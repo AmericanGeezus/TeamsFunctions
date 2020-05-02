@@ -1,47 +1,51 @@
 # Teams Scripts and Functions
 
-This is a collection of Skype-related PowerShell scripts and modules JeffBrown has written. Please show your love https://github.com/JeffBrownTech/
-I added Teams Functions and updated existing Functions to be relevant for Teams and Teams Direct Routing
+This module is a collection of Teams-related PowerShell scripts and functions based on [SkypeFunctions by JeffBrown](https://github.com/JeffBrownTech/Skype). Please show your love. This is published separately (and with permission) rather than updated because I couldn't figure out Forks and Pull-Requests and by the time I had, I had substancially altered the code... 
 
-## Available Scripts
+Added improvements where sensible and updates where needed (Microsoft 365 License names). Renamed most Functions from "SkypeOnline" to "Teams" (Alias available for Backwards compatibility). Functions are relevant to Teams Backend Administration, focused on provisioning for Voice, especially Teams Direct Routing
 
-### Testing Azure AD Information
+## Available Functions
 
-- Test-AzureAdModule:       Verifying the Module is loaded
-- Test-AzureAdConnection:   Verifying a Session exists
-- Test-AzureAdObject:       Verifying the Object exists in AzureAd
+### Azure AD Related
 
-### Testing Skype Online Information
+- `Test-AzureAdModule`:       Verifying the Module is loaded
+- `Test-AzureAdConnection`:   Verifying a Session exists
+- `Test-AzureAdObject`:       Verifying the Object exists in AzureAd
 
-- Test-SkypeOnlineModule:       Verifying the Module is loaded
-- Test-SkypeOnlinedConnection:  Verifying a Session exists
-- Test-SkypeOnlineObject:       Verifying the Object exists in SkypeOnline
+### Skype Online Related
+
+- `Test-SkypeOnlineModule`:       Verifying the Module is loaded
+- `Test-SkypeOnlinedConnection`:  Verifying a Session exists
+- `Test-SkypeOnlineObject`:       Verifying the Object exists in SkypeOnline
 
 ### PowerShell Session Creation
 
-- Connect-AzureAd:              Dependency. Not part of this Module. 
-                                Install-Module AzureAd - https://www.powershellgallery.com/packages/AzureAd
-- Connect-SkypeOnline:          Part of this Module
-- Disconnect-SkypeOnline:       Part of this Module
-- Connect-MicrosoftTeams:       Not required for functions. Not part of this Module. 
-                                Install-Module MicrosoftTeams - https://www.powershellgallery.com/packages/MicrosoftTeams
+- `Connect-AzureAd`:              Not part of this Module, but a dependency: [`Install-Module AzureAd`](https://www.powershellgallery.com/packages/AzureAd)
+- `Connect-SkypeOnline`:          Creates a Session to SkypeOnline/Teams (v7 also extends TimeOut Limit!)
+- `Disconnect-SkypeOnline`:       Disconnects from a Session to SkypeOnline/Teams
+- `Connect-MicrosoftTeams`:       Not part of this Module, not a dependency. Purely listed for distinction: [`Install-Module MicrosoftTeams`](https://www.powershellgallery.com/packages/MicrosoftTeams)
 
 ### Licensing related Functions
 
-- Get-TeamsUserLicense:         Queries licenses assigned to a User and displays visual output
-- Get-TeamsTenantLicenses:      Queries licenses present on the Tenant
-- Add-TeamsUserLicense:         Adds one or more Licenses specified per Switch to the provided Identity
-- Test-TeamsUserLicense:        Tests an individual Service Plan or a License Package against the provided Identity
+- `Get-TeamsUserLicense`:         Queries licenses assigned to a User and displays visual output
+- `Get-TeamsTenantLicenses`:      Queries licenses present on the Tenant
+- `Add-TeamsUserLicense`:         Adds one or more Licenses specified per Switch to the provided Identity
+- `Test-TeamsUserLicense`:        Tests an individual Service Plan or a License Package against the provided Identity
 
 ### Policy related Functions
 
-- Set-TeamsUserPolicy:          Assigns specific Policies to a User
-- Test-TeamsTenantPolicy:       Tests whether any Policy is present in the Tenant 
+- `Set-TeamsUserPolicy`:          Assigns specific Policies to a User
+- `Test-TeamsTenantPolicy`:       Tests whether any Policy is present in the Tenant 
 
 ### Other Functions
 
-- Get-SkypeOnlineConferenceDialInNumbers
+- `Get-SkypeOnlineConferenceDialInNumbers`:
                                 Gathers Dial-In Conferencing Numbers for a specific Domain
-- Remove-TenantDialPlanNormalizationRule
+- `Remove-TenantDialPlanNormalizationRule`:
                                 Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove
-- Test-TeamsExternalDNS         Tests DNS Records for Skype for Business Online and Teams 
+- `Test-TeamsExternalDNS`:      Tests DNS Records for Skype for Business Online and Teams 
+
+## Update/Extension plans
+
+- Adding all Policies to `Set-TeamsUserPolicy` - currently only 6 are supported.
+- Simplifying creation and provisioning of Resource Accounts for Call Queues and Auto Attendants
