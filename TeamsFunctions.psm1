@@ -1,54 +1,49 @@
 ﻿#Requires -Version 3.0
 # Version number of this module.
-ModuleVersion = '1.0.0.0' 
+ModuleVersion = '20.05.02.0' 
 <#
+    Fork of SkypeFunctions
     Written by Jeff Brown
     Jeff@JeffBrown.tech
     @JeffWBrown
     www.jeffbrown.tech
     https://github.com/JeffBrownTech
 
-    Adopted for Teams by David Eberhardt
+    Adopted for Teams as TeamsFunctions
+    by David Eberhardt
     david@davideberhardt.at
     @MightyOrmus
     www.davideberhardt.at
     https://github.com/DEberhardt
 
-
     To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
-    Import-Module C:\files\SkypeOnlineFunctions.psm1
+    Import-Module C:\Code\TeamsFunctions.psm1
     You can also place the .psm1 file in one of the locations PowerShell searches for available modules to import.
     These paths can be found in the $env:PSModulePath variable.A common path is C:\Users\<UserID>\Documents\WindowsPowerShell\Modules
     Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
     Always review any code and steps before applying to a production system to understand their full impact.
 
-    #### Limitations:
+    # Limitations:
     - PhoneSystem_VirtualUser cannot be selected as no GUID is known for it currently
     - Office 365 F1 and F3 as well as Microsoft 365 F1 and F3 cannot be assigned
 
-    #### Version History
-    V1.0 - 10/2/2017 - Initial Version
-    V1.1 - 10/8/2017 - Add non-exported helper functions for AzureAD and Skype connections; fixed a few errors
-    V1.2 - 11/11/2017 - Added Remove-TenantDialPlanNormalizationRule cmdlet
-    V1.3 - 3/11/2018 - Update new license names; added Common Area Phone to license-related commands
-    V20.04 - 17-APR-2020 - Multiple updates for Teams
-    - References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
-    - Function Connect-SkypeOnline renamed to Connect-SkypeOnlineSession (as to not to interfere with Connect-Office365Services)
-    - Function Disconnect-SkypeOnline renamed to Disconnect-SkypeOnlineSession (for consistency)
-    - Function Connect-SkypeOnlineMultiForest renamed to Connect-SkypeOnlineSessionForMultiForest (for consistency)
-    - Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
-    - Function Add-TeamsUserLicense renamed and added Microsoft 365 Licenses
-    - Function Get-TeamsUserLicense renamed and added Microsoft 365 Licenses
-    - Function Get-TeamsTenantLicense renamed and added Microsoft 365 Licenses
-    - Function Set-TeamsUserPolicy renamed - no chances yet to content (want to expand)
-    - Function Test-SkypeOnlineModule updated
-    - Function Test-SkypeOnlineConnection updated to only return $true if the Session is valid
-    - NEW Function Test-AzureADObject to ascertain that the Object exists
-    - NEW Function Test-TeamsObject to ascertain that the Object exists
-    - NEW Function Test-TeamsTenantPolicy to ascertain that the Object exists
-    - NEW Function Test-AzureADObjectLicensePackageForTeams queries whether the Object has a certain License Package assigned
-    - NEW Function Test-AzureADObjectServicePlan queries whether the Object has a specific ServicePlan assinged
+    # Versioning
+    This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
+    Major v20 is the the first one published in 2020, followed by Minor verson for Month and Day. 
+    Subsequent Minor versions indicate additional publications on this day.
+    Revisions are planned quarterly
 
+    # Version History
+    V1.0    02-OCT-2017 - Initial Version (as SkypeFunctions)
+    V20.04  17-APR-2020 - Initial Version (as TeamsFunctions) - Multiple updates for Teams
+            References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
+            Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
+            Microsoft 365 Licenses have been added to all Functions dealing with Licensing
+            Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
+            Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
+            Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
+            Added Function Test-AzureADObjectServicePlan queries whether the Object has a specific ServicePlan assinged
+    V20.05  02-MAY-2020 - First Publish Version - Hello Universe!
 #>
 
 #region *** Exported Functions ***
@@ -161,27 +156,8 @@ function Add-TeamsUserLicense
   )
 
   BEGIN {
-    <#
-        # Verify Azure Active Directory PowerShell Module (AzureAD) is installed on the PC
-        if ((Get-Module -ListAvailable).Name -notcontains "AzureAD")
-        {
-        Write-Warning -Message "Azure Active Directory PowerShell module is not installed. Please install and run command again."
-        RETURN
-        }
-        
-        # Attempt to get tenant Account SKUs
-        # If error is found, attempt connection to Azure AD using Connect-AzureAD
-        $tenantSKUs = Get-AzureADSubscribedSku -ErrorAction SilentlyContinue -ErrorVariable getAzureADTenantDetail
-        if ($getAzureADTenantDetail)
-        {
-        Write-Warning -Message "You must connect to Azure AD before continuing"
-        Connect-AzureAD -Credential (Get-Credential -Message "Enter the sign-in name and password for an O365 Global Admin")
-        $tenantSKUs = Get-AzureADSubscribedSku -ErrorAction STOP
-        }
-    #>
-                
+    # Testing AzureAD Module and Connection
     if ((Test-AzureADModule) -eq $false) {RETURN}
-
     if ((Test-AzureADConnection) -eq $false) {
       try {
         Connect-AzureAD -ErrorAction STOP | Out-Null
@@ -192,6 +168,7 @@ function Add-TeamsUserLicense
       }
     }
 
+    # Querying all SKUs from the Tenant
     try {
       $tenantSKUs = Get-AzureADSubscribedSku -ErrorAction STOP
     }
@@ -230,6 +207,7 @@ function Add-TeamsUserLicense
       }
 
       # Get user's currently assigned licenses
+      # Not used. Ignored
       $userCurrentLicenses = (Get-AzureADUserLicenseDetail -ObjectId $ID).SkuId
       
       # Skype Standalone Plan
@@ -290,28 +268,35 @@ function Add-TeamsUserLicense
   } # End of PROCESS
 } # End of Add-TeamsUserLicense
 
-function Connect-SkypeOnlineSession
+function Connect-SkypeOnline
 {
   <#
       .SYNOPSIS
-      Creates a remote PowerShell session out to Skype for Business Online.
+      Creates a remote PowerShell session out to Skype for Business Online and Teams
       .DESCRIPTION
       Connecting to a remote PowerShell session to Skype for Business Online requires several components
-      and steps. This function consolidates those activities by 1) verifying the SkypeOnlineConnector is
-      installed and imported, 2) prompting for username and password to make and to import the session.
+      and steps. This function consolidates those activities by 
+      1) verifying the SkypeOnlineConnector is installed and imported
+      2) prompting for username and password to make and to import the session.
+      3) extnding the session time-out limit beyond 60mins (SkypeOnlineConnector v7 or higher only!)
+      A SkypeOnline Session requires one of the Teams Admin roles or Skype For Business Admin to connect.
       .PARAMETER UserName
-      The username or sign-in address to use when making the remote PowerShell session connection.
+      Optional String. The username or sign-in address to use when making the remote PowerShell session connection.
       .EXAMPLE
-      Connect-SkypeOnlineSession
+      Connect-SkypeOnline
       Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
       .EXAMPLE
-      Connect-SkypeOnlineSession -UserName admin@contoso.com
+      Connect-SkypeOnline -UserName admin@contoso.com
       Example 2 will prefill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
       .NOTES
       Requires that the Skype Online Connector PowerShell module be installed.
       If the PowerShell Module SkypeOnlineConnector is v7 or higher, the Session TimeOut of 60min can be circumvented.
       Enable-CsOnlineSessionForReconnection is run.
       Download v7 here: https://www.microsoft.com/download/details.aspx?id=39366
+      The SkypeOnline Session allows you to administer SkypeOnline and Teams respectively.
+      To manage Teams, Channels, etc. within Microsoft Teams, use Connect-MicrosoftTeams
+      Connect-MicrosoftTeams requires Teams Service Admin and is part of the PowerShell Module MicrosoftTeams 
+      https://www.powershellgallery.com/packages/MicrosoftTeams
   #>
   [CmdletBinding()]
   param(
@@ -374,7 +359,7 @@ function Connect-SkypeOnlineSession
       if ($moduleVersion.Major -gt "6") # v7 and higher can run Session Limit Extension
       {
         Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue
-        Write-Host "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect."
+        Write-Verbose "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
 
       }
       else 
@@ -386,7 +371,7 @@ function Connect-SkypeOnlineSession
     }
     else
     {
-      Write-Warning -Message "A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnlineSession before attempting this command again."
+      Write-Warning -Message "A Skype Online PowerShell Sessions already exists. Please run DisConnect-SkypeOnline before attempting this command again."
     } # End checking for existing Skype Online Connection
   }
   else
@@ -394,81 +379,15 @@ function Connect-SkypeOnlineSession
     Write-Warning -Message "Skype Online PowerShell Connector module is not installed. Please install and try again."
     Write-Warning -Message "The module can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
   } # End of testing module existence
-} # End of Connect-SkypeOnlineSession
+} # End of Connect-SkypeOnline
 
-
-# Work in Progress - Currently not in list of exported functions
-function Connect-SkypeOnlineSessionForMultiForest
-{
-  [CmdletBinding()]
-  param(
-    [Parameter()]
-    [string]$UserName,
-
-    [Parameter()]
-    [ValidateSet("APC","AUS","CAN","EUR","IND","JPN","NAM")]
-    [string]$Region
-  )
-
-  if ((Get-Module).Name -notcontains "SkypeOnlineConnector")
-  {
-    try
-    {
-      Import-Module SkypeOnlineConnector -ErrorAction STOP
-    }
-    catch
-    {
-      Write-Error -Message "Unable to import SkypeOnlineConnector PowerShell Module : $_"
-    }
-  }
-    
-  if ((Get-PsSession).ComputerName -notlike "*.online.lync.com")
-  {
-    try
-    {        
-      $SkypeOnlineCredentials = Get-Credential $UserName -Message "Enter the sign-in address and password of an O365 or Skype Online Admin"
-            
-      if ($Region.Length -gt 0)
-      {
-        switch ($Region)
-        {
-          "APC" {$forestCode = "0F"; break}
-          "AUS" {$forestCode = "AU1"; break}
-          "CAN" {$forestCode = "CA1"; break}
-          "EUR" {$forestCode = "1E"; break}
-          "IND" {$forestCode = "IN1"; break}
-          "JPN" {$forestCode = "JP1"; break}
-          "NAM" {$forestCode = "2A"; break}
-        }
-                
-        $SkypeOnlineSession = New-CsOnlineSession -Credential $SkypeOnlineCredentials -OverridePowershellUri "https://admin$forestCode.online.lync.com/OcsPowershellLiveId" -Verbose -ErrorAction STOP
-      }
-      else
-      {
-        $SkypeOnlineSession = New-CsOnlineSession -Credential $SkypeOnlineCredentials -Verbose -ErrorAction STOP
-      }
-
-      Import-PSSession -Session $SkypeOnlineSession -AllowClobber -Verbose -ErrorAction STOP
-    }
-    catch
-    {
-      Write-Warning -Message $_
-    }
-  }
-  else
-  {
-    Write-Warning -Message "Existing Skype Online PowerShell Sessions Exists"
-  }
-} # End of Connect-SkypeOnlineSessionForMultiForest
-
-
-function Disconnect-SkypeOnlineSession
+function Disconnect-SkypeOnline
 {
   <#
       .SYNOPSIS
       Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
       .EXAMPLE
-      Disconnect-SkypeOnlineSession
+      Disconnect-SkypeOnline
       Example 1 will remove any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
   #>
 
@@ -495,7 +414,7 @@ function Disconnect-SkypeOnlineSession
     Write-Warning -Message "No remote PowerShell sessions to Skype Online currently exist"
   }
 
-} # End of Disconnect-SkypeOnlineSession
+} # End of DisConnect-SkypeOnline
 
 function Get-SkypeOnlineConferenceDialInNumbers
 {
@@ -512,6 +431,8 @@ function Get-SkypeOnlineConferenceDialInNumbers
       .EXAMPLE
       Get-SkypeOnlineConferenceDialInNumbers -Domain contoso.com
       Example 1 will gather the conference dial-in numbers for contoso.com based on their conference dial-in number web page.
+      .NOTES
+      This function was taken 1:1 from SkypeFunctions and remains untested for Teams
   #>
   [CmdletBinding()]
   param(
@@ -582,11 +503,10 @@ function Get-TeamsUserLicense
       Output can be redirected to a file or grid-view.
   #>
 
-
   [CmdletBinding()]
   param(
-
-    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the UPN or login name of the user account, typically <user>@<domain>.")]
+    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, 
+              HelpMessage = "Enter the UPN or login name of the user account, typically <user>@<domain>.")]
     [Alias("UPN","UserPrincipalName","Username")]
     [string[]]$Identity
   )
@@ -674,7 +594,8 @@ function Get-TeamsUserLicense
       }
             
       $output = [PSCustomObject][ordered]@{
-        User                        = $User                
+        User                        = $User
+        DisplayName                 = $DisplayName                
         License                     = $O365License.TrimEnd(", ") # Removes any trailing ", " at the end of the string                
         CallingPlan                 = $currentCallingPlan                
         CommunicationsCreditLicense = $CommunicationsCreditLicense
@@ -762,11 +683,11 @@ function Get-TeamsTenantLicenses
     if ($skuFriendlyName.Length -gt 0)
     {
       [PSCustomObject][ordered]@{
-        License = $skuFriendlyName
-        Available = $tenantSKU.PrepaidUnits.Enabled
-        Consumed = $tenantSKU.ConsumedUnits
-        Remaining = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
-        Expiring = $tenantSKU.PrepaidUnits.Warning
+        License     = $skuFriendlyName
+        Available   = $tenantSKU.PrepaidUnits.Enabled
+        Consumed    = $tenantSKU.ConsumedUnits
+        Remaining   = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
+        Expiring    = $tenantSKU.PrepaidUnits.Warning
       }
     }    
   } # End of foreach ($tenantSKU in $tenantSKUs}
@@ -808,14 +729,8 @@ function Remove-TenantDialPlanNormalizationRule
   {
     if ((Test-SkypeOnlineConnection) -eq $false)
     {
-      Write-Warning -Message "You must create a remote PowerShell session to Skype Online before continuing."
       Connect-SkypeOnline
     }
-  }
-  else
-  {
-    Write-Warning -Message "Skype Online PowerShell Connector module is not installed. Please install and try again."
-    Write-Warning -Message "The module can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
   }
 
   $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -ErrorAction SilentlyContinue
@@ -894,12 +809,14 @@ function Set-TeamsUserPolicy
       Sets policies on a Teams user
       .DESCRIPTION
       Teams offers the assignment of several policies, to control multiple aspects of the Users experience.
-      For example: Client, Conferencing, External access, Mobility.
+      For example: TeamsUpgrade, Client, Conferencing, External access, Mobility.
       Typically these are assigned using different commands, but
       Set-TeamsUserPolicy allows settings all these with a single command. One or all policy options can
       be used during assignment.
       .PARAMETER Identity
       This is the sign-in address/User Principal Name of the user to configure.
+      .PARAMETER TeamsUpgradePolicy
+      This is one of the available TeamsUpgradePolicies to assign to the user.
       .PARAMETER ClientPolicy
       This is the Client Policy to assign to the user.
       .PARAMETER ConferencingPolicy
@@ -917,6 +834,9 @@ function Set-TeamsUserPolicy
       .EXAMPLE
       Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL -ConferencingPolicy BposSAllModalityNoFT -ExternalAccessPolicy FederationOnly -MobilityPolicy
       Example 3 will set the user John.Does@contoso.com with a client, conferencing, external access, and mobility policy.
+      .NOTES
+      TeamsUpgrade Policy has been added.
+      Multiple other policies are planned to be added to round the function off
   #>
 
   [CmdletBinding()]
@@ -925,6 +845,9 @@ function Set-TeamsUserPolicy
     [Alias("UPN","UserPrincipalName","Username")]
     [string]$Identity,
         
+    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [string]$TeamsUpgradePolicy,
+    
     [Parameter(ValueFromPipelineByPropertyName = $true)]
     [string]$ClientPolicy,
 
@@ -956,6 +879,7 @@ function Set-TeamsUserPolicy
 
     # Get available policies for tenant
     Write-Verbose -Message "Gathering all policies for tenant"
+    $tenantTeamsUpgradePolicies = (Get-CsTeamsUpgradePolicy -WarningAction SilentlyContinue).Identity
     $tenantClientPolicies = (Get-CsClientPolicy -WarningAction SilentlyContinue).Identity
     $tenantConferencingPolicies = (Get-CsConferencingPolicy -Include SubscriptionDefaults -WarningAction SilentlyContinue).Identity
     $tenantExternalAccessPolicies = (Get-CsExternalAccessPolicy -WarningAction SilentlyContinue).Identity
@@ -970,6 +894,35 @@ function Set-TeamsUserPolicy
       # NOTE: Validating users in a try/catch block does not catch the error properly and does not allow for custom outputting of an error message
       if ($null -ne (Get-CsOnlineUser -Identity $ID -ErrorAction SilentlyContinue))
       {
+        #region Teams Upgrade Policy
+        if ($PSBoundParameters.ContainsKey("TeamsUpgradePolicy"))
+        {
+          # Verify if $TeamsUpgradePolicy is a valid policy to assign
+          if ($tenantTeamsUpgradePolicies -icontains "Tag:$TeamsUpgradePolicy")
+          {
+            try
+            {
+              # Attempt to assign policy
+              Grant-CsClientPolicy -Identity $ID -PolicyName $ClientPolicy -WarningAction SilentlyContinue -ErrorAction STOP
+              $output = GetActionOutputObject3 -Name $ID -Property "Teams Upgrade Policy" -Result "Success: $TeamsUpgradePolicy"
+            }
+            catch
+            {
+              $errorMessage = $_
+              $output = GetActionOutputObject3 -Name $ID -Property "Teams Upgrade Policy" -Result "Error: $errorMessage"
+            }
+          }
+          else
+          {
+            # Output invalid client policy to error log file
+            $output = GetActionOutputObject3 -Name $ID -Property "Teams Upgrade Policy" -Result "Error: $TeamsUpgradePolicy is not valid or does not exist"
+          }
+
+          # Output final TeamsUpgradePolicy Success or Fail message
+          Write-Output -InputObject $output
+        } # End of setting Teams Upgrade Policy
+        #endregion
+
         #region Client Policy
         if ($PSBoundParameters.ContainsKey("ClientPolicy"))
         {
@@ -1349,7 +1302,7 @@ function Test-SkypeOnlineConnection
       Will Return $TRUE only if a valid and open session is found.
       .NOTES
       Added check for Open Session to err on the side of caution. 
-      Use with Disconnect-SkypeOnlineSession when tested negative, then Connect-SkypeOnlineSession
+      Use with DisConnect-SkypeOnline when tested negative, then Connect-SkypeOnline
   #>
 
   [CmdletBinding()]
@@ -1374,7 +1327,7 @@ function Test-SkypeOnlineConnection
 } # End of Test-SkypeOnlineModule
 #endregion
 
-#region New Functions:
+#region New Functions
 function Test-AzureADObject
 {
   <#
@@ -1499,190 +1452,58 @@ function Test-TeamsTenantPolicy
   
 } # End of Test-TeamsTenantPolicy
 
-function Test-AzureADObjectLicensePackageForTeams
+function Test-TeamsUserLicense
 {
   <#
       .SYNOPSIS
-      Tests a License Package assignment against an AzureAD-Object
+      Tests a License or License Package assignment against an AzureAD-Object
       .DESCRIPTION
-      Teams requires specific License combinations which can be tested with this script.
+      Teams requires a specific License combination (LicensePackage) for a User.
+      Teams Direct Routing requries a specific License (ServicePlan), namely 'Phone System'
+      to enable a User for Enterprise Voice
+      This Script can be used to ascertain either.
       .PARAMETER Identity
       Mandatory. The sign-in address or User Principal Name of the user account to modify.
+      .PARAMETER ServicePlan
+      Switch. Defined and descriptive Name of the Service Plan to test.
+      Only ServicePlanNames pertaining to Teams are tested.
+      Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success"
       .PARAMETER LicensePackage
-      Mandatory. Defined and descriptive Name of the License Combination.
+      Switch. Defined and descriptive Name of the License Combination to test.
+      This will test multiple individual Service Plans are present
       .EXAMPLE
-      Test-AzureADObjectLicensePackageForTeams -Identity User@domain.com -LicensePackage Microsoft365E5
+      Test-TeamsUserLicensePackage -Identity User@domain.com -ServicePlan MCOEV
+      Will Return $TRUE only if the License is assigned
+      .EXAMPLE
+      Test-TeamsUserLicensePackage -Identity User@domain.com -LicensePackage Microsoft365E5
       Will Return $TRUE only if the license Package is assigned.
       Specific Names have been assigned to these LicensePackages
-      Common Area Phone License, PhoneSystem and PhoneSystem_VirtualUser License are queried exclusively
       .NOTES
-      This Script is indiscriminate against the User Type
+      This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested. 
   #>
+  #region Parameters
   [CmdletBinding()]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory = $true, ParameterSet = "Service", HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory = $true, ParameterSet = "Package", HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity,
-    
-    [Parameter(Mandatory = $true, HelpMessage = "Teams License Package: E5,E3,S2")]
+
+    [Parameter(Mandatory = $true, ParameterSet = "Service", HelpMessage = "AzureAd Service Plan")]
+    [ValidateSet("SPE_E5", "SPE_E3", "ENTERPRISEPREMIUM","ENTERPRISEPACK","MCOSTANDARD","MCOMEETADV","MCOEV","PHONESYSTEM_VIRTUALUSER","MCOCAP","MCOPSTN1","MCOPSTN2","MCOPSTNC")]
+    [string]$ServicePlan,
+
+    [Parameter(Mandatory = $true, ParameterSet = "Package", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateSet("Microsoft365E5", "Microsoft365E3andPhoneSystem", "Office365E5","Office365E3andPhoneSystem","SFBOPlan2andAdvancedMeetingandPhoneSystem","CommonAreaPhoneLicense","PhoneSystem","PhoneSystemVirtualUserLicense")]
     [string]$LicensePackage
     
   )
+  #endregion
 
-  TRY
-  {
-    # Querying License Details
-    $UserLicenseSKU = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
-    
-    SWITCH($LicensePackage)
-    {
-      "Microsoft365E5" 
-      {
-        # Combination 1 - Microsoft 365 E5 has PhoneSystem included
-        IF("SPE_E5" -in $UserLicenseSKU)
-        {
-          Return $TRUE
-        }
-        ELSE
-        {
-          Return $FALSE
-        }
-      }
-      "Office365E5" 
-      {
-        # Combination 2 - Office 365 E5 has PhoneSystem included
-        IF("ENTERPRISEPREMIUM" -in $UserLicenseSKU)
-        {
-          Return $TRUE
-        }
-        ELSE
-        {
-          Return $FALSE
-        }
-      }
-      "Microsoft365E3andPhoneSystem" 
-      {
-        # Combination 3 - Microsoft 365 E3 + PhoneSystem
-        IF("MCOEV" -in $UserLicenseSKU -and "SPE_E3" -in $UserLicenseSKU)
-        {
-          Return $true
-        }
-        ELSE
-        {
-          Return $FALSE
-        }    
-      }
-      "Office365E3andPhoneSystem" 
-      {
-        # Combination 4 - Office 365 E3 + PhoneSystem
-        IF("MCOEV" -in $UserLicenseSKU -and "ENTERPRISEPACK" -in $UserLicenseSKU)
-        {
-          Return $true
-        }
-        ELSE
-        {
-          Return $FALSE
-        }        
-      }
-      "SFBOPlan2andAdvancedMeetingandPhoneSystem"
-      {
-        # Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
-        # NOTE: This is a functioning license, but not one promoted by Microsoft.
-        IF("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
-        {
-          Return $true
-        }
-        ELSE
-        {
-          Return $false
-        }
-      }
-      "CommonAreaPhoneLicense"
-      {
-        # Combination 6 - Common Area Phone
-        # NOTE: This is for Common Area Phones ONLY!
-        IF($UserLicenseSKU = "MCOCAP")
-        {
-          Return $true
-        }
-        ELSE
-        {
-          Return $false
-        }
-      }           
-      "PhoneSystem"
-      {
-        # Combination 7 - PhoneSystem
-        # NOTE: This is for Resource Accounts ONLY!
-        # NOTE: Untested!
-        IF($UserLicenseSKU = "MCOEV")
-        {
-          Return $true
-        }
-        ELSE
-        {
-          Return $false
-        }
-      }
-      "PhoneSystemVirtualUserLicense"
-      {
-        # Combination 8 - PhoneSystem Virtual User License
-        # NOTE: This is for Resource Accounts ONLY!
-        # NOTE: Untested!
-        IF($UserLicenseSKU = "PHONESYSTEM_VIRTUALUSER")
-        {
-          Return $true
-        }
-        ELSE
-        {
-          Return $false
-        }       
-      }
-    }
-    
-  }
-  CATCH
-  {
-    Return $False
-  }
-  
-} # End of Test-AzureADObjectLicensePackageForTeams
-
-function Test-AzureADObjectServicePlan
-{
-  <#
-      .SYNOPSIS
-      Tests a ServicePlan assignment against an AzureAD-Object
-      .DESCRIPTION
-      Verifies whether a specific ServicePlan, for example MCOEV (PhoneSystem) is assigned to an Object.
-      .PARAMETER Identity
-      Mandatory. The sign-in address or User Principal Name of the user account to modify.
-      .PARAMETER ServicePlanName
-      Mandatory. Defined and descriptive Name of the ServicePlanName.
-      .EXAMPLE
-      Test-AzureADObjecteServicePlan
-      Will Return $TRUE only if the license Package is assigned.
-      Common Area Phone License, PhoneSystem and PhoneSystem_VirtualUser License are queried exclusively
-      .NOTES
-      This Script is indiscriminate against the User Type
-      More granular test than Test-TeamsObjectLicensePackage
-  #>
-  [CmdletBinding()]
-  param(
-    [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
-    [string]$Identity,
-    
-    [Parameter(Mandatory = $true, HelpMessage = "ServicePlanName")]
-    [string]$ServicePlanName    
-  )
-
-  BEGIN
+  #region Service Plan
+  if ($PSBoundParameters.ContainsKey("ServicePlan"))
   {
     $UserLicensePlans = (Get-AzureADUserLicenseDetail -ObjectId $Identity).ServicePlans
-  } 
 
-  PROCESS
-  {
     #Checks if it is assigned
     IF($ServicePlanName -in $UserLicensePlans.ServicePlanName)
     {
@@ -1700,19 +1521,173 @@ function Test-AzureADObjectServicePlan
     {
       Return $false
     }
-  }  
-  
-} # End of Test-AzureADObjectServicePlan
+  }
+  #endregion
 
-
-
-
+  #region LicensePackage
+  if ($PSBoundParameters.ContainsKey("LicensePackage"))
+  {
+    TRY
+    {
+      # Querying License Details
+      $UserLicenseSKU = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
+      
+      SWITCH($LicensePackage)
+      {
+        "Microsoft365E5" 
+        {
+          # Combination 1 - Microsoft 365 E5 has PhoneSystem included
+          IF("SPE_E5" -in $UserLicenseSKU) 
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE}
+        }
+        "Office365E5" 
+        {
+          # Combination 2 - Office 365 E5 has PhoneSystem included
+          IF("ENTERPRISEPREMIUM" -in $UserLicenseSKU)
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE}
+        }
+        "Microsoft365E3andPhoneSystem" 
+        {
+          # Combination 3 - Microsoft 365 E3 + PhoneSystem
+          IF("MCOEV" -in $UserLicenseSKU -and "SPE_E3" -in $UserLicenseSKU)
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE} 
+        }
+        "Office365E3andPhoneSystem" 
+        {
+          # Combination 4 - Office 365 E3 + PhoneSystem
+          IF("MCOEV" -in $UserLicenseSKU -and "ENTERPRISEPACK" -in $UserLicenseSKU)
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE}      
+        }
+        "SFBOPlan2andAdvancedMeetingandPhoneSystem"
+        {
+          # Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
+          # NOTE: This is a functioning license, but not one promoted by Microsoft.
+          IF("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE}
+        }
+        "CommonAreaPhoneLicense"
+        {
+          # Combination 6 - Common Area Phone
+          # NOTE: This is for Common Area Phones ONLY!
+          IF("MCOCAP" -in $UserLicenseSKU)
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE}
+        }           
+        "PhoneSystem"
+        {
+          # Combination 7 - PhoneSystem
+          # NOTE: This is for Resource Accounts ONLY!
+          IF("MCOEV" -in $UserLicenseSKU)
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE}
+        }
+        "PhoneSystemVirtualUserLicense"
+        {
+          # Combination 8 - PhoneSystem Virtual User License
+          # NOTE: This is for Resource Accounts ONLY!
+          IF("PHONESYSTEM_VIRTUALUSER" -in $UserLicenseSKU)
+            {Return $TRUE}
+          ELSE
+            {Return $FALSE}    
+        }
+      }
+      
+    }
+    CATCH
+    {
+      Return $False
+    }
+  }
+  #endregion
+} # End of Test-TeamsUserLicense
 
 #endregion
-#endregion
+#endregion *** Exported Functions ***
 
 
 #region *** Non-Exported Helper Functions ***
+# Work in Progress - Currently not in list of exported functions
+# Deprecated function. Taken as-is from SkypeFunctions and not further optimised.
+function Connect-SkypeOnlineForMultiForest
+{
+  <#
+    .NOTES
+    This function was taken 1:1 from SkypeFunctions and remains untested for Teams
+  #>
+  [CmdletBinding()]
+  param(
+    [Parameter()]
+    [string]$UserName,
+
+    [Parameter()]
+    [ValidateSet("APC","AUS","CAN","EUR","IND","JPN","NAM")]
+    [string]$Region
+  )
+
+  if ((Get-Module).Name -notcontains "SkypeOnlineConnector")
+  {
+    try
+    {
+      Import-Module SkypeOnlineConnector -ErrorAction STOP
+    }
+    catch
+    {
+      Write-Error -Message "Unable to import SkypeOnlineConnector PowerShell Module : $_"
+    }
+  }
+    
+  if ((Get-PsSession).ComputerName -notlike "*.online.lync.com")
+  {
+    try
+    {        
+      $SkypeOnlineCredentials = Get-Credential $UserName -Message "Enter the sign-in address and password of an O365 or Skype Online Admin"
+            
+      if ($Region.Length -gt 0)
+      {
+        switch ($Region)
+        {
+          "APC" {$forestCode = "0F"; break}
+          "AUS" {$forestCode = "AU1"; break}
+          "CAN" {$forestCode = "CA1"; break}
+          "EUR" {$forestCode = "1E"; break}
+          "IND" {$forestCode = "IN1"; break}
+          "JPN" {$forestCode = "JP1"; break}
+          "NAM" {$forestCode = "2A"; break}
+        }
+                
+        $SkypeOnlineSession = New-CsOnlineSession -Credential $SkypeOnlineCredentials -OverridePowershellUri "https://admin$forestCode.online.lync.com/OcsPowershellLiveId" -Verbose -ErrorAction STOP
+      }
+      else
+      {
+        $SkypeOnlineSession = New-CsOnlineSession -Credential $SkypeOnlineCredentials -Verbose -ErrorAction STOP
+      }
+
+      Import-PSSession -Session $SkypeOnlineSession -AllowClobber -Verbose -ErrorAction STOP
+    }
+    catch
+    {
+      Write-Warning -Message $_
+    }
+  }
+  else
+  {
+    Write-Warning -Message "Existing Skype Online PowerShell Sessions Exists"
+  }
+} # End of Connect-SkypeOnlineForMultiForest
+
+
 function GetActionOutputObject2
 {
   <#
@@ -1968,15 +1943,15 @@ function ProcessLicense
   
   RETURN $Result
 }
-#endregion
+#endregion *** Non-Exported Helper Functions ***
 
 # Create a new Module out of this
 
 
-Export-ModuleMember -Function Add-TeamsUserLicense, Connect-SkypeOnlineSession, Disconnect-SkypeOnlineSession,`
+Export-ModuleMember -Function Add-TeamsUserLicense, Connect-SkypeOnline, Disconnect-SkypeOnline,`
                               Get-SkypeOnlineConferenceDialInNumbers, Get-TeamsUserLicense, Get-TeamsTenantLicenses, Set-TeamsUserPolicy,`
                               Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS,`
-                              Test-AzureADModule,Test-SkypeOnlineModule,`
-                              Test-AzureADConnection,Test-SkypeOnlineConnection,`
+                              Test-AzureADModule, Test-SkypeOnlineModule,`
+                              Test-AzureADConnection, Test-SkypeOnlineConnection,`
                               Test-AzureADObject, Test-TeamsObject, Test-TeamsTenantPolicy,`
-                              Test-AzureADObjectLicensePackageForTeams, Test-AzureADObjectServicePlan
+                              Test-TeamsUserLicense
