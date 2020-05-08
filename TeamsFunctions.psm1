@@ -1,6 +1,4 @@
 ﻿#Requires -Version 3.0
-# Version number of this module.
-ModuleVersion = '20.5.3.1' 
 <#
     Fork of SkypeFunctions
     Written by Jeff Brown
