@@ -354,7 +354,7 @@ function Connect-SkypeOnline
       #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
       $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
       Write-Host "SkypeOnlineConnector Module is v$ModuleVersion"
-      if ($moduleVersion.Major -gt "6") # v7 and higher can run Session Limit Extension
+      if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
       {
         Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue
         Write-Verbose "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
@@ -1227,6 +1227,9 @@ function Test-AzureADModule
     Write-Warning -Message "Azure Active Directory PowerShell module is not installed. Please install and try again."
     return $false
   }
+  else {
+    return $true
+  }
 } # End of Test-AzureADModule
 
 function Test-AzureADConnection
@@ -1346,24 +1349,30 @@ function Test-AzureADObject
     [string]$Identity  
   )
 
-  Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
-  Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
-  TRY
-  {
-    Get-AzureADUser -ObjectId $Identity | Out-Null -ErrorAction STOP
-    Return $true
+  begin {
+    # Verifying Azure AD Connection
+    if ((Test-AzureAdConnection) -eq $false)
+    {
+        Connect-AzureAD > $null
+    }
+  
+    Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
+    Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
   }
-  CATCH [Microsoft.Open.Azure.AD.CommonLibrary.AadNeedAuthenticationException]
-  {
-    Return $False
-  }
-  CATCH [Microsoft.Open.AzureAD16.Client.ApiException]
-  {
-    Return $False
-  }
-  CATCH
-  {
-    Return $False
+  process {
+    TRY
+    {
+      Get-AzureADUser -ObjectId $Identity -ErrorAction STOP > $null
+      Return $true
+    }
+    CATCH [Microsoft.Open.AzureAD16.Client.ApiException]
+    {
+      Return $False
+    }
+    CATCH
+    {
+      Return $False
+    }
   }
 } # End of Test-AzureADObject
 
@@ -1387,26 +1396,15 @@ function Test-TeamsObject
     [string]$Identity   
   )
 
-  Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
-  Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
   TRY
   {
-    Get-CsOnlineUser -Identity $Identity | Out-Null -ErrorAction STOP
+    Get-CsOnlineUser -Identity $Identity -ErrorAction STOP | Out-Null
     Return $true
   }
-  CATCH [Microsoft.Open.Azure.AD.CommonLibrary.AadNeedAuthenticationException]
+  CATCH [System.Exception]
   {
     Return $False
   }
-  CATCH [Microsoft.Open.AzureAD16.Client.ApiException]
-  {
-    Return $False
-  }
-  CATCH
-  {
-    Return $False
-  }
-  
 } # End of Test-TeamsObject
 
 function Test-TeamsTenantPolicy
@@ -1429,25 +1427,73 @@ function Test-TeamsTenantPolicy
   [CmdletBinding()]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "This is the Noun of Policy, i.e. 'TeamsUpgradePolicy' of 'Get-TeamsUpgradePolicy'")]
+    [Alias("Noun")]
     [string]$Policy,
     
     [Parameter(Mandatory = $true, HelpMessage = "This is the Name of the Policy to test")]
     [string]$PolicyName
-    
-       
   )
+  begin {
+    # Verifying Skype Online Connection
+    if ((Test-SkypeOnlineModule) -eq $true)
+    {
+      if ((Test-SkypeOnlineConnection) -eq $false)
+      {
+        Write-Warning -Message "You must create a remote PowerShell session to SkypeOnline before continuing."
+        Connect-SkypeOnline
+      }
+    }
+    else
+    {
+      Write-Warning -Message "Skype Online PowerShell Connector module is not installed. Please install and try again."
+      Write-Warning -Message "The module can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
+    }
+    
+    try {
+      $TestCommand = "Get-" + $Policy + " -ErrorAction Stop"
+      Invoke-Expression "$TestCommand" | Out-Null
+    }  
+    catch {
+      Write-Warning -Message "Policy Noun '$Policy' is invalid. No such Policy found!"
+      break
+    }
+    finally {
+      $Error.clear()
+    }  
+  }
+  process{
+    try {
+      $Command = "Get-" + $Policy + " -Identity " + $PolicyName + " -ErrorAction Stop"
+      Invoke-Expression "$Command" | Out-Null
+      Return $true
+    }
+    catch [System.Exception] {
+      if($_.FullyQualifiedErrorId -like "*MissingItem*") {
+        Return $False
+      }
+      else {
+        # get error record
+        [Management.Automation.ErrorRecord]$e = $_
 
-  TRY
-  {
-    $Command = "Get-" + $Policy + " -Identity " + $PolicyName
-    Invoke-Expression $Command | Out-Null -ErrorAction STOP
-    Return $true
-  }
-  CATCH
-  {
-    Return $False
-  }
+        # retrieve Info about runtime error
+        $info = [PSCustomObject]@{
+          Exception = $e.Exception.Message
+          Reason    = $e.CategoryInfo.Reason
+          Target    = $e.CategoryInfo.TargetName
+          Script    = $e.InvocationInfo.ScriptName
+          Line      = $e.InvocationInfo.ScriptLineNumber
+          Column    = $e.InvocationInfo.OffsetInLine
+        }
   
+        # output Info. Post-process collected info, and log info (optional)
+        $info
+      }
+    }
+    finally {
+      $Error.clear()
+    }
+
+  }
 } # End of Test-TeamsTenantPolicy
 
 function Test-TeamsUserLicense
@@ -1496,8 +1542,26 @@ function Test-TeamsUserLicense
   )
   #endregion
 
-  switch ($PsCmdlet.ParameterSetName){
-    "ServicePlan" {
+  begin {
+    Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
+    try {
+      #Test relevant to Script (finish with " -ErrorAction Stop | Out-Null")
+      Get-AzureADUserLicenseDetail -ObjectId $Identity -ErrorAction STOP | Out-Null
+    }
+    catch [Microsoft.Open.Azure.AD.CommonLibrary.AadNeedAuthenticationException] {
+      # Fix if fixable, otherwise throw error as desired (relevant to Script) 
+      Write-Verbose "No Connection to AzureAd, establishing..."
+      Connect-AzureAD  > $null
+    }
+    finally {
+      $Error.clear()
+    }
+  }
+  process{
+
+    switch ($PsCmdlet.ParameterSetName) {
+      "ServicePlan" 
+      {
         $UserLicensePlans = (Get-AzureADUserLicenseDetail -ObjectId $Identity).ServicePlans
 
         #Checks if it is assigned
@@ -1517,89 +1581,89 @@ function Test-TeamsUserLicense
         {
           Return $false
         }
-    }
-    "LicensePackage" {
-      TRY
-      {
-        # Querying License Details
-        $UserLicenseSKU = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
-        
-        SWITCH($LicensePackage)
-        {
-          "Microsoft365E5" 
-          {
-            # Combination 1 - Microsoft 365 E5 has PhoneSystem included
-            IF("SPE_E5" -in $UserLicenseSKU) 
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE}
-          }
-          "Office365E5" 
-          {
-            # Combination 2 - Office 365 E5 has PhoneSystem included
-            IF("ENTERPRISEPREMIUM" -in $UserLicenseSKU)
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE}
-          }
-          "Microsoft365E3andPhoneSystem" 
-          {
-            # Combination 3 - Microsoft 365 E3 + PhoneSystem
-            IF("MCOEV" -in $UserLicenseSKU -and "SPE_E3" -in $UserLicenseSKU)
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE} 
-          }
-          "Office365E3andPhoneSystem" 
-          {
-            # Combination 4 - Office 365 E3 + PhoneSystem
-            IF("MCOEV" -in $UserLicenseSKU -and "ENTERPRISEPACK" -in $UserLicenseSKU)
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE}      
-          }
-          "SFBOPlan2andAdvancedMeetingandPhoneSystem"
-          {
-            # Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
-            # NOTE: This is a functioning license, but not one promoted by Microsoft.
-            IF("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE}
-          }
-          "CommonAreaPhoneLicense"
-          {
-            # Combination 6 - Common Area Phone
-            # NOTE: This is for Common Area Phones ONLY!
-            IF("MCOCAP" -in $UserLicenseSKU)
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE}
-          }           
-          "PhoneSystem"
-          {
-            # Combination 7 - PhoneSystem
-            # NOTE: This is for Resource Accounts ONLY!
-            IF("MCOEV" -in $UserLicenseSKU)
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE}
-          }
-          "PhoneSystemVirtualUserLicense"
-          {
-            # Combination 8 - PhoneSystem Virtual User License
-            # NOTE: This is for Resource Accounts ONLY!
-            IF("PHONESYSTEM_VIRTUALUSER" -in $UserLicenseSKU)
-              {Return $TRUE}
-            ELSE
-              {Return $FALSE}    
-          }
-        }
-        
       }
-      CATCH
+      "LicensePackage" 
       {
-        Return $False
+        TRY
+        {
+          # Querying License Details
+          $UserLicenseSKU = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
+        
+          SWITCH($LicensePackage)
+          {
+            "Microsoft365E5" 
+            {
+              # Combination 1 - Microsoft 365 E5 has PhoneSystem included
+              IF("SPE_E5" -in $UserLicenseSKU) 
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "Office365E5" 
+            {
+              # Combination 2 - Office 365 E5 has PhoneSystem included
+              IF("ENTERPRISEPREMIUM" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "Microsoft365E3andPhoneSystem" 
+            {
+              # Combination 3 - Microsoft 365 E3 + PhoneSystem
+              IF("MCOEV" -in $UserLicenseSKU -and "SPE_E3" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE} 
+            }
+            "Office365E3andPhoneSystem" 
+            {
+              # Combination 4 - Office 365 E3 + PhoneSystem
+              IF("MCOEV" -in $UserLicenseSKU -and "ENTERPRISEPACK" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}      
+            }
+            "SFBOPlan2andAdvancedMeetingandPhoneSystem"
+            {
+              # Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
+              # NOTE: This is a functioning license, but not one promoted by Microsoft.
+              IF("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "CommonAreaPhoneLicense"
+            {
+              # Combination 6 - Common Area Phone
+              # NOTE: This is for Common Area Phones ONLY!
+              IF("MCOCAP" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }           
+            "PhoneSystem"
+            {
+              # Combination 7 - PhoneSystem
+              # NOTE: This is for Resource Accounts ONLY!
+              IF("MCOEV" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "PhoneSystemVirtualUserLicense"
+            {
+              # Combination 8 - PhoneSystem Virtual User License
+              # NOTE: This is for Resource Accounts ONLY!
+              IF("PHONESYSTEM_VIRTUALUSER" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}    
+            }
+          }
+        
+        }
+        catch {
+        }       
       }
     }
   }
