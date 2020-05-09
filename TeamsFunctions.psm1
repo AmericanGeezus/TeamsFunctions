@@ -1480,135 +1480,129 @@ function Test-TeamsUserLicense
       This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested. 
   #>
   #region Parameters
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = "ServicePlan")]
   param(
-    [Parameter(Mandatory = $true, ParameterSet = "Service", HelpMessage = "This is the UserID (UPN)")]
-    [Parameter(Mandatory = $true, ParameterSet = "Package", HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity,
 
-    [Parameter(Mandatory = $true, ParameterSet = "Service", HelpMessage = "AzureAd Service Plan")]
+    [Parameter(Mandatory = $true, ParameterSetName = "ServicePlan", HelpMessage = "AzureAd Service Plan")]
     [ValidateSet("SPE_E5", "SPE_E3", "ENTERPRISEPREMIUM","ENTERPRISEPACK","MCOSTANDARD","MCOMEETADV","MCOEV","PHONESYSTEM_VIRTUALUSER","MCOCAP","MCOPSTN1","MCOPSTN2","MCOPSTNC")]
     [string]$ServicePlan,
 
-    [Parameter(Mandatory = $true, ParameterSet = "Package", HelpMessage = "Teams License Package: E5,E3,S2")]
+    [Parameter(Mandatory = $true, ParameterSetName = "Package", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateSet("Microsoft365E5", "Microsoft365E3andPhoneSystem", "Office365E5","Office365E3andPhoneSystem","SFBOPlan2andAdvancedMeetingandPhoneSystem","CommonAreaPhoneLicense","PhoneSystem","PhoneSystemVirtualUserLicense")]
     [string]$LicensePackage
     
   )
   #endregion
 
-  #region Service Plan
-  if ($PSBoundParameters.ContainsKey("ServicePlan"))
-  {
-    $UserLicensePlans = (Get-AzureADUserLicenseDetail -ObjectId $Identity).ServicePlans
+  switch ($PsCmdlet.ParameterSetName){
+    "ServicePlan" {
+        $UserLicensePlans = (Get-AzureADUserLicenseDetail -ObjectId $Identity).ServicePlans
 
-    #Checks if it is assigned
-    IF($ServicePlanName -in $UserLicensePlans.ServicePlanName)
-    {
-      #Checks if the Provisioning Status is also "Success"
-      IF($($UserLicensePlans | Where-Object {$_.ServicePlanName -eq $ServicePlanName}).ProvisioningStatus -eq "Success")
-      {
-        Return $true
-      }
-      ELSE
-      {
-        Return $false
-      }
+        #Checks if it is assigned
+        IF($ServicePlanName -in $UserLicensePlans.ServicePlanName)
+        {
+          #Checks if the Provisioning Status is also "Success"
+          IF($($UserLicensePlans | Where-Object {$_.ServicePlanName -eq $ServicePlanName}).ProvisioningStatus -eq "Success")
+          {
+            Return $true
+          }
+          ELSE
+          {
+            Return $false
+          }
+        }
+        ELSE
+        {
+          Return $false
+        }
     }
-    ELSE
-    {
-      Return $false
+    "LicensePackage" {
+      TRY
+      {
+        # Querying License Details
+        $UserLicenseSKU = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
+        
+        SWITCH($LicensePackage)
+        {
+          "Microsoft365E5" 
+          {
+            # Combination 1 - Microsoft 365 E5 has PhoneSystem included
+            IF("SPE_E5" -in $UserLicenseSKU) 
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE}
+          }
+          "Office365E5" 
+          {
+            # Combination 2 - Office 365 E5 has PhoneSystem included
+            IF("ENTERPRISEPREMIUM" -in $UserLicenseSKU)
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE}
+          }
+          "Microsoft365E3andPhoneSystem" 
+          {
+            # Combination 3 - Microsoft 365 E3 + PhoneSystem
+            IF("MCOEV" -in $UserLicenseSKU -and "SPE_E3" -in $UserLicenseSKU)
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE} 
+          }
+          "Office365E3andPhoneSystem" 
+          {
+            # Combination 4 - Office 365 E3 + PhoneSystem
+            IF("MCOEV" -in $UserLicenseSKU -and "ENTERPRISEPACK" -in $UserLicenseSKU)
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE}      
+          }
+          "SFBOPlan2andAdvancedMeetingandPhoneSystem"
+          {
+            # Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
+            # NOTE: This is a functioning license, but not one promoted by Microsoft.
+            IF("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE}
+          }
+          "CommonAreaPhoneLicense"
+          {
+            # Combination 6 - Common Area Phone
+            # NOTE: This is for Common Area Phones ONLY!
+            IF("MCOCAP" -in $UserLicenseSKU)
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE}
+          }           
+          "PhoneSystem"
+          {
+            # Combination 7 - PhoneSystem
+            # NOTE: This is for Resource Accounts ONLY!
+            IF("MCOEV" -in $UserLicenseSKU)
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE}
+          }
+          "PhoneSystemVirtualUserLicense"
+          {
+            # Combination 8 - PhoneSystem Virtual User License
+            # NOTE: This is for Resource Accounts ONLY!
+            IF("PHONESYSTEM_VIRTUALUSER" -in $UserLicenseSKU)
+              {Return $TRUE}
+            ELSE
+              {Return $FALSE}    
+          }
+        }
+        
+      }
+      CATCH
+      {
+        Return $False
+      }
     }
   }
-  #endregion
-
-  #region LicensePackage
-  if ($PSBoundParameters.ContainsKey("LicensePackage"))
-  {
-    TRY
-    {
-      # Querying License Details
-      $UserLicenseSKU = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
-      
-      SWITCH($LicensePackage)
-      {
-        "Microsoft365E5" 
-        {
-          # Combination 1 - Microsoft 365 E5 has PhoneSystem included
-          IF("SPE_E5" -in $UserLicenseSKU) 
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE}
-        }
-        "Office365E5" 
-        {
-          # Combination 2 - Office 365 E5 has PhoneSystem included
-          IF("ENTERPRISEPREMIUM" -in $UserLicenseSKU)
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE}
-        }
-        "Microsoft365E3andPhoneSystem" 
-        {
-          # Combination 3 - Microsoft 365 E3 + PhoneSystem
-          IF("MCOEV" -in $UserLicenseSKU -and "SPE_E3" -in $UserLicenseSKU)
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE} 
-        }
-        "Office365E3andPhoneSystem" 
-        {
-          # Combination 4 - Office 365 E3 + PhoneSystem
-          IF("MCOEV" -in $UserLicenseSKU -and "ENTERPRISEPACK" -in $UserLicenseSKU)
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE}      
-        }
-        "SFBOPlan2andAdvancedMeetingandPhoneSystem"
-        {
-          # Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
-          # NOTE: This is a functioning license, but not one promoted by Microsoft.
-          IF("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE}
-        }
-        "CommonAreaPhoneLicense"
-        {
-          # Combination 6 - Common Area Phone
-          # NOTE: This is for Common Area Phones ONLY!
-          IF("MCOCAP" -in $UserLicenseSKU)
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE}
-        }           
-        "PhoneSystem"
-        {
-          # Combination 7 - PhoneSystem
-          # NOTE: This is for Resource Accounts ONLY!
-          IF("MCOEV" -in $UserLicenseSKU)
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE}
-        }
-        "PhoneSystemVirtualUserLicense"
-        {
-          # Combination 8 - PhoneSystem Virtual User License
-          # NOTE: This is for Resource Accounts ONLY!
-          IF("PHONESYSTEM_VIRTUALUSER" -in $UserLicenseSKU)
-            {Return $TRUE}
-          ELSE
-            {Return $FALSE}    
-        }
-      }
-      
-    }
-    CATCH
-    {
-      Return $False
-    }
-  }
-  #endregion
 } # End of Test-TeamsUserLicense
 
 #endregion
