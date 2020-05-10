@@ -74,6 +74,8 @@ function Add-TeamsUserLicense
       Adds a Audio Conferencing add-on license to the user account.
       .PARAMETER AddPhoneSystem
       Adds a Phone System add-on license to the user account.
+      .PARAMETER AddPhoneSystemVirtualUser
+      Adds a Phone System add-on license to the user account.
       .PARAMETER AddMSCallingPlanDomestic
       Adds a Domestic Calling Plan add-on license to the user account.
       .PARAMETER AddMSCallingPlanInternational
@@ -139,9 +141,11 @@ function Add-TeamsUserLicense
     [switch]$AddPhoneSystem,
 
     [Parameter(Mandatory=$false)]
+    [switch]$AddPhoneSystemVirtualUser,
+
+    [Parameter(Mandatory=$false)]
     [Alias("AddCommonAreaPhone,AddCAP")]
     [switch]$AddCommonAreaPhone,
-    
     
     [Parameter(ParameterSetName = 'AddDomestic')]
     [Alias("AddDomesticCallingPlan")]
@@ -182,6 +186,7 @@ function Add-TeamsUserLicense
         "MCOPSTN2" {$InternationalCallingPlan = $tenantSKU.SkuId; break}
         "MCOMEETADV" {$AudioConferencing = $tenantSKU.SkuId; break}
         "MCOEV" {$PhoneSystem = $tenantSKU.SkuId; break}
+        "PHONESYSTEM_VIRTUALUSER" {$PhoneSystemVirtualUser = $tenantSKU.SkuId; break}
         "SPE_E3" {$MSE3 = $tenantSKU.SkuId; break}
         "SPE_E5" {$MSE5= $tenantSKU.SkuId; break}
         "ENTERPRISEPREMIUM" {$E5WithPhoneSystem = $tenantSKU.SkuId; break}
@@ -248,6 +253,11 @@ function Add-TeamsUserLicense
         ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem -LicenseName "PhoneSystem (Add-On License)"
       }
 
+      # Phone System Virtual User Add-On License
+      if ($AddPhoneSystemVirtualUser -eq $true) {
+        ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystemVirtualUser -LicenseName "PhoneSystem Virtual User (Add-On License)"
+      }
+      
       # Domestic Calling Plan
       if ($AddMSCallingPlanDomestic -eq $true) {
         ProcessLicense -UserID $ID -LicenseSkuID $DomesticCallingPlan -LicenseName "Microsoft CallingPlan (Domestic)"
@@ -664,7 +674,7 @@ function Get-TeamsTenantLicenses
       "MCOPSTN2" {$skuFriendlyName = "Domestic and International Calling Plan"; break}
       "MCOPSTNC" {$skuFriendlyName = "Communications Credit Add-On"; break}
       "MCOMEETADV" {$skuFriendlyName = "Audio Conferencing Add-On"; break}
-      "MCOEV" {$skuFriendlyName = "PhoneSystem Add-On"; break}
+      "MCOEV" {$skuFriendlyName = "PhoneSystem"; break}
       "MCOCAP" {$skuFriendlyName = "Common Area Phone"; break}
       "ENTERPRISEPREMIUM" {$skuFriendlyName = "Office 365 E5 with Phone System"; break}
       "ENTERPRISEPREMIUM_NOPSTNCONF" {$skuFriendlyName = "Office 365 E5 Without Audio Conferencing"; break}
@@ -1669,7 +1679,317 @@ function Test-TeamsUserLicense
   }
 } # End of Test-TeamsUserLicense
 
+
+# Work in progress: Test-TeamsTenantLicense
+function Test-TeamsTenantLicense
+{
+  <#
+      .SYNOPSIS
+      Tests a License or License Package assignment against the Office 365 Tenant
+      .DESCRIPTION
+      Teams requires a specific License combination (LicensePackage) for a User.
+      Teams Direct Routing requries a specific License (ServicePlan), namely 'Phone System'
+      to enable a User for Enterprise Voice
+      This Script can be used to ascertain either.
+      .PARAMETER Identity
+      Mandatory. The sign-in address or User Principal Name of the user account to modify.
+      .PARAMETER ServicePlan
+      Switch. Defined and descriptive Name of the Service Plan to test.
+      Only ServicePlanNames pertaining to Teams are tested.
+      Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success"
+      .PARAMETER LicensePackage
+      Switch. Defined and descriptive Name of the License Combination to test.
+      This will test multiple individual Service Plans are present
+      .EXAMPLE
+      Test-TeamsUserLicensePackage -Identity User@domain.com -ServicePlan MCOEV
+      Will Return $TRUE only if the License is assigned
+      .EXAMPLE
+      Test-TeamsUserLicensePackage -Identity User@domain.com -LicensePackage Microsoft365E5
+      Will Return $TRUE only if the license Package is assigned.
+      Specific Names have been assigned to these LicensePackages
+      .NOTES
+      This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested. 
+  #>
+  #region Parameters
+  [CmdletBinding(DefaultParameterSetName = "ServicePlan")]
+  param(
+    [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
+    [string]$Identity,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "ServicePlan", HelpMessage = "AzureAd Service Plan")]
+    [ValidateSet("SPE_E5", "SPE_E3", "ENTERPRISEPREMIUM","ENTERPRISEPACK","MCOSTANDARD","MCOMEETADV","MCOEV","PHONESYSTEM_VIRTUALUSER","MCOCAP","MCOPSTN1","MCOPSTN2","MCOPSTNC")]
+    [string]$ServicePlan,
+
+    [Parameter(Mandatory = $true, ParameterSetName = "Package", HelpMessage = "Teams License Package: E5,E3,S2")]
+    [ValidateSet("Microsoft365E5", "Microsoft365E3andPhoneSystem", "Office365E5","Office365E3andPhoneSystem","SFBOPlan2andAdvancedMeetingandPhoneSystem","CommonAreaPhoneLicense","PhoneSystem","PhoneSystemVirtualUserLicense")]
+    [string]$LicensePackage
+    
+  )
+  #endregion
+
+  begin {
+    Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
+    try {
+      #Test relevant to Script (finish with " -ErrorAction Stop | Out-Null")
+      Get-AzureADUserLicenseDetail -ObjectId $Identity -ErrorAction STOP | Out-Null
+    }
+    catch [Microsoft.Open.Azure.AD.CommonLibrary.AadNeedAuthenticationException] {
+      # Fix if fixable, otherwise throw error as desired (relevant to Script) 
+      Write-Verbose "No Connection to AzureAd, establishing..."
+      Connect-AzureAD  > $null
+    }
+    finally {
+      $Error.clear()
+    }
+  }
+  process{
+
+    switch ($PsCmdlet.ParameterSetName) {
+      "ServicePlan" 
+      {
+        $UserLicensePlans = (Get-AzureADUserLicenseDetail -ObjectId $Identity).ServicePlans
+
+        #Checks if it is assigned
+        IF($ServicePlanName -in $UserLicensePlans.ServicePlanName)
+        {
+          #Checks if the Provisioning Status is also "Success"
+          IF($($UserLicensePlans | Where-Object {$_.ServicePlanName -eq $ServicePlanName}).ProvisioningStatus -eq "Success")
+          {
+            Return $true
+          }
+          ELSE
+          {
+            Return $false
+          }
+        }
+        ELSE
+        {
+          Return $false
+        }
+      }
+      "LicensePackage" 
+      {
+        TRY
+        {
+          # Querying License Details
+          $UserLicenseSKU = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
+        
+          SWITCH($LicensePackage)
+          {
+            "Microsoft365E5" 
+            {
+              # Combination 1 - Microsoft 365 E5 has PhoneSystem included
+              IF("SPE_E5" -in $UserLicenseSKU) 
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "Office365E5" 
+            {
+              # Combination 2 - Office 365 E5 has PhoneSystem included
+              IF("ENTERPRISEPREMIUM" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "Microsoft365E3andPhoneSystem" 
+            {
+              # Combination 3 - Microsoft 365 E3 + PhoneSystem
+              IF("MCOEV" -in $UserLicenseSKU -and "SPE_E3" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE} 
+            }
+            "Office365E3andPhoneSystem" 
+            {
+              # Combination 4 - Office 365 E3 + PhoneSystem
+              IF("MCOEV" -in $UserLicenseSKU -and "ENTERPRISEPACK" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}      
+            }
+            "SFBOPlan2andAdvancedMeetingandPhoneSystem"
+            {
+              # Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
+              # NOTE: This is a functioning license, but not one promoted by Microsoft.
+              IF("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "CommonAreaPhoneLicense"
+            {
+              # Combination 6 - Common Area Phone
+              # NOTE: This is for Common Area Phones ONLY!
+              IF("MCOCAP" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }           
+            "PhoneSystem"
+            {
+              # Combination 7 - PhoneSystem
+              # NOTE: This is for Resource Accounts ONLY!
+              IF("MCOEV" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}
+            }
+            "PhoneSystemVirtualUserLicense"
+            {
+              # Combination 8 - PhoneSystem Virtual User License
+              # NOTE: This is for Resource Accounts ONLY!
+              IF("PHONESYSTEM_VIRTUALUSER" -in $UserLicenseSKU)
+              {Return $TRUE}
+              ELSE
+              {Return $FALSE}    
+            }
+          }
+        
+        }
+        catch {
+        }       
+      }
+    }
+  }
+} # End of Test-TeamsTenatLicense
+
 #endregion
+
+#region Exported Helper Functions
+# Testing script functions
+function Remove-StringSpecialCharacter {
+  <#
+.SYNOPSIS
+  This function will remove the special character from a string.
+.DESCRIPTION
+  This function will remove the special character from a string.
+  I'm using Unicode Regular Expressions with the following categories
+  \p{L} : any kind of letter from any language.
+  \p{Nd} : a digit zero through nine in any script except ideographic
+  http://www.regular-expressions.info/unicode.html
+  http://unicode.org/reports/tr18/
+.PARAMETER String
+  Specifies the String on which the special character will be removed
+.PARAMETER SpecialCharacterToKeep
+  Specifies the special character to keep in the output
+.EXAMPLE
+  Remove-StringSpecialCharacter -String "^&*@wow*(&(*&@"
+  wow
+.EXAMPLE
+  Remove-StringSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
+  wow
+.EXAMPLE
+  Remove-StringSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
+  wow-_*
+.NOTES
+  Francois-Xavier Cat
+  @lazywinadmin
+  lazywinadmin.com
+  github.com/lazywinadmin
+#>
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(ValueFromPipeline)]
+      [ValidateNotNullOrEmpty()]
+      [Alias('Text')]
+      [System.String[]]$String,
+
+      [Alias("Keep")]
+      #[ValidateNotNullOrEmpty()]
+      [String[]]$SpecialCharacterToKeep
+  )
+  PROCESS {
+      try {
+          IF ($PSBoundParameters["SpecialCharacterToKeep"]) {
+              $Regex = "[^\p{L}\p{Nd}"
+              Foreach ($Character in $SpecialCharacterToKeep) {
+                  IF ($Character -eq "-") {
+                      $Regex += "-"
+                  }
+                  else {
+                      $Regex += [Regex]::Escape($Character)
+                  }
+                  #$Regex += "/$character"
+              }
+
+              $Regex += "]+"
+          } #IF($PSBoundParameters["SpecialCharacterToKeep"])
+          ELSE { $Regex = "[^\p{L}\p{Nd}]+" }
+
+          FOREACH ($Str in $string) {
+              Write-Verbose -Message "Original String: $Str"
+              $Str -replace $regex, ""
+          }
+      }
+      catch {
+          $PSCmdlet.ThrowTerminatingError($_)
+      }
+  } #PROCESS
+}
+
+function Format-StringForUse {
+  <#
+    .SYNOPSIS
+    Formats a string by removing special characters usually not allowed. 
+    .DESCRIPTION
+    Special Characters in strings usually lead to terminating erros.
+    This function gets around that by formating the string properly.
+    Use is limited, but can be used for UPNs and Display Names
+    Adheres to Microsoft recommendation of special Characters
+    .PARAMETER InputString
+    Mandatory. The string to be reformatted
+    .PARAMETER As
+    Optional String. DisplayName or UserPrincipalName. Uses predefined special characters to remove
+    Cannot be used together with -SpecialChars
+    .PARAMETER SpecialChars
+    Default, Optional String. Manually define which special characters to remove.
+    If not specified, only the following characters are removed: ?()[]{}
+    Cannot be used together with -As
+    .PARAMETER Replacement
+    Optional String. Manually replaces removed characters with this string.
+  #>
+  [CmdletBinding(DefaultParameterSetName = "Manual")]
+  param(
+      [Parameter(Mandatory, HelpMessage = "String to reformat")]
+      [string]$InputString,
+
+      [Parameter(HelpMessage = "Replacement character or string for each removed character")]
+      [string]$Replacement  = "",
+
+      [Parameter(ParameterSetName = "Specific")]
+      [ValidateSet("UserPrincipalName","DisplayName")]
+      [string]$As,
+
+      [Parameter(ParameterSetName = "Manual")]
+      [string]$SpecialChars = "?()[]{}"
+  )
+
+  begin {
+    switch ($PsCmdlet.ParameterSetName) {
+      "Specific" {
+        switch ($As) {
+          "UserPrincipalName" {
+            $CharactersToRemove = '\%&*+/=?{}|<>();:,[]"'
+            $CharactersToRemove += "'´"
+          }
+          "DisplayName" {$CharactersToRemove = '\%*+/=?{}|<>[]"'}
+        }
+      }
+      "Manual" {$CharactersToRemove = $SpecialChars}
+      Default {}
+      }
+  }
+
+  PROCESS {
+
+    $rePattern = ($CharactersToRemove.ToCharArray() | ForEach-Object { [regex]::Escape($_) }) -join "|"
+
+    $InputString -replace $rePattern,$Replacement
+  }
+}
+#endregion Exported Helper Functions
 #endregion *** Exported Functions ***
 
 
@@ -1961,6 +2281,7 @@ function ProcessLicense
     "f82a60b8-1ee3-4cfb-a4fe-1c6a53c2656c" {$StringID = "PROJECTONLINE_PLAN_2"; $ProductName = "PROJECT ONLINE WITH PROJECT FOR OFFICE 365"; break}
     "1fc08a02-8b3d-43b9-831e-f76859e04e1a" {$StringID = "SHAREPOINTSTANDARD"; $ProductName = "SHAREPOINT ONLINE (PLAN 1)"; break}
     "a9732ec9-17d9-494c-a51c-d6b45b384dcb" {$StringID = "SHAREPOINTENTERPRISE"; $ProductName = "SHAREPOINT ONLINE (PLAN 2)"; break}
+#    "" {$StringID = "PHONESYSTEM_VIRTUALUSER"; $ProductName = "Phone System - Virtual User License"; break}
     "e43b5b99-8dfb-405f-9987-dc307f34bcbd" {$StringID = "MCOEV"; $ProductName = "SKYPE FOR BUSINESS CLOUD PBX"; break}
     "b8b749f8-a4ef-4887-9539-c95b1eaa5db7" {$StringID = "MCOIMP"; $ProductName = "SKYPE FOR BUSINESS ONLINE (PLAN 1)"; break}
     "d42c793f-6c78-4f43-92ca-e8f6a02b035f" {$StringID = "MCOSTANDARD"; $ProductName = "SKYPE FOR BUSINESS ONLINE (PLAN 2)"; break}
