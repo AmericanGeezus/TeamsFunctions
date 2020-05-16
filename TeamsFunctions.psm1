@@ -13,11 +13,14 @@
     @MightyOrmus
     www.davideberhardt.at
     https://github.com/DEberhardt
+    https://davideberhardt.wordpress.com/
+
+    Individual Scripts incorporated into this Module are taken with the express permission of the original Author
+    The 
 
     To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
-    Import-Module C:\Code\TeamsFunctions.psm1
-    You can also place the .psm1 file in one of the locations PowerShell searches for available modules to import.
-    These paths can be found in the $env:PSModulePath variable.A common path is C:\Users\<UserID>\Documents\WindowsPowerShell\Modules
+    Import-Module TeamsFunctions
+
     Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
     Always review any code and steps before applying to a production system to understand their full impact.
 
@@ -32,17 +35,25 @@
     Revisions are planned quarterly
 
     # Version History
-    V1.0    02-OCT-2017 - Initial Version (as SkypeFunctions)
-    V20.04  17-APR-2020 - Initial Version (as TeamsFunctions) - Multiple updates for Teams
-            References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
-            Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
-            Microsoft 365 Licenses have been added to all Functions dealing with Licensing
-            Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
-            Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
-            Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
-            Added Function Test-AzureADObjectServicePlan queries whether the Object has a specific ServicePlan assinged
-    V20.05  02-MAY-2020 - First Publish Version - Hello Universe!
-#>
+    1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
+    20.04.17.1  Initial Version (as TeamsFunctions) - Multiple updates for Teams
+                References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
+                Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
+                Microsoft 365 Licenses have been added to all Functions dealing with Licensing
+                Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
+                Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
+                Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
+                Added Function Test-AzureADObjectServicePlan queries whether the Object has a specific ServicePlan assinged
+    20.05.02.1  First Publication  
+    20.05.02.2  Bug fixing, erroneously incorporated all local modules.
+    20.05.03.1  Bug fixing, minor improvements
+    20.05.09.1  Bug fixing, minor improvements
+    20.05.16.1  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
+                Added Get-AzureAdAssignedAdminRoles
+                Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount 
+
+
+  #>
 
 #region *** Exported Functions ***
 #region Existing Functions
@@ -101,6 +112,22 @@ function Add-TeamsUserLicense
       The command will test to see if the license exists in the tenant as well as if the user already
       has the licensed assigned. It does not keep track or take into account the number of licenses
       available before attempting to assign the license.
+
+      05-APR-2020 - Update/Revamp for Teams:
+      # Added Switch to support Microsoft365 E3 License (SPE_E3)
+      # Added Switch to support Microsoft365 E5 License (SPE_E5)
+      # Renamed Switch AddSkypeStandalone to AddSFBO2
+      # Renamed Switch AddE3 to AddOffice365E3 (Alias retains AddE3 for input)
+      # Renamed Switch AddE5 to AddOffice365E5 (Alias retains AddE5 for input)
+      # #TBC: Renamed references from SkypeOnline to Teams where appropriate
+      # #TBC: Renamed function Names to reflect use for Teams
+      # Removed Switch AddE1 (Office 365 E1) as it is not a valid license for Teams
+      # Removed Switch CommunicationCredits as it is not available for Teams (SFBO only)
+
+      16-MAY-2020 - Update: Added Switch Replace
+      # This is for exclusive use for Resource Accounts (swap between PhoneSystem or PhoneSystemVirtualUser)
+      # MS Best practice: https://docs.microsoft.com/en-us/microsoftteams/manage-resource-accounts#change-an-existing-resource-account-to-use-a-virtual-user-license
+
   #>
   [CmdletBinding()]
   param(
@@ -136,11 +163,11 @@ function Add-TeamsUserLicense
     [Alias("AddPSTNConferencing,AddMeetAdv")]
     [switch]$AddAudioConferencing,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(ParameterSetName = 'PhoneSystem')]
     [Alias("AddSFBOCloudPBX,AddCloudPBX")]
     [switch]$AddPhoneSystem,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(ParameterSetName = 'PhoneSystemVirtualUser')]
     [switch]$AddPhoneSystemVirtualUser,
 
     [Parameter(Mandatory=$false)]
@@ -153,8 +180,11 @@ function Add-TeamsUserLicense
 
     [Parameter(ParameterSetName = 'AddInternational')]
     [Alias("AddInternationalCallingPlan")]
-    [switch]$AddMSCallingPlanInternational
-    
+    [switch]$AddMSCallingPlanInternational,
+
+    [Parameter(ParameterSetName = 'PhoneSystem')]
+    [Parameter(ParameterSetName = 'PhoneSystemVirtualUser')]
+    [switch]$Replace
   )
 
   BEGIN {
@@ -211,7 +241,7 @@ function Add-TeamsUserLicense
 
       # Get user's currently assigned licenses
       # Not used. Ignored
-      $userCurrentLicenses = (Get-AzureADUserLicenseDetail -ObjectId $ID).SkuId
+      #$userCurrentLicenses = (Get-AzureADUserLicenseDetail -ObjectId $ID).SkuId
       
       # Skype Standalone Plan
       if ($AddSFBO2 -eq $true) {
@@ -250,12 +280,24 @@ function Add-TeamsUserLicense
 
       # Phone System Add-On License
       if ($AddPhoneSystem -eq $true) {
-        ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem -LicenseName "PhoneSystem (Add-On License)"
+        if ($Replace -and ((Get-AzureADUser -ObjectID $ID).Department -eq 'Microsoft Communication Application Instance')) {
+          # Change to Replace PhoneSystem with Virtual User License
+          ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem -LicenseName "PhoneSystem (Add-On License)"
+        }
+        else {
+          ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem -LicenseName "PhoneSystem (Add-On License)"
+        }
       }
 
       # Phone System Virtual User Add-On License
       if ($AddPhoneSystemVirtualUser -eq $true) {
-        ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystemVirtualUser -LicenseName "PhoneSystem Virtual User (Add-On License)"
+        if ($Replace -and ((Get-AzureADUser -ObjectID $ID).Department -eq 'Microsoft Communication Application Instance')) {
+          # Change to Replace PhoneSystem with Virtual User License
+          ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystemVirtualUser -LicenseName "PhoneSystem Virtual User (Add-On License)"
+        }
+        else {
+          ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystemVirtualUser -LicenseName "PhoneSystem Virtual User (Add-On License)"
+        }
       }
       
       # Domestic Calling Plan
@@ -1842,6 +1884,496 @@ function Test-TeamsTenantLicense {
 
 #endregion
 
+#region Work in Progress
+function New-TeamsResourceAccount {
+  <#
+  .SYNOPSIS
+      Creates a new Resource Account
+  .DESCRIPTION
+      Teams Call Queues and Auto Attendants require a resource account.
+      It can carry a license and optionally also a phone number.
+  .PARAMETER UserPrincipalName
+      The UPN for the new ResourceAccount. Invalid characters are stripped from the provided string
+  .PARAMETER DisplayName
+      The Name it will show up in Teams. Invalid characters are stripped from the provided string
+  .PARAMETER ApplicationType
+      Required. CallQueue or AutoAttendant. Determines the association the account can have: 
+      A resource Account of the type "CallQueue" can only be associated with to a Call Queue
+      A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
+      NOTE: The type can be switched later, though this is not recommended.
+  .PARAMETER License
+      Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystemVirtualUser
+      Unlicensed Objects can exist, but cannot be assigned a phone number
+  .PARAMETER PhoneNumber
+      Optional. Adds a Microsoft or Direct Routing Number to the Resource Account.
+      Requires the Resource Account to be licensed (License Switch)
+  .EXAMPLE
+      New-TeamsResourceAccount -UserPrincipalName "Resource Account@tenantnane.onmicrosoft.com" -Displayname "My {ResourceAccount}" -ApplicationType CallQueue
+      Will create a ResourceAccount of the type CallQueue
+      User Principal Name will be normalised to: ResourceAccount@tenantnane.onmicrosoft.com
+      DisplayName will be normalised to "My ResourceAccount"
+  .EXAMPLE
+      New-TeamsResourceAccount -UserPrincipalName AA-Mainline@tenantnane.onmicrosoft.com" -Displayname "Mainline" -ApplicationType AutoAttendant -License PhoneSystem -PhoneNumber +1555123456
+      Creates a Resource Account for Auto Attendants
+      Applies the specified PhoneSystem License (if available in the Tenant)
+      Assigns the Telephone Number if object could be licensed correctly. 
+  .NOTES
+      CmdLet currently in testing.
+      Please feed back any issues to david.eberhardt@outlook.com
+  .FUNCTIONALITY
+      Creates a resource Account in AzureAD for use in Teams
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory, Position = 0, HelpMessage = "UPN of the Object to create. Must end in '.onmicrosoft.com'")]
+      [ValidatePattern('*@*.onmicrosoft.com', ErrorMessage = "Must contain one '@' and end in '.onmicrosoft.com'")]
+      [Alias("Identity")]
+      [string]$UserPrincipalName,
+
+      [Parameter(HelpMessage = "Display Name as shown in Teams")]
+      [string]$DisplayName,
+      
+      [Parameter(Mandatory, HelpMessage = "CallQueue or AutoAttendant")]
+      [ValidateSet("CallQueue","AutoAttendant","CQ","AA")]
+      [Alias("Type")]
+      [string]$ApplicationType,
+      
+      [Parameter(HelpMessage = "License to be assigned")]
+      [ValidateSet("PhoneSystem","PhoneSystemVirtualUser")]
+      [string]$License = "PhoneSystemVirtualUser",
+
+      [Parameter(HelpMessage = "Telephone Number to assign")]
+      [ValidatePattern('?\+\d{10,15}', ErrorMessage = "Not a valid phone number. Must start with a + and 10 to 15 digits long")]
+      [Alias("Tel","Number","TelephoneNumber")]
+      [string]$PhoneNumber        
+  )
+  
+  begin {
+      # Caveat - to be removed once all assignments have been tested
+      Write-Verbose "This Script is currently in testing - please feed back any issues encountered!" -Verbose
+      $DebugPreference = "Continue"
+      $VerbosePreference = "Verbose"
+
+      # Normalising $UserPrincipalname
+      $UPN = Format-StringForUse -InputString $UserPrincipalName -As UserPrincipalName
+      
+      # Normalising $DisplayName
+      if ($PSBoundParameters.ContainsKey("DisplayName")) {
+          $DisplayNameNormalised = Format-StringForUse -InputString $DisplayName -As DisplayName
+      }
+      
+      # Translating $ApplicationType (Name) to ID used by Commands.
+      switch ($ApplicationType) {
+          "CallQueue"     { $AppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
+          "CQ"            { $AppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
+          "AutoAttendant" { $AppId = "ce933385-9390-45d1-9512-c8d228074e07"}
+          "AA"            { $AppId = "ce933385-9390-45d1-9512-c8d228074e07"}
+          Default {}
+      }
+
+      # Loading all Microsoft Telephone Numbers
+      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers) 
+
+      # License Verification and assignment
+      ## Done in PROCESS
+
+      # Connection to AzureAD 
+      IF(-not (Test-AzureADConnection))
+      {
+          try {
+              Connect-AzureAD
+          }
+          catch {
+              throw
+          }
+      }
+
+      # Connection to SkypeOnline
+      IF(-not (Test-SkypeOnlineConnection))
+      {
+          try {
+              Disconnect-SkypeOnline -WarningAction SilentlyContinue
+              Connect-SkypeOnline
+          }
+          catch {
+              throw
+          }
+      }
+  
+  } # end of begin
+
+  process {
+      #region Creation
+      # Creating Account
+      try {
+          #Trying to create the Resource Account
+          Write-Debug "Needs testing and catching of errors, if any"
+          $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $DisplayNameNormalised)
+      }
+      catch {
+          # Catching anything
+          Write-Host "Creation failed: $_.Exception.Message"
+          break
+      }
+      #endregion
+
+      #region Licensing
+      # Licensing the new Account
+      if($PSBoundParameters.ContainsKey("License")) {
+          # Telephone Number and Licensing
+          # Verifying License is available to be assigned
+          # Getting License Object
+          $TenantLicenses = Get-TeamsTenantLicenses
+          # Switching dependent on input
+          switch ($License) {
+              "PhoneSystem" {
+                  Write-Verbose "Testing whether PhoneSystem License is available"
+                  $RemainingPSlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem"}).Remaining
+                  if ($RemainingPSlicenses -gt 0) {
+                      Write-Debug "Needs testing and catching of errors, if any"
+                      Add-TeamsUserLicense -Identity $UPN -AddPhoneSystem
+                      Write-Verbose "SUCCESS - Free PhoneSystem License found and assigned"
+                      $Islicensed = $true
+                  }
+                  else {
+                      Write-Warning "No free PhoneSystem License remaining in the Tenant. Trying PhoneSystem Virtual User license as fallback"
+                      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem - Virtual User"}).Remaining
+                      if ($RemainingPSVUlicenses -gt 0) {
+                          Write-Debug "Needs testing and catching of errors, if any"
+                          Add-TeamsUserLicense -Identity $UPN -AddPhoneSystemVirtualUser
+                          Write-Verbose "SUCCESS - Free PhoneSystem Virtual User License found and assigned"
+                          $Islicensed = $true
+                      }
+                      else {
+                          Write-Warning "No free PhoneSystem or Phone System Virtual User License remaining in the Tenant. Can create Object but cannot assign Telephone Nuber, please rectify!"
+                          $Islicensed = $false
+                      }
+                  }
+              }
+              "PhoneSystemVirtualUser" {
+                  Write-Verbose "Testing whether PhoneSystem Virtual User License is available"
+                  $RemainingPSVUlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem - Virtual User"}).Remaining
+                  if ($RemainingPSVUlicenses -gt 0) {
+                      Write-Debug "Needs testing and catching of errors, if any"
+                      Add-TeamsUserLicense -Identity $UPN -AddPhoneSystemVirtualUser
+                      Write-Verbose "SUCCESS - Free PhoneSystem Virtual User License found and assigned"
+                      $Islicensed = $true
+                  }
+                  else {
+                      Write-Warning "No free PhoneSystem Virtual User License remaining in the Tenant. Trying PhoneSystem license as fallback"
+                      $RemainingPSlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem"}).Remaining
+                      if ($RemainingPSlicenses -gt 0) {
+                          Write-Debug "Needs testing and catching of errors, if any"
+                          Add-TeamsUserLicense -Identity $UPN -AddPhoneSystem
+                          Write-Verbose "SUCCESS - Free PhoneSystem License found and assigned"
+                          $Islicensed = $true
+                      }
+                      else {
+                          Write-Warning "No free PhoneSystem or Phone System Virtual User License remaining in the Tenant. Can create Object but cannot assign Telephone Nuber, please rectify!"
+                          $Islicensed = $false
+                      }
+                  }
+              }
+          }
+      }
+      else {
+          $Islicensed = $false        
+      }
+      #endregion
+
+      #region PhoneNumber
+      # Assigning Telephone Number
+      if ($PSBoundParameters.ContainsKey("PhoneNumber") -and -not $Islicensed) {
+          Write-Host "ERROR: A Phone Number can only be assigned to licensed objects." -ForegroundColor Red
+          Write-Host "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
+      }
+      else {
+          # Processing paths for Telephone Numbers depending on Type
+          if ($PhoneNumberIsMSNumber) {
+              # Create as VoiceApplicationInstance
+              Write-Verbose "Number found in Tenant, assuming provisioning Microsoft Calling Plans"
+              Write-Debug "Needs testing and catching of errors, if any"
+              Set-CsOnlineVoiceApplicationInstance -Identity $UPN -Telephonenumber $PhoneNumber
+          }
+          else {
+              # Create as ApplicationInstance
+              Write-Verbose "Number not found in Tenant, assuming provisioning for Direct Routing"
+              Write-Debug "Needs testing and catching of errors, if any"
+              Set-CsOnlineApplicationInstance -Identity $UPN -OnPremPhoneNumber $PhoneNumber
+
+          }
+
+      }
+      #  wating for replication in the hope that the PhoneNumber is able to be queried correctly
+      Start-Sleep -Seconds 5
+      
+      #endregion
+      
+
+      #region Output
+      #Creating new PS Object
+      try {
+          # Data
+          $ResourceAccount = Get-CsOnlineApplicationInstance $UPN
+
+          # readable Application type
+          switch ($ResourceAccount.ApplicationId) {
+              "11cd3e2e-fccb-42ad-ad00-878b93575e07" {$ResourceAccountApplicationType = "CallQueue"}
+              "ce933385-9390-45d1-9512-c8d228074e07" {$ResourceAccountApplicationType = "AutoAttendant"}
+          }
+
+          # Resource Account License
+          if ($Islicensed) {
+              # License
+              if (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV) {
+                  $ResourceAccuntLicense = "PhoneSystem"
+              }
+              elseif (Test-TeamsUserLicense -Identity $UPN -ServicePlan PHONESYSTEM_VIRTUALUSER) {
+                  $ResourceAccuntLicense = "PhoneSystem Virtual User"
+              }
+              else {
+                  $ResourceAccuntLicense = $null
+              }
+
+              # Phone Number Type
+              if ($PhoneNumberIsMSNumber) {
+                  $ResourceAccountPhoneNumberType = "Microsoft Number"
+              }
+              else {
+                  $ResourceAccountPhoneNumberType = "Direct Routing Number"
+              }
+              
+              # Phone Number is taken from Original Object and should be populated correctly
+
+          }
+          else {
+              $ResourceAccuntLicense = $null
+              $ResourceAccountPhoneNumberType = $null
+              # Phone Number is taken from Original Object and should be empty at this point                    
+          }
+
+          # Phone Number type
+          switch ($PhoneNumberIsMSNumber) {
+              "11cd3e2e-fccb-42ad-ad00-878b93575e07" {$ResourceAccountApplicationType = "CallQueue"}
+              "ce933385-9390-45d1-9512-c8d228074e07" {$ResourceAccountApplicationType = "AutoAttendant"}
+          }
+          
+          
+          # creating new PS Object (synchronous with Get and Set)
+          $ResourceAccountObject = [PSCustomObject][ordered]@{
+              UserPrincipalName   = $ResourceAccount.UserPrincipalName
+              DisplayName         = $ResourceAccount.DisplayName
+              ApplicationType     = $ResourceAccountApplicationType
+              License             = $ResourceAccuntLicense
+              PhoneNumberType     = $ResourceAccountPhoneNumberType
+              PhoneNumber         = $ResourceAccount.PhoneNumber
+              }
+          
+          Write-Verbose "Resource Account Created:"
+          if ($PSBoundParameters.ContainsKey("PhoneNumber") -and $Islicensed -and $ResourceAccount.PhoneNumber -eq "") {
+              Write-Warning "Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount after 5-10 mins to verify"
+          }
+          return $ResourceAccountObject
+
+      }
+      catch {
+          Write-Warning "Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance"
+      }
+      #endregion
+  }
+  
+  end {
+      
+  }
+}
+
+function Get-TeamsResourceAccount {
+  <#
+  .SYNOPSIS
+      Returns Resource Accounts
+  .DESCRIPTION
+      Returns one or more Resource Accounts based on input.
+  .EXAMPLE
+      Get-TeamsResourceAccount
+      Returns all Resource Accounts
+  .EXAMPLE
+      Get-TeamsResourceAccount -Identity ResourceAccount@tenantnane.onmicrosoft.com
+      Returns the Resource Account with the Identity specified, if found.
+  .EXAMPLE
+      Get-TeamsResourceAccount -ApplicationType AutoAttendant
+      Returns all Resource Accounts of the specified ApplicationType.
+  .EXAMPLE
+      Get-TeamsResourceAccount -PhoneNumber +1555123456
+      Returns the Resource Account with the Phone Number specifed, if found.
+  .NOTES
+      CmdLet currently in testing.
+      Please feed back any issues to david.eberhardt@outlook.com
+  .FUNCTIONALITY
+      Returns one or more Resource Accounts
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(HelpMessage = "User Principal Name of the Object.")]
+      [Alias("UPN","UserPrincipalName")]
+      [string]$Identity,
+
+      [Parameter(HelpMessage = "Limits search to specific Types: CallQueue or AutoAttendant")]
+      [ValidateSet("CallQueue","AutoAttendant","CQ","AA")]
+      [Alias("Type")]
+      [string]$ApplicationType,
+
+      [Parameter(HelpMessage = "Telephone Number of the Object")]
+      [ValidatePattern('?\+\d{10,15}', ErrorMessage = "Not a valid phone number. Must start with a + and 10 to 15 digits long")]
+      [Alias("Tel","Number","TelephoneNumber")]
+      [string]$PhoneNumber        
+  )
+  
+  begin {
+      # Caveat - to be removed once all assignments have been tested
+      Write-Verbose "This Script is currently in testing - please feed back any issues encountered!" -Verbose
+      $DebugPreference = "Continue"
+      $VerbosePreference = "Verbose"
+
+      # Translating $ApplicationType (Name) to ID used by Commands.
+      switch ($ApplicationType) {
+          "CallQueue"     { $AppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
+          "CQ"            { $AppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
+          "AutoAttendant" { $AppId = "ce933385-9390-45d1-9512-c8d228074e07"}
+          "AA"            { $AppId = "ce933385-9390-45d1-9512-c8d228074e07"}
+          Default {}
+      }
+
+      # Loading all Microsoft Telephone Numbers
+      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers) 
+
+      # License Verification and assignment
+      ## Done in PROCESS
+
+      # Connection to AzureAD 
+      IF(-not (Test-AzureADConnection))
+      {
+          try {
+              Connect-AzureAD
+          }
+          catch {
+              throw
+          }
+      }
+
+      # Connection to SkypeOnline
+      IF(-not (Test-SkypeOnlineConnection))
+      {
+          try {
+              Disconnect-SkypeOnline -WarningAction SilentlyContinue
+              Connect-SkypeOnline
+          }
+          catch {
+              throw
+          }
+      }
+
+
+      #Data gathering
+      if ($PSBoundParameters.ContainsKey("Identity")) {
+          $ResourceAccounts = Get-CsOnlineApplicationInstance $Identity
+      }
+      elseif ($PSBoundParameters.ContainsKey("ApplicationType")) {
+          $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object {$_.ApplicationId -eq $AppId}
+      }
+      elseif ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+          $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object {$_.PhoneNumber -eq $PhoneNumber}
+      }
+      else {
+          $ResourceAccounts = Get-CsOnlineApplicationInstance
+      }
+
+      # Traversal of Identity to be synchronous with New Script
+      # NOTE: No input verification is done, hence only Parameter handover
+      $UPN = $Identity
+
+  } # end of begin
+
+  process {
+      #Creating new PS Object
+      try {
+          [System.Collections.ArrayList]$AllAccounts = @()
+
+          foreach ($ResourceAccount in $ResourceAccounts) {
+              # readable Application type
+              switch ($ResourceAccount.ApplicationId) {
+                  "11cd3e2e-fccb-42ad-ad00-878b93575e07" {$ResourceAccountApplicationType = "CallQueue"}
+                  "ce933385-9390-45d1-9512-c8d228074e07" {$ResourceAccountApplicationType = "AutoAttendant"}
+              }
+
+              # Resource Account License
+              if ($Islicensed) {
+                  # License
+                  if (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV) {
+                      $ResourceAccuntLicense = "PhoneSystem"
+                  }
+                  elseif (Test-TeamsUserLicense -Identity $UPN -ServicePlan PHONESYSTEM_VIRTUALUSER) {
+                      $ResourceAccuntLicense = "PhoneSystem Virtual User"
+                  }
+                  else {
+                      $ResourceAccuntLicense = $null
+                  }
+
+                  # Phone Number Type
+                  if ($PhoneNumberIsMSNumber) {
+                      $ResourceAccountPhoneNumberType = "Microsoft Number"
+                  }
+                  else {
+                      $ResourceAccountPhoneNumberType = "Direct Routing Number"
+                  }
+                  
+                  # Phone Number is taken from Original Object and should be populated correctly
+
+              }
+              else {
+                  $ResourceAccuntLicense = $null
+                  $ResourceAccountPhoneNumberType = $null
+                  # Phone Number is taken from Original Object and should be empty at this point                    
+              }
+
+              # Phone Number type
+              switch ($PhoneNumberIsMSNumber) {
+                  "11cd3e2e-fccb-42ad-ad00-878b93575e07" {$ResourceAccountApplicationType = "CallQueue"}
+                  "ce933385-9390-45d1-9512-c8d228074e07" {$ResourceAccountApplicationType = "AutoAttendant"}
+              }
+              
+              
+              # creating new PS Object (synchronous with Get and Set)
+              $ResourceAccountObject = [PSCustomObject][ordered]@{
+                  UserPrincipalName   = $ResourceAccount.UserPrincipalName
+                  DisplayName         = $ResourceAccount.DisplayName
+                  ApplicationType     = $ResourceAccountApplicationType
+                  License             = $ResourceAccuntLicense
+                  PhoneNumberType     = $ResourceAccountPhoneNumberType
+                  PhoneNumber         = $ResourceAccount.PhoneNumber
+                  }
+
+
+              $AllAccounts.Add($ResourceAccountObject) | Out-Null
+          }
+          return $AllAccounts
+
+      }
+      catch {
+          Write-Warning "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
+      }
+  }
+  
+  end {
+      
+  }
+}
+#endregion
+
+
 #region Backup Scripts
 # by Ken Lasko
 function Backup-TeamsEV {
@@ -2186,14 +2718,16 @@ function Backup-TeamsTenant {
 		
 		Copyright © 2020  Ken Lasko
 		klasko@ucdialplans.com
-        https://www.ucdialplans.com
-        
-        Expanded to cover more elements
-        David Eberhardt
+    https://www.ucdialplans.com
+    
+    Expanded to cover more elements
+    David Eberhardt
+    https://github.com/DEberhardt/
+    https://davideberhardt.wordpress.com/
 
-        14-MAY 2020
+    14-MAY 2020
 
-        The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
+    The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
   #>
 
   [CmdletBinding(ConfirmImpact = 'None')]
@@ -2269,7 +2803,7 @@ function Backup-TeamsTenant {
       $null = (Get-CsTeamsVideoInteropServicePolicy | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVideoInteropServicePolicy.txt" -Force -Encoding utf8)
 
       # Tenant Voice Configuration
-    $null = (Get-CsTeamsTranslationRule | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTranslationRule.txt" -Force -Encoding utf8)
+      $null = (Get-CsTeamsTranslationRule | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTranslationRule.txt" -Force -Encoding utf8)
       $null = (Get-CsTenantDialPlan | ConvertTo-Json | Out-File -FilePath "Get-CsTenantDialPlan.txt" -Force -Encoding utf8)
 
       $null = (Get-CsOnlinePSTNGateway | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePSTNGateway.txt" -Force -Encoding utf8)
@@ -2296,18 +2830,18 @@ function Backup-TeamsTenant {
 
       # Resource Accounts, Call Queues and Auto Attendants
       $null = (Get-CsOnlineApplicationInstance | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineApplicationInstance.txt" -Force -Encoding utf8)
-    $null = (Get-CsOnlineApplicationInstanceAssociation | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineApplicationInstanceAssociation.txt" -Force -Encoding utf8)
-    $null = (Get-CsCallQueue | ConvertTo-Json | Out-File -FilePath "Get-CsCallQueue.txt" -Force -Encoding utf8)
-    $null = (Get-CsAutoAttendant | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendant.txt" -Force -Encoding utf8)
-    $null = (Get-CsAutoAttendantHolidays | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantHolidays.txt" -Force -Encoding utf8)
-    $null = (Get-CsAutoAttendantSupportedLanguage | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
-    $null = (Get-CsAutoAttendantSupportedTimeZone | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
-    $null = (Get-CsAutoAttendantTenantInformation | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
-    $null = (Get-CsOrganizationalAutoAttendant | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendant.txt" -Force -Encoding utf8)
-    $null = (Get-CsOrganizationalAutoAttendantHolidays | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantHolidays.txt" -Force -Encoding utf8)
-    $null = (Get-CsOrganizationalAutoAttendantSupportedLanguage | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
-    $null = (Get-CsOrganizationalAutoAttendantSupportedTimeZone | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
-    $null = (Get-CsOrganizationalAutoAttendantTenantInformation | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
+      $null = (Get-CsOnlineApplicationInstanceAssociation | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineApplicationInstanceAssociation.txt" -Force -Encoding utf8)
+      $null = (Get-CsCallQueue | ConvertTo-Json | Out-File -FilePath "Get-CsCallQueue.txt" -Force -Encoding utf8)
+      $null = (Get-CsAutoAttendant | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendant.txt" -Force -Encoding utf8)
+      $null = (Get-CsAutoAttendantHolidays | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantHolidays.txt" -Force -Encoding utf8)
+      $null = (Get-CsAutoAttendantSupportedLanguage | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
+      $null = (Get-CsAutoAttendantSupportedTimeZone | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
+      $null = (Get-CsAutoAttendantTenantInformation | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
+      $null = (Get-CsOrganizationalAutoAttendant | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendant.txt" -Force -Encoding utf8)
+      $null = (Get-CsOrganizationalAutoAttendantHolidays | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantHolidays.txt" -Force -Encoding utf8)
+      $null = (Get-CsOrganizationalAutoAttendantSupportedLanguage | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
+      $null = (Get-CsOrganizationalAutoAttendantSupportedTimeZone | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
+      $null = (Get-CsOrganizationalAutoAttendantTenantInformation | ConvertTo-Json | Out-File -FilePath "Get-CsOrganizationalAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
 
       # User Configuration
       $null = (Get-CsOnlineUser | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineUser.txt" -Force -Encoding utf8)
@@ -2334,6 +2868,51 @@ function Backup-TeamsTenant {
 #endregion
 
 #region Exported Helper Functions
+# Helper Function to find Assigned Admin Roles
+function Get-AzureAdAssignedAdminRoles {
+  <#
+    .SYNOPSIS
+    Queries Admin Roles assigned to an Object
+    .DESCRIPTION
+    Azure Active Directory Admin Roles assigned to an Object are returned
+    Requires a Connection to AzureAd 
+    .EXAMPLE
+    Get-AzureAdAssignedAdminRoles user@domain.com
+    Returns an Object for all Admin Roles assigned
+    .INPUTS
+    Identity in from of a UserPrincipalName (UPN)
+    .OUTPUTS
+    PS Object containing all Admin Roles assigned to this Object
+    .NOTES
+    Script Development information
+    This was intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
+    Based on the output of this script we could then run activate ohter functions, like License Assignments (if License Admin), etc.
+  #>
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory=$true, Position=0, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true, HelpMessage="Enter the identity of the User to Query")]
+    [Alias("UPN","UserPrincipalName","Username")]
+    [string]$Identity
+  )
+
+  #Querying Admin Rights of authenticated Administator
+  $AssignedRoles = @()
+  $Roles = Get-AzureADDirectoryRole
+  FOREACH ($R in $Roles)
+  {
+    $Members = (Get-AzureADDirectoryRoleMember -ObjectId $R.ObjectId).UserprincipalName
+    IF($Identity -in $Members)
+    {
+      #Builing list of Roles assigned to $AdminUPN
+      $AssignedRoles += $R
+    } 
+      
+  }
+
+  #Output
+  return $AssignedRoles
+}
+
 # Testing script functions
 function Remove-StringSpecialCharacter {
   <#
@@ -2624,6 +3203,9 @@ function NewLicenseObject {
   $productLicenseObj.SkuId = $SkuId
   $assignedLicensesObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
   $assignedLicensesObj.AddLicenses = $productLicenseObj
+  # To Do: Figuring out how to replace
+  # Pass Switch -Replace from Add-TeamsUserLicense to ProcessLicense and to NewLicenseObject
+  # Remove all licenses in NewLicenseObjcet if -Replace is used
   return $assignedLicensesObj
 }
 
@@ -2644,17 +3226,6 @@ function ProcessLicense {
       .NOTES
       Uses Microsoft List for Licenses in SWITCH statement, update periodically or switch to lookup from DB(CSV or XLSX)
       https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
-
-      05-APR-2020 - Update/Revamp for Teams:
-      # Added Switch to support Microsoft365 E3 License (SPE_E3)
-      # Added Switch to support Microsoft365 E5 License (SPE_E5)
-      # Renamed Switch AddSkypeStandalone to AddSFBO2
-      # Renamed Switch AddE3 to AddOffice365E3 (Alias retains AddE3 for input)
-      # Renamed Switch AddE5 to AddOffice365E5 (Alias retains AddE5 for input)
-      # #TBC: Renamed references from SkypeOnline to Teams where appropriate
-      # #TBC: Renamed function Names to reflect use for Teams
-      # Removed Switch AddE1 (Office 365 E1) as it is not a valid license for Teams
-      # Removed Switch CommunicationCredits as it is not available for Teams (SFBO only)
   #>
   param(
     [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
@@ -2765,6 +3336,7 @@ function ProcessLicense {
     "cb10e6cd-9da4-4992-867b-67546b1db821" {$StringID = "WIN10_PRO_ENT_SUB"; $ProductName = "WINDOWS 10 ENTERPRISE E3"; break}
     "488ba24a-39a9-4473-8ee5-19291e71b002" {$StringID = "WIN10_VDA_E5"; $ProductName = "Windows 10 Enterprise E5"; break}
   } # End Switch statement
+  $null = $StringID #not used. just to shut up the debugger ;)
       
   # Checking if the Tenant has a License of that SkuID
   if ($LicenseSkuID -ne "") {
@@ -2774,6 +3346,9 @@ function ProcessLicense {
       try {
         #NOTE: Backward Compatibility (Set-MsolUserLicense) - Old method, requires Microsoft Azure AD (v1) Connection (Connect-MsolService) which we want to avoid because of MFA!
         #Set-MsolUserLicense -UserPrincipalName $ID -AddLicenses $LicenseSkuID -ErrorAction STOP
+
+        # To Do: Figuring out how to replace
+        # Pass Switch -Replace from Add-TeamsUserLicense to ProcessLicense and to NewLicenseObject
         $license = NewLicenseObject -SkuId $LicenseSkuID
         Set-AzureADUserLicense -ObjectId $UserID -AssignedLicenses $license -ErrorAction STOP
         $Result = GetActionOutputObject2 -Name $UserID -Result "SUCCESS: $ProductName assigned"
@@ -2798,11 +3373,13 @@ function ProcessLicense {
 
 
 Export-ModuleMember -Function Add-TeamsUserLicense, Connect-SkypeOnline, Disconnect-SkypeOnline,`
-                              Get-SkypeOnlineConferenceDialInNumbers, Get-TeamsUserLicense, Get-TeamsTenantLicenses, Set-TeamsUserPolicy,`
+                              Get-AzureAdAssignedAdminRoles, Get-SkypeOnlineConferenceDialInNumbers, `
+                              Get-TeamsUserLicense, Get-TeamsTenantLicenses, Set-TeamsUserPolicy,`
                               Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS,`
                               Test-AzureADModule, Test-SkypeOnlineModule,`
                               Test-AzureADConnection, Test-SkypeOnlineConnection,`
                               Test-AzureADObject, Test-TeamsObject, 
                               Test-TeamsTenantPolicy, Test-TeamsUserLicense,`
+                              New-TeamsResourceAccount, Get-TeamsResourceAccount,`
                               Backup-TeamsEV,Restore-TeamsEV,Backup-TeamsTenant,`
                               Remove-StringSpecialCharacter, Format-StringForUse
