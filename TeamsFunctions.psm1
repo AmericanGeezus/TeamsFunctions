@@ -51,7 +51,7 @@
     20.05.16.1  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
                 Added Get-AzureAdAssignedAdminRoles
                 Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount 
-
+    20.05.19.1  Fixed an issue with access to the new functions
 
   #>
 
