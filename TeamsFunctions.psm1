@@ -2803,17 +2803,17 @@ function Remove-TeamsResourceAccount {
         Optional. Will also sever all associations this account has in order to remove it
         Script fails if the Account is assigned somewhere
     .EXAMPLE
-        New-TeamsResourceAccount -UserPrincipalName "Resource Account@tenantnane.onmicrosoft.com" -Displayname "My {ResourceAccount}" -ApplicationType CallQueue
-        Will create a ResourceAccount of the type CallQueue
-        User Principal Name will be normalised to: ResourceAccount@tenantnane.onmicrosoft.com
-        DisplayName will be normalised to "My ResourceAccount"
+        Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@tenantnane.onmicrosoft.com"
+        Removes a ResourceAccount
+        Removes in order: Phone Number, License and Account  
     .EXAMPLE
-        New-TeamsResourceAccount -UserPrincipalName AA-Mainline@tenantnane.onmicrosoft.com" -Displayname "Mainline" -ApplicationType AutoAttendant -License PhoneSystem -PhoneNumber +1555123456
-        Creates a Resource Account for Auto Attendants
-        Applies the specified PhoneSystem License (if available in the Tenant)
-        Assigns the Telephone Number if object could be licensed correctly. 
+        Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@tenantnane.onmicrosoft.com" -Force
+        Removes a ResourceAccount
+        Removes in order: Phone Number, License and Account
+        Parameter Force is optional and will also remove all Associations this account has to Call Queues or AutoAttendants.
     .NOTES
         CmdLet currently in testing.
+        Execution requires User Admin Role in Azure AD
         Please feed back any issues to david.eberhardt@outlook.com
     .FUNCTIONALITY
         Removes a resource Account in AzureAD for use in Teams
@@ -2941,54 +2941,13 @@ function Remove-TeamsResourceAccount {
         }
         #endregion
 
-        #region Licensing
-        # Reading User Licenses
-        Write-Verbose "Querying Licenses..."
-        try {
-          $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UserPrincipalName).SkuId
-
-          $Licenses = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-          # This should work: 
-          Write-Debug "Trying to remove licenses with Hash-Table"
-          $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
-          
-          <# Alternatively - to be tested
-          foreach ($Sku in $UserLicenseSkuIDs) {
-            $Licenses.RemoveLicenses += $Sku
-          }
-          #>
-          Set-AzureADUserLicense -ObjectId $UserPrincipalName -AssignedLicenses $Licenses -ErrorAction STOP
-          Write-Verbose "SUCCESS"
-        }
-        catch {
-            Write-Error -Message "Unassignment of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense" 
-            # get error record
-            [Management.Automation.ErrorRecord]$e = $_
-
-            # retrieve Info about runtime error
-            $info = [PSCustomObject]@{
-              Exception = $e.Exception.Message
-              Reason    = $e.CategoryInfo.Reason
-              Target    = $e.CategoryInfo.TargetName
-              Script    = $e.InvocationInfo.ScriptName
-              Line      = $e.InvocationInfo.ScriptLineNumber
-              Column    = $e.InvocationInfo.OffsetInLine
-            }
-        
-            # output Info. Post-process collected info, and log info (optional)
-            $info
-            break
-        }
-
-        #endregion
-
         #region PhoneNumber
         # Removing Phone Number Assignments
         try {
-            # Remove from VoiceApplicationInstance
-            Write-Verbose "Removing $CurrentPhoneNumber from CsOnlineVoiceApplicationInstance (Microsoft Number identified)"
-            Write-Debug "Remove from VoiceApplicationInstance: Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null"
-            $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+          # Remove from VoiceApplicationInstance
+          Write-Verbose "Removing $CurrentPhoneNumber from CsOnlineVoiceApplicationInstance (Microsoft Number identified)"
+          Write-Debug "Remove from VoiceApplicationInstance: Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null"
+          $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
         }
         catch {
             Write-Error -Message "Unassignment of Microsoft Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
@@ -3035,6 +2994,47 @@ function Remove-TeamsResourceAccount {
             $info
             break
         }
+        #endregion
+
+        #region Licensing
+        # Reading User Licenses
+        Write-Verbose "Querying Licenses..."
+        try {
+          $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UserPrincipalName).SkuId
+
+          $Licenses = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
+          # This should work: 
+          Write-Debug "Trying to remove licenses with Hash-Table"
+          $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
+          
+          <# Alternatively - to be tested
+          foreach ($Sku in $UserLicenseSkuIDs) {
+            $Licenses.RemoveLicenses += $Sku
+          }
+          #>
+          Set-AzureADUserLicense -ObjectId $UserPrincipalName -AssignedLicenses $Licenses -ErrorAction STOP
+          Write-Verbose "SUCCESS"
+        }
+        catch {
+            Write-Error -Message "Unassignment of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense" 
+            # get error record
+            [Management.Automation.ErrorRecord]$e = $_
+
+            # retrieve Info about runtime error
+            $info = [PSCustomObject]@{
+              Exception = $e.Exception.Message
+              Reason    = $e.CategoryInfo.Reason
+              Target    = $e.CategoryInfo.TargetName
+              Script    = $e.InvocationInfo.ScriptName
+              Line      = $e.InvocationInfo.ScriptLineNumber
+              Column    = $e.InvocationInfo.OffsetInLine
+            }
+        
+            # output Info. Post-process collected info, and log info (optional)
+            $info
+            break
+        }
+
         #endregion
 
         #region Account Removal
