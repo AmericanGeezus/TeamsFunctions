@@ -2800,7 +2800,7 @@ function Remove-TeamsResourceAccount {
         
     }
 }
-#Alias set to provide default behaviour to CsOnlineApplicationInstance
+#Alias is set to provide default behaviour to CsOnlineApplicationInstance
 Set-Alias -Name Remove-CsOnlineApplicationInstance -Value Remove-TeamsResourceAccount
 #endregion
 
@@ -3289,7 +3289,7 @@ function Backup-TeamsTenant {
 }
 #endregion
 
-#region Exported Helper Functions
+#region *** Exported Functions ***
 # Helper Function to find Assigned Admin Roles
 function Get-AzureAdAssignedAdminRoles {
   <#
@@ -3350,6 +3350,7 @@ function Get-AzureAdAssignedAdminRoles {
   return $AssignedRoles
 }
 
+# Helper Function to create new Azure AD License Objects
 function New-AzureAdLicenseObject {
   <#
       .SYNOPSIS
@@ -3414,7 +3415,7 @@ function New-AzureAdLicenseObject {
   return $newLicensesObj
 }
 
-# Testing script functions
+# Helper functions to test and format strings
 function Remove-StringSpecialCharacter {
   <#
 .SYNOPSIS
@@ -3756,7 +3757,6 @@ function Get-SkuPartNumberfromSkuID {
       "ProductName"   {return $ProductName}
     }   
 }
-#endregion Exported Helper Functions
 #endregion *** Exported Functions ***
 
 
@@ -3917,17 +3917,13 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 
 # Create a new Module out of this
 
-
-Export-ModuleMember -Function Add-TeamsUserLicense, Connect-SkypeOnline, Disconnect-SkypeOnline,`
-                              Get-AzureAdAssignedAdminRoles, Get-SkypeOnlineConferenceDialInNumbers, `
-                              Get-TeamsUserLicense, Get-TeamsTenantLicenses, Set-TeamsUserPolicy,`
-                              Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS,`
-                              Test-AzureADModule, Test-SkypeOnlineModule,`
-                              Test-AzureADConnection, Test-SkypeOnlineConnection,`
-                              Test-AzureADObject, Test-TeamsObject,`
-                              Test-TeamsTenantPolicy, Test-TeamsUserLicense,`
-                              New-TeamsResourceAccount, Get-TeamsResourceAccount,`
-                              Set-TeamsResourceAccount, Remove-TeamsResourceAccount,`
+Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance
+Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Get-AzureAdAssignedAdminRoles,`
+                              Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses,`
+                              Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy,`
+                              Test-AzureADModule, Test-AzureADConnection, Test-AzureADObject,`
+                              Test-SkypeOnlineModule, Test-SkypeOnlineConnection, Test-TeamsObject,`
+                              New-TeamsResourceAccount, Get-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount,`
                               Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant,`
-                              New-AzureAdLicenseObject, Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber,`
-                              Remove-StringSpecialCharacter, Format-StringForUse
+                              Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers,`
+                              Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Remove-StringSpecialCharacter, Format-StringForUse
