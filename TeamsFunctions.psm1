@@ -42,7 +42,7 @@
                 Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
                 Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
                 Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
-                Added Function Test-AzureADObjectServicePlan queries whether the Object has a specific ServicePlan assinged
+                Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
     20.05.02.1  First Publication  
     20.05.02.2  Bug fixing, erroneously incorporated all local modules.
     20.05.03.1  Bug fixing, minor improvements
@@ -1399,17 +1399,17 @@ function Test-SkypeOnlineConnection {
 #endregion
 
 #region New Functions
-function Test-AzureADObject {
+function Test-AzureADUser {
   <#
       .SYNOPSIS
-      Tests whether an Object exists in Azure AD (record found)
+      Tests whether a User exists in Azure AD (record found)
       .DESCRIPTION
-      Simple lookup - does the Object exist - to avoid TRY/CATCH statements for processing
+      Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for processing
       .PARAMETER Identity
-      Mandatory. The sign-in address or User Principal Name of the user account to modify.
+      Mandatory. The sign-in address or User Principal Name of the user account to test.
       .EXAMPLE
-      Test-AzureADObject
-      Will Return $TRUE only if the object is found.
+      Test-AzureADUser -Identity $UPN
+      Will Return $TRUE only if the object $UPN is found.
       Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
   #>
   [CmdletBinding()]
@@ -1452,9 +1452,64 @@ function Test-AzureADObject {
       return $False
     }
   }
-} # End of Test-AzureADObject
+} # End of Test-AzureADUser
 
-function Test-TeamsObject {
+
+function Test-AzureADGroup {
+  <#
+      .SYNOPSIS
+      Tests whether an Group exists in Azure AD (record found)
+      .DESCRIPTION
+      Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
+      .PARAMETER Identity
+      Mandatory. The User Principal Name of the Group to test.
+      .EXAMPLE
+      Test-AzureADGroup -Identity $UPN
+      Will Return $TRUE only if the object $UPN is found.
+      Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
+  #>
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
+    [string]$Identity  
+  )
+
+  begin {
+    # Testing AzureAD Module and Connection
+    if (-not (Test-AzureADModule)) {
+      Write-Host "ERROR: Azure AD Module not installed! Please install and try again." -ForegroundColor Red
+      Write-Host "USE: Install-Module AzureAD"
+      return
+    }
+    elseif (-not (Test-AzureADConnection)) {
+      try {
+        Connect-AzureAD
+      }
+      catch {
+        throw "ERROR: Connection to Azure AD not established. Exiting."
+      }
+    }
+  
+    Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
+    Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
+  }
+  process {
+    try
+    {
+      Get-AzureADGroup -ObjectId $Identity -ErrorAction STOP > $null
+      return $true
+    }
+    catch [Microsoft.Open.AzureAD16.Client.ApiException]
+    {
+      return $False
+    }
+    catch
+    {
+      return $False
+    }
+  }
+} # End of Test-AzureADGroup
+function Test-TeamsUser {
   <#
       .SYNOPSIS
       Tests whether an Object exists in Teams (record found)
@@ -1463,8 +1518,8 @@ function Test-TeamsObject {
       .PARAMETER Identity
       Mandatory. The sign-in address or User Principal Name of the user account to modify.
       .EXAMPLE
-      Test-TeamsObject
-      Will Return $TRUE only if the object is found.
+      Test-TeamsUser -Identity $UPN
+      Will Return $TRUE only if the object $UPN is found.
       Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
   #>
   [CmdletBinding()]
@@ -1501,7 +1556,7 @@ function Test-TeamsObject {
     }
   }
 
-} # End of Test-TeamsObject
+} # End of Test-TeamsUser
 
 function Test-TeamsTenantPolicy {
   <#
@@ -4190,8 +4245,8 @@ Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance
 Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Get-AzureAdAssignedAdminRoles,`
                               Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses,`
                               Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy,`
-                              Test-AzureADModule, Test-AzureADConnection, Test-AzureADObject,`
-                              Test-SkypeOnlineModule, Test-SkypeOnlineConnection, Test-TeamsObject,`
+                              Test-AzureADModule, Test-AzureADConnection, Test-AzureADUser,Test-AzureADGroup,`
+                              Test-SkypeOnlineModule, Test-SkypeOnlineConnection, Test-TeamsUser,`
                               New-TeamsResourceAccount, Get-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount,`
                               Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant,`
                               Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers,`
