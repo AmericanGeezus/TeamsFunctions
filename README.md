@@ -62,17 +62,17 @@ The following are introduced to help with SkypeOnline/Teams related features:
 
 ### Resource Accounts
 
-- `New-TeamsResourceAccount`:         
-- `Get-TeamsResourceAccount`:         
-- `Set-TeamsResourceAccount`:         
-- `Remove-TeamsResourceAccount`:         
+- `New-TeamsResourceAccount`:       Creates a Resource Account in Teams (CsOnlineApplicationInstance)
+- `Get-TeamsResourceAccount`:       Queries Resource Accounts based on input: SearchString, Identity (UPN), PhoneNumber, Type (Call Queue or Auto Attendant)
+- `Set-TeamsResourceAccount`:       Changes settings for a Resource Accounts, swapping License (doesn't work right now...), Type (experimental, 'should work' according to Microsoft)
+- `Remove-TeamsResourceAccount`:    Removes a Resource Account and optionally (with -Force) also the Associations this account has.
 
 ### Call Queues
 
-- `New-TeamsCallQueue`:         
-- `Get-TeamsCallQueue`:         
-- `Set-TeamsCallQueue`:         
-- `Remove-TeamsCallQueue`:         
+- `New-TeamsCallQueue`:             Creates a Call Queue like New-CsCallQueue, but with friendly inputs (File Names, UPNs, etc.)
+- `Get-TeamsCallQueue`:             Queries a Call Queue like Get-CsCallQueue, but with friendly inputs (UPN) and output
+- `Set-TeamsCallQueue`:             Changes a Call Queue like Set-CsCallQueue, but with friendly inputs (File Names, UPNs, etc.)
+- `Remove-TeamsCallQueue`:          Removes a Call Queue like Remove-CsUser does. Just here to complete the set :)
 
 
 ### Policy related Functions
