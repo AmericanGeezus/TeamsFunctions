@@ -56,6 +56,7 @@ I am missing some functionality in Azure AD, hence me creating some scripts to h
 - `Test-TeamsUserLicense`:          Tests an individual Service Plan or a License Package against the provided Identity
 
 ## Adding value to Skype Online
+
 The following are introduced to help with SkypeOnline/Teams related features:
 
 ### Resource Accounts
