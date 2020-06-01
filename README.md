@@ -2,7 +2,7 @@
 
 ## Origins
 
-This module is a collection of Teams-related PowerShell scripts and functions based on [SkypeFunctions by JeffBrown](https://github.com/JeffBrownTech/Skype). Please show your love. This is published separately (and with permission) rather than updated because I couldn't figure out Forks and Pull-Requests and by the time I had, I had substancially altered the code... 
+This module is a collection of Teams-related PowerShell scripts and functions based on [SkypeFunctions by JeffBrown](https://github.com/JeffBrownTech/Skype). Please show your love. This is published separately (and with permission) rather than updated because I couldn't figure out Forks and Pull-Requests and by the time I had, I had substantially altered the code...
 
 The first goal was to refresh what needs adding (for example, License names for Microsoft 365). The second goal was to learn and understand PowerShell better and test all Functions for applicability in Teams. Once vetted, some functions have been renamed from "SkypeOnline" to "Teams" (others, like the "Connect"-scripts have been retained).
 
@@ -27,98 +27,99 @@ Bulk provisioning steps are also evaluated, once I figure out how Begin/Process/
 
 If you have something that could cover the above and want to submit it to be integrated here, please get in touch. I already have Backup Scripts from Ken Lasko that solve what I needed. I am grateful for every small addition to the Module. :)
 
-# Available Functions
+## Available Functions
 
-## Connecting, Disconneting and Testing PowerShell Sessions
+### Connecting, Disconnecting and Testing PowerShell Sessions
 
 - `Connect-AzureAd`:                Not part of this Module, but a dependency: [`Install-Module AzureAd`](https://www.powershellgallery.com/packages/AzureAd)
 - `Connect-MicrosoftTeams`:         Not part of this Module, not a dependency. Purely listed for distinction: [`Install-Module MicrosoftTeams`](https://www.powershellgallery.com/packages/MicrosoftTeams)
 - `Connect-SkypeOnline`:            Creates a Session to SkypeOnline/Teams (v7 also extends TimeOut Limit!)
 - `Disconnect-SkypeOnline`:         Disconnects from a Session to SkypeOnline/Teams
-- `Test-SkypeOnlinedConnection`:    Verifying a Session to SkypeOnline exists
+- `Test-SkypeOnlineConnection`:    Verifying a Session to SkypeOnline exists
 - `Test-AzureAdConnection`:         Verifying a Session to AzureAD exists
 - `Test-SkypeOnlineModule`:         Verifying the Module is loaded, deprecated due to performance (needed, but not really)
 - `Test-AzureAdModule`:             Verifying the Module is loaded, deprecated due to performance (not needed)
 
-## Adding value to AzureAD
+### Adding value to AzureAD
 
 I am missing some functionality in Azure AD, hence me creating some scripts to help me out:
 
-### Lookup
+#### Lookup
 
 - `Get-AzureADUserFromUPN`:         Get-AzureADUser does not accept UserPrincipalName as input. This fixes that :)
 
-### Licensing related Functions
+#### Licensing related Functions
 
 - `Get-TeamsUserLicense`:           Queries licenses assigned to a User and displays visual output
 - `Get-TeamsTenantLicenses`:        Queries licenses present on the Tenant. Output needs improving (Objectification)
 - `Add-TeamsUserLicense`:           Adds one or more Licenses specified per Switch to the provided Identity
 - `Test-TeamsUserLicense`:          Tests an individual Service Plan or a License Package against the provided Identity
 
-## Adding value to Skype Online
+### Adding value to Skype Online
 
 The following are introduced to help with SkypeOnline/Teams related features:
 
-### Resource Accounts
+#### Resource Accounts
 
 - `New-TeamsResourceAccount`:       Creates a Resource Account in Teams (CsOnlineApplicationInstance)
 - `Get-TeamsResourceAccount`:       Queries Resource Accounts based on input: SearchString, Identity (UPN), PhoneNumber, Type (Call Queue or Auto Attendant)
 - `Set-TeamsResourceAccount`:       Changes settings for a Resource Accounts, swapping License (doesn't work right now...), Type (experimental, 'should work' according to Microsoft)
 - `Remove-TeamsResourceAccount`:    Removes a Resource Account and optionally (with -Force) also the Associations this account has.
 
-### Call Queues
+#### Call Queues
 
 - `New-TeamsCallQueue`:             Creates a Call Queue like New-CsCallQueue, but with friendly inputs (File Names, UPNs, etc.)
 - `Get-TeamsCallQueue`:             Queries a Call Queue like Get-CsCallQueue, but with friendly inputs (UPN) and output
 - `Set-TeamsCallQueue`:             Changes a Call Queue like Set-CsCallQueue, but with friendly inputs (File Names, UPNs, etc.)
 - `Remove-TeamsCallQueue`:          Removes a Call Queue like Remove-CsUser does. Just here to complete the set :)
 
-
-### Policy related Functions
+#### Policy related Functions
 
 - `Set-TeamsUserPolicy`:            Assigns specific Policies to a User
-- `Test-TeamsTenantPolicy`:         Tests whether any Policy is present in the Tenant 
+- `Test-TeamsTenantPolicy`:         Tests whether any Policy is present in the Tenant
 
-### Backup and Restore
+#### Backup and Restore
 
 - `Backup-TeamsEV`:                 Curtesy of Ken Lasko, takes a backup of all EnterpriseVoice related features in Teams.
-- `Restore-TeamsEV`:                Curtesy of Ken Lasko, makes a full authoritive restore of all EnterpriseVoice related features. Handle with care!
+- `Restore-TeamsEV`:                Curtesy of Ken Lasko, makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!
 - `Backup-TeamsTenant`:             An adaptation of the above, backing up the whole tenant in the process.
 
-### Other Functions
+#### Other Functions
 
 - `Get-SkypeOnlineConferenceDialInNumbers`:
                                     Gathers Dial-In Conferencing Numbers for a specific Domain
 - `Remove-TenantDialPlanNormalizationRule`:
                                     Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove
 
-### Continue Testing
-- `Test-TeamsExternalDNS`:          Tests DNS Records for Skype for Business Online and Teams 
+#### Continue Testing
+
+- `Test-TeamsExternalDNS`:          Tests DNS Records for Skype for Business Online and Teams
 - `Test-TeamsUser`:                 Testing whether the User exists in SkypeOnline/Teams
 - `Test-AzureAdUser`:               Testing whether the User exists in AzureAd
 - `Test-AzureAdGroup`:              Testing whether the Group exists in AzureAd
 
+#### Helper Functions
 
-### Helper Functions
 The following are exported, there are a handful of other ones that help with smaller tasks around Licensing and lookup but do not qualify to be exported.
+
 - `Get-AzureAdAssignedAdminRoles`:  Queries Admin Roles assigned to one User (UPN). Somehow that wasn't as easy to do...
 - `New-AzureAdLicenseObject`:       Creates a new License Object to be used with `Set-AzureADUserLicense`
-- `Get-SkuPartNumberfromSkuID`:     Tiny little helper translating SkuPartNumber (License Name) to their SkuID
-- `Get-SkuIDfromSkuPartNumber`:     Tiny little helper translating SkuID to their SkuPartNumber (License Name)
-- `Remove-StringSpecialCharacter`:  By Francois-Xavier Cat. Remvoes special characters from strings. Incorporated here only because I need to rely on it.
-- `Format-StringForUse`:            Same as above, though my own approach based on an Anonymous scripter. Applies rules for DisplayName and UPN respectively.
+- `Get-SkuPartNumberFromSkuID`:     Tiny little helper translating SkuPartNumber (License Name) to their SkuID
+- `Get-SkuIDFromSkuPartNumber`:     Tiny little helper translating SkuID to their SkuPartNumber (License Name)
+- `Remove-StringSpecialCharacter`:  By Francois-Xavier Cat. Removes special characters from strings. Incorporated here only because I need to rely on it.
+- `Format-StringForUse`:            Same as above, though my own approach based on an anonymous coder. Applies rules for DisplayName and UPN respectively.
 
+## A look ahead
 
-# A look ahead
-## Update/Extension plans
+### Update/Extension plans
 
 - Adding all Policies to `Set-TeamsUserPolicy` - currently only 6 are supported.
 - Simplifying creation and provisioning of Resource Accounts for Call Queues and Auto Attendants
 - Comparing backups, changed elements for Change control... Looking at Lee Fords backup scripts :)
 
-## Limitations
+### Limitations
 
 - `Connect-SkypeOnline` still seems to be timing out, despite `Enable-CsOnlineSessionForReconnection` set - odd
 - **ResourceAccount**-Scripts are still being tested. GET is good. REMOVE seems to work fine too.
 - Association between Resource Account and CallQueue/AutoAttendant is not yet built. `Remove-TeamsResourceAccount` -Force tries to sever the connection. Experimental still.
-- - **CallQueue**-Scripts are untested. Handle with Care! Will have a closer look in the coming weeks to iron them out.
+- **CallQueue**-Scripts are untested. Handle with Care! Will have a closer look in the coming weeks to iron them out.
