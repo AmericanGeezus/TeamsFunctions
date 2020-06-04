@@ -1958,7 +1958,7 @@ function New-TeamsCallQueue {
       Optional. Default:  30s,   Microsoft Default:  1200s (See Parameter UseMicrosoftDefaults)
       Time in Seconds for the TimeoutAction to trigger        
   .PARAMETER RoutingMethod
-      Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin
+      Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin,LongestIdle
       Describes how the Call Queue is hunting for an Agent.
       Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
       Attendant behaves like Parallel if PresenceBasedRouting is used.
@@ -2091,7 +2091,7 @@ function New-TeamsCallQueue {
       [int16]$TimeoutThreshold = 30,
       
       [Parameter(HelpMessage = "Method to alert Agents")]
-      [Validateset("Attendant","Serial","RoundRobin")]
+      [Validateset("Attendant","Serial","RoundRobin","LongestIdle")]
       [string]$RoutingMethod = "Attendant",
 
       [Parameter(HelpMessage = "If used, Agents receive calls only when their presence state is Available")]
@@ -2913,7 +2913,7 @@ function Set-TeamsCallQueue {
   .PARAMETER TimeoutThreshold
       Optional. Time in Seconds for the TimeoutAction to trigger        
   .PARAMETER RoutingMethod
-      Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin
+      Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin, LongestIdle
       Describes how the Call Queue is hunting for an Agent.
       Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
       Attendant behaves like Parallel if PresenceBasedRouting is used.
@@ -3039,7 +3039,7 @@ function Set-TeamsCallQueue {
       [int16]$TimeoutThreshold,
       
       [Parameter(HelpMessage = "Method to alert Agents")]
-      [Validateset("Attendant","Serial","RoundRobin")]
+      [Validateset("Attendant","Serial","RoundRobin","LongestIdle")]
       [string]$RoutingMethod = "Attendant",
 
       [Parameter(HelpMessage = "If used, Agents receive calls only when their presence state is Available")]
