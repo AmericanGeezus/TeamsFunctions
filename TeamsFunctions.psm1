@@ -60,6 +60,9 @@
                 Added AzureAD Module and Connection Test in all Functions that need it.
                 Added SkypeOnline Module and Connection Test in all Functions that need it.
                 Some bug fixing and code scrubbing
+    20.06.01.1  Unpublished yet.
+                Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+                Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
 
   #>
 
