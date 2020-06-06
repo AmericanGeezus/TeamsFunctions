@@ -1,4 +1,4 @@
-﻿#Requires -Version 3.0
+﻿#Requires -Version 5.1
 <#
     Fork of SkypeFunctions
     Written by Jeff Brown
@@ -60,8 +60,7 @@
                 Added AzureAD Module and Connection Test in all Functions that need it.
                 Added SkypeOnline Module and Connection Test in all Functions that need it.
                 Some bug fixing and code scrubbing
-    20.06.01.1  Unpublished yet.
-                Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+    20.06.06.1  Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
                 Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
 
   #>
@@ -387,16 +386,24 @@ function Connect-SkypeOnline {
     [Parameter()]
     [string]$UserName,
     
-    [Parameter()]
+    [Parameter(Mandatory = $false)]
     [ValidateScript({
-      If ($_ -match '.onmicrosoft.com') {
+      If ($null -eq $_ -or $_ -match '.onmicrosoft.com') {
         $True
       }
       else {
-        Write-Host "Must end in '.onmicrosoft.com'" -ForeGroundColor Red
+        Write-Host "If provided, the OverrideAdminDomain must end in '.onmicrosoft.com'" -ForeGroundColor Red
+        break
       }
     })]
-    [string]$OverrideAdminDomain
+    [string]$OverrideAdminDomain,
+
+    [Parameter(Mandatory = $false, HelpMessage = 'Connects to Azure AD, if UserName is provided, implicitely')]
+    [Alias('AndAAD')]
+    [switch]$AndAzureAD,
+
+    [Parameter(Mandatory = $false, HelpMessage = 'Connects to Microsoft Teams, if UserName is provided, implicitely')]
+    [switch]$AndTeams
   )
     
   if ((Test-SkypeOnlineModule) -eq $true)
@@ -471,14 +478,13 @@ function Connect-SkypeOnline {
         }
         catch
         {
-          Write-Host "Password correct? AzureAD Privileged Identity Managment Roles activated?" -ForegroundColor Magenta
-          Write-Warning -Message $_
+          Write-Error -Message "Connection not established" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
         }
       } # End of if statement for module version checking
     }
     else
     {
-      Write-Warning -Message "A Skype Online PowerShell Sessions already exists. Please run DisConnect-SkypeOnline before attempting this command again."
+      Write-Warning -Message "A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
     } # End checking for existing Skype Online Connection
   }
   else
@@ -486,6 +492,67 @@ function Connect-SkypeOnline {
     Write-Warning -Message "Skype Online PowerShell Connector module is not installed. Please install and try again."
     Write-Warning -Message "The module can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
   } # End of testing module existence
+
+
+  #region Aggregating session details for output
+  try {
+    $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"} -WarningAction STOP -ErrorAction STOP
+    $TenantInformation = Get-CsTenant -WarningAction STOP -ErrorAction STOP
+  
+    if ($PSBoundParameters.ContainsKey('Username')) {
+      $Account = $UserName
+    }
+    else {
+      $Account = "Unknown"
+    }
+    if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+      $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
+    }
+    else {
+      $TenantDomain = "Unknown"
+    }
+  
+    $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
+      Account                   = $Account
+      Environment               = 'SfBPowerShellSession'
+      Tenant                    = $TenantInformation.DisplayName
+      TenantId                  = $TenantInformation.TenantId
+      TenantDomain              = $TenantDomain
+      ComputerName              = $PSSkypeOnlineSession.ComputerName
+      IdleTimeout               = $PSSkypeOnlineSession.IdleTimeout
+      TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
+      }
+  }
+  catch {
+    # Not generating anything for display
+  }
+
+
+  # Adding Remoting to AzureAD with implicit permissions
+  if ($PSBoundParameters.ContainsKey('AndAzureAD')) {
+    if ($PSBoundParameters.ContainsKey("UserName")) {
+      Write-Host "Connecting to Azure Active Directory with authenticated credential" -ForegroundColor Cyan
+      $null = Connect-AzureAd -AccountId $Username
+    }
+    else {
+      Write-Host "Connecting to Azure Active Directory, please authenticate" -ForegroundColor Cyan
+      $null = Connect-AzureAd
+    }
+  }
+
+  # Adding Remoting to MicrosoftTeams with implicit permissions
+  if ($PSBoundParameters.ContainsKey('AndTeams')) {
+    if ($PSBoundParameters.ContainsKey("UserName")) {
+      Write-Host "Connecting to Microsoft Teams with authenticated credential" -ForegroundColor Cyan
+      $null = Connect-MicrosoftTeams -AccountId $Username
+    }
+    else {
+      Write-Host "Connecting to Microsoft Teams, please authenticate" -ForegroundColor Cyan
+      $null = Connect-MicrosoftTeams
+    }
+  }
+
+  return $PSSkypeOnlineSessionInfo
 } # End of Connect-SkypeOnline
 
 function Disconnect-SkypeOnline {
@@ -494,7 +561,7 @@ function Disconnect-SkypeOnline {
       Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
       .EXAMPLE
       Disconnect-SkypeOnline
-      Example 1 will remove any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
+      Removes any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
   #>
 
   [CmdletBinding()]
@@ -502,7 +569,7 @@ function Disconnect-SkypeOnline {
 
   [bool]$sessionFound = $false
 
-  $PSSesssions = Get-PSSession
+  $PSSesssions = Get-PSSession -WarningAction SilentlyContinue
 
   foreach ($session in $PSSesssions)
   {
@@ -520,7 +587,7 @@ function Disconnect-SkypeOnline {
     Write-Verbose -Message "No remote PowerShell sessions to Skype Online currently exist"
   }
 
-} # End of DisConnect-SkypeOnline
+} # End of Disconnect-SkypeOnline
 
 function Get-SkypeOnlineConferenceDialInNumbers {
   <#
@@ -6102,7 +6169,7 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 # Create a new Module out of this
 
 Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance
-Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Get-AzureAdAssignedAdminRoles,Get-AzureADUserFromUPN,`
+Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN,`
                               Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses,`
                               Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy,`
                               Test-AzureADModule, Test-AzureADConnection, Test-AzureADUser,Test-AzureADGroup,`
