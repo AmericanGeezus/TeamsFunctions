@@ -62,6 +62,8 @@
                 Some bug fixing and code scrubbing
     20.06.06.1  Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
                 Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
+                Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
+                Run "sotaad $Username" to connect to all 3 with one authentication prompt
 
   #>
 
@@ -199,12 +201,9 @@ function Add-TeamsUserLicense {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Querying all SKUs from the Tenant
@@ -354,32 +353,34 @@ function Add-TeamsUserLicense {
 
 function Connect-SkypeOnline {
   <#
-      .SYNOPSIS
-      Creates a remote PowerShell session out to Skype for Business Online and Teams
-      .DESCRIPTION
-      Connecting to a remote PowerShell session to Skype for Business Online requires several components
-      and steps. This function consolidates those activities by 
-      1) verifying the SkypeOnlineConnector is installed and imported
-      2) prompting for username and password to make and to import the session.
-      3) extnding the session time-out limit beyond 60mins (SkypeOnlineConnector v7 or higher only!)
-      A SkypeOnline Session requires one of the Teams Admin roles or Skype For Business Admin to connect.
-      .PARAMETER UserName
-      Optional String. The username or sign-in address to use when making the remote PowerShell session connection.
-      .EXAMPLE
-      $null = Connect-SkypeOnline
-      Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
-      .EXAMPLE
-      $null = Connect-SkypeOnline -UserName admin@contoso.com
-      Example 2 will prefill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
-      .NOTES
-      Requires that the Skype Online Connector PowerShell module be installed.
-      If the PowerShell Module SkypeOnlineConnector is v7 or higher, the Session TimeOut of 60min can be circumvented.
-      Enable-CsOnlineSessionForReconnection is run.
-      Download v7 here: https://www.microsoft.com/download/details.aspx?id=39366
-      The SkypeOnline Session allows you to administer SkypeOnline and Teams respectively.
-      To manage Teams, Channels, etc. within Microsoft Teams, use Connect-MicrosoftTeams
-      Connect-MicrosoftTeams requires Teams Service Admin and is part of the PowerShell Module MicrosoftTeams 
-      https://www.powershellgallery.com/packages/MicrosoftTeams
+    .SYNOPSIS
+    Creates a remote PowerShell session out to Skype for Business Online and Teams
+    .DESCRIPTION
+    Connecting to a remote PowerShell session to Skype for Business Online requires several components
+    and steps. This function consolidates those activities by 
+    1) verifying the SkypeOnlineConnector is installed and imported
+    2) prompting for username and password to make and to import the session.
+    3) extnding the session time-out limit beyond 60mins (SkypeOnlineConnector v7 or higher only!)
+    A SkypeOnline Session requires one of the Teams Admin roles or Skype For Business Admin to connect.
+    .PARAMETER UserName
+    Optional String. The username or sign-in address to use when making the remote PowerShell session connection.
+    .PARAMETER OverrideAdminDomain
+    Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
+    .EXAMPLE
+    $null = Connect-SkypeOnline
+    Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
+    .EXAMPLE
+    $null = Connect-SkypeOnline -UserName admin@contoso.com
+    Example 2 will prefill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
+    .NOTES
+    Requires that the Skype Online Connector PowerShell module be installed.
+    If the PowerShell Module SkypeOnlineConnector is v7 or higher, the Session TimeOut of 60min can be circumvented.
+    Enable-CsOnlineSessionForReconnection is run.
+    Download v7 here: https://www.microsoft.com/download/details.aspx?id=39366
+    The SkypeOnline Session allows you to administer SkypeOnline and Teams respectively.
+    To manage Teams, Channels, etc. within Microsoft Teams, use Connect-MicrosoftTeams
+    Connect-MicrosoftTeams requires a Teams Admin role and is part of the PowerShell Module MicrosoftTeams 
+    https://www.powershellgallery.com/packages/MicrosoftTeams
   #>
   [CmdletBinding()]
   param(
@@ -387,25 +388,10 @@ function Connect-SkypeOnline {
     [string]$UserName,
     
     [Parameter(Mandatory = $false)]
-    [ValidateScript({
-      If ($null -eq $_ -or $_ -match '.onmicrosoft.com') {
-        $True
-      }
-      else {
-        Write-Host "If provided, the OverrideAdminDomain must end in '.onmicrosoft.com'" -ForeGroundColor Red
-        break
-      }
-    })]
-    [string]$OverrideAdminDomain,
-
-    [Parameter(Mandatory = $false, HelpMessage = 'Connects to Azure AD, if UserName is provided, implicitely')]
-    [Alias('AndAAD')]
-    [switch]$AndAzureAD,
-
-    [Parameter(Mandatory = $false, HelpMessage = 'Connects to Microsoft Teams, if UserName is provided, implicitely')]
-    [switch]$AndTeams
+    [ValidateScript({$null -eq $_ -or $_ -match '.onmicrosoft.com'})]
+    [string]$OverrideAdminDomain
   )
-    
+
   if ((Test-SkypeOnlineModule) -eq $true)
   {
     if ((Test-SkypeOnlineConnection) -eq $false)
@@ -492,68 +478,186 @@ function Connect-SkypeOnline {
     Write-Warning -Message "Skype Online PowerShell Connector module is not installed. Please install and try again."
     Write-Warning -Message "The module can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
   } # End of testing module existence
-
-
-  #region Aggregating session details for output
-  try {
-    $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"} -WarningAction STOP -ErrorAction STOP
-    $TenantInformation = Get-CsTenant -WarningAction STOP -ErrorAction STOP
-  
-    if ($PSBoundParameters.ContainsKey('Username')) {
-      $Account = $UserName
-    }
-    else {
-      $Account = "Unknown"
-    }
-    if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-      $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
-    }
-    else {
-      $TenantDomain = "Unknown"
-    }
-  
-    $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
-      Account                   = $Account
-      Environment               = 'SfBPowerShellSession'
-      Tenant                    = $TenantInformation.DisplayName
-      TenantId                  = $TenantInformation.TenantId
-      TenantDomain              = $TenantDomain
-      ComputerName              = $PSSkypeOnlineSession.ComputerName
-      IdleTimeout               = $PSSkypeOnlineSession.IdleTimeout
-      TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
-      }
-  }
-  catch {
-    # Not generating anything for display
-  }
-
-
-  # Adding Remoting to AzureAD with implicit permissions
-  if ($PSBoundParameters.ContainsKey('AndAzureAD')) {
-    if ($PSBoundParameters.ContainsKey("UserName")) {
-      Write-Host "Connecting to Azure Active Directory with authenticated credential" -ForegroundColor Cyan
-      $null = Connect-AzureAd -AccountId $Username
-    }
-    else {
-      Write-Host "Connecting to Azure Active Directory, please authenticate" -ForegroundColor Cyan
-      $null = Connect-AzureAd
-    }
-  }
-
-  # Adding Remoting to MicrosoftTeams with implicit permissions
-  if ($PSBoundParameters.ContainsKey('AndTeams')) {
-    if ($PSBoundParameters.ContainsKey("UserName")) {
-      Write-Host "Connecting to Microsoft Teams with authenticated credential" -ForegroundColor Cyan
-      $null = Connect-MicrosoftTeams -AccountId $Username
-    }
-    else {
-      Write-Host "Connecting to Microsoft Teams, please authenticate" -ForegroundColor Cyan
-      $null = Connect-MicrosoftTeams
-    }
-  }
-
-  return $PSSkypeOnlineSessionInfo
 } # End of Connect-SkypeOnline
+
+function Connect-SkypeTeamsAndAAD {
+  <#
+  .SYNOPSIS
+      Connect to SkypeOnline Teams and AzureActiveDirectory
+  .DESCRIPTION
+      One function to connect them all.
+      This function tries to solves the requirement for individual authentication prompts for
+      SkypeOnline, MicrosoftTeams and AzureAD when multiple connections are required.
+      For SkypeOnline, the Skype for Business Legacy Administrator Roles is required
+      For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin)
+      For AzureAD, no particular role is needed as GET-commands are available without a role.
+      Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) 
+      Disconnects current SkypeOnline, MicrosoftTeams and AzureAD session in order to establish a clean new session to each service.
+      Combine as desired
+  .PARAMETER UserName 
+      Requried. UserPrincipalName or LoginName of the Office365 Administrator
+  .PARAMETER SkypeOnline
+      Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator
+  .PARAMETER MicrosoftTeams
+      Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator
+  .PARAMETER AzureAD
+      Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)
+  .PARAMETER OverrideAdminDomain
+      Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
+  .PARAMETER Silent
+      Optional. Suppresses output session information about established sessions. Used for calls by other functions
+  .EXAMPLE
+      Connect-SkypeTeamsAndAAD -Username admin@domain.com
+      Connects to all three Services prompting ONCE for a Password for 'admin@domain.com'
+  .EXAMPLE
+      Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -AzureAD
+      Connects to SkypeOnline and AzureAD prompting ONCE for a Password for 'admin@domain.com'
+  .FUNCTIONALITY
+      Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
+  #>
+
+  param(
+      [Parameter(Mandatory = $true, Position = 0, HelpMessage = 'UserPrincipalName, Administrative Account')]
+      [string]$UserName,
+      
+      [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to SkypeOnline. Prompts for new credentials.')]
+      [Alias('SFBO')]
+      [switch]$SkypeOnline,
+
+      [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to Azure AD. Reuses credentials if authenticated already.')]
+      [Alias('AAD')]
+      [switch]$AzureAD,
+  
+      [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to MicrosoftTeams. Reuses credentials if authenticated already.')]
+      [Alias('Teams')]
+      [switch]$MicrosoftTeams,
+
+      [Parameter(Mandatory = $false, HelpMessage = 'Domain used to connect to for SkypeOnline if DNS points to OnPrem Skype')]
+      [ValidateScript({$null -eq $_ -or $_ -match '.onmicrosoft.com'})]
+      [string]$OverrideAdminDomain,
+
+      [Parameter(Mandatory = $false, HelpMessage = 'Suppresses Session Information output')]
+      $Silent
+
+  )
+  
+  # Preparing variables
+  if (-not ('SkypeOnline' -in $PSBoundParameters -or 'MicrosoftTeams' -in $PSBoundParameters -or 'AzureAD' -in $PSBoundParameters)) {
+      # No parameter provided. Assuming connection to all three!
+      $ConnectALL = $true
+  }
+  if ($PSBoundParameters.ContainsKey('SkypeOnline')) {
+      $ConnectToSkype = $true
+  }
+  if ($PSBoundParameters.ContainsKey('AzureAD')) {
+      $ConnectToAAD = $true
+  }
+  if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+      $ConnectToTeams = $true
+  }
+
+  # Cleaning up existing sessions
+  Write-Verbose -Message "Disconnecting from all existing sessions for SkypeOnline, AzureAD and MicrosoftTeams" -Verbose
+  Disconnect-SkypeTeamsAndAAD
+
+  #region Connections
+  # SkypeOnline
+  if ($ConnectALL -or $ConnectToSkype) {
+    Write-Verbose -Message "Establishing connection to SkypeOnline" -Verbose
+    try {
+      if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+        $null = (Connect-SkypeOnline -Username $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+      }
+      else {
+        $null = (Connect-SkypeOnline -Username $Username -ErrorAction STOP)
+      }       
+    }
+    catch {
+      Write-Error   -Message "Could not establish Connection to SkypeOnline" `
+      -RecommendedAction "Run Connect-SkypeOnline manually" `
+      -Category NotEnabled `
+      -Exception $_.Exception.Message
+    }
+
+    if ((Test-SkypeOnlineConnection) -and -not $Silent) {
+      $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"} -WarningAction STOP -ErrorAction STOP
+      $TenantInformation = Get-CsTenant -WarningAction STOP -ErrorAction STOP
+      $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
+
+      $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
+        Account                   = $UserName
+        Environment               = 'SfBPowerShellSession'
+        Tenant                    = $TenantInformation.DisplayName
+        TenantId                  = $TenantInformation.TenantId
+        TenantDomain              = $TenantDomain
+        ComputerName              = $PSSkypeOnlineSession.ComputerName
+        SkypeOnlineIdleTimeout    = $PSSkypeOnlineSession.IdleTimeout
+        TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
+        }
+
+      $PSSkypeOnlineSessionInfo
+    }
+  }
+
+  # MicrosoftTeams
+  if ($ConnectALL -or $ConnectToTeams) {
+    try {
+      Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
+      if ((Test-MicrosoftTeamsConnection) -and -not $Silent) {
+          Connect-MicrosoftTeams -AccountID $Username
+      }
+      else {
+          $null = (Connect-MicrosoftTeams -AccountID $Username) 
+      }
+    }
+    catch {
+      Write-Error   -Message "Could not establish Connection to MicrosoftTeams" `
+      -RecommendedAction "Run Connect-MicrosoftTeams manually" `
+      -Category NotEnabled `
+      -Exception $_.Exception.Message
+    }
+  }
+
+  # AzureAD
+  if ($ConnectALL -or $ConnectToAAD) {
+    try {
+      Write-Verbose -Message "Establishing connection to AzureAD" -Verbose
+      $null = (Connect-AzureAD -AccountID $Username)
+      if ((Test-AzureADConnection) -and -not $Silent) {
+        Get-AzureADCurrentSessionInfo
+
+        Write-Host "Displaying assigned Admin Roles for Account: $Username" -ForegroundColor DarkYellow
+        Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account | Select-Object DisplayName,Description | Format-Table -AutoSize
+      }
+    }
+    catch {
+      Write-Error   -Message "Could not establish Connection to AzureAD" `
+      -RecommendedAction "Run Connect-AzureAD manually" `
+      -Category NotEnabled `
+      -Exception $_.Exception.Message
+    }
+  }
+  #endregion
+return 
+}
+
+function Disconnect-SkypeTeamsAndAAD {
+  # Helper function to do all three 
+  # Module
+  Import-Module SkypeOnlineConnector -Global
+  Import-Module AzureAD -Global
+  Import-Module MicrosoftTeams -Global
+  
+  try {
+    $null = (Disconnect-SkypeOnline -ErrorAction SilentlyContinue)
+    $null = (Disconnect-MicrosoftTeams -ErrorAction SilentlyContinue)
+    $null = (Disconnect-AzureAD -ErrorAction SilentlyContinue)  
+  }
+  catch {}
+}
+
+Set-Alias -Name con -Value Connect-SkypeTeamsAndAAD
+Set-Alias -Name Connect-Me -Value Connect-SkypeTeamsAndAAD
 
 function Disconnect-SkypeOnline {
   <#
@@ -614,12 +718,9 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 
   # Testing SkypeOnline Connection
   if (-not (Test-SkypeOnlineConnection)) {
-    try {
-      $null = Connect-SkypeOnline
-    }
-    catch {
-      throw "ERROR: Connection to SkypeOnline not established. returning."
-    }
+    Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    break
   }
 
   try
@@ -696,12 +797,9 @@ function Get-TeamsUserLicense {
   {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
   } # End of BEGIN
 
@@ -806,12 +904,9 @@ function Get-TeamsTenantLicenses {
 
   # Testing AzureAD Connection
   if (-not (Test-AzureADConnection)) {
-    try {
-      $null = Connect-AzureAD
-    }
-    catch {
-      throw "ERROR: Connection to Azure AD not established. returning."
-    }
+    Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    break
   }
 
   try
@@ -894,12 +989,9 @@ function Remove-TenantDialPlanNormalizationRule {
 
   # Testing SkypeOnline Connection
   if (-not (Test-SkypeOnlineConnection)) {
-    try {
-      $null = Connect-SkypeOnline
-    }
-    catch {
-      throw "ERROR: Connection to SkypeOnline not established. returning."
-    }
+    Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    break
   }
 
   $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -ErrorAction SilentlyContinue
@@ -1033,12 +1125,9 @@ function Set-TeamsUserPolicy {
   {
     # Testing SkypeOnline Connection
     if (-not (Test-SkypeOnlineConnection)) {
-      try {
-        $null = Connect-SkypeOnline
-      }
-      catch {
-        throw "ERROR: Connection to SkypeOnline not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Get available policies for tenant
@@ -1375,7 +1464,7 @@ function Test-TeamsExternalDNS {
 function Test-AzureADModule {
   <#
       .SYNOPSIS
-      Tests whether the AzureADModule is loaded
+      Tests whether the AzureAD Module is loaded
       .EXAMPLE
       Test-AzureADModule
       Will Return $TRUE if the Module is loaded
@@ -1416,7 +1505,6 @@ function Test-AzureADConnection {
   }
   catch
   {
-    Write-Warning -Message "A connection to AzureAD must be present before continuing"
     return $false
   }
 } # End of Test-AzureADConnection
@@ -1432,7 +1520,7 @@ function Test-SkypeOnlineModule {
   #>
   [CmdletBinding()]
   param()
-    $VerbosePreference =  
+      
   if ((Get-Module "SkypeOnlineConnector" -ListAvailable).count -lt 1)
   {        
     return $false
@@ -1481,6 +1569,54 @@ function Test-SkypeOnlineConnection {
 #endregion
 
 #region New Functions
+function Test-MicrosoftTeamsModule {
+  <#
+      .SYNOPSIS
+      Tests whether the MicrosoftTeams Module is loaded
+      .EXAMPLE
+      Test-AzureADModule
+      Will Return $TRUE if the Module is loaded
+
+  #>
+  [CmdletBinding()]
+  param()
+
+  Write-Verbose -Message "Verifying if MicrosoftTeams module is installed and available"
+
+  if ((Get-Module "MicrosoftTeams" -ListAvailable).count -lt 1)
+  {
+    Write-Warning -Message "MicrosoftTeams PowerShell module is not installed. Please install and try again."
+    return $false
+  }
+  else {
+    return $true
+  }
+} # End of Test-MicrosoftTeamsModule
+
+function Test-MicrosoftTeamsConnection {
+  <#
+      .SYNOPSIS
+      Tests whether a valid PS Session exists for MicrosoftTeams
+      .DESCRIPTION
+      A connection established via Connect-MicrosoftTeams is parsed.
+      .EXAMPLE
+      Test-MicrosoftTeamsConnection
+      Will Return $TRUE only if a session is found.
+  #>
+  [CmdletBinding()]
+  param()
+
+  try
+  {
+    $null = (Get-CsPolicyPackage -ErrorAction STOP)
+    return $true
+  }
+  catch
+  {
+    return $false
+  }
+} # End of Test-MicrosoftTeamsConnection
+
 function Get-AzureADUserFromUPN {
   <#
       .SYNOPSIS
@@ -1503,12 +1639,9 @@ function Get-AzureADUserFromUPN {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
@@ -1580,12 +1713,9 @@ function Test-AzureADUser {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
   
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
@@ -1607,7 +1737,6 @@ function Test-AzureADUser {
     }
   }
 } # End of Test-AzureADUser
-
 
 function Test-AzureADGroup {
   <#
@@ -1631,12 +1760,9 @@ function Test-AzureADGroup {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
   
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
@@ -1658,6 +1784,7 @@ function Test-AzureADGroup {
     }
   }
 } # End of Test-AzureADGroup
+
 function Test-TeamsUser {
   <#
       .SYNOPSIS
@@ -1680,12 +1807,9 @@ function Test-TeamsUser {
   begin {
     # Testing SkypeOnline Connection
     if (-not (Test-SkypeOnlineConnection)) {
-      try {
-        $null = Connect-SkypeOnline
-      }
-      catch {
-        throw "ERROR: Connection to SkypeOnline not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
   }
@@ -1731,12 +1855,9 @@ function Test-TeamsTenantPolicy {
   begin {
     # Testing SkypeOnline Connection
     if (-not (Test-SkypeOnlineConnection)) {
-      try {
-        $null = Connect-SkypeOnline
-      }
-      catch {
-        throw "ERROR: Connection to SkypeOnline not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Data Gathering
@@ -1836,14 +1957,10 @@ function Test-TeamsUserLicense {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
-
 
   }
   
@@ -2247,6 +2364,11 @@ function New-TeamsCallQueue {
   )
   
   begin {
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+
     #region Required Parameters: Name and MusicOnHold
     # Normalising $Name
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
@@ -2807,6 +2929,12 @@ function Get-TeamsCallQueue {
     [AllowNull()]
     [string]$Name
   )
+
+  # Caveat - Script in Testing
+  $VerbosePreference = "Continue"
+  $DebugPreference = "Continue"
+  Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+  
   try {
     if (-not $PSBoundParameters.ContainsKey('Name')) {
       Write-Verbose -Message "No parameters specified. Acting as Alias to Get-CsCallQueue"
@@ -3192,7 +3320,12 @@ function Set-TeamsCallQueue {
   )
   
   begin {
-      #region DisplayName
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+
+    #region DisplayName
       # Normalising $DisplayName
       if ($PSBoundParameters.ContainsKey('Displayname')) {
       $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
@@ -3717,6 +3850,12 @@ function Remove-TeamsCallQueue {
       [Parameter(Mandatory = $true, HelpMessage = "Name of the Call Queue")]
       [string]$Name
   )
+
+  # Caveat - Script in Testing
+  $VerbosePreference = "Continue"
+  $DebugPreference = "Continue"
+  Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+
   try {
       Get-CsCallQueue -NameFilter "$Name" | Remove-TeamsCallQueue -Confirm:$true -ErrorAction STOP
   }
@@ -3827,22 +3966,16 @@ function New-TeamsResourceAccount {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Testing SkypeOnline Connection
     if (-not (Test-SkypeOnlineConnection)) {
-      try {
-        $null = Connect-SkypeOnline
-      }
-      catch {
-        throw "ERROR: Connection to SkypeOnline not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Normalising $UserPrincipalname
@@ -4041,24 +4174,24 @@ function New-TeamsResourceAccount {
 
         # Processing paths for Telephone Numbers depending on Type
         if ($PhoneNumberIsMSNumber) {
-            # Set in VoiceApplicationInstance
-            Write-Verbose -Message "Number found in Tenant, assuming provisioning Microsoft Calling Plans"
-            try {
-              $null = (Set-CsOnlineVoiceApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -Telephonenumber $PhoneNumber -ErrorAction STOP)
-            }
-            catch {
-              Write-Warning -Message "Phone number could not be assigned! Please run Set-TeamsResourceAccount manually"
-            }
+          # Set in VoiceApplicationInstance
+          Write-Verbose -Message "Number found in Tenant, assuming provisioning Microsoft Calling Plans"
+          try {
+            $null = (Set-CsOnlineVoiceApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -Telephonenumber $PhoneNumber -ErrorAction STOP)
           }
+          catch {
+            Write-Warning -Message "Phone number could not be assigned! Please run Set-TeamsResourceAccount manually"
+          }
+        }
         else {
-            # Set in ApplicationInstance
-            Write-Verbose -Message "Number not found in Tenant, assuming provisioning for Direct Routing"
-            try {
-              $null = (Set-CsOnlineApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -OnPremPhoneNumber $PhoneNumber -ErrorAction STOP)
-            }
-            catch {
-              Write-Warning -Message "Phone number could not be assigned! Please run Set-TeamsResourceAccount manually"
-            }
+          # Set in ApplicationInstance
+          Write-Verbose -Message "Number not found in Tenant, assuming provisioning for Direct Routing"
+          try {
+            $null = (Set-CsOnlineApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -OnPremPhoneNumber $PhoneNumber -ErrorAction STOP)
+          }
+          catch {
+            Write-Warning -Message "Phone number could not be assigned! Please run Set-TeamsResourceAccount manually"
+          }
         }
       }
     }
@@ -4077,37 +4210,37 @@ function New-TeamsResourceAccount {
 
         # Resource Account License
         if ($Islicensed) {
-            # License
-            if (Test-TeamsUserLicense -Identity $UPN -LicensePackage PhoneSystem) {
-                $ResourceAccuntLicense = "PhoneSystem"
-            }
-            elseif (Test-TeamsUserLicense -Identity $UPN -LicensePackage PhoneSystem_VirtualUser) {
-                $ResourceAccuntLicense = "PhoneSystem_VirtualUser"
-            }
-            else {
-                $ResourceAccuntLicense = $null
-            }
+          # License
+          if (Test-TeamsUserLicense -Identity $UPN -LicensePackage PhoneSystem) {
+            $ResourceAccuntLicense = "PhoneSystem"
+          }
+          elseif (Test-TeamsUserLicense -Identity $UPN -LicensePackage PhoneSystem_VirtualUser) {
+            $ResourceAccuntLicense = "PhoneSystem_VirtualUser"
+          }
+          else {
+            $ResourceAccuntLicense = $null
+          }
 
-            if($null -ne $ResourceAccount.PhoneNumber) {
-              # Phone Number Type
-              if ($PhoneNumberIsMSNumber) {
-                  $ResourceAccountPhoneNumberType = "Microsoft Number"
-              }
-              else {
-                  $ResourceAccountPhoneNumberType = "Direct Routing Number"
-              }
+          if($null -ne $ResourceAccount.PhoneNumber) {
+            # Phone Number Type
+            if ($PhoneNumberIsMSNumber) {
+              $ResourceAccountPhoneNumberType = "Microsoft Number"
             }
             else {
-              $ResourceAccountPhoneNumberType = $null
+              $ResourceAccountPhoneNumberType = "Direct Routing Number"
             }
-            
-            # Phone Number is taken from Original Object and should be populated correctly
+          }
+          else {
+            $ResourceAccountPhoneNumberType = $null
+          }
+          
+          # Phone Number is taken from Original Object and should be populated correctly
 
         }
         else {
-            $ResourceAccuntLicense = $null
-            $ResourceAccountPhoneNumberType = $null
-            # Phone Number is taken from Original Object and should be empty at this point                    
+          $ResourceAccuntLicense = $null
+          $ResourceAccountPhoneNumberType = $null
+          # Phone Number is taken from Original Object and should be empty at this point                    
         }
 
         # creating new PS Object (synchronous with Get and Set)
@@ -4123,28 +4256,28 @@ function New-TeamsResourceAccount {
         
         Write-Verbose -Message "Resource Account Created:"
         if ($PSBoundParameters.ContainsKey("PhoneNumber") -and $Islicensed -and $ResourceAccount.PhoneNumber -eq "") {
-            Write-Warning -Message "Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount after 5-10 mins to verify"
+          Write-Warning -Message "Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount after 5-10 mins to verify"
         }
         return $ResourceAccountObject
 
     }
     catch {
-        Write-Warning -Message "Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance"
-        # get error record
-        [Management.Automation.ErrorRecord]$e = $_
+      Write-Warning -Message "Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance"
+      # get error record
+      [Management.Automation.ErrorRecord]$e = $_
 
-        # retrieve Info about runtime error
-        $info = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
-        }
-    
-        # output Info. Post-process collected info, and log info (optional)
-        $info
+      # retrieve Info about runtime error
+      $info = [PSCustomObject]@{
+        Exception = $e.Exception.Message
+        Reason    = $e.CategoryInfo.Reason
+        Target    = $e.CategoryInfo.TargetName
+        Script    = $e.InvocationInfo.ScriptName
+        Line      = $e.InvocationInfo.ScriptLineNumber
+        Column    = $e.InvocationInfo.OffsetInLine
+      }
+  
+      # output Info. Post-process collected info, and log info (optional)
+      $info
     }
     #endregion
   }
@@ -4215,22 +4348,16 @@ function Get-TeamsResourceAccount {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Testing SkypeOnline Connection
     if (-not (Test-SkypeOnlineConnection)) {
-      try {
-        $null = Connect-SkypeOnline
-      }
-      catch {
-        throw "ERROR: Connection to SkypeOnline not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     #Data gathering
@@ -4452,22 +4579,16 @@ function Set-TeamsResourceAccount {
   begin {
     # Testing AzureAD Connection
     if (-not (Test-AzureADConnection)) {
-      try {
-        $null = Connect-AzureAD
-      }
-      catch {
-        throw "ERROR: Connection to Azure AD not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Testing SkypeOnline Connection
     if (-not (Test-SkypeOnlineConnection)) {
-      try {
-        $null = Connect-SkypeOnline
-      }
-      catch {
-        throw "ERROR: Connection to SkypeOnline not established. returning."
-      }
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
     # Normalising $DisplayName
@@ -4476,8 +4597,27 @@ function Set-TeamsResourceAccount {
       $DisplayNameNormalised = Format-StringForUse -InputString $DisplayName -As DisplayName
     }
 
-    # Translating $ApplicationType (Name) to ID used by Commands.
-    $AppId = GetAppIdfromApplicationType $ApplicationType
+    # Application Type and Associations
+    if($PSBoundParameters.ContainsKey("ApplicationType")) {
+      # Translating $ApplicationType (Name) to ID used by Commands.
+      Write-Verbose -Message "Preparation: ApplicationType and Associations"
+      $AppId = GetAppIdfromApplicationType $ApplicationType
+      $CurrentAppId = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName).ApplicationId
+      # Does the ApplicationType differ? Does it have to be changed?
+      if ($AppId -eq $CurrentAppId) {
+        # Application IDs match - Type does not need to be changed
+        Write-Verbose -Message "Application Type already set to $ApplicationType. No change necessary."
+      }
+      else {
+        # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
+        $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -ErrorAction Ignore
+        if ($Associations.count -gt 0) {
+          # Associations found. Aborting
+          Write-Error -Message "Object is associated with Call Queue or AutoAttendant. ApplicationType cannot be changed" -Category OperationStopped -RecommendedAction "Remove Associations with Remove-CsOnlineApplicationInstanceAssociation manually"
+          break
+        }  
+      }      
+    }
 
     # Phone Numbers
     # Loading all Microsoft Telephone Numbers
@@ -4528,7 +4668,7 @@ function Set-TeamsResourceAccount {
       else {
           $CurrentLicense = $null
       }
-    }
+    }    
   } # end of begin
 
   process {
@@ -4581,34 +4721,30 @@ function Set-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey("ApplicationType")) {
         $CurrentAppId = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName).ApplicationId
         # Application Type Change?
-        if ($AppId -eq $CurrentAppId) {
-            # Application IDs match - Type does not need to be changed
-            Write-Verbose -Message "'$CurrentDisplayName' - Application Type already set to $ApplicationType. No change necessary."
-        }
-        else {
-            try {
-              Write-Verbose -Message "'$CurrentDisplayName' - Changing Application Type to: $ApplicationType"
-                $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -ApplicationId $AppId -ErrorAction STOP)
-                Write-Verbose -Message "SUCCESS"
-            }
-            catch {
-                Write-Error -Message "Problem encountered changing Application Type" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
-                # get error record
-                [Management.Automation.ErrorRecord]$e = $_
+        if ($AppId -ne $CurrentAppId) {
+          try {
+            Write-Verbose -Message "'$CurrentDisplayName' - Changing Application Type to: $ApplicationType"
+            $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -ApplicationId $AppId -ErrorAction STOP)
+            Write-Verbose -Message "SUCCESS"
+          }
+          catch {
+            Write-Error -Message "Problem encountered changing Application Type" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
+            # get error record
+            [Management.Automation.ErrorRecord]$e = $_
 
-                # retrieve Info about runtime error
-                $info = [PSCustomObject]@{
-                  Exception = $e.Exception.Message
-                  Reason    = $e.CategoryInfo.Reason
-                  Target    = $e.CategoryInfo.TargetName
-                  Script    = $e.InvocationInfo.ScriptName
-                  Line      = $e.InvocationInfo.ScriptLineNumber
-                  Column    = $e.InvocationInfo.OffsetInLine
-                }
-            
-                # output Info. Post-process collected info, and log info (optional)
-                $info
-              }
+            # retrieve Info about runtime error
+            $info = [PSCustomObject]@{
+              Exception = $e.Exception.Message
+              Reason    = $e.CategoryInfo.Reason
+              Target    = $e.CategoryInfo.TargetName
+              Script    = $e.InvocationInfo.ScriptName
+              Line      = $e.InvocationInfo.ScriptLineNumber
+              Column    = $e.InvocationInfo.OffsetInLine
+            }
+        
+            # output Info. Post-process collected info, and log info (optional)
+            $info
+          }
         }
     }
     #endregion
@@ -4801,160 +4937,116 @@ function Set-TeamsResourceAccount {
 }
 
 function Remove-TeamsResourceAccount {
-    <#
-    .SYNOPSIS
-        Removes a new Resource Account
-    .DESCRIPTION
-        This function allows you to update Resource accounts for Teams Call Queues and Auto Attendants.
-        It can carry a license and optionally also a phone number.
-    .PARAMETER UserPrincipalName
-        Required. Identifies the Object being changed
-    .PARAMETER Force
-        Optional. Will also sever all associations this account has in order to remove it
-        Script fails if the Account is assigned somewhere
-    .EXAMPLE
-        Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
-        Removes a ResourceAccount
-        Removes in order: Phone Number, License and Account  
-    .EXAMPLE
-        Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
-        Removes a ResourceAccount
-        Removes in order: Phone Number, License and Account
-        Parameter Force is optional and will also remove all Associations this account has to Call Queues or AutoAttendants.
-    .NOTES
-        CmdLet currently in testing.
-        Execution requires User Admin Role in Azure AD
-        Please feed back any issues to david.eberhardt@outlook.com
-    .FUNCTIONALITY
-        Removes a resource Account in AzureAD for use in Teams
-    .LINK
-        New-TeamsResourceAccount
-        Get-TeamsResourceAccount
-        Set-TeamsResourceAccount
-    #>
+  <#
+  .SYNOPSIS
+      Removes a new Resource Account
+  .DESCRIPTION
+      This function allows you to update Resource accounts for Teams Call Queues and Auto Attendants.
+      It can carry a license and optionally also a phone number.
+  .PARAMETER UserPrincipalName
+      Required. Identifies the Object being changed
+  .PARAMETER Force
+      Optional. Will also sever all associations this account has in order to remove it
+      Script fails if the Account is assigned somewhere
+  .EXAMPLE
+      Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
+      Removes a ResourceAccount
+      Removes in order: Phone Number, License and Account  
+  .EXAMPLE
+      Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
+      Removes a ResourceAccount
+      Removes in order: Phone Number, License and Account
+      Parameter Force is optional and will also remove all Associations this account has to Call Queues or AutoAttendants.
+  .NOTES
+      CmdLet currently in testing.
+      Execution requires User Admin Role in Azure AD
+      Please feed back any issues to david.eberhardt@outlook.com
+  .FUNCTIONALITY
+      Removes a resource Account in AzureAD for use in Teams
+  .LINK
+      New-TeamsResourceAccount
+      Get-TeamsResourceAccount
+      Set-TeamsResourceAccount
+  #>
 
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to create. Must end in '.onmicrosoft.com'")]
-        [ValidateScript({
-          If ($_ -match '@' -and $_ -match '.onmicrosoft.com') {
-            $True
-          }
-          else {
-            Write-Host "Must contain one '@' and end in '.onmicrosoft.com'" -ForeGroundColor Red
-          }
-        })]
-        [Alias("Identity","ObjectId")]
-        [string]$UserPrincipalName,
-
-        [Parameter(Mandatory = $false)]
-        [switch]$Force
-    )
-    
-    begin {
-        # Caveat - Access rights 
-        Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
-        Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
-
-        # Testing AzureAD Connection
-        if (-not (Test-AzureADConnection)) {
-          try {
-            $null = Connect-AzureAD
-          }
-          catch {
-            throw "ERROR: Connection to Azure AD not established. returning."
-          }
-        }
-
-        # Testing SkypeOnline Connection
-        if (-not (Test-SkypeOnlineConnection)) {
-          try {
-            $null = Connect-SkypeOnline
-          }
-          catch {
-            throw "ERROR: Connection to SkypeOnline not established. returning."
-          }
-        }
-
-        # Adding Types - Required for License manipulation in Process
-        Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
-          
-    } # end of begin
-
-    process {
-        #region Lookup of UserPrincipalName
-        try {
-            #Trying to query the Resource Account
-            Write-Verbose -Message "Processing: $UserPrincipalName"
-            $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -ErrorAction STOP)
-            $DisplayName = $Object.DisplayName
-        }
-        catch {
-            # Catching anything
-            Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Resource Account"
-            return
-        }
-        #endregion
-
-        #region Associations
-        # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
-        Write-Verbose -Message "Processing: '$DisplayName' - Associations to Call Queues or Auto Attendants"
-        $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -ErrorAction Ignore
-        if ($Associations.count -eq 0) {
-          # Object has no associations
-          Write-Verbose -Message "'$DisplayName' - Object does not have any associaions"
-          $Associations = $null
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to create. Must end in '.onmicrosoft.com'")]
+      [ValidateScript({
+        If ($_ -match '@' -and $_ -match '.onmicrosoft.com') {
+          $True
         }
         else {
-          Write-Verbose -Message "'$DisplayName' - associaions found"
-          if($PSBoundParameters.ContainsKey("Force")) {
-            # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
-            # with: Remove-CsOnlineApplicationInstanceAssociation
-            try {
-              Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
-              $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations  -ErrorAction STOP)
-              Write-Verbose -Message "SUCCESS: Associations removed"
-            }
-            catch {
-                Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
-                # get error record
-                [Management.Automation.ErrorRecord]$e = $_
-
-                # retrieve Info about runtime error
-                $info = [PSCustomObject]@{
-                  Exception = $e.Exception.Message
-                  Reason    = $e.CategoryInfo.Reason
-                  Target    = $e.CategoryInfo.TargetName
-                  Script    = $e.InvocationInfo.ScriptName
-                  Line      = $e.InvocationInfo.ScriptLineNumber
-                  Column    = $e.InvocationInfo.OffsetInLine
-                }
-            
-                # output Info. Post-process collected info, and log info (optional)
-                $info
-                return                
-            }
-          }
-          else {
-            Write-Error -Message "Associations detected. Please remove first or use -Force" -Category ResourceExists
-            return $Associations
-          }
+          Write-Host "Must contain one '@' and end in '.onmicrosoft.com'" -ForeGroundColor Red
         }
-        #endregion
+      })]
+      [Alias("Identity","ObjectId")]
+      [string]$UserPrincipalName,
 
-        #region PhoneNumber
-        # Removing Phone Number Assignments
-        Write-Verbose -Message "Processing: '$DisplayName' - Phone Number Assignments"
+      [Parameter(Mandatory = $false)]
+      [switch]$Force
+  )
+  
+  begin {
+    # Caveat - Access rights 
+    Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
+    Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
+
+    # Testing AzureAD Connection
+    if (-not (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Testing SkypeOnline Connection
+    if (-not (Test-SkypeOnlineConnection)) {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Adding Types - Required for License manipulation in Process
+    Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
+        
+  } # end of begin
+
+process {
+    #region Lookup of UserPrincipalName
+    try {
+      #Trying to query the Resource Account
+      Write-Verbose -Message "Processing: $UserPrincipalName"
+      $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -ErrorAction STOP)
+      $DisplayName = $Object.DisplayName
+    }
+    catch {
+      # Catching anything
+      Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Resource Account"
+      return
+    }
+    #endregion
+
+    #region Associations
+    # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
+    Write-Verbose -Message "Processing: '$DisplayName' - Associations to Call Queues or Auto Attendants"
+    $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -ErrorAction Ignore
+    if ($Associations.count -eq 0) {
+      # Object has no associations
+      Write-Verbose -Message "'$DisplayName' - Object does not have any associaions"
+      $Associations = $null
+    }
+    else {
+      Write-Verbose -Message "'$DisplayName' - associaions found"
+      if($PSBoundParameters.ContainsKey("Force")) {
+        # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
+        # with: Remove-CsOnlineApplicationInstanceAssociation
         try {
-          # Remove from VoiceApplicationInstance
-          Write-Verbose -Message "'$DisplayName' - Removing Microsoft Number"
-          $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-          # Remove from ApplicationInstance
-          Write-Verbose -Message "'$DisplayName' - Removing Direct Routing Number"
-          $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+          Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
+          $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations  -ErrorAction STOP)
+          Write-Verbose -Message "SUCCESS: Associations removed"
         }
         catch {
-          Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
+          Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
           # get error record
           [Management.Automation.ErrorRecord]$e = $_
 
@@ -4970,82 +5062,120 @@ function Remove-TeamsResourceAccount {
       
           # output Info. Post-process collected info, and log info (optional)
           $info
-          return
+          return                
         }
-        #endregion
-
-        #region Licensing
-        # Reading User Licenses
-        Write-Verbose -Message "Processing: '$DisplayName' - Phone Number Assignments"
-        try {
-          $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UserPrincipalName -ErrorAction STOP).SkuId
-
-          if ($null -eq $UserLicenseSkuIDs) {
-            Write-Verbose -Message "'$DisplayName' - No licenses assigned. OK"
-          }
-          else {
-            $Licenses = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-            # This should work: 
-            Write-Verbose -Message "'$DisplayName' - Removing Removing licenses"
-            $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
-            Set-AzureADUserLicense -ObjectId $Object.ObjectId -AssignedLicenses $Licenses -ErrorAction STOP
-            Write-Verbose -Message "SUCCESS"
-          }
-        }
-        catch {
-            Write-Error -Message "Unassignment of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense" 
-            # get error record
-            [Management.Automation.ErrorRecord]$e = $_
-
-            # retrieve Info about runtime error
-            $info = [PSCustomObject]@{
-              Exception = $e.Exception.Message
-              Reason    = $e.CategoryInfo.Reason
-              Target    = $e.CategoryInfo.TargetName
-              Script    = $e.InvocationInfo.ScriptName
-              Line      = $e.InvocationInfo.ScriptLineNumber
-              Column    = $e.InvocationInfo.OffsetInLine
-            }
-        
-            # output Info. Post-process collected info, and log info (optional)
-            $info
-            return
-        }
-
-        #endregion
-
-        #region Account Removal
-        # Removing AzureAD User
-        Write-Verbose -Message "Processing: '$DisplayName' - Removing AzureAD User Objcet"
-        try {
-            $null = (Remove-AzureADUser -ObjectID $UserPrincipalName -ErrorAction STOP)
-            Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
-        }
-        catch {
-            Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
-            # get error record
-            [Management.Automation.ErrorRecord]$e = $_
-
-            # retrieve Info about runtime error
-            $info = [PSCustomObject]@{
-              Exception = $e.Exception.Message
-              Reason    = $e.CategoryInfo.Reason
-              Target    = $e.CategoryInfo.TargetName
-              Script    = $e.InvocationInfo.ScriptName
-              Line      = $e.InvocationInfo.ScriptLineNumber
-              Column    = $e.InvocationInfo.OffsetInLine
-            }
-        
-            # output Info. Post-process collected info, and log info (optional)
-            $info
-        }
-        #endregion
-        
+      }
+      else {
+        Write-Error -Message "Associations detected. Please remove first or use -Force" -Category ResourceExists
+        return $Associations
+      }
     }
+    #endregion
+
+    #region PhoneNumber
+    # Removing Phone Number Assignments
+    Write-Verbose -Message "Processing: '$DisplayName' - Phone Number Assignments"
+    try {
+      # Remove from VoiceApplicationInstance
+      Write-Verbose -Message "'$DisplayName' - Removing Microsoft Number"
+      $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+      # Remove from ApplicationInstance
+      Write-Verbose -Message "'$DisplayName' - Removing Direct Routing Number"
+      $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+    }
+    catch {
+      Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
+      # get error record
+      [Management.Automation.ErrorRecord]$e = $_
+
+      # retrieve Info about runtime error
+      $info = [PSCustomObject]@{
+        Exception = $e.Exception.Message
+        Reason    = $e.CategoryInfo.Reason
+        Target    = $e.CategoryInfo.TargetName
+        Script    = $e.InvocationInfo.ScriptName
+        Line      = $e.InvocationInfo.ScriptLineNumber
+        Column    = $e.InvocationInfo.OffsetInLine
+      }
+  
+      # output Info. Post-process collected info, and log info (optional)
+      $info
+      return
+    }
+    #endregion
+
+    #region Licensing
+    # Reading User Licenses
+    Write-Verbose -Message "Processing: '$DisplayName' - Phone Number Assignments"
+    try {
+      $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UserPrincipalName -ErrorAction STOP).SkuId
+
+      if ($null -eq $UserLicenseSkuIDs) {
+        Write-Verbose -Message "'$DisplayName' - No licenses assigned. OK"
+      }
+      else {
+        $Licenses = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
+        # This should work: 
+        Write-Verbose -Message "'$DisplayName' - Removing Removing licenses"
+        $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
+        Set-AzureADUserLicense -ObjectId $Object.ObjectId -AssignedLicenses $Licenses -ErrorAction STOP
+        Write-Verbose -Message "SUCCESS"
+      }
+    }
+    catch {
+      Write-Error -Message "Unassignment of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense" 
+      # get error record
+      [Management.Automation.ErrorRecord]$e = $_
+
+      # retrieve Info about runtime error
+      $info = [PSCustomObject]@{
+        Exception = $e.Exception.Message
+        Reason    = $e.CategoryInfo.Reason
+        Target    = $e.CategoryInfo.TargetName
+        Script    = $e.InvocationInfo.ScriptName
+        Line      = $e.InvocationInfo.ScriptLineNumber
+        Column    = $e.InvocationInfo.OffsetInLine
+      }
+  
+      # output Info. Post-process collected info, and log info (optional)
+      $info
+      return
+    }
+
+    #endregion
+
+    #region Account Removal
+    # Removing AzureAD User
+    Write-Verbose -Message "Processing: '$DisplayName' - Removing AzureAD User Objcet"
+    try {
+      $null = (Remove-AzureADUser -ObjectID $UserPrincipalName -ErrorAction STOP)
+      Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
+    }
+    catch {
+      Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
+      # get error record
+      [Management.Automation.ErrorRecord]$e = $_
+
+      # retrieve Info about runtime error
+      $info = [PSCustomObject]@{
+        Exception = $e.Exception.Message
+        Reason    = $e.CategoryInfo.Reason
+        Target    = $e.CategoryInfo.TargetName
+        Script    = $e.InvocationInfo.ScriptName
+        Line      = $e.InvocationInfo.ScriptLineNumber
+        Column    = $e.InvocationInfo.OffsetInLine
+      }
+  
+      # output Info. Post-process collected info, and log info (optional)
+      $info
+    }
+    #endregion
     
-    end {
-        
-    }
+  }
+  
+  end {
+      
+  }
 }
 #Alias is set to provide default behaviour to CsOnlineApplicationInstance
 Set-Alias -Name Remove-CsOnlineApplicationInstance -Value Remove-TeamsResourceAccount
@@ -5419,12 +5549,9 @@ function Backup-TeamsTenant {
 
   # Testing SkypeOnline Connection
   if (-not (Test-SkypeOnlineConnection)) {
-    try {
-      $null = Connect-SkypeOnline
-    }
-    catch {
-      throw "ERROR: Connection to SkypeOnline not established. returning."
-    }
+    Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    break
   }
 
   $Filenames = '*.txt'
@@ -5561,14 +5688,11 @@ function Get-AzureAdAssignedAdminRoles {
 
   # Testing AzureAD Connection
   if (-not (Test-AzureADConnection)) {
-    try {
-      $null = Connect-AzureAD
-    }
-    catch {
-      throw "ERROR: Connection to Azure AD not established. returning."
-    }
+    Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    break
   }
-
+  
   #Querying Admin Rights of authenticated Administator
   $AssignedRoles = @()
   $Roles = Get-AzureADDirectoryRole
@@ -5618,16 +5742,13 @@ function New-AzureAdLicenseObject {
 
     [Parameter(Mandatory = $false, Position = 1, HelpMessage = "SkuId of the license to Remove")]
     [string]$RemoveSkuId
-    )
+  )
 
   # Testing AzureAD Connection
   if (-not (Test-AzureADConnection)) {
-    try {
-      $null = Connect-AzureAD
-    }
-    catch {
-      throw "ERROR: Connection to Azure AD not established. returning."
-    }
+    Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    break
   }
 
   Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
@@ -6166,13 +6287,16 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 }
 #endregion *** Non-Exported Helper Functions ***
 
-# Create a new Module out of this
+# Exporting ModuleMembers
 
-Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance
-Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN,`
+Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-Me
+Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-SkypeTeamsAndAAD, Disconnect-SkypeTeamsAndAAD, `
+                              Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN,`
                               Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses,`
                               Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy,`
                               Test-AzureADModule, Test-AzureADConnection, Test-AzureADUser,Test-AzureADGroup,`
+                              Test-SkypeOnlineModule,Test-SkypeOnlineConnection, `
+                              Test-MicrosoftTeamsModule,Test-MicrosoftTeamsConnection,Test-TeamsUser,`
                               Test-SkypeOnlineModule, Test-SkypeOnlineConnection, Test-TeamsUser,`
                               New-TeamsResourceAccount, Get-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount,`
                               New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue,`
