@@ -123,3 +123,5 @@ The following are exported, there are a handful of other ones that help with sma
 - **ResourceAccount**-Scripts are still being tested. GET is good. REMOVE seems to work fine too.
 - Association between Resource Account and CallQueue/AutoAttendant is not yet built. `Remove-TeamsResourceAccount` -Force tries to sever the connection. Experimental still.
 - **CallQueue**-Scripts are untested. Handle with Care! Will have a closer look in the coming weeks to iron them out.
+
+Enjoy
