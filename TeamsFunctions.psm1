@@ -60,10 +60,10 @@
                 Added AzureAD Module and Connection Test in all Functions that need it.
                 Added SkypeOnline Module and Connection Test in all Functions that need it.
                 Some bug fixing and code scrubbing
-    20.06.06.1  Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+    20.06.07.1  Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
                 Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
                 Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
-                Run "sotaad $Username" to connect to all 3 with one authentication prompt
+                Run "con $Username" to connect to all 3 with one authentication prompt
 
   #>
 
