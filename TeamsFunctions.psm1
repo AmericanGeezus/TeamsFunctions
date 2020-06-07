@@ -2206,7 +2206,7 @@ function New-TeamsCallQueue {
 
   [CmdletBinding()]
   param(
-      [Parameter(Mandatory=$true, HelpMessage = "Name of the Call Queue")]
+      [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
       [string]$Name,
 
       [Parameter(HelpMessage = "No output is written to the screen, but Object returned for processing")]
@@ -2412,6 +2412,7 @@ function New-TeamsCallQueue {
     #region Required Parameters: Name and MusicOnHold
     # Normalising $Name
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
+    Write-Verbose -Message "'$Name' - DisplayName normalised to: $NameNormalised"
   
     # Processing Music On Hold
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile') -and $PSBoundParameters.ContainsKey('UseDefaultMusicOnHold')) {
@@ -2419,28 +2420,26 @@ function New-TeamsCallQueue {
       $UseDefaultMusicOnHold = $false
     }
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
-      Write-Verbose -Message "Parsing Music On Hold"
       $MOHcontent   = Get-Content $MusicOnHoldAudioFile -Encoding byte -ReadCount 0
       $MOHFileName  = Split-Path $MusicOnHoldAudioFile -Leaf
       $MOHFile      = New-CsOnlineAudioFile -FileName $MOHFileName -Content $MOHcontent
-      Write-Verbose -Message "Music On Hold parsed: $MOHFileName used"
+      Write-Verbose -Message "'$NameNormalised' - Music On Hold parsed. Using: $MOHFileName"
     }
     else {
       $UseDefaultMusicOnHold = $true
-      Write-Verbose -Message "No Music On Hold specified: Using UseDefaultMusicOnHold"
+      Write-Verbose -Message "'$NameNormalised' - Music On Hold parsed. Using: UseDefaultMusicOnHold"
     }
     #endregion
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMessageAudioFile')) {
-        Write-Verbose -Message "Parsing Welcome Message"
         $WMcontent    = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0
         $WMFileName   = Split-Path $WelcomeMusicAudioFile -Leaf
         $WMFile       = New-CsOnlineAudioFile -FileName $WMFileName -Content $WMcontent
-        Write-Verbose -Message "Welcome Message parsed: $WMFileName used"
+        Write-Verbose -Message "'$NameNormalised' - Welcome Message parsed. Using: $WMFileName"
       }
       else {
-        Write-Verbose -Message "No Welcome Message File provided, omitting"
+        Write-Verbose -Message "'$NameNormalised' - Welcome Message parsed. Using: NONE"
       }
     #endregion
 
@@ -2451,47 +2450,47 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "Switch UseMicrosoftDefaults used - Setting default values according to New-CsCallQueue" -Verbose
       if (-not $PSBoundParameters.ContainsKey('AllowOptOut')) {
         $AllowOptOut = $true
-        Write-Verbose -Message "Setting default value: AllowOptOut: $AllowOptOut"
+        Write-Verbose -Message "'$NameNormalised' - Setting default value: AllowOptOut: $AllowOptOut"
       }
       if (-not $PSBoundParameters.ContainsKey('ConferenceMode')) {
         $ConferenceMode = $false
-        Write-Verbose -Message "Setting default value: ConferenceMode: $ConferenceMode"
+        Write-Verbose -Message "'$NameNormalised' - Setting default value: ConferenceMode: $ConferenceMode"
       }
       if (-not $PSBoundParameters.ContainsKey('AgentAlertTime')) {
         $TimeoutThreshold = 30
-        Write-Verbose -Message "Setting default value: TimeoutThreshold: $AgentAlertTime"
+        Write-Verbose -Message "'$NameNormalised' - Setting default value: TimeoutThreshold: $AgentAlertTime"
       }
       if (-not $PSBoundParameters.ContainsKey('OverflowThreshold')) {
         $OverflowThreshold = 50
-        Write-Verbose -Message "Setting default value: OverflowThreshold: $OverflowThreshold"
+        Write-Verbose -Message "'$NameNormalised' - Setting default value: OverflowThreshold: $OverflowThreshold"
       }
       if (-not $PSBoundParameters.ContainsKey('TimeoutTheshold')) {
         $TimeoutThreshold = 1200
-        Write-Verbose -Message "Setting default value: TimeoutThreshold: $TimeoutThreshold"
+        Write-Verbose -Message "'$NameNormalised' - Setting default value: TimeoutThreshold: $TimeoutThreshold"
       }
     }
     else {
       Write-Verbose -Message "Switch UseMicrosoftDefaults NOT used - Setting default values according to New-TeamsCallQueue" -Verbose
       if (-not $PSBoundParameters.ContainsKey('AllowOptOut')) {
         $AllowOptOut = $false
-        Write-Verbose -Message "Setting default value: AllowOptOut: $AllowOptOut"
+        Write-Verbose -Message "'$NameNormalised' - Setting default value: AllowOptOut: $AllowOptOut"
       }
       if (-not $PSBoundParameters.ContainsKey('ConferenceMode')) {
         $ConferenceMode = $true
-        Write-Verbose -Message "Setting default value: ConferenceMode: $ConferenceMode"
+        Write-Verbose -Message "'$NameNormalised' - Setting default value: ConferenceMode: $ConferenceMode"
       }
       # AgentAlertTime    is set within PARAM block to 20s
-      Write-Verbose -Message "Setting default value: TimeoutThreshold: $AgentAlertTime"
+      Write-Verbose -Message "'$NameNormalised' - Setting default value: TimeoutThreshold: $AgentAlertTime"
       # OverflowThreshold is set within PARAM block to 30s
-      Write-Verbose -Message "Setting default value: OverflowThreshold: $OverflowThreshold"
+      Write-Verbose -Message "'$NameNormalised' - Setting default value: OverflowThreshold: $OverflowThreshold"
       # TimeoutTheshold   is set within PARAM block to 30s
-      Write-Verbose -Message "Setting default value: TimeoutThreshold: $TimeoutThreshold"
+      Write-Verbose -Message "'$NameNormalised' - Setting default value: TimeoutThreshold: $TimeoutThreshold"
     }
     #endregion
 
     #region Overflow Action and Target
     # Overflow Action
-    Write-Verbose -Message "Parsing requirements for OverflowAction: $OverflowAction"
+    Write-Verbose -Message "'$NameNormalised' - Parsing requirements for OverflowAction: $OverflowAction"
     switch ($OverflowAction) {
       "DisconnectWithBusy" {
       # No Action
@@ -2501,7 +2500,7 @@ function New-TeamsCallQueue {
       }
       "Forward" {
       if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
-          Write-Error -Message "Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          Write-Error -Message "'$NameNormalised' - Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
           $OverflowAction = "DisconnectWithBusy"
       }
       else {
@@ -2510,7 +2509,7 @@ function New-TeamsCallQueue {
               $OverflowActionTargetId = (Get-AzureAdUser $OverflowActionTarget -ErrorAction STOP).ObjectId
           }                                   
           catch {
-              Write-Warning -Message "$NameNormalised - Could not enumerate 'OverflowActionTarget'"
+              Write-Warning -Message "'$NameNormalised' - Could not enumerate 'OverflowActionTarget'"
           }
       }
       }
@@ -2518,7 +2517,7 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Timeout Action and Target
-    Write-Verbose -Message "Parsing requirements for TimeoutAction: $TimeoutAction"
+    Write-Verbose -Message "'$NameNormalised' - Parsing requirements for TimeoutAction: $TimeoutAction"
     switch ($TimeoutAction) {
       "Disconnect" {
       # No Action
@@ -2528,7 +2527,7 @@ function New-TeamsCallQueue {
       }
       "Forward" {
       if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
-          Write-Error -Message "Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          Write-Error -Message "'$NameNormalised' - Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
           $OverflowAction = "Disconnect"
       }
       else {
@@ -2537,7 +2536,7 @@ function New-TeamsCallQueue {
               $TimeoutActionTargetId = (Get-AzureAdUser -ObjectId $TimeoutActionTarget -ErrorAction STOP).ObjectId
           }                                   
           catch {
-              Write-Warning -Message "$NameNormalised - Could not enumerate 'TimoutActionTarget'"
+              Write-Warning -Message "'$NameNormalised' - Could not enumerate 'TimoutActionTarget'"
           }
       }
       }
@@ -2545,9 +2544,9 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Users - Parsing and verifying Users
-    $UserIdList = @()
+    [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
-      Write-Verbose -Message "Parsing Users"
+      Write-Verbose -Message "'$NameNormalised' - Parsing Users"
       foreach ($User in $Users) {
         # Determine ID from UPN
         if (Test-AzureAdUser $User) {
@@ -2559,19 +2558,19 @@ function New-TeamsCallQueue {
           $UserIdList.Add($UserObject.ObjectId)
         }
         else {
-          Write-Warning -Message "User $User not found in AzureAd, omitting user!"
+          Write-Warning -Message "'$NameNormalised' - User $User not found in AzureAd, omitting user!"
         }
       }
     }
     #endregion
 
     #region Groups - Parsing Distribution Lists and their Users
-    $DLIdList = @()
+    [System.Collections.ArrayList]$DLIdList = @()
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
-      Write-Verbose -Message "Parsing Distribution Lists"
+      Write-Verbose -Message "'$NameNormalised' - Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
-        Write-Debug -Message "Function Test-AzureAdGroup is experimental!"
+        Write-Verbose -Message "Function Test-AzureAdGroup is experimental!"
         if (Test-AzureAdGroup $DL) {
           $DLObject = Get-AzureAdGroup -ObjectId $DL
           
@@ -2595,15 +2594,14 @@ function New-TeamsCallQueue {
     #region Create CQ (New-CsCallQueue)
     # Create the Call Queue with $Name as $NameNormalised and $UseDefaultMusicOnHold Switch
     try {
+      Write-Verbose -Message "'$NameNormalised' - Creating Call Queue"
       switch ($UseDefaultMusicOnHold) {
         $true   {
-          Write-Verbose -Message "Creating Call Queue with DEFAULT Music On Hold"
           $Null = (New-CsCallQueue -Name "$NameNormalised" -UseDefaultMusicOnHold $true -ErrorAction Stop)
           Write-Verbose -Message "SUCCESS: $NameNormalised - Call Queue created with default Music on Hold"
         }
         $false  {
-          Write-Verbose -Message "Creating Call Queue with CUSTOM Music On Hold"
-          Write-Debug -Message "TEST: `$MOHfile.id should result in the GUID for -MusicOnHoldFileId!"
+          Write-Debug -Message "TEST: `$MOHfile.id should result in the GUID for -MusicOnHoldFileId: $($MOHfile.id)"
           $Null = (New-CsCallQueue -Name "$NameNormalised" -MusicOnHoldFileId $MOHfile.Id -ErrorAction Stop)
           Write-Verbose -Message "SUCCESS: $NameNormalised - Call Queue created with custom Music on Hold: $MOHfileName."
         }
@@ -2669,8 +2667,8 @@ function New-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): Welcome Message
     # Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMessageAudioFile')) {
+      Write-Verbose -Message "Processing Welcome Message $WMfilename"
       try {
-        Write-Verbose -Message "Processing Welcome Message $WMfilename"
         Write-Debug -Message "TEST: `$MOHfile.id should result in the GUID for -WelcomeMusicAudioFileId!"
         $null = (Set-CsCallQueue -Identity $CallQueue.Identity -WelcomeMusicAudioFileId $WMfile.Id -ErrorAction  Stop)
         Write-Verbose -Message "SUCCESS: $NameNormalised - Welcome messsage $WMFilename set"
@@ -2683,30 +2681,28 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-    #region Settings (Set-CsCallQueue): Routing Parameters: RoutingMethod, PresenceBasedRouting, AgentAlertTime
-    # Routing Method
+    #region Settings (Set-CsCallQueue): RoutingMethod
     try {
-      Write-Verbose -Message "Processing Routing Method"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -RoutingMethod $RoutingMethod -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Routing Method set to: $RoutingMethod"
     }
     catch {
       Write-Warning -Message "$NameNormalised - Could not set Routing Method"
     }
+    #endregion
 
-    # Presence Based Routing
+    #region Settings (Set-CsCallQueue): PresenceBasedRouting
     try {
-      Write-Verbose -Message "Processing Presence Based Routing Switch"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -PresenceBasedRouting  $PresenceBasedRouting -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Presence Based Routing set to: $PresenceBasedRouting"
     }
     catch {
       Write-Warning -Message "$NameNormalised - Could not set Presence Based Routing Switch"
     }
+    #endregion
 
-    # Agent Alert Time
+    #region Settings (Set-CsCallQueue): AgentAlertTime
     try {
-      Write-Verbose -Message "Processing Agent Alert Time"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AgentAlertTime $AgentAlertTime -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Agent Alert Time set to: $AgentAlertTime"
     }
@@ -2715,21 +2711,18 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-    #region Settings (Set-CsCallQueue): Default Parameters: AllowOptOut, ConferenceMode
-    # NOTE: Other Default Parameters OverflowThreshold and TimoutThreshold are processed in thier section
-    # Allow Opt-out
+    #region Settings (Set-CsCallQueue): AllowOptOut
     try {
-      Write-Verbose -Message "Processing AllowOptOut Swich"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AllowOptOut $AllowOptOut -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Allow Opt-out set to: $AllowOptOut"
     }
     catch {
       Write-Warning -Message "$NameNormalised - Could not set AllowOptOut Switch"
     }
+    #endregion
 
-    # Conference Mode
+    #region Settings (Set-CsCallQueue): ConferenceMode
     try {
-      Write-Verbose -Message "Processing Conference Mode Switch"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -ConferenceMode $ConferenceMode -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Conference Mode set to: $ConferenceMode"
     }
@@ -2738,19 +2731,17 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-    #region Settings (Set-CsCallQueue): Overflow (Queue Size Limit)
-    # Overflow Threshold
+    #region Settings (Set-CsCallQueue): OverflowThreshold
     try {
-      Write-Verbose -Message "Processing Overflow Threshold"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowThreshold $OverflowThreshold -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Threshold set to: $OverflowThreshold"
     }
     catch {
       Write-Warning -Message "$NameNormalised - Could not set Overflow Threshold"
     }
+    #endregion
 
-    # OverflowAction and OverflowActionTarget
-    Write-Verbose -Message "Processing Overflow Action and Target"
+    #region Settings (Set-CsCallQueue): OverflowAction and OverflowActionTarget
     switch ($OverflowAction) {
       "DisconnectWithBusy" {
         try {
@@ -2798,19 +2789,17 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-    #region Settings (Set-CsCallQueue): Timeout (No answer)
-    # TimeoutThreshold
+    #region Settings (Set-CsCallQueue): TimeoutThreshold
     try {
-      Write-Verbose -Message "Processing Timeout Threshold"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutThreshold $TimeoutThreshold -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Timeout Threshold set to: $TimeoutThreshold"
     }
     catch {
       Write-Warning -Message "$NameNormalised - Could not set Timeout Threshold"
     }
+    #endregion
 
-    # TimeoutAction and TimeoutActionTarget
-    Write-Verbose -Message "Processing Timeout Action and Target"
+    #region Settings (Set-CsCallQueue): TimeoutAction and TimeoutActionTarget
     switch ($OverflowAction) {
       "DisconnectWithBusy" {
         try {
@@ -2858,20 +2847,18 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-    #region Settings (Set-CsCallQueue): Agents (Users and Groups)
-    # Users
+    #region Settings (Set-CsCallQueue): Users
     try {
-      Write-Verbose -Message "Processing Users"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Users $UserIdList -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Users added: $Users"
     }
     catch {
       Write-Warning -Message "$NameNormalised - Could not add Users"
     }
+    #endregion
 
-    # DistributionLists
+    #region Settings (Set-CsCallQueue):  DistributionLists
     try {
-      Write-Verbose -Message "Processing Distribution Lists"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -DistributionLists $DLIdList -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: $NameNormalised - Groups added: $DistributionLists"
     }
@@ -2970,7 +2957,7 @@ function Get-TeamsCallQueue {
     Remove-TeamsCallQueue
   #>
   param(
-    [Parameter(HelpMessage = 'Partial or full Name of the Call Queue to search')]
+    [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = 'Partial or full Name of the Call Queue to search')]
     [AllowNull()]
     [string]$Name
   )
@@ -3007,66 +2994,74 @@ function Get-TeamsCallQueue {
         # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
         $Queues = Get-CsCallQueue -NameFilter "$Name" -ErrorAction STOP
 
-        Write-Verbose -Message "Only a subset of Parameters are displayed, to display all, please run Get-CsCallQueue -Identity $Queues.Identity" -Verbose
+        Write-Verbose -Message "Only a subset of Parameters are displayed, to display all, please run Get-CsCallQueue -NameFilter `"`$Name`"" -Verbose
 
         # Initialising Arrays
         $DEQueueObjects = @()
 
-        $DLobjects    = [System.Collections.ArrayList]::new()
-        $AgentObjects = [System.Collections.ArrayList]::new()
-        $AIObjects    = [System.Collections.ArrayList]::new()
+        [System.Collections.ArrayList]$DLobjects    = @()
+        [System.Collections.ArrayList]$AgentObjects = @()
+        [System.Collections.ArrayList]$AIObjects    = @()
               
         # Reworking Objects  
         foreach ($Q in $Queues) {
             
-          # Finding OverflowActionTarget
+          #region Finding OverflowActionTarget
           if ($null -eq $Q.OverflowActionTarget) {
-            Write-Verbose -Message "$Q.Name does not have an OverflowActionTarget"
+            Write-Verbose -Message "'$($Q.Name)' - OverflowActionTarget: Not configured"
           }
           else {   
             try {
               $OATobject = Get-AzureAdUser -ObjectId $Q.OverflowActionTarget.Id -ErrorAction STOP
             }                                   
             catch {
-              Write-Warning -Message "$Q.Name - Could not enumerate 'OverflowActionTarget'"
+              Write-Warning -Message "'$($Q.Name)' - OverflowActionTarget: Not enumerated"
             }
           }
           # Output: $OATobject.Userprincipalname
+          #endregion
               
-          # Finding TimeoutActionTarget
+          #region Finding TimeoutActionTarget
           if ($null -eq $Q.TimeoutActionTarget) {
-            Write-Verbose -Message "$Q.Name does not have a TimeoutActionTarget"
+            Write-Verbose -Message "'$($Q.Name)' - TimeoutActionTarget: Not configured"
           }
           else {                               
             try {
               $TATobject = Get-AzureAdUser -ObjectId $Q.TimeoutActionTarget.Id -ErrorAction STOP
             }                                   
             catch {
-              Write-Warning -Message "$Q.Name - Could not enumerate 'TimoutActionTarget'"
+              Write-Warning -Message "'$($Q.Name)' - TimoutActionTarget: Not enumerated"
             }
           }
           # Output: $TATobject.Userprincipalname
+          #endregion
               
+          #region Endpoints - DistributionLists and Agents 
+          Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
           foreach ($DL in $Q.DistributionLists) {
             $DLobject = Get-AzureAdGroup -ObjectId $DL | Select-Object DisplayName,Description,SecurityEnabled,MailEnabled,MailNickName,Mail
             [void]$DLobjects.Add($DLobject)
           }
           # Output: $DLobjects.DisplayName
 
+          Write-Verbose -Message "'$($Q.Name)' - Parsing Users"
           foreach ($Agent in $Q.Agents) {
             $AgentObject = Get-AzureAdUser -ObjectId $Agent.ObjectId | Select-Object UserPrincipalName,DisplayName,JobTitle,CompanyName,Country,UsageLocation,PreferredLanguage
             [void]$AgentObjects.Add($AgentObject)
           }
           # Output: $AgentObjects.UserPrincipalName
+          #endregion
 
-          # Finding Application Instance UPNs                                    
+          #region Application Instance UPNs                                    
           foreach ($AI in $Q.ApplicationInstances) {
             $AIobject = Get-CsOnlineApplicationInstance | Where-Object {$_.ObjectId -eq $AI} | Select-Object UserPrincipalName,DisplayName,PhoneNumber
             [void]$AIObjects.Add($AIobject)
           }
-          # Output: $AIObjects.Userprincipalname          
+          # Output: $AIObjects.Userprincipalname
+          #endregion          
 
-              
+          #region Creating Output Object
+          Write-Verbose -Message "--- OUTPUT --------"
           # Building custom Object with Friendly Names  
           $Q = [PSCustomObject][ordered]@{
             Identity                                           = $Q.Identity                                  
@@ -3099,14 +3094,16 @@ function Get-TeamsCallQueue {
           }
               
           [void]$DEQueueObjects.Add($Q)
+          #endregion
         }
             
         # Output
         return $DEQueueObjects
+
       }
     }
     catch {
-      Write-Error -Message 'Parsing error' -Category ParserError
+      Write-Error -Message 'Could not query Call Queues' -Category OperationStopped -Exception $_.Exception.Message
       # get error record
       [Management.Automation.ErrorRecord]$e = $_
 
@@ -3122,6 +3119,8 @@ function Get-TeamsCallQueue {
       $info
       return
     }
+    Write-Verbose -Message "--- DONE ----------"
+
   }
   end {
     
@@ -3223,7 +3222,7 @@ function Set-TeamsCallQueue {
 
   [CmdletBinding()]
   param(
-      [Parameter(Mandatory=$true, HelpMessage = "UserPrincipalName of the Call Queue")]
+      [Parameter(Mandatory=$true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UserPrincipalName of the Call Queue")]
       [string]$Name,
 
       [Parameter(HelpMessage = "Changes the Name to this DisplayName")]
@@ -3419,8 +3418,6 @@ function Set-TeamsCallQueue {
       break
     }
 
-
-
   }
   
   process {
@@ -3429,7 +3426,8 @@ function Set-TeamsCallQueue {
     #region DisplayName
       # Normalising $DisplayName
       if ($PSBoundParameters.ContainsKey('Displayname')) {
-      $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
+        $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
+        Write-Verbose -Message "'$Name' - DisplayName normalised to: $NameNormalised"    
       }
       else {
           $NameNormalised = $Name
@@ -3446,30 +3444,29 @@ function Set-TeamsCallQueue {
         $MOHcontent   = Get-Content $MusicOnHoldAudioFile -Encoding byte -ReadCount 0
         $MOHFileName  = Split-Path $MusicOnHoldAudioFile -Leaf
         $MOHFile      = New-CsOnlineAudioFile -FileName $MOHFileName -Content $MOHcontent
-        Write-Verbose -Message "Music On Hold parsed: $MOHFileName used"
+        Write-Verbose -Message "Music On Hold parsed. Using: $MOHFileName"
     }
     else {
         $UseDefaultMusicOnHold = $true
-        Write-Verbose -Message "No Music On Hold specified: Using UseDefaultMusicOnHold"
+        Write-Verbose -Message "Music On Hold parsed. Using: UseDefaultMusicOnHold"
     }
     #endregion
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMessageAudioFile')) {
-        Write-Verbose -Message "Parsing Welcome Message"
         $WMcontent    = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0
         $WMFileName   = Split-Path $WelcomeMusicAudioFile -Leaf
         $WMFile       = New-CsOnlineAudioFile -FileName $WMFileName -Content $WMcontent
-        Write-Verbose -Message "Welcome Message parsed: $WMFileName used"
+        Write-Verbose -Message "'$NameNormalised' - Welcome Message parsed. Using: $WMFileName"
     }
     else {
-        Write-Verbose -Message "No Welcome Message File provided, omitting"
+        Write-Verbose -Message "'$NameNormalised' - Welcome Message parsed. Using: NONE"
     }
     #endregion
 
     #region Overflow Action and Target
     # Overflow Action
-    Write-Verbose -Message "Parsing requirements for OverflowAction: $OverflowAction"
+    Write-Verbose -Message "'$NameNormalised' - Parsing requirements for OverflowAction: $OverflowAction"
     switch ($OverflowAction) {
         "DisconnectWithBusy" {
         # No Action
@@ -3479,7 +3476,7 @@ function Set-TeamsCallQueue {
         }
         "Forward" {
         if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
-            Write-Error -Message "Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+            Write-Error -Message "'$NameNormalised' - Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
             $OverflowAction = "DisconnectWithBusy"
         }
         else {
@@ -3488,7 +3485,7 @@ function Set-TeamsCallQueue {
                 $OverflowActionTargetId = (Get-AzureAdUser $OverflowActionTarget -ErrorAction STOP).ObjectId
             }                                   
             catch {
-                Write-Warning -Message "$NameNormalised - Could not enumerate 'OverflowActionTarget'"
+                Write-Warning -Message "'$NameNormalised' - Could not enumerate 'OverflowActionTarget'"
             }
         }
     }
@@ -3496,7 +3493,7 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Timeout Action and Target
-    Write-Verbose -Message "Parsing requirements for TimeoutAction: $TimeoutAction"
+    Write-Verbose -Message "'$NameNormalised' - Parsing requirements for TimeoutAction: $TimeoutAction"
     switch ($TimeoutAction) {
         "Disconnect" {
         # No Action
@@ -3506,7 +3503,7 @@ function Set-TeamsCallQueue {
         }
         "Forward" {
         if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
-            Write-Error -Message "Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+            Write-Error -Message "'$NameNormalised' - Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
             $OverflowAction = "Disconnect"
         }
         else {
@@ -3515,7 +3512,7 @@ function Set-TeamsCallQueue {
                 $TimeoutActionTargetId = (Get-AzureAdUser -ObjectId $TimeoutActionTarget -ErrorAction STOP).ObjectId
             }                                   
             catch {
-                Write-Warning -Message "$NameNormalised - Could not enumerate 'TimoutActionTarget'"
+                Write-Warning -Message "'$NameNormalised' - Could not enumerate 'TimoutActionTarget'"
             }
         }
         }
@@ -3523,9 +3520,9 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Users - Parsing and verifying Users
-    $UserIdList = @()
+    [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
-        Write-Verbose -Message "Parsing Users"
+        Write-Verbose -Message "'$NameNormalised' - Parsing Users"
         foreach ($User in $Users) {
           # Determine ID from UPN
           if (Test-AzureAdUser $User) {
@@ -3537,19 +3534,19 @@ function Set-TeamsCallQueue {
             $UserIdList.Add($UserObject.ObjectId)
           }
         else {
-            Write-Warning -Message "User $User not found in AzureAd, omitting user!"
+            Write-Warning -Message "'$NameNormalised' - User $User not found in AzureAd, omitting user!"
         }
         }
     }
     #endregion
 
     #region Groups - Parsing Distribution Lists and their Users
-    $DLIdList = @()
+    [System.Collections.ArrayList]$DLIdList = @()
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
-        Write-Verbose -Message "Parsing Distribution Lists"
+        Write-Verbose -Message "'$NameNormalised' - Parsing Distribution Lists"
         foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
-        Write-Debug -Message "Function Test-AzureAdGroup is experimental!"
+        Write-Verbose -Message "Function Test-AzureAdGroup is experimental!"
         if (Test-AzureAdGroup $DL) {
             $DLObject = Get-AzureAdGroup -ObjectId $DL
             
@@ -3575,12 +3572,12 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): DisplayName
     if ($PSBoundParameters.ContainsKey('Displayname')) {
         try {
-            Write-Verbose -Message "Changing DisplayName"
+            Write-Verbose -Message "'$NameNormalised' - Changing DisplayName"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Name $NameNormalised -ErrorAction STOP)
             Write-Verbose -Message "SUCCESS: $Name - Call Queue DisplayName changed to: $NameNormalised"
         }
         catch {
-            Write-Error -Message "Error changing DisplayName, using $Name instead" -Category WriteError -Exception "Erorr changing DisplayNae"
+            Write-Error -Message "'$NameNormalised' - Error changing DisplayName, using $Name instead" -Category WriteError -Exception "Erorr changing DisplayNae"
             $NameNormalised = $Name # Required for re-query
         }
     }
@@ -3624,15 +3621,14 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): Music On Hold
     # No check for Key as it is interdependent with $UseDefaultMusicOnHold
     try {
-        switch ($UseDefaultMusicOnHold) {
+      Write-Verbose -Message "Processing change Music On Hold"
+      switch ($UseDefaultMusicOnHold) {
         $true   {
-            Write-Verbose -Message "Processing change to DEFAULT Music On Hold"
             $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -UseDefaultMusicOnHold $true -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Music On Hold changed to: DEFAULT"
         }
         $false  {
-            Write-Verbose -Message "Processing change to CUSTOM Music On Hold"
-            Write-Debug -Message "TEST: `$MOHfile.id should result in the GUID for -MusicOnHoldFileId!"
+            Write-Debug -Message "TEST: `$MOHfile.id should result in the GUID for -MusicOnHoldFileId: $($MOHfile.id)"
             $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -MusicOnHoldFileId $MOHfile.Id -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Music On Hold changed to: $MOHfileName."
         }
@@ -3645,9 +3641,9 @@ function Set-TeamsCallQueue {
 
     #region Settings (Set-CsCallQueue): Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMessageAudioFile')) {
-        try {
-            Write-Verbose -Message "Processing Welcome Message $WMfilename"
-            Write-Debug -Message "TEST: `$MOHfile.id should result in the GUID for -WelcomeMusicAudioFileId!"
+      Write-Verbose -Message "Processing Welcome Message $WMfilename"
+      try {
+            Write-Debug -Message "TEST: `$WMfile.id should result in the GUID for -WelcomeMusicAudioFileId: $($WMfile.id)"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -WelcomeMusicAudioFileId $WMfile.Id -ErrorAction  Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Welcome messsage $WMFilename set"
         }
@@ -3660,7 +3656,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): RoutingMethod
     if ($PSBoundParameters.ContainsKey('RoutingMethod')) {
         try {
-            Write-Verbose -Message "Processing Routing Method"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -RoutingMethod $RoutingMethod -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Routing Method set to: $RoutingMethod"
         }
@@ -3673,7 +3668,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): PresenceBasedRouting
     if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
         try {
-            Write-Verbose -Message "Processing Presence Based Routing Switch"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -PresenceBasedRouting  $PresenceBasedRouting -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Presence Based Routing set to: $PresenceBasedRouting"
         }
@@ -3686,7 +3680,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): AgentAlertTime
     if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
         try {
-            Write-Verbose -Message "Processing Agent Alert Time"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AgentAlertTime $AgentAlertTime -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Agent Alert Time set to: $AgentAlertTime"
         }
@@ -3696,10 +3689,10 @@ function Set-TeamsCallQueue {
     }
     #endregion
 
+
     #region Settings (Set-CsCallQueue): AllowOptOut
     if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
         try {
-            Write-Verbose -Message "Processing AllowOptOut Swich"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AllowOptOut $AllowOptOut -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Allow Opt-out set to: $AllowOptOut"
         }
@@ -3712,7 +3705,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): ConferenceMode
     if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
         try {
-            Write-Verbose -Message "Processing Conference Mode Switch"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -ConferenceMode $ConferenceMode -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Conference Mode set to: $ConferenceMode"
         }
@@ -3725,7 +3717,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): OverflowThreshold
     if ($PSBoundParameters.ContainsKey('OverflowThreshold')) {
         try {
-            Write-Verbose -Message "Processing Overflow Threshold"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowThreshold $OverflowThreshold -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Threshold set to: $OverflowThreshold"
         }
@@ -3737,71 +3728,68 @@ function Set-TeamsCallQueue {
     
     #region Settings (Set-CsCallQueue): OverflowAction and OverflowActionTarget
     if ($PSBoundParameters.ContainsKey('OverflowAction')) {
-        Write-Verbose -Message "Processing Overflow Action and Target"
-        switch ($OverflowAction) {
-            "DisconnectWithBusy" {
-            try {
-                # No Action
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Action set to: $OverflowAction"
-            }
-            catch {
-                Write-Warning -Message "$NameNormalised - Could not set Overflow Action"
-            }
-            }
-            "VoiceMail" {
-            try {
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Action set to: $OverflowAction"
-            }
-            catch {
-                Write-Warning -Message "$NameNormalised - Could not set Overflow Action"
-            }
-            }
-            "Forward" {
-            try {
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -OverflowActionTarget $OverflowActionTargetId -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Action set to: $OverflowAction"
-                Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Target set to: $OverflowActionTarget"
-            }
-            catch {
-                Write-Warning -Message "$NameNormalised - Could not set Overflow Action and Target"
-                # get error record
-                [Management.Automation.ErrorRecord]$e = $_
-        
-                # retrieve Info about runtime error
-                $info = [PSCustomObject]@{
-                Exception = $e.Exception.Message
-                Reason    = $e.CategoryInfo.Reason
-                Target    = $e.CategoryInfo.TargetName
-                Script    = $e.InvocationInfo.ScriptName
-                Line      = $e.InvocationInfo.ScriptLineNumber
-                Column    = $e.InvocationInfo.OffsetInLine
-                }
-                # output Info. Post-process collected info, and log info (optional)
-                $info
-                }
-            }
+      switch ($OverflowAction) {
+        "DisconnectWithBusy" {
+        try {
+          # No Action
+          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -ErrorAction Stop)
+          Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Action set to: $OverflowAction"
         }
+        catch {
+          Write-Warning -Message "$NameNormalised - Could not set Overflow Action"
+        }
+        }
+        "VoiceMail" {
+        try {
+          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -ErrorAction Stop)
+          Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Action set to: $OverflowAction"
+        }
+        catch {
+          Write-Warning -Message "$NameNormalised - Could not set Overflow Action"
+        }
+        }
+        "Forward" {
+        try {
+          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -OverflowActionTarget $OverflowActionTargetId -ErrorAction Stop)
+          Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Action set to: $OverflowAction"
+          Write-Verbose -Message "SUCCESS: $NameNormalised - Overflow Target set to: $OverflowActionTarget"
+        }
+        catch {
+          Write-Warning -Message "$NameNormalised - Could not set Overflow Action and Target"
+          # get error record
+          [Management.Automation.ErrorRecord]$e = $_
+  
+          # retrieve Info about runtime error
+          $info = [PSCustomObject]@{
+          Exception = $e.Exception.Message
+          Reason    = $e.CategoryInfo.Reason
+          Target    = $e.CategoryInfo.TargetName
+          Script    = $e.InvocationInfo.ScriptName
+          Line      = $e.InvocationInfo.ScriptLineNumber
+          Column    = $e.InvocationInfo.OffsetInLine
+          }
+          # output Info. Post-process collected info, and log info (optional)
+          $info
+          }
+        }
+      }
     }
     #endregion
 
     #region Settings (Set-CsCallQueue): TimeoutThreshold
     if ($PSBoundParameters.ContainsKey('TimeoutThreshold')) {
-        try {
-            Write-Verbose -Message "Processing Timeout Threshold"
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutThreshold $TimeoutThreshold -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: $NameNormalised - Timeout Threshold set to: $TimeoutThreshold"
-        }
-        catch {
-            Write-Warning -Message "$NameNormalised - Could not set Timeout Threshold"
-        }
+      try {
+        $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutThreshold $TimeoutThreshold -ErrorAction Stop)
+        Write-Verbose -Message "SUCCESS: $NameNormalised - Timeout Threshold set to: $TimeoutThreshold"
+      }
+      catch {
+        Write-Warning -Message "$NameNormalised - Could not set Timeout Threshold"
+      }
     }
     #endregion
 
     #region Settings (Set-CsCallQueue): TimeoutAction and TimeoutActionTarget
     if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
-        Write-Verbose -Message "Processing Timeout Action and Target"
         switch ($OverflowAction) {
             "DisconnectWithBusy" {
             try {
@@ -3853,7 +3841,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): Users
     if ($PSBoundParameters.ContainsKey('Users')) {
         try {
-            Write-Verbose -Message "Processing Users"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Users $UserIdList -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Users added: $Users"
         }
@@ -3866,7 +3853,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue):  DistributionLists
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
         try {
-            Write-Verbose -Message "Processing Distribution Lists"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -DistributionLists $DLIdList -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: $NameNormalised - Groups added: $DistributionLists"
         }
@@ -3955,34 +3941,59 @@ function Remove-TeamsCallQueue {
 
   #>
   param(
-      [Parameter(Mandatory = $true, HelpMessage = "Name of the Call Queue")]
+      [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
       [string]$Name
   )
 
-  # Caveat - Script in Testing
-  $VerbosePreference = "Continue"
-  $DebugPreference = "Continue"
-  Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+  begin {
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+    
+    # Testing AzureAD Connection
+    if (-not (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
 
-  try {
-      Get-CsCallQueue -NameFilter "$Name" | Remove-TeamsCallQueue -Confirm:$true -ErrorAction STOP
-  }
-  catch {
-      Write-Error -Message "Parsing error" -Category ParserError
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
+    # Testing SkypeOnline Connection
+    if (-not (Test-SkypeOnlineConnection)) {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
 
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
+  } # end of begin
+
+  process {
+    try {
+        Get-CsCallQueue -NameFilter "$Name" | Remove-TeamsCallQueue -Confirm:$true -ErrorAction STOP
+
       }
-      $info
-      return
+    catch {
+      Write-Error -Message 'Removal failed' -Category OperationStopped -Exception $_.Exception.Message
+        # get error record
+        [Management.Automation.ErrorRecord]$e = $_
+
+        # retrieve Info about runtime error
+        $info = [PSCustomObject]@{
+            Exception = $e.Exception.Message
+            Reason    = $e.CategoryInfo.Reason
+            Target    = $e.CategoryInfo.TargetName
+            Script    = $e.InvocationInfo.ScriptName
+            Line      = $e.InvocationInfo.ScriptLineNumber
+            Column    = $e.InvocationInfo.OffsetInLine
+        }
+        $info
+        return
+    }
+    Write-Verbose -Message "--- DONE ----------"
+
+  }
+  end {
+
   }
 }
 #endregion
