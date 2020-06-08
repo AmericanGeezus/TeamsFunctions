@@ -462,8 +462,12 @@ function Connect-SkypeOnline {
         Write-Host "SkypeOnlineConnector Module is v$ModuleVersion"
         if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
         {
-          Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue
-          Write-Verbose -Message "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+          try {
+            Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
+            Write-Verbose -Message "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+          }
+          catch {
+          }          
         }
         else 
         {
