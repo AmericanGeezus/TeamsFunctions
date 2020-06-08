@@ -33,12 +33,18 @@ If you have something that could cover the above and want to submit it to be int
 
 - `Connect-AzureAd`:                Not part of this Module, but a dependency: [`Install-Module AzureAd`](https://www.powershellgallery.com/packages/AzureAd)
 - `Connect-MicrosoftTeams`:         Not part of this Module, not a dependency. Purely listed for distinction: [`Install-Module MicrosoftTeams`](https://www.powershellgallery.com/packages/MicrosoftTeams)
-- `Connect-SkypeOnline`:            Creates a Session to SkypeOnline/Teams (v7 also extends TimeOut Limit!)
-- `Disconnect-SkypeOnline`:         Disconnects from a Session to SkypeOnline/Teams
-- `Test-SkypeOnlineConnection`:    Verifying a Session to SkypeOnline exists
+- `Connect-SkypeOnline`:            Creates a Session to SkypeOnline (v7 also extends TimeOut Limit!)
+- `Connect-SkypeTeamsAndAAD`*:      Creates a Session to SkypeOnline, MicrosoftTeams and AzureAD in one go (one authentication only!)
+- `Disconnect-SkypeOnline`:         Disconnects from a Session to SkypeOnline
+- `Disconnect-SkypeTeamsAndAAD`:    Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD
 - `Test-AzureAdConnection`:         Verifying a Session to AzureAD exists
-- `Test-SkypeOnlineModule`:         Verifying the Module is loaded, deprecated due to performance (needed, but not really)
+- `Test-MicrosoftTeamsConnection`:  Verifying a Session to MicrosoftTeams exists
+- `Test-SkypeOnlineConnection`:     Verifying a Session to SkypeOnline exists
 - `Test-AzureAdModule`:             Verifying the Module is loaded, deprecated due to performance (not needed)
+- `Test-MicrosoftTeamsModule`:      Verifying the module is loaded.
+- `Test-SkypeOnlineModule`:         Verifying the Module is loaded, deprecated due to performance (needed, but not really)
+
+*) Aliases are available: Connect-Me and CON (because I don't want to type as much :))
 
 ### Adding value to AzureAD
 
