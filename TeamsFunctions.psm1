@@ -443,29 +443,34 @@ function Connect-SkypeOnline {
               $SkypeOnlineSession = New-CsOnlineSession -ErrorAction STOP
             }
           }
-
           Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
 
-          #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
-          $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
-          Write-Host "SkypeOnlineConnector Module is v$ModuleVersion"
-          if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
-          {
-            Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue
-            Write-Verbose -Message "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
-
-          }
-          else 
-          {
-            Write-Host "Your Session will time out after 60 min. - To prevent this, Update this module to v7 or higher, then run Enable-CsOnlineSessionForReconnection"
-            Write-Host "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366"
-          }
-          #endregion
         }
         catch
         {
           Write-Error -Message "Connection not established" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
         }
+
+        # Waiting for a valid Connection
+        do {
+          Start-Sleep 1
+        }
+        until (Test-SkypeOnlineConnection)
+
+        #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
+        $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+        Write-Host "SkypeOnlineConnector Module is v$ModuleVersion"
+        if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
+        {
+          Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue
+          Write-Verbose -Message "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+        }
+        else 
+        {
+          Write-Host "Your Session will time out after 60 min. - To prevent this, Update this module to v7 or higher, then run Enable-CsOnlineSessionForReconnection"
+          Write-Host "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366"
+        }
+        #endregion
       } # End of if statement for module version checking
     }
     else
