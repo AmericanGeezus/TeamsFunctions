@@ -2546,7 +2546,7 @@ function New-TeamsCallQueue {
       else {
           # Processing OverflowActionTarget
           try {
-              $OverflowActionTargetId = (Get-AzureAdUser $OverflowActionTarget -ErrorAction STOP).ObjectId
+              $OverflowActionTargetId = (Get-AzureAdUserFromUPN $OverflowActionTarget -ErrorAction STOP).ObjectId
           }                                   
           catch {
               Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
@@ -2573,7 +2573,7 @@ function New-TeamsCallQueue {
       else {
           # Processing TimeoutActionTarget
           try {
-              $TimeoutActionTargetId = (Get-AzureAdUser -ObjectId $TimeoutActionTarget -ErrorAction STOP).ObjectId
+              $TimeoutActionTargetId = (Get-AzureAdUserFromUPN $TimeoutActionTarget -ErrorAction STOP).ObjectId
           }                                   
           catch {
               Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimoutActionTarget'"
@@ -2918,7 +2918,6 @@ function New-TeamsCallQueue {
 
     #region Settings (Set-CsCallQueue): Users
     try {
-      Write-Debug -Verbose "`$UserIdList: Currently contains: $UserIdList"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Users @($UserIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: '$NameNormalised' Users added: $Users"
     }
@@ -2929,7 +2928,6 @@ function New-TeamsCallQueue {
 
     #region Settings (Set-CsCallQueue):  DistributionLists
     try {
-      Write-Debug -Verbose "`$DLIdList: Currently contains: $DLIdList"
       $null = (Set-CsCallQueue -Identity $CallQueue.Identity -DistributionLists @($DLIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
       Write-Verbose -Message "SUCCESS: '$NameNormalised' Groups added: $DistributionLists"
     }
@@ -3545,8 +3543,8 @@ function Set-TeamsCallQueue {
 
     #region Music On Hold
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile') -and $PSBoundParameters.ContainsKey('UseDefaultMusicOnHold')) {
-        Write-Warning -Message "'$NameNormalised' MusicOnHoldAudioFile and UseDefaultMusicOnHold are mutually exclusive. UseDefaultMusicOnHold is ignored!"
-        $UseDefaultMusicOnHold = $false
+      Write-Warning -Message "'$NameNormalised' MusicOnHoldAudioFile and UseDefaultMusicOnHold are mutually exclusive. UseDefaultMusicOnHold is ignored!"
+      $UseDefaultMusicOnHold = $false
     }
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
       $MOHFileName  = Split-Path $MusicOnHoldAudioFile -Leaf
@@ -3559,20 +3557,13 @@ function Set-TeamsCallQueue {
         else {
           $MOHcontent = Get-Content $MusicOnHoldAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
         }
-      }
-      catch {
-        Write-Error -Message "Import of MusicOnHoldAudioFile: '$MOHFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-        Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   UseDefaultMusicOnHold"
-        $UseDefaultMusicOnHold = $true
-      }        
-      if (-not $UseDefaultMusicOnHold) {
         $MOHFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $MOHFileName -Content $MOHcontent -ErrorAction STOP
         Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   '$($MOHFile.FileName)'"
       }
-    }
-    else {
-        $UseDefaultMusicOnHold = $true
-        Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   UseDefaultMusicOnHold"
+      catch {
+        Write-Error -Message "Import of MusicOnHoldAudioFile: '$MOHFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+        break
+      }        
     }
     #endregion
 
@@ -3621,7 +3612,7 @@ function Set-TeamsCallQueue {
         else {
             # Processing OverflowActionTarget
             try {
-                $OverflowActionTargetId = (Get-AzureAdUser $OverflowActionTarget -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureAdUserFromUPN $OverflowActionTarget -ErrorAction STOP).ObjectId
             }                                   
             catch {
                 Write-Warning -Message "'$NameNormalised' Could not enumerate 'OverflowActionTarget'"
@@ -3648,13 +3639,13 @@ function Set-TeamsCallQueue {
         else {
             # Processing TimeoutActionTarget
             try {
-                $TimeoutActionTargetId = (Get-AzureAdUser -ObjectId $TimeoutActionTarget -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureAdUserFromUPN $TimeoutActionTarget -ErrorAction STOP).ObjectId
             }                                   
             catch {
                 Write-Warning -Message "'$NameNormalised' Could not enumerate 'TimoutActionTarget'"
             }
         }
-        }
+      }
     }
     #endregion
 
@@ -3774,22 +3765,23 @@ function Set-TeamsCallQueue {
     #endregion   
     
     #region Settings (Set-CsCallQueue): Music On Hold
-    # No check for Key as it is interdependent with $UseDefaultMusicOnHold
-    try {
-      Write-Verbose -Message "Processing change Music On Hold"
-      switch ($UseDefaultMusicOnHold) {
-        $true   {
-            $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -UseDefaultMusicOnHold $true -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Music On Hold changed to: DEFAULT"
-        }
-        $false  {
-            $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -MusicOnHoldAudioFileId $($MOHfile.Id) -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Music On Hold changed to: '$($MOHfile.FileName)'"
+    if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
+      try {
+        Write-Verbose -Message "Processing change Music On Hold"
+        switch ($UseDefaultMusicOnHold) {
+          $true   {
+              $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -UseDefaultMusicOnHold $true -WarningAction SilentlyContinue -ErrorAction Stop)
+              Write-Verbose -Message "SUCCESS: '$NameNormalised' Music On Hold changed to: DEFAULT"
+          }
+          $false  {
+              $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -MusicOnHoldAudioFileId $($MOHfile.Id) -WarningAction SilentlyContinue -ErrorAction Stop)
+              Write-Verbose -Message "SUCCESS: '$NameNormalised' Music On Hold changed to: '$($MOHfile.FileName)'"
+          }
         }
       }
-    }
-    catch {
-        Write-Error -Message "Error changing Music On Hold" -Category WriteError -Exception "Erorr changing Music On Hold"
+      catch {
+          Write-Error -Message "Error changing Music On Hold" -Category WriteError -Exception "Erorr changing Music On Hold"
+      }
     }
     #endregion
 
@@ -3838,7 +3830,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): AgentAlertTime
     if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
         try {
-          Write-Debug -Message "Set-CsCallQueue -Identity $($CallQueue.Identity) -AllowOptOut $AllowOptOut"
           $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AgentAlertTime $AgentAlertTime -WarningAction SilentlyContinue -ErrorAction Stop)
           Write-Verbose -Message "SUCCESS: '$NameNormalised' Agent Alert Time set to: $AgentAlertTime"
         }
@@ -4010,7 +4001,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue): Users
     if ($PSBoundParameters.ContainsKey('Users')) {
         try {
-          Write-Debug -Verbose "`$UserIdList: Currently contains: $UserIdList"
           $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Users @($UserIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
             Write-Verbose -Message "SUCCESS: '$NameNormalised' Users added: $Users"
         }
@@ -4023,7 +4013,6 @@ function Set-TeamsCallQueue {
     #region Settings (Set-CsCallQueue):  DistributionLists
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
         try {
-          Write-Debug -Verbose "`$DLIdList: Currently contains: $DLIdList"
           $null = (Set-CsCallQueue -Identity $CallQueue.Identity -DistributionLists @($DLIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
           Write-Verbose -Message "SUCCESS: '$NameNormalised' Groups added: $DistributionLists"
         }
