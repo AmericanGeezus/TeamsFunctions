@@ -366,6 +366,9 @@ function Connect-SkypeOnline {
     Optional String. The username or sign-in address to use when making the remote PowerShell session connection.
     .PARAMETER OverrideAdminDomain
     Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
+    .PARAMETER IdleTimeout
+    Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
+    Note, by default, creating a session with New-CsSkypeOnlineSession results in a timout of 15mins!
     .EXAMPLE
     $null = Connect-SkypeOnline
     Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
@@ -389,14 +392,41 @@ function Connect-SkypeOnline {
     
     [Parameter(Mandatory = $false)]
     [ValidateScript({$null -eq $_ -or $_ -match '.onmicrosoft.com'})]
-    [string]$OverrideAdminDomain
+    [string]$OverrideAdminDomain,
+
+    [Parameter(Helpmessage = "Idle Timout of the session in hours between 1 and 8; Default is 4")]
+    [ValidateRange(1,8)]
+    [int]$IdleTimeout = 4
   )
 
-  if ((Test-SkypeOnlineModule) -eq $true)
+  # Generating Session Options (Timeout) based on input
+  $IdleTimeoutInMS = $IdleTimeout * 3600000
+  if ($PSboundparameters.ContainsKey('IdleTimeout')) {
+    $SessionOption = New-PsSessionOption -IdleTimeout $IdleTimeoutInMS
+  }
+  else {
+    $SessionOption = New-PsSessionOption -IdleTimeout 28800000
+  }
+  Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
+
+  # Determining OverrideAdminDomain based on existing connection to AzureAD
+  if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+    $Domain = $OverrideAdminDomain
+    Write-Verbose -Message "OverrideAdminDomain provided: $OverrideAdminDomain"
+  }
+  if (Test-AzureADConnection) {
+    Write-Verbose -Message "Connection to AzureAD already established, overriding the OverrideAdminDomain"
+    $Domain = (Get-AzureADCurrentSessionInfo).TenantDomain
+    Write-Verbose -Message "Reading TenantDomain from Get-AzureAdCurrentSessionINfo: Using: $Domain"
+  }
+
+  # Testing exisiting Module and Connection
+  if (Test-SkypeOnlineModule)
   {
     if ((Test-SkypeOnlineConnection) -eq $false)
     {
       $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+      Write-Verbose -Message "Module SkypeOnlineConnctor installed in Version: $moduleVersion"
       if ($moduleVersion.Major -le "6") # Version 6 and lower do not support MFA authentication for Skype Module PowerShell; also allows use of older PSCredential objects
       {
         try
@@ -425,30 +455,25 @@ function Connect-SkypeOnline {
       {
         try
         {
-          if ($PSBoundParameters.ContainsKey("UserName"))
-          {
-            if ($PSBoundParameters.ContainsKey("OverrideAdminDomain")) {
-              $SkypeOnlineSession = New-CsOnlineSession -UserName $UserName -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP
-            }
-            else {
-              $SkypeOnlineSession = New-CsOnlineSession -UserName $UserName -ErrorAction STOP
-            }            
+          # Constructing Parameters to be passed to New-CsOnlineSession
+          Write-Verbose -Message "Constructing parameter list to be passed on to New-CsOnlineSession"
+          $Parameters = $null
+          if ($PSBoundParameters.ContainsKey("UserName")) {
+            $Parameters +=@{'UserName' = $UserName}
           }
-          else
-          {
-            if ($PSBoundParameters.ContainsKey("OverrideAdminDomain")) {
-              $SkypeOnlineSession = New-CsOnlineSession -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP
-            }
-            else {
-              $SkypeOnlineSession = New-CsOnlineSession -ErrorAction STOP
-            }
+          if ($null -ne $Domain) {
+            $Parameters +=@{'OverrideAdminDomain' = $Domain}
           }
-          Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
+          $Parameters += @{'SessionOption' = $SessionOption}
+          $Parameters += @{'ErrorAction' = 'STOP'}
 
+          # Creating Session
+          Write-Verbose -Message "Creating Session with the following parameters: $($Parameters.Keys)"
+          $SkypeOnlineSession = New-CsOnlineSession @Parameters
         }
         catch
         {
-          Write-Error -Message "Connection not established" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
+          Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
           # get error record
           [Management.Automation.ErrorRecord]$e = $_
 
@@ -465,11 +490,59 @@ function Connect-SkypeOnline {
           $info
         }
 
-        # Waiting for a valid Connection
-        do {
-          Start-Sleep 1
+        # Separated session creation from Import for better troubleshooting
+        try {
+          Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global       
         }
-        until (Test-SkypeOnlineConnection)
+        catch {
+          Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
+          # get error record
+          [Management.Automation.ErrorRecord]$e = $_
+
+          # retrieve Info about runtime error
+          $info = $null
+          $info = [PSCustomObject]@{
+          Exception = $e.Exception.Message
+          Reason    = $e.CategoryInfo.Reason
+          Target    = $e.CategoryInfo.TargetName
+          Script    = $e.InvocationInfo.ScriptName
+          Line      = $e.InvocationInfo.ScriptLineNumber
+          Column    = $e.InvocationInfo.OffsetInLine
+          }
+          # output Info. Post-process collected info, and log info (optional)
+          $info
+
+          # Trying to compensate
+          Write-Verose -Message "Trying to salvage a Session that may have been created but failed to import" -Verbose
+          $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"}
+          if ($PSSkypeOnlineSession.Count -lt 1) {
+            Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
+          }
+          else {
+            try {
+              Import-Module (Import-PSSession -Session $PSSkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
+            }
+            catch {
+              Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
+              # get error record
+              [Management.Automation.ErrorRecord]$e = $_
+
+              # retrieve Info about runtime error
+              $info = $null
+              $info = [PSCustomObject]@{
+              Exception = $e.Exception.Message
+              Reason    = $e.CategoryInfo.Reason
+              Target    = $e.CategoryInfo.TargetName
+              Script    = $e.InvocationInfo.ScriptName
+              Line      = $e.InvocationInfo.ScriptLineNumber
+              Column    = $e.InvocationInfo.OffsetInLine
+              }
+              # output Info. Post-process collected info, and log info (optional)
+              $info
+              return
+            }      
+          }
+        }
 
         #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
         $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
@@ -485,7 +558,7 @@ function Connect-SkypeOnline {
         }
         else 
         {
-          Write-Host "Your Session will time out after 60 min. - To prevent this, Update this module to v7 or higher, then run Enable-CsOnlineSessionForReconnection"
+          Write-Host "Your Session will time out after $IdleTimeout hours. - To prevent this, Update this module to v7 or higher"
           Write-Host "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366"
         }
         #endregion
@@ -599,16 +672,29 @@ function Connect-SkypeTeamsAndAAD {
       }       
     }
     catch {
-      Write-Error   -Message "Could not establish Connection to SkypeOnline" `
-      -RecommendedAction "Run Connect-SkypeOnline manually" `
-      -Category NotEnabled `
-      -Exception $_.Exception.Message
+      Write-Error   -Message "Could not establish Connection to SkypeOnline" -RecommendedAction "Run Connect-SkypeOnline manually" -Category NotEnabled
+      # get error record
+      [Management.Automation.ErrorRecord]$e = $_
+
+      # retrieve Info about runtime error
+      $info = $null
+      $info = [PSCustomObject]@{
+      Exception = $e.Exception.Message
+      Reason    = $e.CategoryInfo.Reason
+      Target    = $e.CategoryInfo.TargetName
+      Script    = $e.InvocationInfo.ScriptName
+      Line      = $e.InvocationInfo.ScriptLineNumber
+      Column    = $e.InvocationInfo.OffsetInLine
+      }
+      # output Info. Post-process collected info, and log info (optional)
+      $info
     }
 
     if ((Test-SkypeOnlineConnection) -and -not $Silent) {
       $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"} -WarningAction STOP -ErrorAction STOP
       $TenantInformation = Get-CsTenant -WarningAction STOP -ErrorAction STOP
       $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
+      $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
 
       $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
         Account                   = $UserName
@@ -617,7 +703,7 @@ function Connect-SkypeTeamsAndAAD {
         TenantId                  = $TenantInformation.TenantId
         TenantDomain              = $TenantDomain
         ComputerName              = $PSSkypeOnlineSession.ComputerName
-        SkypeOnlineIdleTimeout    = $PSSkypeOnlineSession.IdleTimeout
+        IdleTimeoutInHours        = $Timeout
         TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
         }
 
@@ -636,10 +722,22 @@ function Connect-SkypeTeamsAndAAD {
       }
     }
     catch {
-      Write-Error   -Message "Could not establish Connection to AzureAD" `
-      -RecommendedAction "Run Connect-AzureAD manually" `
-      -Category NotEnabled `
-      -Exception $_.Exception.Message
+      Write-Error   -Message "Could not establish Connection to AzureAD" -RecommendedAction "Run Connect-AzureAD manually"  -Category NotEnabled
+      # get error record
+      [Management.Automation.ErrorRecord]$e = $_
+
+      # retrieve Info about runtime error
+      $info = $null
+      $info = [PSCustomObject]@{
+      Exception = $e.Exception.Message
+      Reason    = $e.CategoryInfo.Reason
+      Target    = $e.CategoryInfo.TargetName
+      Script    = $e.InvocationInfo.ScriptName
+      Line      = $e.InvocationInfo.ScriptLineNumber
+      Column    = $e.InvocationInfo.OffsetInLine
+      }
+      # output Info. Post-process collected info, and log info (optional)
+      $info
     }
   }
   #endregion
@@ -647,6 +745,9 @@ function Connect-SkypeTeamsAndAAD {
   #region MicrosoftTeams
   if ($ConnectALL -or $ConnectToTeams) {
     try {
+      if ( !(Test-MicrosoftTeamsModule)) {
+        Import-Module MicrosoftTeams -ErrorAction SilentlyContinue
+      }
       Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
       if ((Test-MicrosoftTeamsConnection) -and -not $Silent) {
           Connect-MicrosoftTeams -AccountID $Username
@@ -656,10 +757,22 @@ function Connect-SkypeTeamsAndAAD {
       }
     }
     catch {
-      Write-Error   -Message "Could not establish Connection to MicrosoftTeams" `
-      -RecommendedAction "Run Connect-MicrosoftTeams manually" `
-      -Category NotEnabled `
-      -Exception $_.Exception.Message
+      Write-Error   -Message "Could not establish Connection to MicrosoftTeams" -RecommendedAction "Run Connect-MicrosoftTeams manually" -Category NotEnabled
+      # get error record
+      [Management.Automation.ErrorRecord]$e = $_
+
+      # retrieve Info about runtime error
+      $info = $null
+      $info = [PSCustomObject]@{
+      Exception = $e.Exception.Message
+      Reason    = $e.CategoryInfo.Reason
+      Target    = $e.CategoryInfo.TargetName
+      Script    = $e.InvocationInfo.ScriptName
+      Line      = $e.InvocationInfo.ScriptLineNumber
+      Column    = $e.InvocationInfo.OffsetInLine
+      }
+      # output Info. Post-process collected info, and log info (optional)
+      $info
     }
   }
   #endregion
@@ -1503,19 +1616,9 @@ function Test-AzureADModule {
       Will Return $TRUE if the Module is loaded
 
   #>
-  [CmdletBinding()]
-  param()
-
-  Write-Verbose -Message "Verifying if AzureAD module is installed and available"
-
-  if ((Get-Module "AzureAD" -ListAvailable).count -lt 1)
-  {
-    Write-Warning -Message "Azure Active Directory PowerShell module is not installed. Please install and try again."
-    return $false
-  }
-  else {
-    return $true
-  }
+  Write-Verbose -Message "Verifying if AzureAd module is installed and available"
+  Import-Module -Name AzureAd -ErrorAction SilentlyContinue
+  return !(Get-Module -Name AzureAd)
 } # End of Test-AzureADModule
 
 function Test-AzureADConnection {
@@ -1550,18 +1653,10 @@ function Test-SkypeOnlineModule {
       Test-SkypeOnlineModule
       Will Return $TRUE if the Module is loaded
 
-  #>
-  [CmdletBinding()]
-  param()
-      
-  if ((Get-Module "SkypeOnlineConnector" -ListAvailable).count -lt 1)
-  {        
-    return $false
-  }
-  else
-  {
-    return $true
-  }
+  #>    
+  Write-Verbose -Message "Verifying if SkypeOnlineConnctor module is installed and available"
+  Import-Module -Name SkypeOnlineConnector -ErrorAction SilentlyContinue
+  return !(Get-Module -Name SkypeOnlineConnector)
 } # End of Test-SkypeOnlineModule
 
 function Test-SkypeOnlineConnection {
@@ -1607,23 +1702,14 @@ function Test-MicrosoftTeamsModule {
       .SYNOPSIS
       Tests whether the MicrosoftTeams Module is loaded
       .EXAMPLE
-      Test-AzureADModule
+      Test-MicrosoftTeamsModule
       Will Return $TRUE if the Module is loaded
 
   #>
-  [CmdletBinding()]
-  param()
 
   Write-Verbose -Message "Verifying if MicrosoftTeams module is installed and available"
-
-  if ((Get-Module "MicrosoftTeams" -ListAvailable).count -lt 1)
-  {
-    Write-Warning -Message "MicrosoftTeams PowerShell module is not installed. Please install and try again."
-    return $false
-  }
-  else {
-    return $true
-  }
+  Import-Module -Name MicrosoftTeams -ErrorAction SilentlyContinue
+  return !(Get-Module -Name MicrosoftTeams)
 } # End of Test-MicrosoftTeamsModule
 
 function Test-MicrosoftTeamsConnection {
