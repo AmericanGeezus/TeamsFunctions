@@ -64,6 +64,8 @@
                 Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
                 Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
                 Run "con $Username" to connect to all 3 with one authentication prompt
+    20.06.12.0  Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
+                Replaced by Test-Module $ModuleNames
 
   #>
 
@@ -421,7 +423,7 @@ function Connect-SkypeOnline {
   }
 
   # Testing exisiting Module and Connection
-  if (Test-SkypeOnlineModule)
+  if (Test-Module SkypeOnlineConnector)
   {
     if ((Test-SkypeOnlineConnection) -eq $false)
     {
@@ -672,7 +674,7 @@ function Connect-SkypeTeamsAndAAD {
       }       
     }
     catch {
-      Write-Error   -Message "Could not establish Connection to SkypeOnline" -RecommendedAction "Run Connect-SkypeOnline manually" -Category NotEnabled
+      Write-Host "Could not establish Connection to SkypeOnline, please verify Module and run Connect-SkypeOnline manually" -Foregroundcolor Red
       # get error record
       [Management.Automation.ErrorRecord]$e = $_
 
@@ -690,6 +692,7 @@ function Connect-SkypeTeamsAndAAD {
       $info
     }
 
+    Start-Sleep 1
     if ((Test-SkypeOnlineConnection) -and -not $Silent) {
       $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"} -WarningAction STOP -ErrorAction STOP
       $TenantInformation = Get-CsTenant -WarningAction STOP -ErrorAction STOP
@@ -717,12 +720,13 @@ function Connect-SkypeTeamsAndAAD {
     try {
       Write-Verbose -Message "Establishing connection to AzureAD" -Verbose
       $null = (Connect-AzureAD -AccountID $Username)
+      Start-Sleep 1
       if ((Test-AzureADConnection) -and -not $Silent) {
         Get-AzureADCurrentSessionInfo
       }
     }
     catch {
-      Write-Error   -Message "Could not establish Connection to AzureAD" -RecommendedAction "Run Connect-AzureAD manually"  -Category NotEnabled
+      Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -Foregroundcolor Red
       # get error record
       [Management.Automation.ErrorRecord]$e = $_
 
@@ -745,7 +749,7 @@ function Connect-SkypeTeamsAndAAD {
   #region MicrosoftTeams
   if ($ConnectALL -or $ConnectToTeams) {
     try {
-      if ( !(Test-MicrosoftTeamsModule)) {
+      if ( !(Test-Module MicrosoftTeams)) {
         Import-Module MicrosoftTeams -ErrorAction SilentlyContinue
       }
       Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
@@ -757,7 +761,7 @@ function Connect-SkypeTeamsAndAAD {
       }
     }
     catch {
-      Write-Error   -Message "Could not establish Connection to MicrosoftTeams" -RecommendedAction "Run Connect-MicrosoftTeams manually" -Category NotEnabled
+      Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -Foregroundcolor Red
       # get error record
       [Management.Automation.ErrorRecord]$e = $_
 
@@ -790,14 +794,16 @@ return
 function Disconnect-SkypeTeamsAndAAD {
   # Helper function to do all three 
   # Module
+  $WarningPreference = "Continue"
+  $ErrorActionPreference = "Continue"
   Import-Module SkypeOnlineConnector -Global
   Import-Module AzureAD -Global
   Import-Module MicrosoftTeams -Global
   
   try {
-    $null = (Disconnect-SkypeOnline -ErrorAction SilentlyContinue)
-    $null = (Disconnect-MicrosoftTeams -ErrorAction SilentlyContinue)
-    $null = (Disconnect-AzureAD -ErrorAction SilentlyContinue)  
+    $null = (Disconnect-SkypeOnline)
+    $null = (Disconnect-MicrosoftTeams)
+    $null = (Disconnect-AzureAD)  
   }
   catch {}
 }
@@ -1607,7 +1613,7 @@ function Test-TeamsExternalDNS {
   Write-Output -InputObject $sipOutput
 } # End of Test-TeamsExternalDNS
 
-function Test-AzureADModule {
+function Test-Module ($Module) {
   <#
       .SYNOPSIS
       Tests whether the AzureAD Module is loaded
@@ -1616,10 +1622,16 @@ function Test-AzureADModule {
       Will Return $TRUE if the Module is loaded
 
   #>
-  Write-Verbose -Message "Verifying if AzureAd module is installed and available"
-  Import-Module -Name AzureAd -ErrorAction SilentlyContinue
-  return !(Get-Module -Name AzureAd)
-} # End of Test-AzureADModule
+  Write-Verbose -Message "Verifying if Module '$Module' is installed and available"
+  Import-Module -Name $Module -ErrorAction SilentlyContinue
+  if (Get-Module -Name $Module) {
+    return $true
+  }
+  else {
+    return $false
+  }
+} # End of Test-Module
+
 
 function Test-AzureADConnection {
   <#
@@ -1645,19 +1657,6 @@ function Test-AzureADConnection {
   }
 } # End of Test-AzureADConnection
 
-function Test-SkypeOnlineModule {
-  <#
-      .SYNOPSIS
-      Tests whether the SkypeOnlineConnector Module is loaded
-      .EXAMPLE
-      Test-SkypeOnlineModule
-      Will Return $TRUE if the Module is loaded
-
-  #>    
-  Write-Verbose -Message "Verifying if SkypeOnlineConnctor module is installed and available"
-  Import-Module -Name SkypeOnlineConnector -ErrorAction SilentlyContinue
-  return !(Get-Module -Name SkypeOnlineConnector)
-} # End of Test-SkypeOnlineModule
 
 function Test-SkypeOnlineConnection {
   <#
@@ -1694,23 +1693,6 @@ function Test-SkypeOnlineConnection {
       }
     }
 } # End of Test-SkypeOnlineModule
-#endregion
-
-#region New Functions
-function Test-MicrosoftTeamsModule {
-  <#
-      .SYNOPSIS
-      Tests whether the MicrosoftTeams Module is loaded
-      .EXAMPLE
-      Test-MicrosoftTeamsModule
-      Will Return $TRUE if the Module is loaded
-
-  #>
-
-  Write-Verbose -Message "Verifying if MicrosoftTeams module is installed and available"
-  Import-Module -Name MicrosoftTeams -ErrorAction SilentlyContinue
-  return !(Get-Module -Name MicrosoftTeams)
-} # End of Test-MicrosoftTeamsModule
 
 function Test-MicrosoftTeamsConnection {
   <#
@@ -6755,14 +6737,13 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 # Exporting ModuleMembers
 
 Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-Me
-Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-SkypeTeamsAndAAD, Disconnect-SkypeTeamsAndAAD, `
+Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-SkypeTeamsAndAAD, Disconnect-SkypeTeamsAndAAD, Test-Module,`
                               Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN,`
                               Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses,`
                               Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy,`
                               Test-AzureADModule, Test-AzureADConnection, Test-AzureADUser,Test-AzureADGroup,`
                               Test-SkypeOnlineModule,Test-SkypeOnlineConnection, `
                               Test-MicrosoftTeamsModule,Test-MicrosoftTeamsConnection,Test-TeamsUser,`
-                              Test-SkypeOnlineModule, Test-SkypeOnlineConnection, Test-TeamsUser,`
                               New-TeamsResourceAccount, Get-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount,`
                               New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue,`
                               Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant,`
