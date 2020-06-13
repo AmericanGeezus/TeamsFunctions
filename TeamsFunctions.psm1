@@ -475,21 +475,8 @@ function Connect-SkypeOnline {
         }
         catch
         {
-          Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
-          # get error record
-          [Management.Automation.ErrorRecord]$e = $_
-
-          # retrieve Info about runtime error
-          $info = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
-          }
-          # output Info. Post-process collected info, and log info (optional)
-          $info
+          Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
+          Write-ErrorRecord $_
         }
 
         # Separated session creation from Import for better troubleshooting
@@ -498,49 +485,21 @@ function Connect-SkypeOnline {
         }
         catch {
           Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
-          # get error record
-          [Management.Automation.ErrorRecord]$e = $_
-
-          # retrieve Info about runtime error
-          $info = $null
-          $info = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
-          }
-          # output Info. Post-process collected info, and log info (optional)
-          $info
+          #Write-ErrorRecord $_
 
           # Trying to compensate
           Write-Verose -Message "Trying to salvage a Session that may have been created but failed to import" -Verbose
           $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"}
           if ($PSSkypeOnlineSession.Count -lt 1) {
-            Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
+            Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
           }
           else {
             try {
               Import-Module (Import-PSSession -Session $PSSkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
             }
             catch {
-              Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation" -Exception $_.Exception.Message
-              # get error record
-              [Management.Automation.ErrorRecord]$e = $_
-
-              # retrieve Info about runtime error
-              $info = $null
-              $info = [PSCustomObject]@{
-              Exception = $e.Exception.Message
-              Reason    = $e.CategoryInfo.Reason
-              Target    = $e.CategoryInfo.TargetName
-              Script    = $e.InvocationInfo.ScriptName
-              Line      = $e.InvocationInfo.ScriptLineNumber
-              Column    = $e.InvocationInfo.OffsetInLine
-              }
-              # output Info. Post-process collected info, and log info (optional)
-              $info
+              Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
               return
             }      
           }
@@ -675,21 +634,7 @@ function Connect-SkypeTeamsAndAAD {
     }
     catch {
       Write-Host "Could not establish Connection to SkypeOnline, please verify Module and run Connect-SkypeOnline manually" -Foregroundcolor Red
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = $null
-      $info = [PSCustomObject]@{
-      Exception = $e.Exception.Message
-      Reason    = $e.CategoryInfo.Reason
-      Target    = $e.CategoryInfo.TargetName
-      Script    = $e.InvocationInfo.ScriptName
-      Line      = $e.InvocationInfo.ScriptLineNumber
-      Column    = $e.InvocationInfo.OffsetInLine
-      }
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
 
     Start-Sleep 1
@@ -727,21 +672,7 @@ function Connect-SkypeTeamsAndAAD {
     }
     catch {
       Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -Foregroundcolor Red
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = $null
-      $info = [PSCustomObject]@{
-      Exception = $e.Exception.Message
-      Reason    = $e.CategoryInfo.Reason
-      Target    = $e.CategoryInfo.TargetName
-      Script    = $e.InvocationInfo.ScriptName
-      Line      = $e.InvocationInfo.ScriptLineNumber
-      Column    = $e.InvocationInfo.OffsetInLine
-      }
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
   }
   #endregion
@@ -762,21 +693,7 @@ function Connect-SkypeTeamsAndAAD {
     }
     catch {
       Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -Foregroundcolor Red
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = $null
-      $info = [PSCustomObject]@{
-      Exception = $e.Exception.Message
-      Reason    = $e.CategoryInfo.Reason
-      Target    = $e.CategoryInfo.TargetName
-      Script    = $e.InvocationInfo.ScriptName
-      Line      = $e.InvocationInfo.ScriptLineNumber
-      Column    = $e.InvocationInfo.OffsetInLine
-      }
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
   }
   #endregion
@@ -1138,6 +1055,8 @@ function Remove-TenantDialPlanNormalizationRule {
     [Parameter(Mandatory=$true, ValueFromPipeline=$true, ValueFromPipelineByPropertyName=$true, HelpMessage="Enter the name of the dial plan to modify the normalization rules.")]
     [string]$DialPlan
   )
+
+  $ConfirmPreference = "Medium"
 
   # Testing SkypeOnline Connection
   if ($false -eq (Test-SkypeOnlineConnection)) {
@@ -1756,37 +1675,11 @@ function Get-AzureADUserFromUPN {
     }
     catch [Microsoft.Open.AzureAD16.Client.ApiException]
     {
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-      Exception = $e.Exception.Message
-      Reason    = $e.CategoryInfo.Reason
-      Target    = $e.CategoryInfo.TargetName
-      Script    = $e.InvocationInfo.ScriptName
-      Line      = $e.InvocationInfo.ScriptLineNumber
-      Column    = $e.InvocationInfo.OffsetInLine
-      }
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     catch
     {
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-      Exception = $e.Exception.Message
-      Reason    = $e.CategoryInfo.Reason
-      Target    = $e.CategoryInfo.TargetName
-      Script    = $e.InvocationInfo.ScriptName
-      Line      = $e.InvocationInfo.ScriptLineNumber
-      Column    = $e.InvocationInfo.OffsetInLine
-      }
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
   }
 } # End of Get-AzureADUserFromUPN
@@ -1990,21 +1883,7 @@ function Test-TeamsTenantPolicy {
         Return $False
       }
       else {
-        # get error record
-        [Management.Automation.ErrorRecord]$e = $_
-
-        # retrieve Info about runtime error
-        $info = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
-        }
-  
-        # output Info. Post-process collected info, and log info (optional)
-        $info
+        Write-ErrorRecord $_ #This handles the eror message in human readable format.
       }
     }
     finally {
@@ -2747,21 +2626,7 @@ function New-TeamsCallQueue {
     }
     catch {
       Write-Error -Message "Error creating the Call Queue" -Category WriteError -Exception "Erorr Creating Call Queue"
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-        Exception = $e.Exception.Message
-        Reason    = $e.CategoryInfo.Reason
-        Target    = $e.CategoryInfo.TargetName
-        Script    = $e.InvocationInfo.ScriptName
-        Line      = $e.InvocationInfo.ScriptLineNumber
-        Column    = $e.InvocationInfo.OffsetInLine
-      }
-  
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
       return
     }
     #endregion
@@ -2921,20 +2786,7 @@ function New-TeamsCallQueue {
         }
         catch {
           Write-Warning -Message "'$NameNormalised' Could not set Overflow Action and Target"
-          # get error record
-          [Management.Automation.ErrorRecord]$e = $_
-  
-          # retrieve Info about runtime error
-          $info = [PSCustomObject]@{
-            Exception = $e.Exception.Message
-            Reason    = $e.CategoryInfo.Reason
-            Target    = $e.CategoryInfo.TargetName
-            Script    = $e.InvocationInfo.ScriptName
-            Line      = $e.InvocationInfo.ScriptLineNumber
-            Column    = $e.InvocationInfo.OffsetInLine
-          }
-          # output Info. Post-process collected info, and log info (optional)
-          $info
+          Write-ErrorRecord $_ #This handles the eror message in human readable format.
           }
       }
     }
@@ -2979,21 +2831,8 @@ function New-TeamsCallQueue {
         }
         catch {
           Write-Warning -Message "'$NameNormalised' Could not set Timeout Action and Target"
-          # get error record
-          [Management.Automation.ErrorRecord]$e = $_
-  
-          # retrieve Info about runtime error
-          $info = [PSCustomObject]@{
-            Exception = $e.Exception.Message
-            Reason    = $e.CategoryInfo.Reason
-            Target    = $e.CategoryInfo.TargetName
-            Script    = $e.InvocationInfo.ScriptName
-            Line      = $e.InvocationInfo.ScriptLineNumber
-            Column    = $e.InvocationInfo.OffsetInLine
-          }
-          # output Info. Post-process collected info, and log info (optional)
-          $info
-          }
+          Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        }
       }
     }
     #endregion
@@ -3300,20 +3139,8 @@ function Get-TeamsCallQueue {
       }
     }
     catch {
-      Write-Error -Message 'Could not query Call Queues' -Category OperationStopped -Exception $_.Exception.Message
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-        Exception = $e.Exception.Message
-        Reason    = $e.CategoryInfo.Reason
-        Target    = $e.CategoryInfo.TargetName
-        Script    = $e.InvocationInfo.ScriptName
-        Line      = $e.InvocationInfo.ScriptLineNumber
-        Column    = $e.InvocationInfo.OffsetInLine
-      }
-      $info
+      Write-Error -Message 'Could not query Call Queues' -Category OperationStopped
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
       return
     }
     Write-Verbose -Message "--- DONE ----------"
@@ -3998,20 +3825,7 @@ function Set-TeamsCallQueue {
         }
         catch {
           Write-Warning -Message "'$NameNormalised' Could not set Overflow Action and Target"
-          # get error record
-          [Management.Automation.ErrorRecord]$e = $_
-  
-          # retrieve Info about runtime error
-          $info = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
-          }
-          # output Info. Post-process collected info, and log info (optional)
-          $info
+          Write-ErrorRecord $_ #This handles the eror message in human readable format.
           }
         }
       }
@@ -4053,28 +3867,15 @@ function Set-TeamsCallQueue {
             }
             }
             "Forward" {
-            try {
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -WarningAction SilentlyContinue -TimeoutActionTarget $TimeoutActionTargetId -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Target set to: $TimeoutActionTarget"
-            }
-            catch {
-                Write-Warning -Message "'$NameNormalised' Could not set Timeout Action and Target"
-                # get error record
-                [Management.Automation.ErrorRecord]$e = $_
-        
-                # retrieve Info about runtime error
-                $info = [PSCustomObject]@{
-                Exception = $e.Exception.Message
-                Reason    = $e.CategoryInfo.Reason
-                Target    = $e.CategoryInfo.TargetName
-                Script    = $e.InvocationInfo.ScriptName
-                Line      = $e.InvocationInfo.ScriptLineNumber
-                Column    = $e.InvocationInfo.OffsetInLine
-                }
-                # output Info. Post-process collected info, and log info (optional)
-                $info
-                }
+              try {
+                  $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -WarningAction SilentlyContinue -TimeoutActionTarget $TimeoutActionTargetId -ErrorAction Stop)
+                  Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
+                  Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Target set to: $TimeoutActionTarget"
+              }
+              catch {
+                  Write-Warning -Message "'$NameNormalised' Could not set Timeout Action and Target"
+                  Write-ErrorRecord $_ #This handles the eror message in human readable format.
+              }
             }
         }
     }
@@ -4194,10 +3995,11 @@ function Remove-TeamsCallQueue {
   )
 
   begin {
+    $ConfirmPreference = "Medium"
+
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    $ConfirmPreference = "High"
     Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
     
     # Testing AzureAD Connection
@@ -4225,20 +4027,8 @@ function Remove-TeamsCallQueue {
       }
     }
     catch {
-      Write-Error -Message "Removal of Call Queue '$($CallQueueToRemove.Name)' failed" -Category OperationStopped -Exception $_.Exception.Message
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
-      }
-      $info
+      Write-Error -Message "Removal of Call Queue '$($CallQueueToRemove.Name)' failed" -Category OperationStopped
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
       return
     }
 
@@ -4471,39 +4261,10 @@ function New-TeamsResourceAccount {
               $null = (Add-TeamsUserLicense -Identity $UPN -AddPhoneSystem -WarningAction STOP -ErrorAction STOP)
               Write-Verbose -Message "SUCCESS"
               $Islicensed = $true                        
-              # get error record
-              [Management.Automation.ErrorRecord]$e = $_
-
-              # retrieve Info about runtime error
-              $info = [PSCustomObject]@{
-                Exception = $e.Exception.Message
-                Reason    = $e.CategoryInfo.Reason
-                Target    = $e.CategoryInfo.TargetName
-                Script    = $e.InvocationInfo.ScriptName
-                Line      = $e.InvocationInfo.ScriptLineNumber
-                Column    = $e.InvocationInfo.OffsetInLine
-              }
-          
-              # output Info. Post-process collected info, and log info (optional)
-              $info
             }
             catch {
               Write-Error -Message "License assignment failed"
-              # get error record
-              [Management.Automation.ErrorRecord]$e = $_
-
-              # retrieve Info about runtime error
-              $info = [PSCustomObject]@{
-                Exception = $e.Exception.Message
-                Reason    = $e.CategoryInfo.Reason
-                Target    = $e.CategoryInfo.TargetName
-                Script    = $e.InvocationInfo.ScriptName
-                Line      = $e.InvocationInfo.ScriptLineNumber
-                Column    = $e.InvocationInfo.OffsetInLine
-              }
-          
-              # output Info. Post-process collected info, and log info (optional)
-              $info
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
           "PhoneSystem_VirtualUser" {
@@ -4519,21 +4280,7 @@ function New-TeamsResourceAccount {
             }
             catch {
               Write-Error -Message "License assignment failed"
-              # get error record
-              [Management.Automation.ErrorRecord]$e = $_
-
-              # retrieve Info about runtime error
-              $info = [PSCustomObject]@{
-                Exception = $e.Exception.Message
-                Reason    = $e.CategoryInfo.Reason
-                Target    = $e.CategoryInfo.TargetName
-                Script    = $e.InvocationInfo.ScriptName
-                Line      = $e.InvocationInfo.ScriptLineNumber
-                Column    = $e.InvocationInfo.OffsetInLine
-              }
-          
-              # output Info. Post-process collected info, and log info (optional)
-              $info
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
         }
@@ -4660,21 +4407,7 @@ function New-TeamsResourceAccount {
     }
     catch {
       Write-Warning -Message "Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance"
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-        Exception = $e.Exception.Message
-        Reason    = $e.CategoryInfo.Reason
-        Target    = $e.CategoryInfo.TargetName
-        Script    = $e.InvocationInfo.ScriptName
-        Line      = $e.InvocationInfo.ScriptLineNumber
-        Column    = $e.InvocationInfo.OffsetInLine
-      }
-  
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     #endregion
 
@@ -4876,21 +4609,7 @@ function Get-TeamsResourceAccount {
     }
     catch {
       Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-        Exception = $e.Exception.Message
-        Reason    = $e.CategoryInfo.Reason
-        Target    = $e.CategoryInfo.TargetName
-        Script    = $e.InvocationInfo.ScriptName
-        Line      = $e.InvocationInfo.ScriptLineNumber
-        Column    = $e.InvocationInfo.OffsetInLine
-      }
-  
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     #endregion
   }
@@ -5132,21 +4851,7 @@ function Set-TeamsResourceAccount {
       catch {
           Write-Verbose -Message "FAILED - Error encountered changing DisplayName"
           Write-Error -Message "Problem encountered with changing DisplayName" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
-          # get error record
-          [Management.Automation.ErrorRecord]$e = $_
-
-          # retrieve Info about runtime error
-          $info = [PSCustomObject]@{
-            Exception = $e.Exception.Message
-            Reason    = $e.CategoryInfo.Reason
-            Target    = $e.CategoryInfo.TargetName
-            Script    = $e.InvocationInfo.ScriptName
-            Line      = $e.InvocationInfo.ScriptLineNumber
-            Column    = $e.InvocationInfo.OffsetInLine
-          }
-      
-          # output Info. Post-process collected info, and log info (optional)
-          $info
+          Write-ErrorRecord $_ #This handles the eror message in human readable format.
       }
     }
     #endregion
@@ -5163,21 +4868,7 @@ function Set-TeamsResourceAccount {
           }
           catch {
             Write-Error -Message "Problem encountered changing Application Type" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
-            # get error record
-            [Management.Automation.ErrorRecord]$e = $_
-
-            # retrieve Info about runtime error
-            $info = [PSCustomObject]@{
-              Exception = $e.Exception.Message
-              Reason    = $e.CategoryInfo.Reason
-              Target    = $e.CategoryInfo.TargetName
-              Script    = $e.InvocationInfo.ScriptName
-              Line      = $e.InvocationInfo.ScriptLineNumber
-              Column    = $e.InvocationInfo.OffsetInLine
-            }
-        
-            # output Info. Post-process collected info, and log info (optional)
-            $info
+            Write-ErrorRecord $_ #This handles the eror message in human readable format.
           }
         }
     }
@@ -5231,22 +4922,7 @@ function Set-TeamsResourceAccount {
             catch {
               Write-Error -Message "License assignment failed"
               $Islicensed = $false
-
-              # get error record
-              [Management.Automation.ErrorRecord]$e = $_
-
-              # retrieve Info about runtime error
-              $info = [PSCustomObject]@{
-                Exception = $e.Exception.Message
-                Reason    = $e.CategoryInfo.Reason
-                Target    = $e.CategoryInfo.TargetName
-                Script    = $e.InvocationInfo.ScriptName
-                Line      = $e.InvocationInfo.ScriptLineNumber
-                Column    = $e.InvocationInfo.OffsetInLine
-              }
-          
-              # output Info. Post-process collected info, and log info (optional)
-              $info
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
           "PhoneSystem_VirtualUser" {
@@ -5276,21 +4952,7 @@ function Set-TeamsResourceAccount {
             catch {
               Write-Error -Message "License assignment failed"
               $Islicensed = $false
-              # get error record
-              [Management.Automation.ErrorRecord]$e = $_
-
-              # retrieve Info about runtime error
-              $info = [PSCustomObject]@{
-                Exception = $e.Exception.Message
-                Reason    = $e.CategoryInfo.Reason
-                Target    = $e.CategoryInfo.TargetName
-                Script    = $e.InvocationInfo.ScriptName
-                Line      = $e.InvocationInfo.ScriptLineNumber
-                Column    = $e.InvocationInfo.OffsetInLine
-              }
-          
-              # output Info. Post-process collected info, and log info (optional)
-              $info
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
         }
@@ -5323,21 +4985,7 @@ function Set-TeamsResourceAccount {
           }
           catch {
             Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
-            # get error record
-            [Management.Automation.ErrorRecord]$e = $_
-
-            # retrieve Info about runtime error
-            $info = [PSCustomObject]@{
-              Exception = $e.Exception.Message
-              Reason    = $e.CategoryInfo.Reason
-              Target    = $e.CategoryInfo.TargetName
-              Script    = $e.InvocationInfo.ScriptName
-              Line      = $e.InvocationInfo.ScriptLineNumber
-              Column    = $e.InvocationInfo.OffsetInLine
-            }
-        
-            # output Info. Post-process collected info, and log info (optional)
-            $info
+            Write-ErrorRecord $_ #This handles the eror message in human readable format.
           }
           # Assigning new Number
           # Processing paths for Telephone Numbers depending on Type
@@ -5349,7 +4997,8 @@ function Set-TeamsResourceAccount {
               Write-Verbose -Message "SUCCESS"
             }
             catch {
-              Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually" -Exception $_.Exception.Message
+              Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
           else {
@@ -5360,7 +5009,8 @@ function Set-TeamsResourceAccount {
               Write-Verbose -Message "SUCCESS"
             }
             catch {
-              Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually" -Exception $_.Exception.Message
+              Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
         }
@@ -5430,6 +5080,8 @@ function Remove-TeamsResourceAccount {
   )
   
   begin {
+    $ConfirmPreference = "Medium"
+
     # Caveat - Access rights 
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
     Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
@@ -5489,21 +5141,7 @@ process {
         }
         catch {
           Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
-          # get error record
-          [Management.Automation.ErrorRecord]$e = $_
-
-          # retrieve Info about runtime error
-          $info = [PSCustomObject]@{
-            Exception = $e.Exception.Message
-            Reason    = $e.CategoryInfo.Reason
-            Target    = $e.CategoryInfo.TargetName
-            Script    = $e.InvocationInfo.ScriptName
-            Line      = $e.InvocationInfo.ScriptLineNumber
-            Column    = $e.InvocationInfo.OffsetInLine
-          }
-      
-          # output Info. Post-process collected info, and log info (optional)
-          $info
+          Write-ErrorRecord $_ #This handles the eror message in human readable format.
           return                
         }
       }
@@ -5527,21 +5165,7 @@ process {
     }
     catch {
       Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-        Exception = $e.Exception.Message
-        Reason    = $e.CategoryInfo.Reason
-        Target    = $e.CategoryInfo.TargetName
-        Script    = $e.InvocationInfo.ScriptName
-        Line      = $e.InvocationInfo.ScriptLineNumber
-        Column    = $e.InvocationInfo.OffsetInLine
-      }
-  
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
       return
     }
     #endregion
@@ -5566,21 +5190,7 @@ process {
     }
     catch {
       Write-Error -Message "Unassignment of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense" 
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-        Exception = $e.Exception.Message
-        Reason    = $e.CategoryInfo.Reason
-        Target    = $e.CategoryInfo.TargetName
-        Script    = $e.InvocationInfo.ScriptName
-        Line      = $e.InvocationInfo.ScriptLineNumber
-        Column    = $e.InvocationInfo.OffsetInLine
-      }
-  
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
       return
     }
 
@@ -5595,21 +5205,7 @@ process {
     }
     catch {
       Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
-      # get error record
-      [Management.Automation.ErrorRecord]$e = $_
-
-      # retrieve Info about runtime error
-      $info = [PSCustomObject]@{
-        Exception = $e.Exception.Message
-        Reason    = $e.CategoryInfo.Reason
-        Target    = $e.CategoryInfo.TargetName
-        Script    = $e.InvocationInfo.ScriptName
-        Line      = $e.InvocationInfo.ScriptLineNumber
-        Column    = $e.InvocationInfo.OffsetInLine
-      }
-  
-      # output Info. Post-process collected info, and log info (optional)
-      $info
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     #endregion
     
@@ -6559,6 +6155,24 @@ function Get-SkuPartNumberfromSkuID {
       "ProductName"   {return $ProductName}
     }   
 }
+
+function Write-ErrorRecord ($ErrorRecord) {
+  # get error record (this is $_ from the parent function)
+  # This function must be called with 'Write-ErrorRecord $_'
+  [Management.Automation.ErrorRecord]$e = $ErrorRecord
+
+  # retrieve Info about runtime error
+  $info = $null
+  $info = [PSCustomObject]@{
+      Exception = $e.Exception.Message
+      Reason    = $e.CategoryInfo.Reason
+      Target    = $e.CategoryInfo.TargetName
+      Script    = $e.InvocationInfo.ScriptName
+      Line      = $e.InvocationInfo.ScriptLineNumber
+      Column    = $e.InvocationInfo.OffsetInLine
+  }
+  $info
+}
 #endregion *** Exported Functions ***
 
 
@@ -6685,20 +6299,7 @@ function ProcessLicense {
       }
       catch {
         #$Result = GetActionOutputObject2 -Name $UserID -Result "ERROR: Unable to assign $LicenseName`: $_"
-        # get error record
-        [Management.Automation.ErrorRecord]$e = $_
-
-        # retrieve Info about runtime error
-        $Result = [PSCustomObject]@{
-          Exception = $e.Exception.Message
-          Reason    = $e.CategoryInfo.Reason
-          Target    = $e.CategoryInfo.TargetName
-          Script    = $e.InvocationInfo.ScriptName
-          Line      = $e.InvocationInfo.ScriptLineNumber
-          Column    = $e.InvocationInfo.OffsetInLine
-        }
-    
-        # output Info. Post-process collected info, and log info (optional)
+        Write-ErrorRecord $_ #This handles the eror message in human readable format.
       }
     }
     else {
@@ -6748,4 +6349,4 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
                               New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue,`
                               Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant,`
                               Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers,`
-                              Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Remove-StringSpecialCharacter, Format-StringForUse
+                              Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Remove-StringSpecialCharacter, Format-StringForUse, Write-ErrorRecord
