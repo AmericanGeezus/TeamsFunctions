@@ -507,20 +507,21 @@ function Connect-SkypeOnline {
 
         #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
         $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
-        Write-Host "SkypeOnlineConnector Module is v$ModuleVersion"
+        Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
+        Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
         if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
         {
           try {
             Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
-            Write-Verbose -Message "The PowerShell session reconnects and authenticates, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+            Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
           }
           catch {
           }          
         }
         else 
         {
-          Write-Host "Your Session will time out after $IdleTimeout hours. - To prevent this, Update this module to v7 or higher"
-          Write-Host "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366"
+          Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
+          Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
         }
         #endregion
       } # End of if statement for module version checking
@@ -681,7 +682,7 @@ function Connect-SkypeTeamsAndAAD {
   if ($ConnectALL -or $ConnectToTeams) {
     try {
       if ( !(Test-Module MicrosoftTeams)) {
-        Import-Module MicrosoftTeams -ErrorAction SilentlyContinue
+        Import-Module MicrosoftTeams -Force -ErrorAction SilentlyContinue
       }
       Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
       if ((Test-MicrosoftTeamsConnection) -and -not $Silent) {
@@ -727,6 +728,7 @@ function Disconnect-SkypeTeamsAndAAD {
 
 Set-Alias -Name con -Value Connect-SkypeTeamsAndAAD
 Set-Alias -Name Connect-Me -Value Connect-SkypeTeamsAndAAD
+Set-Alias -Name Disconnect-Me -Value Disconnect-SkypeTeamsAndAAD
 
 function Disconnect-SkypeOnline {
   <#
@@ -4150,7 +4152,7 @@ function New-TeamsResourceAccount {
     Write-Verbose -Message "--- PREPARATION ---"
     #region Normalising $UserPrincipalname
     $UPN = Format-StringForUse -InputString $UserPrincipalName -As UserPrincipalName
-    Write-Verbose -Message "'$UserPrincipalName' UserPrincipalName normalised to: $UPN"
+    Write-Verbose -Message "UserPrincipalName normalised to: '$UPN'"
     #endregion
 
     #region Normalising $DisplayName
@@ -4160,12 +4162,11 @@ function New-TeamsResourceAccount {
     else {
       $Name = Format-StringForUse -InputString $($UserPrincipalName.Split('@')[0]) -As DisplayName
     }
-    Write-Verbose -Message "'$UPN' DisplayName normalised to: $Name"
+    Write-Verbose -Message "DisplayName normalised to: '$Name'"
     #endregion
 
     #region ApplicationType
     # Translating $ApplicationType (Name) to ID used by Commands.
-    Write-Verbose -Message "Preparation: Normalising UserPrincipalName"
     $AppId = GetAppIdfromApplicationType $ApplicationType
     Write-Verbose -Message "'$Name' ApplicationType parsed"
     #endregion
@@ -4204,10 +4205,10 @@ function New-TeamsResourceAccount {
     #region Creating Account
     try {
         #Trying to create the Resource Account
-        Write-Verbose -Message "'$Name' Action: Creating Resource Account with New-CsOnlineApplicationInstance"
+        Write-Verbose -Message "'$Name' Creating Resource Account with New-CsOnlineApplicationInstance..."
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
-        Write-Verbose -Message "SUCCESS"
-        Write-Verbose -Message "'$Name' Waiting for Get-AzureAdUser to return a Result..."
+        Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait to be able to parse the Object." -Verbose
+        Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
         while ($null -eq $(Get-AzureADUserFromUPN $UPN).ObjectId) {
           Start-Sleep 1
         }
@@ -4221,17 +4222,16 @@ function New-TeamsResourceAccount {
     #endregion
     
     #region UsageLocation
-    Write-Verbose -Message "'$Name' Action: Assigning Usage Location"
     try {
       Get-AzureADUserFromUPN $UPN | Set-AzureAdUser -UsageLocation $UsageLocation -ErrorAction STOP
-      Write-Verbose -Message "SUCCESS - Usage Location set to: $UsageLocation"
+      Write-Verbose -Message "'$Name' SUCCESS - Usage Location set to: $UsageLocation"
     }
     catch {
       if($PSBoundParameters.ContainsKey("License")) {
-        Write-Error -Message "Usage Location could not be set." -Category NotSpecified -RecommendedAction "Apply manually, then run Set-TeamsResourceAccount to apply license and phone number"
+        Write-Error -Message "'$Name' Usage Location could not be set." -Category NotSpecified -RecommendedAction "Apply manually, then run Set-TeamsResourceAccount to apply license and phone number"
       }
       else {
-        Write-Warning -Message "Usage Location cannot be set. If a license is needed, please assign UsageLocation manually before assigning a license"
+        Write-Warning -Message "'$Name' Usage Location cannot be set. If a license is needed, please assign UsageLocation manually before assigning a license"
       }
     }      
     #endregion
@@ -4244,43 +4244,43 @@ function New-TeamsResourceAccount {
         Write-Verbose -Message "'$Name' Querying Licenses..."
         $TenantLicenses = Get-TeamsTenantLicenses
         $RemainingPSlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem"}).Remaining
-        Write-Verbose -Message "Info: $RemainingPSlicenses remaining Phone System Licenses"
+        Write-Verbose -Message "INFO: $RemainingPSlicenses remaining Phone System Licenses"
         $RemainingPSVUlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem - Virtual User"}).Remaining
-        Write-Verbose -Message "Info: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
+        Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
         # Assigning License
         switch ($License) {
           "PhoneSystem" {
             # Free License  
             if ($RemainingPSlicenses -lt 1) {
-              Write-Warning -Message "No free PhoneSystem License remaining in the Tenant. Trying to assign..."
+              Write-Warning -Message "ERROR: No free PhoneSystem License remaining in the Tenant. Trying to assign..."
             }
-
-            try {
-              Write-Verbose -Message "'$Name' Assigning License: '$License'"
-              $null = (Add-TeamsUserLicense -Identity $UPN -AddPhoneSystem -WarningAction STOP -ErrorAction STOP)
-              Write-Verbose -Message "SUCCESS"
-              $Islicensed = $true                        
-            }
-            catch {
-              Write-Error -Message "License assignment failed"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
+            else {
+              try {
+                $null = (Add-TeamsUserLicense -Identity $UPN -AddPhoneSystem -WarningAction STOP -ErrorAction STOP)
+                Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+                $Islicensed = $true                        
+              }
+              catch {
+                Write-Error -Message "'$Name' License assignment failed"
+                Write-ErrorRecord $_ #This handles the eror message in human readable format.
+              }
             }
           }
           "PhoneSystem_VirtualUser" {
             if ($RemainingPSVUlicenses -lt 1) {
-              Write-Warning -Message "No free PhoneSystem Virtual User License remaining in the Tenant. Trying to assign..."
+              Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
             }
-
-            try {
-              Write-Verbose -Message "'$Name' Assigning License: '$License'"
-              $null = (Add-TeamsUserLicense -Identity $UPN -WarningAction STOP -AddPhoneSystemVirtualUser -ErrorAction STOP)
-              Write-Verbose -Message "SUCCESS"
-              $Islicensed = $true                        
-            }
-            catch {
-              Write-Error -Message "License assignment failed"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
+            else {
+              try {
+                $null = (Add-TeamsUserLicense -Identity $UPN -WarningAction STOP -AddPhoneSystemVirtualUser -ErrorAction STOP)
+                Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+                $Islicensed = $true                        
+              }
+              catch {
+                Write-Error -Message "'$Name' License assignment failed"
+                Write-ErrorRecord $_ #This handles the eror message in human readable format.
+              }
             }
           }
         }
@@ -4293,19 +4293,20 @@ function New-TeamsResourceAccount {
     #region PhoneNumber
     if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
       # Assigning Telephone Number
-      Write-Verbose -Message "'$Name' Action: Assigning Phone Number"
-      Write-Verbose -Message "NOTE: Assigning a phone number might fail because the Object in AzureAD does not exist yet." -Verbose
+      Write-Verbose -Message "'$Name' Processing Phone Number"
+      Write-Verbose -Message "NOTE: Assigning a phone number might fail if the Object is not yet replicated" -Verbose
       if (-not $Islicensed) {
         Write-Host "ERROR: A Phone Number can only be assigned to licensed objects." -ForegroundColor Red
         Write-Host "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
       }
       else {
         # Query CsOnlineApplicationInstance (making sure the Object exists)
-        Write-Verbose -Message "'$Name' Waiting for the CsOnlineApplicationInstance - In testing this took about 30s; Waiting for 40s" -Verbose
+        Write-Verbose -Message "'$Name' Waiting for the CsOnlineApplicationInstance to be created"
+        Write-Verbose -Message "NOTE: During Testing this was measured over 30s, please be patient"
         $count = 40
         For($i = 1; $i -le $count; $i++)
         {
-          Write-Progress -Activity "'$Name' Waiting for AAD to create the ApplicationInstance" `
+          Write-Progress -Activity "'$Name' Azure Active Directory is creating the ApplicationInstance. Please wait" `
           -PercentComplete (($i*100)/$count) `
           -Status "$(([math]::Round((($i)/$count * 100),0))) %"
           
@@ -4315,7 +4316,7 @@ function New-TeamsResourceAccount {
         # Processing paths for Telephone Numbers depending on Type
         if ($PhoneNumberIsMSNumber) {
           # Set in VoiceApplicationInstance
-          Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning Microsoft Calling Plans"
+          Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning for: Microsoft Calling Plans"
           try {
             $null = (Set-CsOnlineVoiceApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -Telephonenumber $PhoneNumber -ErrorAction STOP)
           }
@@ -4325,7 +4326,7 @@ function New-TeamsResourceAccount {
         }
         else {
           # Set in ApplicationInstance
-          Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for Direct Routing"
+          Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for: Direct Routing"
           try {
             $null = (Set-CsOnlineApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -OnPremPhoneNumber $PhoneNumber -ErrorAction STOP)
           }
@@ -4745,8 +4746,8 @@ function Set-TeamsResourceAccount {
     #region Normalising $DisplayName
     if ($PSBoundParameters.ContainsKey("DisplayName")) {
       $DisplayNameNormalised = Format-StringForUse -InputString $DisplayName -As DisplayName
-      Write-Verbose -Message "'$DisplayName' Display Name normalised to: $DisplayNameNormalised"
       $Name = $DisplayNameNormalised
+      Write-Verbose -Message "DisplayName normalised to: '$Name'"
     }
     else {
       $Name = $CurrentDisplayName
@@ -4898,61 +4899,59 @@ function Set-TeamsResourceAccount {
             Write-Verbose -Message "Testing whether PhoneSystem License is available"
             $RemainingPSlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem"}).Remaining
             if ($RemainingPSlicenses -lt 1) {
-              Write-Warning -Message "No free PhoneSystem License remaining in the Tenant! Trying to assign regardles..."
+              Write-Error -Message "ERROR: No free PhoneSystem License remaining in the Tenant!"
             }
             else {
               Write-Verbose -Message "SUCCESS - Phone System License found available"
-            }
-
-            try {
-              if ($null -eq $CurrentLicense) {
-                Write-Verbose -Message "'$Name' Assigning new License: '$License'"
-                Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystem -ErrorAction STOP
-                Write-Verbose -Message "SUCCESS"
+              try {
+                if ($null -eq $CurrentLicense) {
+                  Write-Verbose -Message "'$Name' Assigning new License: '$License'"
+                  Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystem -ErrorAction STOP
+                  Write-Verbose -Message "SUCCESS"
+                }
+                else {
+                  Write-Verbose -Message "'$Name' Changing License from '$CurrentLicense' to '$License'"
+                  #This will fail - currently blocked in Add-TeamsUserLicense
+                  Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystem -Replace -ErrorAction STOP
+                  Write-Verbose -Message "SUCCESS"
+                }
+                Write-Verbose -Message "SUCCESS - PhoneSystem License assigned"
+                $Islicensed = $true                        
               }
-              else {
-                Write-Verbose -Message "'$Name' Changing License from '$CurrentLicense' to '$License'"
-                #This will fail - currently blocked in Add-TeamsUserLicense
-                Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystem -Replace -ErrorAction STOP
-                Write-Verbose -Message "SUCCESS"
+              catch {
+                Write-Error -Message "License assignment failed"
+                $Islicensed = $false
+                Write-ErrorRecord $_ #This handles the eror message in human readable format.
               }
-              Write-Verbose -Message "SUCCESS - PhoneSystem License assigned"
-              $Islicensed = $true                        
-            }
-            catch {
-              Write-Error -Message "License assignment failed"
-              $Islicensed = $false
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
           "PhoneSystem_VirtualUser" {
             Write-Verbose -Message "Testing whether PhoneSystem Virtual User License is available"
             $RemainingPSVUlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem - Virtual User"}).Remaining
             if ($RemainingPSVUlicenses -lt 1) {
-                Write-Warning -Message "No free PhoneSystem Virtual User License remaining in the Tenant! Trying to assign regardles..."
+                Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant!"
             }
             else {
                 Write-Verbose -Message "SUCCESS - Phone System Virtual User License found available"
-            }
-
-            try {
-                if ($null = $CurrentLicense) {
-                  Write-Verbose -Message "'$Name' Assigning new License: '$License'"
-                  Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystemVirtualUser -ErrorAction STOP
-                  Write-Verbose -Message "SUCCESS"
-                }
-                else {
-                  Write-Verbose -Message "'$Name' Changing License from '$CurrentLicense' to '$License'"
-                  Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystemVirtualUser -Replace -ErrorAction STOP
-                  Write-Verbose -Message "SUCCESS"
-                }
-                Write-Verbose -Message "SUCCESS - PhoneSystem Virtual User License assigned"
-                $Islicensed = $true                        
-            }
-            catch {
-              Write-Error -Message "License assignment failed"
-              $Islicensed = $false
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
+                try {
+                  if ($null -eq $CurrentLicense) {
+                    Write-Verbose -Message "'$Name' Assigning new License: '$License'"
+                    Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystemVirtualUser -ErrorAction STOP
+                    Write-Verbose -Message "SUCCESS"
+                  }
+                  else {
+                    Write-Verbose -Message "'$Name' Changing License from '$CurrentLicense' to '$License'"
+                    Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystemVirtualUser -Replace -ErrorAction STOP
+                    Write-Verbose -Message "SUCCESS"
+                  }
+                  Write-Verbose -Message "SUCCESS - PhoneSystem Virtual User License assigned"
+                  $Islicensed = $true                        
+              }
+              catch {
+                Write-Error -Message "License assignment failed"
+                $Islicensed = $false
+                Write-ErrorRecord $_ #This handles the eror message in human readable format.
+              }
             }
           }
         }
@@ -4963,7 +4962,7 @@ function Set-TeamsResourceAccount {
     #region PhoneNumber
     if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
       # Assigning Telephone Number
-      Write-Verbose -Message "'$Name' Action: Assigning Phone Number"
+      Write-Verbose -Message "'$Name' ACTION: Assigning Phone Number"
       if ($CurrentPhoneNumber -ne $PhoneNumber) {
         if ($null -eq $CurrentLicense -and -not $Islicensed) {
           Write-Error -Message "A Phone Number can only be assigned to licensed objects." -Category ResourceUnavailable -RecommendedAction "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
@@ -4992,7 +4991,7 @@ function Set-TeamsResourceAccount {
           if ($PhoneNumberIsMSNumber) {
             # Set in VoiceApplicationInstance
             try {
-              Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning Microsoft Calling Plans"
+              Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans"
               $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $PhoneNumber -ErrorAction STOP)
               Write-Verbose -Message "SUCCESS"
             }
@@ -5004,7 +5003,7 @@ function Set-TeamsResourceAccount {
           else {
             # Set in ApplicationInstance
             try {
-              Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for Direct Routing"
+              Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for: Direct Routing"
               $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $PhoneNumber -ErrorAction STOP)
               Write-Verbose -Message "SUCCESS"
             }
@@ -5060,7 +5059,7 @@ function Remove-TeamsResourceAccount {
       Set-TeamsResourceAccount
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(ConfirmImpact='Medium', SupportsShouldProcess)]
   param (
       [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to create. Must end in '.onmicrosoft.com'")]
       [ValidateScript({
@@ -5080,8 +5079,6 @@ function Remove-TeamsResourceAccount {
   )
   
   begin {
-    $ConfirmPreference = "Medium"
-
     # Caveat - Access rights 
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
     Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
@@ -5198,15 +5195,24 @@ process {
 
     #region Account Removal
     # Removing AzureAD User
-    Write-Verbose -Message "Processing: '$DisplayName' Removing AzureAD User Objcet"
-    try {
-      $null = (Remove-AzureADUser -ObjectID $UserPrincipalName -ErrorAction STOP)
-      Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
+    Write-Verbose -Message "Processing: '$DisplayName' Removing AzureAD User Object"
+    if ($Force -or $PSCmdlet.ShouldProcess("'Resource Account with DisplayName: '$DisplayName'",'Remove-AzureADUser')) {
+      try {
+        $null = (Remove-AzureADUser -ObjectID $UserPrincipalName -ErrorAction STOP)
+        Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
+      }
+      catch {
+        Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
+        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      }
     }
-    catch {
-      Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser" 
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+    else
+    {
+      Write-Verbose -Message "SKIPPED - Object removed not confirmed Azure Active Directory"
     }
+
+
+
     #endregion
     
   }
@@ -6337,7 +6343,7 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 
 # Exporting ModuleMembers
 
-Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-Me
+Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-Me, Disconnect-Me
 Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-SkypeTeamsAndAAD, Disconnect-SkypeTeamsAndAAD, Test-Module,`
                               Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN,`
                               Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses,`
