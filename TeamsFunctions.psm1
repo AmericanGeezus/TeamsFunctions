@@ -2941,6 +2941,7 @@ function New-TeamsCallQueue {
       Partial implementation is possible, output will show differences.
   .PARAMETER Name
       Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
+      Used as the DisplayName - Visible in Teams
   .PARAMETER Silent
       Optional. Supresses output. Use for Bulk provisioning only.
       Will return the Output object, but not display any output on Screen.
@@ -4102,9 +4103,9 @@ function Set-TeamsCallQueueSAFE {
       UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
       Set-CsCallQueue   is used to apply parameters dependent on specification.
       Partial implementation is possible, output will show differences.
-  .PARAMETER Identity
-      Required. UserPrincipalName (UPN) of the Call Queue. Used to Identify the Object
   .PARAMETER Name
+      Required. UserPrincipalName (UPN) of the Call Queue. Used to Identify the Object
+  .PARAMETER DisplayName
       Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
   .PARAMETER Silent
       Optional. Supresses output. Use for Bulk provisioning only.
@@ -4924,8 +4925,8 @@ function Set-TeamsCallQueue {
       Set-CsCallQueue   is used to apply parameters dependent on specification.
       Partial implementation is possible, output will show differences.
   .PARAMETER Identity
-      Required. UserPrincipalName (UPN) of the Call Queue. Used to Identify the Object
-  .PARAMETER Name
+      Required. Friendly Name of the Call Queue. Used to Identify the Object
+  .PARAMETER DisplayName
       Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
   .PARAMETER Silent
       Optional. Supresses output. Use for Bulk provisioning only.
@@ -5207,6 +5208,7 @@ function Set-TeamsCallQueue {
   }
   
   process {
+    $PSBoundParameters
     #region PREPARATION
     Write-Verbose -Message "--- PREPARATION ---"
     # preparing Splatting Object
@@ -5233,19 +5235,16 @@ function Set-TeamsCallQueue {
     
     #region DisplayName
     # Normalising $DisplayName
-    Write-Debug "Displaying PSBoundParameters" -Debug
-    Write-Debug "`$DisplayName is passed through, but not specified! HOW!? Value: $DisplayName" -Debug
-    $PSBoundParameters.Keys
-    Write-Debug "it is safe to continue as the Displayname carries the same name (it is not changed)" -Debug
-    pause
-
-    if ($PSBoundParameters.ContainsKey('Displayname')) {
-      $NameNormalised = Format-StringForUse -InputString $DisplayName -As DisplayName
-      Write-Verbose -Message "'$Name' DisplayName normalised to: $NameNormalised"
-      $Parameters +=@{'Name' = $NameNormalised}
+    ### Don't know whats going on here, but during testing, the PSboundparameters get DisplayName injected with weird parameters and it isn't defined anywhere!
+    
+    if ($null -ne $DisplayName -and $DisplayName -ne $false -and $DisplayName -ne $true) {
+    #if ($PSBoundParameters.ContainsKey('DisplayName')) {
+      $NameNormalised = Format-StringForUse -InputString "$DisplayName" -As DisplayName
+      Write-Verbose -Message "'$Name' DisplayName normalised to: '$NameNormalised'"
+      $Parameters +=@{'Name' = "$NameNormalised"}
     }
     else {
-      $NameNormalised = $Name
+      $NameNormalised = "$Name"
     }
     #endregion
 
@@ -5323,7 +5322,7 @@ function Set-TeamsCallQueue {
     #region Boolean Parameters
     # PresenceBasedRouting
     if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
-      if ($PresenceBasedRouting) {
+      if ($PresenceBasedRouting -eq $true) {
         $Parameters += @{'PresenceBasedRouting' = $true}
       }
       else {
@@ -5332,7 +5331,7 @@ function Set-TeamsCallQueue {
     }
     # AllowOptOut
     if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
-      if ($AllowOptOut) {
+      if ($AllowOptOut -eq $true) {
         $Parameters += @{'AllowOptOut' = $true}
       }
       else {
@@ -5341,7 +5340,7 @@ function Set-TeamsCallQueue {
     }
     # ConferenceMode
     if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
-      if ($ConferenceMode) {
+      if ($ConferenceMode -eq $true) {
         $Parameters += @{'ConferenceMode' = $true}
       }
       else {
@@ -5520,16 +5519,17 @@ function Set-TeamsCallQueue {
     else {
       # Set the Call Queue with commands for individual calls to Set-CsCallQueue
       #region Settings (Set-CsCallQueue): DisplayName
-      if ($PSBoundParameters.ContainsKey('Displayname')) {
-          try {
-              Write-Verbose -Message "'$NameNormalised' Changing DisplayName"
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Name $NameNormalised -WarningAction SilentlyContinue -ErrorAction STOP)
-              Write-Verbose -Message "SUCCESS: $Name - Call Queue DisplayName changed to: $NameNormalised"
-          }
-          catch {
-              Write-Error -Message "'$NameNormalised' Error changing DisplayName, using $Name instead" -Category WriteError -Exception "Erorr changing DisplayNae"
-              $NameNormalised = $Name # Required for re-query
-          }
+      if ($null -ne $DisplayName -and $DisplayName -ne $false -and $DisplayName -ne $true) {
+      #if ($PSBoundParameters.ContainsKey('DisplayName')) {
+        try {
+            Write-Verbose -Message "'$NameNormalised' Changing DisplayName"
+            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Name $NameNormalised -WarningAction SilentlyContinue -ErrorAction STOP)
+            Write-Verbose -Message "SUCCESS: $Name - Call Queue DisplayName changed to: $NameNormalised"
+        }
+        catch {
+            Write-Error -Message "'$NameNormalised' Error changing DisplayName, using $Name instead" -Category WriteError -Exception "Erorr changing DisplayNae"
+            $NameNormalised = $Name # Required for re-query
+        }
       }
       #endregion
 
