@@ -4570,15 +4570,15 @@ function Set-TeamsCallQueueSAFE {
 
     #region Settings (Set-CsCallQueue): DisplayName
     if ($PSBoundParameters.ContainsKey('Displayname')) {
-        try {
-            Write-Verbose -Message "'$NameNormalised' Changing DisplayName"
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Name $NameNormalised -WarningAction SilentlyContinue -ErrorAction STOP)
-            Write-Verbose -Message "SUCCESS: $Name - Call Queue DisplayName changed to: $NameNormalised"
-        }
-        catch {
-            Write-Error -Message "'$NameNormalised' Error changing DisplayName, using $Name instead" -Category WriteError -Exception "Erorr changing DisplayNae"
-            $NameNormalised = $Name # Required for re-query
-        }
+      try {
+        Write-Verbose -Message "'$NameNormalised' Changing DisplayName"
+        $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Name $NameNormalised -WarningAction SilentlyContinue -ErrorAction STOP)
+        Write-Verbose -Message "SUCCESS: $Name - Call Queue DisplayName changed to: $NameNormalised"
+      }
+      catch {
+        Write-Error -Message "'$NameNormalised' Error changing DisplayName, using $Name instead" -Category WriteError -Exception "Erorr changing DisplayNae"
+        $NameNormalised = $Name # Required for re-query
+      }
     }
     #endregion
 
@@ -5235,10 +5235,7 @@ function Set-TeamsCallQueue {
     
     #region DisplayName
     # Normalising $DisplayName
-    ### Don't know whats going on here, but during testing, the PSboundparameters get DisplayName injected with weird parameters and it isn't defined anywhere!
-    
-    if ($null -ne $DisplayName -and $DisplayName -ne $false -and $DisplayName -ne $true) {
-    #if ($PSBoundParameters.ContainsKey('DisplayName')) {
+    if ($PSBoundParameters.ContainsKey('DisplayName')) {
       $NameNormalised = Format-StringForUse -InputString "$DisplayName" -As DisplayName
       Write-Verbose -Message "'$Name' DisplayName normalised to: '$NameNormalised'"
       $Parameters +=@{'Name' = "$NameNormalised"}
@@ -5519,8 +5516,7 @@ function Set-TeamsCallQueue {
     else {
       # Set the Call Queue with commands for individual calls to Set-CsCallQueue
       #region Settings (Set-CsCallQueue): DisplayName
-      if ($null -ne $DisplayName -and $DisplayName -ne $false -and $DisplayName -ne $true) {
-      #if ($PSBoundParameters.ContainsKey('DisplayName')) {
+      if ($PSBoundParameters.ContainsKey('DisplayName')) {
         try {
             Write-Verbose -Message "'$NameNormalised' Changing DisplayName"
             $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Name $NameNormalised -WarningAction SilentlyContinue -ErrorAction STOP)
