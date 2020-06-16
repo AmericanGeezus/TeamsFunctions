@@ -3475,7 +3475,7 @@ function New-TeamsCallQueue {
            else {
              # Add to List
              Write-Verbose -Message "User '$User' EnterpriseVoice-Enabled: SUCCESS"
-             Write-Verbose -Message "User '$User' will be added to CallQueue"
+             Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
              [void]$UserIdList.Add($UserObject.ObjectId)
            }
          }
@@ -3496,9 +3496,7 @@ function New-TeamsCallQueue {
         # Determine ID from UPN
         if (Test-AzureAdGroup "$DL") {
           $DLObject = Get-AzureADGroup -SearchString "$DL"
-          Write-Verbose -Message "Group '$DL' found:   SUCCESS"
-          Write-Verbose -Message "NOTE: Group members are parsed by the subsystem"
-          Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members"
+          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
           
           # Test whether Users in DL are enabled for EV and/or licensed?
 
@@ -3509,7 +3507,12 @@ function New-TeamsCallQueue {
           Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
         }
       }
-      $Parameters += @{'DistributionLists' = @($DLIdList)}   
+      $Parameters += @{'DistributionLists' = @($DLIdList)}
+      if ($DLIdList.Count -gt 0) {
+        Write-Verbose -Message "NOTE: Group members are parsed by the subsystem" -Verbose
+        Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members" -Verbose
+
+      }
     }
     #endregion
 
@@ -5452,7 +5455,7 @@ function Set-TeamsCallQueue {
             else {
               # Add to List
               Write-Verbose -Message "User '$User' EnterpriseVoice-Enabled: SUCCESS"
-              Write-Verbose -Message "User '$User' will be added to CallQueue"
+              Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
               [void]$UserIdList.Add($UserObject.ObjectId)
             }
           }
@@ -5473,8 +5476,7 @@ function Set-TeamsCallQueue {
         # Determine ID from UPN
         if (Test-AzureAdGroup $DL) {
             $DLObject = Get-AzureAdGroup -ObjectId $DL
-            Write-Verbose -Message "NOTE: Group members are parsed by the subsystem"
-            Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members"
+            Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
               
             # Test whether Users in DL are enabled for EV and/or licensed?
 
@@ -5486,6 +5488,11 @@ function Set-TeamsCallQueue {
         }
       }
       $Parameters += @{'DistributionLists' = @($DLIdList)}
+      if ($DLIdList.Count -gt 0) {
+        Write-Verbose -Message "NOTE: Group members are parsed by the subsystem" -Verbose
+        Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members" -Verbose
+
+      }
     }
     #endregion
 
