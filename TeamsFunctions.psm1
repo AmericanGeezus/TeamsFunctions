@@ -2696,6 +2696,7 @@ function New-TeamsCallQueue {
         # Create the Call Queue with all enumerated Parameters passed through splatting
         Write-Debug "Listing all aggregated parameters:"
         $Parameters
+        Write-Debug "All right?" -Debug  
         $Null = (New-CsCallQueue @Parameters)
         # New-CsCallQueue @Parameters
         Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue created with all Parameters"    
@@ -3804,6 +3805,7 @@ function Set-TeamsCallQueue {
       # Set the Call Queue with all Parameters provided
       Write-Debug "Listing all aggregated parameters:"
       $Parameters
+      Write-Debug "All right?" -Debug
       $Null = (Set-CsCallQueue @Parameters)
       #Set-CsCallQueue @Parameters
       Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue settings applied"    
