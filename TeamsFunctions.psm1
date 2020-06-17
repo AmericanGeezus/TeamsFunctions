@@ -389,11 +389,12 @@ function Connect-SkypeOnline {
   #>
   [CmdletBinding()]
   param(
-    [Parameter()]
+    [Parameter(Mandatory = $false)]
     [string]$UserName,
     
     [Parameter(Mandatory = $false)]
-    [ValidateScript({$null -eq $_ -or $_ -match '.onmicrosoft.com'})]
+    [AllowNull()]
+    [ValidateScript({$_ -match '.onmicrosoft.com'})]
     [string]$OverrideAdminDomain,
 
     [Parameter(Helpmessage = "Idle Timout of the session in hours between 1 and 8; Default is 4")]
@@ -404,26 +405,36 @@ function Connect-SkypeOnline {
   # Required as Warnings on the OriginalRegistrarPool may halt Script execution
   $WarningPreference = "Continue"
 
+  #region SessionOptions
   # Generating Session Options (Timeout) based on input
   $IdleTimeoutInMS = $IdleTimeout * 3600000
   if ($PSboundparameters.ContainsKey('IdleTimeout')) {
     $SessionOption = New-PsSessionOption -IdleTimeout $IdleTimeoutInMS
   }
   else {
-    $SessionOption = New-PsSessionOption -IdleTimeout 28800000
+    $SessionOption = New-PsSessionOption -IdleTimeout 14400000
   }
   Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
 
+  #endregion
+
   # Determining OverrideAdminDomain based on existing connection to AzureAD
+  <#
   if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
     $Domain = $OverrideAdminDomain
-    Write-Verbose -Message "OverrideAdminDomain provided: $OverrideAdminDomain"
+    Write-Verbose -Message "OverrideAdminDomain: Provided: $OverrideAdminDomain"
   }
-  if (Test-AzureADConnection) {
-    Write-Verbose -Message "Connection to AzureAD already established, overriding the OverrideAdminDomain"
+  elseif (Test-AzureADConnection) {
+    Write-Verbose -Message "OverrideAdminDomain: Connection to AzureAD found established, querying OverrideAdminDomain from there"
     $Domain = (Get-AzureADCurrentSessionInfo).TenantDomain
     Write-Verbose -Message "Reading TenantDomain from Get-AzureAdCurrentSessionINfo: Using: $Domain"
   }
+  else {
+    $UserNameDomain = $UserName.Split('@')[1]
+    $Domain = $UserNameDomain
+    Write-Verbose "OverrideAdminDomain: Domain not specificed or not queried from AzureAD. Using: $UserNameDomain"
+  }
+  #>
 
   # Testing exisiting Module and Connection
   if (Test-Module SkypeOnlineConnector)
@@ -464,17 +475,61 @@ function Connect-SkypeOnline {
           Write-Verbose -Message "Constructing parameter list to be passed on to New-CsOnlineSession"
           $Parameters = $null
           if ($PSBoundParameters.ContainsKey("UserName")) {
+            Write-Verbose -Message "Adding: Username: $Username"
             $Parameters +=@{'UserName' = $UserName}
           }
           if ($null -ne $Domain) {
+            Write-Verbose -Message "Adding: OverrideAdminDomain: $Domain"
             $Parameters +=@{'OverrideAdminDomain' = $Domain}
           }
-          $Parameters += @{'SessionOption' = $SessionOption}
-          $Parameters += @{'ErrorAction' = 'STOP'}
+          else {
+            $Parameters +=@{'OverrideAdminDomain' = $UserNameDomain}
+
+          }
+          #Write-Verbose -Message "Adding: SessionOption with IdleTimeout $IdleTimeout (hrs)"
+          #$Parameters += @{'SessionOption' = $SessionOption}
+          Write-Verbose -Message "Adding: Common Parameters"
+          #$Parameters += @{'ErrorAction' = 'STOP'}
+          #$Parameters += @{'WarningAction' = 'Continue'}
 
           # Creating Session
-          Write-Verbose -Message "Creating Session with the following parameters: $($Parameters.Keys)"
-          $SkypeOnlineSession = New-CsOnlineSession @Parameters
+          Write-Verbose -Message "Creating Session with the following parameters: $($Parameters.Keys)" -Verbose
+          #$SkypeOnlineSession = New-CsOnlineSession @Parameters
+          #<# Troubleshooting old method - same result
+          if ($PSBoundParameters.ContainsKey("UserName")) {
+            if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+            #if ($null -eq $Domain) {
+              $SkypeOnlineSession = New-CsOnlineSession -Username $UserName -SessionOption $SessionOption
+            }
+            else {
+              $SkypeOnlineSession = New-CsOnlineSession -Username $UserName -OverrideAdminDomain $Domain -SessionOption $SessionOption
+            }
+          }
+          else {
+            if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+            #if ($null -eq $Domain) {
+              $SkypeOnlineSession = New-CsOnlineSession -SessionOption $SessionOption
+            }
+            else {
+              $SkypeOnlineSession = New-CsOnlineSession -OverrideAdminDomain $Domain -SessionOption $SessionOption
+            }
+          }
+          #>
+        }
+        catch [System.Net.WebException] {
+          try {
+            Write-Warning -Message "Session could not be created. Maybe missing OverrideAdminDomain to connect?"
+            $Domain = Read-Host "Please enter an OverrideAdminDomain for this Tenant"
+            $Parameters +=@{'OverrideAdminDomain' = $Domain}
+            # Creating Session (again)
+            Write-Verbose -Message "Creating Session with the following parameters: $($Parameters.Keys)" -Verbose
+            $SkypeOnlineSession = New-CsOnlineSession @Parameters
+          }
+          catch
+          {
+            Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
+            Write-ErrorRecord $_
+          }
         }
         catch
         {
@@ -483,14 +538,16 @@ function Connect-SkypeOnline {
         }
 
         # Separated session creation from Import for better troubleshooting
+        $Parameters
+        $SkypeOnlineSession | FL
         try {
           Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global       
         }
         catch {
           Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
-          #Write-ErrorRecord $_
+          Write-ErrorRecord $_
 
-          # Trying to compensate
+          <# Trying to compensate
           Write-Verbose -Message "Trying to salvage a Session that may have been created but failed to import" -Verbose
           $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"}
           if ($PSSkypeOnlineSession.Count -lt 1) {
@@ -498,7 +555,7 @@ function Connect-SkypeOnline {
           }
           else {
             try {
-              Import-Module (Import-PSSession -Session $PSSkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
+              Import-Module (Import-PSSession -Session $PSSkypeOnlineSession -AllowClobber -ErrorAction SilentlyContinue) -Global
             }
             catch {
               Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
@@ -506,25 +563,28 @@ function Connect-SkypeOnline {
               return
             }      
           }
+          #>
         }
 
         #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
-        $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
-        Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
-        Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
-        if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
-        {
-          try {
-            Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
-            Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+        if (TEst-SkypeOnlineConnection) {
+          $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+          Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
+          Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
+          if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
+          {
+            try {
+              Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
+              Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+            }
+            catch {
+            }          
           }
-          catch {
-          }          
-        }
-        else 
-        {
-          Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
-          Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
+          else 
+          {
+            Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
+            Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
+          }
         }
         #endregion
       } # End of if statement for module version checking
@@ -594,8 +654,9 @@ function Connect-SkypeTeamsAndAAD {
       [switch]$MicrosoftTeams,
 
       [Parameter(Mandatory = $false, HelpMessage = 'Domain used to connect to for SkypeOnline if DNS points to OnPrem Skype')]
-      [ValidateScript({$null -eq $_ -or $_ -match '.onmicrosoft.com'})]
-      [string]$OverrideAdminDomain,
+      [AllowNull()]
+      [ValidateScript({$_ -match '.onmicrosoft.com'})]
+        [string]$OverrideAdminDomain,
 
       [Parameter(Mandatory = $false, HelpMessage = 'Suppresses Session Information output')]
       $Silent
@@ -716,10 +777,18 @@ return
 
 function Disconnect-SkypeTeamsAndAAD {
   # Helper function to disconnect from all three Services
+  Import-Module SkypeOnlineConnector
+  Import-Module MicrosoftTeams -Force # Must import Forcefully as the command otherwise fails (not available)
+  Import-Module AzureAD
+  
   try {
     $null = (Disconnect-SkypeOnline -ErrorAction SilentlyContinue)
     $null = (Disconnect-MicrosoftTeams -ErrorAction SilentlyContinue)
     $null = (Disconnect-AzureAD -ErrorAction SilentlyContinue)  
+  }
+  catch [NullReferenceException] {
+    # Disconnecting from AzureAD results in a duplicated error which the ERRORACTIOn only suppresses one of.
+    # This is to capture the second  
   }
   catch {
     Write-ErrorRecord $_
