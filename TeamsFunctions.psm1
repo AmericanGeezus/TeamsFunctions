@@ -311,7 +311,7 @@ function Add-TeamsUserLicense {
         }
         else  {
           # This is not supported. Non-Resource Accounts must not have VirtualUser licenses
-          Write-Error -Message "Non-Resource Account determined. No replacement can be executed" -Category InvalidOperation -RecommendedAction "Verify Account Type is correct. For Resource Accounts, verify Department is set to 'Microsoft Communication Application Instance'"
+          ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem -LicenseName "PhoneSystem (Add-On License)"
           break
         }
       }
@@ -622,7 +622,7 @@ function Connect-SkypeTeamsAndAAD {
 
   # Cleaning up existing sessions
   Write-Verbose -Message "Disconnecting from all existing sessions for SkypeOnline, AzureAD and MicrosoftTeams" -Verbose
-  Disconnect-SkypeTeamsAndAAD
+  $null = (Disconnect-SkypeTeamsAndAAD -ErrorAction SilentlyContinue)
   #endregion
 
   
@@ -4202,13 +4202,13 @@ function New-TeamsResourceAccount {
 
   [CmdletBinding()]
   param (
-      [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, HelpMessage = "UPN of the Object to create. Must end in '.onmicrosoft.com'")]
+      [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, HelpMessage = "UPN of the Object to create.")]
       [ValidateScript({
-        If ($_ -match '@' -and $_ -match '.onmicrosoft.com') {
+        If ($_ -match '@') {
           $True
         }
         else {
-          Write-Host "Must contain one '@' and end in '.onmicrosoft.com'" -ForeGroundColor Red
+          Write-Host "Must be a valid UPN" -ForeGroundColor Red
           $false
         }
       })]
@@ -4790,13 +4790,13 @@ function Set-TeamsResourceAccount {
 
   [CmdletBinding()]
   param (
-      [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change. Must end in '.onmicrosoft.com'")]
+      [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
       [ValidateScript({
-        If ($_ -match '@' -and $_ -match '.onmicrosoft.com') {
+        If ($_ -match '@') {
           $True
         }
         else {
-          Write-Host "Must contain one '@' and end in '.onmicrosoft.com'" -ForeGroundColor Red
+          Write-Host "Must be a valid UPN" -ForeGroundColor Red
           $false
         }
       })]      
@@ -5175,13 +5175,13 @@ function Remove-TeamsResourceAccount {
 
   [CmdletBinding(ConfirmImpact='High', SupportsShouldProcess)]
   param (
-      [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to create. Must end in '.onmicrosoft.com'")]
+      [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to create.")]
       [ValidateScript({
-        If ($_ -match '@' -and $_ -match '.onmicrosoft.com') {
+        If ($_ -match '@') {
           $True
         }
         else {
-          Write-Host "Must contain one '@' and end in '.onmicrosoft.com'" -ForeGroundColor Red
+          Write-Host "Must be a valid UPN" -ForeGroundColor Red
           $false
         }
       })]
