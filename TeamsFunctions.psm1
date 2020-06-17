@@ -394,7 +394,7 @@ function Connect-SkypeOnline {
     
     [Parameter(Mandatory = $false)]
     [AllowNull()]
-    [ValidateScript({$_ -match '.onmicrosoft.com'})]
+    #[ValidateScript({$_ -match '.onmicrosoft.com'})]
     [string]$OverrideAdminDomain,
 
     [Parameter(Helpmessage = "Idle Timout of the session in hours between 1 and 8; Default is 4")]
@@ -417,24 +417,6 @@ function Connect-SkypeOnline {
   Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
 
   #endregion
-
-  # Determining OverrideAdminDomain based on existing connection to AzureAD
-  <#
-  if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-    $Domain = $OverrideAdminDomain
-    Write-Verbose -Message "OverrideAdminDomain: Provided: $OverrideAdminDomain"
-  }
-  elseif (Test-AzureADConnection) {
-    Write-Verbose -Message "OverrideAdminDomain: Connection to AzureAD found established, querying OverrideAdminDomain from there"
-    $Domain = (Get-AzureADCurrentSessionInfo).TenantDomain
-    Write-Verbose -Message "Reading TenantDomain from Get-AzureAdCurrentSessionINfo: Using: $Domain"
-  }
-  else {
-    $UserNameDomain = $UserName.Split('@')[1]
-    $Domain = $UserNameDomain
-    Write-Verbose "OverrideAdminDomain: Domain not specificed or not queried from AzureAD. Using: $UserNameDomain"
-  }
-  #>
 
   # Testing exisiting Module and Connection
   if (Test-Module SkypeOnlineConnector)
@@ -478,51 +460,33 @@ function Connect-SkypeOnline {
             Write-Verbose -Message "Adding: Username: $Username"
             $Parameters +=@{'UserName' = $UserName}
           }
-          if ($null -ne $Domain) {
-            Write-Verbose -Message "Adding: OverrideAdminDomain: $Domain"
-            $Parameters +=@{'OverrideAdminDomain' = $Domain}
+          if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+            Write-Verbose -Message "OverrideAdminDomain: Provided: $OverrideAdminDomain"
+            $Parameters +=@{'OverrideAdminDomain' = $OverrideAdminDomain}
           }
           else {
+            $UserNameDomain = $UserName.Split('@')[1]
             $Parameters +=@{'OverrideAdminDomain' = $UserNameDomain}
 
           }
-          #Write-Verbose -Message "Adding: SessionOption with IdleTimeout $IdleTimeout (hrs)"
-          #$Parameters += @{'SessionOption' = $SessionOption}
+          Write-Verbose -Message "Adding: SessionOption with IdleTimeout $IdleTimeout (hrs)"
+          $Parameters += @{'SessionOption' = $SessionOption}
           Write-Verbose -Message "Adding: Common Parameters"
-          #$Parameters += @{'ErrorAction' = 'STOP'}
-          #$Parameters += @{'WarningAction' = 'Continue'}
+          $Parameters += @{'ErrorAction' = 'STOP'}
+          $Parameters += @{'WarningAction' = 'Continue'}
 
           # Creating Session
-          Write-Verbose -Message "Creating Session with the following parameters: $($Parameters.Keys)" -Verbose
-          #$SkypeOnlineSession = New-CsOnlineSession @Parameters
-          #<# Troubleshooting old method - same result
-          if ($PSBoundParameters.ContainsKey("UserName")) {
-            if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-            #if ($null -eq $Domain) {
-              $SkypeOnlineSession = New-CsOnlineSession -Username $UserName -SessionOption $SessionOption
-            }
-            else {
-              $SkypeOnlineSession = New-CsOnlineSession -Username $UserName -OverrideAdminDomain $Domain -SessionOption $SessionOption
-            }
-          }
-          else {
-            if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-            #if ($null -eq $Domain) {
-              $SkypeOnlineSession = New-CsOnlineSession -SessionOption $SessionOption
-            }
-            else {
-              $SkypeOnlineSession = New-CsOnlineSession -OverrideAdminDomain $Domain -SessionOption $SessionOption
-            }
-          }
-          #>
+          Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
+          $SkypeOnlineSession = New-CsOnlineSession @Parameters
         }
         catch [System.Net.WebException] {
           try {
             Write-Warning -Message "Session could not be created. Maybe missing OverrideAdminDomain to connect?"
             $Domain = Read-Host "Please enter an OverrideAdminDomain for this Tenant"
-            $Parameters +=@{'OverrideAdminDomain' = $Domain}
+            # $Paramters +=@{'OverrideAdminDomain' = $Domain} # This works only if no OverrideAdminDomain is yet in the $Parameters Array. Current config means it will be there! 
+            $Parameters.OverrideAdminDomain = $Domain
             # Creating Session (again)
-            Write-Verbose -Message "Creating Session with the following parameters: $($Parameters.Keys)" -Verbose
+            Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
             $SkypeOnlineSession = New-CsOnlineSession @Parameters
           }
           catch
@@ -538,55 +502,37 @@ function Connect-SkypeOnline {
         }
 
         # Separated session creation from Import for better troubleshooting
-        $Parameters
-        $SkypeOnlineSession | FL
-        try {
-          Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global       
-        }
-        catch {
-          Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
-          Write-ErrorRecord $_
-
-          <# Trying to compensate
-          Write-Verbose -Message "Trying to salvage a Session that may have been created but failed to import" -Verbose
-          $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"}
-          if ($PSSkypeOnlineSession.Count -lt 1) {
-            Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
+        if ($Null -ne $SkypeOnlineSession) {
+          try {
+            Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global       
           }
-          else {
-            try {
-              Import-Module (Import-PSSession -Session $PSSkypeOnlineSession -AllowClobber -ErrorAction SilentlyContinue) -Global
+          catch {
+            Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
+            Write-ErrorRecord $_
+          }
+  
+          #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
+          if (Test-SkypeOnlineConnection) {
+            $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+            Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
+            Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
+            if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
+            {
+              try {
+                Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
+                Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+              }
+              catch {
+              }          
             }
-            catch {
-              Write-Error -Message "Session import failed" -Category ConnectionError -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
-              return
-            }      
-          }
-          #>
-        }
-
-        #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
-        if (TEst-SkypeOnlineConnection) {
-          $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
-          Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
-          Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
-          if ($moduleVersion.Major -ge "7") # v7 and higher can run Session Limit Extension
-          {
-            try {
-              Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
-              Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+            else 
+            {
+              Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
+              Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
             }
-            catch {
-            }          
           }
-          else 
-          {
-            Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
-            Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
-          }
+          #endregion
         }
-        #endregion
       } # End of if statement for module version checking
     }
     else
@@ -707,7 +653,7 @@ function Connect-SkypeTeamsAndAAD {
     Start-Sleep 1
     if ((Test-SkypeOnlineConnection) -and -not $Silent) {
       $PSSkypeOnlineSession = Get-PsSession | Where-Object {$_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available"} -WarningAction STOP -ErrorAction STOP
-      $TenantInformation = Get-CsTenant -WarningAction STOP -ErrorAction STOP
+      $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
       $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
       $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
 
@@ -1680,7 +1626,14 @@ function Test-SkypeOnlineConnection {
       }
       else
       {
-        return $true
+        try {
+          $null = Get-CsTeamsUpgradeConfiguration -ErrorAction Stop -WarningAction SilentlyContinue
+          return $true
+        }
+        catch {
+          return $false
+        }
+        
       }
     }
 } # End of Test-SkypeOnlineModule
@@ -5862,82 +5815,82 @@ function Backup-TeamsTenant {
   
   $ErrorActionP
 
-  $CommandParams =+ @{'WarningAction' = 'SilentlyContinue'}
-  $CommandParams =+ @{'ErrorAction' = 'SilentlyContinue'}
+  $CommandParams += @{'WarningAction' = 'SilentlyContinue'}
+  $CommandParams += @{'ErrorAction' = 'SilentlyContinue'}
 
   # Tenant Configuration
-  $null = (Get-CsOnlineDialInConferencingBridge $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingBridge.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingLanguagesSupported $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingLanguagesSupported.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingServiceNumber $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingServiceNumber.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialinConferencingTenantConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingTenantConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingTenantSettings $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingTenantSettings.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineLisCivicAddress $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisCivicAddress.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineLisLocation $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisLocation.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsClientConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsClientConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsGuestCallingConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestCallingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsGuestMeetingConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMeetingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsGuestMessagingConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMessagingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingBroadcastConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsUpgradeConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradeConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenant $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenant.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantFederationConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantFederationConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantNetworkConfiguration $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantNetworkConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantPublicProvider $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantPublicProvider.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialInConferencingBridge @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingBridge.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialInConferencingLanguagesSupported @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingLanguagesSupported.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialInConferencingServiceNumber @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingServiceNumber.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialinConferencingTenantConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingTenantConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialInConferencingTenantSettings @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingTenantSettings.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineLisCivicAddress @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisCivicAddress.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineLisLocation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisLocation.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsClientConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsClientConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsGuestCallingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestCallingConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsGuestMeetingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMeetingConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsGuestMessagingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMessagingConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsMeetingBroadcastConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsMeetingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsUpgradeConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradeConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTenant @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenant.txt" -Force -Encoding utf8)
+  $null = (Get-CsTenantFederationConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantFederationConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTenantNetworkConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantNetworkConfiguration.txt" -Force -Encoding utf8)
+  $null = (Get-CsTenantPublicProvider @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantPublicProvider.txt" -Force -Encoding utf8)
   
   # Tenant Policies (except voice)
-  $null = (Get-CsTeamsUpgradePolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradePolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsAppPermissionPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppPermissionPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsAppSetupPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppSetupPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsCallParkPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallParkPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsChannelsPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsChannelsPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsEducationAssignmentsAppPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEducationAssignmentsAppPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsFeedbackPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsFeedbackPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingBroadcastPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMessasgingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMessagingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsNotificationAndFeedsPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsNotificationAndFeedsPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsTargetingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTargetingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsVerticalPackagePolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVerticalPackagePolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsVideoInteropServicePolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVideoInteropServicePolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsUpgradePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradePolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsAppPermissionPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppPermissionPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsAppSetupPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppSetupPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsCallParkPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallParkPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsChannelsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsChannelsPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsEducationAssignmentsAppPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEducationAssignmentsAppPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsFeedbackPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsFeedbackPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsMeetingBroadcastPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsMeetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsMessasgingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMessagingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsNotificationAndFeedsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsNotificationAndFeedsPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsTargetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTargetingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsVerticalPackagePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVerticalPackagePolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsVideoInteropServicePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVideoInteropServicePolicy.txt" -Force -Encoding utf8)
 
   # Tenant Voice Configuration
-  $null = (Get-CsTeamsTranslationRule $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTranslationRule.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantDialPlan $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantDialPlan.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsTranslationRule @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTranslationRule.txt" -Force -Encoding utf8)
+  $null = (Get-CsTenantDialPlan @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantDialPlan.txt" -Force -Encoding utf8)
 
-  $null = (Get-CsOnlinePSTNGateway $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePSTNGateway.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoiceRoute $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoute.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlinePstnUsage $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePstnUsage.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoiceRoutingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoutingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlinePSTNGateway @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePSTNGateway.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineVoiceRoute @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoute.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlinePstnUsage @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePstnUsage.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineVoiceRoutingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoutingPolicy.txt" -Force -Encoding utf8)
 
   # Tenant Voice related Configuration and Policies
-  $null = (Get-CsTeamsIPPhonePolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsIPPhonePolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsEmergencyCallingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsEmergencyCallRoutingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallRoutingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialinConferencingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoicemailPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoicemailPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsCallingPolicy $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsIPPhonePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsIPPhonePolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsEmergencyCallingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsEmergencyCallRoutingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallRoutingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialinConferencingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineVoicemailPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoicemailPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsCallingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallingPolicy.txt" -Force -Encoding utf8)
 
   # Tenant Telephone Numbers
-  $null = (Get-CsOnlineTelephoneNumber $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumber.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineTelephoneNumberAvailableCount $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberAvailableCount.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineTelephoneNumberInventoryTypes $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberInventoryTypes.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineTelephoneNumberReservationsInformation $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberReservationsInformation.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineTelephoneNumber @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumber.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineTelephoneNumberAvailableCount @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberAvailableCount.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineTelephoneNumberInventoryTypes @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberInventoryTypes.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineTelephoneNumberReservationsInformation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberReservationsInformation.txt" -Force -Encoding utf8)
 
   # Resource Accounts, Call Queues and Auto Attendants
-  $null = (Get-CsOnlineApplicationInstance $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineApplicationInstance.txt" -Force -Encoding utf8)
-  $null = (Get-CsCallQueue $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsCallQueue.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendant $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendant.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendantSupportedLanguage $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendantSupportedTimeZone $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendantTenantInformation $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineApplicationInstance @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineApplicationInstance.txt" -Force -Encoding utf8)
+  $null = (Get-CsCallQueue @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsCallQueue.txt" -Force -Encoding utf8)
+  $null = (Get-CsAutoAttendant @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendant.txt" -Force -Encoding utf8)
+  $null = (Get-CsAutoAttendantSupportedLanguage @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
+  $null = (Get-CsAutoAttendantSupportedTimeZone @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
+  $null = (Get-CsAutoAttendantTenantInformation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
 
   # User Configuration
-  $null = (Get-CsOnlineUser $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineUser.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoiceUser $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceUser.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingUser $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUser.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingUserInfo $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserInfo.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingUserState $CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserState.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineUser.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineVoiceUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceUser.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialInConferencingUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUser.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialInConferencingUserInfo @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserInfo.txt" -Force -Encoding utf8)
+  $null = (Get-CsOnlineDialInConferencingUserState @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserState.txt" -Force -Encoding utf8)
 
 
   $TenantName = (Get-CsTenant).Displayname
