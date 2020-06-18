@@ -4185,29 +4185,43 @@ function New-TeamsResourceAccount {
   .DESCRIPTION
       Teams Call Queues and Auto Attendants require a resource account.
       It can carry a license and optionally also a phone number.
+      This Function was designed to create the ApplicationInstance in AD,
+      apply a UsageLocation to the corresponding AzureAD User,
+      license the User and subsequently apply a phone number, all with one Command.
   .PARAMETER UserPrincipalName
-      The UPN for the new ResourceAccount. Invalid characters are stripped from the provided string
+      Required. The UPN for the new ResourceAccount. Invalid characters are stripped from the provided string
   .PARAMETER DisplayName
-      The Name it will show up in Teams. Invalid characters are stripped from the provided string
+      Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
   .PARAMETER ApplicationType
       Required. CallQueue or AutoAttendant. Determines the association the account can have: 
       A resource Account of the type "CallQueue" can only be associated with to a Call Queue
       A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
       NOTE: The type can be switched later, though this is not recommended.
+  .PARAMETER UsageLocation
+      Required. Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
+      Before a License can be assigned, the account needs a Usage Location populated.
   .PARAMETER License
-      Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystemVirtualUser
+      Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
+      If not provided, will default to PhoneSystem_VirtualUser
       Unlicensed Objects can exist, but cannot be assigned a phone number
+      NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
   .PARAMETER PhoneNumber
       Optional. Adds a Microsoft or Direct Routing Number to the Resource Account.
       Requires the Resource Account to be licensed (License Switch)
+      Required format is E.164, starting with a '+' and 10-15 digits long.
   .EXAMPLE
-      New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -Displayname "My {ResourceAccount}" -ApplicationType CallQueue
-      Will create a ResourceAccount of the type CallQueue
+      New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
+      Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
+      User Principal Name will be normalised to: ResourceAccount@TenantName.onmicrosoft.com
+      DisplayName will be taken from the User PrincipalName and normalised to "ResourceAccount"
+  .EXAMPLE
+      New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -Displayname "My {ResourceAccount}" -ApplicationType CallQueue -UsageLocation US
+      Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
       User Principal Name will be normalised to: ResourceAccount@TenantName.onmicrosoft.com
       DisplayName will be normalised to "My ResourceAccount"
   .EXAMPLE
-      New-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -Displayname "Mainline" -ApplicationType AutoAttendant -License PhoneSystem -PhoneNumber +1555123456
-      Creates a Resource Account for Auto Attendants
+      New-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -Displayname "Mainline" -ApplicationType AutoAttendant -UsageLocation US -License PhoneSystem -PhoneNumber +1555123456
+      Creates a Resource Account for Auto Attendants with a Usage Location for 'US'
       Applies the specified PhoneSystem License (if available in the Tenant)
       Assigns the Telephone Number if object could be licensed correctly. 
   .NOTES
@@ -4249,7 +4263,8 @@ function New-TeamsResourceAccount {
       [string]$UsageLocation,
 
       [Parameter(HelpMessage = "License to be assigned")]
-      [ValidateSet("PhoneSystem","PhoneSystem_VirtualUser")]
+      #[ValidateSet("PhoneSystem","PhoneSystem_VirtualUser")]
+      [ValidateSet("PhoneSystem_VirtualUser")]
       [string]$License = "PhoneSystem_VirtualUser",
 
       [Parameter(HelpMessage = "Telephone Number to assign")]
@@ -4387,6 +4402,10 @@ function New-TeamsResourceAccount {
         # Assigning License
         switch ($License) {
           "PhoneSystem" {
+            # PhoneSystem is currently disabled
+            # It would require an E1/E3 license in addition OR a full E5 license
+            # Deliberations and confirmation needed.
+
             # Free License  
             if ($RemainingPSlicenses -lt 1) {
               Write-Warning -Message "ERROR: No free PhoneSystem License remaining in the Tenant. Trying to assign..."
@@ -4559,13 +4578,15 @@ function New-TeamsResourceAccount {
 function Get-TeamsResourceAccount {
   <#
   .SYNOPSIS
-      Returns Resource Accounts
+      Returns Resource Accounts from AzureAD
   .DESCRIPTION
       Returns one or more Resource Accounts based on input.
+      This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
   .EXAMPLE
       Get-TeamsResourceAccount
-      Returns all Resource Accounts
-  .EXAMPLE
+      Returns all Resource Accounts.
+      NOTE: Depending on size of the Tenant, this might take a while.
+    .EXAMPLE
       Get-TeamsResourceAccount -Identity ResourceAccount@TenantName.onmicrosoft.com
       Returns the Resource Account with the Identity specified, if found.
   .EXAMPLE
@@ -4637,7 +4658,7 @@ function Get-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey('Searchstring')) {
       if ($null -ne $Searchstring) {
         Write-Verbose -Message "Searchstring - Searching for Account with DisplayName '$SearchString'" -Verbose
-        $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property DisplayName -Like -Value $SearchString
+        $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property DisplayName -Like -Value "*$SearchString*"
       }
       else {
         Write-Verbose -Message "SearchString - No data provided, listing all Resource Accounts" -Verbose
@@ -4763,30 +4784,42 @@ function Set-TeamsResourceAccount {
   .DESCRIPTION
       This function allows you to update Resource accounts for Teams Call Queues and Auto Attendants.
       It can carry a license and optionally also a phone number.
+      This Function was designed to service the ApplicationInstance in AD, 
+      the corresponding AzureAD User and its license and enable use of a phone number, all with one Command.
   .PARAMETER UserPrincipalName
       Required. Identifies the Object being changed
   .PARAMETER DisplayName
-      Optional. The Name it will show up in Teams. Invalid characters are stripped from the provided string
+      Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
   .PARAMETER ApplicationType
       CallQueue or AutoAttendant. Determines the association the account can have: 
       A resource Account of the type "CallQueue" can only be associated with to a Call Queue
       A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
       NOTE: Though switching the account type is possible, this is currently untested: Handle with Care!
-  .PARAMETER License
-      Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystemVirtualUser
+  .PARAMETER UsageLocation
+      Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
+      Before a License can be assigned, the account needs a Usage Location populated.
+    .PARAMETER License
+      Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
+      If not provided, will default to PhoneSystem_VirtualUser
       Unlicensed Objects can exist, but cannot be assigned a phone number
       If a license already exists, it will try to swap the license to the specified one.
+      NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
   .PARAMETER PhoneNumber
-      Optional. Changes the Phone Number of the object.
+      Changes the Phone Number of the object.
       Can either be a Microsoft Number or a Direct Routing Number.
       Requires the Resource Account to be licensed correctly
-  .EXAMPLE
+      Required format is E.164, starting with a '+' and 10-15 digits long.
+      .EXAMPLE
       Set-TeamsResourceAccount -UserPrincipalName ResourceAccount@TenantName.onmicrosoft.com -Displayname "My {ResourceAccount}"
       Will normalise the Display Name (i.E. remove special characters), then set it as "My ResourceAccount"
   .EXAMPLE
-      Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -License PhoneSystem
-      Changes the License to Resource Account AA-Mainline: If no license is assigned, will try to assign.
-      If a PhoneSystem License is applied, no action is taken. If a PhoneSystem Virtual User license is assigned, the license will be swapped.
+      Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -UsageLocation US
+      Sets the UsageLocation for the Account in AzureAD to US.
+  .EXAMPLE
+      Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -License PhoneSystem_VirtualUser
+      Requires the Account to have a UsageLocation populated. Applies the License to Resource Account AA-Mainline.
+      If no license is assigned, will try to assign. If the license is already applied, no action is taken.
+      NOTE: Swapping licenses is currently not possible.
   .EXAMPLE
       Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber +1555123456
       Changes the Phone number of the Object. Will cleanly remove the Phone Number first before reapplying it.
@@ -4837,7 +4870,8 @@ function Set-TeamsResourceAccount {
       [string]$UsageLocation,
 
       [Parameter(HelpMessage = "License to be assigned")]
-      [ValidateSet("PhoneSystem","PhoneSystem_VirtualUser")]
+      #[ValidateSet("PhoneSystem","PhoneSystem_VirtualUser")]
+      [ValidateSet("PhoneSystem_VirtualUser")]
       [string]$License = "PhoneSystem_VirtualUser",
 
       [Parameter(HelpMessage = "Telephone Number to assign")]
@@ -5032,6 +5066,10 @@ function Set-TeamsResourceAccount {
         # Switching dependent on input
         switch ($License) {
           "PhoneSystem" {
+            # PhoneSystem is currently disabled
+            # It would require an E1/E3 license in addition OR a full E5 license
+            # Deliberations and confirmation needed.
+
             Write-Verbose -Message "Testing whether PhoneSystem License is available"
             $RemainingPSlicenses = ($TenantLicenses | Where-Object {$_.License -eq "PhoneSystem"}).Remaining
             if ($RemainingPSlicenses -lt 1) {
@@ -5165,15 +5203,14 @@ function Set-TeamsResourceAccount {
 function Remove-TeamsResourceAccount {
   <#
   .SYNOPSIS
-      Removes a new Resource Account
+      Removes a Resource Account from AzureAD
   .DESCRIPTION
-      This function allows you to update Resource accounts for Teams Call Queues and Auto Attendants.
-      It can carry a license and optionally also a phone number.
+      This function allows you to remove Resource Accounts (Application Instances) from AzureAD
   .PARAMETER UserPrincipalName
       Required. Identifies the Object being changed
   .PARAMETER Force
       Optional. Will also sever all associations this account has in order to remove it
-      Script fails if the Account is assigned somewhere
+      If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
   .EXAMPLE
       Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
       Removes a ResourceAccount
@@ -5181,8 +5218,7 @@ function Remove-TeamsResourceAccount {
   .EXAMPLE
       Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
       Removes a ResourceAccount
-      Removes in order: Phone Number, License and Account
-      Parameter Force is optional and will also remove all Associations this account has to Call Queues or AutoAttendants.
+      Removes in order: Association, Phone Number, License and Account
   .NOTES
       CmdLet currently in testing.
       Execution requires User Admin Role in Azure AD
