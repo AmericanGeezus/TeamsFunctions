@@ -2100,113 +2100,113 @@ function Test-TeamsUserLicense {
 function New-TeamsCallQueue {
   <#
   .SYNOPSIS
-      New-CsCallQueue with UPNs instead of GUIDs
+    New-CsCallQueue with UPNs instead of GUIDs
   .DESCRIPTION
-      Does all the same things that New-CsCallQueue does, but differs in a few significant respects:
-      UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
-      Small changes to defaults (see Parameter UseMicrosoftDefaults for details)
-      New-CsCallQueue   is used to create the Call Queue with minimum settings (Name and UseDefaultMusicOnHold)
-      Set-CsCallQueue   is used to apply parameters dependent on specification.
-      Partial implementation is possible, output will show differences.
+    Does all the same things that New-CsCallQueue does, but differs in a few significant respects:
+    UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
+    Small changes to defaults (see Parameter UseMicrosoftDefaults for details)
+    New-CsCallQueue   is used to create the Call Queue with minimum settings (Name and UseDefaultMusicOnHold)
+    Set-CsCallQueue   is used to apply parameters dependent on specification.
+    Partial implementation is possible, output will show differences.
   .PARAMETER Name
-      Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
-      Used as the DisplayName - Visible in Teams
+    Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
+    Used as the DisplayName - Visible in Teams
   .PARAMETER Silent
-      Optional. Supresses output. Use for Bulk provisioning only.
-      Will return the Output object, but not display any output on Screen.
+    Optional. Supresses output. Use for Bulk provisioning only.
+    Will return the Output object, but not display any output on Screen.
   .PARAMETER Slow
-      Optional. Takes individual steps to apply settings (wit Set-CsCallQueue).
-      If not used, Parameter splatting will be used to hand over Parameters to New-CsCallQueue
-      If used, Parameter splatting will not be used. New-CsCallQueue is run to create the Queue
-      Set-CsCallQueue is then used to apply each individual setting manually. Safer, but slower
+    Optional. Takes individual steps to apply settings (wit Set-CsCallQueue).
+    If not used, Parameter splatting will be used to hand over Parameters to New-CsCallQueue
+    If used, Parameter splatting will not be used. New-CsCallQueue is run to create the Queue
+    Set-CsCallQueue is then used to apply each individual setting manually. Safer, but slower
   .PARAMETER UseMicrosoftDefaults
-      This script uses different default values for some parameters than New-CsCallQueue
-      Using this switch will instruct the Script to adhere to Microsoft defaults.
-      ChangedPARAMETER:      This Script   Microsoft    Reason:
-      - AgentAlertTime:         20s           30s         Shorter Alert Time more universally useful
-      - OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
-      - TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
-      - UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
-      NOTE: This only affects parameters which are NOT specified when running the script.
+    This script uses different default values for some parameters than New-CsCallQueue
+    Using this switch will instruct the Script to adhere to Microsoft defaults.
+    ChangedPARAMETER:      This Script   Microsoft    Reason:
+    - AgentAlertTime:         20s           30s         Shorter Alert Time more universally useful
+    - OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
+    - TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
+    - UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
+    NOTE: This only affects parameters which are NOT specified when running the script.
   .PARAMETER AgentAlertTime
-      Optional. Time in Seconds to alert each agent. Works depending on Routing method
-      NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
+    Optional. Time in Seconds to alert each agent. Works depending on Routing method
+    NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
   .PARAMETER AllowOptOut
-      Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
+    Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
   .PARAMETER UseDefaultMusicOnHold
-      Optional Switch. Indicates whether the default Music On Hold should be used.
+    Optional Switch. Indicates whether the default Music On Hold should be used.
   .PARAMETER WelcomeMusicAudioFile
-      Optional. Path to Audio File to be used as a Welcome message
-      Accepted Formats: MP3, WAV or WMA format, max 5MB
+    Optional. Path to Audio File to be used as a Welcome message
+    Accepted Formats: MP3, WAV or WMA format, max 5MB
   .PARAMETER MusicOnHoldAudioFile
-      Optional. Path to Audio File to be used as Music On Hold.
-      Required if UseDefaultMusicOnHold is not specified/set to TRUE
-      Accepted Formats: MP3, WAV or WMA format, max 5MB
+    Optional. Path to Audio File to be used as Music On Hold.
+    Required if UseDefaultMusicOnHold is not specified/set to TRUE
+    Accepted Formats: MP3, WAV or WMA format, max 5MB
   .PARAMETER OverflowAction
-      Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail
-      Action to be taken if the Queue size limit (OverflowThreshold) is reached
-      Forward requires specification of OverflowActionTarget
+    Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail
+    Action to be taken if the Queue size limit (OverflowThreshold) is reached
+    Forward requires specification of OverflowActionTarget
   .PARAMETER OverflowActionTarget
-      Situational. Required only if OverflowAction is Forward
-      UserPrincipalName of the Target
+    Situational. Required only if OverflowAction is Forward
+    UserPrincipalName of the Target
   .PARAMETER OverflowThreshold
-      Optional. Default:  30s,   Microsoft Default:   50s (See Parameter UseMicrosoftDefaults)
-      Time in Seconds for the OverflowAction to trigger
+    Optional. Default:  30s,   Microsoft Default:   50s (See Parameter UseMicrosoftDefaults)
+    Time in Seconds for the OverflowAction to trigger
   .PARAMETER TimeoutAction
-      Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail
-      Action to be taken if the TimeoutThreshold is reached
-      Forward requires specification of TimeoutActionTarget
+    Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail
+    Action to be taken if the TimeoutThreshold is reached
+    Forward requires specification of TimeoutActionTarget
   .PARAMETER TimeoutActionTarget
-      Situational. Required only if TimeoutAction is Forward
-      UserPrincipalName of the Target
+    Situational. Required only if TimeoutAction is Forward
+    UserPrincipalName of the Target
   .PARAMETER TimeoutThreshold
-      Optional. Default:  30s,   Microsoft Default:  1200s (See Parameter UseMicrosoftDefaults)
-      Time in Seconds for the TimeoutAction to trigger        
+    Optional. Default:  30s,   Microsoft Default:  1200s (See Parameter UseMicrosoftDefaults)
+    Time in Seconds for the TimeoutAction to trigger        
   .PARAMETER RoutingMethod
-      Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin,LongestIdle
-      Describes how the Call Queue is hunting for an Agent.
-      Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
-      Attendant behaves like Parallel if PresenceBasedRouting is used.
+    Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin,LongestIdle
+    Describes how the Call Queue is hunting for an Agent.
+    Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
+    Attendant behaves like Parallel if PresenceBasedRouting is used.
   .PARAMETER PresenceBasedRouting
-      Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status). 
+    Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status). 
   .PARAMETER ConferenceMode
-      Optional. Default: TRUE,   Microsoft Default: FALSE
-      Will establish a conference instead of a direct call and should help with connection time.
-      Documentation vague.
+    Optional. Default: TRUE,   Microsoft Default: FALSE
+    Will establish a conference instead of a direct call and should help with connection time.
+    Documentation vague.
   .PARAMETER DistributionLists
-      Optional. UPNs of DistributionLists or Groups to be used as Agents.
-      Will be parsed after Users if they are specified as well.
+    Optional. UPNs of DistributionLists or Groups to be used as Agents.
+    Will be parsed after Users if they are specified as well.
   .PARAMETER Users
-      Optional. UPNs of Users.
-      Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+    Optional. UPNs of Users.
+    Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
   .EXAMPLE
-      New-TeamsCallQueue -Name "My Queue"
-      Creates a new Call Queue "My Queue" with the Default Music On Hold
-      All other values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+    New-TeamsCallQueue -Name "My Queue"
+    Creates a new Call Queue "My Queue" with the Default Music On Hold
+    All other values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
   .EXAMPLE
-      New-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefautls
-      Creates a new Call Queue "My Queue" with the Default Music On Hold
-      All values not specified default to Microsoft defaults for New-CsCallQueue (See Parameter UseMicrosoftDefaults)
+    New-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefaults
+    Creates a new Call Queue "My Queue" with the Default Music On Hold
+    All values not specified default to Microsoft defaults for New-CsCallQueue (See Parameter UseMicrosoftDefaults)
   .EXAMPLE
-      New-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
-      Creates a new Call Queue "My Queue" and sets it to overflow with more than 5 Callers waiting and a timeout window of 90s
-      All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+    New-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
+    Creates a new Call Queue "My Queue" and sets it to overflow with more than 5 Callers waiting and a timeout window of 90s
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
   .EXAMPLE
-      New-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
-      Creates a new Call Queue "My Queue" with custom Audio Files
-      All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+    New-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
+    Creates a new Call Queue "My Queue" with custom Audio Files
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
   .EXAMPLE
-      New-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
-      Creates a new Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
-      All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults
+    New-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
+    Creates a new Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults
   .EXAMPLE
-      New-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
-      Creates a new Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
-      All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+    New-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
+    Creates a new Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
   .NOTES
-      Currently in Testing
+    Currently in Testing
   .FUNCTIONALITY
-      Creates a Call Queue with custom settings and friendly names as input
+    Creates a Call Queue with custom settings and friendly names as input
   .LINK
     Get-TeamsCallQueue
     Set-TeamsCallQueue
@@ -3009,26 +3009,26 @@ function New-TeamsCallQueue {
 function Get-TeamsCallQueue {
   <#
   .SYNOPSIS
-      Queries Call Queues and displays friendly Names (UPN or Displayname)
+    Queries Call Queues and displays friendly Names (UPN or Displayname)
   .DESCRIPTION
-      Same functionality as Get-CsCallQueue, but display reveals friendly Names,
-      like UserPrincipalName or DisplayName for the following connected Objects
-      OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
+    Same functionality as Get-CsCallQueue, but display reveals friendly Names,
+    like UserPrincipalName or DisplayName for the following connected Objects
+    OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
   .PARAMETER Name
-      Optional. Searches all Call Queues for this names (multiple results possible.)
-      If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+    Optional. Searches all Call Queues for this names (multiple results possible.)
+    If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
   .EXAMPLE
-      Get-TeamsCallQueue
-      Same result as Get-CsCallQueue
+    Get-TeamsCallQueue
+    Same result as Get-CsCallQueue
   .EXAMPLE
-      Get-TeamsCallQueue -Name "My CallQueue"
-      Returns an Object for every Call Queue found with the String "My CallQueue"
-      Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name. 
+    Get-TeamsCallQueue -Name "My CallQueue"
+    Returns an Object for every Call Queue found with the String "My CallQueue"
+    Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name. 
   .NOTES
-      This is as-is as it was built for a specific purpose to look up and query current status of a CQ
-      Some Parameters are not shown as they are also omitted from NEW and SET commands (not live yet)
+    This is as-is as it was built for a specific purpose to look up and query current status of a CQ
+    Some Parameters are not shown as they are also omitted from NEW and SET commands (not live yet)
   .FUNCTIONALITY
-      Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
+    Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
   .LINK
     New-TeamsCallQueue
     Set-TeamsCallQueue
@@ -3250,94 +3250,94 @@ function Get-TeamsCallQueue {
 function Set-TeamsCallQueue {
   <#
   .SYNOPSIS
-      Set-CsCallQueue with UPNs instead of GUIDs
+    Set-CsCallQueue with UPNs instead of GUIDs
   .DESCRIPTION
-      Does all the same things that Set-CsCallQueue does, but differs in a few significant respects:
-      UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
-      Set-CsCallQueue   is used to apply parameters dependent on specification.
-      Partial implementation is possible, output will show differences.
+    Does all the same things that Set-CsCallQueue does, but differs in a few significant respects:
+    UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
+    Set-CsCallQueue   is used to apply parameters dependent on specification.
+    Partial implementation is possible, output will show differences.
   .PARAMETER Identity
-      Required. Friendly Name of the Call Queue. Used to Identify the Object
+    Required. Friendly Name of the Call Queue. Used to Identify the Object
   .PARAMETER DisplayName
-      Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
+    Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
   .PARAMETER Silent
-      Optional. Supresses output. Use for Bulk provisioning only.
-      Will return the Output object, but not display any output on Screen.
+    Optional. Supresses output. Use for Bulk provisioning only.
+    Will return the Output object, but not display any output on Screen.
   .PARAMETER Slow
-      Optional. Takes individual steps to apply settings (wit Set-CsCallQueue).
-      If not used, Parameter splatting will be used to execute Set-CsCallQueue ONCE
-      If used, Set-CsCallQueue is used to apply each individual setting manually. Safer, but slower
+    Optional. Takes individual steps to apply settings (wit Set-CsCallQueue).
+    If not used, Parameter splatting will be used to execute Set-CsCallQueue ONCE
+    If used, Set-CsCallQueue is used to apply each individual setting manually. Safer, but slower
   .PARAMETER AgentAlertTime
-      Optional. Time in Seconds to alert each agent. Works depending on Routing method
-      NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
+    Optional. Time in Seconds to alert each agent. Works depending on Routing method
+    NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
   .PARAMETER AllowOptOut
-      Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
+    Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
   .PARAMETER UseDefaultMusicOnHold
-      Optional Switch. Indicates whether the default Music On Hold should be used.
+    Optional Switch. Indicates whether the default Music On Hold should be used.
   .PARAMETER WelcomeMusicAudioFile
-      Optional. Path to Audio File to be used as a Welcome message
-      Accepted Formats: MP3, WAV or WMA format, max 5MB
-      .PARAMETER MusicOnHoldAudioFile
-      Optional. Path to Audio File to be used as Music On Hold.
-      Required if UseDefaultMusicOnHold is not specified/set to TRUE
-      Accepted Formats: MP3, WAV or WMA format, max 5MB
+    Optional. Path to Audio File to be used as a Welcome message
+    Accepted Formats: MP3, WAV or WMA, max 5MB
+  .PARAMETER MusicOnHoldAudioFile
+    Optional. Path to Audio File to be used as Music On Hold.
+    Required if UseDefaultMusicOnHold is not specified/set to TRUE
+    Accepted Formats: MP3, WAV or WMA, max 5MB
   .PARAMETER OverflowAction
-      Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail
-      Action to be taken if the Queue size limit (OverflowThreshold) is reached
-      Forward requires specification of OverflowActionTarget
+    Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail
+    Action to be taken if the Queue size limit (OverflowThreshold) is reached
+    Forward requires specification of OverflowActionTarget
   .PARAMETER OverflowActionTarget
-      Situational. Required only if OverflowAction is Forward
-      UserPrincipalName of the Target
+    Situational. Required only if OverflowAction is Forward
+    UserPrincipalName of the Target
   .PARAMETER OverflowThreshold
-      Optional. Time in Seconds for the OverflowAction to trigger
+    Optional. Time in Seconds for the OverflowAction to trigger
   .PARAMETER TimeoutAction
-      Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail
-      Action to be taken if the TimeoutThreshold is reached
-      Forward requires specification of TimeoutActionTarget
+    Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail
+    Action to be taken if the TimeoutThreshold is reached
+    Forward requires specification of TimeoutActionTarget
   .PARAMETER TimeoutActionTarget
-      Situational. Required only if TimeoutAction is Forward
-      UserPrincipalName of the Target
+    Situational. Required only if TimeoutAction is Forward
+    UserPrincipalName of the Target
   .PARAMETER TimeoutThreshold
-      Optional. Time in Seconds for the TimeoutAction to trigger        
+    Optional. Time in Seconds for the TimeoutAction to trigger        
   .PARAMETER RoutingMethod
-      Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin, LongestIdle
-      Describes how the Call Queue is hunting for an Agent.
-      Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
-      Attendant behaves like Parallel if PresenceBasedRouting is used.
+    Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin, LongestIdle
+    Describes how the Call Queue is hunting for an Agent.
+    Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
+    Attendant behaves like Parallel if PresenceBasedRouting is used.
   .PARAMETER PresenceBasedRouting
-      Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status). 
+    Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status). 
   .PARAMETER ConferenceMode
-      Optional. Default: TRUE,   Microsoft Default: FALSE
-      Will establish a conference instead of a direct call and should help with connection time.
-      Documentation vague.
+    Optional. Default: TRUE,   Microsoft Default: FALSE
+    Will establish a conference instead of a direct call and should help with connection time.
+    Documentation vague.
   .PARAMETER DistributionLists
-      Optional. UPNs of DistributionLists or Groups to be used as Agents.
-      Will be parsed after Users if they are specified as well.
+    Optional. UPNs of DistributionLists or Groups to be used as Agents.
+    Will be parsed after Users if they are specified as well.
   .PARAMETER Users
-      Optional. UPNs of Users.
-      Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+    Optional. UPNs of Users.
+    Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
   .EXAMPLE
-      Set-TeamsCallQueue -Name "My Queue" -DisplayName "My new Queue Name"
-      Changes the DisplayName of Call Queue "My Queue" to "My new Queue Name"
+    Set-TeamsCallQueue -Name "My Queue" -DisplayName "My new Queue Name"
+    Changes the DisplayName of Call Queue "My Queue" to "My new Queue Name"
   .EXAMPLE
-      Set-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefautls
-      Changes the Call Queue "My Queue" to use Microsft Default Values
+    Set-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefaults
+    Changes the Call Queue "My Queue" to use Microsft Default Values
   .EXAMPLE
-      Set-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
-      Changes the Call Queue "My Queue" to overflow with more than 5 Callers waiting and a timeout window of 90s
+    Set-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
+    Changes the Call Queue "My Queue" to overflow with more than 5 Callers waiting and a timeout window of 90s
   .EXAMPLE
-      Set-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
-      Changes the Call Queue "My Queue" with custom Audio Files
+    Set-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
+    Changes the Call Queue "My Queue" with custom Audio Files
   .EXAMPLE
-      Set-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
-      Changes the Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
+    Set-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
+    Changes the Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
   .EXAMPLE
-      Set-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
-      Changes the Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
+    Set-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
+    Changes the Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
   .NOTES
-      Currently in Testing
+    Currently in Testing
   .FUNCTIONALITY
-      Changes a Call Queue with friendly names as input
+    Changes a Call Queue with friendly names as input
   .LINK
     Set-TeamsCallQueue
     Get-TeamsCallQueue
@@ -4111,14 +4111,14 @@ function Set-TeamsCallQueue {
 function Remove-TeamsCallQueue {
   <#
   .SYNOPSIS
-      Removes a Call Queue
+    Removes a Call Queue
   .DESCRIPTION
-      Remove-CsCallQueue for friendly Names
+    Remove-CsCallQueue for friendly Names
   .PARAMETER Name
-      DisplayName of the Call Queue 
+    DisplayName of the Call Queue 
   .EXAMPLE
-      Remove-TeamsCallQueue -Name "My Queue"
-      Prompts for removal for all queues found with the string "My Queue"
+    Remove-TeamsCallQueue -Name "My Queue"
+    Prompts for removal for all queues found with the string "My Queue"
   .LINK
     New-TeamsCallQueue
     Get-TeamsCallQueue
@@ -4127,8 +4127,8 @@ function Remove-TeamsCallQueue {
   #>
   [CmdletBinding(ConfirmImpact='High', SupportsShouldProcess)]
   param(
-    # Pipleine does not work properly - rebind to Identity? or query with Get-TeamsCallQueue instead?
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
+    # Pipline does not work properly - rebind to Identity? or query with Get-TeamsCallQueue instead?
+    [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
     [string]$Name
   )
 
@@ -4175,6 +4175,242 @@ function Remove-TeamsCallQueue {
 
   }
 }
+#endregion
+
+#region Resource Account Connection
+function Connect-TeamsResourceAccount {
+  # Input: UPN(s) of RA, UPN of CQ/AA (no input for ApplicationType as this is clear once queried)
+  # Putput: 
+  #         Verify existence of UPN of CQ/AA get-CsCallQueue / Get-CsAutoAttendant? any other option to query either?
+  #         Lookup ApplicationType > Define ApplicationType as baseline to test RAs against
+
+  #         Verify existence of each UPN of RA in AzureAD (Is it really a Resource Account? Department!)
+  #         Lookup UPN against Get-CsOnlineApplicationInstance, lookup ApplicationType
+  #
+  #         Verify Application Type of each UPN of RA matches Baseline 
+  #
+  # Action: New-CsOnlineApplicationInstanceAssociation -Identities @() -ConfigurationType $Type -ConfigurationId $Object.ObjectId
+  # 
+  # Output: New Object with: Identity (CQ/AA), ConfigurationType, ResourceAccounts, ResourceAccount Phone Number?
+
+}
+
+function Disconnect-TeamsResourceAccount {
+  # Input: UPN(s) of ResourceAccount
+  # Putput: Verify existence of UPN
+  #         Verify link exists (Get-CsOnlineApplicationInstanceAssociation (Get-TeamsResourceAccount -Identity $Identity))
+  # Action: Remove Link
+  #         Remove-CsOnlineApplicationInstanceAssociation -Identities @()
+  # Output: None? OK? - Query of now unassociated ApplicationInstances?
+  
+}
+
+#Add Association filter -AssociatedOnly, -UnassociatedOnly - use Find-CsOnlineApplicationInstance to do that
+# Alternatively, rework Alias Find-TeamsResourceAccount into function to query associations
+Set-Alias Find-TeamsResourceAccount Find-CsOnlineApplicationInstance
+function Get-TeamsResourceAccount2 {
+  <#
+  .SYNOPSIS
+      Returns Resource Accounts from AzureAD
+  .DESCRIPTION
+      Returns one or more Resource Accounts based on input.
+      This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
+  .EXAMPLE
+      Get-TeamsResourceAccount
+      Returns all Resource Accounts.
+      NOTE: Depending on size of the Tenant, this might take a while.
+    .EXAMPLE
+      Get-TeamsResourceAccount -Identity ResourceAccount@TenantName.onmicrosoft.com
+      Returns the Resource Account with the Identity specified, if found.
+  .EXAMPLE
+      Get-TeamsResourceAccount -ApplicationType AutoAttendant
+      Returns all Resource Accounts of the specified ApplicationType.
+  .EXAMPLE
+      Get-TeamsResourceAccount -PhoneNumber +1555123456
+      Returns the Resource Account with the Phone Number specifed, if found.
+  .NOTES
+      CmdLet currently in testing.
+      Pipeline input possible, though untested. Requires figuring out :)
+      Please feed back any issues to david.eberhardt@outlook.com
+  .FUNCTIONALITY
+      Returns one or more Resource Accounts
+  .LINK
+      New-TeamsResourceAccount
+      Set-TeamsResourceAccount
+      Remove-TeamsResourceAccount
+  #>
+
+  [CmdletBinding(DefaultParameterSetName = "Search")]
+  param (
+      [Parameter(ParameterSetName = "Identity", ValueFromPipelineByPropertyName = $true, HelpMessage = "User Principal Name of the Object.")]
+      [Alias("UPN","UserPrincipalName")]
+      [string]$Identity,
+
+      [Parameter(ParameterSetName = "Search", Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Searches for AzureAD Object with this Name")]
+      [AllowNull()]
+      [string]$Searchstring,
+
+      [Parameter(ParameterSetName = "AppType", HelpMessage = "Limits search to specific Types: CallQueue or AutoAttendant")]
+      [ValidateSet("CallQueue","AutoAttendant","CQ","AA")]
+      [Alias("Type")]
+      [string]$ApplicationType,
+
+      [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName = $true, HelpMessage = "Telephone Number of the Object")]
+      [ValidateScript({
+        If ($_ -match "^\+?[0-9]{3,15}$") {
+          $True
+        }
+        else {
+          Write-Host "Not a phone number or part of a number. Must start with a + and 3 to 15 digits long" -ForeGroundColor Red
+          $false
+        }
+      })]
+      [Alias("Tel","Number","TelephoneNumber")]
+      [string]$PhoneNumber        
+  )
+  
+  begin {
+    # Testing AzureAD Connection
+    if ($false -eq (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Testing SkypeOnline Connection
+    if ($false -eq (Test-SkypeOnlineConnection)) {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+  } # end of begin
+
+  process {
+    #region Data gathering
+    if ($PSBoundParameters.ContainsKey('Searchstring')) {
+      if ($null -ne $Searchstring) {
+        # Compare speed with Find-CsOnlineApplicationInstance -SearchQuery "$SearchString"
+        Write-Verbose -Message "Searchstring - Searching for Account with DisplayName '$SearchString'" -Verbose
+        $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property DisplayName -Like -Value "*$SearchString*"
+      }
+      else {
+        Write-Verbose -Message "SearchString - No data provided, listing all Resource Accounts" -Verbose
+        $ResourceAccounts = Get-CsOnlineApplicationInstance
+      }
+    }
+    elseif ($PSBoundParameters.ContainsKey('Identity')) {
+      Write-Verbose -Message "Identity - Searching for UserPrincipalName '$Identity'" -Verbose
+      try {
+        $ResourceAccounts = Get-CsOnlineApplicationInstance $Identity -ErrorAction Stop
+      }
+      catch {
+        $ResourceAccounts = $null
+      }
+    }
+    elseif ($PSBoundParameters.ContainsKey('ApplicationType')) {
+      Write-Verbose -Message "ApplicationType - Searching for ApplicationType '$ApplicationType'"
+      $AppId = GetAppIdfromApplicationType $ApplicationType
+      $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property ApplicationId -EQ -Value $AppId
+    }
+    elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
+      Write-Verbose -Message "PhoneNumber - Searching for PhoneNumber '$PhoneNumber'"
+      $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property PhoneNumber -Like -Value "*$PhoneNumber*"
+      
+      # Loading all Microsoft Telephone Numbers
+      Write-Verbose -Message "Gathering Phone Numbers from the Tenant"
+      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers) 
+    }
+    else {
+      Write-Verbose -Message "No Parameter specified, listing all Resource Accounts"
+      $ResourceAccounts = Get-CsOnlineApplicationInstance
+    }
+
+    # Stop script if no data has been determined
+    if ($null -eq $ResourceAccounts) {
+      Write-Verbose -Message "No Data found."
+      return
+    }
+
+    #endregion
+    
+    
+    #region Output
+    # Creating new PS Object
+    try {
+      [System.Collections.ArrayList]$AllAccounts = @()
+      Write-Verbose -Message "Parsing Resource Accounts, please wait..." -Verbose
+      foreach ($ResourceAccount in $ResourceAccounts) {
+        # readable Application type
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: ApplicationType"
+        if ($PSBoundParameters.ContainsKey('ApplicationType')) {
+          $ResourceAccountApplicationType = $ApplicationType
+        }
+        else {
+          $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
+        }
+      
+        # Resource Account License
+        # License
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: License"
+        if (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -LicensePackage PhoneSystem) {
+          $ResourceAccuntLicense = "PhoneSystem"
+        }
+        elseif (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -LicensePackage PhoneSystem_VirtualUser) {
+          $ResourceAccuntLicense = "PhoneSystem_VirtualUser"
+        }
+        else {
+          $ResourceAccuntLicense = $null
+        }
+
+        # Phone Number Type
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"
+        if ($null -ne $ResourceAccount.PhoneNumber) {
+          if ($PhoneNumberIsMSNumber) {
+            $ResourceAccountPhoneNumberType = "Microsoft Number"
+          }
+          else {
+            $ResourceAccountPhoneNumberType = "Direct Routing Number"
+          }
+        }
+        else {
+          $ResourceAccountPhoneNumberType = $null
+        }
+
+        # Usage Location from Object
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
+        $UsageLocation = (Get-AzureADUser -SearchString $ResourceAccount.UserPrincipalName).UsageLocation
+
+        
+        # creating new PS Object (synchronous with Get and Set)
+        $ResourceAccountObject = [PSCustomObject][ordered]@{
+          UserPrincipalName   = $ResourceAccount.UserPrincipalName
+          DisplayName         = $ResourceAccount.DisplayName
+          UsageLocation       = $UsageLocation
+          ApplicationType     = $ResourceAccountApplicationType
+          License             = $ResourceAccuntLicense
+          PhoneNumberType     = $ResourceAccountPhoneNumberType
+          PhoneNumber         = $ResourceAccount.PhoneNumber
+        }
+
+        [void]$AllAccounts.Add($ResourceAccountObject)
+      }
+      return $AllAccounts
+      
+    }
+    catch {
+      Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+    }
+    #endregion
+  }
+  
+  end {
+      
+  }
+}
+
 #endregion
 
 #region Resource Accounts - Work in Progress - 
@@ -4360,10 +4596,24 @@ function New-TeamsResourceAccount {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait to be able to parse the Object." -Verbose
         Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
-        while ($null -eq $(Get-AzureADUser -SearchString $UPN).ObjectId) {
+        <#
+          Rework Loop to exit after 20s - Rework lookup to bind to -ObjectId
+          Get-AzureADUser -ObjectId "IE-DUB-Operator-CQ@applicableconsulting.onmicrosoft.com"  returns the object
+          Get-AzureADUser -SearchString IE-DUB-Operator-CQ@applicableconsulting.onmicrosoft.com  doesnt
+          was: while ($null -eq $(Get-AzureADUser -SearchString $UPN).ObjectId) {
+        
+        #>
+        $i    = 0
+        $imax = 20
+        while ($null -eq $(Get-AzureADUser -ObjectId "$UPN").ObjectId) {
+          if ($i -gt $imax) {
+            Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been creaated (UserPrincipalName); Continue with Set-TeamsResourceAccount"
+            break
+          }
           Start-Sleep 1
+          $i++
         }
-        $ResourceAccountCreated = Get-AzureADUser -SearchString $UPN
+        $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN"
       }
     catch {
         # Catching anything
@@ -4657,6 +4907,7 @@ function Get-TeamsResourceAccount {
     #region Data gathering
     if ($PSBoundParameters.ContainsKey('Searchstring')) {
       if ($null -ne $Searchstring) {
+        # Compare speed with Find-CsOnlineApplicationInstance -SearchQuery "$SearchString"
         Write-Verbose -Message "Searchstring - Searching for Account with DisplayName '$SearchString'" -Verbose
         $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property DisplayName -Like -Value "*$SearchString*"
       }
@@ -5444,7 +5695,7 @@ function Import-TeamsAudioFile {
       return $File
     }
     catch {
-      Write-Host "Error importing file - Please check file size 1and compression ratio. If in doubt, provide WAV "  
+      Write-Host "Error importing file - Please check file size and compression ratio. If in doubt, provide WAV "  
       # Writing Error Record in human readable format. Prepend with Custom message
       Write-ErrorRecord $_
       return
@@ -6554,20 +6805,20 @@ function ProcessLicense {
 function GetApplicationTypeFromAppId ($CsAppId) {
   # Translates a given AppId into a friendly ApplicationType (Name)
   switch ($CsAppId) {
-      "11cd3e2e-fccb-42ad-ad00-878b93575e07"  { $CsApplicationType = "CallQueue"}
-      "ce933385-9390-45d1-9512-c8d228074e07"  {$CsApplicationType = "AutoAttendant"}
-      Default {}
+    "11cd3e2e-fccb-42ad-ad00-878b93575e07"  { $CsApplicationType = "CallQueue"}
+    "ce933385-9390-45d1-9512-c8d228074e07"  {$CsApplicationType = "AutoAttendant"}
+    Default {}
   }
   return $CsApplicationType
 }
 function GetAppIdfromApplicationType ($CsApplicationType) {
   # Translates a given friendly ApplicationType (Name) into an AppId used by MS commands
   switch ($CsApplicationType) {
-      "CallQueue"     { $CsAppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
-      "CQ"            { $CsAppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
-      "AutoAttendant" { $CsAppId = "ce933385-9390-45d1-9512-c8d228074e07"}
-      "AA"            { $CsAppId = "ce933385-9390-45d1-9512-c8d228074e07"}
-      Default {}
+    "CallQueue"     { $CsAppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
+    "CQ"            { $CsAppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07"}
+    "AutoAttendant" { $CsAppId = "ce933385-9390-45d1-9512-c8d228074e07"}
+    "AA"            { $CsAppId = "ce933385-9390-45d1-9512-c8d228074e07"}
+    Default {}
   }
   return $CsAppId
 }
@@ -6575,7 +6826,7 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 
 # Exporting ModuleMembers
 
-Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-Me, dis, Disconnect-Me
+Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, Find-TeamsResourceAccount, con, Connect-Me, dis, Disconnect-Me
 Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-SkypeTeamsAndAAD, Disconnect-SkypeTeamsAndAAD, Test-Module,`
                               Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN,`
                               Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses,`
