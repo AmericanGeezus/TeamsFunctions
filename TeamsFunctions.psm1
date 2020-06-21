@@ -74,7 +74,37 @@
 # Assigns a Teams License to a User/Object
 
 function Set-TeamsUserLicense {
-# Add-TeamsUserLicense Rework for the following:
+	<#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+	.PARAMETER 
+		
+	.PARAMETER 
+		
+	.PARAMETER 
+		
+	.EXAMPLE
+		C:\PS>
+		Example of how to use this cmdlet
+	.EXAMPLE
+		C:\PS>
+		Another example of how to use this cmdlet
+	.INPUTS
+		Inputs to this cmdlet (if any)
+	.OUTPUTS
+		Output from this cmdlet (if any)
+	.NOTES
+		General notes
+	.COMPONENT
+		The component this cmdlet belongs to
+	.ROLE
+		The role this cmdlet belongs to
+	.FUNCTIONALITY
+		The functionality that best describes this cmdlet
+	#>
+	# Add-TeamsUserLicense Rework for the following:
 # - One Switch for Licenses Added (ARRAY)
 # - One Switch for Licenses Removed (all)
 # - One Switch for License removed (specific)(ARRAY)
@@ -82,79 +112,79 @@ function Set-TeamsUserLicense {
 }
 function Add-TeamsUserLicense {
 	<#
-			.SYNOPSIS
-			Adds one or more Teams related licenses to a user account.
-			.DESCRIPTION
-			Teams services are available through assignment of different types of licenses.
-			This command allows assigning one or more Teams related Office 365 licenses to a user account to enable
-			the different services, such as E3/E5, Phone System, Calling Plans, and Audio Conferencing.
-			.PARAMETER Identity
-			The sign-in address or User Principal Name of the user account to modify.
-			.PARAMETER AddSFBO2
-			Adds a Skype for Business Plan 2 license to the user account.
-			.PARAMETER AddOffice365E3
-			Adds an Office 365 E3 license to the user account.
-			.PARAMETER AddOffice365E5
-			Adds an Office 365 E5 license to the user account.
-			.PARAMETER AddMicrosoft365E3
-			Adds an Microsoft 365 E3 license to the user account.
-			.PARAMETER AddMicrosoft365E5
-			Adds an Microsoft 365 E5 license to the user account.
-			.PARAMETER AddOffice365E5NoAudioConferencing
-			Adds an Office 365 E5 without Audio Conferencing license to the user account.
-			.PARAMETER AddAudioConferencing
-			Adds a Audio Conferencing add-on license to the user account.
-			.PARAMETER AddPhoneSystem
-			Adds a Phone System add-on license to the user account.
-			Can be combined with Replace (which then will remove PhoneSystem_VirtualUser from the User)
-			.PARAMETER AddPhoneSystemVirtualUser
-			Adds a Phone System Virtual User add-on license to the user account.
-			Can be combined with Replace (which then will remove PhoneSystem from the User)
-			.PARAMETER AddMSCallingPlanDomestic
-			Adds a Domestic Calling Plan add-on license to the user account.
-			.PARAMETER AddMSCallingPlanInternational
-			Adds an International Calling Plan add-on license to the user account.
-			.PARAMETER AddCommonAreaPhone
-			Adds a Common Area Phone license to the user account.
-			.EXAMPLE
-			Add-TeamsUserLicense -Identity Joe@contoso.com -AddMicrosoft365E5
-			Example 1 will add the an Microsoft 365 E5 to Joe@contoso.com
-			.EXAMPLE
-			Add-TeamsUserLicense -Identity Joe@contoso.com -AddMicrosoft365E3 -AddPhoneSystem
-			Example 2 will add the an Microsoft 365 E3 and Phone System add-on license to Joe@contoso.com
-			.EXAMPLE
-			Add-TeamsUserLicense -Identity Joe@contoso.com -AddSFBOS2 -AddAudioConferencing -AddPhoneSystem
-			Example 3 will add the a Skype for Business Plan 2 (S2) and PSTN Conferencing and PhoneSystem add-on license to Joe@contoso.com
-			.EXAMPLE
-			Add-TeamsUserLicense -Identity Joe@contoso.com -AddOffice365E3 -AddPhoneSystem
-			Example 4 will add the an Office 365 E3 and PhoneSystem add-on license to Joe@contoso.com
-			.EXAMPLE
-			Add-TeamsUserLicense -Identity Joe@contoso.com -AddOffice365E5 -AddDomesticCallingPlan
-			Example 5 will add the an Office 365 E5 and Domestic Calling Plan add-on license to Joe@contoso.com
-			.EXAMPLE
-			Add-TeamsUserLicense -Identity ResourceAccount@contoso.com -AddPhoneSystem -Replace
-			Example 5 will add the PhoneSystem add-on license to ResourceAccount@contoso.com, removing the PhoneSystem_VirtualUserLicense
-			NOTE: This is currently in development
-			.NOTES
-			The command will test to see if the license exists in the tenant as well as if the user already
-			has the licensed assigned. It does not keep track or take into account the number of licenses
-			available before attempting to assign the license.
+	.SYNOPSIS
+		Adds one or more Teams related licenses to a user account.
+	.DESCRIPTION
+		Teams services are available through assignment of different types of licenses.
+		This command allows assigning one or more Teams related Office 365 licenses to a user account to enable
+		the different services, such as E3/E5, Phone System, Calling Plans, and Audio Conferencing.
+	.PARAMETER Identity
+		The sign-in address or User Principal Name of the user account to modify.
+	.PARAMETER AddSFBO2
+		Adds a Skype for Business Plan 2 license to the user account.
+	.PARAMETER AddOffice365E3
+		Adds an Office 365 E3 license to the user account.
+	.PARAMETER AddOffice365E5
+		Adds an Office 365 E5 license to the user account.
+	.PARAMETER AddMicrosoft365E3
+		Adds an Microsoft 365 E3 license to the user account.
+	.PARAMETER AddMicrosoft365E5
+		Adds an Microsoft 365 E5 license to the user account.
+	.PARAMETER AddOffice365E5NoAudioConferencing
+		Adds an Office 365 E5 without Audio Conferencing license to the user account.
+	.PARAMETER AddAudioConferencing
+		Adds a Audio Conferencing add-on license to the user account.
+	.PARAMETER AddPhoneSystem
+		Adds a Phone System add-on license to the user account.
+		Can be combined with Replace (which then will remove PhoneSystem_VirtualUser from the User)
+	.PARAMETER AddPhoneSystemVirtualUser
+		Adds a Phone System Virtual User add-on license to the user account.
+		Can be combined with Replace (which then will remove PhoneSystem from the User)
+	.PARAMETER AddMSCallingPlanDomestic
+		Adds a Domestic Calling Plan add-on license to the user account.
+	.PARAMETER AddMSCallingPlanInternational
+		Adds an International Calling Plan add-on license to the user account.
+	.PARAMETER AddCommonAreaPhone
+		Adds a Common Area Phone license to the user account.
+	.EXAMPLE
+		Add-TeamsUserLicense -Identity Joe@contoso.com -AddMicrosoft365E5
+		Example 1 will add the an Microsoft 365 E5 to Joe@contoso.com
+	.EXAMPLE
+		Add-TeamsUserLicense -Identity Joe@contoso.com -AddMicrosoft365E3 -AddPhoneSystem
+		Example 2 will add the an Microsoft 365 E3 and Phone System add-on license to Joe@contoso.com
+	.EXAMPLE
+		Add-TeamsUserLicense -Identity Joe@contoso.com -AddSFBOS2 -AddAudioConferencing -AddPhoneSystem
+		Example 3 will add the a Skype for Business Plan 2 (S2) and PSTN Conferencing and PhoneSystem add-on license to Joe@contoso.com
+	.EXAMPLE
+		Add-TeamsUserLicense -Identity Joe@contoso.com -AddOffice365E3 -AddPhoneSystem
+		Example 4 will add the an Office 365 E3 and PhoneSystem add-on license to Joe@contoso.com
+	.EXAMPLE
+		Add-TeamsUserLicense -Identity Joe@contoso.com -AddOffice365E5 -AddDomesticCallingPlan
+		Example 5 will add the an Office 365 E5 and Domestic Calling Plan add-on license to Joe@contoso.com
+	.EXAMPLE
+		Add-TeamsUserLicense -Identity ResourceAccount@contoso.com -AddPhoneSystem -Replace
+		Example 5 will add the PhoneSystem add-on license to ResourceAccount@contoso.com, removing the PhoneSystem_VirtualUserLicense
+		NOTE: This is currently in development
+	.NOTES
+		The command will test to see if the license exists in the tenant as well as if the user already
+		has the licensed assigned. It does not keep track or take into account the number of licenses
+		available before attempting to assign the license.
 
-			05-APR-2020 - Update/Revamp for Teams:
-			# Added Switch to support Microsoft365 E3 License (SPE_E3)
-			# Added Switch to support Microsoft365 E5 License (SPE_E5)
-			# Renamed Switch AddSkypeStandalone to AddSFBO2
-			# Renamed Switch AddE3 to AddOffice365E3 (Alias retains AddE3 for input)
-			# Renamed Switch AddE5 to AddOffice365E5 (Alias retains AddE5 for input)
-			# #TBC: Renamed references from SkypeOnline to Teams where appropriate
-			# #TBC: Renamed function Names to reflect use for Teams
-			# Removed Switch AddE1 (Office 365 E1) as it is not a valid license for Teams
-			# Removed Switch CommunicationCredits as it is not available for Teams (SFBO only)
+		05-APR-2020 - Update/Revamp for Teams:
+		# Added Switch to support Microsoft365 E3 License (SPE_E3)
+		# Added Switch to support Microsoft365 E5 License (SPE_E5)
+		# Renamed Switch AddSkypeStandalone to AddSFBO2
+		# Renamed Switch AddE3 to AddOffice365E3 (Alias retains AddE3 for input)
+		# Renamed Switch AddE5 to AddOffice365E5 (Alias retains AddE5 for input)
+		# #TBC: Renamed references from SkypeOnline to Teams where appropriate
+		# #TBC: Renamed function Names to reflect use for Teams
+		# Removed Switch AddE1 (Office 365 E1) as it is not a valid license for Teams
+		# Removed Switch CommunicationCredits as it is not available for Teams (SFBO only)
 
-			23-MAY-2020 - Update: Added Switch Replace
-			# This is for exclusive use for Resource Accounts (swap between PhoneSystem or PhoneSystemVirtualUser)
-			# MS Best practice: https://docs.microsoft.com/en-us/microsoftteams/manage-resource-accounts#change-an-existing-resource-account-to-use-a-virtual-user-license
-			# Aliases had to be removed as they were confusing, sorry
+		23-MAY-2020 - Update: Added Switch Replace
+		# This is for exclusive use for Resource Accounts (swap between PhoneSystem or PhoneSystemVirtualUser)
+		# MS Best practice: https://docs.microsoft.com/en-us/microsoftteams/manage-resource-accounts#change-an-existing-resource-account-to-use-a-virtual-user-license
+		# Aliases had to be removed as they were confusing, sorry
 	#>
 	[CmdletBinding(DefaultParameterSetName = 'General')]
 	param(
@@ -363,29 +393,29 @@ function Add-TeamsUserLicense {
 
 function Connect-SkypeOnline {
 	<#
-		.SYNOPSIS
+	.SYNOPSIS
 		Creates a remote PowerShell session out to Skype for Business Online and Teams
-		.DESCRIPTION
+	.DESCRIPTION
 		Connecting to a remote PowerShell session to Skype for Business Online requires several components
 		and steps. This function consolidates those activities by
 		1) verifying the SkypeOnlineConnector is installed and imported
 		2) prompting for username and password to make and to import the session.
 		3) extnding the session time-out limit beyond 60mins (SkypeOnlineConnector v7 or higher only!)
 		A SkypeOnline Session requires one of the Teams Admin roles or Skype For Business Admin to connect.
-		.PARAMETER UserName
+	.PARAMETER UserName
 		Optional String. The username or sign-in address to use when making the remote PowerShell session connection.
-		.PARAMETER OverrideAdminDomain
+	.PARAMETER OverrideAdminDomain
 		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
-		.PARAMETER IdleTimeout
+	.PARAMETER IdleTimeout
 		Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
 		Note, by default, creating a session with New-CsSkypeOnlineSession results in a timout of 15mins!
-		.EXAMPLE
+	.EXAMPLE
 		$null = Connect-SkypeOnline
 		Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
-		.EXAMPLE
+	.EXAMPLE
 		$null = Connect-SkypeOnline -UserName admin@contoso.com
 		Example 2 will prefill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
-		.NOTES
+	.NOTES
 		Requires that the Skype Online Connector PowerShell module be installed.
 		If the PowerShell Module SkypeOnlineConnector is v7 or higher, the Session TimeOut of 60min can be circumvented.
 		Enable-CsOnlineSessionForReconnection is run.
@@ -395,6 +425,7 @@ function Connect-SkypeOnline {
 		Connect-MicrosoftTeams requires a Teams Admin role and is part of the PowerShell Module MicrosoftTeams
 		https://www.powershellgallery.com/packages/MicrosoftTeams
 	#>
+
 	[CmdletBinding()]
 	param(
 		[Parameter(Mandatory = $false)]
@@ -546,37 +577,37 @@ function Connect-SkypeOnline {
 function Connect-SkypeTeamsAndAAD {
 	<#
 	.SYNOPSIS
-			Connect to SkypeOnline Teams and AzureActiveDirectory
+		Connect to SkypeOnline Teams and AzureActiveDirectory
 	.DESCRIPTION
-			One function to connect them all.
-			This function tries to solves the requirement for individual authentication prompts for
-			SkypeOnline, MicrosoftTeams and AzureAD when multiple connections are required.
-			For SkypeOnline, the Skype for Business Legacy Administrator Roles is required
-			For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin)
-			For AzureAD, no particular role is needed as GET-commands are available without a role.
-			Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
-			Disconnects current SkypeOnline, MicrosoftTeams and AzureAD session in order to establish a clean new session to each service.
-			Combine as desired
+		One function to connect them all.
+		This function tries to solves the requirement for individual authentication prompts for
+		SkypeOnline, MicrosoftTeams and AzureAD when multiple connections are required.
+		For SkypeOnline, the Skype for Business Legacy Administrator Roles is required
+		For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin)
+		For AzureAD, no particular role is needed as GET-commands are available without a role.
+		Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
+		Disconnects current SkypeOnline, MicrosoftTeams and AzureAD session in order to establish a clean new session to each service.
+		Combine as desired
 	.PARAMETER UserName
-			Requried. UserPrincipalName or LoginName of the Office365 Administrator
+		Requried. UserPrincipalName or LoginName of the Office365 Administrator
 	.PARAMETER SkypeOnline
-			Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator
+		Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator
 	.PARAMETER MicrosoftTeams
-			Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator
+		Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator
 	.PARAMETER AzureAD
-			Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)
+		Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)
 	.PARAMETER OverrideAdminDomain
-			Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
+		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
 	.PARAMETER Silent
-			Optional. Suppresses output session information about established sessions. Used for calls by other functions
+		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
-			Connect-SkypeTeamsAndAAD -Username admin@domain.com
-			Connects to all three Services prompting ONCE for a Password for 'admin@domain.com'
+		Connect-SkypeTeamsAndAAD -Username admin@domain.com
+		Connects to all three Services prompting ONCE for a Password for 'admin@domain.com'
 	.EXAMPLE
-			Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -AzureAD
-			Connects to SkypeOnline and AzureAD prompting ONCE for a Password for 'admin@domain.com'
+		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -AzureAD
+		Connects to SkypeOnline and AzureAD prompting ONCE for a Password for 'admin@domain.com'
 	.FUNCTIONALITY
-			Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
+		Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
 	#>
 
 	param(
@@ -719,7 +750,15 @@ function Connect-SkypeTeamsAndAAD {
 }
 
 function Disconnect-SkypeTeamsAndAAD {
-	# Helper function to disconnect from all three Services
+	<#
+	.SYNOPSIS
+		Disconnect from Skype, Teams and AzureAD
+	.DESCRIPTION
+		Helper function to disconnect from SkypeOnline, Teams and AzureAD
+	.NOTES
+		Helper function to disconnect from all three Services
+	#>
+
 	Import-Module SkypeOnlineConnector
 	Import-Module MicrosoftTeams -Force # Must import Forcefully as the command otherwise fails (not available)
 	Import-Module AzureAD
@@ -745,9 +784,9 @@ Set-Alias -Name dis -Value Disconnect-SkypeTeamsAndAAD
 
 function Disconnect-SkypeOnline {
 	<#
-			.SYNOPSIS
+		.SYNOPSIS
 			Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
-			.EXAMPLE
+		.EXAMPLE
 			Disconnect-SkypeOnline
 			Removes any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
 	#>
@@ -776,20 +815,20 @@ function Disconnect-SkypeOnline {
 
 function Get-SkypeOnlineConferenceDialInNumbers {
 	<#
-			.SYNOPSIS
-			Gathers the audio conference dial-in numbers information for a Skype for Business Online tenant.
-			.DESCRIPTION
-			This command uses the tenant's conferencing dial-in number web page to gather a "user-readable" list of
-			the regions, numbers, and available languages where dial-in conferencing numbers are available. This web
-			page can be access at https://dialin.lync.com/DialInOnline/Dialin.aspx?path=<DOMAIN> replacing "<DOMAIN>"
-			with the tenant's default domain name (i.e. contoso.com).
-			.PARAMETER Domain
-			The Skype for Business Online Tenant domain to gather the conference dial-in numbers.
-			.EXAMPLE
-			Get-SkypeOnlineConferenceDialInNumbers -Domain contoso.com
-			Example 1 will gather the conference dial-in numbers for contoso.com based on their conference dial-in number web page.
-			.NOTES
-			This function was taken 1:1 from SkypeFunctions and remains untested for Teams
+	.SYNOPSIS
+		Gathers the audio conference dial-in numbers information for a Skype for Business Online tenant.
+	.DESCRIPTION
+		This command uses the tenant's conferencing dial-in number web page to gather a "user-readable" list of
+		the regions, numbers, and available languages where dial-in conferencing numbers are available. This web
+		page can be access at https://dialin.lync.com/DialInOnline/Dialin.aspx?path=<DOMAIN> replacing "<DOMAIN>"
+		with the tenant's default domain name (i.e. contoso.com).
+	.PARAMETER Domain
+		The Skype for Business Online Tenant domain to gather the conference dial-in numbers.
+	.EXAMPLE
+		Get-SkypeOnlineConferenceDialInNumbers -Domain contoso.com
+		Example 1 will gather the conference dial-in numbers for contoso.com based on their conference dial-in number web page.
+	.NOTES
+		This function was taken 1:1 from SkypeFunctions and remains untested for Teams
 	#>
 	[CmdletBinding()]
 	param(
@@ -836,29 +875,29 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 
 function Get-TeamsUserLicense {
 	<#
-			.SYNOPSIS
-			Gathers licenses assigned to a Teams user for Cloud PBX and PSTN Calling Plans.
-			.DESCRIPTION
-			This script lists the UPN, Name, currently O365 Plan, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
-			.PARAMETER Identity
-			The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
-			Aliases include: "UPN","UserPrincipalName","Username"
-			.EXAMPLE
-			Get-TeamsUserLicense -Identity John@domain.com
-			Example 1 will confirm the license for a single user: John@domain.com
-			.EXAMPLE
-			Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
-			Example 2 will confirm the licenses for two users: John@domain.com & Jane@domain.com
-			.EXAMPLE
-			Import-Csv User.csv | Get-TeamsUserLicense
-			Example 3 will use a CSV as an input file and confirm the licenses for users listed in the file. The input file must
-			have a single column heading of "Identity" with properly formatted UPNs.
-			.NOTES
-			If using a CSV file for pipeline input, the CSV user data file should contain a column name matching each of this script's parameters. Example:
-			Identity
-			John@domain.com
-			Jane@domain.com
-			Output can be redirected to a file or grid-view.
+	.SYNOPSIS
+		Gathers licenses assigned to a Teams user for Cloud PBX and PSTN Calling Plans.
+	.DESCRIPTION
+		This script lists the UPN, Name, currently O365 Plan, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
+	.PARAMETER Identity
+		The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
+		Aliases include: "UPN","UserPrincipalName","Username"
+	.EXAMPLE
+		Get-TeamsUserLicense -Identity John@domain.com
+		Example 1 will confirm the license for a single user: John@domain.com
+	.EXAMPLE
+		Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
+		Example 2 will confirm the licenses for two users: John@domain.com & Jane@domain.com
+	.EXAMPLE
+		Import-Csv User.csv | Get-TeamsUserLicense
+		Example 3 will use a CSV as an input file and confirm the licenses for users listed in the file. The input file must
+		have a single column heading of "Identity" with properly formatted UPNs.
+	.NOTES
+		If using a CSV file for pipeline input, the CSV user data file should contain a column name matching each of this script's parameters. Example:
+		Identity
+		John@domain.com
+		Jane@domain.com
+		Output can be redirected to a file or grid-view.
 	#>
 
 	[CmdletBinding()]
@@ -953,17 +992,17 @@ function Get-TeamsUserLicense {
 
 function Get-TeamsTenantLicenses {
 	<#
-			.SYNOPSIS
-			Displays the individual plans, add-on & grouped license SKUs for Teams in the tenant.
-			.DESCRIPTION
-			Teams services can be provisioned through several different combinations of individual
-			plans as well as add-on and grouped license SKUs. This command displays these license SKUs in a more friendly
-			format with descriptive names, SKUpartNumber, active, consumed, remaining, and expiring licenses.
-			.EXAMPLE
-			Get-TeamsTenantLicenses
-			Example 1 will display all the Skype related licenses for the tenant.
-			.NOTES
-			Requires the Azure Active Directory PowerShell module to be installed and authenticated to the tenant's Azure AD instance.
+	.SYNOPSIS
+		Displays the individual plans, add-on & grouped license SKUs for Teams in the tenant.
+	.DESCRIPTION
+		Teams services can be provisioned through several different combinations of individual
+		plans as well as add-on and grouped license SKUs. This command displays these license SKUs in a more friendly
+		format with descriptive names, SKUpartNumber, active, consumed, remaining, and expiring licenses.
+	.EXAMPLE
+		Get-TeamsTenantLicenses
+		Example 1 will display all the Skype related licenses for the tenant.
+	.NOTES
+		Requires the Azure Active Directory PowerShell module to be installed and authenticated to the tenant's Azure AD instance.
 	#>
 
 	[CmdletBinding()]
@@ -1020,27 +1059,27 @@ function Get-TeamsTenantLicenses {
 
 function Remove-TenantDialPlanNormalizationRule {
 	<#
-			.SYNOPSIS
-			Removes a normalization rule from a tenant dial plan.
-			.DESCRIPTION
-			This command will display the normalization rules for a tenant dial plan in a list with
-			index numbers. After choosing one of the rule index numbers, the rule will be removed from
-			the tenant dial plan. This command requires a remote PowerShell session to Teams.
-			Note: The Module name is still referencing Skype for Business Online (SkypeOnlineConnector).
-			.PARAMETER DialPlan
-			This is the name of a valid dial plan for the tenant. To view available tenant dial plans,
-			use the command Get-CsTenantDialPlan.
-			.EXAMPLE
-			Remove-TenantDialPlanNormalizationRule -DialPlan US-OK-OKC-DialPlan
-			Example 1 will display the availble normalization rules to remove from dial plan US-OK-OKC-DialPlan.
-			.NOTES
-			The dial plan rules will display in format similar the example below:
-			RuleIndex Name            Pattern    Translation
-			--------- ----            -------    -----------
-			0 Intl Dialing    ^011(\d+)$ +$1
-			1 Extension Rule  ^(\d{5})$  +155512$1
-			2 Long Distance   ^1(\d+)$   +1$1
-			3 Default         ^(\d+)$    +1$1
+	.SYNOPSIS
+		Removes a normalization rule from a tenant dial plan.
+	.DESCRIPTION
+		This command will display the normalization rules for a tenant dial plan in a list with
+		index numbers. After choosing one of the rule index numbers, the rule will be removed from
+		the tenant dial plan. This command requires a remote PowerShell session to Teams.
+		Note: The Module name is still referencing Skype for Business Online (SkypeOnlineConnector).
+	.PARAMETER DialPlan
+		This is the name of a valid dial plan for the tenant. To view available tenant dial plans,
+		use the command Get-CsTenantDialPlan.
+	.EXAMPLE
+		Remove-TenantDialPlanNormalizationRule -DialPlan US-OK-OKC-DialPlan
+		Example 1 will display the availble normalization rules to remove from dial plan US-OK-OKC-DialPlan.
+	.NOTES
+		The dial plan rules will display in format similar the example below:
+		RuleIndex Name            Pattern    Translation
+		--------- ----            -------    -----------
+		0 Intl Dialing    ^011(\d+)$ +$1
+		1 Extension Rule  ^(\d{5})$  +155512$1
+		2 Long Distance   ^1(\d+)$   +1$1
+		3 Default         ^(\d+)$    +1$1
 	#>
 
 	[CmdletBinding()]
@@ -1120,38 +1159,38 @@ function Remove-TenantDialPlanNormalizationRule {
 # ToDo: Add more policies
 function Set-TeamsUserPolicy {
 	<#
-		.SYNOPSIS
-			Sets policies on a Teams user
-		.DESCRIPTION
-			Teams offers the assignment of several policies, to control multiple aspects of the Users experience.
-			For example: TeamsUpgrade, Client, Conferencing, External access, Mobility.
-			Typically these are assigned using different commands, but
-			Set-TeamsUserPolicy allows settings all these with a single command. One or all policy options can
-			be used during assignment.
-		.PARAMETER Identity
-			This is the sign-in address/User Principal Name of the user to configure.
-		.PARAMETER TeamsUpgradePolicy
-			This is one of the available TeamsUpgradePolicies to assign to the user.
-		.PARAMETER ClientPolicy
-			This is the Client Policy to assign to the user.
-		.PARAMETER ConferencingPolicy
-			This is the Conferencing Policy to assign to the user.
-		.PARAMETER ExternalAccessPolicy
-			This is the External Access Policy to assign to the user.
-		.PARAMETER MobilityPolicy
-			This is the Mobility Policy to assign to the user.
-		.EXAMPLE
-			Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL
-			Example 1 will set the user John.Does@contoso.com with a client policy.
-		.EXAMPLE
-			Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL -ConferencingPolicy BposSAllModalityNoFT
-			Example 2 will set the user John.Does@contoso.com with a client and conferencing policy.
-		.EXAMPLE
-			Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL -ConferencingPolicy BposSAllModalityNoFT -ExternalAccessPolicy FederationOnly -MobilityPolicy
-			Example 3 will set the user John.Does@contoso.com with a client, conferencing, external access, and mobility policy.
-		.NOTES
-			TeamsUpgrade Policy has been added.
-			Multiple other policies are planned to be added to round the function off
+	.SYNOPSIS
+		Sets policies on a Teams user
+	.DESCRIPTION
+		Teams offers the assignment of several policies, to control multiple aspects of the Users experience.
+		For example: TeamsUpgrade, Client, Conferencing, External access, Mobility.
+		Typically these are assigned using different commands, but
+		Set-TeamsUserPolicy allows settings all these with a single command. One or all policy options can
+		be used during assignment.
+	.PARAMETER Identity
+		This is the sign-in address/User Principal Name of the user to configure.
+	.PARAMETER TeamsUpgradePolicy
+		This is one of the available TeamsUpgradePolicies to assign to the user.
+	.PARAMETER ClientPolicy
+		This is the Client Policy to assign to the user.
+	.PARAMETER ConferencingPolicy
+		This is the Conferencing Policy to assign to the user.
+	.PARAMETER ExternalAccessPolicy
+		This is the External Access Policy to assign to the user.
+	.PARAMETER MobilityPolicy
+		This is the Mobility Policy to assign to the user.
+	.EXAMPLE
+		Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL
+		Example 1 will set the user John.Does@contoso.com with a client policy.
+	.EXAMPLE
+		Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL -ConferencingPolicy BposSAllModalityNoFT
+		Example 2 will set the user John.Does@contoso.com with a client and conferencing policy.
+	.EXAMPLE
+		Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL -ConferencingPolicy BposSAllModalityNoFT -ExternalAccessPolicy FederationOnly -MobilityPolicy
+		Example 3 will set the user John.Does@contoso.com with a client, conferencing, external access, and mobility policy.
+	.NOTES
+		TeamsUpgrade Policy has been added.
+		Multiple other policies are planned to be added to round the function off
 	#>
 
 	[CmdletBinding()]
@@ -1331,17 +1370,17 @@ function Set-TeamsUserPolicy {
 
 function Test-TeamsExternalDNS {
 	<#
-		.SYNOPSIS
-			Tests a domain for the required external DNS records for a Teams deployment.
-		.DESCRIPTION
-			Teams requires the use of several external DNS records for clients and federated
-			partners to locate services and users. This function will look for the required external DNS records
-			and display their current values, if they are correctly implemented, and any issues with the records.
-		.PARAMETER Domain
-			The domain name to test records. This parameter is required.
-		.EXAMPLE
-			Test-TeamsExternalDNS -Domain contoso.com
-			Example 1 will test the contoso.com domain for the required external DNS records for Teams.
+	.SYNOPSIS
+		Tests a domain for the required external DNS records for a Teams deployment.
+	.DESCRIPTION
+		Teams requires the use of several external DNS records for clients and federated
+		partners to locate services and users. This function will look for the required external DNS records
+		and display their current values, if they are correctly implemented, and any issues with the records.
+	.PARAMETER Domain
+		The domain name to test records. This parameter is required.
+	.EXAMPLE
+		Test-TeamsExternalDNS -Domain contoso.com
+		Example 1 will test the contoso.com domain for the required external DNS records for Teams.
 	#>
 
 	[CmdletBinding()]
@@ -1475,12 +1514,11 @@ function Test-TeamsExternalDNS {
 
 function Test-Module {
 	<#
-		.SYNOPSIS
-			Tests whether the AzureAD Module is loaded
-		.EXAMPLE
-			Test-AzureADModule
-			Will Return $TRUE if the Module is loaded
-
+	.SYNOPSIS
+		Tests whether the AzureAD Module is loaded
+	.EXAMPLE
+		Test-AzureADModule
+		Will Return $TRUE if the Module is loaded
 	#>
 	[CmdletBinding()]
 	[Outputtype(Boolean)]
@@ -1502,13 +1540,13 @@ function Test-Module {
 
 function Test-AzureADConnection {
 	<#
-		.SYNOPSIS
-			Tests whether a valid PS Session exists for Azure Active Directory (v2)
-		.DESCRIPTION
-			A connection established via Connect-AzureAD is parsed.
-		.EXAMPLE
-			Test-AzureADConnection
-			Will Return $TRUE only if a session is found.
+	.SYNOPSIS
+		Tests whether a valid PS Session exists for Azure Active Directory (v2)
+	.DESCRIPTION
+		A connection established via Connect-AzureAD is parsed.
+	.EXAMPLE
+		Test-AzureADConnection
+		Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
 	[Outputtype(Boolean)]
@@ -1526,17 +1564,17 @@ function Test-AzureADConnection {
 
 function Test-SkypeOnlineConnection {
 	<#
-		.SYNOPSIS
-			Tests whether a valid PS Session exists for SkypeOnline (Teams)
-		.DESCRIPTION
-			A connection established via Connect-SkypeOnline is parsed.
-			This connection must be valid (Available and Opened)
-		.EXAMPLE
-			Test-SkypeOnlineConnection
-			Will Return $TRUE only if a valid and open session is found.
-		.NOTES
-			Added check for Open Session to err on the side of caution.
-			Use with DisConnect-SkypeOnline when tested negative, then Connect-SkypeOnline
+	.SYNOPSIS
+		Tests whether a valid PS Session exists for SkypeOnline (Teams)
+	.DESCRIPTION
+		A connection established via Connect-SkypeOnline is parsed.
+		This connection must be valid (Available and Opened)
+	.EXAMPLE
+		Test-SkypeOnlineConnection
+		Will Return $TRUE only if a valid and open session is found.
+	.NOTES
+		Added check for Open Session to err on the side of caution.
+		Use with DisConnect-SkypeOnline when tested negative, then Connect-SkypeOnline
 	#>
 
 	[CmdletBinding()]
@@ -1566,13 +1604,13 @@ function Test-SkypeOnlineConnection {
 
 function Test-MicrosoftTeamsConnection {
 	<#
-		.SYNOPSIS
-			Tests whether a valid PS Session exists for MicrosoftTeams
-		.DESCRIPTION
-			A connection established via Connect-MicrosoftTeams is parsed.
-		.EXAMPLE
-			Test-MicrosoftTeamsConnection
-			Will Return $TRUE only if a session is found.
+	.SYNOPSIS
+		Tests whether a valid PS Session exists for MicrosoftTeams
+	.DESCRIPTION
+		A connection established via Connect-MicrosoftTeams is parsed.
+	.EXAMPLE
+		Test-MicrosoftTeamsConnection
+		Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
 	[Outputtype(Boolean)]
@@ -1589,15 +1627,15 @@ function Test-MicrosoftTeamsConnection {
 
 function Get-AzureADUserFromUPN {
 	<#
-		.SYNOPSIS
-			Returns User Object in Azure AD from UPN
-		.DESCRIPTION
-			Enables UPN lookup for AzureAD user the User Object exist
-		.PARAMETER Identity
-			Mandatory. The sign-in address or User Principal Name of the user account to test.
-		.EXAMPLE
-			Get-AzureADUserFromUPN $UPN
-			Will Return the Object if UPN is found, otherwise returns error message from Get-AzureAdUser
+	.SYNOPSIS
+		Returns User Object in Azure AD from UPN
+	.DESCRIPTION
+		Enables UPN lookup for AzureAD user the User Object exist
+	.PARAMETER Identity
+		Mandatory. The sign-in address or User Principal Name of the user account to test.
+	.EXAMPLE
+		Get-AzureADUserFromUPN $UPN
+		Will Return the Object if UPN is found, otherwise returns error message from Get-AzureAdUser
 	#>
 	[CmdletBinding()]
 	param(
@@ -1636,16 +1674,16 @@ function Get-AzureADUserFromUPN {
 
 function Test-AzureADUser {
 	<#
-		.SYNOPSIS
-			Tests whether a User exists in Azure AD (record found)
-		.DESCRIPTION
-			Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for processing
-		.PARAMETER Identity
-			Mandatory. The sign-in address or User Principal Name of the user account to test.
-		.EXAMPLE
-			Test-AzureADUser -Identity $UPN
-			Will Return $TRUE only if the object $UPN is found.
-			Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
+	.SYNOPSIS
+		Tests whether a User exists in Azure AD (record found)
+	.DESCRIPTION
+		Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for processing
+	.PARAMETER Identity
+		Mandatory. The sign-in address or User Principal Name of the user account to test.
+	.EXAMPLE
+		Test-AzureADUser -Identity $UPN
+		Will Return $TRUE only if the object $UPN is found.
+		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	#>
 	[CmdletBinding()]
 	[Outputtype(Boolean)]
@@ -1681,17 +1719,18 @@ function Test-AzureADUser {
 
 function Test-AzureADGroup {
 	<#
-		.SYNOPSIS
-			Tests whether an Group exists in Azure AD (record found)
-		.DESCRIPTION
-			Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
-		.PARAMETER Identity
-			Mandatory. The User Principal Name of the Group to test.
-		.EXAMPLE
-			Test-AzureADGroup -Identity $UPN
-			Will Return $TRUE only if the object $UPN is found.
-			Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
+	.SYNOPSIS
+		Tests whether an Group exists in Azure AD (record found)
+	.DESCRIPTION
+		Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
+	.PARAMETER Identity
+		Mandatory. The User Principal Name of the Group to test.
+	.EXAMPLE
+		Test-AzureADGroup -Identity $UPN
+		Will Return $TRUE only if the object $UPN is found.
+		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	#>
+
 	[CmdletBinding()]
 	[Outputtype(Boolean)]
 	param(
@@ -1729,16 +1768,16 @@ function Test-AzureADGroup {
 
 function Test-TeamsUser {
 	<#
-		.SYNOPSIS
-			Tests whether an Object exists in Teams (record found)
-		.DESCRIPTION
-			Simple lookup - does the Object exist - to avoid TRY/CATCH statements for processing
-		.PARAMETER Identity
-			Mandatory. The sign-in address or User Principal Name of the user account to modify.
-		.EXAMPLE
-			Test-TeamsUser -Identity $UPN
-			Will Return $TRUE only if the object $UPN is found.
-			Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
+	.SYNOPSIS
+		Tests whether an Object exists in Teams (record found)
+	.DESCRIPTION
+		Simple lookup - does the Object exist - to avoid TRY/CATCH statements for processing
+	.PARAMETER Identity
+		Mandatory. The sign-in address or User Principal Name of the user account to modify.
+	.EXAMPLE
+		Test-TeamsUser -Identity $UPN
+		Will Return $TRUE only if the object $UPN is found.
+		Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
 	#>
 	[CmdletBinding()]
 	[Outputtype(Boolean)]
@@ -1770,19 +1809,19 @@ function Test-TeamsUser {
 
 function Test-TeamsTenantPolicy {
 	<#
-		.SYNOPSIS
-			Tests whether a specific Policy exists in the Teams Tenant
-		.DESCRIPTION
-			Universal commandlet to test any Policy Object that can be granted to a User
-		.PARAMETER Policy
-			Mandatory. Name of the Policy Object - Which Policy? (PowerShell Noun of the Get/Grant Command).
-		.PARAMETER PolicyName
-			Mandatory. Name of the Policy to look up.
-		.EXAMPLE
-			Test-TeamsPolicy
-			Will Return $TRUE only if a the policy was found in the Teams Tenant.
-		.NOTES
-			This is a crude but universal way of testing it, intended for check of multiple at a time.
+	.SYNOPSIS
+		Tests whether a specific Policy exists in the Teams Tenant
+	.DESCRIPTION
+		Universal commandlet to test any Policy Object that can be granted to a User
+	.PARAMETER Policy
+		Mandatory. Name of the Policy Object - Which Policy? (PowerShell Noun of the Get/Grant Command).
+	.PARAMETER PolicyName
+		Mandatory. Name of the Policy to look up.
+	.EXAMPLE
+		Test-TeamsPolicy
+		Will Return $TRUE only if a the policy was found in the Teams Tenant.
+	.NOTES
+		This is a crude but universal way of testing it, intended for check of multiple at a time.
 	#>
 	[CmdletBinding()]
 	[Outputtype(Boolean)]
@@ -1839,34 +1878,34 @@ function Test-TeamsTenantPolicy {
 
 function Test-TeamsUserLicense {
 	<#
-		.SYNOPSIS
-			Tests a License or License Package assignment against an AzureAD-Object
-		.DESCRIPTION
-			Teams requires a specific License combination (LicensePackage) for a User.
-			Teams Direct Routing requries a specific License (ServicePlan), namely 'Phone System'
-			to enable a User for Enterprise Voice
-			This Script can be used to ascertain either.
-		.PARAMETER Identity
-			Mandatory. The sign-in address or User Principal Name of the user account to modify.
-		.PARAMETER ServicePlan
-			Defined and descriptive Name of the Service Plan to test.
-			Only ServicePlanNames pertaining to Teams are tested.
-			Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success"
-			NOTE: ServicePlans can be part of a license, for Example MCOEV (PhoneSystem) is part of an E5 license.
-			For Testing against a full License Package, please use Parameter LicensePackage
-		.PARAMETER LicensePackage
-			Defined and descriptive Name of the License Combination to test.
-			This will test whether one more more individual Service Plans are present on the Identity
-		.EXAMPLE
-			Test-TeamsUserLicense -Identity User@domain.com -ServicePlan MCOEV
-			Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!
-			This can be a part of a License.
-		.EXAMPLE
-			Test-TeamsUserLicense -Identity User@domain.com -LicensePackage Microsoft365E5
-			Will Return $TRUE only if the license Package is assigned.
-			Specific Names have been assigned to these LicensePackages
-		.NOTES
-			This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
+	.SYNOPSIS
+		Tests a License or License Package assignment against an AzureAD-Object
+	.DESCRIPTION
+		Teams requires a specific License combination (LicensePackage) for a User.
+		Teams Direct Routing requries a specific License (ServicePlan), namely 'Phone System'
+		to enable a User for Enterprise Voice
+		This Script can be used to ascertain either.
+	.PARAMETER Identity
+		Mandatory. The sign-in address or User Principal Name of the user account to modify.
+	.PARAMETER ServicePlan
+		Defined and descriptive Name of the Service Plan to test.
+		Only ServicePlanNames pertaining to Teams are tested.
+		Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success"
+		NOTE: ServicePlans can be part of a license, for Example MCOEV (PhoneSystem) is part of an E5 license.
+		For Testing against a full License Package, please use Parameter LicensePackage
+	.PARAMETER LicensePackage
+		Defined and descriptive Name of the License Combination to test.
+		This will test whether one more more individual Service Plans are present on the Identity
+	.EXAMPLE
+		Test-TeamsUserLicense -Identity User@domain.com -ServicePlan MCOEV
+		Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!
+		This can be a part of a License.
+	.EXAMPLE
+		Test-TeamsUserLicense -Identity User@domain.com -LicensePackage Microsoft365E5
+		Will Return $TRUE only if the license Package is assigned.
+		Specific Names have been assigned to these LicensePackages
+	.NOTES
+		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
 	#>
 	#region Parameters
 	[CmdletBinding(DefaultParameterSetName = "ServicePlan")]
@@ -4029,8 +4068,8 @@ function Remove-TeamsCallQueue {
 		Set-TeamsCallQueue
 		Connect-ResourceAccount
 		Disconnect-ResourceAccount
-
 	#>
+
 	[CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
 	param(
 		# Pipline does not work properly - rebind to Identity? or query with Get-TeamsCallQueue instead?
@@ -4084,7 +4123,22 @@ function Remove-TeamsCallQueue {
 #endregion
 
 #region Resource Account Connection
-function Connect-TeamsResourceAccount {
+function New-TeamsResourceAccountAssociation {
+	<#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+	.EXAMPLE
+		PS C:\> <example usage>
+		Explanation of what the example does
+	.INPUTS
+		Inputs (if any)
+	.OUTPUTS
+		Output (if any)
+	.NOTES
+		General notes
+	#>
 	# Input: UPN(s) of RA, UPN of CQ/AA (no input for ApplicationType as this is clear once queried)
 	# Putput:
 	#         Verify existence of UPN of CQ/AA get-CsCallQueue / Get-CsAutoAttendant? any other option to query either?
@@ -4101,7 +4155,22 @@ function Connect-TeamsResourceAccount {
 
 }
 
-function Disconnect-TeamsResourceAccount {
+function Remove-TeamsResourceAccountAssociation {
+	<#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+	.EXAMPLE
+		PS C:\> <example usage>
+		Explanation of what the example does
+	.INPUTS
+		Inputs (if any)
+	.OUTPUTS
+		Output (if any)
+	.NOTES
+		General notes
+	#>
 	# Input: UPN(s) of ResourceAccount
 	# Putput: Verify existence of UPN
 	#         Verify link exists (Get-CsOnlineApplicationInstanceAssociation (Get-TeamsResourceAccount -Identity $Identity))
@@ -5622,9 +5691,24 @@ Set-Alias -Name Remove-CsOnlineApplicationInstance -Value Remove-TeamsResourceAc
 
 # Function untested, but prepared for later. Used in New-TeamsCallQueue and Set-TeamsCallQueue
 function Import-TeamsAudioFile {
-	# Imports an AudioFile with Import-CsOnlineAudioFile
+	<#
+	.SYNOPSIS
+		Imports an AudioFile for CallQueues or AutoAttendants
+	.DESCRIPTION
+		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
+	.PARAMETER File
+		File to be imported
+	.PARAMETER ApplicationType
+		ApplicationType of the entity it is for
+	.NOTES
+		This is currently in development.
+		Not tested yet. Will replace some code in New/Set-TeamsResourceAccount
+	.FUNCTIONALITY
+		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
+	#>
 
 	[CmdletBinding()]
+	#[Outputtype()] # To be determined
 	param(
 		[Parameter(Mandatory = $true)]
 		[string]$File,
@@ -5685,22 +5769,22 @@ function Import-TeamsAudioFile {
 # by Ken Lasko
 function Backup-TeamsEV {
 	<#
-		.SYNOPSIS
-			A script to automatically backup a Microsoft Teams Enterprise Voice configuration.
+	.SYNOPSIS
+		A script to automatically backup a Microsoft Teams Enterprise Voice configuration.
 
-		.DESCRIPTION
-			Automates the backup of Microsoft Teams Enterprise Voice normalization rules, dialplans, voice policies, voice routes, PSTN usages and PSTN GW translation rules for various countries.
+	.DESCRIPTION
+		Automates the backup of Microsoft Teams Enterprise Voice normalization rules, dialplans, voice policies, voice routes, PSTN usages and PSTN GW translation rules for various countries.
 
-		.PARAMETER OverrideAdminDomain
-			OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
+	.PARAMETER OverrideAdminDomain
+		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
 
-		.NOTES
-			Version 1.10
-			Build: Feb 04, 2020
+	.NOTES
+		Version 1.10
+		Build: Feb 04, 2020
 
-			Copyright © 2020  Ken Lasko
-			klasko@ucdialplans.com
-			https://www.ucdialplans.com
+		Copyright © 2020  Ken Lasko
+		klasko@ucdialplans.com
+		https://www.ucdialplans.com
 	#>
 
 	[CmdletBinding(ConfirmImpact = 'None')]
@@ -5753,33 +5837,33 @@ function Backup-TeamsEV {
 
 function Restore-TeamsEV {
 	<#
-		.SYNOPSIS
-			A script to automatically restore a backed-up Teams Enterprise Voice configuration.
+	.SYNOPSIS
+		A script to automatically restore a backed-up Teams Enterprise Voice configuration.
 
-		.DESCRIPTION
-			A script to automatically restore a backed-up Teams Enterprise Voice configuration. Requires a backup run using Backup-TeamsEV.ps1 in the same directory as the script. Will restore the following items:
-			- Dialplans and associated normalization rules
-			- Voice routes
-			- Voice routing policies
-			- PSTN usages
-			- Outbound translation rules
+	.DESCRIPTION
+		A script to automatically restore a backed-up Teams Enterprise Voice configuration. Requires a backup run using Backup-TeamsEV.ps1 in the same directory as the script. Will restore the following items:
+		- Dialplans and associated normalization rules
+		- Voice routes
+		- Voice routing policies
+		- PSTN usages
+		- Outbound translation rules
 
-		.PARAMETER File
-			REQUIRED. Path to the zip file containing the backed up Teams EV config to restore
+	.PARAMETER File
+		REQUIRED. Path to the zip file containing the backed up Teams EV config to restore
 
-		.PARAMETER KeepExisting
-			OPTIONAL. Will not erase existing Enterprise Voice configuration before restoring.
+	.PARAMETER KeepExisting
+		OPTIONAL. Will not erase existing Enterprise Voice configuration before restoring.
 
-		.PARAMETER OverrideAdminDomain
-			OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
+	.PARAMETER OverrideAdminDomain
+		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
 
-		.NOTES
-			Version 1.10
-			Build: Feb 04, 2020
+	.NOTES
+		Version 1.10
+		Build: Feb 04, 2020
 
-			Copyright © 2020  Ken Lasko
-			klasko@ucdialplans.com
-			https://www.ucdialplans.com
+		Copyright © 2020  Ken Lasko
+		klasko@ucdialplans.com
+		https://www.ucdialplans.com
 	#>
 
 	[CmdletBinding(ConfirmImpact = 'Medium',
@@ -6011,31 +6095,28 @@ function Restore-TeamsEV {
 # Replace with Lee Fords wonderful Backup script that also compares backups?
 function Backup-TeamsTenant {
 	<#
-			.SYNOPSIS
-			A script to automatically backup a Microsoft Teams Tenant configuration.
+	.SYNOPSIS
+		A script to automatically backup a Microsoft Teams Tenant configuration.
+	.DESCRIPTION
+		Automates the backup of Microsoft Teams.
+	.PARAMETER OverrideAdminDomain
+		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
+	.NOTES
+		Version 1.10
+		Build: Feb 04, 2020
 
-			.DESCRIPTION
-			Automates the backup of Microsoft Teams.
+		Copyright © 2020  Ken Lasko
+		klasko@ucdialplans.com
+		https://www.ucdialplans.com
 
-			.PARAMETER OverrideAdminDomain
-			OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
+		Expanded to cover more elements
+		David Eberhardt
+		https://github.com/DEberhardt/
+		https://davideberhardt.wordpress.com/
 
-			.NOTES
-			Version 1.10
-			Build: Feb 04, 2020
+		14-MAY 2020
 
-			Copyright © 2020  Ken Lasko
-			klasko@ucdialplans.com
-			https://www.ucdialplans.com
-
-			Expanded to cover more elements
-			David Eberhardt
-			https://github.com/DEberhardt/
-			https://davideberhardt.wordpress.com/
-
-			14-MAY 2020
-
-			The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
+		The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
 	#>
 
 	[CmdletBinding(ConfirmImpact = 'None')]
@@ -6166,19 +6247,19 @@ function Backup-TeamsTenant {
 # Helper Function to find Assigned Admin Roles
 function Get-AzureAdAssignedAdminRoles {
 	<#
-		.SYNOPSIS
+	.SYNOPSIS
 		Queries Admin Roles assigned to an Object
-		.DESCRIPTION
+	.DESCRIPTION
 		Azure Active Directory Admin Roles assigned to an Object are returned
 		Requires a Connection to AzureAd
-		.EXAMPLE
+	.EXAMPLE
 		Get-AzureAdAssignedAdminRoles user@domain.com
 		Returns an Object for all Admin Roles assigned
-		.INPUTS
+	.INPUTS
 		Identity in from of a UserPrincipalName (UPN)
-		.OUTPUTS
+	.OUTPUTS
 		PS Object containing all Admin Roles assigned to this Object
-		.NOTES
+	.NOTES
 		Script Development information
 		This was intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
 		Based on the output of this script we could then run activate ohter functions, like License Assignments (if License Admin), etc.
@@ -6216,26 +6297,26 @@ function Get-AzureAdAssignedAdminRoles {
 # Helper Function to create new Azure AD License Objects
 function New-AzureAdLicenseObject {
 	<#
-			.SYNOPSIS
-			Creates a new License Object based on existing License assigned
-			.DESCRIPTION
-			Helper function to create a new License Object
-			To execute Teams Commands, a connection via SkypeOnline must be established.
-			This connection must be valid (Available and Opened)
-			.PARAMETER SkuId
-			SkuId of the License to be added
-			.PARAMETER RemoveSkuId
-			SkuId of the License to be removed
-			.EXAMPLE
-			New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd
-			Will create a license Object for the MCOEV license .
-			.EXAMPLE
-			New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd -RemoveSkuId 440eaaa8-b3e0-484b-a8be-62870b9ba70a
-			Will create a license Object based on the existing users License
-			Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.
-			.NOTES
-			This function currently only accepts ONE license to be added and optionally ONE license to be removed.
-			Rework to support multiple assignements is to be evaluated.
+	.SYNOPSIS
+		Creates a new License Object based on existing License assigned
+	.DESCRIPTION
+		Helper function to create a new License Object
+		To execute Teams Commands, a connection via SkypeOnline must be established.
+		This connection must be valid (Available and Opened)
+	.PARAMETER SkuId
+		SkuId of the License to be added
+	.PARAMETER RemoveSkuId
+		SkuId of the License to be removed
+	.EXAMPLE
+		New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd
+		Will create a license Object for the MCOEV license .
+	.EXAMPLE
+		New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd -RemoveSkuId 440eaaa8-b3e0-484b-a8be-62870b9ba70a
+		Will create a license Object based on the existing users License
+		Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.
+	.NOTES
+		This function currently only accepts ONE license to be added and optionally ONE license to be removed.
+		Rework to support multiple assignements is to be evaluated.
 	#>
 	param(
 		[Parameter(Mandatory = $true, Position = 0, HelpMessage = "SkuId of the license to Add")]
@@ -6275,35 +6356,36 @@ function New-AzureAdLicenseObject {
 # Helper functions to test and format strings
 function Format-StringRemoveSpecialCharacter {
 	<#
-.SYNOPSIS
-	This function will remove the special character from a string.
-.DESCRIPTION
-	This function will remove the special character from a string.
-	I'm using Unicode Regular Expressions with the following categories
-	\p{L} : any kind of letter from any language.
-	\p{Nd} : a digit zero through nine in any script except ideographic
-	http://www.regular-expressions.info/unicode.html
-	http://unicode.org/reports/tr18/
-.PARAMETER String
-	Specifies the String on which the special character will be removed
-.PARAMETER SpecialCharacterToKeep
-	Specifies the special character to keep in the output
-.EXAMPLE
-	Format-StringRemoveSpecialCharacter -String "^&*@wow*(&(*&@"
-	wow
-.EXAMPLE
-	Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
-	wow
-.EXAMPLE
-	Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
-	wow-_*
-.NOTES
-	Francois-Xavier Cat
-	@lazywinadmin
-	lazywinadmin.com
-	github.com/lazywinadmin
-#>
+	.SYNOPSIS
+		This function will remove the special character from a string.
+	.DESCRIPTION
+		This function will remove the special character from a string.
+		I'm using Unicode Regular Expressions with the following categories
+		\p{L} : any kind of letter from any language.
+		\p{Nd} : a digit zero through nine in any script except ideographic
+		http://www.regular-expressions.info/unicode.html
+		http://unicode.org/reports/tr18/
+	.PARAMETER String
+		Specifies the String on which the special character will be removed
+	.PARAMETER SpecialCharacterToKeep
+		Specifies the special character to keep in the output
+	.EXAMPLE
+		Format-StringRemoveSpecialCharacter -String "^&*@wow*(&(*&@"
+		wow
+	.EXAMPLE
+		Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
+		wow
+	.EXAMPLE
+		Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
+		wow-_*
+	.NOTES
+		Francois-Xavier Cat
+		@lazywinadmin
+		lazywinadmin.com
+		github.com/lazywinadmin
+	#>
 	[CmdletBinding()]
+	[Outputtype(String)]
 	param
 	(
 		[Parameter(ValueFromPipeline)]
@@ -6315,12 +6397,13 @@ function Format-StringRemoveSpecialCharacter {
 		#[ValidateNotNullOrEmpty()]
 		[String[]]$SpecialCharacterToKeep
 	)
-	PROCESS {
+
+	process {
 		try {
-			IF ($PSBoundParameters["SpecialCharacterToKeep"]) {
+			if ($PSBoundParameters["SpecialCharacterToKeep"]) {
 				$Regex = "[^\p{L}\p{Nd}"
-				Foreach ($Character in $SpecialCharacterToKeep) {
-					IF ($Character -eq "-") {
+				foreach ($Character in $SpecialCharacterToKeep) {
+					if ($Character -eq "-") {
 						$Regex += "-"
 					}
 					else {
@@ -6331,9 +6414,9 @@ function Format-StringRemoveSpecialCharacter {
 
 				$Regex += "]+"
 			} #IF($PSBoundParameters["SpecialCharacterToKeep"])
-			ELSE { $Regex = "[^\p{L}\p{Nd}]+" }
+			else { $Regex = "[^\p{L}\p{Nd}]+" }
 
-			FOREACH ($Str in $string) {
+			foreach ($Str in $string) {
 				Write-Verbose -Message "Original String: $Str"
 				$Str -replace $regex, ""
 			}
@@ -6346,26 +6429,28 @@ function Format-StringRemoveSpecialCharacter {
 
 function Format-StringForUse {
 	<#
-		.SYNOPSIS
+	.SYNOPSIS
 		Formats a string by removing special characters usually not allowed.
-		.DESCRIPTION
+	.DESCRIPTION
 		Special Characters in strings usually lead to terminating erros.
 		This function gets around that by formating the string properly.
 		Use is limited, but can be used for UPNs and Display Names
 		Adheres to Microsoft recommendation of special Characters
-		.PARAMETER InputString
+	.PARAMETER InputString
 		Mandatory. The string to be reformatted
-		.PARAMETER As
+	.PARAMETER As
 		Optional String. DisplayName or UserPrincipalName. Uses predefined special characters to remove
 		Cannot be used together with -SpecialChars
-		.PARAMETER SpecialChars
+	.PARAMETER SpecialChars
 		Default, Optional String. Manually define which special characters to remove.
 		If not specified, only the following characters are removed: ?()[]{}
 		Cannot be used together with -As
-		.PARAMETER Replacement
+	.PARAMETER Replacement
 		Optional String. Manually replaces removed characters with this string.
 	#>
+
 	[CmdletBinding(DefaultParameterSetName = "Manual")]
+	[Outputtype(String)]
 	param(
 		[Parameter(Mandatory, HelpMessage = "String to reformat")]
 		[string]$InputString,
@@ -6397,7 +6482,7 @@ function Format-StringForUse {
 		}
 	}
 
-	PROCESS {
+	process {
 
 		$rePattern = ($CharactersToRemove.ToCharArray() | ForEach-Object { [regex]::Escape($_) }) -join "|"
 
@@ -6408,6 +6493,17 @@ function Format-StringForUse {
 # SkuID and Partnumber are useful to look up dynamically, but would need a data source...
 # Helper functions as a static alternative :)
 function Get-SkuIDfromSkuPartNumber {
+	<#
+	.SYNOPSIS
+		Returns SkuID from FriendlyName 
+	.DESCRIPTION
+		Returns SkuID from SkuPartNumber
+	.PARAMETER SkuPartNumber
+		FriendlyName of the License
+	.FUNCTIONALITY
+		Helper Function for Licensing, translating ID to FriendlyName
+	#>
+
 	param(
 		[Parameter(Mandatory = $true, Position = 0)]
 		[String]$SkuPartNumber
@@ -6508,6 +6604,19 @@ function Get-SkuIDfromSkuPartNumber {
 }
 
 function Get-SkuPartNumberfromSkuID {
+	<#
+	.SYNOPSIS
+		Returns FriendlyName from SkuID
+	.DESCRIPTION
+		Returns SkuPartNumber or ProductName for any given SkuID
+	.PARAMETER SkuId
+		Identity of the License
+	.PARAMETER Output
+		Changes the Output Object. Can Return ProductName or SkuPartnumber (default)
+	.FUNCTIONALITY
+		Helper Function for Licensing, translating ID to FriendlyName
+	#>
+
 	param(
 		[Parameter(Mandatory = $true, Position = 0)]
 		[String]$SkuID,
@@ -6616,8 +6725,16 @@ function Get-SkuPartNumberfromSkuID {
 }
 
 function Write-ErrorRecord ($ErrorRecord) {
-	# get error record (this is $_ from the parent function)
-	# This function must be called with 'Write-ErrorRecord $_'
+	<#
+	.SYNOPSIS
+		Returns the provided Error-Record as an Object
+	.DESCRIPTION
+		Helper Function for Troubleshooting
+	.NOTES
+		get error record (this is $_ from the parent function)
+		This function must be called with 'Write-ErrorRecord $_'
+	#>
+
 	[Management.Automation.ErrorRecord]$e = $ErrorRecord
 
 	# retrieve Info about runtime error
@@ -6773,7 +6890,13 @@ function ProcessLicense {
 }
 
 function GetApplicationTypeFromAppId ($CsAppId) {
-	# Translates a given AppId into a friendly ApplicationType (Name)
+	<#
+	.SYNOPSIS
+		ApplicationType for AppId 
+	.DESCRIPTION
+		Translates a given AppId into a friendly ApplicationType (Name)
+	#>
+
 	switch ($CsAppId) {
 		"11cd3e2e-fccb-42ad-ad00-878b93575e07" { $CsApplicationType = "CallQueue" }
 		"ce933385-9390-45d1-9512-c8d228074e07" { $CsApplicationType = "AutoAttendant" }
@@ -6782,7 +6905,13 @@ function GetApplicationTypeFromAppId ($CsAppId) {
 	return $CsApplicationType
 }
 function GetAppIdfromApplicationType ($CsApplicationType) {
-	# Translates a given friendly ApplicationType (Name) into an AppId used by MS commands
+	<#
+	.SYNOPSIS
+		AppId for ApplicationType 
+	.DESCRIPTION
+		Translates a given friendly ApplicationType (Name) into an AppId used by MS commands
+	#>
+
 	switch ($CsApplicationType) {
 		"CallQueue" { $CsAppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07" }
 		"CQ" { $CsAppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07" }
@@ -6805,6 +6934,7 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
 	Test-SkypeOnlineModule, Test-SkypeOnlineConnection, `
 	Test-MicrosoftTeamsModule, Test-MicrosoftTeamsConnection, Test-TeamsUser, `
 	New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
+#s	New-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation,`
 	New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
 	Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
 	Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
