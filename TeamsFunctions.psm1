@@ -72,6 +72,14 @@
 #region *** Exported Functions ***
 #region Existing Functions
 # Assigns a Teams License to a User/Object
+
+function Set-TeamsUserLicense {
+# Add-TeamsUserLicense Rework for the following:
+# - One Switch for Licenses Added (ARRAY)
+# - One Switch for Licenses Removed (all)
+# - One Switch for License removed (specific)(ARRAY)
+
+}
 function Add-TeamsUserLicense {
 	<#
 			.SYNOPSIS
@@ -513,6 +521,7 @@ function Connect-SkypeOnline {
 								Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
 							}
 							catch {
+								Write-ErrorRecord $_
 							}
 						}
 						else {
@@ -721,7 +730,7 @@ function Disconnect-SkypeTeamsAndAAD {
 		$null = (Disconnect-AzureAD -ErrorAction SilentlyContinue)
 	}
 	catch [NullReferenceException] {
-		# Disconnecting from AzureAD results in a duplicated error which the ERRORACTIOn only suppresses one of.
+		# Disconnecting from AzureAD results in a duplicated error which the ERRORACTION only suppresses one of.
 		# This is to capture the second
 	}
 	catch {
@@ -1336,6 +1345,7 @@ function Test-TeamsExternalDNS {
 	#>
 
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	Param
 	(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the domain name to test the external DNS Skype Online records.")]
@@ -1463,7 +1473,7 @@ function Test-TeamsExternalDNS {
 	Write-Output -InputObject $sipOutput
 } # End of Test-TeamsExternalDNS
 
-function Test-Module ($Module) {
+function Test-Module {
 	<#
 		.SYNOPSIS
 			Tests whether the AzureAD Module is loaded
@@ -1472,6 +1482,13 @@ function Test-Module ($Module) {
 			Will Return $TRUE if the Module is loaded
 
 	#>
+	[CmdletBinding()]
+	[Outputtype(Boolean)]
+	Param
+	(
+		[Parameter(Mandatory = $true, HelpMessage = "Module to test.")]
+		[string]$Module
+	)
 	Write-Verbose -Message "Verifying if Module '$Module' is installed and available"
 	Import-Module -Name $Module -ErrorAction SilentlyContinue
 	if (Get-Module -Name $Module) {
@@ -1494,6 +1511,7 @@ function Test-AzureADConnection {
 			Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	param()
 
 	try {
@@ -1522,6 +1540,7 @@ function Test-SkypeOnlineConnection {
 	#>
 
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	param()
 
 	if ((Get-PsSession).ComputerName -notlike "*.online.lync.com") {
@@ -1556,6 +1575,7 @@ function Test-MicrosoftTeamsConnection {
 			Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	param()
 
 	try {
@@ -1628,6 +1648,7 @@ function Test-AzureADUser {
 			Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	#>
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity
@@ -1672,6 +1693,7 @@ function Test-AzureADGroup {
 			Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	#>
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
 		[string]$Identity
@@ -1719,6 +1741,7 @@ function Test-TeamsUser {
 			Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
 	#>
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity
@@ -1762,6 +1785,7 @@ function Test-TeamsTenantPolicy {
 			This is a crude but universal way of testing it, intended for check of multiple at a time.
 	#>
 	[CmdletBinding()]
+	[Outputtype(Boolean)]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the Noun of Policy, i.e. 'TeamsUpgradePolicy' of 'Get-TeamsUpgradePolicy'")]
 		[Alias("Noun")]
@@ -1846,6 +1870,7 @@ function Test-TeamsUserLicense {
 	#>
 	#region Parameters
 	[CmdletBinding(DefaultParameterSetName = "ServicePlan")]
+	[Outputtype(Boolean)]
 	param(
 		[Parameter(Mandatory = $true, Position = 0, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity,
@@ -4595,7 +4620,7 @@ function Get-TeamsResourceAccount {
 
 	process {
 		$ResourceAccounts = $null
-		
+
 		#region Data gathering
 		if ($PSBoundParameters.ContainsKey('Identity')) {
 			# Default Parameterset
@@ -4634,7 +4659,7 @@ function Get-TeamsResourceAccount {
 			Write-Verbose -Message "Identity - Listing all Resource Accounts" -Verbose
 			$ResourceAccounts = Get-CsOnlineApplicationInstance
 		}
-		
+
 		# Stop script if no data has been determined
 		if ($ResourceAccounts.Count -eq 0) {
 			Write-Verbose -Message "No Data found."
@@ -5159,7 +5184,7 @@ function Set-TeamsResourceAccount {
 				Write-Verbose -Message "'$Name' Current License assigned: $CurrentLicense"
 			}
 			else {
-				Write-Verbose -Message "'$Name' Current License assigned: NONE"				
+				Write-Verbose -Message "'$Name' Current License assigned: NONE"
 			}
 		}
 		#endregion
@@ -6248,7 +6273,7 @@ function New-AzureAdLicenseObject {
 }
 
 # Helper functions to test and format strings
-function Remove-StringSpecialCharacter {
+function Format-StringRemoveSpecialCharacter {
 	<#
 .SYNOPSIS
 	This function will remove the special character from a string.
@@ -6264,13 +6289,13 @@ function Remove-StringSpecialCharacter {
 .PARAMETER SpecialCharacterToKeep
 	Specifies the special character to keep in the output
 .EXAMPLE
-	Remove-StringSpecialCharacter -String "^&*@wow*(&(*&@"
+	Format-StringRemoveSpecialCharacter -String "^&*@wow*(&(*&@"
 	wow
 .EXAMPLE
-	Remove-StringSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
+	Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
 	wow
 .EXAMPLE
-	Remove-StringSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
+	Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
 	wow-_*
 .NOTES
 	Francois-Xavier Cat
@@ -6689,7 +6714,7 @@ function ProcessLicense {
 			Uses Microsoft List for Licenses in SWITCH statement, update periodically or switch to lookup from DB(CSV or XLSX)
 			https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 	#>
-	
+
 	[CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
@@ -6783,4 +6808,4 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
 	New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
 	Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
 	Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
-	Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Remove-StringSpecialCharacter, Format-StringForUse, Write-ErrorRecord
+	Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
