@@ -1384,7 +1384,7 @@ function Test-TeamsExternalDNS {
 	#>
 
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	Param
 	(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the domain name to test the external DNS Skype Online records.")]
@@ -1521,7 +1521,7 @@ function Test-Module {
 		Will Return $TRUE if the Module is loaded
 	#>
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	Param
 	(
 		[Parameter(Mandatory = $true, HelpMessage = "Module to test.")]
@@ -1549,7 +1549,7 @@ function Test-AzureADConnection {
 		Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param()
 
 	try {
@@ -1578,7 +1578,7 @@ function Test-SkypeOnlineConnection {
 	#>
 
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param()
 
 	if ((Get-PsSession).ComputerName -notlike "*.online.lync.com") {
@@ -1613,7 +1613,7 @@ function Test-MicrosoftTeamsConnection {
 		Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param()
 
 	try {
@@ -1686,7 +1686,7 @@ function Test-AzureADUser {
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	#>
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity
@@ -1732,7 +1732,7 @@ function Test-AzureADGroup {
 	#>
 
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
 		[string]$Identity
@@ -1780,7 +1780,7 @@ function Test-TeamsUser {
 		Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
 	#>
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity
@@ -1824,7 +1824,7 @@ function Test-TeamsTenantPolicy {
 		This is a crude but universal way of testing it, intended for check of multiple at a time.
 	#>
 	[CmdletBinding()]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the Noun of Policy, i.e. 'TeamsUpgradePolicy' of 'Get-TeamsUpgradePolicy'")]
 		[Alias("Noun")]
@@ -1909,7 +1909,7 @@ function Test-TeamsUserLicense {
 	#>
 	#region Parameters
 	[CmdletBinding(DefaultParameterSetName = "ServicePlan")]
-	[Outputtype([Boolean])]
+	[OutputType([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, Position = 0, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity,
@@ -2492,7 +2492,6 @@ function New-TeamsCallQueue {
 			}
 			"VoiceMail" {
 				# Currently no actions, but might be added later
-				$Parameters += @{'OverflowAction' = $OverflowAction }
 			}
 			"Forward" {
 				if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
@@ -2503,15 +2502,16 @@ function New-TeamsCallQueue {
 					# Processing OverflowActionTarget
 					try {
 						$OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
-						$Parameters += @{'OverflowAction' = $OverflowAction }
-						$Parameters += @{'OverflowActionTargetId' = $OverflowActionTargetId }
+						$Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
 					}
 					catch {
 						Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
+						$OverflowAction = "DisconnectWithBusy"
 					}
 				}
 			}
 		}
+		$Parameters += @{'OverflowAction' = $OverflowAction }
 		#endregion
 
 		#region Timeout Action and Target
@@ -2522,26 +2522,26 @@ function New-TeamsCallQueue {
 			}
 			"VoiceMail" {
 				# Currently no actions, but might be added later
-				$Parameters += @{'TimeoutAction' = $TimeoutAction }
 			}
 			"Forward" {
 				if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
 					Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-					$OverflowAction = "Disconnect"
+					$TimeoutAction = "Disconnect"
 				}
 				else {
 					# Processing TimeoutActionTarget
 					try {
 						$TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
-						$Parameters += @{'TimeoutAction' = $TimeoutAction }
-						$Parameters += @{'TimeoutActionTargetId' = $TimeoutActionTargetId }
+						$Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
 					}
 					catch {
 						Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimoutActionTarget'"
+						$TimeoutAction = "Disconnect"
 					}
 				}
 			}
 		}
+		$Parameters += @{'TimeoutAction' = $TimeoutAction }
 		#endregion
 
 		#region Users - Parsing and verifying Users
@@ -3629,31 +3629,29 @@ function Set-TeamsCallQueue {
 			switch ($OverflowAction) {
 				"DisconnectWithBusy" {
 					# No Action
-					$Parameters += @{'OverflowAction' = $OverflowAction }
 				}
 				"VoiceMail" {
 					# Currently no actions, but might be added later
-					$Parameters += @{'OverflowAction' = $OverflowAction }
 				}
 				"Forward" {
 					if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
 						Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
 						$OverflowAction = "DisconnectWithBusy"
-						$Parameters += @{'OverflowAction' = $OverflowAction }
 					}
 					else {
 						# Processing OverflowActionTarget
 						try {
 							$OverflowActionTargetId = (Get-AzureADUser -ObjectId "$($OverflowActionTarget)" -ErrorAction STOP).ObjectId
-							$Parameters += @{'OverflowAction' = $OverflowAction }
-							$Parameters += @{'OverflowActionTargetId' = $OverflowActionTargetId }
+							$Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
 						}
 						catch {
 							Write-Warning -Message "'$NameNormalised' Could not enumerate 'OverflowActionTarget'"
+							$OverflowAction = "DisconnectWithBusy"
 						}
 					}
 				}
 			}
+			$Parameters += @{'OverflowAction' = $OverflowAction }
 		}
 		#endregion
 
@@ -3670,19 +3668,22 @@ function Set-TeamsCallQueue {
 				"Forward" {
 					if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
 						Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-						$OverflowAction = "Disconnect"
+						$TimeoutAction = "Disconnect"
 					}
 					else {
 						# Processing TimeoutActionTarget
 						try {
 							$TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$($TimeoutActionTarget)" -ErrorAction STOP).ObjectId
+							$Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
 						}
 						catch {
 							Write-Warning -Message "'$NameNormalised' Could not enumerate 'TimoutActionTarget'"
+							$TimeoutAction = "Disconnect"
 						}
 					}
 				}
 			}
+			$Parameters += @{'TimeoutAction' = $TimeoutAction }
 		}
 		#endregion
 
@@ -5708,7 +5709,7 @@ function Import-TeamsAudioFile {
 	#>
 
 	[CmdletBinding()]
-	#[Outputtype()] # To be determined
+	#[OutputType()] # To be determined
 	param(
 		[Parameter(Mandatory = $true)]
 		[string]$File,
@@ -6385,7 +6386,7 @@ function Format-StringRemoveSpecialCharacter {
 		github.com/lazywinadmin
 	#>
 	[CmdletBinding()]
-	[Outputtype(String)]
+	[OutputType([String])]
 	param
 	(
 		[Parameter(ValueFromPipeline)]
@@ -6450,7 +6451,7 @@ function Format-StringForUse {
 	#>
 
 	[CmdletBinding(DefaultParameterSetName = "Manual")]
-	[Outputtype(String)]
+	[OutputType([String])]
 	param(
 		[Parameter(Mandatory, HelpMessage = "String to reformat")]
 		[string]$InputString,
