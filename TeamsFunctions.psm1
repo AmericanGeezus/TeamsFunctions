@@ -1345,7 +1345,7 @@ function Test-TeamsExternalDNS {
 	#>
 
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	Param
 	(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the domain name to test the external DNS Skype Online records.")]
@@ -1483,7 +1483,7 @@ function Test-Module {
 
 	#>
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	Param
 	(
 		[Parameter(Mandatory = $true, HelpMessage = "Module to test.")]
@@ -1511,7 +1511,7 @@ function Test-AzureADConnection {
 			Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param()
 
 	try {
@@ -1540,7 +1540,7 @@ function Test-SkypeOnlineConnection {
 	#>
 
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param()
 
 	if ((Get-PsSession).ComputerName -notlike "*.online.lync.com") {
@@ -1575,7 +1575,7 @@ function Test-MicrosoftTeamsConnection {
 			Will Return $TRUE only if a session is found.
 	#>
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param()
 
 	try {
@@ -1648,7 +1648,7 @@ function Test-AzureADUser {
 			Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	#>
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity
@@ -1693,7 +1693,7 @@ function Test-AzureADGroup {
 			Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	#>
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
 		[string]$Identity
@@ -1741,7 +1741,7 @@ function Test-TeamsUser {
 			Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
 	#>
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity
@@ -1785,7 +1785,7 @@ function Test-TeamsTenantPolicy {
 			This is a crude but universal way of testing it, intended for check of multiple at a time.
 	#>
 	[CmdletBinding()]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, HelpMessage = "This is the Noun of Policy, i.e. 'TeamsUpgradePolicy' of 'Get-TeamsUpgradePolicy'")]
 		[Alias("Noun")]
@@ -1870,7 +1870,7 @@ function Test-TeamsUserLicense {
 	#>
 	#region Parameters
 	[CmdletBinding(DefaultParameterSetName = "ServicePlan")]
-	[Outputtype(Boolean)]
+	[Outputtype([Boolean])]
 	param(
 		[Parameter(Mandatory = $true, Position = 0, HelpMessage = "This is the UserID (UPN)")]
 		[string]$Identity,
