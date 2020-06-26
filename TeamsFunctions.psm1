@@ -4265,7 +4265,6 @@ function Get-TeamsResourceAccountAssociation {
 	[OutputType([System.Object[]])]
 	param(
 		[Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
-		[AllowEmptyString]
 		[Alias('Identity')]
 		[string[]]$UserPrincipalName
 	)
@@ -4315,21 +4314,24 @@ function Get-TeamsResourceAccountAssociation {
 			foreach ($UPN in $UserPrincipalName) {
 				Write-Verbose -Message "Querying Resource Account '$UPN'"
 				try {
-					$RAObject = Get-AzureADUserFromUPN $UPN -ErrorAction Stop
+					$RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
+					$AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+					[void]$Accounts.Add($AppInstance)
+					Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
 				}
 				catch {
-					Write-Error "Resource Account '$UPN' not found!"
+					Write-Error "Resource Account not found: '$UPN'" -Category ObjectNotFound
 					continue
 				}
-				[void]$Accounts.Add($RAObject)
 			}
 		}
 
 		# Processing found accounts
 		[System.Collections.ArrayList]$AllAccounts = @()
-		if ($null -ne $Account) {
+		if ($null -ne $Accounts) {
 			foreach ($Account in $Accounts) {
 				$Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
+				$ApplicationType = GetApplicationTypeFromAppId $Account.ApplicationId
 				if ($null -ne $Association) {
 					# Finding associated entity
 					$AssocObject = switch ($Association.ConfigurationType) {
@@ -4339,14 +4341,14 @@ function Get-TeamsResourceAccountAssociation {
 					$AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $Account.ObjectId -ErrorAction SilentlyContinue
 				}
 				else {
-					Write-Verbose -Message "Resource Account '$UserPrincipalName' - No Association found!" -Verbose
+					Write-Verbose -Message "'$($Account.UserPrincipalName)' - No Association found!" -Verbose
 					continue
 				}
 
 				# Output
 				$ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
 					UserPrincipalName = $Account.UserPrincipalName
-					ConfigurationType = $Account.ConfigurationType
+					ConfigurationType = $ApplicationType
 					Status            = $AssociationStatus.Status
 					StatusCode        = $AssociationStatus.StatusCode
 					StatusMessage     = $AssociationStatus.Message
@@ -4358,7 +4360,9 @@ function Get-TeamsResourceAccountAssociation {
 				[void]$AllAccounts.Add($ResourceAccountAssociationObject)
 			}
 			return $AllAccounts
-
+		}
+		else {
+			Write-Verbose -Message "No Accounts found" -Verbose
 		}
 	}
 }
@@ -4397,10 +4401,10 @@ function New-TeamsResourceAccountAssociation {
 		[string[]]$UserPrincipalName,
 
 		[Parameter(Mandatory = $true, ParameterSetName = 'CallQueue', Position = 1, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the CallQueue")]
-		[switch]$CallQueue,
+		[string]$CallQueue,
 
 		[Parameter(Mandatory = $true, ParameterSetName = 'AutoAttendant', Position = 1, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the AutoAttendant")]
-		[switch]$AutoAttendant,
+		[string]$AutoAttendant,
 
 		[Parameter(Mandatory = $false)]
 		[switch]$Force
@@ -4443,114 +4447,153 @@ function New-TeamsResourceAccountAssociation {
 		foreach ($UPN in $UserPrincipalName) {
 			Write-Verbose -Message "Querying Resource Account '$UPN'"
 			try {
-				$RAObject = Get-AzureADUserFromUPN $UPN -ErrorAction Stop
-				Write-Verbose "Resource Account '$UPN' found"
+				$RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
+				$AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+				[void]$Accounts.Add($AppInstance)
+				Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
 			}
 			catch {
-				Write-Error "Resource Account '$UPN' not found!"
+				Write-Error "Resource Account not found: '$UPN'" -Category ObjectNotFound
 				continue
 			}
-			[void]$Accounts.Add($RAObject)
 		}
 
+		# Processing found accounts
+		[System.Collections.ArrayList]$AllAccounts = @()
 		if ($null -ne $Accounts) {
-			# Processing Connection to Call Queue
-			if ($PSBoundParameters.ContainsKey('CallQueue')) {
-				# Querying Call Queue by Name - need Unique Result
-				$CallQueueObj = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
-				if ($null -eq $CallQueueObj) {
-					Write-Error "Resource Account '$UPN' - Call Queue '$CallQueue' not found" -Category ParserError -RecommendedAction  "Please check 'CallQueue' exists with this Name"
-					break
-				}
-				elseif ($CallQueueObj.GetType().BaseType.Name -eq "Array") {
-					Write-Error "Resource Account '$UPN' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
-					break
-				}
-				else {
-					Write-Verbose -Message "Resource Account '$UPN' - Call Queue found: $($CallQueueObj.Identity)"
-				}
+			foreach ($Account in $Accounts) {
+				#region Connection to Call Queue
+				if ($PSBoundParameters.ContainsKey('CallQueue')) {
+					# Querying Call Queue by Name - need Unique Result
+					Write-Verbose -Message "Querying Call Queue '$CallQueue'"
+					$CallQueueObj = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
+					if ($null -eq $CallQueueObj) {
+						Write-Error "'$CallQueue' - Not found" -Category ParserError -RecommendedAction  "Please check 'CallQueue' exists with this Name"
+						break
+					}
+					elseif ($CallQueueObj.GetType().BaseType.Name -eq "Array") {
+						Write-Error "'$CallQueue' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+						$CallQueueObj | Select-Object Identity, Name | Format-Table
+						break
+					}
+					else {
+						Write-Verbose -Message "'$CallQueue' - Unique result found: $($CallQueueObj.Identity)"
+					}
 
-				# Processing Call Queue
-				foreach ($Account in $Accounts) {
-					# Comparing ApplicationType
-					if ((Get-TeamsResourceAccount $Account.UserPrincipalName).ApplicationType -ne "CallQueue") {
-						if ($PSBoundParameters.ContainsKey('Force')) {
-							# Changing Application Type
-							Write-Verbose -Message "Resource Account '$UPN' - Changing Application Type to 'CallQueue'" -Verbose
-							$null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType CallQueue)
-							Start-Process Sleep 2
-							if ("CallQueue" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
-								Write-Error -Message "Resource Account '$UPN' - Application type could not be changed" -Category InvalidType
-								break
+					# Processing Call Queue
+					Write-Verbose -Message "Processing assignment of all Accounts to Call Queue"
+					foreach ($Account in $Accounts) {
+						# Comparing ApplicationType
+						if ((Get-TeamsResourceAccount $Account.UserPrincipalName).ApplicationType -ne "CallQueue") {
+							if ($PSBoundParameters.ContainsKey('Force')) {
+								# Changing Application Type
+								Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'CallQueue'" -Verbose
+								$null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType CallQueue)
+								Start-Process Sleep 2
+								if ("CallQueue" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
+									Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType
+									break
+								}
+								else {
+									Write-Verbose -Message "SUCCESS"
+								}
 							}
 							else {
-								Write-Verbose -Message "SUCCESS"
+								Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
 							}
 						}
-						else {
-							Write-Error -Message "Resource Account '$UPN' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
+
+						# Establishing Association
+						Write-Verbose -Message "'$($Account.UserPrincipalName)' - Assigning to Call Queue: '$CallQueue'"
+						if ($PSCmdlet.ShouldProcess("$Account.UserPrincipalName", "New-CsOnlineApplicationInstanceAssociation")) {
+							$OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType CallQueue -ConfigurationId $CallQueueObj.Identity
 						}
 					}
 
-					# Establishing Association
-					Write-Debug -Message "Resource Account '$UPN' - Assigning to Call Queue: '$CallQueue'" -Debug
-					if ($PSCmdlet.ShouldProcess("$UPN", "New-CsOnlineApplicationInstanceAssociation")) {
-						New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType CallQueue -ConfigurationId $CallQueueObj.Identity
+					# Output
+					$ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+						UserPrincipalName = $Account.UserPrincipalName
+						ConfigurationType = $OperationStatus.'Configuration Type'
+						Result            = $OperationStatus.Result
+						StatusCode        = $OperationStatus.'Status Code'
+						StatusMessage     = $OperationStatus.Message
+						StatusTimeStamp   = $AssociationStatus.StatusTimestamp
+						AssociatedTo      = $AssocObject.Name
+
 					}
+					[void]$AllAccounts.Add($ResourceAccountAssociationObject)
 				}
+				#endregion
 
-				# Output: New Object with: Identity (CQ/AA), ConfigurationType, ResourceAccounts, ResourceAccount Phone Number?
-			}
+				#region Connection to Auto Attendant
+				if ($PSBoundParameters.ContainsKey('AutoAttendant')) {
+					# Querying Auto Attendant by Name - need Unique Result
+					Write-Verbose -Message "Querying Auto Attendant '$AutoAttendant'"
+					$AutoAttendantObj = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
+					if ($null -eq $AutoAttendantObj) {
+						Write-Error "'$AutoAttendant' - Not found" -Category ParserError -RecommendedAction  "Please check 'AutoAttendant' exists with this Name"
+						break
+					}
+					elseif ($AutoAttendantObj.GetType().BaseType.Name -eq "Array") {
+						Write-Error "'$AutoAttendant' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+						$AutoAttendantObj | Select-Object Identity, Name | Format-Table
+						break
+					}
+					else {
+						Write-Verbose -Message "'$AutoAttendant' - Unique result found: $($AutoAttendantObj.Identity)"
+					}
 
-			# Processing Connection to Auto Attendant
-			if ($PSBoundParameters.ContainsKey('AutoAttendant')) {
-				# Querying Auto Attendant by Name - need Unique Result
-				$AutoAttendantObj = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
-				if ($null -eq $AutoAttendantObj) {
-					Write-Error "Resource Account '$UPN' - Call Queue '$CallQueue' not found" -Category ParserError -RecommendedAction  "Please check 'CallQueue' exists with this Name"
-					break
-				}
-				elseif ($AutoAttendantObj.GetType().BaseType.Name -eq "Array") {
-					Write-Error "Resource Account '$UPN' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
-					break
-				}
-				else {
-					Write-Verbose -Message "Resource Account '$UPN' - Call Queue found: $($AutoAttendantObj.Identity)"
-				}
-
-				# Processing Auto Attendant
-				foreach ($Account in $Accounts) {
-					# Comparing ApplicationType
-					if ((Get-TeamsResourceAccount $Account.UserPrincipalName).ApplicationType -ne "AutoAttendant") {
-						if ($PSBoundParameters.ContainsKey('Force')) {
-							# Changing Application Type
-							Write-Verbose -Message "Resource Account '$UPN' - Changing Application Type to 'AutoAttendant'" -Verbose
-							$null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType AutoAttendant)
-							Start-Process Sleep 2
-							if ("AutoAttendant" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
-								Write-Error -Message "Resource Account '$UPN' - Application type could not be changed" -Category InvalidType
-								break
+					# Processing Auto Attendant
+					Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
+					foreach ($Account in $Accounts) {
+						# Comparing ApplicationType
+						if ((Get-TeamsResourceAccount $Account.UserPrincipalName).ApplicationType -ne "AutoAttendant") {
+							if ($PSBoundParameters.ContainsKey('Force')) {
+								# Changing Application Type
+								Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'AutoAttendant'" -Verbose
+								$null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType AutoAttendant)
+								Start-Process Sleep 2
+								if ("AutoAttendant" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
+									Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType
+									break
+								}
+								else {
+									Write-Verbose -Message "SUCCESS"
+								}
 							}
 							else {
-								Write-Verbose -Message "SUCCESS"
+								Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
 							}
 						}
-						else {
-							Write-Error -Message "Resource Account '$UPN' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
+
+						# Establishing Association
+						Write-Verbose -Message "'$($Account.UserPrincipalName)' - Assigning to Auto Attendant: '$AutoAttendant'"
+						if ($PSCmdlet.ShouldProcess("$Account.UserPrincipalName", "New-CsOnlineApplicationInstanceAssociation")) {
+							$OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $CallQueueObj.Identity
 						}
 					}
 
-					# Establishing Association
-					Write-Debug -Message "Resource Account '$UPN' - Assigning to Auto Attendant: '$AutoAttendant'" -Debug
-					if ($PSCmdlet.ShouldProcess("$UPN", "New-CsOnlineApplicationInstanceAssociation")) {
-						New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $CallQueueObj.Identity
-					}
-				}
+					# Output
+					$ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+						UserPrincipalName = $Account.UserPrincipalName
+						ConfigurationType = $ApplicationType
+						Status            = $AssociationStatus.Status
+						StatusCode        = $AssociationStatus.StatusCode
+						StatusMessage     = $AssociationStatus.Message
+						StatusTimeStamp   = $AssociationStatus.StatusTimestamp
+						AssociatedTo      = $AssocObject.Name
 
-				# Output: New Object with: Identity (CQ/AA), ConfigurationType, ResourceAccounts, ResourceAccount Phone Number?
+					}
+					[void]$AllAccounts.Add($ResourceAccountAssociationObject)
+				}
+				#endregion
 			}
+
+			return $AllAccounts
 		}
-
+		else {
+			Write-Warning -Message "No Accounts found"
+		}
 	}
 }
 
@@ -4615,45 +4658,70 @@ function Remove-TeamsResourceAccountAssociation {
 	}
 	process {
 		# Querying ObjectId from provided UPNs
-		try {
-			$Account = Get-AzureADUserFromUPN $UserPrincipalName -ErrorAction Stop
-		}
-		catch {
-			Write-Error "Resource Account '$UserPrincipalName' not found!"
-			$Account = $null
-			continue
-		}
-
-		# Processing found accounts
-		if ($null -ne $Account) {
-			$Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
-			if ($null -ne $Association) {
-				# Finding associated entity
-				$AssocObject = switch ($Association.ConfigurationType) {
-					'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId }
-					'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
-				}
-
-				# Removing Association
-				try {
-					if ($PSCmdlet.ShouldProcess("Removing Association of Account $UserPrincipalName to $($Association.ConfigurationType) '$($AssocObject.Name)'", "Remove-CsOnlineApplicationInstanceAssociation")) {
-						Write-Verbose -Message "Resource Account '$UserPrincipalName' - Removing Association to $($Association.ConfigurationType) '$($AssocObject.Name)': " -Verbose
-						Remove-CsOnlineApplicationInstanceAssociation $Association.Id -ErrorAction Stop
-					}
-					else {
-						continue
-					}
-				}
-				catch {
-					Write-ErrorRecord $_
-				}
+		[System.Collections.ArrayList]$Accounts = @()
+		foreach ($UPN in $UserPrincipalName) {
+			try {
+				$RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
+				$AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+				[void]$Accounts.Add($AppInstance)
+				Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
 			}
-			else {
-				Write-Verbose -Message "Resource Account '$UserPrincipalName' - No Association found!" -Verbose
+			catch {
+				Write-Error "Resource Account not found: '$UPN'" -Category ObjectNotFound
 				continue
 			}
 		}
 
+		# Processing found accounts
+		[System.Collections.ArrayList]$AllAccounts = @()
+		if ($null -ne $Accounts) {
+			foreach ($Account in $Accounts) {
+				$Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
+				if ($null -ne $Association) {
+					# Finding associated entity
+					$AssocObject = switch ($Association.ConfigurationType) {
+						'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId }
+						'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
+					}
+
+					# Removing Association
+					try {
+						if ($PSCmdlet.ShouldProcess("Removing Association of Account $UserPrincipalName to $($Association.ConfigurationType) '$($AssocObject.Name)'", "Remove-CsOnlineApplicationInstanceAssociation")) {
+							Write-Verbose -Message "'$UserPrincipalName' - Removing Association to $($Association.ConfigurationType) '$($AssocObject.Name)': " -Verbose
+							$OperationStatus = Remove-CsOnlineApplicationInstanceAssociation $Association.Id -ErrorAction Stop
+						}
+						else {
+							continue
+						}
+					}
+					catch {
+						Write-ErrorRecord $_
+					}
+				}
+				else {
+					Write-Verbose -Message "'$UserPrincipalName' - No Association found!" -Verbose
+					continue
+				}
+
+				# Output
+				$ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+					UserPrincipalName  = $Account.UserPrincipalName
+					ConfigurationType  = $OperationStatus.'Configuration Type'
+					Result             = $OperationStatus.Result
+					StatusCode         = $OperationStatus.'Status Code'
+					StatusMessage      = $OperationStatus.Message
+					StatusTimeStamp    = $AssociationStatus.StatusTimestamp
+					AssociatedTo       = $null
+					AssociationRemoved = $AssocObject.Name
+
+				}
+				[void]$AllAccounts.Add($ResourceAccountAssociationObject)
+			}
+			return $AllAccounts
+		}
+		else {
+			Write-Warning -Message "No Accounts found"
+		}
 	}
 }
 #endregion
@@ -7493,7 +7561,7 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
 	Test-SkypeOnlineModule, Test-SkypeOnlineConnection, `
 	Test-MicrosoftTeamsModule, Test-MicrosoftTeamsConnection, Test-TeamsUser, `
 	New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
-	#	New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation,`
+	New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation, `
 	New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
 	Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
 	Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
