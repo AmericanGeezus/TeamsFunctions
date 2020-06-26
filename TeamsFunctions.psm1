@@ -7169,7 +7169,7 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   Test-SkypeOnlineModule, Test-SkypeOnlineConnection, `
   Test-MicrosoftTeamsModule, Test-MicrosoftTeamsConnection, Test-TeamsUser, `
   New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
-  #s	New-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation,`
+  #	New-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation,`
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
   Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
