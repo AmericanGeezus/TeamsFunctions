@@ -547,6 +547,7 @@ function Connect-SkypeOnline {
         if ($Null -ne $SkypeOnlineSession) {
           try {
             Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
+            $null = Enable-CsOnlineSessionForReconnection
           }
           catch {
             Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
