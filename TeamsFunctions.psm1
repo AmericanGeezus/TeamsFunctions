@@ -43,15 +43,15 @@
 								Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
 								Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
 								Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
-		20.05.02.1  First Publication
-		20.05.02.2  Bug fixing, erroneously incorporated all local modules.
-		20.05.03.1  Bug fixing, minor improvements
+		20.05.03.1  First Publication
+		            Bug fixing, erroneously incorporated all local modules.
 		20.05.09.1  Bug fixing, minor improvements
-		20.05.16.1  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
+		20.05.19.2  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
 								Added Get-AzureAdAssignedAdminRoles
 								Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
-		20.05.19.1  Fixed an issue with access to the new functions
-		20.05.23.1  Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
+                Fixed an issue with access to the new functions
+                Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+		20.05.24.2  Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
 								Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
 								Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
 								Added Helper function for Licensing: Get-SkuIDfromSkuPartNumber (returns SkuID)
@@ -60,12 +60,18 @@
 								Added AzureAD Module and Connection Test in all Functions that need it.
 								Added SkypeOnline Module and Connection Test in all Functions that need it.
 								Some bug fixing and code scrubbing
-		20.06.07.1  Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
-								Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
+		20.06.09.1  Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
 								Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
 								Run "con $Username" to connect to all 3 with one authentication prompt
-		20.06.12.0  Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
-								Replaced by Test-Module $ModuleNames
+                Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
+                Replaced by Test-Module $ModuleNames
+    20.06.17.1  Added Write-ErrorRecord.
+                Bugfixing Resource Account and Call Queue Scripts
+    20.06.22.0  Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
+                Bugfixing Resource Account and Call Queue Scripts
+                Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
+    20.06.29.1  Added TeamsResourceAccountAssociation Scripts
+                Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
 
 	#>
 
