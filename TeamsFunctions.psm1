@@ -43,15 +43,15 @@
 								Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
 								Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
 								Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
-		20.05.02.1  First Publication
-		20.05.02.2  Bug fixing, erroneously incorporated all local modules.
-		20.05.03.1  Bug fixing, minor improvements
+		20.05.03.1  First Publication
+		            Bug fixing, erroneously incorporated all local modules.
 		20.05.09.1  Bug fixing, minor improvements
-		20.05.16.1  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
+		20.05.19.2  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
 								Added Get-AzureAdAssignedAdminRoles
 								Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
-		20.05.19.1  Fixed an issue with access to the new functions
-		20.05.23.1  Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
+                Fixed an issue with access to the new functions
+                Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+		20.05.24.2  Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
 								Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
 								Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
 								Added Helper function for Licensing: Get-SkuIDfromSkuPartNumber (returns SkuID)
@@ -60,12 +60,18 @@
 								Added AzureAD Module and Connection Test in all Functions that need it.
 								Added SkypeOnline Module and Connection Test in all Functions that need it.
 								Some bug fixing and code scrubbing
-		20.06.07.1  Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
-								Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
+		20.06.09.1  Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
 								Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
 								Run "con $Username" to connect to all 3 with one authentication prompt
-		20.06.12.0  Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
-								Replaced by Test-Module $ModuleNames
+                Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
+                Replaced by Test-Module $ModuleNames
+    20.06.17.1  Added Write-ErrorRecord.
+                Bugfixing Resource Account and Call Queue Scripts
+    20.06.22.0  Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
+                Bugfixing Resource Account and Call Queue Scripts
+                Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
+    20.06.29.1  Added TeamsResourceAccountAssociation Scripts
+                Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
 
 	#>
 
@@ -109,7 +115,7 @@ function Set-TeamsUserLicense {
   # - One Switch for Licenses Removed (all)
   # - One Switch for License removed (specific)(ARRAY)
 
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
 
   )
@@ -547,6 +553,7 @@ function Connect-SkypeOnline {
         if ($Null -ne $SkypeOnlineSession) {
           try {
             Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
+            $null = Enable-CsOnlineSessionForReconnection
           }
           catch {
             Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
@@ -1096,7 +1103,7 @@ function Remove-TenantDialPlanNormalizationRule {
 		3 Default         ^(\d+)$    +1$1
 	#>
 
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the name of the dial plan to modify the normalization rules.")]
     [string]$DialPlan
@@ -1219,7 +1226,7 @@ function Set-TeamsUserPolicy {
 		Multiple other policies are planned to be added to round the function off
 	#>
 
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the identity for the user to configure")]
     [Alias("UPN", "UserPrincipalName", "Username")]
@@ -2205,7 +2212,7 @@ function New-TeamsCallQueue {
 		Disconnect-ResourceAccount
 	#>
 
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
     [string]$Name,
@@ -3374,7 +3381,7 @@ function Set-TeamsCallQueue {
 		Disconnect-ResourceAccount
 	#>
 
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UserPrincipalName of the Call Queue")]
     [string]$Name,
@@ -4242,40 +4249,48 @@ function Remove-TeamsCallQueue {
 #endregion
 
 #region Resource Account Connection
-function New-TeamsResourceAccountAssociation {
+function Get-TeamsResourceAccountAssociation {
   <#
 	.SYNOPSIS
-		Short description
+		Queries a Resource Account Association
 	.DESCRIPTION
-		Long description
+		Queries an existing Resource Account and lists its Association (if any)
+	.PARAMETER UserPrincipalName
+		Optional. UPN(s) of the Resource Account(s) to be queried
 	.EXAMPLE
-		PS C:\> <example usage>
-		Explanation of what the example does
-	.INPUTS
-		Inputs (if any)
-	.OUTPUTS
-		Output (if any)
+		Get-TeamsResourceAccountAssociation
+		Queries all Resource Accounts and enumerates their Association as well as the Association Status
+	.EXAMPLE
+		Get-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
+		Queries the Association of the Account 'ResourceAccount@domain.com'
 	.NOTES
-		General notes
+		Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
+		Without any Parameters, can be used to enumerate all Resource Accounts
+		This may take a while to calculate, depending on # of Accounts in the Tenant
 	#>
-  # Input: UPN(s) of RA, UPN of CQ/AA (no input for ApplicationType as this is clear once queried)
-  # Putput:
-  #         Verify existence of UPN of CQ/AA get-CsCallQueue / Get-CsAutoAttendant? any other option to query either?
-  #         Lookup ApplicationType > Define ApplicationType as baseline to test RAs against
-
-  #         Verify existence of each UPN of RA in AzureAD (Is it really a Resource Account? Department!)
-  #         Lookup UPN against Get-CsOnlineApplicationInstance, lookup ApplicationType
-  #
-  #         Verify Application Type of each UPN of RA matches Baseline
-  #
-  # Action: New-CsOnlineApplicationInstanceAssociation -Identities @() -ConfigurationType $Type -ConfigurationId $Object.ObjectId
-  #
-  # Output: New Object with: Identity (CQ/AA), ConfigurationType, ResourceAccounts, ResourceAccount Phone Number?
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding()]
+  [OutputType([System.Object[]])]
   param(
-    $UserPrincipalName
+    [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName
   )
   begin {
+    # Testing AzureAD Connection
+    if ($false -eq (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Testing SkypeOnline Connection
+    if ($false -eq (Test-SkypeOnlineConnection)) {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
       $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
     }
@@ -4285,14 +4300,313 @@ function New-TeamsResourceAccountAssociation {
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
+
+    # Enabling $Confirm to work with $Force
+    if ($Force -and -not $Confirm) {
+      $ConfirmPreference = 'None'
+    }
+
+
   }
   process {
-    #
-    if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "New-CsOnlineApplicationInstanceAssociation")) {
-      #
+    # Querying ObjectId from provided UPNs
+    if ($null -eq $UserPrincipalName) {
+      # Getting all RAs
+      Write-Verbose -Message "Querying all Resource Accounts, please wait..." -Verbose
+      $Accounts = Get-CsOnlineApplicationInstance
     }
     else {
+      # Query $UserPrincipalName
+      [System.Collections.ArrayList]$Accounts = @()
+      foreach ($UPN in $UserPrincipalName) {
+        Write-Verbose -Message "Querying Resource Account '$UPN'"
+        try {
+          $RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
+          $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+          [void]$Accounts.Add($AppInstance)
+          Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
+        }
+        catch {
+          Write-Error "Resource Account not found: '$UPN'" -Category ObjectNotFound
+          continue
+        }
+      }
+    }
+
+    # Processing found accounts
+    [System.Collections.ArrayList]$AllAccounts = @()
+    if ($null -ne $Accounts) {
+      foreach ($Account in $Accounts) {
+        $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
+        $ApplicationType = GetApplicationTypeFromAppId $Account.ApplicationId
+        if ($null -ne $Association) {
+          # Finding associated entity
+          $AssocObject = switch ($Association.ConfigurationType) {
+            'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId }
+            'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
+          }
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $Account.ObjectId -ErrorAction SilentlyContinue
+        }
+        else {
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - No Association found!" -Verbose
+          continue
+        }
+
+        # Output
+        $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+          UserPrincipalName = $Account.UserPrincipalName
+          ConfigurationType = $ApplicationType
+          Status            = $AssociationStatus.Status
+          StatusCode        = $AssociationStatus.StatusCode
+          StatusMessage     = $AssociationStatus.Message
+          StatusTimeStamp   = $AssociationStatus.StatusTimestamp
+          AssociatedTo      = $AssocObject.Name
+
+        }
+
+        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+      }
+      return $AllAccounts
+    }
+    else {
+      Write-Verbose -Message "No Accounts found" -Verbose
+    }
+  }
+}
+
+function New-TeamsResourceAccountAssociation {
+  <#
+	.SYNOPSIS
+		Connects a Resource Account to a CQ or AA
+	.DESCRIPTION
+		Associates an existing Resource Account to a Call Queue or Auto Attendant
+		Resource Account Type is checked against the ApplicationType.
+		User is prompted if types do not match
+	.PARAMETER UserPrincipalName
+		Required. UPN(s) of the Resource Account(s) to be associated to a Call Queue or AutoAttendant
+	.PARAMETER CallQueue
+		Optional. Specifies the connection to be made to the provided Call Queue Name
+	.PARAMETER AutoAttendant
+		Optional. Specifies the connection to be made to the provided Auto Attendant Name
+	.PARAMETER Force
+		Optional. Suppresses Confirmation dialog if -Confirm is not provided
+		Used to override prompts for alignment of ApplicationTypes.
+		The Resource Account is changed to have the same type as the associated Object (CallQueue or AutoAttendant)!
+	.EXAMPLE
+		New-TeamsResourceAccountAssociation -UserPrincipalName Account1@domain.com -
+		Explanation of what the example does
+	.INPUTS
+		Inputs (if any)
+	.OUTPUTS
+		Output (if any)
+	.NOTES
+		General notes
+	#>
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'CallQueue')]
+  param(
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
+    [string[]]$UserPrincipalName,
+
+    [Parameter(Mandatory = $true, ParameterSetName = 'CallQueue', Position = 1, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the CallQueue")]
+    [string]$CallQueue,
+
+    [Parameter(Mandatory = $true, ParameterSetName = 'AutoAttendant', Position = 1, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the AutoAttendant")]
+    [string]$AutoAttendant,
+
+    [Parameter(Mandatory = $false)]
+    [switch]$Force
+  )
+  begin {
+    # Testing AzureAD Connection
+    if ($false -eq (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
+    }
+
+    # Testing SkypeOnline Connection
+    if ($false -eq (Test-SkypeOnlineConnection)) {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
+
+    # Enabling $Confirm to work with $Force
+    if ($Force -and -not $Confirm) {
+      $ConfirmPreference = 'None'
+    }
+
+  }
+  process {
+    # Query $UserPrincipalName
+    [System.Collections.ArrayList]$Accounts = @()
+    foreach ($UPN in $UserPrincipalName) {
+      Write-Verbose -Message "Querying Resource Account '$UPN'"
+      try {
+        $RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
+        $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+        [void]$Accounts.Add($AppInstance)
+        Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
+      }
+      catch {
+        Write-Error "Resource Account not found: '$UPN'" -Category ObjectNotFound
+        continue
+      }
+    }
+
+    # Processing found accounts
+    [System.Collections.ArrayList]$AllAccounts = @()
+    if ($null -ne $Accounts) {
+      #region Connection to Call Queue
+      if ($PSBoundParameters.ContainsKey('CallQueue')) {
+        # Querying Call Queue by Name - need Unique Result
+        Write-Verbose -Message "Querying Call Queue '$CallQueue'"
+        $CallQueueObj = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
+        if ($null -eq $CallQueueObj) {
+          Write-Error "'$CallQueue' - Not found" -Category ParserError -RecommendedAction  "Please check 'CallQueue' exists with this Name"
+          break
+        }
+        elseif ($CallQueueObj.GetType().BaseType.Name -eq "Array") {
+          Write-Error "'$CallQueue' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+          $CallQueueObj | Select-Object Identity, Name | Format-Table
+          break
+        }
+        else {
+          Write-Verbose -Message "'$CallQueue' - Unique result found: $($CallQueueObj.Identity)"
+        }
+
+        # Processing Call Queue
+        Write-Verbose -Message "Processing assignment of all Accounts to Call Queue"
+        foreach ($Account in $Accounts) {
+          # Comparing ApplicationType
+          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName).ApplicationType -ne "CallQueue") {
+            if ($PSBoundParameters.ContainsKey('Force')) {
+              # Changing Application Type
+              Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'CallQueue'" -Verbose
+              $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType CallQueue)
+              Start-Process Sleep 2
+              if ("CallQueue" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
+                Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType
+                break
+              }
+              else {
+                Write-Verbose -Message "SUCCESS"
+              }
+            }
+            else {
+              Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
+            }
+          }
+          else {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches Call Queue - OK"
+          }
+
+          # Establishing Association
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - Assigning to Call Queue: '$CallQueue'"
+          if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", "New-CsOnlineApplicationInstanceAssociation")) {
+            $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType CallQueue -ConfigurationId $CallQueueObj.Identity
+          }
+        }
+        # Requery Association Target
+        $AssociationTarget = Get-CsCallQueue -Identity $OperationStatus.Results.ConfigurationId -ErrorAction SilentlyContinue
+
+        # Output
+        $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+          UserPrincipalName = $Account.UserPrincipalName
+          ConfigurationType = $OperationStatus.Results.ConfigurationType
+          Result            = $OperationStatus.Results.Result
+          StatusCode        = $OperationStatus.Results.StatusCode
+          StatusMessage     = $OperationStatus.Results.Message
+          AssociatedTo      = $AssociationTarget.Name
+
+        }
+        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+      }
+      #endregion
+
+      #region Connection to Auto Attendant
+      if ($PSBoundParameters.ContainsKey('AutoAttendant')) {
+        # Querying Auto Attendant by Name - need Unique Result
+        Write-Verbose -Message "Querying Auto Attendant '$AutoAttendant'"
+        $AutoAttendantObj = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
+        if ($null -eq $AutoAttendantObj) {
+          Write-Error "'$AutoAttendant' - Not found" -Category ParserError -RecommendedAction  "Please check 'AutoAttendant' exists with this Name"
+          break
+        }
+        elseif ($AutoAttendantObj.GetType().BaseType.Name -eq "Array") {
+          Write-Error "'$AutoAttendant' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+          $AutoAttendantObj | Select-Object Identity, Name | Format-Table
+          break
+        }
+        else {
+          Write-Verbose -Message "'$AutoAttendant' - Unique result found: $($AutoAttendantObj.Identity)"
+        }
+
+        # Processing Auto Attendant
+        Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
+        foreach ($Account in $Accounts) {
+          # Comparing ApplicationType
+          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName).ApplicationType -ne "AutoAttendant") {
+            if ($PSBoundParameters.ContainsKey('Force')) {
+              # Changing Application Type
+              Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'AutoAttendant'" -Verbose
+              $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType AutoAttendant)
+              Start-Process Sleep 2
+              if ("AutoAttendant" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
+                Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType
+                break
+              }
+              else {
+                Write-Verbose -Message "SUCCESS"
+              }
+            }
+            else {
+              Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
+            }
+          }
+          else {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches Auto Attendant - OK"
+          }
+
+
+          # Establishing Association
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - Assigning to Auto Attendant: '$AutoAttendant'"
+          if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", "New-CsOnlineApplicationInstanceAssociation")) {
+            $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $CallQueueObj.Identity
+          }
+        }
+        # Requery Association Target
+        $AssociationTarget = Get-CsAutoAttendant -Identity $OperationStatus.Results.ConfigurationId -ErrorAction SilentlyContinue
+
+        # Output
+        $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+          UserPrincipalName = $Account.UserPrincipalName
+          ConfigurationType = $OperationStatus.Results.ConfigurationType
+          Result            = $OperationStatus.Results.Result
+          StatusCode        = $OperationStatus.Results.StatusCode
+          StatusMessage     = $OperationStatus.Results.Message
+          AssociatedTo      = $AssociationTarget.Name
+
+        }
+        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+      }
+      #endregion
+
+      return $AllAccounts
+    }
+    else {
+      Write-Warning -Message "No Accounts found"
     }
   }
 }
@@ -4300,30 +4614,45 @@ function New-TeamsResourceAccountAssociation {
 function Remove-TeamsResourceAccountAssociation {
   <#
 	.SYNOPSIS
-		Short description
+		Removes the connection between a Resource Account and a CQ or AA
 	.DESCRIPTION
-		Long description
+		Removes an associated Resource Account from a Call Queue or Auto Attendant
+	.PARAMETER UserPrincipalName
+		Required. UPN(s) of the Resource Account(s) to be removed from a Call Queue or AutoAttendant
+	.PARAMETER Force
+		Optional. Suppresses Confirmation dialog if -Confirm is not provided
 	.EXAMPLE
-		PS C:\> <example usage>
-		Explanation of what the example does
-	.INPUTS
-		Inputs (if any)
-	.OUTPUTS
-		Output (if any)
+		Remove-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
+		Removes the Association of the Account 'ResourceAccount@domain.com' from the identified Call Queue or Auto Attendant
 	.NOTES
+		Does the same as Remove-CsOnlineApplicationInstanceAssociation, but with friendly Names
 		General notes
 	#>
-  # Input: UPN(s) of ResourceAccount
-  # Putput: Verify existence of UPN
-  #         Verify link exists (Get-CsOnlineApplicationInstanceAssociation (Get-TeamsResourceAccount -Identity $Identity))
-  # Action: Remove Link
-  #         Remove-CsOnlineApplicationInstanceAssociation -Identities @()
-  # Output: None? OK? - Query of now unassociated ApplicationInstances?
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
-    $UserPrincipalName
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
+
+    [Parameter(Mandatory = $false)]
+    [switch]$Force
   )
   begin {
+    # Testing AzureAD Connection
+    if ($false -eq (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Testing SkypeOnline Connection
+    if ($false -eq (Test-SkypeOnlineConnection)) {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+
+    # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
       $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
     }
@@ -4333,14 +4662,78 @@ function Remove-TeamsResourceAccountAssociation {
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
+
+    # Enabling $Confirm to work with $Force
+    if ($Force -and -not $Confirm) {
+      $ConfirmPreference = 'None'
+    }
+
+
   }
   process {
-    #
-    if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "New-CsOnlineApplicationInstanceAssociation")) {
-      #
+    # Querying ObjectId from provided UPNs
+    [System.Collections.ArrayList]$Accounts = @()
+    foreach ($UPN in $UserPrincipalName) {
+      try {
+        $RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
+        $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+        [void]$Accounts.Add($AppInstance)
+        Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
+      }
+      catch {
+        Write-Error "Resource Account not found: '$UPN'" -Category ObjectNotFound
+        continue
+      }
+    }
+
+    # Processing found accounts
+    [System.Collections.ArrayList]$AllAccounts = @()
+    if ($null -ne $Accounts) {
+      foreach ($Account in $Accounts) {
+        $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
+        if ($null -ne $Association) {
+          # Finding associated entity
+          $AssocObject = switch ($Association.ConfigurationType) {
+            'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId }
+            'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
+          }
+
+          # Removing Association
+          try {
+            if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Removing Association of the Target Account to $($Association.ConfigurationType) '$($AssocObject.Name)'")) {
+              Write-Verbose -Message "'$UserPrincipalName' - Removing Association to $($Association.ConfigurationType) '$($AssocObject.Name)'"
+              $OperationStatus = Remove-CsOnlineApplicationInstanceAssociation $Association.Id -ErrorAction Stop
+            }
+            else {
+              continue
+            }
+          }
+          catch {
+            Write-ErrorRecord $_
+          }
+        }
+        else {
+          Write-Verbose -Message "'$UserPrincipalName' - No Association found!" -Verbose
+          continue
+        }
+
+        # Output
+        $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+          UserPrincipalName  = $Account.UserPrincipalName
+          ConfigurationType  = $OperationStatus.Results.ConfigurationType
+          Result             = $OperationStatus.Results.Result
+          StatusCode         = $OperationStatus.Results.StatusCode
+          StatusMessage      = $OperationStatus.Results.Message
+          AssociatedTo       = $null
+          AssociationRemoved = $AssocObject.Name
+
+        }
+        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+      }
+      return $AllAccounts
     }
     else {
-      break
+      Write-Warning -Message "No Accounts found"
     }
   }
 }
@@ -4407,7 +4800,7 @@ function New-TeamsResourceAccount {
 		Disconnect-ResourceAccount
 	#>
 
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, HelpMessage = "UPN of the Object to create.")]
     [ValidateScript( {
@@ -4843,7 +5236,6 @@ function Get-TeamsResourceAccount {
   [CmdletBinding(DefaultParameterSetName = "Identity")]
   param (
     [Parameter(ParameterSetName = "Identity", Position = 0, ValueFromPipelineByPropertyName = $true, HelpMessage = "User Principal Name of the Object.")]
-    [AllowEmptyString]
     [Alias("UPN", "UserPrincipalName")]
     [string[]]$Identity,
 
@@ -4933,7 +5325,7 @@ function Get-TeamsResourceAccount {
     # Creating new PS Object
     try {
       [System.Collections.ArrayList]$AllAccounts = @()
-      Write-Verbose -Message "Parsing Resource Accounts, please wait..." -Verbose
+      Write-Verbose -Message "Parsing Resource Accounts, please wait..."
       foreach ($ResourceAccount in $ResourceAccounts) {
         # readable Application type
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: ApplicationType"
@@ -4978,11 +5370,12 @@ function Get-TeamsResourceAccount {
         # Associations
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
         try {
-          $Assocociation = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
-          $AssocObject = switch ($Assocociation.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Assocociation.ConfigurationId }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Assocociation.ConfigurationId }
+          $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
+          $AssocObject = switch ($Association.ConfigurationType) {
+            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId }
+            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
           }
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
         }
         catch {
           $AssocObject	= $null
@@ -4998,7 +5391,8 @@ function Get-TeamsResourceAccount {
           PhoneNumberType   = $ResourceAccountPhoneNumberType
           PhoneNumber       = $ResourceAccount.PhoneNumber
           AssociatedTo      = $AssocObject.Name
-          AssociatedAs      = $Assocociation.ConfigurationType
+          AssociatedAs      = $Association.ConfigurationType
+          AssocationStatus  = $AssociationStatus.Status
         }
 
         [void]$AllAccounts.Add($ResourceAccountObject)
@@ -5056,6 +5450,7 @@ function Find-TeamsResourceAccount {
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Search")]
+  [OutputType([System.Object[]])]
   param (
     [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", HelpMessage = "Part of the DisplayName to be found")]
     [Parameter(Mandatory, Position = 0, ParameterSetName = "AssociatedOnly", HelpMessage = "Part of the DisplayName to be found")]
@@ -5174,11 +5569,12 @@ function Find-TeamsResourceAccount {
         # Associations
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
         try {
-          $Assocociation = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
-          $AssocObject = switch ($Assocociation.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Assocociation.ConfigurationId -ErrorAction SilentlyContinue }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Assocociation.ConfigurationId -ErrorAction SilentlyContinue }
+          $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
+          $AssocObject = switch ($Association.ConfigurationType) {
+            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -ErrorAction SilentlyContinue }
+            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -ErrorAction SilentlyContinue }
           }
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
         }
         catch {
           $AssocObject	= $null
@@ -5194,7 +5590,8 @@ function Find-TeamsResourceAccount {
           PhoneNumberType   = $ResourceAccountPhoneNumberType
           PhoneNumber       = $ResourceAccount.PhoneNumber
           AssociatedTo      = $AssocObject.Name
-          AssociatedAs      = $Assocociation.ConfigurationType
+          AssociatedAs      = $Association.ConfigurationType
+          AssocationStatus  = $AssociationStatus.Status
         }
 
         [void]$AllAccounts.Add($ResourceAccountObject)
@@ -5282,7 +5679,7 @@ function Set-TeamsResourceAccount {
 		Disconnect-ResourceAccount
 	#>
 
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param (
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
     [ValidateScript( {
@@ -5781,6 +6178,11 @@ function Remove-TeamsResourceAccount {
       break
     }
 
+    # Enabling $Confirm to work with $Force
+    if ($Force -and -not $Confirm) {
+      $ConfirmPreference = 'None'
+    }
+
     # Adding Types - Required for License manipulation in Process
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
 
@@ -5815,15 +6217,17 @@ function Remove-TeamsResourceAccount {
       if ($PSBoundParameters.ContainsKey("Force")) {
         # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
         # with: Remove-CsOnlineApplicationInstanceAssociation
-        try {
-          Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
-          $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations  -ErrorAction STOP)
-          Write-Verbose -Message "SUCCESS: Associations removed"
-        }
-        catch {
-          Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
-          Write-ErrorRecord $_ #This handles the eror message in human readable format.
-          return
+        if ($PSCmdlet.ShouldProcess("Resource Account Associations ($($Associations.Count))", 'Remove-CsOnlineApplicationInstanceAssociation')) {
+          try {
+            Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
+            $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations  -ErrorAction STOP)
+            Write-Verbose -Message "SUCCESS: Associations removed"
+          }
+          catch {
+            Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
+            Write-ErrorRecord $_ #This handles the eror message in human readable format.
+            return
+          }
         }
       }
       else {
@@ -5880,7 +6284,7 @@ function Remove-TeamsResourceAccount {
     #region Account Removal
     # Removing AzureAD User
     Write-Verbose -Message "Processing: '$DisplayName' Removing AzureAD User Object"
-    if ($Force -or $PSCmdlet.ShouldProcess("'Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
+    if ($PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
       try {
         $null = (Remove-AzureADUser -ObjectID $UserPrincipalName -ErrorAction STOP)
         Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
@@ -6537,7 +6941,7 @@ function New-AzureAdLicenseObject {
 		This function currently only accepts ONE license to be added and optionally ONE license to be removed.
 		Rework to support multiple assignements is to be evaluated.
 	#>
-  [CmdletBinding(SupportsShouldProcess)]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
     [Parameter(Mandatory = $true, Position = 0, HelpMessage = "SkuId of the license to Add")]
     [Alias('AddSkuId')]
@@ -7169,7 +7573,7 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   Test-SkypeOnlineModule, Test-SkypeOnlineConnection, `
   Test-MicrosoftTeamsModule, Test-MicrosoftTeamsConnection, Test-TeamsUser, `
   New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
-  #s	New-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation,`
+  New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation, `
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
   Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
