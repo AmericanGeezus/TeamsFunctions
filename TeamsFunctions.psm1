@@ -2621,7 +2621,7 @@ function New-TeamsCallQueue {
           $ServicePlanName = "MCOEV"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
           if ($ServicePlanStatus -ne "Success") {
-            # User not licenses (doesn't have Phone System)
+            # User not licensed (doesn't have Phone System)
             Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
           }
           else {
@@ -3796,7 +3796,7 @@ function Set-TeamsCallQueue {
           $ServicePlanName = "MCOEV"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
           if ($ServicePlanStatus -ne "Success") {
-            # User not licenses (doesn't have Phone System)
+            # User not licensed (doesn't have Phone System)
             Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
           }
           else {
@@ -6352,7 +6352,7 @@ function Import-TeamsAudioFile {
       break
     }
 
-    $FileName = Split-Path $Files -Leaf
+    $FileName = Split-Path $File -Leaf
 
     # remodelling ApplicationType to ApplicationId
     $ApplicationId = switch ($ApplicationType) {
@@ -6370,8 +6370,8 @@ function Import-TeamsAudioFile {
       }
 
       # Importing file
-      $File = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName $FileName -Content $content -ErrorAction STOP
-      return $File
+      $AudioFile = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName $FileName -Content $content -ErrorAction STOP
+      return $AudioFile
     }
     catch {
       Write-Host "Error importing file - Please check file size and compression ratio. If in doubt, provide WAV "
@@ -7575,6 +7575,6 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
   New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation, `
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
-  Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
+  Import-TeamsAudioFile, Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
   Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
