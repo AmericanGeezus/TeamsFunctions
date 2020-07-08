@@ -2312,6 +2312,10 @@ function New-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
     [ValidateScript( {
+      if ($null -eq $_) {
+        $True
+      }
+      else {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
             $True
@@ -2323,25 +2327,26 @@ function New-TeamsCallQueue {
         else {
           Write-Host "File not found, please verify" -ForeGroundColor Red
         }
-      })]
+      }
+    })]
     [string]$WelcomeMusicAudioFile,
 
     [Parameter(HelpMessage = "Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)")]
     [ValidateScript( {
-        If (Test-Path $_) {
-          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
-            $True
-          }
-          else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
-            $false
-          }
+      If (Test-Path $_) {
+        If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+          $True
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
           $false
         }
-      })]
+      }
+      else {
+        Write-Host "File not found, please verify" -ForeGroundColor Red
+        $false
+      }
+    })]
     [string]$MusicOnHoldAudioFile,
 
     #Agents
@@ -2472,25 +2477,30 @@ function New-TeamsCallQueue {
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-      $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
-      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
-      # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
-      # $WMFile = Import-TeamsAudioFile -File $WelcomeMusicAudioFile -ApplicationType CallQueue
+      if ($null -ne $WelcomeMusicAudioFile) {
+        $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
+        # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
+        # $WMFile = Import-TeamsAudioFile -File $WelcomeMusicAudioFile -ApplicationType CallQueue
 
-      # Accommodating for different behaviour in PWSH6 and above
-      try {
-        if ($PSVersionTable.PSVersion.Major -ge 6) {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
+        # Accommodating for different behaviour in PWSH6 and above
+        try {
+          if ($PSVersionTable.PSVersion.Major -ge 6) {
+            $WMcontent = Get-Content $WelcomeMusicAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
+          }
+          else {
+            $WMcontent = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
+          }
+          $WMFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $WMFileName -Content $WMcontent -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
+          $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
         }
-        else {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
+        catch {
+          Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
         }
-        $WMFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $WMFileName -Content $WMcontent -ErrorAction STOP
-        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
-        $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
       }
-      catch {
-        Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+      else {
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
       }
     }
@@ -2621,7 +2631,7 @@ function New-TeamsCallQueue {
           $ServicePlanName = "MCOEV"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
           if ($ServicePlanStatus -ne "Success") {
-            # User not licenses (doesn't have Phone System)
+            # User not licensed (doesn't have Phone System)
             Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
           }
           else {
@@ -3480,6 +3490,10 @@ function Set-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
     [ValidateScript( {
+      if ($null -eq $_) {
+        $True
+      }
+      else {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
             $True
@@ -3493,25 +3507,26 @@ function Set-TeamsCallQueue {
           Write-Host "File not found, please verify" -ForeGroundColor Red
           $false
         }
-      })]
+      }
+    })]
     [string]$WelcomeMusicAudioFile,
 
     [Parameter(HelpMessage = "Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)")]
     [ValidateScript( {
-        If (Test-Path $_) {
-          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
-            $True
-          }
-          else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
-            $false
-          }
+      If (Test-Path $_) {
+        If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+          $True
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
           $false
         }
-      })]
+      }
+      else {
+        Write-Host "File not found, please verify" -ForeGroundColor Red
+        $false
+      }
+    })]
     [string]$MusicOnHoldAudioFile,
 
     #Agents
@@ -3653,26 +3668,31 @@ function Set-TeamsCallQueue {
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-      $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
-      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
-      # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
-      # $WMFile = Import-TeamsAudioFile -File $WelcomeMusicAudioFile -ApplicationType CallQueue
+      if ($null -ne $WelcomeMusicAudioFile) {
+        $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
+        # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
+        # $WMFile = Import-TeamsAudioFile -File $WelcomeMusicAudioFile -ApplicationType CallQueue
 
-      # Accommodating for different behaviour in PWSH6 and above
-      try {
-        if ($PSVersionTable.PSVersion.Major -ge 6) {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
+        # Accommodating for different behaviour in PWSH6 and above
+        try {
+          if ($PSVersionTable.PSVersion.Major -ge 6) {
+            $WMcontent = Get-Content $WelcomeMusicAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
+          }
+          else {
+            $WMcontent = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
+          }
+          $WMFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $WMFileName -Content $WMcontent -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
+          $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
         }
-        else {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
+        catch {
+          Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
         }
-        $WMFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $WMFileName -Content $WMcontent -ErrorAction STOP
-        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
-        $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
       }
-      catch {
-        Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-        break
+      else {
+        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
       }
     }
     else {
@@ -3796,7 +3816,7 @@ function Set-TeamsCallQueue {
           $ServicePlanName = "MCOEV"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
           if ($ServicePlanStatus -ne "Success") {
-            # User not licenses (doesn't have Phone System)
+            # User not licensed (doesn't have Phone System)
             Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
           }
           else {
@@ -6352,7 +6372,7 @@ function Import-TeamsAudioFile {
       break
     }
 
-    $FileName = Split-Path $Files -Leaf
+    $FileName = Split-Path $File -Leaf
 
     # remodelling ApplicationType to ApplicationId
     $ApplicationId = switch ($ApplicationType) {
@@ -6370,8 +6390,8 @@ function Import-TeamsAudioFile {
       }
 
       # Importing file
-      $File = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName $FileName -Content $content -ErrorAction STOP
-      return $File
+      $AudioFile = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName $FileName -Content $content -ErrorAction STOP
+      return $AudioFile
     }
     catch {
       Write-Host "Error importing file - Please check file size and compression ratio. If in doubt, provide WAV "
@@ -7577,6 +7597,6 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
   New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation, `
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
-  Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
+  Import-TeamsAudioFile, Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
   Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
