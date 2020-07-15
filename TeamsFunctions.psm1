@@ -2378,7 +2378,8 @@ function Test-TeamsUserLicense {
 						"SFBOPlan2andAdvancedMeetingandPhoneSystem" {
 							# Combination 5 - Skype for Business Online Plan 2 (S2) + Audio Conferencing + PhoneSystem
 							# NOTE: This is a functioning license, but not one promoted by Microsoft.
-							IF ("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and "MCOSTANDARD" -in $UserLicenseSKU)
+							# NOTE: MCOSTANDARD is the main Plan, but MCOPROFESSIONAL seems to be also sold to cover the same. Testing for both.
+							IF ("MCOEV" -in $UserLicenseSKU -and "MCOMEEDADV" -in $UserLicenseSKU -and ("MCOSTANDARD" -in $UserLicenseSKU -or "MCOPROFESSIONAL" -in $UserLicenseSKU))
 							{ Return $TRUE }
 							ELSE
 							{ Return $FALSE }
@@ -7482,6 +7483,7 @@ $TeamsLicensingArrayEntry05 = [PSCustomObject][ordered]@{
 }
 $TeamsLicensingArray.Add($TeamsLicensingArrayEntry05)
 
+# Ignoring MCOPROFESSIONAL for assignment (outlier!)
 $TeamsLicensingArrayEntry06 = [PSCustomObject][ordered]@{
 	'FriendlyName'  = "Skype for Business Online (Plan 2)"
 	'ProductName'   = "SKYPE FOR BUSINESS ONLINE (PLAN 2)"
