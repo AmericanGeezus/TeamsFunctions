@@ -16,16 +16,12 @@
 		https://davideberhardt.wordpress.com/
 
 		Individual Scripts incorporated into this Module are taken with the express permission of the original Author
-		The
 
 		To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
 		Import-Module TeamsFunctions
 
 		Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
 		Always review any code and steps before applying to a production system to understand their full impact.
-
-		# Limitations:
-		- Office 365 F1 and F3 as well as Microsoft 365 F1 and F3 cannot be assigned
 
 		# Versioning
 		This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
@@ -44,13 +40,13 @@
 								Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
 								Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
 		20.05.03.1  First Publication
-		            Bug fixing, erroneously incorporated all local modules.
+								Bug fixing, erroneously incorporated all local modules.
 		20.05.09.1  Bug fixing, minor improvements
 		20.05.19.2  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
 								Added Get-AzureAdAssignedAdminRoles
 								Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
-                Fixed an issue with access to the new functions
-                Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+								Fixed an issue with access to the new functions
+								Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
 		20.05.24.2  Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
 								Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
 								Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
@@ -63,16 +59,25 @@
 		20.06.09.1  Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
 								Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
 								Run "con $Username" to connect to all 3 with one authentication prompt
-                Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
-                Replaced by Test-Module $ModuleNames
-    20.06.17.1  Added Write-ErrorRecord.
-                Bugfixing Resource Account and Call Queue Scripts
-    20.06.22.0  Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
-                Bugfixing Resource Account and Call Queue Scripts
-                Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
-    20.06.29.1  Added TeamsResourceAccountAssociation Scripts
-                Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
-
+								Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
+								Replaced by Test-Module $ModuleNames
+		20.06.17.1  Added Write-ErrorRecord.
+								Bugfixing Resource Account and Call Queue Scripts
+		20.06.22.0  Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
+								Bugfixing Resource Account and Call Queue Scripts
+								Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
+		20.06.29.1  Added TeamsResourceAccountAssociation Scripts
+								Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
+		20.07.08-alpha2     Exposed Import-TeamsAudioFile for public use.
+										    Updated New-TeamsCallQueue and Set-TeamsCallQueue to use Import-TeamsAudioFile for Welcome Message and Music On Hold
+                        Updated Set-TeamsCallQueue to allow $NULL for Parameter WelcomeMusicAudioFile
+    20.07.18-prerelase  Added Variable $TeamsLicensingArray - Fully populated with 38 Microsoft Licenses
+                        Updated Get-TeamsTenantLicense - now returns a proper Object, based on Variable $TeamsLicensingArray
+                        Updated Get-TeamsUserLicense - now returns a proper Object, based on Variable $TeamsLicensingArray
+                        Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicnese
+                        This function now supports multiple adds and removes including purges
+                        Added Disclaimer for Add-TeamsUserLicense as it is now deprecated
+                        RetiredGet-TeamsTenantLicneses (plural)
 	#>
 
 #region *** Exported Functions ***
@@ -82,52 +87,443 @@
 function Set-TeamsUserLicense {
   <#
 	.SYNOPSIS
-		Short description
+		Changes the License of an AzureAD Object
 	.DESCRIPTION
-		Long description
-	.PARAMETER
-
-	.PARAMETER
-
-	.PARAMETER
-
+    Adds, removes or purges teams related Licenses from an AzureAD Object
+    Supports all Licenses listed in $TeamsLicensingArray, currently: 38 Licenses
+    Uses friendly Names for Parameter Values, supports Arrays.
+    Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
+		This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
+    Will verify major Licenses and their exclusivity, but not all.
+    Verifies whether the Licenses selected are available on the Tenant before executing
+	.PARAMETER Identity
+		Required. UserPrincipalName of the Object to be manipulated
+	.PARAMETER AddLicenses
+		Optional. Licenses to be added (main function)
+    Accepted Values are listed in $TeamsLicensingArray.ParameterName
+	.PARAMETER RemoveLicenses
+		Optional. Licesnses to be removed (alternative function)
+    Accepted Values are listed in $TeamsLicensingArray.ParameterName
+	.PARAMETER RemoveAllLicenses
+		Optional Switch. Removes all licenses currently assigned (intended for replacements)
 	.EXAMPLE
-		C:\PS>
-		Example of how to use this cmdlet
+		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses MS365E5
+		Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
 	.EXAMPLE
-		C:\PS>
-		Another example of how to use this cmdlet
-	.INPUTS
-		Inputs to this cmdlet (if any)
-	.OUTPUTS
-		Output from this cmdlet (if any)
+		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses PhoneSystem
+		Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
+		This requires a main license to be present as PhoneSystem is an add-on license
+	.EXAMPLE
+		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses MS365E3,PhoneSystem
+		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses @('MS365E3','PhoneSystem')
+		Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
+	.EXAMPLE
+		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses O365E5 -RemoveLicenses SFBOP2
+		Special Case Scenario to replace a specific license with another.
+		Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
+	.EXAMPLE
+		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses PhoneSystem_VirtualUser -RemoveAllLicenses
+		Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
+		Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
+	.EXAMPLE
+		Set-TeamsUserLicense -Identity Name@domain.com -RemoveLicenses PhoneSystem
+		Removes the Phone System License from the Object.
+	.EXAMPLE
+		Set-TeamsUserLicense -Identity Name@domain.com -RemoveAllLicenses
+		Removes all licenses the Object is currently provisioned for!
 	.NOTES
-		General notes
+		Many license packages are available, the following Licenses are most predominant:
+		# Main License Packages
+		- Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)
+		- Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+		- Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)
+		- Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
+		- Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+		- Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+
+		# Add-On Licenses (Require Main License Package from above)
+		- Audio Conferencing License - AudioConferencing (MCOMEETADV)
+		- Phone System - PhoneSystem (MCOEV)
+
+		# Standaolne Licenses (Special)
+		- Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
+		- Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
+
+		# Microsoft Calling Plan Licenses
+		- Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
+		- Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
+
+    # Data in $TeamsLicensingArray as per Microsoft Docs Article: Published Service Plan IDs for Licensing
+    https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
+
 	.COMPONENT
-		The component this cmdlet belongs to
+		Teams Migration and Enablement. License Assignment
 	.ROLE
-		The role this cmdlet belongs to
+		Licensing
 	.FUNCTIONALITY
-		The functionality that best describes this cmdlet
+		This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
 	#>
-  # Add-TeamsUserLicense Rework for the following:
-  # - One Switch for Licenses Added (ARRAY)
-  # - One Switch for Licenses Removed (all)
-  # - One Switch for License removed (specific)(ARRAY)
 
-  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
   param(
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+    [Alias("UPN", "UserPrincipalName", "Username")]
+    [string[]]$Identity,
 
+    [Parameter(ParameterSetName = 'Add', Mandatory = $true, HelpMessage = 'License(s) to be added to this Object')]
+    [Parameter(ParameterSetName = 'Remove', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
+    [Parameter(ParameterSetName = 'RemoveAll', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
+    [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    [string[]]$AddLicenses,
+
+    [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
+    [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    [string[]]$RemoveLicenses,
+
+    [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
+    [Swtich]$RemoveAllLicenses
   )
-  process {
 
+  begin {
+    # Testing AzureAD Connection
+    if ($false -eq (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
 
+    #Loading License Array
+    $AllLicenses = $TeamsLicensingArray
 
-    if ($PSCmdlet.ShouldProcess("Target", "Operation")) {
+    #region Input verification
+    # All Main licenses are mutually exclusive
+    # Domestic and International are mutually exclusive
+    # Common AreaPhone and PhoneSystemVirtualUser are exclusive
+    # AudioConf only for O365E5NoConf, E3 Licenses and SFBOP2
+    # PhoneSystem only for E3 Licenses and SFBOP2
+    <#
+			'Microsoft365E5', 'Microsoft365E3',
+			'Office365E5', 'Office365E5NoAudioConferencing', 'Office365E3', 'SkypeOnlinePlan2',
+			'AudioConferencing', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone'
+			'DomesticCallingPlan','InternationalCallingPlan'
+		#>
+    try {
+      if ($PSBoundParameters.ContainsKey('AddLicenses') -and $PSBoundParameters.ContainsKey('RemoveLicenses')) {
+        # Check if any are listed in both!
+        Write-Verbose -Message "Validating input for Add and Remove (identifying inconsistencies)" -Verbose
+
+        foreach ($Lic in $AddLicenses) {
+          if ($Lic -in $RemoveLicenses) {
+            Write-Error -Message "Invalid combination. '$Lic' cannot be added AND removed" -Category LimitsExceeded -RecommendedAction "Please specify only once!" -ErrorAction Stop
+          }
+        }
+      }
+
+      if ($PSBoundParameters.ContainsKey('AddLicenses')) {
+        Write-Verbose -Message "Validating input for Adding Licenses (identifying inconsistencies)" -Verbose
+        #region Disclaimer
+        # Checking any other combinations then the verified
+        if ( -not ('Microsoft365E3' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses`
+              -or 'PhoneSystem' -in $AddLicenses -or 'AudioConferencing' -in $AddLicenses)) {
+          Write-Warning -Message "License combination not verified. Errors due to incompatibilities may occur!"
+          Write-Verbose -Message "Please check yourself which Licenses may not be assigned together" -Verbose
+        }
+        #endregion
+
+        #region Main Licenses
+        #region Microsoft 365
+        # Checking combinations for Microsoft365E5
+        if ('Microsoft365E5' -in $AddLicenses) {
+          if ('Microsoft365E3' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses`
+              -or 'PhoneSystem' -in $AddLicenses -or 'AudioConferencing' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
+          }
+        }
+
+        # Checking combinations for Microsoft365E3
+        if ('Microsoft365E3' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
+          }
+        }
+        #endregion
+
+        #region Office 365
+        # Checking combinations for Office365E5
+        if ('Office365E5' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses`
+              -or 'PhoneSystem' -in $AddLicenses -or 'AudioConferencing' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
+          }
+        }
+
+        # Checking combinations for Office365E5NoAudioConferencing
+        if ('Office365E5NoAudioConferencing' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses -or 'Office365E5' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
+          }
+        }
+
+        # Checking combinations for Office365E3
+        if ('Office365E3' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Microsoft365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!"
+            break
+          }
+        }
+        #endregion
+
+        #region Skype Online Plan2
+        # Checking combinations for SkypeOnlinePlan2
+        if ('SkypeOnlinePlan2' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
+          }
+        }
+        #endregion
+        #endregion
+
+        #region Standalone Licenses
+        # Checking combinations for CommonAreaPhone
+        if ('CommonAreaPhone' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'Microsoft365E3' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
+          }
+        }
+
+        # Checking combinations for PhoneSystemVirtualUser
+        if ('PhoneSystemVirtualUser' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
+          }
+        }
+        #endregion
+
+        #region Add-on Licenses
+        # Checking combinations for PhoneSystem
+        if ('PhoneSystem' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination. 'PhoneSystem' cannot be added to the Main License specified (already integrated)" -Category LimitsExceeded -RecommendedAction "Please remove 'PhoneSystem'" -ErrorAction Stop
+          }
+          elseif ('Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses) {
+            Write-Verbose -Message "Combination correct. 'PhoneSystem' can be added"
+          }
+        }
+
+        # Checking combinations for Microsoft365E3
+        if ('AudioConferencing' -in $AddLicenses) {
+          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses `
+              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
+              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+            Write-Error -Message "Invalid combination. 'AudioConferencing' cannot be added to the Main License specified (already integrated)" -Category LimitsExceeded -RecommendedAction "Please remove 'AudioConferencing'" -ErrorAction Stop
+          }
+          elseif ('Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses) {
+            Write-Verbose -Message "Combination correct. 'AudioConferencing' can be added"
+          }
+        }
+        #endregion
+
+        #region Calling Plans
+        # Checking combinations for Calling Plans
+        if ('DomesticCallingPlan' -in $AddLicenses -and 'InternationalCallingPlan' -in $AddLicenses) {
+          Write-Error -Message "Invalid combination of Calling Plan Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Calling Plan License!" -ErrorAction Stop
+        }
+        #endregion
+      }
+
+      if ($PSBoundParameters.ContainsKey('RemoveLicenses')) {
+        Write-Verbose -Message "Validating input for Removing (identifying inconsistencies)"
+        # No checks needed that aren't captured by the Add and Remove check! - Leaving this here just in case.
+        Write-Verbose -Message "NOTE: Currently no checks for Remove Licenses necessary"
+      }
+
+      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses') -and -not $PSBoundParameters.ContainsKey('AddLicenses')) {
+        Write-Warning -Message "This will leave the Object without ANY License!"
+        if (-not (Get-Consent)) {
+          throw "No consent given. Aborting execution!"
+        }
+      }
 
     }
+    catch {
+      throw
+    }
+
+    #endregion
+
+    #region Queries
+    # Querying licenses in the Tenant to compare SKUs
+    try {
+      Write-Verbose -Message "Querying Licenses from the Tenant" -Verbose
+      #$TenantLicenses = Get-TeamsTenantLicenses -ErrorAction STOP
+      $TenantLicenses = Get-AzureADSubscribedSku -ErrorAction STOP
+    }
+    catch {
+      Write-Warning $_
+      return
+    }
+    #endregion
+
+    Write-Verbose -Message "Processing Licenses:"
+    #region AddLicenses
+    if ($PSBoundParameters.ContainsKey('AddLicenses')) {
+      Write-Verbose -Message "Parsing array 'AddLicenses'" -Verbose
+      try {
+        # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
+        [System.Collections.ArrayList]$AddSkuIds = @()
+        foreach ($AddLic in $AddLicenses) {
+          $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
+          $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
+          $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('FriendlyName')
+
+          #region Verifying license is available in the Tenant
+          if (-not ($SkuPartNumber -in $($TenantLicenses.SkuPartNumber))) {
+            Write-Error -Message "'$AddLicName' - License not found in the Tenant" -ErrorAction Stop
+          }
+          else {
+            $RemainingLics = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
+            if ($RemainingLics -lt 1) {
+              Write-Error -Message "'$AddLicName' - License found in the Tenant, but no units available" -ErrorAction Stop
+            }
+            else {
+              Write-Verbose -Message "'$AddLicName' - License found in the Tenant. Free unit available!" -Verbose
+            }
+          }
+          #endregion
+
+          $AddSkuIds.Add("$AddSku")
+          Write-Verbose -Message "Preparing License Object: Adding   '$AddLicName'"
+        }
+
+      }
+      catch {
+        throw
+      }
+    }
+    #endregion
+
+    #region RemoveLicenses
+    if ($PSBoundParameters.ContainsKey('RemoveLicenses')) {
+      Write-Verbose -Message "Parsing array 'RemoveLicenses'" -Verbose
+      try {
+        # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
+        [System.Collections.ArrayList]$RemoveSkuIds = @()
+        foreach ($RemoveLic in $RemoveLicenses) {
+          $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
+          $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
+          $RemoveSkuIds.Add("$RemoveSku")
+          Write-Verbose -Message "Preparing License Object: Removing '$RemoveLicName'"
+        }
+      }
+      catch {
+        throw
+      }
+    }
+    #endregion
+
+    # Parsing RemoveAllLicenses is user specific and has to be done in PROCESS
+
   }
 
+  process {
+    foreach ($ID in $Identity) {
+      #region Object Verification
+      # Querying User
+      try {
+        $UserObject = Get-AzureADUser -ObjectId "$ID" -ErrorAction STOP
+      }
+      catch {
+        Write-Error -Message "User Account not valid" -Category ObjectNotFound -RecommendedAction "Verify UserPrincipalName"
+        return
+      }
+
+      # Checking Usage Location is Set
+      try {
+        if ($null -eq $UserObject.UsageLocation) {
+          throw
+        }
+      }
+      catch {
+        Write-Error -Message "Usage Location not set" -Category InvalidResult -RecommendedAction "Set Usage Location, then try assigning a License again"
+        return
+      }
+      #endregion
+
+
+      #region RemoveAllLicenses (dependent on Licenses currently on User)
+      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses')) {
+        Write-Verbose -Message "Parsing switch 'RemoveAllLicenses'" -Verbose
+        try {
+          # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
+          $AllSkus = (Get-AzureADUserLicenseDetail -ObjectId $User).SkuPartNumber
+
+          [System.Collections.ArrayList]$RemoveAllSkuIds = @()
+          foreach ($RemoveLic in $AllSkus) {
+            $RemoveSku = ($AllLicenses | Where-Object SkuPartNumber -EQ $RemoveLic).('SkuId')
+            $RemoveLicName = ($AllLicenses | Where-Object SkuPartNumber -EQ $RemoveLic).('FriendlyName')
+            $RemoveAllSkuIds.Add("$RemoveSku")
+            Write-Verbose -Message "Preparing License Object: Removing '$RemoveLicName'"
+          }
+
+          <# Alternative
+          $RemoveAllSkuIds = Get-AzureADUser -ObjectID $ID | Select-Object -ExpandProperty AssignedLicenses | Select-Object SkuID
+          [System.Collections.ArrayList]$RemoveAllSkuIds = @()
+          foreach ($Lic in $RemoveAllSkuIds) {
+            Write-Verbose -Message "Preparing License Object: Removing Sku '$Lic'"
+          }
+          #>
+        }
+        catch {
+          throw
+        }
+      }
+      #endregion
+
+      #region Creating User specific License Object
+      $NewLicenseObjParameters = $null
+      if ($PSBoundParameters.ContainsKey('AddLicenses')) {
+        $NewLicenseObjParameters += @{'SkuId' = $AddSkuIds }
+      }
+      if ($PSBoundParameters.ContainsKey('RemoveLicenses')) {
+        $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveSkuIds }
+      }
+      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses')) {
+        $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveAllSkuIds }
+      }
+
+      $LicenseObject = New-AzureAdLicenseObject @NewLicenseObjParameters
+      Write-Verbose -Message "Creating License Object: Done"
+      #endregion
+
+      # Executing Assignment
+      if ($PSCmdlet.ShouldProcess("$ID", "Set-AzureADUserLicense")) {
+        #Assign $LicenseObject to each User
+        Write-Verbose -Message "'$ID' - Applying License"
+        Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject
+        Write-Verbose -Message "'$ID' - Applying License: Done"
+      }
+    }
+    #endregion
+  }
 }
 function Add-TeamsUserLicense {
   <#
@@ -264,6 +660,8 @@ function Add-TeamsUserLicense {
       Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
+
+    Write-Verbose -Message "This function is deprecated. It is still functional, but limited. Please use Set-TeamsUserLicense instead" -Verbose
 
     # Querying all SKUs from the Tenant
     try {
@@ -897,28 +1295,27 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 function Get-TeamsUserLicense {
   <#
 	.SYNOPSIS
-		Gathers licenses assigned to a Teams user for Cloud PBX and PSTN Calling Plans.
-	.DESCRIPTION
+    Returns License information for an Object in AzureAD
+  .DESCRIPTION
+    Returns an Object containing all Teams related Licenses found for a specific Object
 		This script lists the UPN, Name, currently O365 Plan, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
 	.PARAMETER Identity
 		The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
-		Aliases include: "UPN","UserPrincipalName","Username"
+    Aliases include: "UPN","UserPrincipalName","Username"
+  .PARAMETER DisplayAll
+    Displays all ServicePlans, not only relevant Teams Plans
 	.EXAMPLE
 		Get-TeamsUserLicense -Identity John@domain.com
-		Example 1 will confirm the license for a single user: John@domain.com
+		Displays all licenses assigned to User John@domain.com
 	.EXAMPLE
 		Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
-		Example 2 will confirm the licenses for two users: John@domain.com & Jane@domain.com
+		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 	.EXAMPLE
 		Import-Csv User.csv | Get-TeamsUserLicense
-		Example 3 will use a CSV as an input file and confirm the licenses for users listed in the file. The input file must
-		have a single column heading of "Identity" with properly formatted UPNs.
+    Displays all liceneses assigned to Users from User.csv, Column Identity.
+    The input file must have a single column heading of "Identity" with properly formatted UPNs.
 	.NOTES
-		If using a CSV file for pipeline input, the CSV user data file should contain a column name matching each of this script's parameters. Example:
-		Identity
-		John@domain.com
-		Jane@domain.com
-		Output can be redirected to a file or grid-view.
+		Requires a connection to Azure Active Directory
 	#>
 
   [CmdletBinding()]
@@ -926,158 +1323,231 @@ function Get-TeamsUserLicense {
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true,
       HelpMessage = "Enter the UPN or login name of the user account, typically <user>@<domain>.")]
     [Alias("UPN", "UserPrincipalName", "Username")]
-    [string[]]$Identity
+    [string[]]$Identity,
+
+    [Parameter(Mandatory = $false, HelpMessage = "Displays all ServicePlans")]
+    [switch]$DisplayAll
   )
 
-  BEGIN {
+  begin {
     # Testing AzureAD Connection
     if ($false -eq (Test-AzureADConnection)) {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
       Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
-  } # End of BEGIN
 
-  PROCESS {
+    # preparing Output Field Separator
+    $OFS = ", "
+
+    # Loading License Array
+    $AllLicenses = $TeamsLicensingArray
+
+  }
+
+  process {
     foreach ($User in $Identity) {
       try {
         Get-AzureADUser -ObjectId "$User" -ErrorAction STOP | Out-Null
       }
       catch {
-        $output = [PSCustomObject][ordered]@{
-          User                        = $User
-          License                     = "Invalid User"
-          SkuPartNumber               = "Invalid User"
-          CallingPlan                 = "Invalid User"
-          CommunicationsCreditLicense = "Invalid User"
-          AudioConferencingAddOn      = "Invalid User"
-          CommoneAreaPhoneLicense     = "Invalid User"
-        }
-
-        Write-Output $output
+        throw $_
         continue
       }
 
-      $userInformation = Get-AzureADUser -ObjectId "$User"
-      $assignedLicenses = (Get-AzureADUserLicenseDetail -ObjectId $User).SkuPartNumber
-      [string]$DisplayName = $userInformation.Surname + ", " + $userInformation.GivenName
-      [string]$O365License = $null
-      [string]$currentCallingPlan = "Not Assigned"
-      [bool]$CommunicationsCreditLicense = $false
-      [bool]$AudioConferencingAddOn = $false
-      [bool]$CommonAreaPhoneLicense = $false
+      $UserObject = Get-AzureADUser -ObjectId "$User"
+      [string]$DisplayName = $UserObject.DisplayName
 
-      if ($null -ne $assignedLicenses) {
-        foreach ($license in $assignedLicenses) {
-          switch -Wildcard ($license) {
-            "DESKLESSPACK" { $O365SkuParNrs += $license; $O365License += "Kiosk Plan, "; break }
-            "EXCHANGEDESKLESS" { $O365SkuParNrs += $license; $O365License += "Exchange Kiosk, "; break }
-            "EXCHANGESTANDARD" { $O365SkuParNrs += $license; $O365License += "Exchange Standard, "; break }
-            "EXCHANGEENTERPRISE" { $O365SkuParNrs += $license; $O365License += "Exchange Premium, "; break }
-            "MCOSTANDARD" { $O365SkuParNrs += $license; $O365License += "Skype Plan 2, "; break }
-            "STANDARDPACK" { $O365SkuParNrs += $license; $O365License += "Office 365 E1, "; break }
-            "ENTERPRISEPACK" { $O365SkuParNrs += $license; $O365License += "Office 365 E3, "; break }
-            "ENTERPRISEPREMIUM" { $O365SkuParNrs += $license; $O365License += "Office 365 E5, "; break }
-            "ENTERPRISEPREMIUM_NOPSTNCONF" { $O365SkuParNrs += $license; $O365License += "Office 365 E5 (No Audio Conferencing), "; break }
-            "SPE_E3" { $O365SkuParNrs += $license; $O365License += "Microsoft 365 E3, "; break }
-            "SPE_E5" { $O365SkuParNrs += $license; $O365License += "Microsoft 365 E5, "; break }
-            "MCOEV" { $O365SkuParNrs += $license; $O365License += "PhoneSystem, "; break }
-            "PHONESYSTEM_VIRTUALUSER" { $O365SkuParNrs += $license; $O365License = "PhoneSystem - Virtual User"; break }
-            "MCOCAP" { $O365SkuParNrs += $license; $CommonAreaPhoneLicense = $true; break }
-            "MCOPSTN1" { $O365SkuParNrs += $license; $currentCallingPlan = "Domestic"; break }
-            "MCOPSTN2" { $O365SkuParNrs += $license; $currentCallingPlan = "Domestic and International"; break }
-            "MCOPSTNC" { $O365SkuParNrs += $license; $CommunicationsCreditLicense = $true; break }
-            "MCOMEETADV" { $O365SkuParNrs += $license; $AudioConferencingAddOn = $true; break }
-          }
+      # Querying Licenses
+      $assignedSkuPartNumbers = (Get-AzureADUserLicenseDetail -ObjectId $User).SkuPartNumber
+      [System.Collections.ArrayList]$UserLicenses = @()
+      foreach ($PartNumber in $assignedSkuPartNumbers) {
+        $Lic = $null
+        $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ $Partnumber
+        if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
+          [void]$UserLicenses.Add($Lic)
         }
       }
+      $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, FriendlyName
+      [string]$LicensesFriendlyNames = ($UserLicensesSorted | Where-Object FriendlyName -ne $null).FriendlyName
+
+      # Querying Service Plans
+      $assignedServicePlans = (Get-AzureADUserLicenseDetail -ObjectId $User).ServicePlans | Sort-Object ServicePlanName
+      [System.Collections.ArrayList]$UserServicePlans = @()
+      foreach ($ServicePlan in $assignedServicePlans) {
+        $Lic = $null
+        $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ $ServicePlan.ServicePlanName
+        if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
+          $LicObj = [PSCustomObject][ordered]@{
+            FriendlyName       = $Lic.FriendlyName
+            ServicePlanName    = $ServicePlan.ServicePlanName
+            ProvisioningStatus = $ServicePlan.ProvisioningStatus
+          }
+          [void]$UserServicePlans.Add($LicObj)
+        }
+      }
+      $UserServicePlansSorted = $UserServicePlans | Sort-Object Friendlyname, ProvisioningStatus, ServicePlanNam
+      [string]$ServicePlansFriendlyNames = ($UserServicePlansSorted | Where-Object FriendlyName -ne $null).FriendlyName
+
+      $PhoneSystemLicense = ("MCOEV" -in $UserServicePlans.ServicePlanName)
+      $AudioConfLicense = ("MCOMEETADV" -in $UserServicePlans.ServicePlanName)
+      $PhoneSystemVirtual = ("MCOEV_VIRTUALUSER" -in $UserServicePlans.ServicePlanName)
+      $CommonAreaPhoneLic = ("MCOCAP" -in $UserServicePlans.ServicePlanName)
+      $CommunicationCreds = ("MCOPSTNC" -in $UserServicePlans.ServicePlanName)
+      $CallingPlanDom = ("MCOPSTN1" -in $UserServicePlans.ServicePlanName)
+      $CallingPlanInt = ("MCOPSTN2" -in $UserServicePlans.ServicePlanName)
+
+      if ($CallingPlanDom) {
+        $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN1"
+      }
+      elseif ($CallingPlanInt) {
+        $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN2"
+      }
       else {
-        $O365License = "No Licenses Assigned"
+        [string]$currentCallingPlan = $null
       }
 
       $output = [PSCustomObject][ordered]@{
-        User                        = $User
-        DisplayName                 = $DisplayName
-        License                     = $O365License.TrimEnd(", ") # Removes any trailing ", " at the end of the string
-        SkuPartNumber               = $O365SkuParNrs.TrimEnd(", ") # Removes any trailing ", " at the end of the string
-        CallingPlan                 = $currentCallingPlan
-        CommunicationsCreditLicense = $CommunicationsCreditLicense
-        AudioConferencingAddOn      = $AudioConferencingAddOn
-        CommoneAreaPhoneLicense     = $CommonAreaPhoneLicense
+        User                      = $User
+        DisplayName               = $DisplayName
+        LicensesFriendlyNames     = $LicensesFriendlyNames
+        ServicePlansFriendlyNames = $ServicePlansFriendlyNames
+        AudioConferencing         = $AudioConfLicense
+        CommoneAreaPhoneLicense   = $CommonAreaPhoneLic
+        PhoneSystemVirtualUser    = $PhoneSystemVirtual
+        PhoneSystem               = $PhoneSystemLicense
+        CallingPlanDomestic       = $CallingPlanDom
+        CallingPlanInternational  = $CallingPlanInt
+        CommunicationsCredits     = $CommunicationCreds
+        CallingPlan               = $currentCallingPlan
+        Licenses                  = $UserLicensesSorted
+        ServicePlans              = $UserServicePlansSorted
+
       }
 
       Write-Output $output
-    } # End of foreach ($UserPrincipal in $Identity)
-  } # End of PROCESS
-} # End of Get-TeamsUserLicense
+    }
+  }
+}
 
-function Get-TeamsTenantLicenses {
+function Get-TeamsTenantLicense {
   <#
 	.SYNOPSIS
-		Displays the individual plans, add-on & grouped license SKUs for Teams in the tenant.
-	.DESCRIPTION
+		Returns one or all Teams Tenant licenses from a Tenant
+  .DESCRIPTION
+    Returns an Object containing Teams related Licenses found in the Tenant
 		Teams services can be provisioned through several different combinations of individual
 		plans as well as add-on and grouped license SKUs. This command displays these license SKUs in a more friendly
-		format with descriptive names, SKUpartNumber, active, consumed, remaining, and expiring licenses.
+    format with descriptive names, SKUpartNumber, active, consumed, remaining, and expiring licenses.
+  .PARAMETER License
+    Optional. Limits the Output to one license.
+    Accepted Values are listed in $TeamsLicensingArray.ParameterName
+  .PARAMETER DisplayAll
+    Displays all Licenses, not only relevant Teams Licenses
 	.EXAMPLE
 		Get-TeamsTenantLicenses
-		Example 1 will display all the Skype related licenses for the tenant.
+		Displays detailed information about all Teams related licenses found on the tenant.
+	.EXAMPLE
+		Get-TeamsTenantLicenses -License PhoneSystem
+    Displays detailed information about the PhoneSystem license found on the tenant.
+  .EXAMPLE
+		Get-TeamsTenantLicenses -DisplayAll
+		Displays detailed information about all licenses found on the tenant.
 	.NOTES
-		Requires the Azure Active Directory PowerShell module to be installed and authenticated to the tenant's Azure AD instance.
+		Requires a connection to Azure Active Directory
 	#>
 
   [CmdletBinding()]
-  param()
+  [OutputType([Object[]])]
+  param(
+    [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
+    [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    [string]$License,
 
-  # Testing AzureAD Connection
-  if ($false -eq (Test-AzureADConnection)) {
-    Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-    break
-  }
+    [Parameter(Mandatory = $false, HelpMessage = "Displays all ServicePlans")]
+    [switch]$DisplayAll
+  )
 
-  try {
-    $tenantSKUs = Get-AzureADSubscribedSku -ErrorAction STOP
-  }
-  catch {
-    Write-Warning $_
-    RETURN
-  }
-
-  foreach ($tenantSKU in $tenantSKUs) {
-    [string]$skuFriendlyName = $null
-    switch ($tenantSKU.SkuPartNumber) {
-      "MCOPSTN1" { $skuFriendlyName = "Domestic Calling Plan"; break }
-      "MCOPSTN2" { $skuFriendlyName = "Domestic and International Calling Plan"; break }
-      "MCOPSTNC" { $skuFriendlyName = "Communications Credit Add-On"; break }
-      "MCOMEETADV" { $skuFriendlyName = "Audio Conferencing Add-On"; break }
-      "MCOEV" { $skuFriendlyName = "PhoneSystem"; break }
-      "MCOCAP" { $skuFriendlyName = "Common Area Phone"; break }
-      "ENTERPRISEPREMIUM" { $skuFriendlyName = "Office 365 E5 with Phone System"; break }
-      "ENTERPRISEPREMIUM_NOPSTNCONF" { $skuFriendlyName = "Office 365 E5 Without Audio Conferencing"; break }
-      "ENTERPRISEPACK" { $skuFriendlyName = "Office 365 E3"; break }
-      "STANDARDPACK" { $skuFriendlyName = "Office 365 E1"; break }
-      "MCOSTANDARD" { $skuFriendlyName = "Skype for Business Online Standalone Plan 2"; break }
-      "O365_BUSINESS_PREMIUM" { $skuFriendlyName = "O365 Business Premium"; break }
-      "PHONESYSTEM_VIRTUALUSER" { $skuFriendlyName = "PhoneSystem - Virtual User"; break }
-      "SPE_E3" { $skuFriendlyName = "Microsoft 365 E3"; break }
-      "SPE_E5" { $skuFriendlyName = "Microsoft 365 E5"; break }
-
+  begin {
+    # Testing AzureAD Connection
+    if ($false -eq (Test-AzureADConnection)) {
+      Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
     }
 
-    if ($skuFriendlyName.Length -gt 0) {
-      [PSCustomObject][ordered]@{
-        License       = $skuFriendlyName
-        SkuPartNumber = $tenantSKU.SkuPartNumber
-        Available     = $tenantSKU.PrepaidUnits.Enabled
-        Consumed      = $tenantSKU.ConsumedUnits
-        Remaining     = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
-        Expiring      = $tenantSKU.PrepaidUnits.Warning
+    #Loading License Array
+    $AllLicenses = $null
+    $AllLicenses = $TeamsLicensingArray
+
+    $AllLicenses | Add-Member -NotePropertyName Available -NotePropertyValue 0 -Force
+    $AllLicenses | Add-Member -NotePropertyName Consumed -NotePropertyValue 0 -Force
+    $AllLicenses | Add-Member -NotePropertyName Remaining -NotePropertyValue 0 -Force
+    $AllLicenses | Add-Member -NotePropertyName Expiring -NotePropertyValue 0 -Force
+
+
+    try {
+      if ($PSBoundParameters.ContainsKey('License')) {
+        $TenantID = (Get-AzureADCurrentSessionInfo).TenantId
+        $SKU = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuId
+        $ObjectId = "$TenantID" + "_" + "$SKU"
+        $tenantSKUs = Get-AzureADSubscribedSku -ObjectId $ObjectId -ErrorAction STOP
+      }
+      else {
+        $tenantSKUs = Get-AzureADSubscribedSku -ErrorAction STOP
       }
     }
-  } # End of foreach ($tenantSKU in $tenantSKUs}
-} # End of Get-TeamsTenantLicenses
+    catch {
+      Write-Warning $_
+      return
+    }
+  }
 
+  process {
+
+    [System.Collections.ArrayList]$TenantLicenses = @()
+    foreach ($tenantSKU in $tenantSKUs) {
+      $Lic = $null
+      $Lic = $AllLicenses | Where-Object SkuId -EQ "$($tenantSKU.SkuId)"
+
+      if ($null -ne $Lic) {
+        $Lic.Available = $($tenantSKU.PrepaidUnits.Enabled)
+        $Lic.Consumed = $($tenantSKU.ConsumedUnits)
+        $Lic.Remaining = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
+        $Lic.Expiring = $($tenantSKU.PrepaidUnits.Warning)
+
+        [void]$TenantLicenses.Add($Lic)
+      }
+      else {
+        if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+          $NewLic = [PSCustomObject][ordered]@{
+            'FriendlyName'        = $null
+            'ProductName'         = $null
+            'SkuPartNumber'       = $tenantSKU.SkuPartNumber
+            'SkuId'               = $tenantSKU.SkuId
+            'LicenseType'         = "Unknown"
+            'ParameterName'       = $null
+            'IncludesTeams'       = $null
+            'IncludesPhoneSystem' = $null
+            'Available'           = $($tenantSKU.PrepaidUnits.Enabled)
+            'Consumed'            = $($tenantSKU.ConsumedUnits)
+            'Remaining'           = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
+            'Expiring'            = $($tenantSKU.PrepaidUnits.Warning)
+          }
+          [void]$TenantLicenses.Add($NewLic)
+        }
+        else {
+          Write-Verbose "No entry in Database found for '$($tenantSKU.SkuId)' - Use DisplayAll to show" -Verbose
+        }
+      }
+
+
+    }
+  }
+  end {
+    return $TenantLicenses
+  }
+}
 function Remove-TenantDialPlanNormalizationRule {
   <#
 	.SYNOPSIS
@@ -1874,7 +2344,8 @@ function Test-TeamsTenantPolicy {
 		Test-TeamsPolicy
 		Will Return $TRUE only if a the policy was found in the Teams Tenant.
 	.NOTES
-		This is a crude but universal way of testing it, intended for check of multiple at a time.
+    This is a crude but universal way of testing it, intended for check of multiple at a time.
+    NOTE: Uses Invoke-Expression for the PolicyName provided to from Get-$($PolicyName)
 	#>
   [CmdletBinding()]
   [OutputType([Boolean])]
@@ -1968,11 +2439,10 @@ function Test-TeamsUserLicense {
     [string]$Identity,
 
     [Parameter(Mandatory = $true, ParameterSetName = "ServicePlan", HelpMessage = "AzureAd Service Plan")]
-    [ValidateSet("SPE_E5", "SPE_E3", "ENTERPRISEPREMIUM", "ENTERPRISEPACK", "MCOSTANDARD", "MCOMEETADV", "MCOEV", "MCOEV_VIRTUALUSER", "MCOCAP", "MCOPSTN1", "MCOPSTN2", "MCOPSTNC")]
     [string]$ServicePlan,
 
     [Parameter(Mandatory = $true, ParameterSetName = "LicensePackage", HelpMessage = "Teams License Package: E5,E3,S2")]
-    [ValidateSet("Microsoft365E5", "Microsoft365E3andPhoneSystem", "Office365E5", "Office365E3andPhoneSystem", "SFBOPlan2andAdvancedMeetingandPhoneSystem", "CommonAreaPhoneLicense", "PhoneSystemAddOn", "PhoneSystem_VirtualUser")]
+    [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
     [string]$LicensePackage
 
   )
@@ -2441,18 +2911,8 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
       $MOHFileName = Split-Path $MusicOnHoldAudioFile -Leaf
       Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Parsing: '$MOHFileName'" -Verbose
-      # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
-      # $MOHFile = Import-TeamsAudioFile -File $MusicOnHoldAudioFile -ApplicationType CallQueue
-
-      # Accommodating for different behaviour in PWSH6 and above
       try {
-        if ($PSVersionTable.PSVersion.Major -ge 6) {
-          $MOHcontent = Get-Content $MusicOnHoldAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
-        }
-        else {
-          $MOHcontent = Get-Content $MusicOnHoldAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
-        }
-        $MOHFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $MOHFileName -Content $MOHcontent -ErrorAction STOP
+        $MOHFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $MusicOnHoldAudioFile -ErrorAction STOP
         Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   '$($MOHFile.FileName)'"
         $Parameters += @{'MusicOnHoldAudioFileId' = $MOHFile.Id }
       }
@@ -2474,18 +2934,8 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
       Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
-      # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
-      # $WMFile = Import-TeamsAudioFile -File $WelcomeMusicAudioFile -ApplicationType CallQueue
-
-      # Accommodating for different behaviour in PWSH6 and above
       try {
-        if ($PSVersionTable.PSVersion.Major -ge 6) {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
-        }
-        else {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
-        }
-        $WMFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $WMFileName -Content $WMcontent -ErrorAction STOP
+        $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
         $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
       }
@@ -2614,14 +3064,14 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
       foreach ($User in $Users) {
-        if (Test-AzureAdUser $User) {
+        if (Test-AzureADUser $User) {
           # Determine ID from UPN
           $UserObject = Get-AzureADUser -ObjectId "$User"
           $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
           $ServicePlanName = "MCOEV"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
           if ($ServicePlanStatus -ne "Success") {
-            # User not licenses (doesn't have Phone System)
+            # User not licensed (doesn't have Phone System)
             Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
           }
           else {
@@ -2653,7 +3103,7 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
-        if (Test-AzureAdGroup "$DL") {
+        if (Test-AzureADGroup "$DL") {
           $DLObject = Get-AzureADGroup -SearchString "$DL"
           Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
 
@@ -3310,7 +3760,7 @@ function Set-TeamsCallQueue {
 	.PARAMETER UseDefaultMusicOnHold
 		Optional Switch. Indicates whether the default Music On Hold should be used.
 	.PARAMETER WelcomeMusicAudioFile
-		Optional. Path to Audio File to be used as a Welcome message
+		Optional or $NULL. Path to Audio File to be used as a Welcome message
 		Accepted Formats: MP3, WAV or WMA, max 5MB
 	.PARAMETER MusicOnHoldAudioFile
 		Optional. Path to Audio File to be used as Music On Hold.
@@ -3480,18 +3930,23 @@ function Set-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
     [ValidateScript( {
-        If (Test-Path $_) {
-          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
-            $True
-          }
-          else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
-            $false
-          }
+        if ($null -eq $_) {
+          $True
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
-          $false
+          If (Test-Path $_) {
+            If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+              $True
+            }
+            else {
+              Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+              $false
+            }
+          }
+          else {
+            Write-Host "File not found, please verify" -ForeGroundColor Red
+            $false
+          }
         }
       })]
     [string]$WelcomeMusicAudioFile,
@@ -3626,18 +4081,8 @@ function Set-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
       $MOHFileName = Split-Path $MusicOnHoldAudioFile -Leaf
       Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Parsing: '$MOHFileName'" -Verbose
-      # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
-      # $MOHFile = Import-TeamsAudioFile -File $MusicOnHoldAudioFile -ApplicationType CallQueue
-
-      # Accommodating for different behaviour in PWSH6 and above
       try {
-        if ($PSVersionTable.PSVersion.Major -ge 6) {
-          $MOHcontent = Get-Content $MusicOnHoldAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
-        }
-        else {
-          $MOHcontent = Get-Content $MusicOnHoldAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
-        }
-        $MOHFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $MOHFileName -Content $MOHcontent -ErrorAction STOP
+        $MOHFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $MusicOnHoldAudioFile -ErrorAction STOP
         Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   '$($MOHFile.FileName)'"
         $Parameters += @{'MusicOnHoldAudioFileId' = $MOHFile.Id }
       }
@@ -3653,26 +4098,22 @@ function Set-TeamsCallQueue {
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-      $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
-      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
-      # A replacement function is prepared, but not yet tested: Import-TeamsAudioFile
-      # $WMFile = Import-TeamsAudioFile -File $WelcomeMusicAudioFile -ApplicationType CallQueue
-
-      # Accommodating for different behaviour in PWSH6 and above
-      try {
-        if ($PSVersionTable.PSVersion.Major -ge 6) {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -AsByteStream -ReadCount 0 -ErrorAction STOP
+      if ($null -ne $WelcomeMusicAudioFile) {
+        $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
+        try {
+          $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
+          $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
         }
-        else {
-          $WMcontent = Get-Content $WelcomeMusicAudioFile -Encoding byte -ReadCount 0 -ErrorAction STOP
+        catch {
+          Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE or EXISTING"
         }
-        $WMFile = Import-CsOnlineAudioFile -ApplicationId HuntGroup -FileName $WMFileName -Content $WMcontent -ErrorAction STOP
-        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
-        $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
       }
-      catch {
-        Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-        break
+      else {
+        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
+        $Parameters += @{'WelcomeMusicAudioFileId' = $null }
       }
     }
     else {
@@ -3789,14 +4230,14 @@ function Set-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
       foreach ($User in $Users) {
-        if (Test-AzureAdUser $User) {
+        if (Test-AzureADUser $User) {
           # Determine ID from UPN
           $UserObject = Get-AzureADUser -ObjectId "$User"
           $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
           $ServicePlanName = "MCOEV"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
           if ($ServicePlanStatus -ne "Success") {
-            # User not licenses (doesn't have Phone System)
+            # User not licensed (doesn't have Phone System)
             Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
           }
           else {
@@ -3828,7 +4269,7 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
-        if (Test-AzureAdGroup $DL) {
+        if (Test-AzureADGroup $DL) {
           $DLObject = Get-AzureADGroup -ObjectId $DL
           Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
 
@@ -4987,9 +5428,9 @@ function New-TeamsResourceAccount {
       # Determining available Licenses from Tenant
       Write-Verbose -Message "'$Name' Querying Licenses..."
       $TenantLicenses = Get-TeamsTenantLicenses
-      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "PhoneSystem" }).Remaining
+      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
       Write-Verbose -Message "INFO: $RemainingPSlicenses remaining Phone System Licenses"
-      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "PhoneSystem - Virtual User" }).Remaining
+      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
       Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
       # Assigning License
@@ -5925,9 +6366,9 @@ function Set-TeamsResourceAccount {
       # Determining available Licenses from Tenant
       Write-Verbose -Message "'$Name' Querying Licenses..."
       $TenantLicenses = Get-TeamsTenantLicenses
-      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "PhoneSystem" }).Remaining
+      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
       Write-Verbose -Message "Info: $RemainingPSlicenses remaining Phone System Licenses"
-      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "PhoneSystem - Virtual User" }).Remaining
+      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
       Write-Verbose -Message "Info: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
       # Changing License if requried
@@ -5946,7 +6387,7 @@ function Set-TeamsResourceAccount {
             # Deliberations and confirmation needed.
 
             Write-Verbose -Message "Testing whether PhoneSystem License is available"
-            $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "PhoneSystem" }).Remaining
+            $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
             if ($RemainingPSlicenses -lt 1) {
               Write-Error -Message "ERROR: No free PhoneSystem License remaining in the Tenant!"
             }
@@ -5981,7 +6422,7 @@ function Set-TeamsResourceAccount {
           "PhoneSystem_VirtualUser" {
             $ServicePlanName = "MCOEV_VIRTUALUSER"
             Write-Verbose -Message "Testing whether PhoneSystem Virtual User License is available"
-            $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "PhoneSystem - Virtual User" }).Remaining
+            $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
             if ($RemainingPSVUlicenses -lt 1) {
               Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant!"
             }
@@ -6352,7 +6793,7 @@ function Import-TeamsAudioFile {
       break
     }
 
-    $FileName = Split-Path $Files -Leaf
+    $FileName = Split-Path $File -Leaf
 
     # remodelling ApplicationType to ApplicationId
     $ApplicationId = switch ($ApplicationType) {
@@ -6370,8 +6811,8 @@ function Import-TeamsAudioFile {
       }
 
       # Importing file
-      $File = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName $FileName -Content $content -ErrorAction STOP
-      return $File
+      $AudioFile = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName $FileName -Content $content -ErrorAction STOP
+      return $AudioFile
     }
     catch {
       Write-Host "Error importing file - Please check file size and compression ratio. If in doubt, provide WAV "
@@ -6807,11 +7248,13 @@ function Backup-TeamsTenant {
   $null = (Get-CsTeamsAppSetupPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppSetupPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsCallParkPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallParkPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsChannelsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsChannelsPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsComplianceRecordingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsComplianceRecordingPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsEducationAssignmentsAppPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEducationAssignmentsAppPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsFeedbackPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsFeedbackPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsMeetingBroadcastPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsMeetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsMessasgingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMessagingPolicy.txt" -Force -Encoding utf8)
+  $null = (Get-CsTeamsMobilityPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMobilityPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsNotificationAndFeedsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsNotificationAndFeedsPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsTargetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTargetingPolicy.txt" -Force -Encoding utf8)
   $null = (Get-CsTeamsVerticalPackagePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVerticalPackagePolicy.txt" -Force -Encoding utf8)
@@ -7129,18 +7572,626 @@ function Format-StringForUse {
   }
 }
 
+#region Licensing Table
+# $PSCustomObject created to simplifying any licensing related lookup
+[System.Collections.ArrayList]$TeamsLicensingArray = @()
+#region Main Licenses
+#region Teams Licenses (LicensePackages incl. Teams)
+$TeamsLicensingArrayEntry01 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 A3 for faculty"
+  'ProductName'         = "Microsoft 365 A3 for faculty"
+  'SkuPartNumber'       = "M365EDU_A3_FACULTY"
+  'SkuId'               = "4b590615-0888-425a-a965-b3bf7789848d"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365A3faculty"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry01)
+
+$TeamsLicensingArrayEntry02 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 A3 for students"
+  'ProductName'         = "Microsoft 365 A3 for students"
+  'SkuPartNumber'       = "M365EDU_A3_STUDENT"
+  'SkuId'               = "7cfd9a2b-e110-4c39-bf20-c6a3f36a3121"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365A3students"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry02)
+
+$TeamsLicensingArrayEntry03 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 A5 for faculty"
+  'ProductName'         = "Microsoft 365 A5 for faculty"
+  'SkuPartNumber'       = "M365EDU_A5_FACULTY"
+  'SkuId'               = "e97c048c-37a4-45fb-ab50-922fbf07a370"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365A5faculty"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry03)
+
+$TeamsLicensingArrayEntry04 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 A5 for students"
+  'ProductName'         = "Microsoft 365 A5 for students"
+  'SkuPartNumber'       = "M365EDU_A5_STUDENT"
+  'SkuId'               = "46c119d4-0379-4a9d-85e4-97c66d3f909e"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365A5students"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry04)
+
+$TeamsLicensingArrayEntry05 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 Business Basic (O365)"
+  'ProductName'         = "MICROSOFT 365 BUSINESS BASIC"
+  'SkuPartNumber'       = "O365_BUSINESS_ESSENTIALS"
+  'SkuId'               = "3b555118-da6a-4418-894f-7df1e2096870"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = ""
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry05)
+
+$TeamsLicensingArrayEntry06 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 Business Basic (SMB)"
+  'ProductName'         = "MICROSOFT 365 BUSINESS BASIC"
+  'SkuPartNumber'       = "SMB_BUSINESS_ESSENTIALS"
+  'SkuId'               = "dab7782a-93b1-4074-8bb1-0e61318bea0b"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365BusinessBasic"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry06)
+
+$TeamsLicensingArrayEntry07 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 Business Standard (O365)"
+  'ProductName'         = "MICROSOFT 365 BUSINESS STANDARD"
+  'SkuPartNumber'       = "O365_BUSINESS_PREMIUM"
+  'SkuId'               = "f245ecc8-75af-4f8e-b61f-27d8114de5f3"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = ""
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry07)
+
+$TeamsLicensingArrayEntry08 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 Business Standard (SMB)"
+  'ProductName'         = "MICROSOFT 365 BUSINESS STANDARD"
+  'SkuPartNumber'       = "SMB_BUSINESS_PREMIUM"
+  'SkuId'               = "ac5cef5d-921b-4f97-9ef3-c99076e5470f"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365BusinessStandard"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry08)
+
+$TeamsLicensingArrayEntry09 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 Business Premium"
+  'ProductName'         = "MICROSOFT 365 BUSINESS PREMIUM"
+  'SkuPartNumber'       = "SPB"
+  'SkuId'               = "cbdc14ab-d96c-4c30-b9f4-6ada7cdc1d46"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365BusinessPremium"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry09)
+
+$TeamsLicensingArrayEntry10 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 E3"
+  'ProductName'         = "MICROSOFT 365 E3"
+  'SkuPartNumber'       = "SPE_E3"
+  'SkuId'               = "05e9a617-0261-4cee-bb44-138d3ef5d965"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365E3"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry10)
+
+$TeamsLicensingArrayEntry11 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 E5"
+  'ProductName'         = "MICROSOFT 365 E5"
+  'SkuPartNumber'       = "SPE_E5"
+  'SkuId'               = "06ebc4ee-1bb5-47dd-8120-11324bc54e06"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365E5"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry11)
+
+$TeamsLicensingArrayEntry12 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 F1"
+  'ProductName'         = "Microsoft 365 F1"
+  'SkuPartNumber'       = "M365_F1"
+  'SkuId'               = "44575883-256e-4a79-9da4-ebe9acabe2b2"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365F1"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry12)
+
+$TeamsLicensingArrayEntry13 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 F3"
+  'ProductName'         = "Microsoft 365 F3"
+  'SkuPartNumber'       = "SPE_F1"
+  'SkuId'               = "66b55226-6b4f-492c-910c-a3b7a3c9d993"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365F3"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry13)
+
+$TeamsLicensingArrayEntry14 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 A5 for faculty"
+  'ProductName'         = "Office 365 A5 for faculty"
+  'SkuPartNumber'       = "ENTERPRISEPREMIUM_FACULTY"
+  'SkuId'               = "a4585165-0533-458a-97e3-c400570268c4"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365A5faculty"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry14)
+
+$TeamsLicensingArrayEntry15 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 A5 for students"
+  'ProductName'         = "Office 365 A5 for students"
+  'SkuPartNumber'       = "ENTERPRISEPREMIUM_STUDENT"
+  'SkuId'               = "ee656612-49fa-43e5-b67e-cb1fdf7699df"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365A5students"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry15)
+
+$TeamsLicensingArrayEntry16 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E1"
+  'ProductName'         = "OFFICE 365 E1"
+  'SkuPartNumber'       = "STANDARDPACK"
+  'SkuId'               = "18181a46-0d4e-45cd-891e-60aabd171b4e"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E1"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry16)
+
+$TeamsLicensingArrayEntry17 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E2"
+  'ProductName'         = "OFFICE 365 E2"
+  'SkuPartNumber'       = "STANDARDWOFFPACK"
+  'SkuId'               = "6634e0ce-1a9f-428c-a498-f84ec7b8aa2e"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E2"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry17)
+
+$TeamsLicensingArrayEntry18 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E3"
+  'ProductName'         = "OFFICE 365 E3"
+  'SkuPartNumber'       = "ENTERPRISEPACK"
+  'SkuId'               = "6fd2c87f-b296-42f0-b197-1e91e994b900"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E3"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry18)
+
+$TeamsLicensingArrayEntry19 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E3 Developer"
+  'ProductName'         = "OFFICE 365 E3 DEVELOPER"
+  'SkuPartNumber'       = "DEVELOPERPACK"
+  'SkuId'               = "189a915c-fe4f-4ffa-bde4-85b9628d07a0"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E3Dev"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry19)
+
+$TeamsLicensingArrayEntry20 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E4"
+  'ProductName'         = "OFFICE 365 E4"
+  'SkuPartNumber'       = "ENTERPRISEWITHSCAL"
+  'SkuId'               = "1392051d-0cb9-4b7a-88d5-621fee5e8711"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E4"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry20)
+
+$TeamsLicensingArrayEntry21 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E5"
+  'ProductName'         = "OFFICE 365 E5"
+  'SkuPartNumber'       = "ENTERPRISEPREMIUM"
+  'SkuId'               = "c7df2760-2c81-4ef7-b578-5b5392b571df"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E5"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry21)
+
+$TeamsLicensingArrayEntry22 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E5 without Audio Conferencing"
+  'ProductName'         = "OFFICE 365 E5 WITHOUT AUDIO CONFERENCING"
+  'SkuPartNumber'       = "ENTERPRISEPREMIUM_NOPSTNCONF"
+  'SkuId'               = "26d45bd9-adf1-46cd-a9e1-51e9a5524128"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E5NoAudioConferencing"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry22)
+
+$TeamsLicensingArrayEntry23 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 F1"
+  'ProductName'         = "OFFICE 365 F1"
+  'SkuPartNumber'       = "DESKLESSPACK"
+  'SkuId'               = "4b585984-651b-448a-9e53-3b10f069cf7f"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365F1"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry23)
+#endregion
+
+#region Teams Licenses (GOV)
+$TeamsLicensingArrayEntry24 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 E3_USGOV_DOD"
+  'ProductName'         = "Microsoft 365 E3_USGOV_DOD"
+  'SkuPartNumber'       = "SPE_E3_USGOV_DOD"
+  'SkuId'               = "d61d61cc-f992-433f-a577-5bd016037eeb"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365E3USGOVDOD"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry24)
+
+$TeamsLicensingArrayEntry25 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 E3_USGOV_GCCHIGH"
+  'ProductName'         = "Microsoft 365 E3_USGOV_GCCHIGH"
+  'SkuPartNumber'       = "SPE_E3_USGOV_GCCHIGH"
+  'SkuId'               = "ca9d1dd9-dfe9-4fef-b97c-9bc1ea3c3658"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365E3USGOVGCCHIGH"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry25)
+
+
+$TeamsLicensingArrayEntry26 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E3_USGOV_DOD"
+  'ProductName'         = "Office 365 E3_USGOV_DOD"
+  'SkuPartNumber'       = "ENTERPRISEPACK_USGOV_DOD"
+  'SkuId'               = "b107e5a3-3e60-4c0d-a184-a7e4395eb44c"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E3USGOVDOD"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry26)
+
+$TeamsLicensingArrayEntry27 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Office 365 E3_USGOV_GCCHIGH"
+  'ProductName'         = "Office 365 E3_USGOV_GCCHIGH"
+  'SkuPartNumber'       = "ENTERPRISEPACK_USGOV_GCCHIGH"
+  'SkuId'               = "aea38a85-9bd5-4981-aa00-616b411205bf"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Office365E3USGOVGCCHIGH"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry27)
+#endregion
+
+#region Additional PhoneSystem Licenses
+$TeamsLicensingArrayEntry28 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Phone System"
+  'ProductName'         = "SKYPE FOR BUSINESS CLOUD PBX"
+  'SkuPartNumber'       = "MCOEV"
+  'SkuId'               = "e43b5b99-8dfb-405f-9987-dc307f34bcbd"
+  'LicenseType'         = "AddOnLicense"
+  'ParameterName'       = "PhoneSystem"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry28)
+
+$TeamsLicensingArrayEntry29 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Phone System - Virtual User License"
+  'ProductName'         = "Phone System - Virtual User License"
+  'SkuPartNumber'       = "PHONESYSTEM_VIRTUALUSER"
+  'SkuId'               = "440eaaa8-b3e0-484b-a8be-62870b9ba70a"
+  'LicenseType'         = "StandaloneLicense"
+  'ParameterName'       = "PhoneSystemVirtualUser"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry29)
+
+$TeamsLicensingArrayEntry30 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Common Area Phone"
+  'ProductName'         = "Common Area Phone"
+  'SkuPartNumber'       = "MCOCAP"
+  'SkuId'               = "295a8eb0-f78d-45c7-8b5b-1eed5ed02dff"
+  'LicenseType'         = "StandaloneLicense"
+  'ParameterName'       = "CommonAreaPhone"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $TRUE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry30)
+#endregion
+
+#region Additional Teams License
+$TeamsLicensingArrayEntry31 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Skype for Business Online (Plan 2)"
+  'ProductName'         = "SKYPE FOR BUSINESS ONLINE (PLAN 2)"
+  'SkuPartNumber'       = "MCOSTANDARD"
+  'SkuId'               = "d42c793f-6c78-4f43-92ca-e8f6a02b035f"
+  'LicenseType'         = "StandaloneLicense"
+  'ParameterName'       = "SkypeOnlinePlan2"
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry31)
+
+$TeamsLicensingArrayEntry32 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Teams"
+  'ProductName'         = "Teams"
+  'SkuPartNumber'       = "TEAMS1"
+  'SkuId'               = "57ff2da0-773e-42df-b2af-ffb7a2317929"
+  'LicenseType'         = "ServicePlan"
+  'ParameterName'       = ""
+  'IncludesTeams'       = $TRUE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry32)
+#endregion
+
+#region Additioanl Add-on Licenses
+$TeamsLicensingArrayEntry33 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Audio Conferencing"
+  'ProductName'         = "AUDIO CONFERENCING"
+  'SkuPartNumber'       = "MCOMEETADV"
+  'SkuId'               = "0c266dff-15dd-4b49-8397-2bb16070ed52"
+  'LicenseType'         = "AddOnLicense"
+  'ParameterName'       = "AudioConferencing"
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry33)
+#endregion
+
+#region Microsoft Calling Plans
+$TeamsLicensingArrayEntry34 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Domestic and International Calling Plan"
+  'ProductName'         = "SKYPE FOR BUSINESS PSTN DOMESTIC AND INTERNATIONAL CALLING"
+  'SkuPartNumber'       = "MCOPSTN2"
+  'SkuId'               =	"d3b4fe1f-9992-4930-8acb-ca6ec609365e"
+  'LicenseType'         = "CallingPlan"
+  'ParameterName'       = "InternationalCallingPlan"
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry34)
+
+$TeamsLicensingArrayEntry35 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Domestic Calling Plan"
+  'ProductName'         = "SKYPE FOR BUSINESS PSTN DOMESTIC CALLING"
+  'SkuPartNumber'       = "MCOPSTN1"
+  'SkuId'               = "0dab259f-bf13-4952-b7f8-7db8f131b28d"
+  'LicenseType'         = "CallingPlan"
+  'ParameterName'       = "DomesticCallingPlan"
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry35)
+
+$TeamsLicensingArrayEntry36 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Domestic Calling Plan (120 Minutes)"
+  'ProductName'         = "SKYPE FOR BUSINESS PSTN DOMESTIC CALLING (120 Minutes)"
+  'SkuPartNumber'       = "MCOPSTN5"
+  'SkuId'               = "54a152dc-90de-4996-93d2-bc47e670fc06"
+  'LicenseType'         = "CallingPlan"
+  'ParameterName'       = "DomesticCallingPlan120"
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry36)
+
+$TeamsLicensingArrayEntry37 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Domestic Calling Plan (240 Minutes)"
+  'ProductName'         = "SKYPE FOR BUSINESS PSTN DOMESTIC CALLING (240 Minutes)"
+  'SkuPartNumber'       = "MCOPSTN6"
+  'SkuId'               = ""
+  'LicenseType'         = "CallingPlan"
+  'ParameterName'       = ""
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry37)
+
+$TeamsLicensingArrayEntry38 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Communication Credits"
+  'ProductName'         = "SKYPE FOR BUSINESS PSTN DOMESTIC CALLING (120 Minutes)"
+  'SkuPartNumber'       = "MCOPSTNC"
+  'SkuId'               = "47794cd0-f0e5-45c5-9033-2eb6b5fc84e0"
+  'LicenseType'         = "CallingPlan"
+  'ParameterName'       = "CommunicationCredits"
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry38)
+#endregion
+#endregion
+
+#region Additional Licenses to Query (Non-Teams Licenses)
+$TeamsLicensingArrayEntry39 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Skype for Business Online (Plan 1)"
+  'ProductName'         = "SKYPE FOR BUSINESS ONLINE (PLAN 1)"
+  'SkuPartNumber'       = "MCOIMP"
+  'SkuId'               = "b8b749f8-a4ef-4887-9539-c95b1eaa5db7"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "SkypeOnlinePlan1"
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry39)
+
+<# Template
+$TeamsLicensingArrayEntry39 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = "Microsoft 365 A1"
+  'ProductName'         = "Microsoft 365 A1"
+  'SkuPartNumber'       = "M365EDU_A1"
+  'SkuId'               = "b17653a4-2443-4e8c-a550-18249dda78bb"
+  'LicenseType'         = "LicensePackage"
+  'ParameterName'       = "Microsoft365A1"
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry39)
+
+$TeamsLicensingArrayEntry40 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = ""
+  'ProductName'         = ""
+  'SkuPartNumber'       = ""
+  'SkuId'               = ""
+  'LicenseType'         = ""
+  'ParameterName'       = ""
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry40)
+
+$TeamsLicensingArrayEntry41 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = ""
+  'ProductName'         = ""
+  'SkuPartNumber'       = ""
+  'SkuId'               = ""
+  'LicenseType'         = ""
+  'ParameterName'       = ""
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry41)
+
+$TeamsLicensingArrayEntry42 = [PSCustomObject][ordered]@{
+  'FriendlyName'        = ""
+  'ProductName'         = ""
+  'SkuPartNumber'       = ""
+  'SkuId'               = ""
+  'LicenseType'         = ""
+  'ParameterName'       = ""
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntry42)
+
+$TeamsLicensingArrayEntryXX = [PSCustomObject][ordered]@{
+  'FriendlyName'        = ""
+  'ProductName'         = ""
+  'SkuPartNumber'       = ""
+  'SkuId'               = ""
+  'LicenseType'         = ""
+  'ParameterName'       = ""
+  'IncludesTeams'       = $FALSE
+  'IncludesPhoneSystem' = $FALSE
+}
+$TeamsLicensingArray.Add($TeamsLicensingArrayEntryXX)
+#>
+#endregion
+
+#region Additional Sku defintions (not in the Array)
+<# Additional Licenses, not in the Array
+$SkuID = "2b9c8e7c-319c-43a2-a2a0-48c5c6161de7"; $SkuPartNumber = "AAD_BASIC"; $ProductName = "AZURE ACTIVE DIRECTORY BASIC"
+$SkuID = "078d2b04-f1bd-4111-bbd4-b4b1b354cef4"; $SkuPartNumber = "AAD_PREMIUM"; $ProductName = "AZURE ACTIVE DIRECTORY PREMIUM P1"
+$SkuID = "84a661c4-e949-4bd2-a560-ed7766fcaf2b"; $SkuPartNumber = "AAD_PREMIUM_P2"; $ProductName = "AZURE ACTIVE DIRECTORY PREMIUM P2"
+$SkuID = "c52ea49f-fe5d-4e95-93ba-1de91d380f89"; $SkuPartNumber = "RIGHTSMANAGEMENT"; $ProductName = "AZURE INFORMATION PROTECTION PLAN 1"
+$SkuID = "ea126fc5-a19e-42e2-a731-da9d437bffcf"; $SkuPartNumber = "DYN365_ENTERPRISE_PLAN1"; $ProductName = "DYNAMICS 365 CUSTOMER ENGAGEMENT PLAN ENTERPRISE EDITION"
+$SkuID = "749742bf-0d37-4158-a120-33567104deeb"; $SkuPartNumber = "DYN365_ENTERPRISE_CUSTOMER_SERVICE"; $ProductName = "DYNAMICS 365 FOR CUSTOMER SERVICE ENTERPRISE EDITION"
+$SkuID = "cc13a803-544e-4464-b4e4-6d6169a138fa"; $SkuPartNumber = "DYN365_FINANCIALS_BUSINESS_SKU"; $ProductName = "DYNAMICS 365 FOR FINANCIALS BUSINESS EDITION"
+$SkuID = "8edc2cf8-6438-4fa9-b6e3-aa1660c640cc"; $SkuPartNumber = "DYN365_ENTERPRISE_SALES_CUSTOMERSERVICE"; $ProductName = "DYNAMICS 365 FOR SALES AND CUSTOMER SERVICE ENTERPRISE EDITION"
+$SkuID = "1e1a282c-9c54-43a2-9310-98ef728faace"; $SkuPartNumber = "DYN365_ENTERPRISE_SALES"; $ProductName = "DYNAMICS 365 FOR SALES ENTERPRISE EDITION"
+$SkuID = "8e7a3d30-d97d-43ab-837c-d7701cef83dc"; $SkuPartNumber = "DYN365_ENTERPRISE_TEAM_MEMBERS"; $ProductName = "DYNAMICS 365 FOR TEAM MEMBERS ENTERPRISE EDITION"
+$SkuID = "ccba3cfe-71ef-423a-bd87-b6df3dce59a9"; $SkuPartNumber = "Dynamics_365_for_Operations"; $ProductName = "DYNAMICS 365 UNF OPS PLAN ENT EDITION"
+$SkuID = "efccb6f7-5641-4e0e-bd10-b4976e1bf68e"; $SkuPartNumber = "EMS"; $ProductName = "ENTERPRISE MOBILITY + SECURITY E3"
+$SkuID = "b05e124f-c7cc-45a0-a6aa-8cf78c946968"; $SkuPartNumber = "EMSPREMIUM"; $ProductName = "ENTERPRISE MOBILITY + SECURITY E5"
+$SkuID = "4b9405b0-7788-4568-add1-99614e613b69"; $SkuPartNumber = "EXCHANGESTANDARD"; $ProductName = "EXCHANGE ONLINE (PLAN 1)"
+$SkuID = "19ec0d23-8335-4cbd-94ac-6050e30712fa"; $SkuPartNumber = "EXCHANGEENTERPRISE"; $ProductName = "EXCHANGE ONLINE (PLAN 2)"
+$SkuID = "ee02fd1b-340e-4a4b-b355-4a514e4c8943"; $SkuPartNumber = "EXCHANGEARCHIVE_ADDON"; $ProductName = "EXCHANGE ONLINE ARCHIVING FOR EXCHANGE ONLINE"
+$SkuID = "90b5e015-709a-4b8b-b08e-3200f994494c"; $SkuPartNumber = "EXCHANGEARCHIVE"; $ProductName = "EXCHANGE ONLINE ARCHIVING FOR EXCHANGE SERVER"
+$SkuID = "7fc0182e-d107-4556-8329-7caaa511197b"; $SkuPartNumber = "EXCHANGEESSENTIALS"; $ProductName = "EXCHANGE ONLINE ESSENTIALS"
+$SkuID = "e8f81a67-bd96-4074-b108-cf193eb9433b"; $SkuPartNumber = "EXCHANGE_S_ESSENTIALS"; $ProductName = "EXCHANGE ONLINE ESSENTIALS"
+$SkuID = "80b2d799-d2ba-4d2a-8842-fb0d0f3a4b82"; $SkuPartNumber = "EXCHANGEDESKLESS"; $ProductName = "EXCHANGE ONLINE KIOSK"
+$SkuID = "cb0a98a8-11bc-494c-83d9-c1b1ac65327e"; $SkuPartNumber = "EXCHANGETELCO"; $ProductName = "EXCHANGE ONLINE POP"
+$SkuID = "061f9ace-7d42-4136-88ac-31dc755f143f"; $SkuPartNumber = "INTUNE_A"; $ProductName = "INTUNE"
+$SkuID = "184efa21-98c3-4e5d-95ab-d07053a96e67"; $SkuPartNumber = "INFORMATION_PROTECTION_COMPLIANCE"; $ProductName = "Microsoft 365 E5 Compliance"
+$SkuID = "26124093-3d78-432b-b5dc-48bf992543d5"; $SkuPartNumber = "IDENTITY_THREAT_PROTECTION"; $ProductName = "Microsoft 365 E5 Security"
+$SkuID = "44ac31e7-2999-4304-ad94-c948886741d4"; $SkuPartNumber = "IDENTITY_THREAT_PROTECTION_FOR_EMS_E5"; $ProductName = "Microsoft 365 E5 Security for EMS E5"
+$SkuID = "111046dd-295b-4d6d-9724-d52ac90bd1f2"; $SkuPartNumber = "WIN_DEF_ATP"; $ProductName = "Microsoft Defender Advanced Threat Protection"
+$SkuID = "d17b27af-3f49-4822-99f9-56a661538792"; $SkuPartNumber = "CRMSTANDARD"; $ProductName = "MICROSOFT DYNAMICS CRM ONLINE"
+$SkuID = "906af65a-2970-46d5-9b58-4e9aa50f0657"; $SkuPartNumber = "CRMPLAN2"; $ProductName = "MICROSOFT DYNAMICS CRM ONLINE BASIC"
+$SkuID = "ba9a34de-4489-469d-879c-0f0f145321cd"; $SkuPartNumber = "IT_ACADEMY_AD"; $ProductName = "MS IMAGINE ACADEMY"
+$SkuID = "1b1b1f7a-8355-43b6-829f-336cfccb744c"; $SkuPartNumber = "EQUIVIO_ANALYTICS"; $ProductName = "Office 365 Advanced Compliance"
+$SkuID = "4ef96642-f096-40de-a3e9-d83fb2f90211"; $SkuPartNumber = "ATP_ENTERPRISE"; $ProductName = "Office 365 Advanced Threat Protection (Plan 1)"
+$SkuID = "04a7fb0d-32e0-4241-b4f5-3f7618cd1162"; $SkuPartNumber = "MIDSIZEPACK"; $ProductName = "OFFICE 365 MIDSIZE BUSINESS"
+$SkuID = "c2273bd0-dff7-4215-9ef5-2c7bcfb06425"; $SkuPartNumber = "OFFICESUBSCRIPTION"; $ProductName = "OFFICE 365 PROPLUS"
+$SkuID = "bd09678e-b83c-4d3f-aaba-3dad4abd128b"; $SkuPartNumber = "LITEPACK"; $ProductName = "OFFICE 365 SMALL BUSINESS"
+$SkuID = "fc14ec4a-4169-49a4-a51e-2c852931814b"; $SkuPartNumber = "LITEPACK_P2"; $ProductName = "OFFICE 365 SMALL BUSINESS PREMIUM"
+$SkuID = "e6778190-713e-4e4f-9119-8b8238de25df"; $SkuPartNumber = "WACONEDRIVESTANDARD"; $ProductName = "ONEDRIVE FOR BUSINESS (PLAN 1)"
+$SkuID = "ed01faf2-1d88-4947-ae91-45ca18703a96"; $SkuPartNumber = "WACONEDRIVEENTERPRISE"; $ProductName = "ONEDRIVE FOR BUSINESS (PLAN 2)"
+$SkuID = "b30411f5-fea1-4a59-9ad9-3db7c7ead579"; $SkuPartNumber = "POWERAPPS_PER_USER"; $ProductName = "POWER APPS PER USER PLAN"
+$SkuID = "45bc2c81-6072-436a-9b0b-3b12eefbc402"; $SkuPartNumber = "POWER_BI_ADDON"; $ProductName = "POWER BI FOR OFFICE 365 ADD-ON"
+$SkuID = "f8a1db68-be16-40ed-86d5-cb42ce701560"; $SkuPartNumber = "POWER_BI_PRO"; $ProductName = "POWER BI PRO"
+$SkuID = "a10d5e58-74da-4312-95c8-76be4e5b75a0"; $SkuPartNumber = "PROJECTCLIENT"; $ProductName = "PROJECT FOR OFFICE 365"
+$SkuID = "776df282-9fc0-4862-99e2-70e561b9909e"; $SkuPartNumber = "PROJECTESSENTIALS"; $ProductName = "PROJECT ONLINE ESSENTIALS"
+$SkuID = "09015f9f-377f-4538-bbb5-f75ceb09358a"; $SkuPartNumber = "PROJECTPREMIUM"; $ProductName = "PROJECT ONLINE PREMIUM"
+$SkuID = "2db84718-652c-47a7-860c-f10d8abbdae3"; $SkuPartNumber = "PROJECTONLINE_PLAN_1"; $ProductName = "PROJECT ONLINE PREMIUM WITHOUT PROJECT CLIENT"
+$SkuID = "53818b1b-4a27-454b-8896-0dba576410e6"; $SkuPartNumber = "PROJECTPROFESSIONAL"; $ProductName = "PROJECT ONLINE PROFESSIONAL"
+$SkuID = "f82a60b8-1ee3-4cfb-a4fe-1c6a53c2656c"; $SkuPartNumber = "PROJECTONLINE_PLAN_2"; $ProductName = "PROJECT ONLINE WITH PROJECT FOR OFFICE 365"
+$SkuID = "1fc08a02-8b3d-43b9-831e-f76859e04e1a"; $SkuPartNumber = "SHAREPOINTSTANDARD"; $ProductName = "SHAREPOINT ONLINE (PLAN 1)"
+$SkuID = "a9732ec9-17d9-494c-a51c-d6b45b384dcb"; $SkuPartNumber = "SHAREPOINTENTERPRISE"; $ProductName = "SHAREPOINT ONLINE (PLAN 2)"
+$SkuID = "4b244418-9658-4451-a2b8-b5e2b364e9bd"; $SkuPartNumber = "VISIOONLINE_PLAN1"; $ProductName = "VISIO ONLINE PLAN 1"
+$SkuID = "c5928f49-12ba-48f7-ada3-0d743a3601d5"; $SkuPartNumber = "VISIOCLIENT"; $ProductName = "VISIO Online Plan 2"
+$SkuID = "cb10e6cd-9da4-4992-867b-67546b1db821"; $SkuPartNumber = "WIN10_PRO_ENT_SUB"; $ProductName = "WINDOWS 10 ENTERPRISE E3"
+$SkuID = "488ba24a-39a9-4473-8ee5-19291e71b002"; $SkuPartNumber = "WIN10_VDA_E5"; $ProductName = "Windows 10 Enterprise E5"
+#>
+#endregion
+#endregion
+
 # SkuID and Partnumber are useful to look up dynamically, but would need a data source...
 # Helper functions as a static alternative :)
 function Get-SkuIDfromSkuPartNumber {
   <#
 	.SYNOPSIS
-		Returns SkuID from FriendlyName
+		Returns SkuID from SkuPartNumber
 	.DESCRIPTION
 		Returns SkuID from SkuPartNumber
 	.PARAMETER SkuPartNumber
-		FriendlyName of the License
+		Part Number of the Sku
 	.FUNCTIONALITY
-		Helper Function for Licensing, translating ID to FriendlyName
+		Helper Function for Licensing, translating ID to SkuPartNumber
 	#>
 
   param(
@@ -7564,10 +8615,11 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 
 # Exporting ModuleMembers
 
+Export-ModuleMember -Variable TeamsLicensingArray
 Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-Me, dis, Disconnect-Me
 Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-SkypeTeamsAndAAD, Disconnect-SkypeTeamsAndAAD, Test-Module, `
   Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN, `
-  Add-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicenses, `
+  Add-TeamsUserLicense, Set-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicense, `
   Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy, `
   Test-AzureADModule, Test-AzureADConnection, Test-AzureADUser, Test-AzureADGroup, `
   Test-SkypeOnlineModule, Test-SkypeOnlineConnection, `
@@ -7575,6 +8627,6 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
   New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation, `
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
-  Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
+  Import-TeamsAudioFile, Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
   Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
