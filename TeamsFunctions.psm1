@@ -1446,6 +1446,8 @@ function Get-TeamsTenantLicense {
   .PARAMETER License
     Optional. Limits the Output to one license.
     Accepted Values are listed in $TeamsLicenses.ParameterName
+  .PARAMETER ConciseView
+    Displays only Parameters relevant to determine License availability
   .PARAMETER DisplayAll
     Displays all Licenses, not only relevant Teams Licenses
 	.EXAMPLE
@@ -1454,6 +1456,9 @@ function Get-TeamsTenantLicense {
 	.EXAMPLE
 		Get-TeamsTenantLicenses -License PhoneSystem
     Displays detailed information about the PhoneSystem license found on the tenant.
+  .EXAMPLE
+		Get-TeamsTenantLicenses -ConciseView
+		Displays all Teams Licenses found on the tenant, but only Name and counters.
   .EXAMPLE
 		Get-TeamsTenantLicenses -DisplayAll
 		Displays detailed information about all licenses found on the tenant.
@@ -1467,6 +1472,9 @@ function Get-TeamsTenantLicense {
     [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
     [string]$License,
+
+    [Parameter(Mandatory = $false, HelpMessage = "Displays only required Parameters")]
+    [switch]$ConciseView,
 
     [Parameter(Mandatory = $false, HelpMessage = "Displays all ServicePlans")]
     [switch]$DisplayAll
@@ -1505,6 +1513,10 @@ function Get-TeamsTenantLicense {
       Write-Warning $_
       return
     }
+
+    if ($PSBoundParameters.ContainsKey('ConciseView')) {
+      $TenantLicenses = $TenantLicenses | Select-Object FriendlyName, SkuPartNumber, LicenseType
+    }
   }
 
   process {
@@ -1524,24 +1536,42 @@ function Get-TeamsTenantLicense {
       }
       else {
         if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-          $NewLic = [PSCustomObject][ordered]@{
-            FriendlyName        = $null
-            ProductName         = $null
-            SkuPartNumber       = $tenantSKU.SkuPartNumber
-            SkuId               = $tenantSKU.SkuId
-            LicenseType         = "Unknown"
-            ParameterName       = $null
-            IncludesTeams       = $null
-            IncludesPhoneSystem = $null
-            Available           = $($tenantSKU.PrepaidUnits.Enabled)
-            Consumed            = $($tenantSKU.ConsumedUnits)
-            Remaining           = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
-            Expiring            = $($tenantSKU.PrepaidUnits.Warning)
+          if ($PSBoundParameters.ContainsKey('ConciseView')) {
+            $NewLic = [PSCustomObject][ordered]@{
+              FriendlyName  = $null
+              SkuPartNumber = $tenantSKU.SkuPartNumber
+              LicenseType   = "Unknown"
+              Available     = $($tenantSKU.PrepaidUnits.Enabled)
+              Consumed      = $($tenantSKU.ConsumedUnits)
+              Remaining     = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
+              Expiring      = $($tenantSKU.PrepaidUnits.Warning)
+            }
+            [void]$TenantLicenses.Add($NewLic)
           }
-          [void]$TenantLicenses.Add($NewLic)
+          else {
+            $NewLic = [PSCustomObject][ordered]@{
+              FriendlyName        = $null
+              SkuPartNumber       = $tenantSKU.SkuPartNumber
+              SkuId               = $tenantSKU.SkuId
+              LicenseType         = "Unknown"
+              ParameterName       = $null
+              IncludesTeams       = $null
+              IncludesPhoneSystem = $null
+              Available           = $($tenantSKU.PrepaidUnits.Enabled)
+              Consumed            = $($tenantSKU.ConsumedUnits)
+              Remaining           = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
+              Expiring            = $($tenantSKU.PrepaidUnits.Warning)
+            }
+            [void]$TenantLicenses.Add($NewLic)
+          }
         }
         else {
-          Write-Verbose "No entry in Database found for '$($tenantSKU.SkuId)' - Use DisplayAll to show" -Verbose
+          if ($PSBoundParameters.ContainsKey('ConciseView')) {
+            # no action - Verbose message will be suppressed.
+          }
+          else {
+            Write-Verbose "No entry in Database found for '$($tenantSKU.SkuId)' - Use DisplayAll to show" -Verbose
+          }
         }
       }
 
