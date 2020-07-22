@@ -1490,7 +1490,12 @@ function Get-TeamsTenantLicense {
 
     #Loading License Array
     $AllLicenses = $null
-    $AllLicenses = $TeamsLicenses
+    if ($PSBoundParameters.ContainsKey('ConciseView')) {
+      $AllLicenses = $TeamsLicenses | Select-Object FriendlyName, SkuPartNumber
+    }
+    else {
+      $AllLicenses = $TeamsLicenses
+    }
 
     $AllLicenses | Add-Member -NotePropertyName Available -NotePropertyValue 0 -Force
     $AllLicenses | Add-Member -NotePropertyName Consumed -NotePropertyValue 0 -Force
@@ -1501,7 +1506,7 @@ function Get-TeamsTenantLicense {
     try {
       if ($PSBoundParameters.ContainsKey('License')) {
         $TenantID = (Get-AzureADCurrentSessionInfo).TenantId
-        $SKU = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuId
+        $SKU = ($TeamsLicenses | Where-Object ParameterName -EQ $License).SkuId
         $ObjectId = "$TenantID" + "_" + "$SKU"
         $tenantSKUs = Get-AzureADSubscribedSku -ObjectId $ObjectId -ErrorAction STOP
       }
@@ -1514,9 +1519,7 @@ function Get-TeamsTenantLicense {
       return
     }
 
-    if ($PSBoundParameters.ContainsKey('ConciseView')) {
-      $TenantLicenses = $TenantLicenses | Select-Object FriendlyName, SkuPartNumber, LicenseType
-    }
+
   }
 
   process {
@@ -1524,7 +1527,7 @@ function Get-TeamsTenantLicense {
     [System.Collections.ArrayList]$TenantLicenses = @()
     foreach ($tenantSKU in $tenantSKUs) {
       $Lic = $null
-      $Lic = $AllLicenses | Where-Object SkuId -EQ "$($tenantSKU.SkuId)"
+      $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ $($TeamsLicenses | Where-Object SkuId -EQ "$($tenantSKU.SkuId)").SkuPartNumber
 
       if ($null -ne $Lic) {
         $Lic.Available = $($tenantSKU.PrepaidUnits.Enabled)
@@ -1538,7 +1541,6 @@ function Get-TeamsTenantLicense {
         if ($PSBoundParameters.ContainsKey('DisplayAll')) {
           if ($PSBoundParameters.ContainsKey('ConciseView')) {
             $NewLic = [PSCustomObject][ordered]@{
-              FriendlyName  = $null
               SkuPartNumber = $tenantSKU.SkuPartNumber
               LicenseType   = "Unknown"
               Available     = $($tenantSKU.PrepaidUnits.Enabled)
