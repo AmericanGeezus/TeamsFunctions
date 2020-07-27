@@ -2355,7 +2355,7 @@ function Test-AzureADUser {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity
   )
 
@@ -2401,7 +2401,7 @@ function Test-AzureADGroup {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
     [string]$Identity
   )
 
@@ -3293,7 +3293,6 @@ function New-TeamsCallQueue {
     #endregion
 
     #region OverflowAction SharedVoicemail - Processing
-    # requires check for Parameter OverflowAction -eq "SharedVoicemail" AND presence of OverflowTarget?
     if ($OverflowAction -eq "SharedVoiceMail") {
       # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
       if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
@@ -4689,7 +4688,6 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region OverflowAction SharedVoicemail - Processing
-    # requires check for Parameter OverflowAction -eq "SharedVoicemail" AND presence of OverflowTarget?
     if ($OverflowAction -eq "SharedVoiceMail") {
       # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
       if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
