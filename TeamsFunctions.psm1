@@ -195,7 +195,7 @@ function Set-TeamsUserLicense {
     [string[]]$RemoveLicenses,
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
-    [Swtich]$RemoveAllLicenses
+    [Switch]$RemoveAllLicenses
   )
 
   begin {
@@ -389,8 +389,8 @@ function Set-TeamsUserLicense {
     # Querying licenses in the Tenant to compare SKUs
     try {
       Write-Verbose -Message "Querying Licenses from the Tenant" -Verbose
-      #$TenantLicenses = Get-TeamsTenantLicenses -ErrorAction STOP
-      $TenantLicenses = Get-AzureADSubscribedSku -ErrorAction STOP
+      $TenantLicenses = Get-TeamsTenantLicense -ErrorAction STOP
+      #$TenantLicenses = Get-AzureADSubscribedSku -ErrorAction STOP
     }
     catch {
       Write-Warning $_
@@ -1514,19 +1514,19 @@ function Get-TeamsTenantLicense {
   .PARAMETER DisplayAll
     Displays all Licenses, not only relevant Teams Licenses
 	.EXAMPLE
-		Get-TeamsTenantLicenses
+		Get-TeamsTenantLicense
 		Displays detailed information about all Teams related licenses found on the tenant.
 	.EXAMPLE
-		Get-TeamsTenantLicenses -License PhoneSystem
+		Get-TeamsTenantLicense -License PhoneSystem
     Displays detailed information about the PhoneSystem license found on the tenant.
   .EXAMPLE
-		Get-TeamsTenantLicenses -ConciseView
+		Get-TeamsTenantLicense -ConciseView
 		Displays all Teams Licenses found on the tenant, but only Name and counters.
   .EXAMPLE
-		Get-TeamsTenantLicenses -DisplayAll
+		Get-TeamsTenantLicense -DisplayAll
 		Displays detailed information about all licenses found on the tenant.
   .EXAMPLE
-		Get-TeamsTenantLicenses -ConciseView -DisplayAll
+		Get-TeamsTenantLicense -ConciseView -DisplayAll
 		Displays a concise view of all licenses found on the tenant.
   .NOTES
     Requires a connection to Azure Active Directory
@@ -2423,11 +2423,24 @@ function Test-AzureADGroup {
     }
     catch {
       try {
-        $null = Get-AzureADGroup -SearchString "$Identity" -ErrorAction STOP
-        return $true
+        $Group2 = Get-AzureADGroup -SearchString "$Identity" -ErrorAction STOP
+        if ($null -ne $Group2) {
+          return $true
+        }
+        else {
+         try {
+            $MailNickName = $Identity.Split('@')[0]
+            $null = Get-AzureADGroup -SearchString "$MailNickName" -ErrorAction STOP
+            Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
+            return $true
+          }
+          catch {
+            return $false
+          }
+        }
       }
       catch {
-        return $False
+        return $false
       }
     }
   }
@@ -2985,16 +2998,21 @@ function New-TeamsCallQueue {
     #region Music files
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
     [ValidateScript( {
-        If (Test-Path $_) {
-          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
-            $True
-          }
-          else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
-          }
+        if ($null -eq $_) {
+          $True
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          If (Test-Path $_) {
+            If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+              $True
+            }
+            else {
+              Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            }
+          }
+          else {
+            Write-Host "File not found, please verify" -ForeGroundColor Red
+          }
         }
       })]
     [string]$WelcomeMusicAudioFile,
@@ -3160,15 +3178,20 @@ function New-TeamsCallQueue {
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-      $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
-      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
-      try {
-        $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
-        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
-        $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
+      if ($null -ne $WelcomeMusicAudioFile) {
+        $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
+        try {
+          $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
+          $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
+        }
+        catch {
+          Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
+        }
       }
-      catch {
-        Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+      else {
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
       }
     }
@@ -3507,8 +3530,22 @@ function New-TeamsCallQueue {
         # Determine ID from UPN
         if (Test-AzureADGroup "$DL") {
           $DLObject = Get-AzureADGroup -SearchString "$DL"
-          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+          if ($null -eq $DLObject) {
+            $DL2 = $DL.Split('@')[0]
+            $DLObject = Get-AzureADGroup -SearchString "$DL2"
+            if ($null -eq $DLObject) {
+              try {
+              $DLObject = Get-AzureADGroup -ObjectId "$DL"
+              }
+              catch {
+                Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+              }
+            }
+          }
+        }
 
+        if ($DLObject) {
+          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
           # Test whether Users in DL are enabled for EV and/or licensed?
 
           # Add to List
@@ -3602,7 +3639,7 @@ function New-TeamsCallQueue {
         Write-Warning -Message "No Distribution Lists or Users added to callqueue. There will be no agents to call."
       }
 
-      $Difference = Compare-Object -ReferenceObject $CallQueueDesired -DifferenceObject $CallQueueImplemented
+      $Difference = Compare-Object -ReferenceObject $CallQueueDesired -DifferenceObject $CallQueueFinal
       if ($difference.Count -gt 0) {
         Write-Host "SUCCESS: Call Queue created and SOME values set" -Foregroundcolor Yellow
         Write-Host "The following Settings have not been able to be applied"
@@ -4577,7 +4614,8 @@ function Set-TeamsCallQueue {
       }
     }
     else {
-      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE or EXISTING"
+      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
+      $Parameters += @{'WelcomeMusicAudioFileId' = $null }
     }
     #endregion
 
@@ -4907,17 +4945,31 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
-        if (Test-AzureADGroup $DL) {
-          $DLObject = Get-AzureADGroup -ObjectId $DL
-          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+        if (Test-AzureADGroup "$DL") {
+          $DLObject = Get-AzureADGroup -SearchString "$DL"
+          if ($null -eq $DLObject) {
+            $DL2 = $DL.Split('@')[0]
+            $DLObject = Get-AzureADGroup -SearchString "$DL2"
+            if ($null -eq $DLObject) {
+              try {
+              $DLObject = Get-AzureADGroup -ObjectId "$DL"
+              }
+              catch {
+                Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+              }
+            }
+          }
+        }
 
+        if ($DLObject) {
+          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
           # Test whether Users in DL are enabled for EV and/or licensed?
 
           # Add to List
           [void]$DLIdList.Add($DLObject.ObjectId)
         }
         else {
-          Write-Warning -Message "Group $DL not found in AzureAd, omitting Group!"
+          Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
         }
       }
       $Parameters += @{'DistributionLists' = @($DLIdList) }
@@ -5379,7 +5431,7 @@ function New-TeamsResourceAccountAssociation {
           # Establishing Association
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - Assigning to Auto Attendant: '$AutoAttendant'"
           if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", "New-CsOnlineApplicationInstanceAssociation")) {
-            $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $CallQueueObj.Identity
+            $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $AutoAttendantObj.Identity
           }
         }
         # Requery Association Target
@@ -5734,7 +5786,7 @@ function New-TeamsResourceAccount {
         $imax = 20
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($imax s) to be able to parse the Object." -Verbose
         Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
-        while ($null -eq $(Get-AzureADUser -ObjectId "$UPN" -ErrorAction SilentlyContinue).ObjectId) {
+        while ($null -eq $(Get-AzureADUserFromUPN "$UPN" -ErrorAction SilentlyContinue).ObjectId) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been creaated (UserPrincipalName); Continue with Set-TeamsResourceAccount"
             break
@@ -5782,10 +5834,10 @@ function New-TeamsResourceAccount {
       # Verifying License is available to be assigned
       # Determining available Licenses from Tenant
       Write-Verbose -Message "'$Name' Querying Licenses..."
-      $TenantLicenses = Get-TeamsTenantLicenses
-      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
+      $TenantLicenses = Get-TeamsTenantLicense
+      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "MCOEV" }).Remaining
       Write-Verbose -Message "INFO: $RemainingPSlicenses remaining Phone System Licenses"
-      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
+      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
       Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
       # Assigning License
@@ -6720,11 +6772,11 @@ function Set-TeamsResourceAccount {
       # Verifying License is available to be assigned
       # Determining available Licenses from Tenant
       Write-Verbose -Message "'$Name' Querying Licenses..."
-      $TenantLicenses = Get-TeamsTenantLicenses
-      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
-      Write-Verbose -Message "Info: $RemainingPSlicenses remaining Phone System Licenses"
-      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
-      Write-Verbose -Message "Info: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
+      $TenantLicenses = Get-TeamsTenantLicense
+      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "MCOEV" }).Remaining
+      Write-Verbose -Message "INFO: $RemainingPSlicenses remaining Phone System Licenses"
+      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
+      Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
       # Changing License if requried
       if ($License -eq $CurrentLicense) {
