@@ -188,10 +188,13 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'Remove', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    #ValidateScript needs testing, but would make things easier here
+    #[ValidateScript({$_ -in $TeamsLicenses.ParameterName})]
     [string[]]$AddLicenses,
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    #[ValidateScript( { $_ -in $TeamsLicenses.ParameterName })]
     [string[]]$RemoveLicenses,
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
@@ -206,6 +209,16 @@ function Set-TeamsUserLicense {
       break
     }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
     #Loading License Array
     $AllLicenses = $null
     $AllLicenses = $TeamsLicenses
@@ -390,7 +403,6 @@ function Set-TeamsUserLicense {
     try {
       Write-Verbose -Message "Querying Licenses from the Tenant" -Verbose
       $TenantLicenses = Get-TeamsTenantLicense -ErrorAction STOP
-      #$TenantLicenses = Get-AzureADSubscribedSku -ErrorAction STOP
     }
     catch {
       Write-Warning $_
@@ -2428,7 +2440,7 @@ function Test-AzureADGroup {
           return $true
         }
         else {
-         try {
+          try {
             $MailNickName = $Identity.Split('@')[0]
             $null = Get-AzureADGroup -SearchString "$MailNickName" -ErrorAction STOP
             Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
@@ -3535,7 +3547,7 @@ function New-TeamsCallQueue {
             $DLObject = Get-AzureADGroup -SearchString "$DL2"
             if ($null -eq $DLObject) {
               try {
-              $DLObject = Get-AzureADGroup -ObjectId "$DL"
+                $DLObject = Get-AzureADGroup -ObjectId "$DL"
               }
               catch {
                 Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
@@ -3602,8 +3614,11 @@ function New-TeamsCallQueue {
       EnableTimeoutSharedVoicemailTranscription  = $EnableTimeoutSharedVoicemailTranscription
       LanguageId                                 = $LanguageId
       #LineUri                                            = $LineUri
-      Users                                      = $Users
-      DistributionLists                          = $DistributionLists
+      # Testing whether names or IDs need to be compared - depends on what is queried in $CallQueueFinal - if CsCallQueue, we need IDs
+      #Users                                      = $Users
+      #DistributionLists                          = $DistributionLists
+      Users                                      = $UserIdList
+      DistributionLists                          = $DLIdList
     }
     #endregion
 
@@ -3744,12 +3759,14 @@ function Get-TeamsCallQueue {
         # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
         $Queues = Get-CsCallQueue -NameFilter "$Name" -ErrorAction STOP
 
-        if ($PSBoundParameters.ContainsKey('ConciseView')) {
-          Write-Verbose -Message "Parameters relating to Language & Shared Voicemail are not shown." -Verbose
-          Write-Verbose -Message "These are: OverflowSharedVoicemailAudioFilePrompt, OverflowSharedVoicemailTextToSpeechPrompt, TimeoutSharedVoicemailAudioFilePrompt, TimeoutSharedVoicemailTextToSpeechPrompt, EnableOverflowSharedVoicemailTranscription, EnableTimeoutSharedVoicemailTranscription, LanguageId, LineUri" -Verbose
-        }
-        else {
-          Write-Verbose -Message "All Parameters except 'LineUri' are shown"
+        if ($null -ne $Queues) {
+          if ($PSBoundParameters.ContainsKey('ConciseView')) {
+            Write-Verbose -Message "Parameters relating to Language & Shared Voicemail are not shown." -Verbose
+            Write-Verbose -Message "These are: OverflowSharedVoicemailAudioFilePrompt, OverflowSharedVoicemailTextToSpeechPrompt, TimeoutSharedVoicemailAudioFilePrompt, TimeoutSharedVoicemailTextToSpeechPrompt, EnableOverflowSharedVoicemailTranscription, EnableTimeoutSharedVoicemailTranscription, LanguageId, LineUri" -Verbose
+          }
+          else {
+            Write-Verbose -Message "All Parameters except 'LineUri' are shown"
+          }
         }
 
         # Initialising Arrays
@@ -4952,7 +4969,7 @@ function Set-TeamsCallQueue {
             $DLObject = Get-AzureADGroup -SearchString "$DL2"
             if ($null -eq $DLObject) {
               try {
-              $DLObject = Get-AzureADGroup -ObjectId "$DL"
+                $DLObject = Get-AzureADGroup -ObjectId "$DL"
               }
               catch {
                 Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
@@ -5326,12 +5343,25 @@ function New-TeamsResourceAccountAssociation {
           break
         }
         elseif ($CallQueueObj.GetType().BaseType.Name -eq "Array") {
-          Write-Error "'$CallQueue' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+          Write-Error "'$CallQueue' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction  "Please use New-CsOnlineApplicationInstanceAssociation!"
           $CallQueueObj | Select-Object Identity, Name | Format-Table
+          Write-Verbose -Message "This script is based on lookup via Name, which requires a unique Name to process. Please use New-CsOnlineApplicationInstanceAssociation!"
           break
         }
         else {
           Write-Verbose -Message "'$CallQueue' - Unique result found: $($CallQueueObj.Identity)"
+        }
+
+        # Query existing connection
+        $ExistingConnection = $null
+        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN
+        if ($null -eq $ExistingConnection.AssociatedTo) {
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
+        }
+        else {
+          Write-Error -Message "'$($Account.UserPrincipalName)' - This account is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
+          $ExistingConnection
+          break
         }
 
         # Processing Call Queue
@@ -5393,13 +5423,27 @@ function New-TeamsResourceAccountAssociation {
           break
         }
         elseif ($AutoAttendantObj.GetType().BaseType.Name -eq "Array") {
-          Write-Error "'$AutoAttendant' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+          Write-Error "'$AutoAttendant' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction  "Please use New-CsOnlineApplicationInstanceAssociation!"
           $AutoAttendantObj | Select-Object Identity, Name | Format-Table
+          Write-Verbose -Message "This script is based on lookup via Name, which requires a unique Name to process. Please use New-CsOnlineApplicationInstanceAssociation!"
           break
         }
         else {
           Write-Verbose -Message "'$AutoAttendant' - Unique result found: $($AutoAttendantObj.Identity)"
         }
+
+        # Query existing connection
+        $ExistingConnection = $null
+        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN
+        if ($null -eq $ExistingConnection.AssociatedTo) {
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
+        }
+        else {
+          Write-Error -Message "'$($Account.UserPrincipalName)' - This account is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
+          $ExistingConnection
+          break
+        }
+
 
         # Processing Auto Attendant
         Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
@@ -5786,7 +5830,9 @@ function New-TeamsResourceAccount {
         $imax = 20
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($imax s) to be able to parse the Object." -Verbose
         Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
-        while ($null -eq $(Get-AzureADUserFromUPN "$UPN" -ErrorAction SilentlyContinue).ObjectId) {
+        # Get-AzureAdUser resulted in a BadRequest message instead of $null
+        #while ($null -eq $(Get-AzureADUserFromUPN "$UPN" -ErrorAction SilentlyContinue).ObjectId) {
+        while ( -not (Test-AzureADUser $UPN)) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been creaated (UserPrincipalName); Continue with Set-TeamsResourceAccount"
             break
