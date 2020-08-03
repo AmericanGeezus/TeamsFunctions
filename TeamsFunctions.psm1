@@ -1,83 +1,107 @@
 ﻿#Requires -Version 5.1
 <#
-		Fork of SkypeFunctions
-		Written by Jeff Brown
-		Jeff@JeffBrown.tech
-		@JeffWBrown
-		www.jeffbrown.tech
-		https://github.com/JeffBrownTech
+  Fork of SkypeFunctions
+  Written by Jeff Brown
+  Jeff@JeffBrown.tech
+  @JeffWBrown
+  www.jeffbrown.tech
+  https://github.com/JeffBrownTech
 
-		Adopted for Teams as TeamsFunctions
-		by David Eberhardt
-		david@davideberhardt.at
-		@MightyOrmus
-		www.davideberhardt.at
-		https://github.com/DEberhardt
-		https://davideberhardt.wordpress.com/
+  Adopted for Teams as TeamsFunctions
+  by David Eberhardt
+  david@davideberhardt.at
+  @MightyOrmus
+  www.davideberhardt.at
+  https://github.com/DEberhardt
+  https://davideberhardt.wordpress.com/
 
-		Individual Scripts incorporated into this Module are taken with the express permission of the original Author
+  Individual Scripts incorporated into this Module are taken with the express permission of the original Author
 
-		To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
-		Import-Module TeamsFunctions
+  To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
+  Import-Module TeamsFunctions
 
-		Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
-		Always review any code and steps before applying to a production system to understand their full impact.
+  Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
+  Always review any code and steps before applying to a production system to understand their full impact.
 
-		# Versioning
-		This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
-		Major v20 is the the first one published in 2020, followed by Minor verson for Month and Day.
-		Subsequent Minor versions indicate additional publications on this day.
-		Revisions are planned quarterly
+  # Versioning
+  This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
+  Major v20 is the the first one published in 2020, followed by Minor verson for Month and Day.
+  Subsequent Minor versions indicate additional publications on this day.
+  Revisions are planned quarterly
 
-		# Version History
-		1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
-		20.04.17.1  Initial Version (as TeamsFunctions) - Multiple updates for Teams
-								References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
-								Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
-								Microsoft 365 Licenses have been added to all Functions dealing with Licensing
-								Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
-								Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
-								Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
-								Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
-		20.05.03.1  First Publication
-								Bug fixing, erroneously incorporated all local modules.
-		20.05.09.1  Bug fixing, minor improvements
-		20.05.19.2  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
-								Added Get-AzureAdAssignedAdminRoles
-								Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
-								Fixed an issue with access to the new functions
-								Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
-		20.05.24.2  Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
-								Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
-								Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
-								Added Helper function for Licensing: Get-SkuIDfromSkuPartNumber (returns SkuID)
-								Renamed Helper function for Licensing: New-AzureADLicenseObject (creates a new License Object, can add and remove one)
-								RESOLVED Limitation "PhoneSystem_VirtualUser cannot be selected as no GUID is known for it currently"
-								Added AzureAD Module and Connection Test in all Functions that need it.
-								Added SkypeOnline Module and Connection Test in all Functions that need it.
-								Some bug fixing and code scrubbing
-		20.06.09.1  Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
-								Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
-								Run "con $Username" to connect to all 3 with one authentication prompt
-								Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
-								Replaced by Test-Module $ModuleNames
-		20.06.17.1  Added Write-ErrorRecord.
-								Bugfixing Resource Account and Call Queue Scripts
-		20.06.22.0  Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
-								Bugfixing Resource Account and Call Queue Scripts
-								Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
-		20.06.29.1  Added TeamsResourceAccountAssociation Scripts
-								Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
-		20.07.08-alpha2     Exposed Import-TeamsAudioFile for public use.
-										    Updated New-TeamsCallQueue and Set-TeamsCallQueue to use Import-TeamsAudioFile for Welcome Message and Music On Hold
-                        Updated Set-TeamsCallQueue to allow $NULL for Parameter WelcomeMusicAudioFile
-    20.07.18-prerelase  Added Variable $TeamsLicenses - Fully populated with 38 Microsoft Licenses
-                        Updated Get-TeamsTenantLicense - now returns a proper Object, based on Variable $TeamsLicenses
-                        Updated Get-TeamsUserLicense - now returns a proper Object, based on Variable $TeamsLicenses
-                        Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicnese
-                        This function now supports multiple adds and removes including purges
-                        Added Disclaimer for Add-TeamsUserLicense as it is now deprecated
-                        Removed Get-TeamsTenantLicneses (plural)
+  # Version History
+  1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
+  20.04.17.1  Initial Version (as TeamsFunctions) - Multiple updates for Teams
+        References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
+        Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
+        Microsoft 365 Licenses have been added to all Functions dealing with Licensing
+        Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
+        Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
+        Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
+        Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
+  20.05.03.1  First Publication
+        Bug fixing, erroneously incorporated all local modules.
+  20.05.09.1  Bug fixing, minor improvements
+  20.05.19.2  Adding Backup and TeamsResourceAccount functions (BETA)
+        Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
+        Added Get-AzureAdAssignedAdminRoles
+        Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
+        Fixed an issue with access to the new functions
+        Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+  20.05.24.2  Added Helper functions
+        Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
+        Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
+        Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
+        Added Helper function for Licensing: Get-SkuIDfromSkuPartNumber (returns SkuID)
+        Renamed Helper function for Licensing: New-AzureADLicenseObject (creates a new License Object, can add and remove one)
+        RESOLVED Limitation "PhoneSystem_VirtualUser cannot be selected as no GUID is known for it currently"
+        Added AzureAD Module and Connection Test in all Functions that need it.
+        Added SkypeOnline Module and Connection Test in all Functions that need it.
+        Some bug fixing and code scrubbing
+  20.06.09.1  Added TeamsCallQueue Functions (BETA)
+        Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
+        Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
+        Run "con $Username" to connect to all 3 with one authentication prompt
+        Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
+        Replaced by Test-Module $ModuleNames
+  20.06.17.1  Bugfixing
+        Added Write-ErrorRecord.
+        Bugfixing Resource Account and Call Queue Scripts
+  20.06.22.0
+        Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
+        Bugfixing Resource Account and Call Queue Scripts
+        Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
+  20.06.29.1
+        Added TeamsResourceAccountAssociation Functions & Script Analyzer
+        Added TeamsResourceAccountAssociation Scripts
+        Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
+  20.07.08-alpha2       Import-TeamsAudioFile
+        Exposed Import-TeamsAudioFile for public use.
+        Updated New-TeamsCallQueue and Set-TeamsCallQueue to use Import-TeamsAudioFile for Welcome Message and Music On Hold
+        Updated Set-TeamsCallQueue to allow $NULL for Parameter WelcomeMusicAudioFile
+  20.07.18-prerelase    License Update
+        Added Variable $TeamsLicenses - Fully populated with 38 Microsoft Licenses
+        Updated Get-TeamsTenantLicense - now returns a proper Object, based on Variable $TeamsLicenses
+        Updated Get-TeamsUserLicense - now returns a proper Object, based on Variable $TeamsLicenses
+        Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicnese
+        This function now supports multiple adds and removes including purges
+        Added Disclaimer for Add-TeamsUserLicense as it is now deprecated
+        Removed Get-TeamsTenantLicneses (plural)
+  20.07.26-prerelease   Voicemail and SharedVoicemail for TeamsCallQueue
+        Updated New-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
+        Updated Set-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
+        Updated Get-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout (output)
+        Removed Parameter Slow from New & Set-TeamsCallQueue as splatting is working fine
+        Updated Connect-SkypeTeamsAndAAD to support connection to Exchange with the same credentials (required to check O365 Groups)
+  20.08 Live Version for AUG 2020
+        # Not perfect yet, but the monthly release. Future releases as PreRelease again
+        Miscellaneous Bugfixes and performance improvements
+        Fixes for New-TeamsResourceAccountAssociation for AutoAttendants
+        Fixes for New-TeamsCallQueue - Lookup for Users and Groups and Desired Configuration
+        Fixes for Set-TeamsCallQueue - Lookup for Users and Groups
+        Fixes for Get-TeamsCallQueue - Improvements for Output
+        Fixes for New-TeamsResourceAccountAssociation for AutoAttendants
+        Minor fixes for all Test-Commands which now also have verbose output for re-using a session
 	#>
 
 #region *** Exported Functions ***
@@ -162,7 +186,12 @@ function Set-TeamsUserLicense {
 		Licensing
 	.FUNCTIONALITY
 		This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
-	#>
+  .LINK
+    Get-TeamsTenantLicense
+    Get-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
+    Test-TeamsUserLicense
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
   param(
@@ -174,24 +203,41 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'Remove', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    #ValidateScript needs testing, but would make things easier here
+    #TODO: Test swap to ValidateScript
+    #[ValidateScript( {$_ -in $TeamsLicenses.ParameterName} )]
     [string[]]$AddLicenses,
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    #[ValidateScript( {$_ -in $TeamsLicenses.ParameterName} )]
     [string[]]$RemoveLicenses,
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
-    [Swtich]$RemoveAllLicenses
+    [Switch]$RemoveAllLicenses
   )
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
     #Loading License Array
     $AllLicenses = $null
     $AllLicenses = $TeamsLicenses
@@ -375,8 +421,7 @@ function Set-TeamsUserLicense {
     # Querying licenses in the Tenant to compare SKUs
     try {
       Write-Verbose -Message "Querying Licenses from the Tenant" -Verbose
-      #$TenantLicenses = Get-TeamsTenantLicenses -ErrorAction STOP
-      $TenantLicenses = Get-AzureADSubscribedSku -ErrorAction STOP
+      $TenantLicenses = Get-TeamsTenantLicense -ErrorAction STOP
     }
     catch {
       Write-Warning $_
@@ -601,7 +646,15 @@ function Add-TeamsUserLicense {
 		# This is for exclusive use for Resource Accounts (swap between PhoneSystem or PhoneSystemVirtualUser)
 		# MS Best practice: https://docs.microsoft.com/en-us/microsoftteams/manage-resource-accounts#change-an-existing-resource-account-to-use-a-virtual-user-license
 		# Aliases had to be removed as they were confusing, sorry
-	#>
+  .FUNCTIONALITY
+		Returns a list of Licenses depending on input
+  .LINK
+    Get-TeamsTenantLicense
+    Get-TeamsUserLicense
+    Set-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
+    Test-TeamsUserLicense
+  #>
   [CmdletBinding(DefaultParameterSetName = 'General')]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -656,9 +709,12 @@ function Add-TeamsUserLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -826,7 +882,7 @@ function Connect-SkypeOnline {
 		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
 	.PARAMETER IdleTimeout
 		Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
-		Note, by default, creating a session with New-CsSkypeOnlineSession results in a timout of 15mins!
+		Note, by default, creating a session with New-CsSkypeOnlineSession results in a Timeout of 15mins!
 	.EXAMPLE
 		$null = Connect-SkypeOnline
 		Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
@@ -851,10 +907,9 @@ function Connect-SkypeOnline {
 
     [Parameter(Mandatory = $false)]
     [AllowNull()]
-    #[ValidateScript({$_ -match '.onmicrosoft.com'})]
     [string]$OverrideAdminDomain,
 
-    [Parameter(Helpmessage = "Idle Timout of the session in hours between 1 and 8; Default is 4")]
+    [Parameter(Helpmessage = "Idle Timeout of the session in hours between 1 and 8; Default is 4")]
     [ValidateRange(1, 8)]
     [int]$IdleTimeout = 4
   )
@@ -984,7 +1039,7 @@ function Connect-SkypeOnline {
       } # End of if statement for module version checking
     }
     else {
-      Write-Warning -Message "A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
+      Write-Warning -Message "A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
     } # End checking for existing Skype Online Connection
   }
   else {
@@ -1015,17 +1070,27 @@ function Connect-SkypeTeamsAndAAD {
 		Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator
 	.PARAMETER AzureAD
 		Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)
+	.PARAMETER ExchangeOnline
+		Optional. Connects to Exchange Online Management. Requires Exchange Admin Role
 	.PARAMETER OverrideAdminDomain
 		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
+    NOTE: The OverrideAdminDomain is handled by Connect-SkypeOnline (prompts if no connection can be established)
+    Using the Parameter here is using it explicitely
 	.PARAMETER Silent
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
 		Connect-SkypeTeamsAndAAD -Username admin@domain.com
-		Connects to all three Services prompting ONCE for a Password for 'admin@domain.com'
+		Connects to SkypeOnline, MicrosoftTeams & AzureAD prompting ONCE for a Password for 'admin@domain.com'
 	.EXAMPLE
 		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -AzureAD
 		Connects to SkypeOnline and AzureAD prompting ONCE for a Password for 'admin@domain.com'
-	.FUNCTIONALITY
+	.EXAMPLE
+		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -ExchangeOnline
+    Connects to SkypeOnline and ExchangeOnline prompting ONCE for a Password for 'admin@domain.com'
+	.EXAMPLE
+		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -OverrideAdminDomain domain.co.uk
+    Connects to SkypeOnline prompting ONCE for a Password for 'admin@domain.com' using the explicit OverrideAdminDomain domain.co.uk
+  .FUNCTIONALITY
 		Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
 	#>
 
@@ -1045,9 +1110,12 @@ function Connect-SkypeTeamsAndAAD {
     [Alias('Teams')]
     [switch]$MicrosoftTeams,
 
+    [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to Exchange Online. Reuses credentials if authenticated already.')]
+    [Alias('Exchange')]
+    [switch]$ExchangeOnline,
+
     [Parameter(Mandatory = $false, HelpMessage = 'Domain used to connect to for SkypeOnline if DNS points to OnPrem Skype')]
     [AllowNull()]
-    [ValidateScript( { $_ -match '.onmicrosoft.com' })]
     [string]$OverrideAdminDomain,
 
     [Parameter(Mandatory = $false, HelpMessage = 'Suppresses Session Information output')]
@@ -1157,6 +1225,27 @@ function Connect-SkypeTeamsAndAAD {
   }
   #endregion
 
+  #region ExchangeOnline
+  if ($PSBoundParameters.ContainsKey('ExchangeOnline')) {
+    try {
+      if ( !(Test-Module ExchangeOnlineManagement)) {
+        Import-Module ExchangeOnlineManagement -Force -ErrorAction SilentlyContinue
+      }
+      Write-Verbose -Message "Establishing connection to ExchangeOnlineManagement" -Verbose
+      if ((Test-ExchangeOnlineConnection) -and -not $Silent) {
+        Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false
+      }
+      else {
+        $null = (Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false)
+      }
+    }
+    catch {
+      Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -Foregroundcolor Red
+      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+    }
+  }
+  #endregion
+
   #region Display Admin Roles
   if ((Test-AzureADConnection) -and -not $Silent) {
     Write-Host "Displaying assigned Admin Roles for Account: " -ForegroundColor Magenta -NoNewline
@@ -1171,11 +1260,12 @@ function Connect-SkypeTeamsAndAAD {
 function Disconnect-SkypeTeamsAndAAD {
   <#
 	.SYNOPSIS
-		Disconnect from Skype, Teams and AzureAD
+		Disconnect from SkypeOnline, Teams, AzureAD
 	.DESCRIPTION
-		Helper function to disconnect from SkypeOnline, Teams and AzureAD
+		Helper function to disconnect from SkypeOnline, Teams, AzureAD
 	.NOTES
-		Helper function to disconnect from all three Services
+    Helper function to disconnect from SkypeOnline, Teams, AzureAD
+    To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
 	#>
 
   Import-Module SkypeOnlineConnector
@@ -1190,7 +1280,7 @@ function Disconnect-SkypeTeamsAndAAD {
   catch [NullReferenceException] {
     # Disconnecting from AzureAD results in a duplicated error which the ERRORACTION only suppresses one of.
     # This is to capture the second
-    Write-Verbose -Message "Caught NullReferenceException. Not to worry"
+    Write-Verbose -Message "AzureAD: Caught NullReferenceException. Not to worry"
   }
   catch {
     Write-ErrorRecord $_
@@ -1216,7 +1306,7 @@ function Disconnect-SkypeOnline {
 
   [bool]$sessionFound = $false
 
-  $PSSesssions = Get-PSSession -WarningAction SilentlyContinue
+  $PSSesssions = Get-PSSession  -WarningAction SilentlyContinue
 
   foreach ($session in $PSSesssions) {
     if ($session.ComputerName -like "*.online.lync.com") {
@@ -1257,10 +1347,19 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   )
 
   # Testing SkypeOnline Connection
-  if ($false -eq (Test-SkypeOnlineConnection)) {
-    Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-    break
+  if (Test-SkypeOnlineConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+  }
+  else {
+    if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+      Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+      $null = Get-CsTenant
+    }
+    else {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
   }
 
   try {
@@ -1317,7 +1416,14 @@ function Get-TeamsUserLicense {
     The input file must have a single column heading of "Identity" with properly formatted UPNs.
 	.NOTES
 		Requires a connection to Azure Active Directory
-	#>
+  .FUNCTIONALITY
+		Returns a list of Licenses assigned to a specific User depending on input
+  .LINK
+    Get-TeamsTenantLicense
+    Set-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
+    Test-TeamsUserLicense
+  #>
 
   [CmdletBinding()]
   param(
@@ -1332,9 +1438,12 @@ function Get-TeamsUserLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -1451,19 +1560,30 @@ function Get-TeamsTenantLicense {
   .PARAMETER DisplayAll
     Displays all Licenses, not only relevant Teams Licenses
 	.EXAMPLE
-		Get-TeamsTenantLicenses
+		Get-TeamsTenantLicense
 		Displays detailed information about all Teams related licenses found on the tenant.
 	.EXAMPLE
-		Get-TeamsTenantLicenses -License PhoneSystem
+		Get-TeamsTenantLicense -License PhoneSystem
     Displays detailed information about the PhoneSystem license found on the tenant.
   .EXAMPLE
-		Get-TeamsTenantLicenses -ConciseView
+		Get-TeamsTenantLicense -ConciseView
 		Displays all Teams Licenses found on the tenant, but only Name and counters.
   .EXAMPLE
-		Get-TeamsTenantLicenses -DisplayAll
+		Get-TeamsTenantLicense -DisplayAll
 		Displays detailed information about all licenses found on the tenant.
-	.NOTES
-		Requires a connection to Azure Active Directory
+  .EXAMPLE
+		Get-TeamsTenantLicense -ConciseView -DisplayAll
+		Displays a concise view of all licenses found on the tenant.
+  .NOTES
+    Requires a connection to Azure Active Directory
+  .FUNCTIONALITY
+		Returns a list of Licenses on the Tenant depending on input
+  .LINK
+    Get-TeamsTenantLicense
+    Get-TeamsUserLicense
+    Set-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
+    Test-TeamsUserLicense
 	#>
 
   [CmdletBinding()]
@@ -1482,9 +1602,12 @@ function Get-TeamsTenantLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -1572,7 +1695,7 @@ function Get-TeamsTenantLicense {
             # no action - Verbose message will be suppressed.
           }
           else {
-            Write-Verbose "No entry in Database found for '$($tenantSKU.SkuId)' - Use DisplayAll to show" -Verbose
+            Write-Verbose "No entry in Database found for '$($tenantSKU.SkuId)' - Use DisplayAll to show"
           }
         }
       }
@@ -1628,7 +1751,7 @@ function Remove-TenantDialPlanNormalizationRule {
   # Testing SkypeOnline Connection
   if ($false -eq (Test-SkypeOnlineConnection)) {
     Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
     break
   }
 
@@ -1758,7 +1881,7 @@ function Set-TeamsUserPolicy {
     # Testing SkypeOnline Connection
     if ($false -eq (Test-SkypeOnlineConnection)) {
       Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2120,6 +2243,28 @@ function Test-AzureADConnection {
   }
 } # End of Test-AzureADConnection
 
+function Test-MicrosoftTeamsConnection {
+  <#
+	.SYNOPSIS
+		Tests whether a valid PS Session exists for MicrosoftTeams
+	.DESCRIPTION
+		A connection established via Connect-MicrosoftTeams is parsed.
+	.EXAMPLE
+		Test-MicrosoftTeamsConnection
+		Will Return $TRUE only if a session is found.
+	#>
+  [CmdletBinding()]
+  [OutputType([Boolean])]
+  param()
+
+  try {
+    $null = (Get-CsPolicyPackage | Select-Object -First 1 -ErrorAction STOP)
+    return $true
+  }
+  catch {
+    return $false
+  }
+} # End of Test-MicrosoftTeamsConnection
 
 function Test-SkypeOnlineConnection {
   <#
@@ -2140,50 +2285,51 @@ function Test-SkypeOnlineConnection {
   [OutputType([Boolean])]
   param()
 
-  if ((Get-PSSession).ComputerName -notlike "*.online.lync.com") {
-    return $false
-  }
-  else {
-    $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" }
-    if ($PSSkypeOnlineSession.Count -lt 1) {
-      return $false
+  $Sessions = Get-PSSession
+  if ([bool]($Sessions.Computername -match "online.lync.com")) {
+    $PSSkypeOnlineSession = $Sessions | Where-Object { $_.Computername -match "online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+    if ($PSSkypeOnlineSession.Count -ge 1) {
+      return $true
     }
     else {
-      try {
-        $null = Get-CsTeamsUpgradeConfiguration -ErrorAction Stop -WarningAction SilentlyContinue
-        return $true
-      }
-      catch {
-        return $false
-      }
-
+      return $false
     }
   }
-} # End of Test-SkypeOnlineModule
+  else {
+    return $false
+  }
+} # End of Test-SkypeOnlineConnection
 
-function Test-MicrosoftTeamsConnection {
+function Test-ExchangeOnlineConnection {
   <#
 	.SYNOPSIS
-		Tests whether a valid PS Session exists for MicrosoftTeams
+		Tests whether a valid PS Session exists for ExchangeOnline
 	.DESCRIPTION
-		A connection established via Connect-MicrosoftTeams is parsed.
+		A connection established via Connect-ExchangeOnline is parsed.
+		This connection must be valid (Available and Opened)
 	.EXAMPLE
-		Test-MicrosoftTeamsConnection
+		Test-ExchangeOnlineConnection
 		Will Return $TRUE only if a session is found.
 	#>
   [CmdletBinding()]
   [OutputType([Boolean])]
   param()
 
-  try {
-    $null = (Get-CsPolicyPackage -ErrorAction STOP)
-    return $true
+  $Sessions = Get-PSSession
+  if ([bool]($Sessions.Computername -match "outlook.office365.com")) {
+    $PSExchangeOnlineSession = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+    if ($PSExchangeOnlineSession.Count -ge 1) {
+      return $true
+    }
+    else {
+      return $false
+    }
   }
-  catch {
+  else {
     return $false
   }
-} # End of Test-MicrosoftTeamsConnection
 
+} # End of Test-ExchangeOnlineConnection
 function Get-AzureADUserFromUPN {
   <#
 	.SYNOPSIS
@@ -2205,9 +2351,12 @@ function Get-AzureADUserFromUPN {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2247,15 +2396,18 @@ function Test-AzureADUser {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity
   )
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2264,7 +2416,7 @@ function Test-AzureADUser {
   }
   process {
     try {
-      $null = (Get-AzureADUser -All:$true | Where-Object { $_.UserPrincipalName -eq $Identity } -ErrorAction STOP)
+      $null = Get-AzureADUser -ObjectId "$Identity" -ErrorAction STOP
       return $true
     }
     catch [Microsoft.Open.AzureAD16.Client.ApiException] {
@@ -2293,15 +2445,18 @@ function Test-AzureADGroup {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
     [string]$Identity
   )
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2310,16 +2465,29 @@ function Test-AzureADGroup {
   }
   process {
     try {
-      $null = Get-AzureADGroup -ObjectId $Identity -ErrorAction STOP
-      return $true
+      $Group2 = Get-AzureADGroup -SearchString "$Identity" -ErrorAction STOP
+      if ($null -ne $Group2) {
+        return $true
+      }
+      else {
+        try {
+          $MailNickName = $Identity.Split('@')[0]
+          $null = Get-AzureADGroup -SearchString "$MailNickName" -ErrorAction STOP
+          Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
+          return $true
+        }
+        catch {
+          return $false
+        }
+      }
     }
     catch {
       try {
-        $null = Get-AzureADGroup -SearchString "$Identity" -ErrorAction STOP
+        $null = Get-AzureADGroup -ObjectId $Identity -ErrorAction STOP
         return $true
       }
       catch {
-        return $False
+        return $false
       }
     }
   }
@@ -2347,16 +2515,26 @@ function Test-TeamsUser {
 
   begin {
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
     }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
+    }
+
 
   }
   process {
     try {
-      Get-CsOnlineUser -Identity $Identity -ErrorAction STOP | Out-Null
+      $null = Get-CsOnlineUser -Identity $Identity -ErrorAction STOP
       return $true
     }
     catch [System.Exception] {
@@ -2395,10 +2573,19 @@ function Test-TeamsTenantPolicy {
   )
   begin {
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Data Gathering
@@ -2466,7 +2653,14 @@ function Test-TeamsUserLicense {
 		Specific Names have been assigned to these LicensePackages
 	.NOTES
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
-	#>
+  .FUNCTIONALITY
+    Returns a boolean value for LicensePackage or Serviceplan for a specific user.
+  .LINK
+    Get-TeamsTenantLicense
+    Get-TeamsUserLicense
+    Set-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
+  #>
   #region Parameters
   [CmdletBinding(DefaultParameterSetName = "ServicePlan")]
   [OutputType([Boolean])]
@@ -2479,6 +2673,7 @@ function Test-TeamsUserLicense {
 
     [Parameter(Mandatory = $true, ParameterSetName = "LicensePackage", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    #TODO: Add Lookup here too!
     [string]$LicensePackage
 
   )
@@ -2486,9 +2681,12 @@ function Test-TeamsUserLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2522,9 +2720,13 @@ function Test-TeamsUserLicense {
         }
       }
       "LicensePackage" {
+        # need to update $LicensePackage Parameters to list all
+        # Also need to change lookup against License, not ServicePlan!
         Write-Verbose -Message "'$DisplayName' Testing against '$LicensePackage'"
         TRY {
           $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
+          #TODO: Change Lookup here to a simplified Cross-Ref from $TeamsLicenses
+          # Translate Parametername to LicenseName and look it up in $UserLicenseSKU
           SWITCH ($LicensePackage) {
             "Microsoft365E5" {
               # Combination 1 - Microsoft 365 E5 has PhoneSystem included
@@ -2617,11 +2819,6 @@ function New-TeamsCallQueue {
 	.PARAMETER Silent
 		Optional. Supresses output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
-	.PARAMETER Slow
-		Optional. Takes individual steps to apply settings (wit Set-CsCallQueue).
-		If not used, Parameter splatting will be used to hand over Parameters to New-CsCallQueue
-		If used, Parameter splatting will not be used. New-CsCallQueue is run to create the Queue
-		Set-CsCallQueue is then used to apply each individual setting manually. Safer, but slower
 	.PARAMETER UseMicrosoftDefaults
 		This script uses different default values for some parameters than New-CsCallQueue
 		Using this switch will instruct the Script to adhere to Microsoft defaults.
@@ -2652,7 +2849,16 @@ function New-TeamsCallQueue {
 	.PARAMETER OverflowActionTarget
 		Situational. Required only if OverflowAction is Forward
 		UserPrincipalName of the Target
-	.PARAMETER OverflowThreshold
+	.PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
+    Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
+    Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailAudioFile is $null
+	.PARAMETER OverflowSharedVoicemailAudioFile
+    Situational. Path to the Audio File for a Shared Voicemail greeting
+    Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null
+  .PARAMETER EnableOverflowSharedVoicemailTranscription
+    Situational. Boolean Switch. Requires specification of LanguageId
+    Enables a transcription of the Voicemail message to be sent to the Group mailbox
+  .PARAMETER OverflowThreshold
 		Optional. Default:  30s,   Microsoft Default:   50s (See Parameter UseMicrosoftDefaults)
 		Time in Seconds for the OverflowAction to trigger
 	.PARAMETER TimeoutAction
@@ -2662,7 +2868,16 @@ function New-TeamsCallQueue {
 	.PARAMETER TimeoutActionTarget
 		Situational. Required only if TimeoutAction is Forward
 		UserPrincipalName of the Target
-	.PARAMETER TimeoutThreshold
+	.PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
+    Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
+    Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailAudioFile is $null
+	.PARAMETER TimeoutSharedVoicemailAudioFile
+    Situational. Path to the Audio File for a Shared Voicemail greeting
+    Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null
+  .PARAMETER EnableTimeoutSharedVoicemailTranscription
+    Situational. Boolean Switch. Requires specification of LanguageId
+    Enables a transcription of the Voicemail message to be sent to the Group mailbox
+  .PARAMETER TimeoutThreshold
 		Optional. Default:  30s,   Microsoft Default:  1200s (See Parameter UseMicrosoftDefaults)
 		Time in Seconds for the TimeoutAction to trigger
 	.PARAMETER RoutingMethod
@@ -2682,6 +2897,9 @@ function New-TeamsCallQueue {
 	.PARAMETER Users
 		Optional. UPNs of Users.
 		Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+  .PARAMETER LanguageId
+    Optional Language Identifier indicating the language that is used to play shared voicemail prompts.
+    This parameter becomes a required parameter If either OverflowAction or TimeoutAction is set to SharedVoicemail.
 	.EXAMPLE
 		New-TeamsCallQueue -Name "My Queue"
 		Creates a new Call Queue "My Queue" with the Default Music On Hold
@@ -2743,22 +2961,51 @@ function New-TeamsCallQueue {
     [Parameter(HelpMessage = "Can agents opt in or opt out from taking calls from a Call Queue (Default: TRUE)")]
     [boolean]$AllowOptOut,
 
+    #region Overflow Params
     [Parameter(HelpMessage = "Action to be taken for Overflow")]
-    [Validateset("Voicemail", "Forward", "DisconnectWithBusy")]
+    [Validateset("DisconnectWithBusy", "Forward", "Voicemail", "SharedVoicemail")]
     [string]$OverflowAction = "DisconnectWithBusy",
 
-    #Only valid for $OverflowAction = "Forward"
+    # if OverflowAction is not DisconnectWithBusy, this is required
     [Parameter(HelpMessage = "UPN that is targeted upon overflow, only valid for forwarded calls")]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
+        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
+          return $true
         }
         else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
+          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
+          #return $false
+        }
+      }
+    )]
+    [string]$OverflowActionTarget,
+
+    #region OverflowAction = SharedVoiceMail
+    # if OverflowAction is SharedVoicemail one of the following two have to be provided
+    [Parameter(HelpMessage = "Text-to-speech Message. This will require the LanguageId Parameter")]
+    [string]$OverflowSharedVoicemailTextToSpeechPrompt,
+
+    [Parameter(HelpMessage = "Path to Audio File for the SharedVoiceMail Message")]
+    [ValidateScript( {
+        If (Test-Path $_) {
+          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+            $True
+          }
+          else {
+            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            $false
+          }
+        }
+        else {
+          Write-Host "File not found, please verify" -ForeGroundColor Red
           $false
         }
       })]
-    [string]$OverflowActionTarget,
+    [string]$OverflowSharedVoicemailAudioFile,
+
+    [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
+    [bool]$EnableOverflowSharedVoicemailTranscription,
+    #endregion
 
     #Deviation from MS Default (50)
     [Parameter(HelpMessage = "Time in seconds (0-200s) before timeout action is triggered (Default: 10, Note: Microsoft default: 50)")]
@@ -2772,22 +3019,25 @@ function New-TeamsCallQueue {
         }
       })]
     [int16]$OverflowThreshold = 10,
+    #endregion
 
+    #region Timeout Params
     [Parameter(HelpMessage = "Action to be taken for Timeout")]
-    [Validateset("Voicemail", "Forward", "Disconnect")]
+    [Validateset("Disconnect", "Forward", "Voicemail", "SharedVoicemail")]
     [string]$TimeoutAction = "Disconnect",
 
-    #Only valid for $TimeoutAction = "Forward"
+    # if TimeoutAction is not Disconnect, this is required
     [Parameter(HelpMessage = "UPN that is targeted upon timeout, only valid for forwarded calls")]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
+        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
+          return $true
         }
         else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
-          $false
+          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
+          #return $false
         }
-      })]
+      }
+    )]
     [string]$TimeoutActionTarget,
 
     #Deviation from MS Default (1200s)
@@ -2802,6 +3052,7 @@ function New-TeamsCallQueue {
         }
       })]
     [int16]$TimeoutThreshold = 30,
+    #endregion
 
     [Parameter(HelpMessage = "Method to alert Agents")]
     [Validateset("Attendant", "Serial", "RoundRobin", "LongestIdle")]
@@ -2816,18 +3067,24 @@ function New-TeamsCallQueue {
     [Parameter(HelpMessage = "If used, Conference mode is used to establish calls")]
     [boolean]$ConferenceMode,
 
+    #region Music files
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
     [ValidateScript( {
-        If (Test-Path $_) {
-          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
-            $True
-          }
-          else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
-          }
+        if ($null -eq $_) {
+          $True
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          If (Test-Path $_) {
+            If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+              $True
+            }
+            else {
+              Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            }
+          }
+          else {
+            Write-Host "File not found, please verify" -ForeGroundColor Red
+          }
         }
       })]
     [string]$WelcomeMusicAudioFile,
@@ -2849,47 +3106,44 @@ function New-TeamsCallQueue {
         }
       })]
     [string]$MusicOnHoldAudioFile,
+    #endregion
 
-    #Agents
+    #region Agents
     [Parameter(HelpMessage = "Name of one or more Distribution Lists")]
     [ValidateScript( {
-        If (Test-AzureADGroup $_) {
-          $True
-        }
-        else {
-          Write-Host "Distribution List $_ not found" -ForeGroundColor Red
-          $false
+        foreach ($e in $_) {
+          If (Test-AzureADGroup $e) {
+            $True
+          }
+          else {
+            Write-Host "Distribution List '$e' not found" -ForeGroundColor Red
+            $false
+          }
         }
       })]
     [string[]]$DistributionLists,
 
-    [Parameter(HelpMessage = "UPN of one or more Distribution Lists")]
+    [Parameter(HelpMessage = "UPN of one or more Users")]
     [ValidateScript( {
-        If ($_ -match '@') {
-          If (Test-AzureADUser $_) {
-            $True
+        foreach ($e in $_) {
+          If (Test-AzureADUser $e) {
+            return $true
           }
           else {
-            Write-Host "User $_ not found!" -ForeGroundColor Red
-            $false
+            Write-Host "User '$e' not found!" -ForeGroundColor Red
+            return $false
           }
-        }
-        else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
-          $false
         }
       })]
     [string[]]$Users,
+    #endregion
+
+    [Parameter(HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
+    [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
+    [string]$LanguageId,
 
     [Parameter(HelpMessage = "Will adhere to defaults as Microsoft outlines in New-CsCallQueue")]
-    [switch]$UseMicrosoftDefaults,
-
-    [Parameter(HelpMessage = "Will separate Creation (New-CsCallQueue) and settings (Set-CsCallQueue). Slower, but safer.")]
-    [switch]$Slow = $false
-
-    #Other
-    #not implemented as it is reserved for MS use: Tenant <Guid>
-
+    [switch]$UseMicrosoftDefaults
 
   )
 
@@ -2900,17 +3154,29 @@ function New-TeamsCallQueue {
     Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -2924,6 +3190,40 @@ function New-TeamsCallQueue {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    # Testing ExchangeOnline Connection if needed
+    if ($OverflowAction -eq "SharedVoiceMail" -or $TimeoutAction -eq "SharedVoiceMail") {
+      # Testing Exchange Online Connection
+      if (Test-ExchangeOnlineConnection) {
+        Write-Verbose -Message "INFO:  Session found, reusing existing connection to ExchangeOnline"
+      }
+      else {
+        if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
+          Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+          $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
+        }
+        else {
+          Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+          Write-Host "INFO:  Connect-Me can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
+          break
+        }
+      }
+    }
+
+    # Checking for Text-to-speech prompts without providing LanguageId
+    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt') -or $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+      if (-not $PSBoundParameters.ContainsKey('LanguageId')) {
+        Write-Host "ERROR: You must provide the Parameter 'LanguageId' if using Text-to-speech prompts." -ForegroundColor Red
+        break
+      }
+      else {
+        if ((Get-CsAutoAttendantSupportedLanguage -Id $LanguageId).VoiceResponseSupported) {
+          Write-Verbose "The provided LanguageId '$LanguageId' does support Voice Responses"
+        }
+        else {
+          Write-Warning "The provided LanguageId '$LanguageId' does not support Voice Responses"
+        }
+      }
+    }
   }
 
   process {
@@ -2968,15 +3268,20 @@ function New-TeamsCallQueue {
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-      $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
-      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
-      try {
-        $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
-        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
-        $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
+      if ($null -ne $WelcomeMusicAudioFile) {
+        $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
+        try {
+          $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
+          $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
+        }
+        catch {
+          Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
+        }
       }
-      catch {
-        Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+      else {
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
       }
     }
@@ -3034,6 +3339,7 @@ function New-TeamsCallQueue {
     Write-Verbose -Message "'$NameNormalised' Setting default value: TimeoutThreshold: $TimeoutThreshold"
     #endregion
 
+    #region Overflow
     #region Overflow Action and Target
     # Overflow Action
     Write-Verbose -Message "'$NameNormalised' Parsing requirements for OverflowAction: $OverflowAction"
@@ -3041,10 +3347,8 @@ function New-TeamsCallQueue {
       "DisconnectWithBusy" {
         # No Action - Default
       }
-      "VoiceMail" {
-        # Currently no actions, but might be added later
-      }
       "Forward" {
+        # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
         if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
           Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
           $OverflowAction = "DisconnectWithBusy"
@@ -3061,20 +3365,107 @@ function New-TeamsCallQueue {
           }
         }
       }
+      "VoiceMail" {
+        # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+        if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
+          Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $OverflowAction = "DisconnectWithBusy"
+        }
+        else {
+          # Processing OverflowActionTarget
+          try {
+            $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+          }
+          catch {
+            Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
+            $OverflowAction = "DisconnectWithBusy"
+          }
+        }
+      }
+      "SharedVoiceMail" {
+        # SharedVoiceMail requires an OverflowActionTarget (UPN of a Group to be translated to GUID)
+        if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
+          Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $OverflowAction = "DisconnectWithBusy"
+        }
+        else {
+          # Processing OverflowActionTarget
+          try {
+            $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+          }
+          catch {
+            Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
+            $OverflowAction = "DisconnectWithBusy"
+          }
+        }
+      }
     }
-    $Parameters += @{'OverflowAction' = $OverflowAction }
+    # $OverflowAction is added to the Parameter list only after all checks are complete!
     #endregion
 
+    #region OverflowAction SharedVoicemail - Processing
+    if ($OverflowAction -eq "SharedVoiceMail") {
+      # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
+      if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+        # Both Parameters provided
+        Write-Error -Message "'$NameNormalised' either Parameter OverflowSharedVoicemailAudioFile OR OverflowSharedVoicemailTextToSpeechPrompt are required (not both!); Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $OverflowAction = "DisconnectWithBusy"
+      }
+      elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+        # Neither Parameter provided
+        Write-Error -Message "'$NameNormalised' either Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt are required; Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $OverflowAction = "DisconnectWithBusy"
+      }
+      else {
+        # Processing OverflowSharedVoicemailTextToSpeechPrompt
+        if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt' -and -not $PSBoundParameters.ContainsKey('LanguageId'))) {
+          # TTS Parameter without Language selected
+          Write-Error -Message "'$NameNormalised': OverflowSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId; Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $OverflowSharedVoicemailTextToSpeechPrompt = $null
+          $OverflowAction = "DisconnectWithBusy"
+        }
+        else {
+          # TTS Parameter and Language provided
+          $Parameters += @{'LanguageId' = $LanguageId }
+          $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
+        }
+
+
+        # Processing OverflowSharedVoicemailAudioFile
+        if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile')) {
+          $OFSVMFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
+          Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
+          try {
+            $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
+            Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
+            $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+          }
+          catch {
+            Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+            break
+          }
+        }
+      }
+    }
+    #endregion
+
+    #region OverflowAction conclusion
+    # finally, after all checks are done, adding OverflowAction to Parameters
+    $Parameters += @{'OverflowAction' = $OverflowAction }
+    #endregion
+    #endregion
+
+    #region Timeout
     #region Timeout Action and Target
     Write-Verbose -Message "'$NameNormalised' Parsing requirements for TimeoutAction: $TimeoutAction"
     switch ($TimeoutAction) {
       "Disconnect" {
         # No Action - Default
       }
-      "VoiceMail" {
-        # Currently no actions, but might be added later
-      }
       "Forward" {
+        # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
         if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
           Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
           $TimeoutAction = "Disconnect"
@@ -3086,13 +3477,101 @@ function New-TeamsCallQueue {
             $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimoutActionTarget'"
+            Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimeoutActionTarget'"
             $TimeoutAction = "Disconnect"
           }
         }
       }
+      "VoiceMail" {
+        # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+        if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
+          Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $TimeoutAction = "Disconnect"
+        }
+        else {
+          # Processing TimeoutActionTarget
+          try {
+            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$($TimeoutActionTarget)" -ErrorAction STOP).ObjectId
+            $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+          }
+          catch {
+            Write-Warning -Message "'$NameNormalised' Could not enumerate 'TimeoutActionTarget'"
+            $TimeoutAction = "Disconnect"
+          }
+        }
+      }
+      "SharedVoiceMail" {
+        # SharedVoiceMail requires an TimeoutActionTarget (UPN of a Group to be translated to GUID)
+        if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
+          Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $TimeoutAction = "DisconnectWithBusy"
+        }
+        else {
+          # Processing TimeoutActionTarget
+          try {
+            $TimeoutwActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+            $Parameters += @{'TimeoutActionTarget' = $TimeoutwActionTargetId }
+          }
+          catch {
+            Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimeoutActionTarget'"
+            $TimeoutAction = "DisconnectWithBusy"
+          }
+        }
+      }
     }
+    # $TimeoutAction is added to the Parameter list only after all checks are complete!
+    #endregion
+
+    #region TimeoutAction SharedVoicemail - Processing
+    if ($TimeoutAction -eq "SharedVoiceMail") {
+      # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
+      if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+        # Both Parameters provided
+        Write-Error -Message "'$NameNormalised' either Parameter TimeoutSharedVoicemailAudioFile OR TimeoutSharedVoicemailTextToSpeechPrompt are required (not both!); Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $TimeoutAction = "Disconnect"
+      }
+      elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+        # Neither Parameter provided
+        Write-Error -Message "'$NameNormalised' either Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt are required; Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $TimeoutAction = "Disconnect"
+      }
+      else {
+        # Processing TimeoutSharedVoicemailTextToSpeechPrompt
+        if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt' -and -not $PSBoundParameters.ContainsKey('LanguageId'))) {
+          # TTS Parameter without Language selected
+          Write-Error -Message "'$NameNormalised': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId; Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $TimeoutSharedVoicemailTextToSpeechPrompt = $null
+          $TimeoutAction = "Disconnect"
+        }
+        else {
+          # TTS Parameter and Language provided
+          $Parameters += @{'LanguageId' = $LanguageId }
+          $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
+        }
+
+
+        # Processing TimeoutSharedVoicemailAudioFile
+        if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile')) {
+          $OFSVMFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
+          Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
+          try {
+            $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
+            Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
+            $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+          }
+          catch {
+            Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+            break
+          }
+        }
+      }
+    }
+    #endregion
+
+    #region TimeoutAction conclusion
+    # finally, after all checks are done, adding TimeoutAction to Parameters
     $Parameters += @{'TimeoutAction' = $TimeoutAction }
+    #endregion
     #endregion
 
     #region Users - Parsing and verifying Users
@@ -3141,8 +3620,22 @@ function New-TeamsCallQueue {
         # Determine ID from UPN
         if (Test-AzureADGroup "$DL") {
           $DLObject = Get-AzureADGroup -SearchString "$DL"
-          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+          if ($null -eq $DLObject) {
+            $DL2 = $DL.Split('@')[0]
+            $DLObject = Get-AzureADGroup -SearchString "$DL2"
+            if ($null -eq $DLObject) {
+              try {
+                $DLObject = Get-AzureADGroup -ObjectId "$DL"
+              }
+              catch {
+                Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+              }
+            }
+          }
+        }
 
+        if ($DLObject) {
+          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
           # Test whether Users in DL are enabled for EV and/or licensed?
 
           # Add to List
@@ -3176,59 +3669,46 @@ function New-TeamsCallQueue {
     #region Desired Configuration
     # Creating Custom Object with desired configuration for comparison
     $CallQueueDesired = [PSCustomObject][ordered]@{
-      Name                    = $NameNormalised
-      UseDefaultMusicOnHold   = $UseDefaultMusicOnHold
-      MusicOnHoldAudioFileId  = $MOHfile.Id
-      WelcomeMusicAudioFileId = $WMFile.Id
-      RoutingMethod           = $RoutingMethod
-      PresenceBasedRouting    = $PresenceBasedRouting
-      AgentAlertTime          = $AgentAlertTime
-      AllowOptOut             = $AllowOptOut
-      ConferenceMode          = $ConferenceMode
-      OverflowAction          = $OverflowAction
-      OverflowActionTarget    = $OverflowActionTarget
-      #OverflowSharedVoicemailAudioFilePrompt             = $OverflowSharedVoicemailAudioFilePrompt
-      #OverflowSharedVoicemailTextToSpeechPrompt          = $OverflowSharedVoicemailTextToSpeechPrompt
-      OverflowThreshold       = $OverflowThreshold
-      TimeoutAction           = $TimeoutAction
-      TimeoutActionTarget     = $TimeoutActionTarget
-      #TimeoutSharedVoicemailAudioFilePrompt              = $TimeoutSharedVoicemailAudioFilePrompt
-      #TimeoutSharedVoicemailTextToSpeechPrompt           = $TimeoutSharedVoicemailTextToSpeechPrompt
-      TimeoutThreshold        = $TimeoutThreshold
-      #EnableOverflowSharedVoicemailTranscription         = $EnableOverflowSharedVoicemailTranscription
-      #EnableTimeoutSharedVoicemailTranscription          = $EnableTimeoutSharedVoicemailTranscription
-      #LanguageId                                         = $LanguageId
+      Name                                       = $NameNormalised
+      UseDefaultMusicOnHold                      = $UseDefaultMusicOnHold
+      MusicOnHoldAudioFileId                     = $MOHfile.Id
+      WelcomeMusicAudioFileId                    = $WMFile.Id
+      RoutingMethod                              = $RoutingMethod
+      PresenceBasedRouting                       = $PresenceBasedRouting
+      AgentAlertTime                             = $AgentAlertTime
+      AllowOptOut                                = $AllowOptOut
+      ConferenceMode                             = $ConferenceMode
+      OverflowAction                             = $OverflowAction
+      OverflowActionTarget                       = $OverflowActionTarget
+      OverflowSharedVoicemailAudioFilePrompt     = $OverflowSharedVoicemailAudioFilePrompt
+      OverflowSharedVoicemailTextToSpeechPrompt  = $OverflowSharedVoicemailTextToSpeechPrompt
+      OverflowThreshold                          = $OverflowThreshold
+      TimeoutAction                              = $TimeoutAction
+      TimeoutActionTarget                        = $TimeoutActionTarget
+      TimeoutSharedVoicemailAudioFilePrompt      = $TimeoutSharedVoicemailAudioFilePrompt
+      TimeoutSharedVoicemailTextToSpeechPrompt   = $TimeoutSharedVoicemailTextToSpeechPrompt
+      TimeoutThreshold                           = $TimeoutThreshold
+      EnableOverflowSharedVoicemailTranscription = $EnableOverflowSharedVoicemailTranscription
+      EnableTimeoutSharedVoicemailTranscription  = $EnableTimeoutSharedVoicemailTranscription
+      LanguageId                                 = $LanguageId
       #LineUri                                            = $LineUri
-      Users                   = $Users
-      DistributionLists       = $DistributionLists
+      # Testing whether names or IDs need to be compared - depends on what is queried in $CallQueueFinal - if CsCallQueue, we need IDs
+      #Users                                      = $Users
+      #DistributionLists                          = $DistributionLists
+      Users                                      = $UserIdList
+      DistributionLists                          = $DLIdList
     }
     #endregion
 
 
     #region ACTION
-    Write-Verbose -Message "--- ACTIONS -------"
-    #region Create CQ (New-CsCallQueue)
+    # Create CQ (New-CsCallQueue)
     Write-Verbose -Message "'$NameNormalised' Creating Call Queue"
     if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "New-CsCallQueue")) {
       try {
-        if (-not ($PSBoundParameters.ContainsKey('Slow'))) {
-          # Create the Call Queue with all enumerated Parameters passed through splatting
-          $Null = (New-CsCallQueue @Parameters)
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue created with all Parameters"
-        }
-        else {
-          # Create the Call Queue with $Name as $NameNormalised and $UseDefaultMusicOnHold Switch
-          switch ($UseDefaultMusicOnHold) {
-            $true {
-              $Null = (New-CsCallQueue -Name "$NameNormalised" -UseDefaultMusicOnHold $true -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue created with default Music on Hold"
-            }
-            $false {
-              $Null = (New-CsCallQueue -Name "$NameNormalised" -MusicOnHoldAudioFileId $MOHfile.Id -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue created with custom Music on Hold: '$($MOHfile.FileName)'"
-            }
-          }
-        }
+        # Create the Call Queue with all enumerated Parameters passed through splatting
+        $Null = (New-CsCallQueue @Parameters)
+        Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue created with all Parameters"
       }
       catch {
         Write-Error -Message "Error creating the Call Queue" -Category WriteError -Exception "Erorr Creating Call Queue"
@@ -3241,271 +3721,18 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-    #region - Parameter SLOW - Actions to be undertaken if splatting is not used
-    if ($PSBoundParameters.ContainsKey('Slow')) {
-      # Re-Query CallQueue with Get-CsCallQueue - Used going forward
-      $CallQueue = Get-CsCallQueue -NameFilter "$NameNormalised" -WarningAction SilentlyContinue
-
-      #region Settings (Set-CsCallQueue): Welcome Message
-      # Welcome Message
-      if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -WelcomeMusicAudioFileId $($WMfile.Id)")) {
-          Write-Verbose -Message "Processing Welcome Message $WMfilename"
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -WelcomeMusicAudioFileId $WMfile.Id -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Welcome messsage set to: '$($WMfile.FileName)'"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not apply Welcome Message"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): RoutingMethod
-      try {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -RoutingMethod $RoutingMethod")) {
-          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -RoutingMethod $RoutingMethod -WarningAction SilentlyContinue -ErrorAction Stop)
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Routing Method set to: $RoutingMethod"
-        }
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Could not set Routing Method"
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): PresenceBasedRouting
-      try {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -PresenceBasedRouting $PresenceBasedRouting")) {
-          if ($PresenceBasedRouting) {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -PresenceBasedRouting $true -WarningAction SilentlyContinue -ErrorAction Stop)
-          }
-          else {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -PresenceBasedRouting $false -WarningAction SilentlyContinue -ErrorAction Stop)
-          }
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Presence Based Routing set to: $PresenceBasedRouting"
-        }
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Could not set Presence Based Routing Switch"
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): AllowOptOut
-      try {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -AllowOptOut $AllowOptOut")) {
-          if ($AllowOptOut) {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AllowOptOut $true -WarningAction SilentlyContinue -ErrorAction Stop)
-          }
-          else {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AllowOptOut $false -WarningAction SilentlyContinue -ErrorAction Stop)
-          }
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Allow Opt-out set to: $AllowOptOut"
-        }
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Could not set AllowOptOut Switch"
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): ConferenceMode
-      try {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -ConferenceMode $ConferenceMode")) {
-          if ($ConferenceMode) {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -ConferenceMode $true -WarningAction Continue -ErrorAction Stop)
-          }
-          else {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -ConferenceMode $false -WarningAction Continue -ErrorAction Stop)
-          }
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Conference Mode set to: $ConferenceMode"
-        }
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Could not set ConferenceMode Switch"
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): AgentAlertTime
-      try {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -AgentAlertTime $AgentAlertTime")) {
-          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AgentAlertTime $AgentAlertTime -WarningAction SilentlyContinue -ErrorAction Stop)
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Agent Alert Time set to: $AgentAlertTime"
-        }
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Could not set Agent Alert Time"
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): OverflowThreshold
-      try {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -OverflowThreshold $OverflowThreshold")) {
-          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowThreshold $OverflowThreshold -WarningAction SilentlyContinue -ErrorAction Stop)
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Threshold set to: $OverflowThreshold"
-        }
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Could not set Overflow Threshold"
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): OverflowAction and OverflowActionTarget
-      if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -OverflowAction $OverflowAction")) {
-        switch ($OverflowAction) {
-          "DisconnectWithBusy" {
-            try {
-              # No Action
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Action set to: $OverflowAction"
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' Could not set Overflow Action"
-            }
-          }
-          "VoiceMail" {
-            try {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Action set to: $OverflowAction"
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' Could not set Overflow Action"
-            }
-          }
-          "Forward" {
-            try {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -OverflowActionTarget $OverflowActionTargetId -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Action set to: $OverflowAction"
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Target set to: $OverflowActionTarget"
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' Could not set Overflow Action and Target"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
-            }
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): TimeoutThreshold
-      try {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -TimeoutThreshold $TimeoutThreshold")) {
-          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutThreshold $TimeoutThreshold -WarningAction SilentlyContinue -ErrorAction Stop)
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Threshold set to: $TimeoutThreshold"
-        }
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Could not set Timeout Threshold"
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): TimeoutAction and TimeoutActionTarget
-      if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -TimeoutAction $TimeoutAction")) {
-        switch ($TimeoutAction) {
-          "DisconnectWithBusy" {
-            try {
-              # No Action
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' Could not set Timeout Action"
-            }
-          }
-          "VoiceMail" {
-            try {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' Could not set Timeout Action"
-            }
-          }
-          "Forward" {
-            try {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -TimeoutActionTarget $TimeoutActionTargetId -WarningAction SilentlyContinue -ErrorAction Stop)
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
-              Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Target set to: $TimeoutActionTarget"
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' Could not set Timeout Action and Target"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
-            }
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): Users
-      if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -Users @($UserIdList)")) {
-        try {
-          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Users @($UserIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Users added: $Users"
-        }
-        catch {
-          Write-Warning -Message "'$NameNormalised' Could not add Users"
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue):  DistributionLists
-      if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -DistributionLists @($DLIdList)")) {
-        try {
-          $null = (Set-CsCallQueue -Identity $CallQueue.Identity -DistributionLists @($DLIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
-          Write-Verbose -Message "SUCCESS: '$NameNormalised' Groups added: $DistributionLists"
-        }
-        catch {
-          Write-Warning -Message "'$NameNormalised' Could not add Groups"
-        }
-      }
-      #endregion
-    }
-    #endregion
-    #endregion
-
 
     #region Output and Desired Configuration
-    Write-Verbose -Message "--- OUTPUT --------"
     # Re-query output
     #TODO: Users and DLs need to be queried first, as they must be compared UPN to UPN
     $CallQueueFinal = Get-CsCallQueue -NameFilter $NameNormalised -WarningAction SilentlyContinue
-    if ($PSBoundParameters.ContainsKey('Silent')) {
-      Return $CallQueueFinal
-    }
-    else {
-      $CallQueueImplemented = [PSCustomObject][ordered]@{
-        Name                    = $CallQueueFinal.Name
-        UseDefaultMusicOnHold   = $CallQueueFinal.UseDefaultMusicOnHold
-        MusicOnHoldAudioFileId  = $CallQueueFinal.MusicOnHoldAudioFileId
-        WelcomeMusicAudioFileId = $CallQueueFinal.WelcomeMusicAudioFileId
-        RoutingMethod           = $CallQueueFinal.RoutingMethod
-        PresenceBasedRouting    = $CallQueueFinal.PresenceBasedRouting
-        AgentAlertTime          = $CallQueueFinal.AgentAlertTime
-        AllowOptOut             = $CallQueueFinal.AllowOptOut
-        ConferenceMode          = $CallQueueFinal.ConferenceMode
-        OverflowAction          = $CallQueueFinal.OverflowAction
-        OverflowActionTarget    = $CallQueueFinal.OverflowActionTarget
-        #OverflowSharedVoicemailAudioFilePrompt             = $CallQueueFinal.OverflowSharedVoicemailAudioFilePrompt
-        #OverflowSharedVoicemailTextToSpeechPrompt          = $CallQueueFinal.OverflowSharedVoicemailTextToSpeechPrompt
-        OverflowThreshold       = $CallQueueFinal.OverflowThreshold
-        TimeoutAction           = $CallQueueFinal.TimeoutAction
-        TimeoutActionTarget     = $CallQueueFinal.TimeoutActionTarget
-        #TimeoutSharedVoicemailAudioFilePrompt              = $CallQueueFinal.TimeoutSharedVoicemailAudioFilePrompt
-        #TimeoutSharedVoicemailTextToSpeechPrompt           = $CallQueueFinal.TimeoutSharedVoicemailTextToSpeechPrompt
-        TimeoutThreshold        = $CallQueueFinal.TimeoutThreshold
-        #EnableOverflowSharedVoicemailTranscription         = $CallQueueFinal.EnableOverflowSharedVoicemailTranscription
-        #EnableTimeoutSharedVoicemailTranscription          = $CallQueueFinal.EnableTimeoutSharedVoicemailTranscription
-        #LanguageId                                         = $CallQueueFinal.LanguageId
-        #LineUri                                            = $CallQueueFinal.LineUri
-        Users                   = $CallQueueFinal.Users
-        DistributionLists       = $CallQueueFinal.DistributionLists
-      }
-
+    if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
       # Displaying Warning when no Agents are found
       if ($null -eq $($CallQueueFinal.Agents) -and ($null -eq $($CallQueueFinal.DistributionLists))) {
         Write-Warning -Message "No Distribution Lists or Users added to callqueue. There will be no agents to call."
       }
 
-      $Difference = Compare-Object -ReferenceObject $CallQueueDesired -DifferenceObject $CallQueueImplemented
+      $Difference = Compare-Object -ReferenceObject $CallQueueDesired -DifferenceObject $CallQueueFinal
       if ($difference.Count -gt 0) {
         Write-Host "SUCCESS: Call Queue created and SOME values set" -Foregroundcolor Yellow
         Write-Host "The following Settings have not been able to be applied"
@@ -3515,7 +3742,9 @@ function New-TeamsCallQueue {
         Write-Host "SUCCESS: Call Queue created and all values set" -Foregroundcolor Green
         Return $CallQueueFinal
       }
-      Write-Verbose -Message "--- DONE ----------"
+    }
+    else {
+      Return
     }
     #endregion
   }
@@ -3532,10 +3761,19 @@ function Get-TeamsCallQueue {
 	.DESCRIPTION
 		Same functionality as Get-CsCallQueue, but display reveals friendly Names,
 		like UserPrincipalName or DisplayName for the following connected Objects
-		OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
+    OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
+    Parameters for Audio Files display the File Name instead of the ID. The Parameter Name reflects that.
+    MusicOnHoldAudioFile and WelcomeMusicAudioFile, OverflowSharedVoicemailAudioFilePrompt, TimeoutSharedVoicemailAudioFilePrompt
+    Please Note, to differenciate Parameter Names are changed slightly to avoid down-stream
+    processing errors while not calling the DisplayIDs switch
 	.PARAMETER Name
-		Optional. Searches all Call Queues for this names (multiple results possible.)
-		If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+		Optional. Searches all Call Queues for this name (multiple results possible.)
+    If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+  .PARAMETER DisplayAudioFileIDs
+    Optional Switch. Displays Music File IDs to enable processing
+  .PARAMETER ConciseView
+    Optional Switch. Displays reduced set of Parameters for better visibility
+    Parameters relating to Language & Shared Voicemail are not shown.
 	.EXAMPLE
 		Get-TeamsCallQueue
 		Same result as Get-CsCallQueue
@@ -3560,7 +3798,9 @@ function Get-TeamsCallQueue {
     [AllowNull()]
     [string]$Name,
 
-    [switch]$Detailed
+    [switch]$DisplayIDs,
+
+    [switch]$ConciseView
   )
 
   begin {
@@ -3571,17 +3811,29 @@ function Get-TeamsCallQueue {
     #Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
   } # end of begin
@@ -3597,11 +3849,14 @@ function Get-TeamsCallQueue {
         # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
         $Queues = Get-CsCallQueue -NameFilter "$Name" -ErrorAction STOP
 
-        if (-not $PSBoundParameters.ContainsKey('Detailed')) {
-          Write-Verbose -Message "Reserved parameters are not shown. To display them please use switch -Detailed" -Verbose
-        }
-        else {
-          Write-Verbose -Message "Reserved parameters are displayed. Please note that currently, the following parameters are reserved: OverflowSharedVoicemailAudioFilePrompt, OverflowSharedVoicemailTextToSpeechPrompt, TimeoutSharedVoicemailAudioFilePrompt, TimeoutSharedVoicemailTextToSpeechPrompt, EnableOverflowSharedVoicemailTranscription, EnableTimeoutSharedVoicemailTranscription, LanguageId, LineUri" -Verbose
+        if ($null -ne $Queues) {
+          if ($PSBoundParameters.ContainsKey('ConciseView')) {
+            Write-Verbose -Message "Parameters relating to Language & Shared Voicemail are not shown." -Verbose
+            Write-Verbose -Message "These are: OverflowSharedVoicemailAudioFilePrompt, OverflowSharedVoicemailTextToSpeechPrompt, TimeoutSharedVoicemailAudioFilePrompt, TimeoutSharedVoicemailTextToSpeechPrompt, EnableOverflowSharedVoicemailTranscription, EnableTimeoutSharedVoicemailTranscription, LanguageId, LineUri" -Verbose
+          }
+          else {
+            Write-Verbose -Message "All Parameters except 'LineUri' are shown"
+          }
         }
 
         # Initialising Arrays
@@ -3615,31 +3870,106 @@ function Get-TeamsCallQueue {
         # Reworking Objects
         foreach ($Q in $Queues) {
 
-          #region Finding OverflowActionTarget
-          if ($null -eq $Q.OverflowActionTarget) {
-            Write-Verbose -Message "'$($Q.Name)' OverflowActionTarget: Not configured"
+          <# If Get-CsOnlineAudioFile were available, the following code would be an option to extend this function
+          This is currently not an option
+          #region Finding Welcome Music Audio File
+          if ($null -eq $Q.WelcomeMusicAudioFileId) {
+            # Welcome Music is not set
+            $WMAudioFile = $null
           }
           else {
-            try {
-              $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+            $WMAudioFile = Get-CsOnlineAudioFile $Q.WelcomeMusicAudioFileId
+          }
+          #endregion
+
+          #region Finding MusicOnHoldAudioFile
+          if ($Q.UseDefaultMusicOnHold) {
+            $MoHAudioFile = $null
+          }
+          else {
+            # Music On Hold is custom
+            $MoHAudioFile = Get-CsOnlineAudioFile $Q.MusicOnHoldAudioFileId
+          }
+          #endregion
+          #>
+
+          #region Finding OverflowActionTarget
+          switch ($Q.OverflowAction) {
+            "Forward" {
+              # Forward targets a "Person in the Organisation"
+              try {
+                $TATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+              }
             }
-            catch {
-              Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+            "Voicemail" {
+              # Voicemail targets a Users Mailbox
+              try {
+                $TATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+              }
+            }
+            "SharedVoiceMail" {
+              # SharedVoiceMail targets an Office 365 Group
+              #TODO: Verify whether AzureADGroup consistently returns a correct result.
+              # The equivalent for AzureADgroup "ObjectId" on the Exchange Object for Get-UnifiedGroup is "ExternalDirectoryObjectId"
+              try {
+                $TATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+              }
+            }
+            "DisconnectWithBusy" {
+              Write-Verbose -Message "'$($Q.Name)' OverflowActionTarget: Not configured"
+            }
+            default {
+              Write-Verbose -Message "'$($Q.Name)' OverflowActionTarget: Not configured"
             }
           }
           # Output: $OATobject.Userprincipalname
           #endregion
 
           #region Finding TimeoutActionTarget
-          if ($null -eq $Q.TimeoutActionTarget) {
-            Write-Verbose -Message "'$($Q.Name)' TimeoutActionTarget: Not configured"
-          }
-          else {
-            try {
-              $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+          switch ($Q.TimeoutAction) {
+            "Forward" {
+              # Forward targets a "Person in the Organisation"
+              try {
+                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+              }
             }
-            catch {
-              Write-Warning -Message "'$($Q.Name)' TimoutActionTarget: Not enumerated"
+            "Voicemail" {
+              # Voicemail targets a Users Mailbox
+              try {
+                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+              }
+            }
+            "SharedVoiceMail" {
+              # SharedVoiceMail targets an Office 365 Group
+              #TODO: Verify whether AzureADGroup consistently returns a correct result.
+              # The equivalent for AzureADgroup "ObjectId" on the Exchange Object for Get-UnifiedGroup is "ExternalDirectoryObjectId"
+              try {
+                $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+              }
+            }
+            "Disconnect" {
+              Write-Verbose -Message "'$($Q.Name)' TimeoutActionTarget: Not configured"
+            }
+            default {
+              Write-Verbose -Message "'$($Q.Name)' TimeoutActionTarget: Not configured"
             }
           }
           # Output: $TATobject.Userprincipalname
@@ -3680,7 +4010,76 @@ function Get-TeamsCallQueue {
           #region Creating Output Object
           Write-Verbose -Message "--- OUTPUT --------"
           # Building custom Object with Friendly Names
-          if (-not $PSBoundParameters.ContainsKey('Detailed')) {
+          if ($PSBoundParameters.ContainsKey('ConciseView')) {
+            <# If Get-CsOnlineAudioFile were available, the following code would be an option to extend this function
+            This is currently not an option. Leaving code for future expansion
+            if ($PSBoundParameters.ContainsKey('DisplayAudioFileIDs')) {
+              $Q = [PSCustomObject][ordered]@{
+                Identity                = $Q.Identity
+                Name                    = $Q.Name
+                UseDefaultMusicOnHold   = $Q.UseDefaultMusicOnHold
+                MusicOnHoldAudioFile    = $MoHAudioFile.Name
+                WelcomeMusicAudioFile   = $WMAudioFile.Name
+                MusicOnHoldAudioFileId  = $Q.MusicOnHoldAudioFileId
+                WelcomeMusicAudioFileId = $Q.WelcomeMusicAudioFileId
+                RoutingMethod           = $Q.RoutingMethod
+                PresenceBasedRouting    = $Q.PresenceBasedRouting
+                AgentAlertTime          = $Q.AgentAlertTime
+                AllowOptOut             = $Q.AllowOptOut
+                ConferenceMode          = $Q.ConferenceMode
+                OverflowAction          = $Q.OverflowAction
+                OverflowActionTarget    = $OATobject.Userprincipalname
+                #OverflowSharedVoicemailAudioFilePrompt             = $Q.OverflowSharedVoicemailAudioFilePrompt
+                #OverflowSharedVoicemailTextToSpeechPrompt          = $Q.OverflowSharedVoicemailTextToSpeechPrompt
+                OverflowThreshold       = $Q.OverflowThreshold
+                TimeoutAction           = $Q.TimeoutAction
+                TimeoutActionTarget     = $TATobject.Userprincipalname
+                #TimeoutSharedVoicemailAudioFilePrompt              = $Q.TimeoutSharedVoicemailAudioFilePrompt
+                #TimeoutSharedVoicemailTextToSpeechPrompt           = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
+                TimeoutThreshold        = $Q.TimeoutThreshold
+                #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
+                #EnableTimeoutSharedVoicemailTranscription          = $Q.EnableTimeoutSharedVoicemailTranscription
+                #LanguageId                                         = $Q.LanguageId
+                #LineUri                                            = $Q.LineUri
+                Users                   = $UserObjects.UserPrincipalName
+                DistributionLists       = $DLobjects.DisplayName
+                Agents                  = $AgentObjects.UserPrincipalName
+                ApplicationInstances    = $AIObjects.Userprincipalname
+              }
+            }
+            else {
+              $Q = [PSCustomObject][ordered]@{
+                Identity              = $Q.Identity
+                Name                  = $Q.Name
+                UseDefaultMusicOnHold = $Q.UseDefaultMusicOnHold
+                MusicOnHoldAudioFile  = $MoHAudioFile.Name
+                WelcomeMusicAudioFile = $WMAudioFile.Name
+                RoutingMethod         = $Q.RoutingMethod
+                PresenceBasedRouting  = $Q.PresenceBasedRouting
+                AgentAlertTime        = $Q.AgentAlertTime
+                AllowOptOut           = $Q.AllowOptOut
+                ConferenceMode        = $Q.ConferenceMode
+                OverflowAction        = $Q.OverflowAction
+                OverflowActionTarget  = $OATobject.Userprincipalname
+                #OverflowSharedVoicemailAudioFilePrompt             = $Q.OverflowSharedVoicemailAudioFilePrompt
+                #OverflowSharedVoicemailTextToSpeechPrompt          = $Q.OverflowSharedVoicemailTextToSpeechPrompt
+                OverflowThreshold     = $Q.OverflowThreshold
+                TimeoutAction         = $Q.TimeoutAction
+                TimeoutActionTarget   = $TATobject.Userprincipalname
+                #TimeoutSharedVoicemailAudioFilePrompt              = $Q.TimeoutSharedVoicemailAudioFilePrompt
+                #TimeoutSharedVoicemailTextToSpeechPrompt           = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
+                TimeoutThreshold      = $Q.TimeoutThreshold
+                #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
+                #EnableTimeoutSharedVoicemailTranscription          = $Q.EnableTimeoutSharedVoicemailTranscription
+                #LanguageId                                         = $Q.LanguageId
+                #LineUri                                            = $Q.LineUri
+                Users                 = $UserObjects.UserPrincipalName
+                DistributionLists     = $DLobjects.DisplayName
+                Agents                = $AgentObjects.UserPrincipalName
+                ApplicationInstances  = $AIObjects.Userprincipalname
+              }
+            }
+            #>
             $Q = [PSCustomObject][ordered]@{
               Identity                = $Q.Identity
               Name                    = $Q.Name
@@ -3713,7 +4112,79 @@ function Get-TeamsCallQueue {
             }
           }
           else {
-            # Displays Microsoft Internal Parameters
+            # Displays all except reserved Parameters (Microsoft Internal)
+            <# This is currently not an option. Leaving code for future expansion
+
+            if ($PSBoundParameters.ContainsKey('DisplayAudioFileIDs')) {
+              # Displays also AudioFileIDs
+              $Q = [PSCustomObject][ordered]@{
+                Identity                                   = $Q.Identity
+                Name                                       = $Q.Name
+                UseDefaultMusicOnHold                      = $Q.UseDefaultMusicOnHold
+                MusicOnHoldAudioFile                       = $MoHAudioFile.Name
+                WelcomeMusicAudioFile                      = $WMAudioFile.Name
+                MusicOnHoldAudioFileId                     = $Q.MusicOnHoldAudioFileId
+                WelcomeMusicAudioFileId                    = $Q.WelcomeMusicAudioFileId
+                RoutingMethod                              = $Q.RoutingMethod
+                PresenceBasedRouting                       = $Q.PresenceBasedRouting
+                AgentAlertTime                             = $Q.AgentAlertTime
+                AllowOptOut                                = $Q.AllowOptOut
+                ConferenceMode                             = $Q.ConferenceMode
+                OverflowAction                             = $Q.OverflowAction
+                OverflowActionTarget                       = $OATobject.Userprincipalname
+                OverflowSharedVoicemailAudioFilePrompt     = $Q.OverflowSharedVoicemailAudioFilePrompt
+                OverflowSharedVoicemailTextToSpeechPrompt  = $Q.OverflowSharedVoicemailTextToSpeechPrompt
+                OverflowThreshold                          = $Q.OverflowThreshold
+                TimeoutAction                              = $Q.TimeoutAction
+                TimeoutActionTarget                        = $TATobject.Userprincipalname
+                TimeoutSharedVoicemailAudioFilePrompt      = $Q.TimeoutSharedVoicemailAudioFilePrompt
+                TimeoutSharedVoicemailTextToSpeechPrompt   = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
+                TimeoutThreshold                           = $Q.TimeoutThreshold
+                EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
+                EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
+                LanguageId                                 = $Q.LanguageId
+                #LineUri                                    = $Q.LineUri
+                Users                                      = $UserObjects.UserPrincipalName
+                DistributionLists                          = $DLobjects.DisplayName
+                Agents                                     = $AgentObjects.UserPrincipalName
+                ApplicationInstances                       = $AIObjects.Userprincipalname
+              }
+            }
+            else {
+              # Displays native Get-TeamsCallQueue Object
+              $Q = [PSCustomObject][ordered]@{
+                Identity                                   = $Q.Identity
+                Name                                       = $Q.Name
+                UseDefaultMusicOnHold                      = $Q.UseDefaultMusicOnHold
+                MusicOnHoldAudioFile                       = $MoHAudioFile.Name
+                WelcomeMusicAudioFile                      = $WMAudioFile.Name
+                RoutingMethod                              = $Q.RoutingMethod
+                PresenceBasedRouting                       = $Q.PresenceBasedRouting
+                AgentAlertTime                             = $Q.AgentAlertTime
+                AllowOptOut                                = $Q.AllowOptOut
+                ConferenceMode                             = $Q.ConferenceMode
+                OverflowAction                             = $Q.OverflowAction
+                OverflowActionTarget                       = $OATobject.Userprincipalname
+                OverflowSharedVoicemailAudioFilePrompt     = $Q.OverflowSharedVoicemailAudioFilePrompt
+                OverflowSharedVoicemailTextToSpeechPrompt  = $Q.OverflowSharedVoicemailTextToSpeechPrompt
+                OverflowThreshold                          = $Q.OverflowThreshold
+                TimeoutAction                              = $Q.TimeoutAction
+                TimeoutActionTarget                        = $TATobject.Userprincipalname
+                TimeoutSharedVoicemailAudioFilePrompt      = $Q.TimeoutSharedVoicemailAudioFilePrompt
+                TimeoutSharedVoicemailTextToSpeechPrompt   = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
+                TimeoutThreshold                           = $Q.TimeoutThreshold
+                EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
+                EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
+                LanguageId                                 = $Q.LanguageId
+                #LineUri                                    = $Q.LineUri
+                Users                                      = $UserObjects.UserPrincipalName
+                DistributionLists                          = $DLobjects.DisplayName
+                Agents                                     = $AgentObjects.UserPrincipalName
+                ApplicationInstances                       = $AIObjects.Userprincipalname
+              }
+            }
+
+            #>
             $Q = [PSCustomObject][ordered]@{
               Identity                                   = $Q.Identity
               Name                                       = $Q.Name
@@ -3738,18 +4209,17 @@ function Get-TeamsCallQueue {
               EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
               EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
               LanguageId                                 = $Q.LanguageId
-              LineUri                                    = $Q.LineUri
+              #LineUri                                    = $Q.LineUri
               Users                                      = $UserObjects.UserPrincipalName
               DistributionLists                          = $DLobjects.DisplayName
               Agents                                     = $AgentObjects.UserPrincipalName
               ApplicationInstances                       = $AIObjects.Userprincipalname
             }
-          }
 
+          }
           [void]$DEQueueObjects.Add($Q)
           #endregion
         }
-
         # Output
         return $DEQueueObjects
 
@@ -3760,7 +4230,6 @@ function Get-TeamsCallQueue {
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
       return
     }
-    Write-Verbose -Message "--- DONE ----------"
 
   }
   end {
@@ -3784,10 +4253,6 @@ function Set-TeamsCallQueue {
 	.PARAMETER Silent
 		Optional. Supresses output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
-	.PARAMETER Slow
-		Optional. Takes individual steps to apply settings (wit Set-CsCallQueue).
-		If not used, Parameter splatting will be used to execute Set-CsCallQueue ONCE
-		If used, Set-CsCallQueue is used to apply each individual setting manually. Safer, but slower
 	.PARAMETER AgentAlertTime
 		Optional. Time in Seconds to alert each agent. Works depending on Routing method
 		NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
@@ -3809,6 +4274,15 @@ function Set-TeamsCallQueue {
 	.PARAMETER OverflowActionTarget
 		Situational. Required only if OverflowAction is Forward
 		UserPrincipalName of the Target
+	.PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
+    Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
+    Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailAudioFile is $null
+	.PARAMETER OverflowSharedVoicemailAudioFile
+    Situational. Path to the Audio File for a Shared Voicemail greeting
+    Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null
+  .PARAMETER EnableOverflowSharedVoicemailTranscription
+    Situational. Boolean Switch. Requires specification of LanguageId
+    Enables a transcription of the Voicemail message to be sent to the Group mailbox
 	.PARAMETER OverflowThreshold
 		Optional. Time in Seconds for the OverflowAction to trigger
 	.PARAMETER TimeoutAction
@@ -3818,6 +4292,15 @@ function Set-TeamsCallQueue {
 	.PARAMETER TimeoutActionTarget
 		Situational. Required only if TimeoutAction is Forward
 		UserPrincipalName of the Target
+	.PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
+    Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
+    Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailAudioFile is $null
+	.PARAMETER TimeoutSharedVoicemailAudioFile
+    Situational. Path to the Audio File for a Shared Voicemail greeting
+    Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null
+  .PARAMETER EnableTimeoutSharedVoicemailTranscription
+    Situational. Boolean Switch. Requires specification of LanguageId
+    Enables a transcription of the Voicemail message to be sent to the Group mailbox
 	.PARAMETER TimeoutThreshold
 		Optional. Time in Seconds for the TimeoutAction to trigger
 	.PARAMETER RoutingMethod
@@ -3836,7 +4319,10 @@ function Set-TeamsCallQueue {
 		Will be parsed after Users if they are specified as well.
 	.PARAMETER Users
 		Optional. UPNs of Users.
-		Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+    Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+  .PARAMETER LanguageId
+    Optional Language Identifier indicating the language that is used to play shared voicemail prompts.
+    This parameter becomes a required parameter If either OverflowAction or TimeoutAction is set to SharedVoicemail.
 	.EXAMPLE
 		Set-TeamsCallQueue -Name "My Queue" -DisplayName "My new Queue Name"
 		Changes the DisplayName of Call Queue "My Queue" to "My new Queue Name"
@@ -3893,22 +4379,51 @@ function Set-TeamsCallQueue {
     [Parameter(HelpMessage = "Can agents opt in or opt out from taking calls from a Call Queue (Default: TRUE)")]
     [boolean]$AllowOptOut,
 
+    #region Overflow Params
     [Parameter(HelpMessage = "Action to be taken for Overflow")]
-    [Validateset("Voicemail", "Forward", "DisconnectWithBusy")]
+    [Validateset("DisconnectWithBusy", "Forward", "Voicemail", "SharedVoicemail")]
     [string]$OverflowAction = "DisconnectWithBusy",
 
-    #Only valid for $OverflowAction = "Forward"
+    # if OverflowAction is not DisconnectWithBusy, this is required
     [Parameter(HelpMessage = "UPN that is targeted upon overflow, only valid for forwarded calls")]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
+        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
+          return $true
         }
         else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
+          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
+          #return $false
+        }
+      }
+    )]
+    [string]$OverflowActionTarget,
+
+    #region OverflowAction = SharedVoiceMail
+    # if OverflowAction is SharedVoicemail one of the following two have to be provided
+    [Parameter(HelpMessage = "Text-to-speech Message. This will require the LanguageId Parameter")]
+    [string]$OverflowSharedVoicemailTextToSpeechPrompt,
+
+    [Parameter(HelpMessage = "Path to Audio File for Overflow SharedVoiceMail Message")]
+    [ValidateScript( {
+        If (Test-Path $_) {
+          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+            $True
+          }
+          else {
+            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            $false
+          }
+        }
+        else {
+          Write-Host "File not found, please verify" -ForeGroundColor Red
           $false
         }
       })]
-    [string]$OverflowActionTarget,
+    [string]$OverflowSharedVoicemailAudioFile,
+
+    [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
+    [bool]$EnableOverflowSharedVoicemailTranscription,
+    #endregion
 
     [Parameter(HelpMessage = "Time in seconds (0-200s) before timeout action is triggered (Default: 30, Note: Microsoft default: 50)")]
     [ValidateScript( {
@@ -3921,23 +4436,53 @@ function Set-TeamsCallQueue {
         }
       })]
     [int16]$OverflowThreshold,
+    #endregion
 
+    #region Timeout Params
     [Parameter(HelpMessage = "Action to be taken for Timeout")]
-    [Validateset("Voicemail", "Forward", "Disconnect")]
+    [Validateset("Disconnect", "Forward", "Voicemail", "SharedVoicemail")]
     [string]$TimeoutAction = "Disconnect",
 
-    #Only valid for $TimeoutAction = "Forward"
+    # if TimeoutAction is not Disconnect, this is required
     [Parameter(HelpMessage = "UPN that is targeted upon timeout, only valid for forwarded calls")]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
+        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
+          return $true
         }
         else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
+          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
+          #return $false
+        }
+      }
+    )]
+    [string]$TimeoutActionTarget,
+
+    #region OverflowAction = SharedVoiceMail
+    # if OverflowAction is SharedVoicemail one of the following two have to be provided
+    [Parameter(HelpMessage = "Text-to-speech Message. This will require the LanguageId Parameter")]
+    [string]$TimeoutSharedVoicemailTextToSpeechPrompt,
+
+    [Parameter(HelpMessage = "Path to Audio File for the SharedVoiceMail Message")]
+    [ValidateScript( {
+        If (Test-Path $_) {
+          If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
+            $True
+          }
+          else {
+            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            $false
+          }
+        }
+        else {
+          Write-Host "File not found, please verify" -ForeGroundColor Red
           $false
         }
       })]
-    [string]$TimeoutActionTarget,
+    [string]$TimeoutSharedVoicemailAudioFile,
+
+    [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
+    [bool]$EnableTimeoutSharedVoicemailTranscription,
+    #endregion
 
     [Parameter(HelpMessage = "Time in seconds (0-2700s) before timeout action is triggered (Default: 30, Note: Microsoft default: 1200)")]
     [ValidateScript( {
@@ -3950,6 +4495,7 @@ function Set-TeamsCallQueue {
         }
       })]
     [int16]$TimeoutThreshold,
+    #endregion
 
     [Parameter(HelpMessage = "Method to alert Agents")]
     [Validateset("Attendant", "Serial", "RoundRobin", "LongestIdle")]
@@ -3964,6 +4510,7 @@ function Set-TeamsCallQueue {
     [Parameter(HelpMessage = "If used, Conference mode is used to establish calls")]
     [boolean]$ConferenceMode,
 
+    #region Music files
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
     [ValidateScript( {
         if ($null -eq $_) {
@@ -4004,60 +4551,69 @@ function Set-TeamsCallQueue {
         }
       })]
     [string]$MusicOnHoldAudioFile,
+    #endregion
 
-    #Agents
+    #region Agents
     [Parameter(HelpMessage = "Name of one or more Distribution Lists")]
     [ValidateScript( {
-        If (Test-AzureADGroup $_) {
-          $True
-        }
-        else {
-          Write-Host "Distribution List $_ not found" -ForeGroundColor Red
-          $false
+        foreach ($e in $_) {
+          If (Test-AzureADGroup $e) {
+            $True
+          }
+          else {
+            Write-Host "Distribution List '$e' not found" -ForeGroundColor Red
+            $false
+          }
         }
       })]
     [string[]]$DistributionLists,
 
-    [Parameter(HelpMessage = "UPN of one or more Distribution Lists")]
+    [Parameter(HelpMessage = "UPN of one or more Users")]
     [ValidateScript( {
-        If ($_ -match '@') {
-          If (Test-AzureADUser $_) {
-            $True
+        foreach ($e in $_) {
+          If (Test-AzureADUser $e) {
+            return $true
           }
           else {
-            Write-Host "User $_ not found!" -ForeGroundColor Red
-            $false
+            Write-Host "User '$e' not found!" -ForeGroundColor Red
+            return $false
           }
-        }
-        else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
-          $false
         }
       })]
     [string[]]$Users,
+    #endregion
 
-    [Parameter(HelpMessage = "Will apply each setting individually and not use splatting. Slower, but safer.")]
-    [switch]$Slow = $false
-
-    #Other
-    #not implemented as it is reserved for MS use: Tenant <Guid>
-
+    [Parameter(HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
+    [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
+    [string]$LanguageId
 
   )
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -4069,6 +4625,41 @@ function Set-TeamsCallQueue {
     }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
+
+    # Testing ExchangeOnline Connection if needed
+    if ($OverflowAction -eq "SharedVoiceMail" -or $TimeoutAction -eq "SharedVoiceMail") {
+      # Testing Exchange Online Connection
+      if (Test-ExchangeOnlineConnection) {
+        Write-Verbose -Message "INFO:  Session found, reusing existing connection to ExchangeOnline"
+      }
+      else {
+        if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
+          Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+          $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
+        }
+        else {
+          Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+          Write-Host "INFO:  Connect-Me can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
+          break
+        }
+      }
+    }
+
+    # Checking for Text-to-speech prompts without providing LanguageId
+    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt') -or $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+      if (-not $PSBoundParameters.ContainsKey('LanguageId')) {
+        Write-Host "ERROR: You must provide the Parameter 'LanguageId' if using Text-to-speech prompts." -ForegroundColor Red
+        break
+      }
+      else {
+        if ((Get-CsAutoAttendantSupportedLanguage -Id $LanguageId).VoiceResponseSupported) {
+          Write-Verbose "The provided LanguageId '$LanguageId' does support Voice Responses"
+        }
+        else {
+          Write-Warning "The provided LanguageId '$LanguageId' does not support Voice Responses"
+        }
+      }
     }
   }
 
@@ -4153,7 +4744,8 @@ function Set-TeamsCallQueue {
       }
     }
     else {
-      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE or EXISTING"
+      Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
+      $Parameters += @{'WelcomeMusicAudioFileId' = $null }
     }
     #endregion
 
@@ -4194,7 +4786,7 @@ function Set-TeamsCallQueue {
     }
     #endregion
 
-
+    #region Overflow
     #region Overflow Action and Target
     # Overflow Action
     if ($PSBoundParameters.ContainsKey('OverflowAction')) {
@@ -4203,10 +4795,8 @@ function Set-TeamsCallQueue {
         "DisconnectWithBusy" {
           # No Action
         }
-        "VoiceMail" {
-          # Currently no actions, but might be added later
-        }
         "Forward" {
+          # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
           if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
             Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
             $OverflowAction = "DisconnectWithBusy"
@@ -4223,11 +4813,103 @@ function Set-TeamsCallQueue {
             }
           }
         }
+        "VoiceMail" {
+          # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+          if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
+            Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+            $OverflowAction = "DisconnectWithBusy"
+          }
+          else {
+            # Processing OverflowActionTarget
+            try {
+              $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+            }
+            catch {
+              Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
+              $OverflowAction = "DisconnectWithBusy"
+            }
+          }
+        }
+        "SharedVoiceMail" {
+          # SharedVoiceMail requires an OverflowActionTarget (UPN of a Group to be translated to GUID)
+          if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
+            Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+            $OverflowAction = "DisconnectWithBusy"
+          }
+          else {
+            # Processing OverflowActionTarget
+            try {
+              $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+            }
+            catch {
+              Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
+              $OverflowAction = "DisconnectWithBusy"
+            }
+          }
+        }
       }
-      $Parameters += @{'OverflowAction' = $OverflowAction }
+      # $OverflowAction is added to the Parameter list only after all checks are complete!
+      # and for SET only(!) if specified
     }
     #endregion
 
+    #region OverflowAction SharedVoicemail - Processing
+    if ($OverflowAction -eq "SharedVoiceMail") {
+      # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
+      if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+        # Both Parameters provided
+        Write-Error -Message "'$NameNormalised' either Parameter OverflowSharedVoicemailAudioFile OR OverflowSharedVoicemailTextToSpeechPrompt are required (not both!); Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $OverflowAction = "DisconnectWithBusy"
+      }
+      elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+        # Neither Parameter provided
+        Write-Error -Message "'$NameNormalised' either Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt are required; Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $OverflowAction = "DisconnectWithBusy"
+      }
+      else {
+        # Processing OverflowSharedVoicemailTextToSpeechPrompt
+        if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt' -and -not $PSBoundParameters.ContainsKey('LanguageId'))) {
+          # TTS Parameter without Language selected
+          Write-Error -Message "'$NameNormalised': OverflowSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId; Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $OverflowSharedVoicemailTextToSpeechPrompt = $null
+          $OverflowAction = "DisconnectWithBusy"
+        }
+        else {
+          # TTS Parameter and Language provided
+          $Parameters += @{'LanguageId' = $LanguageId }
+          $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
+        }
+
+
+        # Processing OverflowSharedVoicemailAudioFile
+        if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile')) {
+          $OFSVMFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
+          Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
+          try {
+            $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
+            Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
+            $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+          }
+          catch {
+            Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+            break
+          }
+        }
+      }
+    }
+    #endregion
+
+    #region OverflowAction conclusion
+    # finally, after all checks are done, adding OverflowAction to Parameters, if specified
+    if ($PSBoundParameters.ContainsKey('OverflowAction')) {
+      $Parameters += @{'OverflowAction' = $OverflowAction }
+    }
+    #endregion
+    #endregion
+
+    #region Timeout
     #region Timeout Action and Target
     if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
       Write-Verbose -Message "'$NameNormalised' Parsing requirements for TimeoutAction: $TimeoutAction"
@@ -4235,10 +4917,8 @@ function Set-TeamsCallQueue {
         "Disconnect" {
           # No Action
         }
-        "VoiceMail" {
-          # Currently no actions, but might be added later
-        }
         "Forward" {
+          # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
           if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
             Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
             $TimeoutAction = "Disconnect"
@@ -4250,16 +4930,106 @@ function Set-TeamsCallQueue {
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
             }
             catch {
-              Write-Warning -Message "'$NameNormalised' Could not enumerate 'TimoutActionTarget'"
+              Write-Warning -Message "'$NameNormalised' Could not enumerate 'TimeoutActionTarget'"
               $TimeoutAction = "Disconnect"
             }
           }
         }
+        "VoiceMail" {
+          # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+          if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
+            Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+            $TimeoutAction = "Disconnect"
+          }
+          else {
+            # Processing TimeoutActionTarget
+            try {
+              $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$($TimeoutActionTarget)" -ErrorAction STOP).ObjectId
+              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+            }
+            catch {
+              Write-Warning -Message "'$NameNormalised' Could not enumerate 'TimeoutActionTarget'"
+              $TimeoutAction = "Disconnect"
+            }
+          }
+        }
+        "SharedVoiceMail" {
+          # SharedVoiceMail requires an TimeoutActionTarget (UPN of a Group to be translated to GUID)
+          if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
+            Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+            $TimeoutAction = "DisconnectWithBusy"
+          }
+          else {
+            # Processing TimeoutActionTarget
+            try {
+              $TimeoutwActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              $Parameters += @{'TimeoutActionTarget' = $TimeoutwActionTargetId }
+            }
+            catch {
+              Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimeoutActionTarget'"
+              $TimeoutAction = "DisconnectWithBusy"
+            }
+          }
+        }
       }
-      $Parameters += @{'TimeoutAction' = $TimeoutAction }
+      # $TimeoutAction is added to the Parameter list only after all checks are complete!
+      # for SET, only if specified
     }
     #endregion
 
+    #region TimeoutAction SharedVoicemail - Processing
+    if ($TimeoutAction -eq "SharedVoiceMail") {
+      # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
+      if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+        # Both Parameters provided
+        Write-Error -Message "'$NameNormalised' either Parameter TimeoutSharedVoicemailAudioFile OR TimeoutSharedVoicemailTextToSpeechPrompt are required (not both!); Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $TimeoutAction = "Disconnect"
+      }
+      elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+        # Neither Parameter provided
+        Write-Error -Message "'$NameNormalised' either Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt are required; Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+        $TimeoutAction = "Disconnect"
+      }
+      else {
+        # Processing TimeoutSharedVoicemailTextToSpeechPrompt
+        if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt' -and -not $PSBoundParameters.ContainsKey('LanguageId'))) {
+          # TTS Parameter without Language selected
+          Write-Error -Message "'$NameNormalised': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId; Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
+          $TimeoutSharedVoicemailTextToSpeechPrompt = $null
+          $TimeoutAction = "Disconnect"
+        }
+        else {
+          # TTS Parameter and Language provided
+          $Parameters += @{'LanguageId' = $LanguageId }
+          $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
+        }
+
+
+        # Processing TimeoutSharedVoicemailAudioFile
+        if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile')) {
+          $OFSVMFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
+          Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
+          try {
+            $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
+            Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
+            $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+          }
+          catch {
+            Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+            break
+          }
+        }
+      }
+    }
+    #endregion
+
+    #region TimeoutAction conclusion
+    # finally, after all checks are done, adding TimeoutAction to Parameters, if specified
+    if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
+      $Parameters += @{'TimeoutAction' = $TimeoutAction }
+    }
+    #endregion
+    #endregion
 
     #region Users - Parsing and verifying Users
     [System.Collections.ArrayList]$UserIdList = @()
@@ -4305,17 +5075,31 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
-        if (Test-AzureADGroup $DL) {
-          $DLObject = Get-AzureADGroup -ObjectId $DL
-          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+        if (Test-AzureADGroup "$DL") {
+          $DLObject = Get-AzureADGroup -SearchString "$DL"
+          if ($null -eq $DLObject) {
+            $DL2 = $DL.Split('@')[0]
+            $DLObject = Get-AzureADGroup -SearchString "$DL2"
+            if ($null -eq $DLObject) {
+              try {
+                $DLObject = Get-AzureADGroup -ObjectId "$DL"
+              }
+              catch {
+                Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+              }
+            }
+          }
+        }
 
+        if ($DLObject) {
+          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
           # Test whether Users in DL are enabled for EV and/or licensed?
 
           # Add to List
           [void]$DLIdList.Add($DLObject.ObjectId)
         }
         else {
-          Write-Warning -Message "Group $DL not found in AzureAd, omitting Group!"
+          Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
         }
       }
       $Parameters += @{'DistributionLists' = @($DLIdList) }
@@ -4341,299 +5125,15 @@ function Set-TeamsCallQueue {
 
 
     #region ACTION
-    Write-Verbose -Message "--- ACTIONS -------"
-    # Applying Settings - TRUE: Splatting, FALSE: Slow variant
-    if (-not ($PSBoundParameters.ContainsKey('Slow'))) {
-      # Set the Call Queue with all Parameters provided
-      if ($PSCmdlet.ShouldProcess("$Name", "Set-CsCallQueue")) {
-        $Null = (Set-CsCallQueue @Parameters)
-        Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue settings applied"
-      }
-    }
-    else {
-      # Set the Call Queue with commands for individual calls to Set-CsCallQueue
-      #region Settings (Set-CsCallQueue): DisplayName
-      if ($PSBoundParameters.ContainsKey('DisplayName')) {
-        if ($PSCmdlet.ShouldProcess("$Name", "Set-CsCallQueue -DisplayName $NameNormalised")) {
-          try {
-            Write-Verbose -Message "'$NameNormalised' Changing DisplayName"
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Name $NameNormalised -WarningAction SilentlyContinue -ErrorAction STOP)
-            Write-Verbose -Message "SUCCESS: $Name - Call Queue DisplayName changed to: $NameNormalised"
-          }
-          catch {
-            Write-Error -Message "'$NameNormalised' Error changing DisplayName, using $Name instead" -Category WriteError -Exception "Erorr changing DisplayNae"
-            $NameNormalised = $Name # Required for re-query
-          }
-        }
-      }
-      #endregion
-
-      # Re-Query CallQueue with Get-CsCallQueue - Used going forward
-      $CallQueue = Get-CsCallQueue -NameFilter "$NameNormalised" -WarningAction SilentlyContinue
-
-
-      #region Settings (Set-CsCallQueue): Music On Hold
-      if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue MusicOnHold / DefaultMusicOnHold (depending)")) {
-          try {
-            Write-Verbose -Message "Processing change Music On Hold"
-            switch ($UseDefaultMusicOnHold) {
-              $true {
-                $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -UseDefaultMusicOnHold $true -WarningAction SilentlyContinue -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Music On Hold changed to: DEFAULT"
-              }
-              $false {
-                $Null = (Set-CsCallQueue -Identity $CallQueue.Identity -MusicOnHoldAudioFileId $($MOHfile.Id) -WarningAction SilentlyContinue -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Music On Hold changed to: '$($MOHfile.FileName)'"
-              }
-            }
-          }
-          catch {
-            Write-Error -Message "Error changing Music On Hold" -Category WriteError -Exception "Erorr changing Music On Hold"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): Welcome Message
-      if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -WelcomeMusicAudioFileId $($WMfile.Id)")) {
-          Write-Verbose -Message "Processing Welcome Message $WMfilename"
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -WelcomeMusicAudioFileId $($WMfile.Id) -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Welcome messsage set to: '$($WMfile.FileName)'"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not apply Welcome Message"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): RoutingMethod
-      if ($PSBoundParameters.ContainsKey('RoutingMethod')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -RoutingMethod $RoutingMethod")) {
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -RoutingMethod $RoutingMethod -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Routing Method set to: $RoutingMethod"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not set Routing Method"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): PresenceBasedRouting
-      if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -PresenceBasedRouting $PresenceBasedRouting")) {
-          try {
-            if ($PresenceBasedRouting) {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -PresenceBasedRouting $true -WarningAction SilentlyContinue -ErrorAction Stop)
-            }
-            else {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -PresenceBasedRouting $false -WarningAction SilentlyContinue -ErrorAction Stop)
-            }
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Presence Based Routing set to: $PresenceBasedRouting"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not set Presence Based Routing Switch"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): AllowOptOut
-      if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -AllowOptOut $AllowOptOut")) {
-          try {
-            if ($AllowOptOut) {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AllowOptOut $true -WarningAction SilentlyContinue -ErrorAction Stop)
-            }
-            else {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AllowOptOut $false -WarningAction SilentlyContinue -ErrorAction Stop)
-            }
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Allow Opt-out set to: $AllowOptOut"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not set AllowOptOut Switch"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): ConferenceMode
-      if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -ConferenceMode $ConferenceMode")) {
-          try {
-            if ($ConferenceMode) {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -ConferenceMode $true -WarningAction Continue -ErrorAction Stop)
-            }
-            else {
-              $null = (Set-CsCallQueue -Identity $CallQueue.Identity -ConferenceMode $false -WarningAction Continue -ErrorAction Stop)
-            }
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Conference Mode set to: $ConferenceMode"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not set ConferenceMode Switch"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): AgentAlertTime
-      if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -AgentAlertTime $AgentAlertTime")) {
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -AgentAlertTime $AgentAlertTime -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Agent Alert Time set to: $AgentAlertTime"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not set Agent Alert Time"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): OverflowThreshold
-      if ($PSBoundParameters.ContainsKey('OverflowThreshold')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -OverflowThreshold $OverflowThreshold")) {
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowThreshold $OverflowThreshold -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Threshold set to: $OverflowThreshold"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not set Overflow Threshold"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): OverflowAction and OverflowActionTarget
-      if ($PSBoundParameters.ContainsKey('OverflowAction')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -OverflowAction $OverflowAction")) {
-          switch ($OverflowAction) {
-            "DisconnectWithBusy" {
-              try {
-                # No Action
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -WarningAction SilentlyContinue -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Action set to: $OverflowAction"
-              }
-              catch {
-                Write-Warning -Message "'$NameNormalised' Could not set Overflow Action"
-              }
-            }
-            "VoiceMail" {
-              try {
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -WarningAction SilentlyContinue -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Action set to: $OverflowAction"
-              }
-              catch {
-                Write-Warning -Message "'$NameNormalised' Could not set Overflow Action"
-              }
-            }
-            "Forward" {
-              try {
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -OverflowAction $OverflowAction -OverflowActionTarget $OverflowActionTargetId -WarningAction SilentlyContinue -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Action set to: $OverflowAction"
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Overflow Target set to: $OverflowActionTarget"
-              }
-              catch {
-                Write-Warning -Message "'$NameNormalised' Could not set Overflow Action and Target"
-                Write-ErrorRecord $_ #This handles the eror message in human readable format.
-              }
-            }
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): TimeoutThreshold
-      if ($PSBoundParameters.ContainsKey('TimeoutThreshold')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -TimeoutThreshold $TimeoutThreshold")) {
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutThreshold $TimeoutThreshold -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Threshold set to: $TimeoutThreshold"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not set Timeout Threshold"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): TimeoutAction and TimeoutActionTarget
-      if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -TimeoutAction $TimeoutAction")) {
-          switch ($TimeoutAction) {
-            "DisconnectWithBusy" {
-              try {
-                # No Action
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -WarningAction SilentlyContinue -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
-              }
-              catch {
-                Write-Warning -Message "'$NameNormalised' Could not set Timeout Action"
-              }
-            }
-            "VoiceMail" {
-              try {
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -WarningAction SilentlyContinue -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
-              }
-              catch {
-                Write-Warning -Message "'$NameNormalised' Could not set Timeout Action"
-              }
-            }
-            "Forward" {
-              try {
-                $null = (Set-CsCallQueue -Identity $CallQueue.Identity -TimeoutAction $TimeoutAction -WarningAction SilentlyContinue -TimeoutActionTarget $TimeoutActionTargetId -ErrorAction Stop)
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Action set to: $TimeoutAction"
-                Write-Verbose -Message "SUCCESS: '$NameNormalised' Timeout Target set to: $TimeoutActionTarget"
-              }
-              catch {
-                Write-Warning -Message "'$NameNormalised' Could not set Timeout Action and Target"
-                Write-ErrorRecord $_ #This handles the eror message in human readable format.
-              }
-            }
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue): Users
-      if ($PSBoundParameters.ContainsKey('Users')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -Users @($UserIdList)")) {
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -Users @($UserIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Users added: $Users"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not add Users"
-          }
-        }
-      }
-      #endregion
-
-      #region Settings (Set-CsCallQueue):  DistributionLists
-      if ($PSBoundParameters.ContainsKey('DistributionLists')) {
-        if ($PSCmdlet.ShouldProcess("$NameNormalised", "Set-CsCallQueue -DistributionLists @($DLIdList)")) {
-          try {
-            $null = (Set-CsCallQueue -Identity $CallQueue.Identity -DistributionLists @($DLIdList) -WarningAction SilentlyContinue -ErrorAction Stop)
-            Write-Verbose -Message "SUCCESS: '$NameNormalised' Groups added: $DistributionLists"
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' Could not add Groups"
-          }
-        }
-      }
-      #endregion
+    # Set the Call Queue with all Parameters provided
+    if ($PSCmdlet.ShouldProcess("$Name", "Set-CsCallQueue")) {
+      $Null = (Set-CsCallQueue @Parameters)
+      Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue settings applied"
     }
     #endregion
 
 
     #region Output
-    Write-Verbose -Message "--- OUTPUT --------"
     # Re-query output
     $CallQueueFinal = Get-CsCallQueue -NameFilter $NameNormalised -WarningAction SilentlyContinue
     if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
@@ -4641,10 +5141,11 @@ function Set-TeamsCallQueue {
       if ($null -eq $($CallQueueFinal.Agents) -and $null -eq $($CallQueueFinal.DistributionLists)) {
         Write-Warning -Message "No Distribution Lists or Users added to callqueue. There will be no agents to call."
       }
+      Return $CallQueueFinal
     }
-    Write-Verbose -Message "--- DONE ----------"
-    #Return $CallQueueFinal
-    Return
+    else {
+      Return
+    }
     #endregion
 
   }
@@ -4687,17 +5188,29 @@ function Remove-TeamsCallQueue {
     #Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
   } # end of begin
@@ -4754,17 +5267,29 @@ function Get-TeamsResourceAccountAssociation {
   )
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -4895,17 +5420,29 @@ function New-TeamsResourceAccountAssociation {
   )
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -4955,12 +5492,25 @@ function New-TeamsResourceAccountAssociation {
           break
         }
         elseif ($CallQueueObj.GetType().BaseType.Name -eq "Array") {
-          Write-Error "'$CallQueue' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+          Write-Error "'$CallQueue' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction  "Please use New-CsOnlineApplicationInstanceAssociation!"
           $CallQueueObj | Select-Object Identity, Name | Format-Table
+          Write-Verbose -Message "This script is based on lookup via Name, which requires a unique Name to process. Please use New-CsOnlineApplicationInstanceAssociation!"
           break
         }
         else {
           Write-Verbose -Message "'$CallQueue' - Unique result found: $($CallQueueObj.Identity)"
+        }
+
+        # Query existing connection
+        $ExistingConnection = $null
+        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN
+        if ($null -eq $ExistingConnection.AssociatedTo) {
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
+        }
+        else {
+          Write-Error -Message "'$($Account.UserPrincipalName)' - This account is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
+          $ExistingConnection
+          break
         }
 
         # Processing Call Queue
@@ -5022,13 +5572,27 @@ function New-TeamsResourceAccountAssociation {
           break
         }
         elseif ($AutoAttendantObj.GetType().BaseType.Name -eq "Array") {
-          Write-Error "'$AutoAttendant' - Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+          Write-Error "'$AutoAttendant' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction  "Please use New-CsOnlineApplicationInstanceAssociation!"
           $AutoAttendantObj | Select-Object Identity, Name | Format-Table
+          Write-Verbose -Message "This script is based on lookup via Name, which requires a unique Name to process. Please use New-CsOnlineApplicationInstanceAssociation!"
           break
         }
         else {
           Write-Verbose -Message "'$AutoAttendant' - Unique result found: $($AutoAttendantObj.Identity)"
         }
+
+        # Query existing connection
+        $ExistingConnection = $null
+        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN
+        if ($null -eq $ExistingConnection.AssociatedTo) {
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
+        }
+        else {
+          Write-Error -Message "'$($Account.UserPrincipalName)' - This account is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
+          $ExistingConnection
+          break
+        }
+
 
         # Processing Auto Attendant
         Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
@@ -5060,7 +5624,7 @@ function New-TeamsResourceAccountAssociation {
           # Establishing Association
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - Assigning to Auto Attendant: '$AutoAttendant'"
           if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", "New-CsOnlineApplicationInstanceAssociation")) {
-            $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $CallQueueObj.Identity
+            $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $AutoAttendantObj.Identity
           }
         }
         # Requery Association Target
@@ -5116,17 +5680,29 @@ function Remove-TeamsResourceAccountAssociation {
   )
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -5324,17 +5900,29 @@ function New-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -5415,7 +6003,7 @@ function New-TeamsResourceAccount {
         $imax = 20
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($imax s) to be able to parse the Object." -Verbose
         Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
-        while ($null -eq $(Get-AzureADUser -ObjectId "$UPN" -ErrorAction SilentlyContinue).ObjectId) {
+        while ( -not (Test-AzureADUser $UPN)) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been creaated (UserPrincipalName); Continue with Set-TeamsResourceAccount"
             break
@@ -5463,10 +6051,10 @@ function New-TeamsResourceAccount {
       # Verifying License is available to be assigned
       # Determining available Licenses from Tenant
       Write-Verbose -Message "'$Name' Querying Licenses..."
-      $TenantLicenses = Get-TeamsTenantLicenses
-      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
+      $TenantLicenses = Get-TeamsTenantLicense
+      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "MCOEV" }).Remaining
       Write-Verbose -Message "INFO: $RemainingPSlicenses remaining Phone System Licenses"
-      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
+      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
       Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
       # Assigning License
@@ -5733,18 +6321,31 @@ function Get-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
     }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
+    }
+
   } # end of begin
 
   process {
@@ -5946,17 +6547,29 @@ function Find-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
   } # end of begin
@@ -6194,17 +6807,29 @@ function Set-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -6401,11 +7026,11 @@ function Set-TeamsResourceAccount {
       # Verifying License is available to be assigned
       # Determining available Licenses from Tenant
       Write-Verbose -Message "'$Name' Querying Licenses..."
-      $TenantLicenses = Get-TeamsTenantLicenses
-      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
-      Write-Verbose -Message "Info: $RemainingPSlicenses remaining Phone System Licenses"
-      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
-      Write-Verbose -Message "Info: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
+      $TenantLicenses = Get-TeamsTenantLicense
+      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "MCOEV" }).Remaining
+      Write-Verbose -Message "INFO: $RemainingPSlicenses remaining Phone System Licenses"
+      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
+      Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
       # Changing License if requried
       if ($License -eq $CurrentLicense) {
@@ -6642,17 +7267,29 @@ function Remove-TeamsResourceAccount {
     Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Enabling $Confirm to work with $Force
@@ -7228,10 +7865,19 @@ function Backup-TeamsTenant {
   )
 
   # Testing SkypeOnline Connection
-  if ($false -eq (Test-SkypeOnlineConnection)) {
-    Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-    break
+  if (Test-SkypeOnlineConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+  }
+  else {
+    if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+      Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+      $null = Get-CsTenant
+    }
+    else {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
   }
 
   $Filenames = '*.txt'
@@ -7374,9 +8020,12 @@ function Get-AzureAdAssignedAdminRoles {
   )
 
   # Testing AzureAD Connection
-  if ($false -eq (Test-AzureADConnection)) {
+  if (Test-AzureADConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+  }
+  else {
     Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
     break
   }
 
@@ -7441,11 +8090,15 @@ function New-AzureAdLicenseObject {
   }
 
   # Testing AzureAD Connection
-  if ($false -eq (Test-AzureADConnection)) {
+  if (Test-AzureADConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+  }
+  else {
     Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
     break
   }
+
 
   Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
   $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
@@ -8095,8 +8748,8 @@ $TeamsServicePlansEntry01 = [PSCustomObject][ordered]@{
 $TeamsServicePlans.Add($TeamsServicePlansEntry01)
 
 $TeamsServicePlansEntry02 = [PSCustomObject][ordered]@{
-  FriendlyName     = "Teams"
-  ProductName      = "Teams"
+  FriendlyName     = "Teams AR DoD"
+  ProductName      = "Teams AR DoD"
   ServicePlanName  = "TEAMS_AR_DOD"
   ServicePlanId    = "fd500458-c24c-478e-856c-a6067a8376cd"
   RelevantForTeams = $TRUE
@@ -8104,8 +8757,8 @@ $TeamsServicePlansEntry02 = [PSCustomObject][ordered]@{
 $TeamsServicePlans.Add($TeamsServicePlansEntry02)
 
 $TeamsServicePlansEntry03 = [PSCustomObject][ordered]@{
-  FriendlyName     = "Teams"
-  ProductName      = "Teams"
+  FriendlyName     = "Teams AR GCC High"
+  ProductName      = "Teams AR GCC High"
   ServicePlanName  = "TEAMS_AR_GCCHIGH"
   ServicePlanId    = "9953b155-8aef-4c56-92f3-72b0487fce41"
   RelevantForTeams = $TRUE
@@ -8114,7 +8767,7 @@ $TeamsServicePlans.Add($TeamsServicePlansEntry03)
 
 $TeamsServicePlansEntry04 = [PSCustomObject][ordered]@{
   FriendlyName     = "Skype Online"
-  ProductName      = "Skype for Business Online (Plan 2)"
+  ProductName      = "Skype for Business Online"
   ServicePlanName  = "MCOSTANDARD"
   ServicePlanId    = "0feaeb32-d00e-4d66-bd5a-43b5b83db82c"
   RelevantForTeams = $TRUE
@@ -8154,7 +8807,7 @@ $TeamsServicePlansEntry08 = [PSCustomObject][ordered]@{
   FriendlyName     = "Skype Online (Midmarket)"
   ProductName      = "Skype for Business Online (Plan 2)"
   ServicePlanName  = "MCOSTANDARD_MIDMARKET"
-  ServicePlanId    = "b2669e95-76ef-4e7e-a367-002f60a39f3 e"
+  ServicePlanId    = "b2669e95-76ef-4e7e-a367-002f60a39f3e"
   RelevantForTeams = $TRUE
 }
 $TeamsServicePlans.Add($TeamsServicePlansEntry08)
@@ -8733,11 +9386,10 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   Add-TeamsUserLicense, Set-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicense, `
   Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy, `
   Test-AzureADModule, Test-AzureADConnection, Test-AzureADUser, Test-AzureADGroup, `
-  Test-SkypeOnlineModule, Test-SkypeOnlineConnection, `
-  Test-MicrosoftTeamsModule, Test-MicrosoftTeamsConnection, Test-TeamsUser, `
+  Test-SkypeOnlineConnection, Test-MicrosoftTeamsConnection, Test-ExchangeOnlineConnection, Test-TeamsUser, `
   New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
   New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation, `
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
   Import-TeamsAudioFile, Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
-  Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
+  Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
