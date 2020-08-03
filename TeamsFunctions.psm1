@@ -1,92 +1,107 @@
 ﻿#Requires -Version 5.1
 <#
-		Fork of SkypeFunctions
-		Written by Jeff Brown
-		Jeff@JeffBrown.tech
-		@JeffWBrown
-		www.jeffbrown.tech
-		https://github.com/JeffBrownTech
+  Fork of SkypeFunctions
+  Written by Jeff Brown
+  Jeff@JeffBrown.tech
+  @JeffWBrown
+  www.jeffbrown.tech
+  https://github.com/JeffBrownTech
 
-		Adopted for Teams as TeamsFunctions
-		by David Eberhardt
-		david@davideberhardt.at
-		@MightyOrmus
-		www.davideberhardt.at
-		https://github.com/DEberhardt
-		https://davideberhardt.wordpress.com/
+  Adopted for Teams as TeamsFunctions
+  by David Eberhardt
+  david@davideberhardt.at
+  @MightyOrmus
+  www.davideberhardt.at
+  https://github.com/DEberhardt
+  https://davideberhardt.wordpress.com/
 
-		Individual Scripts incorporated into this Module are taken with the express permission of the original Author
+  Individual Scripts incorporated into this Module are taken with the express permission of the original Author
 
-		To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
-		Import-Module TeamsFunctions
+  To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
+  Import-Module TeamsFunctions
 
-		Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
-		Always review any code and steps before applying to a production system to understand their full impact.
+  Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
+  Always review any code and steps before applying to a production system to understand their full impact.
 
-		# Versioning
-		This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
-		Major v20 is the the first one published in 2020, followed by Minor verson for Month and Day.
-		Subsequent Minor versions indicate additional publications on this day.
-		Revisions are planned quarterly
+  # Versioning
+  This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
+  Major v20 is the the first one published in 2020, followed by Minor verson for Month and Day.
+  Subsequent Minor versions indicate additional publications on this day.
+  Revisions are planned quarterly
 
-		# Version History
-		1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
-		20.04.17.1  Initial Version (as TeamsFunctions) - Multiple updates for Teams
-								References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
-								Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
-								Microsoft 365 Licenses have been added to all Functions dealing with Licensing
-								Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
-								Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
-								Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
-								Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
-		20.05.03.1  First Publication
-								Bug fixing, erroneously incorporated all local modules.
-		20.05.09.1  Bug fixing, minor improvements
-		20.05.19.2  Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
-								Added Get-AzureAdAssignedAdminRoles
-								Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
-								Fixed an issue with access to the new functions
-								Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
-		20.05.24.2  Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
-								Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
-								Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
-								Added Helper function for Licensing: Get-SkuIDfromSkuPartNumber (returns SkuID)
-								Renamed Helper function for Licensing: New-AzureADLicenseObject (creates a new License Object, can add and remove one)
-								RESOLVED Limitation "PhoneSystem_VirtualUser cannot be selected as no GUID is known for it currently"
-								Added AzureAD Module and Connection Test in all Functions that need it.
-								Added SkypeOnline Module and Connection Test in all Functions that need it.
-								Some bug fixing and code scrubbing
-		20.06.09.1  Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
-								Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
-								Run "con $Username" to connect to all 3 with one authentication prompt
-								Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
-								Replaced by Test-Module $ModuleNames
-		20.06.17.1  Added Write-ErrorRecord.
-								Bugfixing Resource Account and Call Queue Scripts
-		20.06.22.0  Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
-								Bugfixing Resource Account and Call Queue Scripts
-								Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
-		20.06.29.1  Added TeamsResourceAccountAssociation Scripts
-								Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
-    20.07.08-alpha2     Import-TeamsAudioFile
-                Exposed Import-TeamsAudioFile for public use.
-                Updated New-TeamsCallQueue and Set-TeamsCallQueue to use Import-TeamsAudioFile for Welcome Message and Music On Hold
-                Updated Set-TeamsCallQueue to allow $NULL for Parameter WelcomeMusicAudioFile
-    20.07.18-prerelase  License Update
-                Added Variable $TeamsLicenses - Fully populated with 38 Microsoft Licenses
-                Updated Get-TeamsTenantLicense - now returns a proper Object, based on Variable $TeamsLicenses
-                Updated Get-TeamsUserLicense - now returns a proper Object, based on Variable $TeamsLicenses
-                Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicnese
-                This function now supports multiple adds and removes including purges
-                Added Disclaimer for Add-TeamsUserLicense as it is now deprecated
-                Removed Get-TeamsTenantLicneses (plural)
-    20.07.26-prerelease Voicemail and SharedVoicemail for TeamsCallQueue
-                Updated New-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
-                Updated Set-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
-                Updated Get-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout (output)
-                Removed Parameter Slow from New & Set-TeamsCallQueue as splatting is working fine
-                Updated Connect-SkypeTeamsAndAAD to support connection to Exchange with the same credentials (required to check O365 Groups)
-
+  # Version History
+  1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
+  20.04.17.1  Initial Version (as TeamsFunctions) - Multiple updates for Teams
+        References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
+        Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
+        Microsoft 365 Licenses have been added to all Functions dealing with Licensing
+        Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
+        Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
+        Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
+        Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
+  20.05.03.1  First Publication
+        Bug fixing, erroneously incorporated all local modules.
+  20.05.09.1  Bug fixing, minor improvements
+  20.05.19.2  Adding Backup and TeamsResourceAccount functions (BETA)
+        Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
+        Added Get-AzureAdAssignedAdminRoles
+        Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
+        Fixed an issue with access to the new functions
+        Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
+  20.05.24.2  Added Helper functions
+        Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
+        Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
+        Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
+        Added Helper function for Licensing: Get-SkuIDfromSkuPartNumber (returns SkuID)
+        Renamed Helper function for Licensing: New-AzureADLicenseObject (creates a new License Object, can add and remove one)
+        RESOLVED Limitation "PhoneSystem_VirtualUser cannot be selected as no GUID is known for it currently"
+        Added AzureAD Module and Connection Test in all Functions that need it.
+        Added SkypeOnline Module and Connection Test in all Functions that need it.
+        Some bug fixing and code scrubbing
+  20.06.09.1  Added TeamsCallQueue Functions (BETA)
+        Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
+        Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
+        Run "con $Username" to connect to all 3 with one authentication prompt
+        Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
+        Replaced by Test-Module $ModuleNames
+  20.06.17.1  Bugfixing
+        Added Write-ErrorRecord.
+        Bugfixing Resource Account and Call Queue Scripts
+  20.06.22.0
+        Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
+        Bugfixing Resource Account and Call Queue Scripts
+        Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
+  20.06.29.1
+        Added TeamsResourceAccountAssociation Functions & Script Analyzer
+        Added TeamsResourceAccountAssociation Scripts
+        Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
+  20.07.08-alpha2       Import-TeamsAudioFile
+        Exposed Import-TeamsAudioFile for public use.
+        Updated New-TeamsCallQueue and Set-TeamsCallQueue to use Import-TeamsAudioFile for Welcome Message and Music On Hold
+        Updated Set-TeamsCallQueue to allow $NULL for Parameter WelcomeMusicAudioFile
+  20.07.18-prerelase    License Update
+        Added Variable $TeamsLicenses - Fully populated with 38 Microsoft Licenses
+        Updated Get-TeamsTenantLicense - now returns a proper Object, based on Variable $TeamsLicenses
+        Updated Get-TeamsUserLicense - now returns a proper Object, based on Variable $TeamsLicenses
+        Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicnese
+        This function now supports multiple adds and removes including purges
+        Added Disclaimer for Add-TeamsUserLicense as it is now deprecated
+        Removed Get-TeamsTenantLicneses (plural)
+  20.07.26-prerelease   Voicemail and SharedVoicemail for TeamsCallQueue
+        Updated New-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
+        Updated Set-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
+        Updated Get-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout (output)
+        Removed Parameter Slow from New & Set-TeamsCallQueue as splatting is working fine
+        Updated Connect-SkypeTeamsAndAAD to support connection to Exchange with the same credentials (required to check O365 Groups)
+  20.08 Live Version for AUG 2020
+        # Not perfect yet, but the monthly release. Future releases as PreRelease again
+        Miscellaneous Bugfixes and performance improvements
+        Fixes for New-TeamsResourceAccountAssociation for AutoAttendants
+        Fixes for New-TeamsCallQueue - Lookup for Users and Groups and Desired Configuration
+        Fixes for Set-TeamsCallQueue - Lookup for Users and Groups
+        Fixes for Get-TeamsCallQueue - Improvements for Output
+        Fixes for New-TeamsResourceAccountAssociation for AutoAttendants
+        Minor fixes for all Test-Commands which now also have verbose output for re-using a session
 	#>
 
 #region *** Exported Functions ***
@@ -189,12 +204,13 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
     #ValidateScript needs testing, but would make things easier here
-    #[ValidateScript({$_ -in $TeamsLicenses.ParameterName})]
+    #TODO: Test swap to ValidateScript
+    #[ValidateScript( {$_ -in $TeamsLicenses.ParameterName} )]
     [string[]]$AddLicenses,
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
-    #[ValidateScript( { $_ -in $TeamsLicenses.ParameterName })]
+    #[ValidateScript( {$_ -in $TeamsLicenses.ParameterName} )]
     [string[]]$RemoveLicenses,
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
@@ -203,9 +219,12 @@ function Set-TeamsUserLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -690,9 +709,12 @@ function Add-TeamsUserLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -1017,7 +1039,7 @@ function Connect-SkypeOnline {
       } # End of if statement for module version checking
     }
     else {
-      Write-Warning -Message "A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
+      Write-Warning -Message "A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
     } # End checking for existing Skype Online Connection
   }
   else {
@@ -1211,10 +1233,10 @@ function Connect-SkypeTeamsAndAAD {
       }
       Write-Verbose -Message "Establishing connection to ExchangeOnlineManagement" -Verbose
       if ((Test-ExchangeOnlineConnection) -and -not $Silent) {
-        Connect-ExchangeOnline -UserPrincipalName $Username
+        Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false
       }
       else {
-        $null = (Connect-ExchangeOnline -UserPrincipalName $Username)
+        $null = (Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false)
       }
     }
     catch {
@@ -1325,10 +1347,19 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   )
 
   # Testing SkypeOnline Connection
-  if ($false -eq (Test-SkypeOnlineConnection)) {
-    Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-    break
+  if (Test-SkypeOnlineConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+  }
+  else {
+    if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+      Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+      $null = Get-CsTenant
+    }
+    else {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
   }
 
   try {
@@ -1407,9 +1438,12 @@ function Get-TeamsUserLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -1568,9 +1602,12 @@ function Get-TeamsTenantLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2206,6 +2243,28 @@ function Test-AzureADConnection {
   }
 } # End of Test-AzureADConnection
 
+function Test-MicrosoftTeamsConnection {
+  <#
+	.SYNOPSIS
+		Tests whether a valid PS Session exists for MicrosoftTeams
+	.DESCRIPTION
+		A connection established via Connect-MicrosoftTeams is parsed.
+	.EXAMPLE
+		Test-MicrosoftTeamsConnection
+		Will Return $TRUE only if a session is found.
+	#>
+  [CmdletBinding()]
+  [OutputType([Boolean])]
+  param()
+
+  try {
+    $null = (Get-CsPolicyPackage | Select-Object -First 1 -ErrorAction STOP)
+    return $true
+  }
+  catch {
+    return $false
+  }
+} # End of Test-MicrosoftTeamsConnection
 
 function Test-SkypeOnlineConnection {
   <#
@@ -2226,49 +2285,20 @@ function Test-SkypeOnlineConnection {
   [OutputType([Boolean])]
   param()
 
-  if ((Get-PSSession).ComputerName -notlike "*.online.lync.com") {
-    return $false
-  }
-  else {
-    $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" }
-    if ($PSSkypeOnlineSession.Count -lt 1) {
-      return $false
+  $Sessions = Get-PSSession
+  if ([bool]($Sessions.Computername -match "online.lync.com")) {
+    $PSSkypeOnlineSession = $Sessions | Where-Object { $_.Computername -match "online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+    if ($PSSkypeOnlineSession.Count -ge 1) {
+      return $true
     }
     else {
-      try {
-        $null = Get-CsTeamsUpgradeConfiguration -ErrorAction Stop -WarningAction SilentlyContinue
-        return $true
-      }
-      catch {
-        return $false
-      }
-
+      return $false
     }
   }
-} # End of Test-SkypeOnlineConnection
-
-function Test-MicrosoftTeamsConnection {
-  <#
-	.SYNOPSIS
-		Tests whether a valid PS Session exists for MicrosoftTeams
-	.DESCRIPTION
-		A connection established via Connect-MicrosoftTeams is parsed.
-	.EXAMPLE
-		Test-MicrosoftTeamsConnection
-		Will Return $TRUE only if a session is found.
-	#>
-  [CmdletBinding()]
-  [OutputType([Boolean])]
-  param()
-
-  try {
-    $null = (Get-CsPolicyPackage -ErrorAction STOP)
-    return $true
-  }
-  catch {
+  else {
     return $false
   }
-} # End of Test-MicrosoftTeamsConnection
+} # End of Test-SkypeOnlineConnection
 
 function Test-ExchangeOnlineConnection {
   <#
@@ -2276,6 +2306,7 @@ function Test-ExchangeOnlineConnection {
 		Tests whether a valid PS Session exists for ExchangeOnline
 	.DESCRIPTION
 		A connection established via Connect-ExchangeOnline is parsed.
+		This connection must be valid (Available and Opened)
 	.EXAMPLE
 		Test-ExchangeOnlineConnection
 		Will Return $TRUE only if a session is found.
@@ -2284,25 +2315,20 @@ function Test-ExchangeOnlineConnection {
   [OutputType([Boolean])]
   param()
 
-  if ((Get-PSSession).ComputerName -notlike "outlook.office365.com") {
-    return $false
-  }
-  else {
-    $PSExchangeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "outlook.office365.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" }
-    if ($PSExchangeOnlineSession.Count -lt 1) {
-      return $false
+  $Sessions = Get-PSSession
+  if ([bool]($Sessions.Computername -match "outlook.office365.com")) {
+    $PSExchangeOnlineSession = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+    if ($PSExchangeOnlineSession.Count -ge 1) {
+      return $true
     }
     else {
-      try {
-        $null = Get-UnifiedGroup -ErrorAction Stop -WarningAction SilentlyContinue | Select-Object -First 1
-        return $true
-      }
-      catch {
-        return $false
-      }
-
+      return $false
     }
   }
+  else {
+    return $false
+  }
+
 } # End of Test-ExchangeOnlineConnection
 function Get-AzureADUserFromUPN {
   <#
@@ -2325,9 +2351,12 @@ function Get-AzureADUserFromUPN {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2373,9 +2402,12 @@ function Test-AzureADUser {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2384,7 +2416,7 @@ function Test-AzureADUser {
   }
   process {
     try {
-      $null = (Get-AzureADUser -All:$true | Where-Object { $_.UserPrincipalName -eq $Identity } -ErrorAction STOP)
+      $null = Get-AzureADUser -ObjectId "$Identity" -ErrorAction STOP
       return $true
     }
     catch [Microsoft.Open.AzureAD16.Client.ApiException] {
@@ -2419,9 +2451,12 @@ function Test-AzureADGroup {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2430,26 +2465,26 @@ function Test-AzureADGroup {
   }
   process {
     try {
-      $null = Get-AzureADGroup -ObjectId $Identity -ErrorAction STOP
-      return $true
+      $Group2 = Get-AzureADGroup -SearchString "$Identity" -ErrorAction STOP
+      if ($null -ne $Group2) {
+        return $true
+      }
+      else {
+        try {
+          $MailNickName = $Identity.Split('@')[0]
+          $null = Get-AzureADGroup -SearchString "$MailNickName" -ErrorAction STOP
+          Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
+          return $true
+        }
+        catch {
+          return $false
+        }
+      }
     }
     catch {
       try {
-        $Group2 = Get-AzureADGroup -SearchString "$Identity" -ErrorAction STOP
-        if ($null -ne $Group2) {
-          return $true
-        }
-        else {
-          try {
-            $MailNickName = $Identity.Split('@')[0]
-            $null = Get-AzureADGroup -SearchString "$MailNickName" -ErrorAction STOP
-            Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
-            return $true
-          }
-          catch {
-            return $false
-          }
-        }
+        $null = Get-AzureADGroup -ObjectId $Identity -ErrorAction STOP
+        return $true
       }
       catch {
         return $false
@@ -2480,16 +2515,26 @@ function Test-TeamsUser {
 
   begin {
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
     }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
+    }
+
 
   }
   process {
     try {
-      Get-CsOnlineUser -Identity $Identity -ErrorAction STOP | Out-Null
+      $null = Get-CsOnlineUser -Identity $Identity -ErrorAction STOP
       return $true
     }
     catch [System.Exception] {
@@ -2528,10 +2573,19 @@ function Test-TeamsTenantPolicy {
   )
   begin {
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Data Gathering
@@ -2619,6 +2673,7 @@ function Test-TeamsUserLicense {
 
     [Parameter(Mandatory = $true, ParameterSetName = "LicensePackage", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
+    #TODO: Add Lookup here too!
     [string]$LicensePackage
 
   )
@@ -2626,9 +2681,12 @@ function Test-TeamsUserLicense {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
@@ -2667,6 +2725,8 @@ function Test-TeamsUserLicense {
         Write-Verbose -Message "'$DisplayName' Testing against '$LicensePackage'"
         TRY {
           $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
+          #TODO: Change Lookup here to a simplified Cross-Ref from $TeamsLicenses
+          # Translate Parametername to LicenseName and look it up in $UserLicenseSKU
           SWITCH ($LicensePackage) {
             "Microsoft365E5" {
               # Combination 1 - Microsoft 365 E5 has PhoneSystem included
@@ -3052,11 +3112,11 @@ function New-TeamsCallQueue {
     [Parameter(HelpMessage = "Name of one or more Distribution Lists")]
     [ValidateScript( {
         foreach ($e in $_) {
-          If (Test-AzureADGroup $_) {
+          If (Test-AzureADGroup $e) {
             $True
           }
           else {
-            Write-Host "Distribution List $_ not found" -ForeGroundColor Red
+            Write-Host "Distribution List '$e' not found" -ForeGroundColor Red
             $false
           }
         }
@@ -3094,17 +3154,29 @@ function New-TeamsCallQueue {
     Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -3118,16 +3190,22 @@ function New-TeamsCallQueue {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-
     # Testing ExchangeOnline Connection if needed
     if ($OverflowAction -eq "SharedVoiceMail" -or $TimeoutAction -eq "SharedVoiceMail") {
-      if ($false -eq (Test-ExchangeOnlineConnection)) {
-        Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-        Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
-        break
+      # Testing Exchange Online Connection
+      if (Test-ExchangeOnlineConnection) {
+        Write-Verbose -Message "INFO:  Session found, reusing existing connection to ExchangeOnline"
       }
       else {
-        Write-Verbose "Connection to ExchangeOnline established. Continuing"
+        if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
+          Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+          $null = Get-UnifiedGroup | Select-Object -First 1
+        }
+        else {
+          Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+          Write-Host "INFO:  Connect-Me can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
+          break
+        }
       }
     }
 
@@ -3733,17 +3811,29 @@ function Get-TeamsCallQueue {
     #Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
   } # end of begin
@@ -3825,6 +3915,8 @@ function Get-TeamsCallQueue {
             }
             "SharedVoiceMail" {
               # SharedVoiceMail targets an Office 365 Group
+              #TODO: Verify whether AzureADGroup consistently returns a correct result.
+              # The equivalent for AzureADgroup "ObjectId" on the Exchange Object for Get-UnifiedGroup is "ExternalDirectoryObjectId"
               try {
                 $TATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
               }
@@ -3864,6 +3956,8 @@ function Get-TeamsCallQueue {
             }
             "SharedVoiceMail" {
               # SharedVoiceMail targets an Office 365 Group
+              #TODO: Verify whether AzureADGroup consistently returns a correct result.
+              # The equivalent for AzureADgroup "ObjectId" on the Exchange Object for Get-UnifiedGroup is "ExternalDirectoryObjectId"
               try {
                 $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
               }
@@ -4463,11 +4557,11 @@ function Set-TeamsCallQueue {
     [Parameter(HelpMessage = "Name of one or more Distribution Lists")]
     [ValidateScript( {
         foreach ($e in $_) {
-          If (Test-AzureADGroup $_) {
+          If (Test-AzureADGroup $e) {
             $True
           }
           else {
-            Write-Host "Distribution List $_ not found" -ForeGroundColor Red
+            Write-Host "Distribution List '$e' not found" -ForeGroundColor Red
             $false
           }
         }
@@ -4497,17 +4591,29 @@ function Set-TeamsCallQueue {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -4523,13 +4629,20 @@ function Set-TeamsCallQueue {
 
     # Testing ExchangeOnline Connection if needed
     if ($OverflowAction -eq "SharedVoiceMail" -or $TimeoutAction -eq "SharedVoiceMail") {
-      if ($false -eq (Test-ExchangeOnlineConnection)) {
-        Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-        Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
-        break
+      # Testing Exchange Online Connection
+      if (Test-ExchangeOnlineConnection) {
+        Write-Verbose -Message "INFO:  Session found, reusing existing connection to ExchangeOnline"
       }
       else {
-        Write-Verbose "Connection to ExchangeOnline established. Continuing"
+        if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
+          Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+          $null = Get-UnifiedGroup | Select-Object -First 1
+        }
+        else {
+          Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+          Write-Host "INFO:  Connect-Me can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
+          break
+        }
       }
     }
 
@@ -5075,17 +5188,29 @@ function Remove-TeamsCallQueue {
     #Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
   } # end of begin
@@ -5142,17 +5267,29 @@ function Get-TeamsResourceAccountAssociation {
   )
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -5283,17 +5420,29 @@ function New-TeamsResourceAccountAssociation {
   )
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -5531,17 +5680,29 @@ function Remove-TeamsResourceAccountAssociation {
   )
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -5739,17 +5900,29 @@ function New-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -5830,8 +6003,6 @@ function New-TeamsResourceAccount {
         $imax = 20
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($imax s) to be able to parse the Object." -Verbose
         Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
-        # Get-AzureAdUser resulted in a BadRequest message instead of $null
-        #while ($null -eq $(Get-AzureADUserFromUPN "$UPN" -ErrorAction SilentlyContinue).ObjectId) {
         while ( -not (Test-AzureADUser $UPN)) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been creaated (UserPrincipalName); Continue with Set-TeamsResourceAccount"
@@ -6150,18 +6321,31 @@ function Get-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
     }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
+    }
+
   } # end of begin
 
   process {
@@ -6363,17 +6547,29 @@ function Find-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
   } # end of begin
@@ -6611,17 +6807,29 @@ function Set-TeamsResourceAccount {
 
   begin {
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Setting Preference Variables according to Upstream settings
@@ -7059,17 +7267,29 @@ function Remove-TeamsResourceAccount {
     Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
 
     # Testing AzureAD Connection
-    if ($false -eq (Test-AzureADConnection)) {
+    if (Test-AzureADConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    }
+    else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
       break
     }
 
     # Testing SkypeOnline Connection
-    if ($false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
+    if (Test-SkypeOnlineConnection) {
+      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    }
+    else {
+      if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        $null = Get-CsTenant
+      }
+      else {
+        Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+        break
+      }
     }
 
     # Enabling $Confirm to work with $Force
@@ -7645,10 +7865,19 @@ function Backup-TeamsTenant {
   )
 
   # Testing SkypeOnline Connection
-  if ($false -eq (Test-SkypeOnlineConnection)) {
-    Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-    break
+  if (Test-SkypeOnlineConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+  }
+  else {
+    if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+      Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+      $null = Get-CsTenant
+    }
+    else {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
   }
 
   $Filenames = '*.txt'
@@ -7791,9 +8020,12 @@ function Get-AzureAdAssignedAdminRoles {
   )
 
   # Testing AzureAD Connection
-  if ($false -eq (Test-AzureADConnection)) {
+  if (Test-AzureADConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+  }
+  else {
     Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
     break
   }
 
@@ -7858,11 +8090,15 @@ function New-AzureAdLicenseObject {
   }
 
   # Testing AzureAD Connection
-  if ($false -eq (Test-AzureADConnection)) {
+  if (Test-AzureADConnection) {
+    Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+  }
+  else {
     Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-SkypeTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+    Write-Host "INFO:  Connect-Me can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
     break
   }
+
 
   Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
   $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
