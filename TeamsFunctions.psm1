@@ -3199,7 +3199,7 @@ function New-TeamsCallQueue {
       else {
         if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
           Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
-          $null = Get-UnifiedGroup | Select-Object -First 1
+          $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
           Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -4636,7 +4636,7 @@ function Set-TeamsCallQueue {
       else {
         if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
           Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
-          $null = Get-UnifiedGroup | Select-Object -First 1
+          $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
           Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -9392,4 +9392,4 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
   Import-TeamsAudioFile, Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
-  Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
+  Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
