@@ -3202,9 +3202,7 @@ function New-TeamsCallQueue {
           $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
-          Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-          Write-Host "INFO:  Connect-Me can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
-          break
+          Write-Warning -Message "No connection to ExchangeOnline found. UnifiedGroup cannot be verified"
         }
       }
     }
@@ -3392,7 +3390,14 @@ function New-TeamsCallQueue {
         else {
           # Processing OverflowActionTarget
           try {
-            $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+            if (Test-ExchangeOnlineConnection) {
+              $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+            }
+            else {
+              Write-Verbose -Message "No connection to Exchange, verifying AzureAD Object instead" -Verbose
+              #TODO This Requires change to group, and correct lookup of DN or UPN respectively. Might need helper function!
+              $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+            }
             $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
           }
           catch {
@@ -3509,7 +3514,14 @@ function New-TeamsCallQueue {
         else {
           # Processing TimeoutActionTarget
           try {
-            $TimeoutwActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+            if (Test-ExchangeOnlineConnection) {
+              $TimeoutwActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+            }
+            else {
+              Write-Verbose -Message "TimeoutActionTarget '$TimeoutActionTarget' - No connection to Exchange, verifying AzureAD Object instead" -Verbose
+              #TODO This Requires change to group, and correct lookup of DN or UPN respectively. Might need helper function!
+              $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
+            }
             $Parameters += @{'TimeoutActionTarget' = $TimeoutwActionTargetId }
           }
           catch {
@@ -3804,11 +3816,16 @@ function Get-TeamsCallQueue {
   )
 
   begin {
-    # Caveat - Script in Testing
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    #$WarningPreference = "SilentlyContinue"
-    #Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
 
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
@@ -3894,85 +3911,95 @@ function Get-TeamsCallQueue {
           #>
 
           #region Finding OverflowActionTarget
-          switch ($Q.OverflowAction) {
-            "Forward" {
-              # Forward targets a "Person in the Organisation"
+          switch ($Q.OverflowActionTarget.Type) {
+            "ApplicationEndpoint" {
               try {
-                $TATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                $OAT = $OATobject.UserPrincipalName
               }
               catch {
                 Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
               }
             }
-            "Voicemail" {
-              # Voicemail targets a Users Mailbox
+            "Mailbox" {
               try {
-                $TATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                $OAT = $OATobject.DisplayName
               }
               catch {
                 Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
               }
             }
-            "SharedVoiceMail" {
-              # SharedVoiceMail targets an Office 365 Group
-              #TODO: Verify whether AzureADGroup consistently returns a correct result.
-              # The equivalent for AzureADgroup "ObjectId" on the Exchange Object for Get-UnifiedGroup is "ExternalDirectoryObjectId"
+            "User" {
               try {
-                $TATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                $OAT = $OATobject.UserPrincipalName
               }
               catch {
                 Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
               }
-            }
-            "DisconnectWithBusy" {
-              Write-Verbose -Message "'$($Q.Name)' OverflowActionTarget: Not configured"
             }
             default {
-              Write-Verbose -Message "'$($Q.Name)' OverflowActionTarget: Not configured"
+              try {
+                $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                $OAT = $OATobject.UserPrincipalName
+                if ($null -eq $TAT) {
+                  throw
+                }
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+              }
             }
           }
-          # Output: $OATobject.Userprincipalname
+
+          # Output: $OAT, $Q.OverflowActionTarget.Type
           #endregion
 
           #region Finding TimeoutActionTarget
-          switch ($Q.TimeoutAction) {
-            "Forward" {
-              # Forward targets a "Person in the Organisation"
+          switch ($Q.TimeoutActionTarget.Type) {
+            "ApplicationEndpoint" {
               try {
                 $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                $TAT = $TATObject.UserPrincipalName
               }
               catch {
                 Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
               }
             }
-            "Voicemail" {
-              # Voicemail targets a Users Mailbox
-              try {
-                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
-              }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-              }
-            }
-            "SharedVoiceMail" {
-              # SharedVoiceMail targets an Office 365 Group
-              #TODO: Verify whether AzureADGroup consistently returns a correct result.
-              # The equivalent for AzureADgroup "ObjectId" on the Exchange Object for Get-UnifiedGroup is "ExternalDirectoryObjectId"
+            "Mailbox" {
               try {
                 $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                $TAT = $TATObject.DisplayName
               }
               catch {
                 Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
               }
             }
-            "Disconnect" {
-              Write-Verbose -Message "'$($Q.Name)' TimeoutActionTarget: Not configured"
+            "User" {
+              try {
+                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                $TAT = $TATObject.UserPrincipalName
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+              }
             }
             default {
-              Write-Verbose -Message "'$($Q.Name)' TimeoutActionTarget: Not configured"
+              try {
+                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                $TAT = $TATObject.UserPrincipalName
+                if ($null -eq $TAT) {
+                  throw
+                }
+              }
+              catch {
+                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+              }
             }
           }
-          # Output: $TATobject.Userprincipalname
+
+          # Output: $TAT, $Q.TimeoutActionTarget.Type
           #endregion
 
           #region Endpoints - DistributionLists and Agents
@@ -4008,7 +4035,6 @@ function Get-TeamsCallQueue {
           #endregion
 
           #region Creating Output Object
-          Write-Verbose -Message "--- OUTPUT --------"
           # Building custom Object with Friendly Names
           if ($PSBoundParameters.ContainsKey('ConciseView')) {
             <# If Get-CsOnlineAudioFile were available, the following code would be an option to extend this function
@@ -4027,17 +4053,18 @@ function Get-TeamsCallQueue {
                 AgentAlertTime          = $Q.AgentAlertTime
                 AllowOptOut             = $Q.AllowOptOut
                 ConferenceMode          = $Q.ConferenceMode
+                OverflowThreshold       = $Q.OverflowThreshold
                 OverflowAction          = $Q.OverflowAction
-                OverflowActionTarget    = $OATobject.Userprincipalname
+                OverflowActionTarget    = $OAT
+                OverflowActionTargetType = $Q.OverflowActionTarget.Type
                 #OverflowSharedVoicemailAudioFilePrompt             = $Q.OverflowSharedVoicemailAudioFilePrompt
                 #OverflowSharedVoicemailTextToSpeechPrompt          = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-                OverflowThreshold       = $Q.OverflowThreshold
+                #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
                 TimeoutAction           = $Q.TimeoutAction
-                TimeoutActionTarget     = $TATobject.Userprincipalname
+                TimeoutActionTarget     = $TAT
+                TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
                 #TimeoutSharedVoicemailAudioFilePrompt              = $Q.TimeoutSharedVoicemailAudioFilePrompt
                 #TimeoutSharedVoicemailTextToSpeechPrompt           = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-                TimeoutThreshold        = $Q.TimeoutThreshold
-                #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
                 #EnableTimeoutSharedVoicemailTranscription          = $Q.EnableTimeoutSharedVoicemailTranscription
                 #LanguageId                                         = $Q.LanguageId
                 #LineUri                                            = $Q.LineUri
@@ -4059,17 +4086,19 @@ function Get-TeamsCallQueue {
                 AgentAlertTime        = $Q.AgentAlertTime
                 AllowOptOut           = $Q.AllowOptOut
                 ConferenceMode        = $Q.ConferenceMode
+                OverflowThreshold     = $Q.OverflowThreshold
                 OverflowAction        = $Q.OverflowAction
-                OverflowActionTarget  = $OATobject.Userprincipalname
+                OverflowActionTarget    = $OAT
+                OverflowActionTargetType = $Q.OverflowActionTarget.Type
                 #OverflowSharedVoicemailAudioFilePrompt             = $Q.OverflowSharedVoicemailAudioFilePrompt
                 #OverflowSharedVoicemailTextToSpeechPrompt          = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-                OverflowThreshold     = $Q.OverflowThreshold
+                #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
+                TimeoutThreshold      = $Q.TimeoutThreshold
                 TimeoutAction         = $Q.TimeoutAction
-                TimeoutActionTarget   = $TATobject.Userprincipalname
+                TimeoutActionTarget     = $TAT
+                TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
                 #TimeoutSharedVoicemailAudioFilePrompt              = $Q.TimeoutSharedVoicemailAudioFilePrompt
                 #TimeoutSharedVoicemailTextToSpeechPrompt           = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-                TimeoutThreshold      = $Q.TimeoutThreshold
-                #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
                 #EnableTimeoutSharedVoicemailTranscription          = $Q.EnableTimeoutSharedVoicemailTranscription
                 #LanguageId                                         = $Q.LanguageId
                 #LineUri                                            = $Q.LineUri
@@ -4091,17 +4120,19 @@ function Get-TeamsCallQueue {
               AgentAlertTime          = $Q.AgentAlertTime
               AllowOptOut             = $Q.AllowOptOut
               ConferenceMode          = $Q.ConferenceMode
+              OverflowThreshold       = $Q.OverflowThreshold
               OverflowAction          = $Q.OverflowAction
-              OverflowActionTarget    = $OATobject.Userprincipalname
+              OverflowActionTarget    = $OAT
+              OverflowActionTargetType = $Q.OverflowActionTarget.Type
               #OverflowSharedVoicemailAudioFilePrompt             = $Q.OverflowSharedVoicemailAudioFilePrompt
               #OverflowSharedVoicemailTextToSpeechPrompt          = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-              OverflowThreshold       = $Q.OverflowThreshold
+              #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
+              TimeoutThreshold        = $Q.TimeoutThreshold
               TimeoutAction           = $Q.TimeoutAction
-              TimeoutActionTarget     = $TATobject.Userprincipalname
+              TimeoutActionTarget     = $TAT
+              TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
               #TimeoutSharedVoicemailAudioFilePrompt              = $Q.TimeoutSharedVoicemailAudioFilePrompt
               #TimeoutSharedVoicemailTextToSpeechPrompt           = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-              TimeoutThreshold        = $Q.TimeoutThreshold
-              #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
               #EnableTimeoutSharedVoicemailTranscription          = $Q.EnableTimeoutSharedVoicemailTranscription
               #LanguageId                                         = $Q.LanguageId
               #LineUri                                            = $Q.LineUri
@@ -4130,17 +4161,19 @@ function Get-TeamsCallQueue {
                 AgentAlertTime                             = $Q.AgentAlertTime
                 AllowOptOut                                = $Q.AllowOptOut
                 ConferenceMode                             = $Q.ConferenceMode
+                OverflowThreshold                          = $Q.OverflowThreshold
                 OverflowAction                             = $Q.OverflowAction
-                OverflowActionTarget                       = $OATobject.Userprincipalname
+                OverflowActionTarget    = $OAT
+                OverflowActionTargetType = $Q.OverflowActionTarget.Type
                 OverflowSharedVoicemailAudioFilePrompt     = $Q.OverflowSharedVoicemailAudioFilePrompt
                 OverflowSharedVoicemailTextToSpeechPrompt  = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-                OverflowThreshold                          = $Q.OverflowThreshold
+                EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
+                TimeoutThreshold                           = $Q.TimeoutThreshold
                 TimeoutAction                              = $Q.TimeoutAction
-                TimeoutActionTarget                        = $TATobject.Userprincipalname
+                TimeoutActionTarget     = $TAT
+                TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
                 TimeoutSharedVoicemailAudioFilePrompt      = $Q.TimeoutSharedVoicemailAudioFilePrompt
                 TimeoutSharedVoicemailTextToSpeechPrompt   = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-                TimeoutThreshold                           = $Q.TimeoutThreshold
-                EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
                 EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
                 LanguageId                                 = $Q.LanguageId
                 #LineUri                                    = $Q.LineUri
@@ -4163,17 +4196,19 @@ function Get-TeamsCallQueue {
                 AgentAlertTime                             = $Q.AgentAlertTime
                 AllowOptOut                                = $Q.AllowOptOut
                 ConferenceMode                             = $Q.ConferenceMode
+                OverflowThreshold                          = $Q.OverflowThreshold
                 OverflowAction                             = $Q.OverflowAction
-                OverflowActionTarget                       = $OATobject.Userprincipalname
+                OverflowActionTarget    = $OAT
+                OverflowActionTargetType = $Q.OverflowActionTarget.Type
                 OverflowSharedVoicemailAudioFilePrompt     = $Q.OverflowSharedVoicemailAudioFilePrompt
                 OverflowSharedVoicemailTextToSpeechPrompt  = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-                OverflowThreshold                          = $Q.OverflowThreshold
+                EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
+                TimeoutThreshold                           = $Q.TimeoutThreshold
                 TimeoutAction                              = $Q.TimeoutAction
-                TimeoutActionTarget                        = $TATobject.Userprincipalname
+                TimeoutActionTarget     = $TAT
+                TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
                 TimeoutSharedVoicemailAudioFilePrompt      = $Q.TimeoutSharedVoicemailAudioFilePrompt
                 TimeoutSharedVoicemailTextToSpeechPrompt   = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-                TimeoutThreshold                           = $Q.TimeoutThreshold
-                EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
                 EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
                 LanguageId                                 = $Q.LanguageId
                 #LineUri                                    = $Q.LineUri
@@ -4196,17 +4231,19 @@ function Get-TeamsCallQueue {
               AgentAlertTime                             = $Q.AgentAlertTime
               AllowOptOut                                = $Q.AllowOptOut
               ConferenceMode                             = $Q.ConferenceMode
+              OverflowThreshold                          = $Q.OverflowThreshold
               OverflowAction                             = $Q.OverflowAction
-              OverflowActionTarget                       = $OATobject.Userprincipalname
+              OverflowActionTarget    = $OAT
+              OverflowActionTargetType = $Q.OverflowActionTarget.Type
               OverflowSharedVoicemailAudioFilePrompt     = $Q.OverflowSharedVoicemailAudioFilePrompt
               OverflowSharedVoicemailTextToSpeechPrompt  = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-              OverflowThreshold                          = $Q.OverflowThreshold
+              EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
+              TimeoutThreshold                           = $Q.TimeoutThreshold
               TimeoutAction                              = $Q.TimeoutAction
-              TimeoutActionTarget                        = $TATobject.Userprincipalname
+              TimeoutActionTarget     = $TAT
+              TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
               TimeoutSharedVoicemailAudioFilePrompt      = $Q.TimeoutSharedVoicemailAudioFilePrompt
               TimeoutSharedVoicemailTextToSpeechPrompt   = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-              TimeoutThreshold                           = $Q.TimeoutThreshold
-              EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
               EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
               LanguageId                                 = $Q.LanguageId
               #LineUri                                    = $Q.LineUri
@@ -4639,9 +4676,7 @@ function Set-TeamsCallQueue {
           $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
-          Write-Host "ERROR: You must call the Connect-ExchangeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-          Write-Host "INFO:  Connect-Me can be used with the Switch -ExchangeOnline" -ForegroundColor DarkCyan
-          break
+          Write-Warning -Message "No connection to ExchangeOnline found. UnifiedGroup cannot be verified"
         }
       }
     }
@@ -4840,7 +4875,14 @@ function Set-TeamsCallQueue {
           else {
             # Processing OverflowActionTarget
             try {
-              $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              if (Test-ExchangeOnlineConnection) {
+                $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              }
+              else {
+                Write-Verbose -Message "No connection to Exchange, verifying AzureAD Object instead" -Verbose
+                #TODO This Requires change to group, and correct lookup of DN or UPN respectively. Might need helper function!
+                $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+              }
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
             }
             catch {
@@ -4962,7 +5004,14 @@ function Set-TeamsCallQueue {
           else {
             # Processing TimeoutActionTarget
             try {
-              $TimeoutwActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              if (Test-ExchangeOnlineConnection) {
+                $TimeoutwActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              }
+              else {
+                Write-Verbose -Message "TimeoutActionTarget '$TimeoutActionTarget' - No connection to Exchange, verifying AzureAD Object instead" -Verbose
+                #TODO This Requires change to group, and correct lookup of DN or UPN respectively. Might need helper function!
+                $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
+              }
               $Parameters += @{'TimeoutActionTarget' = $TimeoutwActionTargetId }
             }
             catch {
@@ -5938,6 +5987,10 @@ function New-TeamsResourceAccount {
   } # end of begin
 
   process {
+#TODO Use Set-TeamsUSerLicense in NEW and SET!
+#TODO Change behaviour of script if no Exchange Connection is there!
+# DO: Write-Warning "no connection to Exchange, Unified Group cannot be verified."
+
     #region PREPARATION
     Write-Verbose -Message "--- PREPARATION ---"
     #region Normalising $UserPrincipalname
@@ -6174,7 +6227,6 @@ function New-TeamsResourceAccount {
     #endregion
 
     #region Output
-    Write-Verbose -Message "--- OUTPUT --------"
     #Creating new PS Object
     try {
       Write-Verbose -Message "'$Name' Preparing Output Object"
