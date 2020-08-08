@@ -220,7 +220,7 @@ function Set-TeamsUserLicense {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -710,7 +710,7 @@ function Add-TeamsUserLicense {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -1348,11 +1348,11 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 
   # Testing SkypeOnline Connection
   if (Test-SkypeOnlineConnection) {
-    Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
   }
   else {
     if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-      Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+      Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
       $null = Get-CsTenant
     }
     else {
@@ -1439,7 +1439,7 @@ function Get-TeamsUserLicense {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -1603,7 +1603,7 @@ function Get-TeamsTenantLicense {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -2352,7 +2352,7 @@ function Get-AzureADUserFromUPN {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -2403,7 +2403,7 @@ function Test-AzureADUser {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -2452,7 +2452,7 @@ function Test-AzureADGroup {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -2516,11 +2516,11 @@ function Test-TeamsUser {
   begin {
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -2574,11 +2574,11 @@ function Test-TeamsTenantPolicy {
   begin {
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -2682,7 +2682,7 @@ function Test-TeamsUserLicense {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -2973,7 +2973,7 @@ function New-TeamsCallQueue {
           return $true
         }
         else {
-          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
+          throw "OverflowActionTarget: Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
           #return $false
         }
       }
@@ -2997,7 +2997,7 @@ function New-TeamsCallQueue {
           }
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "OverflowSharedVoicemailAudioFile: File not found, please verify" -ForeGroundColor Red
           $false
         }
       })]
@@ -3014,7 +3014,7 @@ function New-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "Must be a value between 0 and 200s." -ForeGroundColor Red
+          Write-Host "OverflowThreshold: Must be a value between 0 and 200s." -ForeGroundColor Red
           $false
         }
       })]
@@ -3033,7 +3033,7 @@ function New-TeamsCallQueue {
           return $true
         }
         else {
-          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
+          throw "TimeoutActionTarget: Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
           #return $false
         }
       }
@@ -3047,7 +3047,7 @@ function New-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForeGroundColor Red
+          Write-Host "TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForeGroundColor Red
           $false
         }
       })]
@@ -3079,11 +3079,11 @@ function New-TeamsCallQueue {
               $True
             }
             else {
-              Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
             }
           }
           else {
-            Write-Host "File not found, please verify" -ForeGroundColor Red
+            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForeGroundColor Red
           }
         }
       })]
@@ -3096,12 +3096,12 @@ function New-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "MusicOnHoldAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
             $false
           }
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "MusicOnHoldAudioFile: File not found, please verify" -ForeGroundColor Red
           $false
         }
       })]
@@ -3116,7 +3116,7 @@ function New-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Distribution List '$e' not found" -ForeGroundColor Red
+            Write-Host "DistributionLists: '$e' not found" -ForeGroundColor Red
             $false
           }
         }
@@ -3130,7 +3130,7 @@ function New-TeamsCallQueue {
             return $true
           }
           else {
-            Write-Host "User '$e' not found!" -ForeGroundColor Red
+            Write-Host "Users: '$e' not found!" -ForeGroundColor Red
             return $false
           }
         }
@@ -3155,7 +3155,7 @@ function New-TeamsCallQueue {
 
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -3165,11 +3165,11 @@ function New-TeamsCallQueue {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -3194,11 +3194,11 @@ function New-TeamsCallQueue {
     if ($OverflowAction -eq "SharedVoiceMail" -or $TimeoutAction -eq "SharedVoiceMail") {
       # Testing Exchange Online Connection
       if (Test-ExchangeOnlineConnection) {
-        Write-Verbose -Message "INFO:  Session found, reusing existing connection to ExchangeOnline"
+        Write-Verbose -Message "ExchangeOnline: Valid Session found, reusing existing connection"
       }
       else {
         if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
-          Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+          Write-Host "ExchangeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
           $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
@@ -3208,17 +3208,20 @@ function New-TeamsCallQueue {
     }
 
     # Checking for Text-to-speech prompts without providing LanguageId
-    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt') -or $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt') -or $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
       if (-not $PSBoundParameters.ContainsKey('LanguageId')) {
         Write-Host "ERROR: You must provide the Parameter 'LanguageId' if using Text-to-speech prompts." -ForegroundColor Red
         break
       }
       else {
-        if ((Get-CsAutoAttendantSupportedLanguage -Id $LanguageId).VoiceResponseSupported) {
-          Write-Verbose "The provided LanguageId '$LanguageId' does support Voice Responses"
+        # Language has to be normalised as the Id is case sensititve
+        $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
+        Write-Verbose "Provided LanguageId '$LanguageId' normalised to '$Language'"
+        if ((Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported) {
+          Write-Verbose "The provided LanguageId '$Language' does support Voice Responses"
         }
         else {
-          Write-Warning "The provided LanguageId '$LanguageId' does not support Voice Responses"
+          Write-Warning "The provided LanguageId '$Language' does not support Voice Responses"
         }
       }
     }
@@ -3226,7 +3229,6 @@ function New-TeamsCallQueue {
 
   process {
     #region PREPARATION
-    Write-Verbose -Message "--- PREPARATION ---"
     # preparing Splatting Object
     $Parameters = $null
 
@@ -3396,7 +3398,7 @@ function New-TeamsCallQueue {
             else {
               Write-Verbose -Message "No connection to Exchange, verifying AzureAD Object instead" -Verbose
               #TODO This Requires change to group, and correct lookup of DN or UPN respectively. Might need helper function!
-              $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+              $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
             }
             $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
           }
@@ -3432,8 +3434,7 @@ function New-TeamsCallQueue {
           $OverflowAction = "DisconnectWithBusy"
         }
         else {
-          # TTS Parameter and Language provided
-          $Parameters += @{'LanguageId' = $LanguageId }
+          # TTS Parameter provided
           $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
         }
 
@@ -3452,6 +3453,11 @@ function New-TeamsCallQueue {
             break
           }
         }
+      }
+
+      # Processing TimeoutSharedVoicemailAudioFile
+      if ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) {
+        $Parameters += @{'EnableOverflowSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
       }
     }
     #endregion
@@ -3556,8 +3562,7 @@ function New-TeamsCallQueue {
           $TimeoutAction = "Disconnect"
         }
         else {
-          # TTS Parameter and Language provided
-          $Parameters += @{'LanguageId' = $LanguageId }
+          # TTS Parameter provided
           $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
         }
 
@@ -3577,6 +3582,11 @@ function New-TeamsCallQueue {
           }
         }
       }
+
+      # Processing TimeoutSharedVoicemailAudioFile
+      if ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')) {
+        $Parameters += @{'EnableTimeoutSharedVoicemailTranscription' = $EnableTimeoutSharedVoicemailTranscription }
+      }
     }
     #endregion
 
@@ -3584,6 +3594,11 @@ function New-TeamsCallQueue {
     # finally, after all checks are done, adding TimeoutAction to Parameters
     $Parameters += @{'TimeoutAction' = $TimeoutAction }
     #endregion
+
+    # Adding Language
+    if ($PSBoundParameters.ContainsKey('LanguageId')) {
+      $Parameters += @{'LanguageId' = $Language }
+    }
     #endregion
 
     #region Users - Parsing and verifying Users
@@ -3829,7 +3844,7 @@ function Get-TeamsCallQueue {
 
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -3839,11 +3854,11 @@ function Get-TeamsCallQueue {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -3864,15 +3879,12 @@ function Get-TeamsCallQueue {
       }
       else {
         # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
+        #$Queues = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue -ErrorAction STOP
         $Queues = Get-CsCallQueue -NameFilter "$Name" -ErrorAction STOP
 
         if ($null -ne $Queues) {
           if ($PSBoundParameters.ContainsKey('ConciseView')) {
-            Write-Verbose -Message "Parameters relating to Language & Shared Voicemail are not shown." -Verbose
-            Write-Verbose -Message "These are: OverflowSharedVoicemailAudioFilePrompt, OverflowSharedVoicemailTextToSpeechPrompt, TimeoutSharedVoicemailAudioFilePrompt, TimeoutSharedVoicemailTextToSpeechPrompt, EnableOverflowSharedVoicemailTranscription, EnableTimeoutSharedVoicemailTranscription, LanguageId, LineUri" -Verbose
-          }
-          else {
-            Write-Verbose -Message "All Parameters except 'LineUri' are shown"
+            Write-Verbose -Message "ConciseView: Parameters relating to Language & Shared Voicemail are not shown." -Verbose
           }
         }
 
@@ -3911,44 +3923,58 @@ function Get-TeamsCallQueue {
           #>
 
           #region Finding OverflowActionTarget
-          switch ($Q.OverflowActionTarget.Type) {
-            "ApplicationEndpoint" {
-              try {
-                $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
-                $OAT = $OATobject.UserPrincipalName
-              }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-              }
-            }
-            "Mailbox" {
-              try {
-                $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
-                $OAT = $OATobject.DisplayName
-              }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-              }
-            }
-            "User" {
-              try {
-                $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
-                $OAT = $OATobject.UserPrincipalName
-              }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-              }
-            }
-            default {
-              try {
-                $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
-                $OAT = $OATobject.UserPrincipalName
-                if ($null -eq $TAT) {
-                  throw
+          if ($null -eq $Q.OverflowActionTarget) {
+            $OAT = $null
+          }
+          else {
+            switch ($Q.OverflowActionTarget.Type) {
+              "ApplicationEndpoint" {
+                try {
+                  $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                  $OAT = $OATobject.UserPrincipalName
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
                 }
               }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+              "Mailbox" {
+                try {
+                  $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                  $OAT = $OATobject.DisplayName
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                }
+              }
+              "User" {
+                try {
+                  $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                  $OAT = $OATobject.UserPrincipalName
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                }
+              }
+              default {
+                try {
+                  $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                  $OAT = $OATobject.UserPrincipalName
+                  if ($null -eq $OAT) {
+                    try {
+                      $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                      $OAT = $OATobject.DisplayName
+                      if ($null -eq $OAT) {
+                        throw
+                      }
+                    }
+                    catch {
+                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                    }
+                  }
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                }
               }
             }
           }
@@ -3957,44 +3983,58 @@ function Get-TeamsCallQueue {
           #endregion
 
           #region Finding TimeoutActionTarget
-          switch ($Q.TimeoutActionTarget.Type) {
-            "ApplicationEndpoint" {
-              try {
-                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
-                $TAT = $TATObject.UserPrincipalName
-              }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-              }
-            }
-            "Mailbox" {
-              try {
-                $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
-                $TAT = $TATObject.DisplayName
-              }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-              }
-            }
-            "User" {
-              try {
-                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
-                $TAT = $TATObject.UserPrincipalName
-              }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-              }
-            }
-            default {
-              try {
-                $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
-                $TAT = $TATObject.UserPrincipalName
-                if ($null -eq $TAT) {
-                  throw
+          if ($null -eq $Q.OverflowActionTarget) {
+            $TAT = $null
+          }
+          else {
+            switch ($Q.TimeoutActionTarget.Type) {
+              "ApplicationEndpoint" {
+                try {
+                  $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                  $TAT = $TATObject.UserPrincipalName
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
                 }
               }
-              catch {
-                Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+              "Mailbox" {
+                try {
+                  $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                  $TAT = $TATObject.DisplayName
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                }
+              }
+              "User" {
+                try {
+                  $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                  $TAT = $TATObject.UserPrincipalName
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                }
+              }
+              default {
+                try {
+                  $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                  $TAT = $TATObject.UserPrincipalName
+                  if ($null -eq $TAT) {
+                    try {
+                      $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                      $TAT = $TATObject.DisplayName
+                      if ($null -eq $TAT) {
+                        throw
+                      }
+                    }
+                    catch {
+                      Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                    }
+                  }
+                }
+                catch {
+                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                }
               }
             }
           }
@@ -4110,36 +4150,36 @@ function Get-TeamsCallQueue {
             }
             #>
             $Q = [PSCustomObject][ordered]@{
-              Identity                = $Q.Identity
-              Name                    = $Q.Name
-              UseDefaultMusicOnHold   = $Q.UseDefaultMusicOnHold
-              MusicOnHoldAudioFileId  = $Q.MusicOnHoldAudioFileId
-              WelcomeMusicAudioFileId = $Q.WelcomeMusicAudioFileId
-              RoutingMethod           = $Q.RoutingMethod
-              PresenceBasedRouting    = $Q.PresenceBasedRouting
-              AgentAlertTime          = $Q.AgentAlertTime
-              AllowOptOut             = $Q.AllowOptOut
-              ConferenceMode          = $Q.ConferenceMode
-              OverflowThreshold       = $Q.OverflowThreshold
-              OverflowAction          = $Q.OverflowAction
-              OverflowActionTarget    = $OAT
+              Identity                 = $Q.Identity
+              Name                     = $Q.Name
+              UseDefaultMusicOnHold    = $Q.UseDefaultMusicOnHold
+              MusicOnHoldAudioFileId   = $Q.MusicOnHoldAudioFileId
+              WelcomeMusicAudioFileId  = $Q.WelcomeMusicAudioFileId
+              RoutingMethod            = $Q.RoutingMethod
+              PresenceBasedRouting     = $Q.PresenceBasedRouting
+              AgentAlertTime           = $Q.AgentAlertTime
+              AllowOptOut              = $Q.AllowOptOut
+              ConferenceMode           = $Q.ConferenceMode
+              OverflowThreshold        = $Q.OverflowThreshold
+              OverflowAction           = $Q.OverflowAction
+              OverflowActionTarget     = $OAT
               OverflowActionTargetType = $Q.OverflowActionTarget.Type
               #OverflowSharedVoicemailAudioFilePrompt             = $Q.OverflowSharedVoicemailAudioFilePrompt
               #OverflowSharedVoicemailTextToSpeechPrompt          = $Q.OverflowSharedVoicemailTextToSpeechPrompt
               #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
-              TimeoutThreshold        = $Q.TimeoutThreshold
-              TimeoutAction           = $Q.TimeoutAction
-              TimeoutActionTarget     = $TAT
-              TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
+              TimeoutThreshold         = $Q.TimeoutThreshold
+              TimeoutAction            = $Q.TimeoutAction
+              TimeoutActionTarget      = $TAT
+              TimeoutActionTargetType  = $Q.TimeoutActionTarget.Type
               #TimeoutSharedVoicemailAudioFilePrompt              = $Q.TimeoutSharedVoicemailAudioFilePrompt
               #TimeoutSharedVoicemailTextToSpeechPrompt           = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
               #EnableTimeoutSharedVoicemailTranscription          = $Q.EnableTimeoutSharedVoicemailTranscription
               #LanguageId                                         = $Q.LanguageId
               #LineUri                                            = $Q.LineUri
-              Users                   = $UserObjects.UserPrincipalName
-              DistributionLists       = $DLobjects.DisplayName
-              Agents                  = $AgentObjects.UserPrincipalName
-              ApplicationInstances    = $AIObjects.Userprincipalname
+              Users                    = $UserObjects.UserPrincipalName
+              DistributionLists        = $DLobjects.DisplayName
+              Agents                   = $AgentObjects.UserPrincipalName
+              ApplicationInstances     = $AIObjects.Userprincipalname
             }
           }
           else {
@@ -4233,15 +4273,15 @@ function Get-TeamsCallQueue {
               ConferenceMode                             = $Q.ConferenceMode
               OverflowThreshold                          = $Q.OverflowThreshold
               OverflowAction                             = $Q.OverflowAction
-              OverflowActionTarget    = $OAT
-              OverflowActionTargetType = $Q.OverflowActionTarget.Type
+              OverflowActionTarget                       = $OAT
+              OverflowActionTargetType                   = $Q.OverflowActionTarget.Type
               OverflowSharedVoicemailAudioFilePrompt     = $Q.OverflowSharedVoicemailAudioFilePrompt
               OverflowSharedVoicemailTextToSpeechPrompt  = $Q.OverflowSharedVoicemailTextToSpeechPrompt
               EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
               TimeoutThreshold                           = $Q.TimeoutThreshold
               TimeoutAction                              = $Q.TimeoutAction
-              TimeoutActionTarget     = $TAT
-              TimeoutActionTargetType = $Q.TimeoutActionTarget.Type
+              TimeoutActionTarget                        = $TAT
+              TimeoutActionTargetType                    = $Q.TimeoutActionTarget.Type
               TimeoutSharedVoicemailAudioFilePrompt      = $Q.TimeoutSharedVoicemailAudioFilePrompt
               TimeoutSharedVoicemailTextToSpeechPrompt   = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
               EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
@@ -4428,7 +4468,7 @@ function Set-TeamsCallQueue {
           return $true
         }
         else {
-          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
+          throw "OverflowActionTarget: Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
           #return $false
         }
       }
@@ -4452,7 +4492,7 @@ function Set-TeamsCallQueue {
           }
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "OverflowSharedVoicemailAudioFile: File not found, please verify" -ForeGroundColor Red
           $false
         }
       })]
@@ -4468,7 +4508,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "Must be a value between 0 and 200s." -ForeGroundColor Red
+          Write-Host "OverflowThreshold: Must be a value between 0 and 200s." -ForeGroundColor Red
           $false
         }
       })]
@@ -4527,7 +4567,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForeGroundColor Red
+          Write-Host "TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForeGroundColor Red
           $false
         }
       })]
@@ -4559,12 +4599,12 @@ function Set-TeamsCallQueue {
               $True
             }
             else {
-              Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
               $false
             }
           }
           else {
-            Write-Host "File not found, please verify" -ForeGroundColor Red
+            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForeGroundColor Red
             $false
           }
         }
@@ -4578,12 +4618,12 @@ function Set-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "MusicOnHoldAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
             $false
           }
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "MusicOnHoldAudioFile: File not found, please verify" -ForeGroundColor Red
           $false
         }
       })]
@@ -4598,7 +4638,7 @@ function Set-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Distribution List '$e' not found" -ForeGroundColor Red
+            Write-Host "DistributionLists: '$e' not found" -ForeGroundColor Red
             $false
           }
         }
@@ -4612,7 +4652,7 @@ function Set-TeamsCallQueue {
             return $true
           }
           else {
-            Write-Host "User '$e' not found!" -ForeGroundColor Red
+            Write-Host "Users: '$e' not found!" -ForeGroundColor Red
             return $false
           }
         }
@@ -4629,7 +4669,7 @@ function Set-TeamsCallQueue {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -4639,11 +4679,11 @@ function Set-TeamsCallQueue {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -4668,11 +4708,11 @@ function Set-TeamsCallQueue {
     if ($OverflowAction -eq "SharedVoiceMail" -or $TimeoutAction -eq "SharedVoiceMail") {
       # Testing Exchange Online Connection
       if (Test-ExchangeOnlineConnection) {
-        Write-Verbose -Message "INFO:  Session found, reusing existing connection to ExchangeOnline"
+        Write-Verbose -Message "ExchangeOnline: Valid Session found, reusing existing connection"
       }
       else {
         if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
-          Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+          Write-Host "ExchangeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
           $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
@@ -4682,25 +4722,28 @@ function Set-TeamsCallQueue {
     }
 
     # Checking for Text-to-speech prompts without providing LanguageId
-    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt') -or $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt') -or $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
       if (-not $PSBoundParameters.ContainsKey('LanguageId')) {
         Write-Host "ERROR: You must provide the Parameter 'LanguageId' if using Text-to-speech prompts." -ForegroundColor Red
         break
       }
       else {
-        if ((Get-CsAutoAttendantSupportedLanguage -Id $LanguageId).VoiceResponseSupported) {
-          Write-Verbose "The provided LanguageId '$LanguageId' does support Voice Responses"
+        # Language has to be normalised as the Id is case sensititve
+        $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
+        Write-Verbose "Provided LanguageId '$LanguageId' normalised to '$Language'"
+        if ((Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported) {
+          Write-Verbose "The provided LanguageId '$Language' does support Voice Responses"
         }
         else {
-          Write-Warning "The provided LanguageId '$LanguageId' does not support Voice Responses"
+          Write-Warning "The provided LanguageId '$Language' does not support Voice Responses"
         }
+
       }
     }
   }
 
   process {
     #region PREPARATION
-    Write-Verbose -Message "--- PREPARATION ---"
     # preparing Splatting Object
     $Parameters = $null
 
@@ -4708,16 +4751,16 @@ function Set-TeamsCallQueue {
     # Initial Query to determine uniqure result (single object)
     $CallQueue = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue
     if ($null -eq $CallQueue) {
-      Write-Error "No Object found for '$Name'" -Category ParserError -RecommendedAction  "Please check 'Name' provided"
+      Write-Error "'$Name' No Object found" -Category ParserError -RecommendedAction  "Please check 'Name' provided"
       break
     }
     elseif ($CallQueue.GetType().BaseType.Name -eq "Array") {
-      Write-Error "Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
+      Write-Error "'$Name' Multiple Results found! Cannot determine unique result." -Category ParserError -RecommendedAction  "Please use Set-CsCallQueue with the -Identity switch!"
       break
     }
     else {
       $ID = $CallQueue.Identity
-      Write-Verbose -Message "Call Queue found: Identity: $ID"
+      Write-Verbose -Message "'$Name' Call Queue found: Identity: $ID"
       $Parameters += @{'Identity' = $ID }
     }
     #endregion
@@ -4754,7 +4797,7 @@ function Set-TeamsCallQueue {
       }
     }
     else {
-      Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile: Using:   NONE or EXISTING"
+      Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   NONE or EXISTING"
     }
     #endregion
 
@@ -4919,8 +4962,7 @@ function Set-TeamsCallQueue {
           $OverflowAction = "DisconnectWithBusy"
         }
         else {
-          # TTS Parameter and Language provided
-          $Parameters += @{'LanguageId' = $LanguageId }
+          # TTS Parameter provided
           $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
         }
 
@@ -4940,6 +4982,11 @@ function Set-TeamsCallQueue {
           }
         }
       }
+    }
+
+    # Processing TimeoutSharedVoicemailAudioFile
+    if ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) {
+      $Parameters += @{'EnableOverflowSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
     }
     #endregion
 
@@ -5048,8 +5095,7 @@ function Set-TeamsCallQueue {
           $TimeoutAction = "Disconnect"
         }
         else {
-          # TTS Parameter and Language provided
-          $Parameters += @{'LanguageId' = $LanguageId }
+          # TTS Parameter provided
           $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
         }
 
@@ -5070,6 +5116,11 @@ function Set-TeamsCallQueue {
         }
       }
     }
+
+    # Processing TimeoutSharedVoicemailAudioFile
+    if ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')) {
+      $Parameters += @{'EnableTimeoutSharedVoicemailTranscription' = $EnableTimeoutSharedVoicemailTranscription }
+    }
     #endregion
 
     #region TimeoutAction conclusion
@@ -5078,6 +5129,11 @@ function Set-TeamsCallQueue {
       $Parameters += @{'TimeoutAction' = $TimeoutAction }
     }
     #endregion
+
+    # Adding Language
+    if ($PSBoundParameters.ContainsKey('LanguageId')) {
+      $Parameters += @{'LanguageId' = $Language }
+    }
     #endregion
 
     #region Users - Parsing and verifying Users
@@ -5162,7 +5218,7 @@ function Set-TeamsCallQueue {
 
 
     #region Common parameters
-    if ($PSBoundParameters.ContainsKey('Silent')) {
+    if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
       $Parameters += @{'WarningAction' = 'SilentlyContinue' }
     }
     else {
@@ -5184,12 +5240,9 @@ function Set-TeamsCallQueue {
 
     #region Output
     # Re-query output
-    $CallQueueFinal = Get-CsCallQueue -NameFilter $NameNormalised -WarningAction SilentlyContinue
+    #$CallQueueFinal = Get-CsCallQueue -NameFilter $NameNormalised -WarningAction SilentlyContinue
     if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
-      # Displaying Warning when no Agents are found
-      if ($null -eq $($CallQueueFinal.Agents) -and $null -eq $($CallQueueFinal.DistributionLists)) {
-        Write-Warning -Message "No Distribution Lists or Users added to callqueue. There will be no agents to call."
-      }
+      $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
       Return $CallQueueFinal
     }
     else {
@@ -5238,7 +5291,7 @@ function Remove-TeamsCallQueue {
 
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -5248,11 +5301,11 @@ function Remove-TeamsCallQueue {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection to"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -5317,7 +5370,7 @@ function Get-TeamsResourceAccountAssociation {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -5327,11 +5380,11 @@ function Get-TeamsResourceAccountAssociation {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -5470,7 +5523,7 @@ function New-TeamsResourceAccountAssociation {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -5480,11 +5533,11 @@ function New-TeamsResourceAccountAssociation {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -5730,7 +5783,7 @@ function Remove-TeamsResourceAccountAssociation {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -5740,11 +5793,11 @@ function Remove-TeamsResourceAccountAssociation {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -5950,7 +6003,7 @@ function New-TeamsResourceAccount {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -5960,11 +6013,11 @@ function New-TeamsResourceAccount {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -5987,9 +6040,9 @@ function New-TeamsResourceAccount {
   } # end of begin
 
   process {
-#TODO Use Set-TeamsUSerLicense in NEW and SET!
-#TODO Change behaviour of script if no Exchange Connection is there!
-# DO: Write-Warning "no connection to Exchange, Unified Group cannot be verified."
+    #TODO Use Set-TeamsUSerLicense in NEW and SET!
+    #TODO Change behaviour of script if no Exchange Connection is there!
+    # DO: Write-Warning "no connection to Exchange, Unified Group cannot be verified."
 
     #region PREPARATION
     Write-Verbose -Message "--- PREPARATION ---"
@@ -6374,7 +6427,7 @@ function Get-TeamsResourceAccount {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -6384,11 +6437,11 @@ function Get-TeamsResourceAccount {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -6600,7 +6653,7 @@ function Find-TeamsResourceAccount {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -6610,11 +6663,11 @@ function Find-TeamsResourceAccount {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -6860,7 +6913,7 @@ function Set-TeamsResourceAccount {
   begin {
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -6870,11 +6923,11 @@ function Set-TeamsResourceAccount {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -7320,7 +7373,7 @@ function Remove-TeamsResourceAccount {
 
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+      Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
     }
     else {
       Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -7330,11 +7383,11 @@ function Remove-TeamsResourceAccount {
 
     # Testing SkypeOnline Connection
     if (Test-SkypeOnlineConnection) {
-      Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+      Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
     }
     else {
       if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-        Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+        Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
         $null = Get-CsTenant
       }
       else {
@@ -7918,11 +7971,11 @@ function Backup-TeamsTenant {
 
   # Testing SkypeOnline Connection
   if (Test-SkypeOnlineConnection) {
-    Write-Verbose -Message "INFO:  Session found, reusing existing connection to SkypeOnline"
+    Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
   }
   else {
     if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
-      Write-Host "INFO:  Session found, but it requires reconnecting. Attempting to reconnect" -ForegroundColor DarkCyan
+      Write-Host "SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
       $null = Get-CsTenant
     }
     else {
@@ -8073,7 +8126,7 @@ function Get-AzureAdAssignedAdminRoles {
 
   # Testing AzureAD Connection
   if (Test-AzureADConnection) {
-    Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
   }
   else {
     Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
@@ -8143,7 +8196,7 @@ function New-AzureAdLicenseObject {
 
   # Testing AzureAD Connection
   if (Test-AzureADConnection) {
-    Write-Verbose -Message "INFO:  Session found, reusing existing connection to AzureAD - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
   }
   else {
     Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
