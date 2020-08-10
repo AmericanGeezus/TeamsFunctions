@@ -2802,7 +2802,6 @@ function Test-TeamsUserLicense {
 #endregion
 
 #region Call Queues - Work in Progress
-
 function Get-TeamsCallQueue {
   <#
 	.SYNOPSIS
@@ -3090,10 +3089,19 @@ function Get-TeamsCallQueue {
           #region Application Instance UPNs
           Write-Verbose -Message "'$($Q.Name)' Parsing Resource Accounts"
           foreach ($AI in $Q.ApplicationInstances) {
+            $AIobject = $null
             $AIobject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
-            [void]$AIObjects.Add($AIobject)
+            #TODO: Verify what to do if RA cannot be enumerated. Currently empty. Show ObjectId instead?
+            if ($null -ne $AIobject) {
+              [void]$AIObjects.Add($AIobject)
+            }
+            else {
+              # Create new Object with ObjectId as UPN and ObjectId?
+              [void]$AIObjects.Add($AIobject)
+            }
           }
-          # Output: $AIObjects.Userprincipalname
+
+          # Output: $AIObjects.UserPrincipalName
           #endregion
 
           #region Creating Output Object
@@ -4991,11 +4999,16 @@ function Set-TeamsCallQueue {
         "Forward" {
           # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
           try {
-            if ($OverflowActionTarget -match "^tel:\+\d|^\+\d") {
-              #Telephone Number
+            if ($OverflowActionTarget -match "^tel:\+\d") {
+              #Telephone URI
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTarget }
             }
-            elseif ($OverflowActionTarget -contains '@') {
+            elseif ($OverflowActionTarget -match "^\+\d") {
+              #Telephone Number (E.164)
+              $OverflowActionTargetNormalised = "tel:" + $OverflowActionTarget
+              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetNormalised }
+            }
+            elseif ($OverflowActionTarget -match '@') {
               #Assume it is a User
               $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$($OverflowActionTarget)" -ErrorAction STOP).ObjectId
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
@@ -5165,11 +5178,16 @@ function Set-TeamsCallQueue {
         "Forward" {
           # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
           try {
-            if ($TimeoutActionTarget -match "^tel:\+\d|^\+\d") {
-              #Telephone Number
+            if ($TimeoutActionTarget -match "^tel:\+\d") {
+              #Telephone URI
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTarget }
             }
-            elseif ($TimeoutActionTarget -contains '@') {
+            elseif ($TimeoutActionTarget -match "^\+\d") {
+              #Telephone Number (E.164)
+              $TimeoutActionTargetNormalised = "tel:" + $TimeoutActionTarget
+              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetNormalised }
+            }
+            elseif ($TimeoutActionTarget -match '@') {
               #Assume it is a User
               $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
