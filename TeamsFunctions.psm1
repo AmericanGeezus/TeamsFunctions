@@ -204,7 +204,7 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [ValidateSet('Microsoft365A3faculty', 'Microsoft365A3students', 'Microsoft365A5faculty', 'Microsoft365A5students', 'Microsoft365BusinessBasic', 'Microsoft365BusinessStandard', 'Microsoft365BusinessPremium', 'Microsoft365E3', 'Microsoft365E5', 'Microsoft365F1', 'Microsoft365F3', 'Office365A5faculty', 'Office365A5students', 'Office365E1', 'Office365E2', 'Office365E3', 'Office365E3Dev', 'Office365E4', 'Office365E5', 'Office365E5NoAudioConferencing', 'Office365F1', 'Microsoft365E3USGOVDOD', 'Microsoft365E3USGOVGCCHIGH', 'Office365E3USGOVDOD', 'Office365E3USGOVGCCHIGH', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone', 'SkypeOnlinePlan2', 'AudioConferencing', 'InternationalCallingPlan', 'DomesticCallingPlan', 'DomesticCallingPlan120', 'CommunicationCredits', 'SkypeOnlinePlan1')]
     #ValidateScript needs testing, but would make things easier here
-    #TODO: Test swap to ValidateScript
+    #TODO: Test swap to ValidateScript, FOREACH! and ARRAY - needs test!
     #[ValidateScript( {$_ -in $TeamsLicenses.ParameterName} )]
     [string[]]$AddLicenses,
 
@@ -456,7 +456,7 @@ function Set-TeamsUserLicense {
           }
           #endregion
 
-          $AddSkuIds.Add("$AddSku")
+          [void]$AddSkuIds.Add("$AddSku")
           Write-Verbose -Message "Preparing License Object: Adding   '$AddLicName'"
         }
 
@@ -476,7 +476,7 @@ function Set-TeamsUserLicense {
         foreach ($RemoveLic in $RemoveLicenses) {
           $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
           $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
-          $RemoveSkuIds.Add("$RemoveSku")
+          [void]$RemoveSkuIds.Add("$RemoveSku")
           Write-Verbose -Message "Preparing License Object: Removing '$RemoveLicName'"
         }
       }
@@ -526,7 +526,7 @@ function Set-TeamsUserLicense {
           foreach ($RemoveLic in $AllSkus) {
             $RemoveSku = ($AllLicenses | Where-Object SkuPartNumber -EQ $RemoveLic).('SkuId')
             $RemoveLicName = ($AllLicenses | Where-Object SkuPartNumber -EQ $RemoveLic).('FriendlyName')
-            $RemoveAllSkuIds.Add("$RemoveSku")
+            [void]$RemoveAllSkuIds.Add("$RemoveSku")
             Write-Verbose -Message "Preparing License Object: Removing '$RemoveLicName'"
           }
 
@@ -1127,9 +1127,12 @@ function Connect-SkypeTeamsAndAAD {
   $WarningPreference = "Continue"
 
   # Preparing variables
-  if (-not ('SkypeOnline' -in $PSBoundParameters -or 'MicrosoftTeams' -in $PSBoundParameters -or 'AzureAD' -in $PSBoundParameters)) {
+  if ($PSBoundParameters.ContainsKey('SkypeOnline') -or $PSBoundParameters.ContainsKey('AzureAD') -or $PSBoundParameters.ContainsKey('MicrosoftTeams')) {
     # No parameter provided. Assuming connection to all three!
-    $ConnectALL = $true
+    $ConnectALL = $false
+  }
+  else {
+    $ConnectAll = $true
   }
   if ($PSBoundParameters.ContainsKey('SkypeOnline')) {
     $ConnectToSkype = $true
@@ -1795,7 +1798,7 @@ function Remove-TenantDialPlanNormalizationRule {
       # If there is only 1 rule left, we have to set -NormalizationRules to $null
       if ($ruleCount -ne 1) {
         $newNormRules = $currentNormRules
-        $newNormRules.Remove($currentNormRules[$indexToRemove])
+        [void]$newNormRules.Remove($currentNormRules[$indexToRemove])
         if ($PSCmdlet.ShouldProcess("$DialPlan", "Set-CsTenantDialPlan")) {
           Set-CsTenantDialPlan -Identity $DialPlan -NormalizationRules $newNormRules
         }
@@ -5039,7 +5042,7 @@ function Set-TeamsCallQueue {
           if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
             # Both Parameters provided
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailAudioFile and OverflowSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only"
-            $PSBoundParameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
+            [void]$PSBoundParameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
           }
           elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
             # Neither Parameter provided
@@ -5218,7 +5221,7 @@ function Set-TeamsCallQueue {
           if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
             # Both Parameters provided
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailAudioFile and TimeoutSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only"
-            $PSBoundParameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
+            [void]$PSBoundParameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
           }
           elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
             # Neither Parameter provided
@@ -6162,9 +6165,9 @@ function New-TeamsResourceAccount {
     [string]$UsageLocation,
 
     [Parameter(HelpMessage = "License to be assigned")]
-    #[ValidateSet("PhoneSystem","PhoneSystem_VirtualUser")]
-    [ValidateSet("PhoneSystem_VirtualUser")]
-    [string]$License = "PhoneSystem_VirtualUser",
+    #[ValidateSet("PhoneSystem","PhoneSystemVirtualUser")]
+    [ValidateSet("PhoneSystemVirtualUser")]
+    [string]$License = "PhoneSystemVirtualUser",
 
     [Parameter(HelpMessage = "Telephone Number to assign")]
     [ValidateScript( {
@@ -6292,7 +6295,7 @@ function New-TeamsResourceAccount {
         while ( -not (Test-AzureADUser $UPN)) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been creaated (UserPrincipalName); Continue with Set-TeamsResourceAccount"
-            break
+            return
           }
           Write-Progress -Activity "'$Name' Azure Active Directory is creating the Object. Please wait" `
             -PercentComplete (($i * 100) / $imax) `
@@ -6304,13 +6307,13 @@ function New-TeamsResourceAccount {
         $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN"
       }
       else {
-        break
+        return
       }
     }
     catch {
       # Catching anything
       Write-Host "ERROR:   Creation failed: $($_.Exception.Message)" -ForegroundColor Red
-      break
+      return
     }
     #endregion
 
@@ -6338,54 +6341,40 @@ function New-TeamsResourceAccount {
       # Determining available Licenses from Tenant
       Write-Verbose -Message "'$Name' Querying Licenses..."
       $TenantLicenses = Get-TeamsTenantLicense
-      $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "MCOEV" }).Remaining
-      Write-Verbose -Message "INFO: $RemainingPSlicenses remaining Phone System Licenses"
-      $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
-      Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
 
       # Assigning License
       switch ($License) {
-        "PhoneSystem" {
-          $ServicePlanName = "MCOEV"
-          # PhoneSystem is currently disabled
-          # It would require an E1/E3 license in addition OR a full E5 license
-          # Deliberations and confirmation needed.
-
-          # Free License
-          if ($RemainingPSlicenses -lt 1) {
-            Write-Warning -Message "ERROR: No free PhoneSystem License remaining in the Tenant. Trying to assign..."
-          }
-          else {
-            try {
-              if ($PSCmdlet.ShouldProcess("$UPN", "Add-TeamsUserLicense -AddPhoneSystem")) {
-                $null = (Add-TeamsUserLicense -Identity $UPN -AddPhoneSystem -WarningAction STOP -ErrorAction STOP)
-                Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
-                $Islicensed = $true
-              }
-            }
-            catch {
-              Write-Error -Message "'$Name' License assignment failed"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
-            }
-          }
-        }
-        "PhoneSystem_VirtualUser" {
-          $ServicePlanName = "MCOEV_VIRTUALUSER"
+        "PhoneSystemVirtualUser" {
+          $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
+          Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
           if ($RemainingPSVUlicenses -lt 1) {
             Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
           }
           else {
             try {
               if ($PSCmdlet.ShouldProcess("$UPN", "Add-TeamsUserLicense -AddPhoneSystemVirtualUser")) {
-                $null = (Add-TeamsUserLicense -Identity $UPN -WarningAction STOP -AddPhoneSystemVirtualUser -ErrorAction STOP)
+                $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
                 Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
                 $Islicensed = $true
               }
             }
             catch {
-              Write-Error -Message "'$Name' License assignment failed"
+              Write-Error -Message "'$Name' License assignment failed for '$License'"
               Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
+          }
+        }
+        default {
+          try {
+            if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses $License")) {
+              $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
+              Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+              $Islicensed = $true
+            }
+          }
+          catch {
+            Write-Error -Message "'$Name' License assignment failed for '$License'"
+            Write-ErrorRecord $_ #This handles the eror message in human readable format.
           }
         }
       }
@@ -6470,13 +6459,14 @@ function New-TeamsResourceAccount {
       $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
 
       # Resource Account License
+      #TODO Change License output and verification against $TeamsLicenses
       if ($Islicensed) {
         # License
         if (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV) {
           $ResourceAccuntLicense = "PhoneSystem"
         }
         elseif (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccuntLicense = "PhoneSystem_VirtualUser"
+          $ResourceAccuntLicense = "PhoneSystemVirtualUser"
         }
         else {
           $ResourceAccuntLicense = $null
@@ -6528,6 +6518,7 @@ function New-TeamsResourceAccount {
     }
     #endregion
 
+    #TODO remove status indicators!
     Write-Verbose -Message "--- DONE ----------"
   }
 
@@ -6701,12 +6692,13 @@ function Get-TeamsResourceAccount {
 
         # Resource Account License
         # License
+        #TODO Change License output and verification against $TeamsLicenses
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: License"
         if (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV) {
-          $ResourceAccuntLicense = "PhoneSystem (Add-on)"
+          $ResourceAccuntLicense = "PhoneSystem"
         }
         elseif (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccuntLicense = "PhoneSystem_VirtualUser"
+          $ResourceAccuntLicense = "PhoneSystemVirtualUser"
         }
         else {
           $ResourceAccuntLicense = $null
@@ -7082,8 +7074,8 @@ function Set-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "License to be assigned")]
     #[ValidateSet("PhoneSystem","PhoneSystem_VirtualUser")]
-    [ValidateSet("PhoneSystem_VirtualUser")]
-    [string]$License = "PhoneSystem_VirtualUser",
+    [ValidateSet("PhoneSystemVirtualUser")]
+    [string]$License = "PhoneSystemVirtualUser",
 
     [Parameter(HelpMessage = "Telephone Number to assign")]
     [Alias("Tel", "Number", "TelephoneNumber")]
@@ -7229,11 +7221,12 @@ function Set-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey("License") -or $PSBoundParameters.ContainsKey("PhoneNumber")) {
       $CurrentLicense = $null
       # Determining license Status of Object
+      #TODO Check Status - Test should go against Lic not SP!
       if (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan MCOEV) {
         $CurrentLicense = "PhoneSystem"
       }
       elseif (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan MCOEV_VIRTUALUSER) {
-        $CurrentLicense = "PhoneSystem_VirtualUser"
+        $CurrentLicense = "PhoneSystemVirtualUser"
       }
       if ($null -ne $CurrentLicense) {
         Write-Verbose -Message "'$Name' Current License assigned: $CurrentLicense"
@@ -7326,77 +7319,37 @@ function Set-TeamsResourceAccount {
       else {
         # Switching dependent on input
         switch ($License) {
-          "PhoneSystem" {
-            $ServicePlanName = "MCOEV"
-            # PhoneSystem is currently disabled
-            # It would require an E1/E3 license in addition OR a full E5 license
-            # Deliberations and confirmation needed.
-
-            Write-Verbose -Message "Testing whether PhoneSystem License is available"
-            $RemainingPSlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System Add-On" }).Remaining
-            if ($RemainingPSlicenses -lt 1) {
-              Write-Error -Message "ERROR: No free PhoneSystem License remaining in the Tenant!"
+          "PhoneSystemVirtualUser" {
+            $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
+            Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
+            if ($RemainingPSVUlicenses -lt 1) {
+              Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
             }
             else {
-              Write-Verbose -Message "SUCCESS - Phone System License found available"
               try {
-                if ($null -eq $CurrentLicense) {
-                  if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Add-TeamsUserLicense -AddPhoneSystem")) {
-                    Write-Verbose -Message "'$Name' Assigning new License: '$License'"
-                    Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystem -ErrorAction STOP
-                    Write-Verbose -Message "SUCCESS"
-                  }
+                if ($PSCmdlet.ShouldProcess("$UPN", "Add-TeamsUserLicense -AddPhoneSystemVirtualUser")) {
+                  $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
+                  Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+                  $Islicensed = $true
                 }
-                else {
-                  if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Add-TeamsUserLicense -AddPhoneSystem -Replace")) {
-                    Write-Verbose -Message "'$Name' Changing License from '$CurrentLicense' to '$License'"
-                    #This will fail - currently blocked in Add-TeamsUserLicense
-                    Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystem -Replace -ErrorAction STOP
-                    Write-Verbose -Message "SUCCESS"
-                  }
-                }
-                Write-Verbose -Message "SUCCESS - PhoneSystem License assigned"
-                $Islicensed = $true
               }
               catch {
-                Write-Error -Message "License assignment failed"
-                $Islicensed = $false
+                Write-Error -Message "'$Name' License assignment failed for '$License'"
                 Write-ErrorRecord $_ #This handles the eror message in human readable format.
               }
             }
           }
-          "PhoneSystem_VirtualUser" {
-            $ServicePlanName = "MCOEV_VIRTUALUSER"
-            Write-Verbose -Message "Testing whether PhoneSystem Virtual User License is available"
-            $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.License -eq "Phone System - Virtual User" }).Remaining
-            if ($RemainingPSVUlicenses -lt 1) {
-              Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant!"
-            }
-            else {
-              Write-Verbose -Message "SUCCESS - Phone System Virtual User License found available"
-              try {
-                if ($null -eq $CurrentLicense) {
-                  if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Add-TeamsUserLicense -AddPhoneSystemVirtualUser")) {
-                    Write-Verbose -Message "'$Name' Assigning new License: '$License'"
-                    Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystemVirtualUser -ErrorAction STOP
-                    Write-Verbose -Message "SUCCESS"
-                  }
-                }
-                else {
-                  if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Add-TeamsUserLicense -AddPhoneSystemVirtualUser -Replace")) {
-                    Write-Verbose -Message "'$Name' Changing License from '$CurrentLicense' to '$License'"
-                    Add-TeamsUserLicense -Identity $UserPrincipalName -AddPhoneSystemVirtualUser -Replace -ErrorAction STOP
-                    Write-Verbose -Message "SUCCESS"
-                  }
-                }
-                Write-Verbose -Message "SUCCESS - PhoneSystem Virtual User License assigned"
+          default {
+            try {
+              if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses $License")) {
+                $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
+                Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
                 $Islicensed = $true
               }
-              catch {
-                Write-Error -Message "License assignment failed"
-                $Islicensed = $false
-                Write-ErrorRecord $_ #This handles the eror message in human readable format.
-              }
+            }
+            catch {
+              Write-Error -Message "'$Name' License assignment failed for '$License'"
+              Write-ErrorRecord $_ #This handles the eror message in human readable format.
             }
           }
         }
@@ -7413,7 +7366,7 @@ function Set-TeamsResourceAccount {
       while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
         if ($i -gt $imax) {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount"
-          break
+          return
         }
         Write-Progress -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
           -PercentComplete (($i * 100) / $imax) `
@@ -7484,6 +7437,7 @@ function Set-TeamsResourceAccount {
     }
     #endregion
 
+    #TODO remove status indicators
     Write-Verbose -Message "--- DONE ----------"
     #endregion
   }
@@ -7988,7 +7942,7 @@ function Restore-TeamsEV {
 
     # Only include the external access prefix if one is defined. MS throws an error if you pass a null/empty ExternalAccessPrefix
     If ($Dialplan.ExternalAccessPrefix) {
-      $DPDetails.Add("ExternalAccessPrefix", $Dialplan.ExternalAccessPrefix)
+      [void]$DPDetails.Add("ExternalAccessPrefix", $Dialplan.ExternalAccessPrefix)
     }
 
     If ($DPExists) {
