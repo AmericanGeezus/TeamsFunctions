@@ -105,13 +105,12 @@
   20.08.08 prerelease
         Fixes for New-TeamsCallQueue, Set-TeamsCallQueue
   20.08.14 prerelease
-        Fixes for New-TeamsCallQueue, Set-TeamsCallQueue
+        Fixes for New-TeamsCallQueue, Set-TeamsCallQueue (major improvements for Shared Voicemail and its complex requirements)
         Fixes for Connect-SkypeTeamsAndAAD to allow for individual connection (logic error)
-        Better reordering and regrouping of Functions due to volume
+        Restructured Module File (function order) and regrouped the functions for better management
   #>
 
 #region Session Connection
-
 function Connect-SkypeOnline {
   <#
 	.SYNOPSIS
@@ -537,11 +536,6 @@ function Disconnect-SkypeTeamsAndAAD {
   }
 }
 
-Set-Alias -Name con -Value Connect-SkypeTeamsAndAAD
-Set-Alias -Name Connect-Me -Value Connect-SkypeTeamsAndAAD
-Set-Alias -Name Disconnect-Me -Value Disconnect-SkypeTeamsAndAAD
-Set-Alias -Name dis -Value Disconnect-SkypeTeamsAndAAD
-
 function Disconnect-SkypeOnline {
   <#
 		.SYNOPSIS
@@ -572,6 +566,11 @@ function Disconnect-SkypeOnline {
   }
 
 }
+
+Set-Alias -Name con -Value Connect-SkypeTeamsAndAAD
+Set-Alias -Name Connect-Me -Value Connect-SkypeTeamsAndAAD
+Set-Alias -Name Disconnect-Me -Value Disconnect-SkypeTeamsAndAAD
+Set-Alias -Name dis -Value Disconnect-SkypeTeamsAndAAD
 #endregion
 
 
@@ -1061,7 +1060,7 @@ function Add-TeamsUserLicense {
 		Teams services are available through assignment of different types of licenses.
 		This command allows assigning one or more Teams related Office 365 licenses to a user account to enable
     the different services, such as E3/E5, Phone System, Calling Plans, and Audio Conferencing.
-    This function is deprecated. Please use Set-TeamsUserLicense instead
+    NOTE: This function is deprecated. Please use Set-TeamsUserLicense instead
 	.PARAMETER Identity
 		The sign-in address or User Principal Name of the user account to modify.
 	.PARAMETER AddSFBO2
@@ -1377,8 +1376,8 @@ function Get-TeamsUserLicense {
   .LINK
     Get-TeamsTenantLicense
     Set-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
     Test-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
   #>
 
   [CmdletBinding()]
@@ -1538,8 +1537,8 @@ function Get-TeamsTenantLicense {
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
     Test-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
 	#>
 
   [CmdletBinding()]
@@ -1703,8 +1702,9 @@ function Get-TeamsCallQueue {
 		New-TeamsCallQueue
 		Set-TeamsCallQueue
 		Remove-TeamsCallQueue
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
   param(
     [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = 'Partial or full Name of the Call Queue to search')]
@@ -2208,6 +2208,7 @@ function Get-TeamsCallQueue {
 
   }
 }
+
 function New-TeamsCallQueue {
   <#
 	.SYNOPSIS
@@ -2249,11 +2250,11 @@ function New-TeamsCallQueue {
 		Required if UseDefaultMusicOnHold is not specified/set to TRUE
 		Accepted Formats: MP3, WAV or WMA format, max 5MB
 	.PARAMETER OverflowAction
-		Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail
+		Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail, SharedVoiceMail
 		Action to be taken if the Queue size limit (OverflowThreshold) is reached
 		Forward requires specification of OverflowActionTarget
 	.PARAMETER OverflowActionTarget
-		Situational. Required only if OverflowAction is Forward
+		Situational. Required only if OverflowAction is not DisconnectWithBusy
 		UserPrincipalName of the Target
 	.PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
@@ -2268,11 +2269,11 @@ function New-TeamsCallQueue {
 		Optional. Default:  30s,   Microsoft Default:   50s (See Parameter UseMicrosoftDefaults)
 		Time in Seconds for the OverflowAction to trigger
 	.PARAMETER TimeoutAction
-		Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail
+		Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
 		Action to be taken if the TimeoutThreshold is reached
 		Forward requires specification of TimeoutActionTarget
 	.PARAMETER TimeoutActionTarget
-		Situational. Required only if TimeoutAction is Forward
+		Situational. Required only if TimeoutAction is not Disconnect
 		UserPrincipalName of the Target
 	.PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
@@ -2298,7 +2299,7 @@ function New-TeamsCallQueue {
 		Will establish a conference instead of a direct call and should help with connection time.
 		Documentation vague.
 	.PARAMETER DistributionLists
-		Optional. UPNs of DistributionLists or Groups to be used as Agents.
+		Optional. Display Names of DistributionLists or Groups to be used as Agents.
 		Will be parsed after Users if they are specified as well.
 	.PARAMETER Users
 		Optional. UPNs of Users.
@@ -2338,8 +2339,9 @@ function New-TeamsCallQueue {
 		Get-TeamsCallQueue
 		Set-TeamsCallQueue
 		Remove-TeamsCallQueue
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -2347,10 +2349,12 @@ function New-TeamsCallQueue {
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
     [string]$Name,
 
+    [Parameter(HelpMessage = "Will adhere to defaults as Microsoft outlines in New-CsCallQueue")]
+    [switch]$UseMicrosoftDefaults,
+
     [Parameter(HelpMessage = "No output is written to the screen, but Object returned for processing")]
     [switch]$Silent,
 
-    #Deviation from MS Default (30s)
     [Parameter(HelpMessage = "Time an agent is alerted in seconds (15-180s)")]
     [ValidateScript( {
         If ($_ -ge 15 -and $_ -le 180) {
@@ -2361,9 +2365,8 @@ function New-TeamsCallQueue {
           $false
         }
       })]
-    [int16]$AgentAlertTime = 20,
+    [int16]$AgentAlertTime,
 
-    #Deviation from MS Default
     [Parameter(HelpMessage = "Can agents opt in or opt out from taking calls from a Call Queue (Default: TRUE)")]
     [boolean]$AllowOptOut,
 
@@ -2376,16 +2379,6 @@ function New-TeamsCallQueue {
     # if OverflowAction is not DisconnectWithBusy, this is required
     [Parameter(HelpMessage = "TEL URI or UPN that is targeted upon overflow, only valid for forwarded calls")]
     [Alias('OAT')]
-    [ValidateScript( {
-        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
-          return $true
-        }
-        else {
-          throw "OverflowActionTarget: Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
-          #return $false
-        }
-      }
-    )]
     [string]$OverflowActionTarget,
 
     #region OverflowAction = SharedVoiceMail
@@ -2430,7 +2423,7 @@ function New-TeamsCallQueue {
           $false
         }
       })]
-    [int16]$OverflowThreshold = 10,
+    [int16]$OverflowThreshold,
     #endregion
 
     #region Timeout Params
@@ -2442,16 +2435,6 @@ function New-TeamsCallQueue {
     # if TimeoutAction is not Disconnect, this is required
     [Parameter(HelpMessage = "TEL URI or UPN that is targeted upon timeout, only valid for forwarded calls")]
     [Alias('TAT')]
-    [ValidateScript( {
-        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
-          return $true
-        }
-        else {
-          throw "TimeoutActionTarget: Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
-          #return $false
-        }
-      }
-    )]
     [string]$TimeoutActionTarget,
 
     #region TimeoutAction = SharedVoiceMail
@@ -2496,7 +2479,7 @@ function New-TeamsCallQueue {
           $false
         }
       })]
-    [int16]$TimeoutThreshold = 30,
+    [int16]$TimeoutThreshold,
     #endregion
 
     [Parameter(HelpMessage = "Method to alert Agents")]
@@ -2587,11 +2570,7 @@ function New-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
-    [string]$LanguageId,
-
-    [Parameter(HelpMessage = "Will adhere to defaults as Microsoft outlines in New-CsCallQueue")]
-    [switch]$UseMicrosoftDefaults
-
+    [string]$LanguageId
   )
 
   begin {
@@ -2649,18 +2628,11 @@ function New-TeamsCallQueue {
           $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
-          Write-Warning -Message "No connection to ExchangeOnline found. UnifiedGroup cannot be verified"
+          Write-Verbose -Message "ExchangeOnline: No session found. Shared Voicemail Targets will be queried against AzureAD only"
         }
       }
     }
 
-    # Checking for Text-to-speech prompts without providing LanguageId
-    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt') -or $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-      if (-not $PSBoundParameters.ContainsKey('LanguageId')) {
-        Write-Host "ERROR: You must provide the Parameter 'LanguageId' if using Text-to-speech prompts." -ForegroundColor Red
-        break
-      }
-    }
 
     # Language has to be normalised as the Id is case sensititve
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
@@ -2671,6 +2643,17 @@ function New-TeamsCallQueue {
       }
       else {
         Write-Warning "LanguageId '$Language' - Voice Responses not supported"
+      }
+    }
+    else {
+      # Checking for Parameters which would require LanguageId
+      if (($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) -or `
+        ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) -or `
+        ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) -or `
+        ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription'))) {
+
+        Write-Error "Parameter LanguageId is required and missing. Text-to-speech prompts or Transcription require specification of a Language. No default is available." -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
+        return
       }
     }
   }
@@ -2687,7 +2670,7 @@ function New-TeamsCallQueue {
     $Parameters += @{'Name' = $NameNormalised }
     #endregion
 
-    #region Required Parameters: MusicOnHold
+    #region Music On Hold
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile') -and $PSBoundParameters.ContainsKey('UseDefaultMusicOnHold')) {
       Write-Warning -Message "'$NameNormalised' MusicOnHoldAudioFile and UseDefaultMusicOnHold are mutually exclusive. UseDefaultMusicOnHold is ignored!"
       $UseDefaultMusicOnHold = $false
@@ -2708,8 +2691,8 @@ function New-TeamsCallQueue {
       }
     }
     else {
-      $UseDefaultMusicOnHold = $true
       Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   DEFAULT"
+      $UseDefaultMusicOnHold = $true
       $Parameters += @{'UseDefaultMusicOnHold' = $true }
     }
     #endregion
@@ -2738,13 +2721,24 @@ function New-TeamsCallQueue {
     }
     #endregion
 
+    #region ValueSet Parameters
+    # RoutingMethod
+    if ($PSBoundParameters.ContainsKey('RoutingMethod')) {
+      $Parameters += @{'RoutingMethod' = $RoutingMethod }
+    }
+    #endregion
+
     #region Boolean Parameters
+    # PresenceBasedRouting
+    if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
+      $Parameters += @{'PresenceBasedRouting' = $PresenceBasedRouting }
+    }
+    # AllowOptOut
     if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
-      Write-Verbose -Message "'$NameNormalised' Setting default value: AllowOptOut: $AllowOptOut"
       $Parameters += @{'AllowOptOut' = $AllowOptOut }
     }
+    # ConferenceMode
     if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
-      Write-Verbose -Message "'$NameNormalised' Setting default value: ConferenceMode: $ConferenceMode"
       $Parameters += @{'ConferenceMode' = $ConferenceMode }
     }
     #endregion
@@ -2752,316 +2746,428 @@ function New-TeamsCallQueue {
     #region Valued Parameters
     if ($PSBoundParameters.ContainsKey('UseMicrosoftDefaults')) {
       Write-Verbose -Message "'$NameNormalised' Setting default values according to New-CsCallQueue (Microsoft defaults)" -Verbose
+      # AgentAlertTime
+      if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
+        Write-Verbose -Message "'$NameNormalised' AgentAlertTime: $AgentAlertTime" -Verbose
+        $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
+      }
+      # OverflowThreshold
+      if ($PSBoundParameters.ContainsKey('OverflowThreshold')) {
+        Write-Verbose -Message "'$NameNormalised' OverflowThreshold: $OverflowThreshold" -Verbose
+        $Parameters += @{'OverflowThreshold' = $OverflowThreshold }
+      }
+      # TimeoutThreshold
+      if ($PSBoundParameters.ContainsKey('TimeoutThreshold')) {
+        Write-Verbose -Message "'$NameNormalised' TimeoutThreshold: $TimeoutThreshold" -Verbose
+        $Parameters += @{'TimeoutThreshold' = $TimeoutThreshold }
+      }
     }
     else {
       Write-Verbose -Message "'$NameNormalised' Setting default values according to New-TeamsCallQueue (optimised defaults)" -Verbose
-    }
-    # AgentAlertTime
-    if (-not $PSBoundParameters.ContainsKey('AgentAlertTime')) {
-      if ($PSBoundParameters.ContainsKey('UseMicrosoftDefaults')) {
-        $AgentAlertTime = 30
+      # AgentAlertTime
+      if (-not $PSBoundParameters.ContainsKey('AgentAlertTime')) {
+        $AgentAlertTime = 20
       }
-      # AgentAlertTime    is set within PARAM block to 20s
-    }
-    $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
-    Write-Verbose -Message "'$NameNormalised' Setting default value: AgentAlertTime: $AgentAlertTime"
+      Write-Verbose -Message "'$NameNormalised' AgentAlertTime: $AgentAlertTime" -Verbose
+      $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
 
-    # OverflowThreshold
-    if (-not $PSBoundParameters.ContainsKey('OverflowThreshold')) {
-      if ($PSBoundParameters.ContainsKey('UseMicrosoftDefaults')) {
-        $OverflowThreshold = 50
+      # OverflowThreshold
+      if (-not $PSBoundParameters.ContainsKey('OverflowThreshold')) {
+        $OverflowThreshold = 10
       }
-      # OverflowThreshold is set within PARAM block to 30s
-    }
-    $Parameters += @{'OverflowThreshold' = $OverflowThreshold }
-    Write-Verbose -Message "'$NameNormalised' Setting default value: OverflowThreshold: $OverflowThreshold"
+      Write-Verbose -Message "'$NameNormalised' OverflowThreshold: $OverflowThreshold" -Verbose
+      $Parameters += @{'OverflowThreshold' = $OverflowThreshold }
 
-    # TimeoutThreshold
-    if (-not $PSBoundParameters.ContainsKey('TimeoutThreshold')) {
-      if ($PSBoundParameters.ContainsKey('UseMicrosoftDefaults')) {
-        $TimeoutThreshold = 1200
+      # TimeoutThreshold
+      if (-not $PSBoundParameters.ContainsKey('TimeoutThreshold')) {
+        $TimeoutThreshold = 30
       }
-      # TimeoutTheshold   is set within PARAM block to 30s
+      Write-Verbose -Message "'$NameNormalised' TimeoutThreshold: $TimeoutThreshold" -Verbose
+      $Parameters += @{'TimeoutThreshold' = $TimeoutThreshold }
     }
-    $Parameters += @{'TimeoutThreshold' = $TimeoutThreshold }
-    Write-Verbose -Message "'$NameNormalised' Setting default value: TimeoutThreshold: $TimeoutThreshold"
     #endregion
 
+
+    #region Language
+    if ($PSBoundParameters.ContainsKey('LanguageId')) {
+      $Parameters += @{'LanguageId' = $Language }
+    }
+
+    # Checking for Text-to-speech prompts without providing LanguageId
+    # This is already done in the BEGIN block
+    #endregion
+
+
     #region Overflow
-    #region Overflow Action and Target
-    # Overflow Action
-    Write-Verbose -Message "'$NameNormalised' Parsing requirements for OverflowAction: $OverflowAction"
-    switch ($OverflowAction) {
-      "DisconnectWithBusy" {
-        # No Action - Default
-      }
-      "Forward" {
-        # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
-        if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
-          Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $OverflowAction = "DisconnectWithBusy"
+    #region Overflow Action
+    if ($PSBoundParameters.ContainsKey('OverflowAction')) {
+      Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' Parsing requirements"
+      if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
+        # We have a Target
+        if ($OverflowAction -eq "DisconnectWithBusy") {
+          #but we don't need one
+          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' does not require an OverflowActionTarget. It will not be processed" -Verbose
         }
         else {
-          # Processing OverflowActionTarget
+          # OK
+          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' and OverflowActionTarget '$OverflowActionTarget' specified. Processing both."
+        }
+        # NEW: Adding Action only with a Target | SET: Adding Action if specified
+        $Parameters += @{'OverflowAction' = $OverflowAction }
+      }
+      elseif ($OverflowAction -ne "DisconnectWithBusy") {
+        Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction' not set! Parameter OverflowActionTarget missing OverflowAction will not be set"
+      }
+    }
+    else {
+      $OverflowAction = $CallQueue.OverflowAction
+      Write-Verbose -Message "'$NameNormalised' Parameter OverflowAction not present. Using existing setting: '$OverflowAction'"
+    }
+    #endregion
+
+    #region OverflowActionTarget
+    # Processing for Target is depenent on Action
+    if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
+      switch ($OverflowAction) {
+        "DisconnectWithBusy" {
+          # Explicit setting of DisconnectWithBusy
+          if (-not $PSBoundParameters.ContainsKey('OverflowAction')) {
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': No Overflow-Parameters are processed" -Verbose
+          }
+          #else: No Action
+        }
+        "Forward" {
+          # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
           try {
-            if ($OverflowActionTarget -match "^tel:\+\d|^\+\d") {
-              #Telephone Number
+            if ($OverflowActionTarget -match "^tel:\+\d") {
+              #Telephone URI
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTarget }
             }
-            else {
+            elseif ($OverflowActionTarget -match "^\+\d") {
+              #Telephone Number (E.164)
+              $OverflowActionTargetNormalised = "tel:" + $OverflowActionTarget
+              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetNormalised }
+            }
+            elseif ($OverflowActionTarget -match '@') {
               #Assume it is a User
               $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$($OverflowActionTarget)" -ErrorAction STOP).ObjectId
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
             }
+            else {
+              # Capturing any other specified Target that does not match for the Forward
+              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' is incompatible and is not processed!"
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget expected is a Tel URI or a UPN of a User" -Verbose
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
-            $OverflowAction = "DisconnectWithBusy"
+            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
           }
         }
-      }
-      "VoiceMail" {
-        # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
-        if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
-          Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $OverflowAction = "DisconnectWithBusy"
-        }
-        else {
-          # Processing OverflowActionTarget
+        "VoiceMail" {
+          # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
           try {
             $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
             $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
-            $OverflowAction = "DisconnectWithBusy"
+            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
           }
         }
-      }
-      "SharedVoiceMail" {
-        # SharedVoiceMail requires an OverflowActionTarget (UPN of a Group to be translated to GUID)
-        if (-not $PSBoundParameters.ContainsKey('OverflowActionTarget')) {
-          Write-Error -Message "'$NameNormalised' Parameter OverFlowActionTarget Missing, Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $OverflowAction = "DisconnectWithBusy"
-        }
-        else {
-          # Processing OverflowActionTarget
+        "SharedVoiceMail" {
+          # SharedVoiceMail requires an OverflowActionTarget (UPN of a Group to be translated to GUID)
+          #region SharedVoiceMail prerequisites
+          if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+            # Both Parameters provided
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailAudioFile and OverflowSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
+            [void]$PSBoundParameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
+          }
+          elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+            # Neither Parameter provided
+            Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
+            return
+          }
+          elseif ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+            if (-not $PSBoundParameters.ContainsKey('LanguageId')) {
+              Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
+              return
+            }
+            else {
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
+            }
+          }
+          #endregion
+
+          #region Processing OverflowActionTarget for SharedVoiceMail
           try {
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Testing Exchange Connection"
             if (Test-ExchangeOnlineConnection) {
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Exchange Object"
               $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
             }
             else {
-              Write-Verbose -Message "No connection to Exchange, verifying AzureAD Object instead" -Verbose
-              #TODO This Requires change to group, and correct lookup of DN or UPN respectively. Might need helper function!
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
               $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
             }
-            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+            if ($null -eq $OverflowActionTargetId) {
+              throw
+            }
+            else {
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' Could not enumerate OverflowActionTarget: '$OverflowActionTarget'"
-            $OverflowAction = "DisconnectWithBusy"
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object: Mailnickname"
+            try {
+              if ($OverflowActionTarget.Contains("@")) {
+                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -ErrorAction STOP).ObjectId
+              }
+              else {
+                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -ErrorAction STOP).ObjectId
+              }
+              if ($null -eq $OverflowActionTargetId) {
+                throw
+              }
+              else {
+                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+                $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+              }
+            }
+            catch {
+              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            }
           }
+          #endregion
         }
       }
     }
-    # $OverflowAction is added to the Parameter list only after all checks are complete!
     #endregion
 
     #region OverflowAction SharedVoicemail - Processing
-    if ($OverflowAction -eq "SharedVoiceMail") {
-      # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
-      if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-        # Both Parameters provided
-        Write-Error -Message "'$NameNormalised' either Parameter OverflowSharedVoicemailAudioFile OR OverflowSharedVoicemailTextToSpeechPrompt are required (not both!); Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-        $OverflowAction = "DisconnectWithBusy"
-      }
-      elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-        # Neither Parameter provided
-        Write-Error -Message "'$NameNormalised' either Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt are required; Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-        $OverflowAction = "DisconnectWithBusy"
+    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile')) {
+      if ($OverflowAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for OverflowAction '$OverflowAction'" -Verbose
       }
       else {
-        # Processing OverflowSharedVoicemailTextToSpeechPrompt
-        if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt' -and -not $PSBoundParameters.ContainsKey('LanguageId'))) {
-          # TTS Parameter without Language selected
-          Write-Error -Message "'$NameNormalised': OverflowSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId; Reverting OverflowAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $OverflowSharedVoicemailTextToSpeechPrompt = $null
-          $OverflowAction = "DisconnectWithBusy"
+        $OFSVMFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
+        try {
+          $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
+          $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
         }
-        else {
-          # TTS Parameter provided
-          $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
-        }
-
-
-        # Processing OverflowSharedVoicemailAudioFile
-        if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile')) {
-          $OFSVMFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
-          Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
-          try {
-            $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
-            Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
-            $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
-          }
-          catch {
-            Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-            break
-          }
+        catch {
+          Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          return
         }
       }
+    }
 
-      # Processing TimeoutSharedVoicemailAudioFile
-      if ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) {
+    if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+      if ($OverflowAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for OverflowAction '$OverflowAction'" -Verbose
+      }
+      else {
+        $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
+      }
+    }
+
+    if ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) {
+      if ($OverflowAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for OverflowAction '$OverflowAction'" -Verbose
+      }
+      else {
         $Parameters += @{'EnableOverflowSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
       }
     }
     #endregion
-
-    #region OverflowAction conclusion
-    # finally, after all checks are done, adding OverflowAction to Parameters
-    $Parameters += @{'OverflowAction' = $OverflowAction }
-    #endregion
     #endregion
 
     #region Timeout
-    #region Timeout Action and Target
-    Write-Verbose -Message "'$NameNormalised' Parsing requirements for TimeoutAction: $TimeoutAction"
-    switch ($TimeoutAction) {
-      "Disconnect" {
-        # No Action - Default
-      }
-      "Forward" {
-        # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
-        if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
-          Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $TimeoutAction = "Disconnect"
+    #region TimeoutAction
+    if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
+      Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' Parsing requirements"
+      if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
+        # We have a Target
+        if ($TimeoutAction -eq "Disconnect") {
+          #but we don't need one
+          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' does not require an TimeoutActionTarget. It will not be processed" -Verbose
         }
         else {
-          # Processing TimeoutActionTarget
+          # OK
+          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' and TimeoutActionTarget '$TimeoutActionTarget' specified. Processing both."
+        }
+        # NEW: Adding Action only with a Target | SET: Adding Action if specified
+        $Parameters += @{'TimeoutAction' = $TimeoutAction }
+      }
+      elseif ($TimeoutAction -ne "Disconnect") {
+        Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' not set! Parameter TimeoutActionTarget missing"
+      }
+    }
+    else {
+      $TimeoutAction = $CallQueue.TimeoutAction
+      Write-Verbose -Message "'$NameNormalised' Parameter TimeoutAction not present. Using existing setting: '$TimeoutAction'"
+    }
+    #endregion
+
+    #region TimeoutActionTarget
+    # Processing for Target is depenent on Action
+    if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
+      switch ($TimeoutAction) {
+        "Disconnect" {
+          # Explicit setting of DisconnectWithBusy
+          if (-not $PSBoundParameters.ContainsKey('TimeoutAction')) {
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': No Timeout-Parameters are processed" -Verbose
+          }
+          #else: No Action
+        }
+        "Forward" {
+          # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
           try {
-            if ($TimeoutActionTarget -match "^tel:\+\d|^\+\d") {
-              #Telephone Number
-              $Parameters += @{'OverflowActionTarget' = $TimeoutActionTarget }
+            if ($TimeoutActionTarget -match "^tel:\+\d") {
+              #Telephone URI
+              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTarget }
             }
-            else {
+            elseif ($TimeoutActionTarget -match "^\+\d") {
+              #Telephone Number (E.164)
+              $TimeoutActionTargetNormalised = "tel:" + $TimeoutActionTarget
+              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetNormalised }
+            }
+            elseif ($TimeoutActionTarget -match '@') {
               #Assume it is a User
               $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
             }
+            else {
+              # Capturing any other specified Target that does not match for the Forward
+              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' is incompatible and is not processed!"
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget expected is a Tel URI or a UPN of a User" -Verbose
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimeoutActionTarget'"
-            $TimeoutAction = "Disconnect"
+            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
           }
         }
-      }
-      "VoiceMail" {
-        # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
-        if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
-          Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $TimeoutAction = "Disconnect"
-        }
-        else {
-          # Processing TimeoutActionTarget
+        "VoiceMail" {
+          # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
           try {
             $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$($TimeoutActionTarget)" -ErrorAction STOP).ObjectId
             $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' Could not enumerate 'TimeoutActionTarget'"
-            $TimeoutAction = "Disconnect"
+            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
           }
         }
-      }
-      "SharedVoiceMail" {
-        # SharedVoiceMail requires an TimeoutActionTarget (UPN of a Group to be translated to GUID)
-        if (-not $PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
-          Write-Error -Message "'$NameNormalised' Parameter TimeoutActionTarget Missing, Reverting TimeoutAction to 'DisconnectWithBusy'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $TimeoutAction = "DisconnectWithBusy"
-        }
-        else {
-          # Processing TimeoutActionTarget
-          try {
-            if (Test-ExchangeOnlineConnection) {
-              $TimeoutwActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+        "SharedVoiceMail" {
+          # SharedVoiceMail requires an TimeoutActionTarget (UPN of a Group to be translated to GUID)
+          #region SharedVoiceMail prerequisites
+          if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+            # Both Parameters provided
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailAudioFile and TimeoutSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
+            [void]$PSBoundParameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
+          }
+          elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+            # Neither Parameter provided
+            Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
+            return
+          }
+          elseif ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+            if (($null -eq $CallQueue.LanguageId) -or (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
+              Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
+              return
             }
             else {
-              Write-Verbose -Message "TimeoutActionTarget '$TimeoutActionTarget' - No connection to Exchange, verifying AzureAD Object instead" -Verbose
-              #TODO This Requires change to group, and correct lookup of DN or UPN respectively. Might need helper function!
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
+            }
+          }
+          #endregion
+
+          #region Processing TimeoutActionTarget for SharedVoiceMail
+          try {
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Testing Exchange Connection"
+            if (Test-ExchangeOnlineConnection) {
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Exchange Object"
+              $TimeoutActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+            }
+            else {
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
               $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
             }
-            $Parameters += @{'TimeoutActionTarget' = $TimeoutwActionTargetId }
+            if ($null -eq $TimeoutActionTargetId) {
+              throw
+            }
+            else {
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' Could not enumerate TimeoutActionTarget: '$TimeoutActionTarget'"
-            $TimeoutAction = "DisconnectWithBusy"
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object: Mailnickname"
+            try {
+              if ($TimeoutActionTarget.Contains("@")) {
+                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -ErrorAction STOP).ObjectId
+              }
+              else {
+                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -ErrorAction STOP).ObjectId
+              }
+              if ($null -eq $TimeoutActionTargetId) {
+                throw
+              }
+              else {
+                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+                $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+              }
+            }
+            catch {
+              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            }
           }
+          #endregion
         }
       }
     }
-    # $TimeoutAction is added to the Parameter list only after all checks are complete!
     #endregion
 
     #region TimeoutAction SharedVoicemail - Processing
-    if ($TimeoutAction -eq "SharedVoiceMail") {
-      # SharedVoiceMail requires either AudioFile or TTS prompt; TTS prompt requires Language
-      if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-        # Both Parameters provided
-        Write-Error -Message "'$NameNormalised' either Parameter TimeoutSharedVoicemailAudioFile OR TimeoutSharedVoicemailTextToSpeechPrompt are required (not both!); Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-        $TimeoutAction = "Disconnect"
-      }
-      elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-        # Neither Parameter provided
-        Write-Error -Message "'$NameNormalised' either Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt are required; Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-        $TimeoutAction = "Disconnect"
+    if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile')) {
+      if ($TimeoutAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for TimeoutAction '$TimeoutAction'" -Verbose
       }
       else {
-        # Processing TimeoutSharedVoicemailTextToSpeechPrompt
-        if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt' -and -not $PSBoundParameters.ContainsKey('LanguageId'))) {
-          # TTS Parameter without Language selected
-          Write-Error -Message "'$NameNormalised': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId; Reverting TimeoutAction to 'Disconnect'" -ErrorAction Continue -RecommendedAction "Reapply again with Set-TeamsCallQueue or Set-CsCallQueue"
-          $TimeoutSharedVoicemailTextToSpeechPrompt = $null
-          $TimeoutAction = "Disconnect"
+        $TOSVMFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$TOSVMFileName'" -Verbose
+        try {
+          $TOSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($TOSVMFile.FileName)'"
+          $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $TOSVMFile.Id }
         }
-        else {
-          # TTS Parameter provided
-          $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
-        }
-
-
-        # Processing TimeoutSharedVoicemailAudioFile
-        if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile')) {
-          $OFSVMFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
-          Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
-          try {
-            $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
-            Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
-            $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
-          }
-          catch {
-            Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-            break
-          }
+        catch {
+          Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$TOSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          return
         }
       }
+    }
 
-      # Processing TimeoutSharedVoicemailAudioFile
-      if ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')) {
-        $Parameters += @{'EnableTimeoutSharedVoicemailTranscription' = $EnableTimeoutSharedVoicemailTranscription }
+    if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+      if ($TimeoutAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for TimeoutAction '$TimeoutAction'" -Verbose
+      }
+      else {
+        $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
+      }
+    }
+
+    if ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')) {
+      if ($TimeoutAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for TimeoutAction '$TimeoutAction'" -Verbose
+      }
+      else {
+        $Parameters += @{'EnableTimeoutSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
       }
     }
     #endregion
-
-    #region TimeoutAction conclusion
-    # finally, after all checks are done, adding TimeoutAction to Parameters
-    $Parameters += @{'TimeoutAction' = $TimeoutAction }
     #endregion
 
-    # Adding Language
-    if ($PSBoundParameters.ContainsKey('LanguageId')) {
-      $Parameters += @{'LanguageId' = $Language }
-    }
-    #endregion
 
     #region Users - Parsing and verifying Users
     [System.Collections.ArrayList]$UserIdList = @()
@@ -3097,6 +3203,10 @@ function New-TeamsCallQueue {
           Write-Warning -Message "'$NameNormalised' User '$User' not found in AzureAd, omitting user!"
         }
       }
+    }
+    # NEW: Processing always / SET: Processing only when specified
+    Write-Verbose -Message "'$NameNormalised' Users: Adding $($UserIdList.Count) Users as Agents to the Queue" -Verbose
+    if ($UserIdList.Count -gt 0) {
       $Parameters += @{'Users' = @($UserIdList) }
     }
     #endregion
@@ -3134,12 +3244,13 @@ function New-TeamsCallQueue {
           Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
         }
       }
+    }
+    # NEW: Processing always / SET: Processing only when specified
+    Write-Verbose -Message "'$NameNormalised' Groups: Adding $($DLIdList.Count) Groups to the Queue" -Verbose
+    if ($DLIdList.Count -gt 0) {
       $Parameters += @{'DistributionLists' = @($DLIdList) }
-      if ($DLIdList.Count -gt 0) {
-        Write-Verbose -Message "NOTE: Group members are parsed by the subsystem" -Verbose
-        Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members" -Verbose
-
-      }
+      Write-Verbose -Message "NOTE: Group members are parsed by the subsystem" -Verbose
+      Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members" -Verbose
     }
     #endregion
 
@@ -3153,40 +3264,6 @@ function New-TeamsCallQueue {
     }
     $Parameters += @{'ErrorAction' = 'STOP' }
     #endregion
-    #endregion
-
-    #region Desired Configuration
-    # Creating Custom Object with desired configuration for comparison
-    $CallQueueDesired = [PSCustomObject][ordered]@{
-      Name                                       = $NameNormalised
-      UseDefaultMusicOnHold                      = $UseDefaultMusicOnHold
-      MusicOnHoldAudioFileId                     = $MOHfile.Id
-      WelcomeMusicAudioFileId                    = $WMFile.Id
-      RoutingMethod                              = $RoutingMethod
-      PresenceBasedRouting                       = $PresenceBasedRouting
-      AgentAlertTime                             = $AgentAlertTime
-      AllowOptOut                                = $AllowOptOut
-      ConferenceMode                             = $ConferenceMode
-      OverflowAction                             = $OverflowAction
-      OverflowActionTarget                       = $OverflowActionTarget
-      OverflowSharedVoicemailAudioFilePrompt     = $OverflowSharedVoicemailAudioFilePrompt
-      OverflowSharedVoicemailTextToSpeechPrompt  = $OverflowSharedVoicemailTextToSpeechPrompt
-      OverflowThreshold                          = $OverflowThreshold
-      TimeoutAction                              = $TimeoutAction
-      TimeoutActionTarget                        = $TimeoutActionTarget
-      TimeoutSharedVoicemailAudioFilePrompt      = $TimeoutSharedVoicemailAudioFilePrompt
-      TimeoutSharedVoicemailTextToSpeechPrompt   = $TimeoutSharedVoicemailTextToSpeechPrompt
-      TimeoutThreshold                           = $TimeoutThreshold
-      EnableOverflowSharedVoicemailTranscription = $EnableOverflowSharedVoicemailTranscription
-      EnableTimeoutSharedVoicemailTranscription  = $EnableTimeoutSharedVoicemailTranscription
-      LanguageId                                 = $LanguageId
-      #LineUri                                            = $LineUri
-      # Testing whether names or IDs need to be compared - depends on what is queried in $CallQueueFinal - if CsCallQueue, we need IDs
-      #Users                                      = $Users
-      #DistributionLists                          = $DistributionLists
-      Users                                      = $UserIdList
-      DistributionLists                          = $DLIdList
-    }
     #endregion
 
 
@@ -3206,36 +3283,22 @@ function New-TeamsCallQueue {
       }
     }
     else {
-      break
+      return
     }
     #endregion
 
 
-    #region Output and Desired Configuration
+    #region Output
     # Re-query output
-    #TODO: Users and DLs need to be queried first, as they must be compared UPN to UPN
-    $CallQueueFinal = Get-CsCallQueue -NameFilter $NameNormalised -WarningAction SilentlyContinue
     if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
-      # Displaying Warning when no Agents are found
-      if ($null -eq $($CallQueueFinal.Agents) -and ($null -eq $($CallQueueFinal.DistributionLists))) {
-        Write-Warning -Message "No Distribution Lists or Users added to callqueue. There will be no agents to call."
-      }
-
-      $Difference = Compare-Object -ReferenceObject $CallQueueDesired -DifferenceObject $CallQueueFinal
-      if ($difference.Count -gt 0) {
-        Write-Host "SUCCESS: Call Queue created and SOME values set" -Foregroundcolor Yellow
-        Write-Host "The following Settings have not been able to be applied"
-        return $Difference
-      }
-      else {
-        Write-Host "SUCCESS: Call Queue created and all values set" -Foregroundcolor Green
-        Return $CallQueueFinal
-      }
+      $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
+      return $CallQueueFinal
     }
     else {
-      Return
+      return
     }
     #endregion
+
   }
 
   end {
@@ -3274,11 +3337,11 @@ function Set-TeamsCallQueue {
 		Required if UseDefaultMusicOnHold is not specified/set to TRUE
 		Accepted Formats: MP3, WAV or WMA, max 5MB
 	.PARAMETER OverflowAction
-		Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail
+		Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail, SharedVoiceMail
 		Action to be taken if the Queue size limit (OverflowThreshold) is reached
 		Forward requires specification of OverflowActionTarget
 	.PARAMETER OverflowActionTarget
-		Situational. Required only if OverflowAction is Forward
+		Situational. Required only if OverflowAction is not DisconnectWithBusy
 		UserPrincipalName of the Target
 	.PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
@@ -3292,11 +3355,11 @@ function Set-TeamsCallQueue {
 	.PARAMETER OverflowThreshold
 		Optional. Time in Seconds for the OverflowAction to trigger
 	.PARAMETER TimeoutAction
-		Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail
+		Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
 		Action to be taken if the TimeoutThreshold is reached
 		Forward requires specification of TimeoutActionTarget
 	.PARAMETER TimeoutActionTarget
-		Situational. Required only if TimeoutAction is Forward
+		Situational. Required only if TimeoutAction is not Disconnect
 		UserPrincipalName of the Target
 	.PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
@@ -3321,7 +3384,7 @@ function Set-TeamsCallQueue {
 		Will establish a conference instead of a direct call and should help with connection time.
 		Documentation vague.
 	.PARAMETER DistributionLists
-		Optional. UPNs of DistributionLists or Groups to be used as Agents.
+		Optional. Display Names of DistributionLists or Groups to be used as Agents.
 		Will be parsed after Users if they are specified as well.
 	.PARAMETER Users
 		Optional. UPNs of Users.
@@ -3355,8 +3418,9 @@ function Set-TeamsCallQueue {
 		Set-TeamsCallQueue
 		Get-TeamsCallQueue
 		Remove-TeamsCallQueue
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -3393,16 +3457,6 @@ function Set-TeamsCallQueue {
 
     [Parameter(HelpMessage = "TEL URI or UPN that is targeted upon overflow, only valid for forwarded calls")]
     [Alias('OAT')]
-    [ValidateScript( {
-        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
-          return $true
-        }
-        else {
-          throw "OverflowActionTarget: Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
-          #return $false
-        }
-      }
-    )]
     [string]$OverflowActionTarget,
 
     #region OverflowAction = SharedVoiceMail
@@ -3458,16 +3512,6 @@ function Set-TeamsCallQueue {
     # if TimeoutAction is not Disconnect, this is required
     [Parameter(HelpMessage = "TEL URI or UPN that is targeted upon timeout, only valid for forwarded calls")]
     [Alias('TAT')]
-    [ValidateScript( {
-        if ($_ -match "(^tel:\+\d|^\+\d)|@") {
-          return $true
-        }
-        else {
-          throw "Value provided must either be a UPN (containing a '@'), a Tel URI (starting with 'tel:+') or a E.164 number (starting '+' followed by a number)"
-          #return $false
-        }
-      }
-    )]
     [string]$TimeoutActionTarget,
 
     #region TimeoutAction = SharedVoiceMail
@@ -3603,10 +3647,14 @@ function Set-TeamsCallQueue {
     [Parameter(HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
     [string]$LanguageId
-
   )
 
   begin {
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+
     # Testing AzureAD Connection
     if (Test-AzureADConnection) {
       Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
@@ -3656,7 +3704,7 @@ function Set-TeamsCallQueue {
           $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
         else {
-          Write-Warning -Message "No connection to ExchangeOnline found. UnifiedGroup cannot be verified"
+          Write-Verbose -Message "ExchangeOnline: No session found. Shared Voicemail Targets will be queried against AzureAD only"
         }
       }
     }
@@ -3669,7 +3717,7 @@ function Set-TeamsCallQueue {
         Write-Verbose "LanguageId '$Language' - Voice Responses supported"
       }
       else {
-        Write-Warning "LanguageId '$Language' - Voice Responses not supported"
+        Write-Warning "LanguageId '$Language' - Voice Responses are not supported"
       }
     }
   }
@@ -3725,11 +3773,11 @@ function Set-TeamsCallQueue {
       }
       catch {
         Write-Error -Message "Import of MusicOnHoldAudioFile: '$MOHFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-        break
+        return
       }
     }
     elseif ($UseDefaultMusicOnHold -and $PSBoundParameters.ContainsKey('UseDefaultMusicOnHold')) {
-      Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   NONE"
+      Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   DEFAULT"
       $Parameters += @{'UseDefaultMusicOnHold' = $true }
     }
     else {
@@ -3808,15 +3856,15 @@ function Set-TeamsCallQueue {
       $Language = $CallQueue.LanguageId
     }
 
-    # Checking for Text-to-speech prompts without providing LanguageId
+    # Checking for Parameters which would require LanguageId
     if ($null -eq $Language -and `
-      ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) -or `
-      ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) -or `
-      ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) -or `
-      ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription'))) {
+      (($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) -or `
+        ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) -or `
+        ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) -or `
+        ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')))) {
 
       Write-Error "'$NameNormalised' LanguageId is not set and not provided. This is required for using Text-to-speech prompts or Transcription." -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
-      break
+      return
     }
     #endregion
 
@@ -3829,7 +3877,7 @@ function Set-TeamsCallQueue {
         # We have a Target
         if ($OverflowAction -eq "DisconnectWithBusy") {
           #but we don't need one
-          Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction' does not require an OverflowActionTarget. It will not be processed"
+          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' does not require an OverflowActionTarget. It will not be processed" -Verbose
         }
         else {
           # OK
@@ -3839,9 +3887,7 @@ function Set-TeamsCallQueue {
       elseif ($OverflowAction -ne "DisconnectWithBusy") {
         Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction' not set! Parameter OverflowActionTarget missing"
       }
-      # Adding OverflowAction here
-      # This might lead to errors if the dependent Parameters are not all present.
-      # Trying to Catching errors there.
+      # NEW: Adding Action only with a Target | SET: Adding Action if specified
       $Parameters += @{'OverflowAction' = $OverflowAction }
     }
     else {
@@ -3903,18 +3949,18 @@ function Set-TeamsCallQueue {
           #region SharedVoiceMail prerequisites
           if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
             # Both Parameters provided
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailAudioFile and OverflowSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only"
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailAudioFile and OverflowSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
             [void]$PSBoundParameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
           }
           elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
             # Neither Parameter provided
             Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
-            break
+            return
           }
           elseif ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
             if (($null -eq $CallQueue.LanguageId) -or (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
               Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
-              break
+              return
             }
             elseif ($PSBoundParameters.ContainsKey('LanguageId')) {
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
@@ -3969,33 +4015,44 @@ function Set-TeamsCallQueue {
         }
       }
     }
-    else {
-      #no Target specified. Using existing
-      $OverflowActionTarget = $CallQueue.OverflowActionTarget
-    }
     #endregion
 
     #region OverflowAction SharedVoicemail - Processing
     if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile')) {
-      $OFSVMFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
-      Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
-      try {
-        $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
-        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
-        $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+      if ($OverflowAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for OverflowAction '$OverflowAction'" -Verbose
       }
-      catch {
-        Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-        break
+      else {
+        $OFSVMFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
+        try {
+          $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
+          $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+        }
+        catch {
+          Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          return
+        }
       }
     }
 
     if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-      $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
+      if ($OverflowAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for OverflowAction '$OverflowAction'" -Verbose
+      }
+      else {
+        $Parameters += @{'OverflowSharedVoicemailTextToSpeechPrompt' = $OverflowSharedVoicemailTextToSpeechPrompt }
+      }
     }
 
     if ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) {
-      $Parameters += @{'EnableOverflowSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
+      if ($OverflowAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for OverflowAction '$OverflowAction'" -Verbose
+      }
+      else {
+        $Parameters += @{'EnableOverflowSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
+      }
     }
     #endregion
     #endregion
@@ -4006,9 +4063,9 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' Parsing requirements"
       if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
         # We have a Target
-        if ($TimeoutAction -eq "DisconnectWithBusy") {
+        if ($TimeoutAction -eq "Disconnect") {
           #but we don't need one
-          Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' does not require an TimeoutActionTarget. It will not be processed"
+          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' does not require an TimeoutActionTarget. It will not be processed" -Verbose
         }
         else {
           # OK
@@ -4018,9 +4075,7 @@ function Set-TeamsCallQueue {
       elseif ($TimeoutAction -ne "Disconnect") {
         Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' not set! Parameter TimeoutActionTarget missing"
       }
-      # Adding TimeoutAction here
-      # This might lead to errors if the dependent Parameters are not all present.
-      # Trying to Catching errors there.
+      # NEW: Adding Action only with a Target | SET: Adding Action if specified
       $Parameters += @{'TimeoutAction' = $TimeoutAction }
     }
     else {
@@ -4082,18 +4137,18 @@ function Set-TeamsCallQueue {
           #region SharedVoiceMail prerequisites
           if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
             # Both Parameters provided
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailAudioFile and TimeoutSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only"
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailAudioFile and TimeoutSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
             [void]$PSBoundParameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
           }
           elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
             # Neither Parameter provided
             Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
-            break
+            return
           }
           elseif ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
             if (($null -eq $CallQueue.LanguageId) -or (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
               Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
-              break
+              return
             }
             elseif ($PSBoundParameters.ContainsKey('LanguageId')) {
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
@@ -4148,34 +4203,44 @@ function Set-TeamsCallQueue {
         }
       }
     }
-    else {
-      #no Target specified. Using existing
-      $TimeoutActionTarget = $CallQueue.TimeoutActionTarget
-    }
-
     #endregion
 
     #region TimeoutAction SharedVoicemail - Processing
     if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile')) {
-      $OFSVMFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
-      Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
-      try {
-        $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
-        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
-        $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+      if ($TimeoutAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for TimeoutAction '$TimeoutAction'" -Verbose
       }
-      catch {
-        Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
-        break
+      else {
+        $TOSVMFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$TOSVMFileName'" -Verbose
+        try {
+          $TOSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($TOSVMFile.FileName)'"
+          $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $TOSVMFile.Id }
+        }
+        catch {
+          Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$TOSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          return
+        }
       }
     }
 
     if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-      $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
+      if ($TimeoutAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for TimeoutAction '$TimeoutAction'" -Verbose
+      }
+      else {
+        $Parameters += @{'TimeoutSharedVoicemailTextToSpeechPrompt' = $TimeoutSharedVoicemailTextToSpeechPrompt }
+      }
     }
 
     if ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')) {
-      $Parameters += @{'EnableTimeoutSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
+      if ($TimeoutAction -ne "SharedVoicemail") {
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for TimeoutAction '$TimeoutAction'" -Verbose
+      }
+      else {
+        $Parameters += @{'EnableTimeoutSharedVoicemailTranscription' = $EnableOverflowSharedVoicemailTranscription }
+      }
     }
     #endregion
     #endregion
@@ -4215,7 +4280,11 @@ function Set-TeamsCallQueue {
           Write-Warning -Message "'$NameNormalised' User '$User' not found in AzureAd, omitting user!"
         }
       }
-      $Parameters += @{'Users' = @($UserIdList) }
+      # NEW: Processing always / SET: Processing only when specified
+      Write-Verbose -Message "'$NameNormalised' Users: Adding $($UserIdList.Count) Users as Agents to the Queue" -Verbose
+      if ($UserIdList.Count -gt 0) {
+        $Parameters += @{'Users' = @($UserIdList) }
+      }
     }
     #endregion
 
@@ -4252,11 +4321,12 @@ function Set-TeamsCallQueue {
           Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
         }
       }
-      $Parameters += @{'DistributionLists' = @($DLIdList) }
+      # NEW: Processing always / SET: Processing only when specified
+      Write-Verbose -Message "'$NameNormalised' Groups: Adding $($DLIdList.Count) Groups to the Queue" -Verbose
       if ($DLIdList.Count -gt 0) {
+        $Parameters += @{'DistributionLists' = @($DLIdList) }
         Write-Verbose -Message "NOTE: Group members are parsed by the subsystem" -Verbose
         Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members" -Verbose
-
       }
     }
     #endregion
@@ -4285,13 +4355,12 @@ function Set-TeamsCallQueue {
 
     #region Output
     # Re-query output
-    #$CallQueueFinal = Get-CsCallQueue -NameFilter $NameNormalised -WarningAction SilentlyContinue
     if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
       $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
-      Return $CallQueueFinal
+      return $CallQueueFinal
     }
     else {
-      Return
+      return
     }
     #endregion
 
@@ -4317,8 +4386,9 @@ function Remove-TeamsCallQueue {
 		New-TeamsCallQueue
 		Get-TeamsCallQueue
 		Set-TeamsCallQueue
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
@@ -4385,6 +4455,7 @@ function Remove-TeamsCallQueue {
 }
 #endregion
 
+
 #region Resource Account Connection
 function Get-TeamsResourceAccountAssociation {
   <#
@@ -4403,7 +4474,18 @@ function Get-TeamsResourceAccountAssociation {
 	.NOTES
 		Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
 		Without any Parameters, can be used to enumerate all Resource Accounts
-		This may take a while to calculate, depending on # of Accounts in the Tenant
+    This may take a while to calculate, depending on # of Accounts in the Tenant
+  .LINK
+		New-TeamsCallQueue
+		Get-TeamsCallQueue
+		Set-TeamsCallQueue
+		Remove-TeamsCallQueue
+    New-TeamsResourceAccount
+    Get-TeamsResourceAccount
+    Set-TeamsResourceAccount
+    Remove-TeamsResourceAccount
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
   [CmdletBinding()]
   [OutputType([System.Object[]])]
@@ -4550,7 +4632,18 @@ function New-TeamsResourceAccountAssociation {
 		Output (if any)
 	.NOTES
 		General notes
-	#>
+  .LINK
+		New-TeamsCallQueue
+		Get-TeamsCallQueue
+		Set-TeamsCallQueue
+		Remove-TeamsCallQueue
+    New-TeamsResourceAccount
+    Get-TeamsResourceAccount
+    Set-TeamsResourceAccount
+    Remove-TeamsResourceAccount
+    Get-TeamsResourceAccountAssociation
+    Remove-TeamsResourceAccountAssociation
+  #>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'CallQueue')]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
@@ -4815,7 +4908,18 @@ function Remove-TeamsResourceAccountAssociation {
 	.NOTES
 		Does the same as Remove-CsOnlineApplicationInstanceAssociation, but with friendly Names
 		General notes
-	#>
+  .LINK
+		New-TeamsCallQueue
+		Get-TeamsCallQueue
+		Set-TeamsCallQueue
+		Remove-TeamsCallQueue
+    New-TeamsResourceAccount
+    Get-TeamsResourceAccount
+    Set-TeamsResourceAccount
+    Remove-TeamsResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+    #>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
@@ -4939,6 +5043,7 @@ function Remove-TeamsResourceAccountAssociation {
 }
 #endregion
 
+
 #region Resource Accounts - Work in Progress -
 function New-TeamsResourceAccount {
   <#
@@ -4992,13 +5097,14 @@ function New-TeamsResourceAccount {
 	.FUNCTIONALITY
 		Creates a resource Account in AzureAD for use in Teams
 	.LINK
-		Find-TeamsResourceAccount
-		Set-TeamsResourceAccount
-		Get-TeamsResourceAccount
-		Remove-TeamsResourceAccount
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
-	#>
+    Find-TeamsResourceAccount
+    Get-TeamsResourceAccount
+    Set-TeamsResourceAccount
+    Remove-TeamsResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
+    #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param (
@@ -5448,12 +5554,13 @@ function Set-TeamsResourceAccount {
 	.FUNCTIONALITY
 		Changes a resource Account in AzureAD for use in Teams
 	.LINK
-		New-TeamsResourceAccount
-		Get-TeamsResourceAccount
-		Find-TeamsResourceAccount
-		Remove-TeamsResourceAccount
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    New-TeamsResourceAccount
+    Find-TeamsResourceAccount
+    Get-TeamsResourceAccount
+    Remove-TeamsResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -5891,12 +5998,13 @@ function Get-TeamsResourceAccount {
 	.FUNCTIONALITY
 		Returns one or more Resource Accounts
 	.LINK
-		New-TeamsResourceAccount
-		Find-TeamsResourceAccount
-		Set-TeamsResourceAccount
-		Remove-TeamsResourceAccount
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    New-TeamsResourceAccount
+    Find-TeamsResourceAccount
+    Set-TeamsResourceAccount
+    Remove-TeamsResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Identity")]
@@ -6121,12 +6229,13 @@ function Find-TeamsResourceAccount {
 	.FUNCTIONALITY
 		Returns one or more Resource Accounts
 	.LINK
-		New-TeamsResourceAccount
-		Get-TeamsResourceAccount
-		Set-TeamsResourceAccount
-		Remove-TeamsResourceAccount
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    New-TeamsResourceAccount
+    Get-TeamsResourceAccount
+    Set-TeamsResourceAccount
+    Remove-TeamsResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Search")]
@@ -6329,12 +6438,13 @@ function Remove-TeamsResourceAccount {
 	.FUNCTIONALITY
 		Removes a resource Account in AzureAD for use in Teams
 	.LINK
-		New-TeamsResourceAccount
-		Get-TeamsResourceAccount
-		Find-TeamsResourceAccount
-		Set-TeamsResourceAccount
-		Connect-ResourceAccount
-		Disconnect-ResourceAccount
+    New-TeamsResourceAccount
+    Find-TeamsResourceAccount
+    Get-TeamsResourceAccount
+    Set-TeamsResourceAccount
+    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
@@ -6538,6 +6648,9 @@ function Import-TeamsAudioFile {
 		Not tested yet. Will replace some code in New/Set-TeamsResourceAccount
 	.FUNCTIONALITY
 		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
+	.LINK
+		New-TeamsCallQueue
+		Set-TeamsCallQueue
 	#>
 
   [CmdletBinding()]
@@ -7051,6 +7164,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   }
 }
 #endregion
+
 
 #region Test Functions
 function Test-TeamsExternalDNS {
