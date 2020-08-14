@@ -268,8 +268,6 @@ If you have a script or a function that could cover something I mentioned or sol
 ### Dependencies
 
 > Module **AzureAd** - Heavily integrated into Azure Active Directory, we are relying on `Connect-AzureAd` to establish a connection and use the Licensing Scripts of AzureAd V2
-
-
 > Module **MicrosoftTeams** - The connect Scripts are relying on `Connect-MicrosoftTeams` to establish a connection to Microsoft Teams.
 
 ### Functions
@@ -281,10 +279,10 @@ If you have a script or a function that could cover something I mentioned or sol
 - Managing Call Queues
 - Backup & Restore for Voice (with thanks to [Ken Lasko](https://www.ucdialplans.com)) expanded to cover the whole Tenant
 - Additional functions
-  -  Policies
-  -  Dial-in Conferencing
-  -  Dial Plans & Normalisation rules
-  -  etc.
+  - Policies
+  - Dial-in Conferencing
+  - Dial Plans & Normalisation rules
+  - etc.
 
 Enjoy
 
