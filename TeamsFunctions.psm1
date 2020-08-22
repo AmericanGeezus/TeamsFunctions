@@ -1972,41 +1972,41 @@ function Get-TeamsCallQueue {
           # Building custom Object with Friendly Names
           if ($PSBoundParameters.ContainsKey('ConciseView')) {
             $Q = [PSCustomObject][ordered]@{
-              Identity                 = $Q.Identity
-              Name                     = $Q.Name
-              UseDefaultMusicOnHold    = $Q.UseDefaultMusicOnHold
-              MusicOnHoldAudioFileName = $Q.MusicOnHoldFileName
-              WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
-              RoutingMethod            = $Q.RoutingMethod
-              PresenceBasedRouting     = $Q.PresenceBasedRouting
-              AgentAlertTime           = $Q.AgentAlertTime
-              AllowOptOut              = $Q.AllowOptOut
-              ConferenceMode           = $Q.ConferenceMode
-              OverflowThreshold        = $Q.OverflowThreshold
-              OverflowAction           = $Q.OverflowAction
-              OverflowActionTarget     = $OAT
-              OverflowActionTargetType = $Q.OverflowActionTarget.Type
+              Identity                          = $Q.Identity
+              Name                              = $Q.Name
+              UseDefaultMusicOnHold             = $Q.UseDefaultMusicOnHold
+              MusicOnHoldAudioFileName          = $Q.MusicOnHoldFileName
+              WelcomeMusicAudioFileName         = $Q.WelcomeMusicFileName
+              RoutingMethod                     = $Q.RoutingMethod
+              PresenceBasedRouting              = $Q.PresenceBasedRouting
+              AgentAlertTime                    = $Q.AgentAlertTime
+              AllowOptOut                       = $Q.AllowOptOut
+              ConferenceMode                    = $Q.ConferenceMode
+              OverflowThreshold                 = $Q.OverflowThreshold
+              OverflowAction                    = $Q.OverflowAction
+              OverflowActionTarget              = $OAT
+              OverflowActionTargetType          = $Q.OverflowActionTarget.Type
               #OverflowSharedVoicemailAudioFilePrompt             = $Q.OverflowSharedVoicemailAudioFilePrompt
               #OverflowSharedVoicemailTextToSpeechPrompt          = $Q.OverflowSharedVoicemailTextToSpeechPrompt
               #EnableOverflowSharedVoicemailTranscription         = $Q.EnableOverflowSharedVoicemailTranscription
-              TimeoutThreshold         = $Q.TimeoutThreshold
-              TimeoutAction            = $Q.TimeoutAction
-              TimeoutActionTarget      = $TAT
-              TimeoutActionTargetType  = $Q.TimeoutActionTarget.Type
+              TimeoutThreshold                  = $Q.TimeoutThreshold
+              TimeoutAction                     = $Q.TimeoutAction
+              TimeoutActionTarget               = $TAT
+              TimeoutActionTargetType           = $Q.TimeoutActionTarget.Type
               #TimeoutSharedVoicemailAudioFilePrompt              = $Q.TimeoutSharedVoicemailAudioFilePrompt
               #TimeoutSharedVoicemailTextToSpeechPrompt           = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
               #EnableTimeoutSharedVoicemailTranscription          = $Q.EnableTimeoutSharedVoicemailTranscription
               #LanguageId                                         = $Q.LanguageId
               #LineUri                                            = $Q.LineUri
-              MusicOnHoldAudioFileId   = $Q.MusicOnHoldAudioFileId
-              WelcomeMusicAudioFileId  = $Q.WelcomeMusicAudioFileId
-              Users                    = $UserObjects.UserPrincipalName
-              DistributionLists        = $DLobjects.DisplayName
-              DistributionListsLastExpanded = $Q.DistributionListsLastExpanded
+              MusicOnHoldAudioFileId            = $Q.MusicOnHoldAudioFileId
+              WelcomeMusicAudioFileId           = $Q.WelcomeMusicAudioFileId
+              Users                             = $UserObjects.UserPrincipalName
+              DistributionLists                 = $DLobjects.DisplayName
+              DistributionListsLastExpanded     = $Q.DistributionListsLastExpanded
               AgentsInSyncWithDistributionLists = $Q.AgentsInSyncWithDistributionLists
-              AgentsCapped = $Q.AgentsCapped
-              Agents                   = $AgentObjects.UserPrincipalName
-              ApplicationInstances     = $AIObjects.Userprincipalname
+              AgentsCapped                      = $Q.AgentsCapped
+              Agents                            = $AgentObjects.UserPrincipalName
+              ApplicationInstances              = $AIObjects.Userprincipalname
             }
           }
           else {
@@ -2014,9 +2014,9 @@ function Get-TeamsCallQueue {
             $Q = [PSCustomObject][ordered]@{
               Identity                                   = $Q.Identity
               Name                                       = $Q.Name
-              UseDefaultMusicOnHold    = $Q.UseDefaultMusicOnHold
-              MusicOnHoldAudioFileName = $Q.MusicOnHoldFileName
-              WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
+              UseDefaultMusicOnHold                      = $Q.UseDefaultMusicOnHold
+              MusicOnHoldAudioFileName                   = $Q.MusicOnHoldFileName
+              WelcomeMusicAudioFileName                  = $Q.WelcomeMusicFileName
               RoutingMethod                              = $Q.RoutingMethod
               PresenceBasedRouting                       = $Q.PresenceBasedRouting
               AgentAlertTime                             = $Q.AgentAlertTime
@@ -2038,13 +2038,13 @@ function Get-TeamsCallQueue {
               EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
               LanguageId                                 = $Q.LanguageId
               #LineUri                                    = $Q.LineUri
-              MusicOnHoldAudioFileId   = $Q.MusicOnHoldAudioFileId
-              WelcomeMusicAudioFileId  = $Q.WelcomeMusicAudioFileId
-              Users                    = $UserObjects.UserPrincipalName
-              DistributionLists        = $DLobjects.DisplayName
-              DistributionListsLastExpanded = $Q.DistributionListsLastExpanded
-              AgentsInSyncWithDistributionLists = $Q.AgentsInSyncWithDistributionLists
-              AgentsCapped = $Q.AgentsCapped
+              MusicOnHoldAudioFileId                     = $Q.MusicOnHoldAudioFileId
+              WelcomeMusicAudioFileId                    = $Q.WelcomeMusicAudioFileId
+              Users                                      = $UserObjects.UserPrincipalName
+              DistributionLists                          = $DLobjects.DisplayName
+              DistributionListsLastExpanded              = $Q.DistributionListsLastExpanded
+              AgentsInSyncWithDistributionLists          = $Q.AgentsInSyncWithDistributionLists
+              AgentsCapped                               = $Q.AgentsCapped
               Agents                                     = $AgentObjects.UserPrincipalName
               ApplicationInstances                       = $AIObjects.Userprincipalname
             }
@@ -5344,9 +5344,6 @@ function New-TeamsResourceAccount {
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     #endregion
-
-    #TODO remove status indicators!
-    Write-Verbose -Message "--- DONE ----------"
   }
 
   end {
