@@ -409,7 +409,7 @@ function Connect-SkypeTeamsAndAAD {
       }
     }
     catch {
-      Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!)" -Foregroundcolor Red
+      Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain, Admin Role Activation (PIM) and Session Exhaustion (2 max!)" -Foregroundcolor Red
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
 
@@ -2401,31 +2401,9 @@ function New-TeamsCallQueue {
 
     #region Agents
     [Parameter(HelpMessage = "Name of one or more Distribution Lists")]
-    [ValidateScript( {
-        foreach ($e in $_) {
-          If (Test-AzureADGroup $e) {
-            $True
-          }
-          else {
-            Write-Host "DistributionLists: '$e' not found" -ForeGroundColor Red
-            $false
-          }
-        }
-      })]
     [string[]]$DistributionLists,
 
     [Parameter(HelpMessage = "UPN of one or more Users")]
-    [ValidateScript( {
-        foreach ($e in $_) {
-          If (Test-AzureADUser $e) {
-            return $true
-          }
-          else {
-            Write-Host "Users: '$e' not found!" -ForeGroundColor Red
-            return $false
-          }
-        }
-      })]
     [string[]]$Users,
     #endregion
 
@@ -2681,7 +2659,7 @@ function New-TeamsCallQueue {
       }
     }
     else {
-      $OverflowAction = $CallQueue.OverflowAction
+      $OverflowAction = "DisconnectWithBusy"
       Write-Verbose -Message "'$NameNormalised' Parameter OverflowAction not present. Using existing setting: '$OverflowAction'"
     }
     #endregion
@@ -2866,7 +2844,7 @@ function New-TeamsCallQueue {
       }
     }
     else {
-      $TimeoutAction = $CallQueue.TimeoutAction
+      $TimeoutAction = "Disconnect"
       Write-Verbose -Message "'$NameNormalised' Parameter TimeoutAction not present. Using existing setting: '$TimeoutAction'"
     }
     #endregion
@@ -3477,31 +3455,9 @@ function Set-TeamsCallQueue {
 
     #region Agents
     [Parameter(HelpMessage = "Name of one or more Distribution Lists")]
-    [ValidateScript( {
-        foreach ($e in $_) {
-          If (Test-AzureADGroup $e) {
-            $True
-          }
-          else {
-            Write-Host "DistributionLists: '$e' not found" -ForeGroundColor Red
-            $false
-          }
-        }
-      })]
     [string[]]$DistributionLists,
 
     [Parameter(HelpMessage = "UPN of one or more Users")]
-    [ValidateScript( {
-        foreach ($e in $_) {
-          If (Test-AzureADUser $e) {
-            return $true
-          }
-          else {
-            Write-Host "Users: '$e' not found!" -ForeGroundColor Red
-            return $false
-          }
-        }
-      })]
     [string[]]$Users,
     #endregion
 
