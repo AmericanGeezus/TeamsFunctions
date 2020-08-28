@@ -7197,6 +7197,8 @@ function Test-MicrosoftTeamsConnection {
   }
 } # End of Test-MicrosoftTeamsConnection
 
+#TODO: Add Helper function to run Get-CsTenant Quietly and reconnect if possible. if not. automatically run CON -SkypeOnline
+# Reconnect-SkypeOnline / Assert-SkypeOnlineSession ?
 function Test-SkypeOnlineConnection {
   <#
 	.SYNOPSIS
