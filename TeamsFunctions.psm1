@@ -108,6 +108,13 @@
         Fixes for New-TeamsCallQueue, Set-TeamsCallQueue (major improvements for Shared Voicemail and its complex requirements)
         Fixes for Connect-SkypeTeamsAndAAD to allow for individual connection (logic error)
         Restructured Module File (function order) and regrouped the functions for better management
+  20.08.22 prerelease
+        Bugfixing and more bugfixing. Get-TeamsCallQueue did not deliver a result. :(
+  20.09 Live Version for SEP 2020
+        More bugfixes. Updated parameter list for Get-TeamsCallQueue as Get-CsCallQueue provides more information (AgentsCapped, etc.)
+        New-/Set-TeamsCallQueue - Removed ValidateScript for Users as verification is done when processing Users.
+        TODO: Adding enablement of Users when adding them to Call Queues
+
   #>
 
 #region Session Connection
@@ -2164,10 +2171,14 @@ function New-TeamsCallQueue {
 		Will be parsed after Users if they are specified as well.
 	.PARAMETER Users
 		Optional. UPNs of Users.
-		Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+    Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+    Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
   .PARAMETER LanguageId
     Optional Language Identifier indicating the language that is used to play shared voicemail prompts.
     This parameter becomes a required parameter If either OverflowAction or TimeoutAction is set to SharedVoicemail.
+  .PARAMETER Force
+    Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified
+    Currently no other impact
 	.EXAMPLE
 		New-TeamsCallQueue -Name "My Queue"
 		Creates a new Call Queue "My Queue" with the Default Music On Hold
@@ -2409,7 +2420,10 @@ function New-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
-    [string]$LanguageId
+    [string]$LanguageId,
+
+    [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
+    [switch]$Force
   )
 
   begin {
@@ -3028,13 +3042,29 @@ function New-TeamsCallQueue {
             $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
             if (-not $EVenabled) {
               # User not EV-Enabled
-              Write-Warning -Message "User '$User' EnterpriseVoice-Enabled: FAILED - Omitting User"
+              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
+                try {
+                  Write-Verbose -Message "User '$User' EnterpriseVoice: Not enabled, trying to enable"
+                  $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                  $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
+                  Write-Verbose -Message "User '$User' EnterpriseVoice: SUCCESS"
+                }
+                catch {
+                  Write-Verbose -Message "User '$User' EnterpriseVoice: FAILED. Please check User provisioning manually and run Set-TeamsCallQueue again!"
+                }
+              }
+              else {
+                Write-Verbose -Message "User '$User' EnterpriseVoice: User not enabled"
+              }
             }
-            else {
-              # Add to List
-              Write-Verbose -Message "User '$User' EnterpriseVoice-Enabled: SUCCESS"
+
+            # Add enabled user to list
+            if ($EVenabled) {
               Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
               [void]$UserIdList.Add($UserObject.ObjectId)
+            }
+            else {
+              Write-Warning -Message "User '$User' EnterpriseVoice: User not enabled - Omitting User"
             }
           }
         }
@@ -3228,10 +3258,14 @@ function Set-TeamsCallQueue {
 	.PARAMETER Users
 		Optional. UPNs of Users.
     Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+    Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
   .PARAMETER LanguageId
     Optional Language Identifier indicating the language that is used to play shared voicemail prompts.
     This parameter becomes a required parameter If either OverflowAction or TimeoutAction is set to SharedVoicemail.
-	.EXAMPLE
+  .PARAMETER Force
+    Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified
+    Currently no other impact
+  .EXAMPLE
 		Set-TeamsCallQueue -Name "My Queue" -DisplayName "My new Queue Name"
 		Changes the DisplayName of Call Queue "My Queue" to "My new Queue Name"
 	.EXAMPLE
@@ -3463,7 +3497,10 @@ function Set-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
-    [string]$LanguageId
+    [string]$LanguageId,
+
+    [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
+    [switch]$Force
   )
 
   begin {
@@ -4083,13 +4120,29 @@ function Set-TeamsCallQueue {
             $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
             if (-not $EVenabled) {
               # User not EV-Enabled
-              Write-Warning -Message "User '$User' EnterpriseVoice-Enabled: FAILED - Omitting User"
+              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
+                try {
+                  Write-Verbose -Message "User '$User' EnterpriseVoice: Not enabled, trying to enable"
+                  $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                  $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
+                  Write-Verbose -Message "User '$User' EnterpriseVoice: SUCCESS"
+                }
+                catch {
+                  Write-Verbose -Message "User '$User' EnterpriseVoice: FAILED. Please check User provisioning manually and run Set-TeamsCallQueue again!"
+                }
+              }
+              else {
+                Write-Verbose -Message "User '$User' EnterpriseVoice: User not enabled"
+              }
             }
-            else {
-              # Add to List
-              Write-Verbose -Message "User '$User' EnterpriseVoice-Enabled: SUCCESS"
+
+            # Add enabled user to list
+            if ($EVenabled) {
               Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
               [void]$UserIdList.Add($UserObject.ObjectId)
+            }
+            else {
+              Write-Warning -Message "User '$User' EnterpriseVoice: User not enabled - Omitting User"
             }
           }
         }
