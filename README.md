@@ -6,43 +6,44 @@
 
 SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services. Creating a Session to them is not implemented very nicely. The following is trying to make this simpler and provide an easier way to connect:
 
-| Function                      | Description                                                                                              |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `Connect-SkypeOnline`         | Creates a Session to SkypeOnline (v7 also extends TimeOut Limit!)                                        |
-| `Connect-SkypeTeamsAndAAD`    | Creates a Session to SkypeOnline, MicrosoftTeams and AzureAD in one go (one authentication prompt only!) |
-| `Disconnect-SkypeOnline`      | Disconnects from a Session to SkypeOnline                                                                |
-| `Disconnect-SkypeTeamsAndAAD` | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD                                 |
+| Function                      | Description                                                                                                                                                                                           |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Connect-SkypeOnline`         | Creates a Session to SkypeOnline (v7 also extends Timeout Limit!)                                                                                                                                     |
+| `Connect-SkypeTeamsAndAAD`    | Creates a Session to SkypeOnline, MicrosoftTeams and AzureAD in one go. <br/>Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt!<br/>Aliases: `Connect-Me` and `con` |
+| `Disconnect-SkypeOnline`      | Disconnects from a Session to SkypeOnline<br/>Aliases `Disconnect-Me` and `dis`                                                                                                                       |
+| `Disconnect-SkypeTeamsAndAAD` | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD                                                                                                                              |
 
-Aliases are available for `Connect-SkypeTeamsAndAAD`: `Connect-Me` or even shorter: `con` - To run disconnect, `Disconnect-Me` or `dis` :)
+#### Test & Assert Functions for Connection
 
-#### Test Functions for Connection
+These are helper functions for testing Connections and Modules. All Functions return boolean output.
 
-These are helper functions for testing Connections and Modules
-
-| Function                        | Description                                  |
-| ------------------------------- | -------------------------------------------- |
-| `Test-AzureAdConnection`        | Verifying a Session to AzureAD exists        |
-| `Test-MicrosoftTeamsConnection` | Verifying a Session to MicrosoftTeams exists |
-| `Test-SkypeOnlineConnection`    | Verifying a Session to SkypeOnline exists    |
-| `Test-ExchangeOnlineConnection` | Verifying a Session to ExchangeOnline exists |
-| `Test-Module`                   | Verifying the specified Module is loaded     |
+| Function                          | Description                                                                                                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Test-AzureAdConnection`          | Verifying a Session to AzureAD exists                                                                                                                         |
+| `Test-MicrosoftTeamsConnection`   | Verifying a Session to MicrosoftTeams exists                                                                                                                  |
+| `Test-SkypeOnlineConnection`      | Verifying a Session to SkypeOnline exists                                                                                                                     |
+| `Test-ExchangeOnlineConnection`   | Verifying a Session to ExchangeOnline exists                                                                                                                  |
+| `Test-Module`                     | Verifying the specified Module is loaded                                                                                                                      |
+| `Assert-AzureADConnection`        | Helper function to execute Test and provide visual feedback                                                                                                   |
+| `Assert-MicrosoftTeamsConnection` | Helper function to execute Test and provide visual feedback                                                                                                   |
+| `Assert-SkypeOnlineConnection`    | Helper function to execute Test and provide visual feedback and **attempts to reconnect** a *broken* session.<br/>Alias `PoL` for it does a *Ping-of-life* ;) |
 
 ### Licensing Functions
 
 Functions for licensing in AzureAD. Hopefully simplifies license application a bit
 
-| Function                   | Description                                                                                                                                                                                                                      |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Get-TeamsTenantLicense`   | Queries licenses present on the Tenant. Output needs improving (Objectification)                                                                                                                                                 |
-| `Get-TeamsUserLicense`     | Queries licenses assigned to a User and displays visual output                                                                                                                                                                   |
-| `Test-TeamsUserLicense`    | Tests an individual Service Plan or a License Package against the provided Identity                                                                                                                                              |
-| `Add-TeamsUserLicense`     | Adds one or more Licenses specified per Switch to the provided Identity (deprecated)                                                                                                                                             |
-| `Set-TeamsUserLicense`     | Adds one or more Licenses specified in an Array to the provided Identity.  Removes one or more Licenses specified through an Array to the provided Identity. Removes all Licenses from the Object. Replaces Add-TeamsUserLicense |
-| `New-AzureAdLicenseObject` | Creates a License Object for application. Generic helper function.                                                                                                                                                               |
+| Function                                | Description                                                                                                                                                                                                                      |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Get-TeamsTenantLicense`                | Queries licenses present on the Tenant. Switches are available for better at-a-glance visibility                                                                                                                                 |
+| `Get-TeamsUserLicense`                  | Queries licenses assigned to a User and displays visual output                                                                                                                                                                   |
+| `Test-TeamsUserLicense`                 | Tests an individual Service Plan or a License Package against the provided Identity                                                                                                                                              |
+| `Add-TeamsUserLicense` **[deprecated]** | Adds one or more Licenses specified per Switch to the provided Identity                                                                                                                                                          |
+| `Set-TeamsUserLicense`                  | Adds one or more Licenses specified in an Array to the provided Identity.  Removes one or more Licenses specified through an Array to the provided Identity. Removes all Licenses from the Object. Replaces Add-TeamsUserLicense |
+| `New-AzureAdLicenseObject`              | Creates a License Object for application. Generic helper function.                                                                                                                                                               |
 
 ### Resource Accounts
 
-As Microsoft has selected a GUID as the Identity the `CsOnlineApplicationInstance` scripts are a bit cumbersome. IDs are also used for the Application Type. These Scripts are wrapping around and are bound to the *UserPrincipalName* instead of the Identity.
+As Microsoft has selected a GUID as the Identity the `CsOnlineApplicationInstance` scripts are a bit cumbersome. IDs are also used for the Application Type. These Scripts are wrapping around them and bind to the *UserPrincipalName* instead of the *ObjectId*/Identity.
 
 | Function                      | Underlying Function              | Description                                                                                                                                       |
 | ----------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -54,15 +55,15 @@ As Microsoft has selected a GUID as the Identity the `CsOnlineApplicationInstanc
 
 ### Account Association
 
-| Function                                 | Underlying Function                                                                          | Description                                                                       |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `New-TeamsResourceAccountAssociation`    | New-CsOnlineApplicationInstanceAssociation                                                   | Links one or more Resource Accounts to a Call Queue or an Auto Attendant          |
-| `Get-TeamsResourceAccountAssociation`    | Get-CsOnlineApplicationInstanceAssociation, Get-CsOnlineApplicationInstanceAssociationStatus | Queries links for one or more Resource Accounts to Call Queues or Auto Attendants |
-| `Remove-TeamsResourceAccountAssociation` | Remove-CsOnlineApplicationInstanceAssociation                                                | Removes a link for one or more Resource Accounts                                  |
+| Function                                 | Underlying Function                                                                               | Description                                                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `New-TeamsResourceAccountAssociation`    | New-CsOnlineApplicationInstanceAssociation                                                        | Links one or more Resource Accounts to a Call Queue or an Auto Attendant          |
+| `Get-TeamsResourceAccountAssociation`    | Get-CsOnlineApplicationInstanceAssociation, <br/>Get-CsOnlineApplicationInstanceAssociationStatus | Queries links for one or more Resource Accounts to Call Queues or Auto Attendants |
+| `Remove-TeamsResourceAccountAssociation` | Remove-CsOnlineApplicationInstanceAssociation                                                     | Removes a link for one or more Resource Accounts                                  |
 
 ### Call Queues
 
-Bound to the Display Name rather than the Identity/GUID these aim to make managing Call Queues easier.
+Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bit cumbersome. The Searchstring parameter is available, and utilised as a basic input method for `TeamsCallQueue` cmdlets. They query by *DisplayName*, which comes with a drawback for the `Set`-command: It requires a unique result. Also uses Filenames instead of IDs when adding Audio Files. <br/>Hope these make managing Call Queues easier.
 
 | Function                | Underlying Function | Description                                                        |
 | ----------------------- | ------------------- | ------------------------------------------------------------------ |
@@ -116,7 +117,7 @@ Curtesy of Ken Lasko
   - Currently, no Pester tests exist for this Module. - I cannot figure them out yet.
   - All Testing is done with my trusty ISEsteroids.
 - Functions
-  - `Connect-SkypeOnline` still seems to be timing out, despite `Enable-CsOnlineSessionForReconnection` being run - Recent improvements should stabilise these now, but I will still test them more thoroughly.&nbsp; **UPDATE**: v20.08 should hopefully be able to alleviate this. - Reconnection attempt is taken if connection is broken.
+  - `Connect-SkypeOnline` still seems to be timing out, despite `Enable-CsOnlineSessionForReconnection` being run - Recent improvements should stabilise these now, but I will still test them more thoroughly.&nbsp; <br/>**UPDATE**: v20.08 should hopefully be able to alleviate this. - Reconnection attempt is taken if connection is broken.
   - Scripts for **Call Queue Handling** are not fully tested yet. They have improved a lot, but are still BETA - Handle with Care!
   - I try to build my scripts so that they are very talkative, if you get stuck, `-Verbose` should be able to help
 
@@ -126,6 +127,31 @@ David
 
 ***
 Change Log
+
+## v20.09 - September 2020 release
+
+Another month of bugfixing and stabilisation
+
+- **New: Assert-Cmdlets for Connections**
+  - The Test-Commands only verify whether a session exists but do not action anything. As I didn't want to touch them, I have created their corresponding Assert-Commands (Output: OnScreen display and returns Boolean value)
+  - `Assert-AzureADConnection` executes Test-AzureADConnection and if unsuccessful, displays output to run Connect-AzureAD (as all AzureAD scripts do already, preempting issues with AzureAD)
+  - `Assert-MicrosoftTeamsConnection`  executes Test-MicrosoftTeamsConnection and if unsuccessful, displays output to run Connect-MicrosoftTeams (I am currently not using it, so don't know whether it behaves the same as for AzureAD...)
+  - `Assert-SkypeOnlineConnection` executes Test-SkypeOnlineConnection and if unsuccessful, **tries to reconnect** the session with Get-CsTenant because of the caveat listed below. <br/>If this too proves unsuccessful, it will request to disconnect and reconnect manually using `Connect-Me`. The Alias '`pol`' is available. PoL for *Ping-of-life* as it it either resets the timeout counter or reconnects the session for you.
+  - **NOTE**: The behavior of the Scripts did not change, I merely pulled the existing pre-check functionality into a separate function and linked them in the Script as a one-liner, this brought the line count of the module down by 300 :)
+- **Changed: Teams Call Queue Handling**
+  - `New-/Set-TeamsCallQueue` will now try to enable Users for EnterpriseVoice if they are Licensed, but not enabled yet.
+  This affects User Objects added as agents with the *Users* Parameter as well as the *OverflowActionTarget* and *TimeoutActionTarget* if the respective *OverflowAction* or *TimeoutAction* if set to *'Forward'*
+  - If the *OverflowActionTarget* could not be enumerated and the OverflowAction is not *'DisconnectWithBusy'* the OverflowAction will be removed from the parameter stack (reducing errors)
+  - If the *TimeoutActionTarget* could not be enumerated and the TimeoutAction is not *'Disconnect'* the TimeoutAction will be removed from the parameter stack (reducing errors)
+  - `Get-TeamsCallQueue` output has received a revamp. Order improved for readability, parameter *ConciseView* delivers less (similar to Get-CsCallQueue -ExcludeContent, but developed wihtout knowing about this switch). <br/>Added parameters that Microsoft now exposes due to requests from myself and others in Uservoice. For Example: *DistributionGroupsLastExpanded* gives feedback on when the agent list was last updated. <br/>**NOTE**: This is still on an 8 hour cadence without an option to trigger other than to remove the Group and re-attach it to the CallQueue
+- **Bugfixes**
+  - `Get-TeamsCallQueue` now returns a result again. Mea culpa.
+  - Many small improvements in all `TeamsCallQueue` Cmdlets
+  - `New-TeamsResourceAccount` now correctly handles PhoneNumber assignments.
+  - `Set-TeamsResourceAccount` now should be a tad faster as it does not query the Object for every single piece of information.
+  - Typos fixed. 'timout' will be the bane of my existence.
+- **Caveats**
+  - Consistency of ability to reconnect sessions is dependent on the Security settings in the Tenant. On some tenants this works fine and commands are executd correctly after re-authenticating yourself. On other tenants, most notably ones with PIM activated, Error-messages are received with 'Session assertion' or other seemingly abstruse messages. Just run `Connect-Me` again to recreate a session (this will cleanly disconnect the session prior). The Assert-Cmdlets should help with this :)
 
 ## v20.08 - August 2020 Release
 
