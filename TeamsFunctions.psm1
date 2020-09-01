@@ -1879,16 +1879,16 @@ function Remove-TeamsUserVoiceConfig {
   )
 
   begin {
-    # Testing
-    $VerbosePreference = "Verbose"
-    $DebugPreference = "Debug"
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
-    # Testing SkypeOnline Connection
-    if (false -eq (Test-SkypeOnlineConnection)) {
-      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
-      break
-    }
+    # Asserting AzureAD Connection
+    if (-not (Assert-AzureADConnection)) { return }
+
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { return }
   }
 
   process {
@@ -1910,54 +1910,158 @@ function Remove-TeamsUserVoiceConfig {
 function Test-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
-		Short description
+		Tests whether any Voice Configuration has been applied to this User
 	.DESCRIPTION
-		Long description
-	.PARAMETER
-
-	.PARAMETER
-
-	.PARAMETER
-
+    For Microsoft Call Plans: Tests for EnterpriseVoice enablement, License AND Phone Number
+    For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
+	.PARAMETER Identity
+    Required. UserPrincipalName of the User to be tested
+	.PARAMETER DirectRouting
+    Optional (Default). Switch to determine whether a User is configured for Direct Routing
+    Tested Parameters: EnterpriseVoiceEnabled, OnlineVoiceRoutingPolicy, OnPremLineURI
+	.PARAMETER CallPlans
+    Optional. Switch to determine whether a User is configured for Microsoft CallPlans
+    Tested Parameters: EnterpriseVoiceEnabled, User License (Domestic or Interanational Call Plan), TelephoneNumber
+  .PARAMETER Partial
+    Optional. By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
+    Using this switch, returns TRUE if ANY of the voice Parameters are configured (User has some or full configuration)
 	.EXAMPLE
-		C:\PS>
-		Example of how to use this cmdlet
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName
+    Tests for Direct Routing and returns TRUE if FULL configuration is found
 	.EXAMPLE
-		C:\PS>
-		Another example of how to use this cmdlet
-	.INPUTS
-		Inputs to this cmdlet (if any)
-	.OUTPUTS
-		Output from this cmdlet (if any)
-	.NOTES
-		General notes
-	.COMPONENT
-		The component this cmdlet belongs to
-	.ROLE
-		The role this cmdlet belongs to
-	.FUNCTIONALITY
-		The functionality that best describes this cmdlet
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -DirectRouting -Partial
+    Tests for Direct Routing and returns TRUE if ANY configuration is found
+	.EXAMPLE
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -CallPlans
+    Tests for Call Plans and returns TRUE if FULL configuration is found
+	.EXAMPLE
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -DirectRouting -Partial
+    Tests for Call Plans but returns TRUE if ANY configuration is found
+  .NOTES
+    All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
+    Partial configuration provides insight for incorrectly deprovisioned configuration that could block configuration for the other.
+    For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI
+      This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.
+      "Remove-TeamsUserVoiceConfig -Force" can help
+	.LINK
+    Get-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+    Remove-TeamsUserVoiceConfig
+    Test-TeamsUserVoiceConfig
 	#>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = "DirectRouting")]
+  [OutputType([Boolean])]
   param(
     [Parameter(Mandatory = $true)]
-    [string]$Identity
+    [string]$Identity,
+
+    [Parameter(ParameterSetName = "CallPlans", Mandatory, Helpmessage = 'Queries configuration for Microsoft Call Plans (License, etc.)')]
+    [switch]$CallPlans,
+
+    #TODO Potentially needs changing to: (check documentation too if so!)
+    #[Parameter(ParameterSetName = "DirectRouting", Mandatory, Helpmessage = 'Queries configuration for Direct Routing (OVP, etc.)')]
+    [Parameter(ParameterSetName = "DirectRouting", Helpmessage = 'Queries configuration for Direct Routing (OVP, etc.)')]
+    [switch]$DirectRouting,
+
+    [Parameter(Helpmessage = 'Queries a partial implementation')]
+    [switch]$Partial
 
   )
 
   begin {
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
+
+    # Asserting AzureAD Connection
+    if (-not (Assert-AzureADConnection)) { return }
+
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { return }
   }
 
   process {
-    $User = Get-CsOnlineUser $Identity
-    $User
+    try {
+      $CsUser = Get-CsOnlineUser $Identity -ErrorAction Stop
+    }
+    catch {
+      Write-Error "User '$Identity' not found" -Category ObjectNotFound -ErrorAction Stop
+    }
 
+    switch ($PsCmdlet.ParameterSetName) {
+      "DirectRouting" {
+        if ($PSBoundParameters.ContainsKey('Partial')) {
+          # Query partial configuration
+          # Returns TRUE if some conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and ($null -ne $CsUser.OnlineVoiceRoutingPolicy -or $null -ne $CsUser.OnPremLineURI)) {
+            return $true
+          }
+          else {
+            return $false
+          }
+        }
+        else {
+          # Query complete configuration
+          # Returns TRUE only if all conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
+            return $true
+          }
+          else {
+            return $false
+          }
+        }
+      }
+      "CallPlans" {
+        # Determining Call Plan License Assignment
+        $IntCallPlan = Test-TeamsUserLicense -Identity $Identity -LicensePackage InternationalCallingPlan
+        $DomCallPlan = Test-TeamsUserLicense -Identity $Identity -LicensePackage DomesticCallingPlan
+        $Dom120CallPlan = Test-TeamsUserLicense -Identity $Identity -LicensePackage DomesticCallingPlan120
+        $CommunicationC = Test-TeamsUserLicense -Identity $Identity -LicensePackage CommunicationCredits
+
+        if ($IntCallPlan -or $DomCallPlan -or $Dom120CallPlan -or $CommunicationC) {
+          $UserHasCallPlan = $true
+        }
+        else {
+          $UserHasCallPlan = $false
+        }
+
+
+        if ($PSBoundParameters.ContainsKey('Partial')) {
+          # Query partial configuration
+          # Returns TRUE if some conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and ($UserHasCallPlan -or $null -ne $CsUser.TelephoneNumber)) {
+            return $true
+          }
+          else {
+            return $false
+          }
+
+        }
+        else {
+          # Query complete configuration
+          # Returns TRUE only if all conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $UserHasCallPlan -and $null -ne $CsUser.TelephoneNumber) {
+            return $true
+          }
+          else {
+            return $false
+          }
+        }
+      }
+    }
   }
 
   end {
   }
 }
+
+Set-Alias -Name Get-TeamsEVConfig -Value Get-TeamsUserVoiceConfig
+Set-Alias -Name New-TeamsEVConfig -Value New-TeamsUserVoiceConfig
+Set-Alias -Name Remove-TeamsEVConfig -Value Remove-TeamsUserVoiceConfig
+Set-Alias -Name Test-TeamsEVConfig -Value Test-TeamsUserVoiceConfig
 #endregion
 
 
@@ -2670,7 +2774,7 @@ function New-TeamsCallQueue {
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { return }
@@ -3818,7 +3922,7 @@ function Set-TeamsCallQueue {
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { return }
@@ -4650,7 +4754,7 @@ function Remove-TeamsCallQueue {
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    #Write-Warning -Message "This Script is currently in testing. Please feed back issues encountered"
+    #Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { return }
