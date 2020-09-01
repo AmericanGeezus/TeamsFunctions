@@ -416,14 +416,14 @@ function Connect-SkypeTeamsAndAAD {
     Write-Verbose -Message "Establishing connection to SkypeOnline" -Verbose
     try {
       if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-        $null = (Connect-SkypeOnline -Username $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+        $null = (Connect-SkypeOnline -UserName $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
       }
       else {
-        $null = (Connect-SkypeOnline -Username $Username -ErrorAction STOP)
+        $null = (Connect-SkypeOnline -UserName $Username -ErrorAction STOP)
       }
     }
     catch {
-      Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain, Admin Role Activation (PIM) and Session Exhaustion (2 max!)" -Foregroundcolor Red
+      Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain, Admin Role Activation (PIM) and Session Exhaustion (2 max!)" -ForegroundColor Red
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
 
@@ -454,14 +454,14 @@ function Connect-SkypeTeamsAndAAD {
   if ($ConnectALL -or $ConnectToAAD) {
     try {
       Write-Verbose -Message "Establishing connection to AzureAD" -Verbose
-      $null = (Connect-AzureAD -AccountID $Username)
+      $null = (Connect-AzureAD -AccountId $Username)
       Start-Sleep 1
       if ((Test-AzureADConnection) -and -not $Silent) {
         Get-AzureADCurrentSessionInfo
       }
     }
     catch {
-      Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -Foregroundcolor Red
+      Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -ForegroundColor Red
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
   }
@@ -475,14 +475,14 @@ function Connect-SkypeTeamsAndAAD {
       }
       Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
       if ((Test-MicrosoftTeamsConnection) -and -not $Silent) {
-        Connect-MicrosoftTeams -AccountID $Username
+        Connect-MicrosoftTeams -AccountId $Username
       }
       else {
-        $null = (Connect-MicrosoftTeams -AccountID $Username)
+        $null = (Connect-MicrosoftTeams -AccountId $Username)
       }
     }
     catch {
-      Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -Foregroundcolor Red
+      Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -ForegroundColor Red
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
   }
@@ -503,7 +503,7 @@ function Connect-SkypeTeamsAndAAD {
       }
     }
     catch {
-      Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -Foregroundcolor Red
+      Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -ForegroundColor Red
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
   }
@@ -1450,7 +1450,7 @@ function Get-TeamsUserLicense {
         }
       }
       $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, FriendlyName
-      [string]$LicensesFriendlyNames = ($UserLicensesSorted | Where-Object FriendlyName -ne $null).FriendlyName
+      [string]$LicensesFriendlyNames = ($UserLicensesSorted | Where-Object FriendlyName -NE $null).FriendlyName
 
       # Querying Service Plans
       $assignedServicePlans = (Get-AzureADUserLicenseDetail -ObjectId $User).ServicePlans | Sort-Object ServicePlanName
@@ -1468,7 +1468,7 @@ function Get-TeamsUserLicense {
         }
       }
       $UserServicePlansSorted = $UserServicePlans | Sort-Object Friendlyname, ProvisioningStatus, ServicePlanNam
-      [string]$ServicePlansFriendlyNames = ($UserServicePlansSorted | Where-Object FriendlyName -ne $null).FriendlyName
+      [string]$ServicePlansFriendlyNames = ($UserServicePlansSorted | Where-Object FriendlyName -NE $null).FriendlyName
 
       $PhoneSystemLicense = ("MCOEV" -in $UserServicePlans.ServicePlanName)
       $AudioConfLicense = ("MCOMEETADV" -in $UserServicePlans.ServicePlanName)
@@ -1677,6 +1677,275 @@ function Get-TeamsTenantLicense {
   }
   end {
 
+  }
+}
+#endregion
+
+
+#region Voice Configuration
+function Get-TeamsTenantVoiceConfig {
+  <#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+	.PARAMETER
+
+	.PARAMETER
+
+	.PARAMETER
+
+	.EXAMPLE
+		C:\PS>
+		Example of how to use this cmdlet
+	.EXAMPLE
+		C:\PS>
+		Another example of how to use this cmdlet
+	.INPUTS
+		Inputs to this cmdlet (if any)
+	.OUTPUTS
+		Output from this cmdlet (if any)
+	.NOTES
+		General notes
+	.COMPONENT
+		The component this cmdlet belongs to
+	.ROLE
+		The role this cmdlet belongs to
+	.FUNCTIONALITY
+		The functionality that best describes this cmdlet
+	#>
+
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Identity
+  )
+
+  begin {
+  }
+
+  process {
+
+  }
+
+  end {
+  }
+}
+
+
+function Get-TeamsUserVoiceConfig {
+  <#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+	.PARAMETER
+
+	.PARAMETER
+
+	.PARAMETER
+
+	.EXAMPLE
+		C:\PS>
+		Example of how to use this cmdlet
+	.EXAMPLE
+		C:\PS>
+		Another example of how to use this cmdlet
+	.INPUTS
+		Inputs to this cmdlet (if any)
+	.OUTPUTS
+		Output from this cmdlet (if any)
+	.NOTES
+		General notes
+	.COMPONENT
+		The component this cmdlet belongs to
+	.ROLE
+		The role this cmdlet belongs to
+	.FUNCTIONALITY
+		The functionality that best describes this cmdlet
+	#>
+
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Identity
+  )
+
+  begin {
+  }
+
+  process {
+
+  }
+
+  end {
+  }
+}
+
+
+function Set-TeamsUserVoiceConfig {
+  <#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+	.PARAMETER
+
+	.PARAMETER
+
+	.PARAMETER
+
+	.EXAMPLE
+		C:\PS>
+		Example of how to use this cmdlet
+	.EXAMPLE
+		C:\PS>
+		Another example of how to use this cmdlet
+	.INPUTS
+		Inputs to this cmdlet (if any)
+	.OUTPUTS
+		Output from this cmdlet (if any)
+	.NOTES
+		General notes
+	.COMPONENT
+		The component this cmdlet belongs to
+	.ROLE
+		The role this cmdlet belongs to
+	.FUNCTIONALITY
+		The functionality that best describes this cmdlet
+	#>
+
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Identity,
+
+    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
+    [switch]$Force
+  )
+
+  begin {
+
+  }
+
+  process {
+
+    #Snippet for ShouldProcess:
+    if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
+      # do harm
+    }
+
+  }
+
+  end {
+  }
+}
+
+
+function Remove-TeamsUserVoiceConfig {
+  <#
+	.SYNOPSIS
+		Removes Voice Configuration from a user
+	.DESCRIPTION
+		Deprovisions a user from Enterprise Voice, removes the Telephone Number, Tenant Dial Plan and Voice Routing Policy
+	.PARAMETER Identity
+		Required. UserPrincipalName of the User.
+	.EXAMPLE
+		Remove-TeamsUserVoiceConfig -Identity John@domain.com
+		Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned
+	.NOTES
+    For DirectRouting, this Script does not remove any licenses.
+    For CallingPlans it will prompt for Calling Plan licenses to be removed.
+	.FUNCTIONALITY
+		Removes a Teams Users Voice Configuration and disables them from placing PSTN calls
+	#>
+
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  param(
+    [Parameter(Mandatory = $true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [string]$Identity,
+
+    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
+    [switch]$Force
+
+  )
+
+  begin {
+    # Testing
+    $VerbosePreference = "Verbose"
+    $DebugPreference = "Debug"
+
+    # Testing SkypeOnline Connection
+    if (false -eq (Test-SkypeOnlineConnection)) {
+      Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+      Write-Host "INFO:  Connect-SkypeAndTeamsAndAAD can be used to connect to SkypeOnline, MicrosoftTeams and AzureAD!" -ForegroundColor DarkCyan
+      break
+    }
+  }
+
+  process {
+    $User = Get-AzureADUser -SearchString $Identity
+    $User
+
+    #Snippet for ShouldProcess:
+    if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
+      # do harm
+    }
+
+  }
+
+  end {
+  }
+}
+
+
+function Test-TeamsUserVoiceConfig {
+  <#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+	.PARAMETER
+
+	.PARAMETER
+
+	.PARAMETER
+
+	.EXAMPLE
+		C:\PS>
+		Example of how to use this cmdlet
+	.EXAMPLE
+		C:\PS>
+		Another example of how to use this cmdlet
+	.INPUTS
+		Inputs to this cmdlet (if any)
+	.OUTPUTS
+		Output from this cmdlet (if any)
+	.NOTES
+		General notes
+	.COMPONENT
+		The component this cmdlet belongs to
+	.ROLE
+		The role this cmdlet belongs to
+	.FUNCTIONALITY
+		The functionality that best describes this cmdlet
+	#>
+
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Identity
+
+  )
+
+  begin {
+  }
+
+  process {
+
+  }
+
+  end {
   }
 }
 #endregion
@@ -2194,7 +2463,7 @@ function New-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "Must be a value between 30 and 180s (3 minutes)" -ForeGroundColor Red
+          Write-Host "Must be a value between 30 and 180s (3 minutes)" -ForegroundColor Red
           $false
         }
       })]
@@ -2228,12 +2497,12 @@ function New-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
             $false
           }
         }
         else {
-          Write-Host "OverflowSharedVoicemailAudioFile: File not found, please verify" -ForeGroundColor Red
+          Write-Host "OverflowSharedVoicemailAudioFile: File not found, please verify" -ForegroundColor Red
           $false
         }
       })]
@@ -2252,7 +2521,7 @@ function New-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "OverflowThreshold: Must be a value between 0 and 200s." -ForeGroundColor Red
+          Write-Host "OverflowThreshold: Must be a value between 0 and 200s." -ForegroundColor Red
           $false
         }
       })]
@@ -2284,12 +2553,12 @@ function New-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
             $false
           }
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "File not found, please verify" -ForegroundColor Red
           $false
         }
       })]
@@ -2308,7 +2577,7 @@ function New-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForeGroundColor Red
+          Write-Host "TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForegroundColor Red
           $false
         }
       })]
@@ -2340,12 +2609,12 @@ function New-TeamsCallQueue {
               $True
             }
             else {
-              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
               $false
             }
           }
           else {
-            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForeGroundColor Red
+            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForegroundColor Red
             $false
           }
         }
@@ -2359,12 +2628,12 @@ function New-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "MusicOnHoldAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "MusicOnHoldAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
             $false
           }
         }
         else {
-          Write-Host "MusicOnHoldAudioFile: File not found, please verify" -ForeGroundColor Red
+          Write-Host "MusicOnHoldAudioFile: File not found, please verify" -ForegroundColor Red
           $false
         }
       })]
@@ -3345,7 +3614,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "Must be a value between 30 and 180s (3 minutes)" -ForeGroundColor Red
+          Write-Host "Must be a value between 30 and 180s (3 minutes)" -ForegroundColor Red
           $false
         }
       })]
@@ -3378,12 +3647,12 @@ function Set-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
             $false
           }
         }
         else {
-          Write-Host "OverflowSharedVoicemailAudioFile: File not found, please verify" -ForeGroundColor Red
+          Write-Host "OverflowSharedVoicemailAudioFile: File not found, please verify" -ForegroundColor Red
           $false
         }
       })]
@@ -3401,7 +3670,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "OverflowThreshold: Must be a value between 0 and 200s." -ForeGroundColor Red
+          Write-Host "OverflowThreshold: Must be a value between 0 and 200s." -ForegroundColor Red
           $false
         }
       })]
@@ -3433,12 +3702,12 @@ function Set-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
             $false
           }
         }
         else {
-          Write-Host "File not found, please verify" -ForeGroundColor Red
+          Write-Host "File not found, please verify" -ForegroundColor Red
           $false
         }
       })]
@@ -3456,7 +3725,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host "TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForeGroundColor Red
+          Write-Host "TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)" -ForegroundColor Red
           $false
         }
       })]
@@ -3488,12 +3757,12 @@ function Set-TeamsCallQueue {
               $True
             }
             else {
-              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
               $false
             }
           }
           else {
-            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForeGroundColor Red
+            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForegroundColor Red
             $false
           }
         }
@@ -3507,12 +3776,12 @@ function Set-TeamsCallQueue {
             $True
           }
           else {
-            Write-Host "MusicOnHoldAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForeGroundColor Red
+            Write-Host "MusicOnHoldAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
             $false
           }
         }
         else {
-          Write-Host "MusicOnHoldAudioFile: File not found, please verify" -ForeGroundColor Red
+          Write-Host "MusicOnHoldAudioFile: File not found, please verify" -ForegroundColor Red
           $false
         }
       })]
@@ -5010,7 +5279,7 @@ function New-TeamsResourceAccount {
           $True
         }
         else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
+          Write-Host "Must be a valid UPN" -ForegroundColor Red
           $false
         }
       })]
@@ -5047,7 +5316,7 @@ function New-TeamsResourceAccount {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForeGroundColor Red
+          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
           $false
         }
       })]
@@ -5443,7 +5712,7 @@ function Set-TeamsResourceAccount {
           $True
         }
         else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
+          Write-Host "Must be a valid UPN" -ForegroundColor Red
           $false
         }
       })]
@@ -5481,7 +5750,7 @@ function Set-TeamsResourceAccount {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForeGroundColor Red
+          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
           $false
         }
       })]
@@ -6302,7 +6571,7 @@ function Remove-TeamsResourceAccount {
           $True
         }
         else {
-          Write-Host "Must be a valid UPN" -ForeGroundColor Red
+          Write-Host "Must be a valid UPN" -ForegroundColor Red
           $false
         }
       })]
@@ -6449,7 +6718,7 @@ function Remove-TeamsResourceAccount {
     Write-Verbose -Message "Processing: '$DisplayName' Removing AzureAD User Object"
     if ($PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
       try {
-        $null = (Remove-AzureADUser -ObjectID $UserPrincipalName -ErrorAction STOP)
+        $null = (Remove-AzureADUser -ObjectId $UserPrincipalName -ErrorAction STOP)
         Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
       }
       catch {
@@ -6812,76 +7081,80 @@ function Remove-TenantDialPlanNormalizationRule {
     [string]$DialPlan
   )
 
-  # Asserting SkypeOnline Connection
-  if (-not (Assert-SkypeOnlineConnection)) { return }
+  begin {
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { return }
 
-  if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-    $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
   }
-  if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-    $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-  }
-  if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-    $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-  }
 
-  $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -ErrorAction SilentlyContinue
+  process {
+    $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -ErrorAction SilentlyContinue
 
-  if ($null -ne $dpInfo) {
-    $currentNormRules = $dpInfo.NormalizationRules
-    [int]$ruleIndex = 0
-    [int]$ruleCount = $currentNormRules.Count
-    [array]$ruleArray = @()
-    [array]$indexArray = @()
+    if ($null -ne $dpInfo) {
+      $currentNormRules = $dpInfo.NormalizationRules
+      [int]$ruleIndex = 0
+      [int]$ruleCount = $currentNormRules.Count
+      [array]$ruleArray = @()
+      [array]$indexArray = @()
 
-    if ($ruleCount -ne 0) {
-      foreach ($normRule in $dpInfo.NormalizationRules) {
-        $output = [PSCustomObject][ordered]@{
-          'RuleIndex'   = $ruleIndex
-          'Name'        = $normRule.Name
-          'Pattern'     = $normRule.Pattern
-          'Translation' = $normRule.Translation
+      if ($ruleCount -ne 0) {
+        foreach ($normRule in $dpInfo.NormalizationRules) {
+          $output = [PSCustomObject][ordered]@{
+            'RuleIndex'   = $ruleIndex
+            'Name'        = $normRule.Name
+            'Pattern'     = $normRule.Pattern
+            'Translation' = $normRule.Translation
+          }
+
+          $ruleArray += $output
+          $indexArray += $ruleIndex
+          $ruleIndex++
+        } # End of foreach ($normRule in $dpInfo.NormalizationRules)
+
+        # Displays rules to the screen with RuleIndex added
+        $ruleArray | Out-Host
+
+        do {
+          $indexToRemove = Read-Host -Prompt "Enter the Rule Index of the normalization rule to remove from the dial plan (leave blank to quit without changes)"
+
+          if ($indexToRemove -notin $indexArray -and $indexToRemove.Length -ne 0) {
+            Write-Warning -Message "That is not a valid Rule Index. Please try again or leave blank to quit."
+          }
+        } until ($indexToRemove -in $indexArray -or $indexToRemove.Length -eq 0)
+
+        if ($indexToRemove.Length -eq 0) { RETURN }
+
+        # If there is more than 1 rule left, remove the rule and set to new normalization rules
+        # If there is only 1 rule left, we have to set -NormalizationRules to $null
+        if ($ruleCount -ne 1) {
+          $newNormRules = $currentNormRules
+          [void]$newNormRules.Remove($currentNormRules[$indexToRemove])
+          if ($PSCmdlet.ShouldProcess("$DialPlan", "Set-CsTenantDialPlan")) {
+            Set-CsTenantDialPlan -Identity $DialPlan -NormalizationRules $newNormRules
+          }
         }
-
-        $ruleArray += $output
-        $indexArray += $ruleIndex
-        $ruleIndex++
-      } # End of foreach ($normRule in $dpInfo.NormalizationRules)
-
-      # Displays rules to the screen with RuleIndex added
-      $ruleArray | Out-Host
-
-      do {
-        $indexToRemove = Read-Host -Prompt "Enter the Rule Index of the normalization rule to remove from the dial plan (leave blank to quit without changes)"
-
-        if ($indexToRemove -notin $indexArray -and $indexToRemove.Length -ne 0) {
-          Write-Warning -Message "That is not a valid Rule Index. Please try again or leave blank to quit."
-        }
-      } until ($indexToRemove -in $indexArray -or $indexToRemove.Length -eq 0)
-
-      if ($indexToRemove.Length -eq 0) { RETURN }
-
-      # If there is more than 1 rule left, remove the rule and set to new normalization rules
-      # If there is only 1 rule left, we have to set -NormalizationRules to $null
-      if ($ruleCount -ne 1) {
-        $newNormRules = $currentNormRules
-        [void]$newNormRules.Remove($currentNormRules[$indexToRemove])
-        if ($PSCmdlet.ShouldProcess("$DialPlan", "Set-CsTenantDialPlan")) {
-          Set-CsTenantDialPlan -Identity $DialPlan -NormalizationRules $newNormRules
+        else {
+          if ($PSCmdlet.ShouldProcess("$DialPlan", "Set-CsTenantDialPlan")) {
+            Set-CsTenantDialPlan -Identity $DialPlan -NormalizationRules $null
+          }
         }
       }
       else {
-        if ($PSCmdlet.ShouldProcess("$DialPlan", "Set-CsTenantDialPlan")) {
-          Set-CsTenantDialPlan -Identity $DialPlan -NormalizationRules $null
-        }
+        Write-Warning -Message "$DialPlan does not contain any normalization rules."
       }
     }
     else {
-      Write-Warning -Message "$DialPlan does not contain any normalization rules."
+      Write-Warning -Message "$DialPlan is not a valid dial plan for the tenant. Please try again."
     }
-  }
-  else {
-    Write-Warning -Message "$DialPlan is not a valid dial plan for the tenant. Please try again."
   }
 } # End of Remove-TenantDialPlanNormalizationRule
 
@@ -7460,7 +7733,7 @@ function Test-TeamsUserLicense {
       "LicensePackage" {
         Write-Verbose -Message "'$DisplayName' Testing against '$LicensePackage'"
         $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
-        $Sku = ($TeamsLicenses | Where-Object ParameterName -eq $LicensePackage).SkuPartNumber
+        $Sku = ($TeamsLicenses | Where-Object ParameterName -EQ $LicensePackage).SkuPartNumber
         if ($Sku -in $UserLicenseSKU) {
           return $true
         }
@@ -7715,43 +7988,48 @@ function Backup-TeamsEV {
     $OverrideAdminDomain
   )
 
-  $Filenames = 'Dialplans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
+  begin {
+    $Filenames = 'Dialplans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
 
-  If ((Get-PSSession | Where-Object -FilterScript {
-        $_.ComputerName -like '*.online.lync.com'
-      }).State -eq 'Opened') {
-    Write-Host -Object 'Using existing session credentials'
-  }
-  Else {
-    Write-Host -Object 'Logging into Office 365...'
-
-    If ($OverrideAdminDomain) {
-      $O365Session = (New-CsOnlineSession -OverrideAdminDomain $OverrideAdminDomain)
+    If ((Get-PSSession | Where-Object -FilterScript {
+          $_.ComputerName -like '*.online.lync.com'
+        }).State -eq 'Opened') {
+      Write-Host -Object 'Using existing session credentials'
     }
     Else {
-      $O365Session = (New-CsOnlineSession)
+      Write-Host -Object 'Logging into Office 365...'
+
+      If ($OverrideAdminDomain) {
+        $O365Session = (New-CsOnlineSession -OverrideAdminDomain $OverrideAdminDomain)
+      }
+      Else {
+        $O365Session = (New-CsOnlineSession)
+      }
+      $null = (Import-PSSession -Session $O365Session -AllowClobber)
     }
-    $null = (Import-PSSession -Session $O365Session -AllowClobber)
+
   }
 
-  Try {
-    $null = (Get-CsTenantDialPlan -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath Dialplans.txt -Force -Encoding utf8)
-    $null = (Get-CsOnlineVoiceRoute -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutes.txt -Force -Encoding utf8)
-    $null = (Get-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutingPolicies.txt -Force -Encoding utf8)
-    $null = (Get-CsOnlinePstnUsage -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNUsages.txt -Force -Encoding utf8)
-    $null = (Get-CsTeamsTranslationRule -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath TranslationRules.txt -Force -Encoding utf8)
-    $null = (Get-CsOnlinePSTNGateway -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNGateways.txt -Force -Encoding utf8)
-  }
-  Catch {
-    Write-Error -Message 'There was an error backing up the MS Teams Enterprise Voice configuration.'
-    return
-  }
+  process {
+    Try {
+      $null = (Get-CsTenantDialPlan -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath Dialplans.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlineVoiceRoute -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutes.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutingPolicies.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlinePstnUsage -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNUsages.txt -Force -Encoding utf8)
+      $null = (Get-CsTeamsTranslationRule -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath TranslationRules.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlinePSTNGateway -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNGateways.txt -Force -Encoding utf8)
+    }
+    Catch {
+      Write-Error -Message 'There was an error backing up the MS Teams Enterprise Voice configuration.'
+      return
+    }
 
-  $BackupFile = ('TeamsEVBackup_' + (Get-Date -Format yyyy-MM-dd) + '.zip')
-  $null = (Compress-Archive -Path $Filenames -DestinationPath $BackupFile -Force)
-  $null = (Remove-Item -Path $Filenames -Force -Confirm:$false)
+    $BackupFile = ('TeamsEVBackup_' + (Get-Date -Format yyyy-MM-dd) + '.zip')
+    $null = (Compress-Archive -Path $Filenames -DestinationPath $BackupFile -Force)
+    $null = (Remove-Item -Path $Filenames -Force -Confirm:$false)
 
-  Write-Host -Object ('Microsoft Teams Enterprise Voice configuration backed up to {0}' -f $BackupFile)
+    Write-Host -Object ('Microsoft Teams Enterprise Voice configuration backed up to {0}' -f $BackupFile)
+  }
 
 }
 
@@ -7800,215 +8078,221 @@ function Restore-TeamsEV {
     $OverrideAdminDomain
   )
 
-  Try {
-    $ZipPath = (Resolve-Path -Path $File)
-    $null = (Add-Type -AssemblyName System.IO.Compression.FileSystem)
-    $ZipStream = [io.compression.zipfile]::OpenRead($ZipPath)
-  }
-  Catch {
-    Write-Error -Message 'Could not open zip archive.' -ErrorAction Stop
-    return
-  }
-
-  If ((Get-PSSession | Where-Object -FilterScript { $_.ComputerName -like '*.online.lync.com' }).State -eq 'Opened') {
-    Write-Host -Object 'Using existing session credentials'
-  }
-  Else {
-    Write-Host -Object 'Logging into Office 365...'
-
-    If ($OverrideAdminDomain) {
-      $O365Session = (New-CsOnlineSession -OverrideAdminDomain $OverrideAdminDomain)
-    }
-    Else {
-      $O365Session = (New-CsOnlineSession)
-    }
-    $null = (Import-PSSession -Session $O365Session -AllowClobber)
-  }
-
-  $EV_Entities = 'Dialplans', 'VoiceRoutes', 'VoiceRoutingPolicies', 'PSTNUsages', 'TranslationRules', 'PSTNGateways'
-
-  Write-Host -Object 'Validating backup files.'
-
-  ForEach ($EV_Entity in $EV_Entities) {
+  begin {
     Try {
-      $ZipItem = $ZipStream.GetEntry("$EV_Entity.txt")
-      $ItemReader = (New-Object -TypeName System.IO.StreamReader -ArgumentList ($ZipItem.Open()))
-
-      $null = (Set-Variable -Name $EV_Entity -Value ($ItemReader.ReadToEnd() | ConvertFrom-Json))
-
-      # Throw error if there is no Identity field, which indicates this isn't a proper backup file
-      If ($null -eq ((Get-Variable -Name $EV_Entity).Value[0].Identity)) {
-        $null = (Set-Variable -Name $EV_Entity -Value $NULL)
-        Throw ('Error')
-      }
+      $ZipPath = (Resolve-Path -Path $File)
+      $null = (Add-Type -AssemblyName System.IO.Compression.FileSystem)
+      $ZipStream = [io.compression.zipfile]::OpenRead($ZipPath)
     }
     Catch {
-      Write-Error -Message ($EV_Entity + '.txt could not be found, was empty or could not be parsed. ' + $EV_Entity + ' will not be restored.') -ErrorAction Continue
-    }
-    $ItemReader.Close()
-  }
-
-  If (!$KeepExisting) {
-    $Confirm = Read-Host -Prompt 'WARNING: This will ERASE all existing dialplans/voice routes/policies etc prior to restoring from backup. Continue (Y/N)?'
-    If ($Confirm -notmatch '^[Yy]$') {
-      Write-Host -Object 'returning without making changes.'
+      Write-Error -Message 'Could not open zip archive.' -ErrorAction Stop
       return
     }
 
-    Write-Host -Object 'Erasing all existing dialplans/voice routes/policies etc.'
-
-    Write-Verbose 'Erasing all tenant dialplans'
-    $null = (Get-CsTenantDialPlan -ErrorAction SilentlyContinue | Remove-CsTenantDialPlan -ErrorAction SilentlyContinue)
-    Write-Verbose 'Erasing all online voice routes'
-    $null = (Get-CsOnlineVoiceRoute -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoute -ErrorAction SilentlyContinue)
-    Write-Verbose 'Erasing all online voice routing policies'
-    $null = (Get-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue)
-    Write-Verbose 'Erasing all PSTN usages'
-    $null = (Set-CsOnlinePstnUsage -Identity Global -Usage $NULL -ErrorAction SilentlyContinue)
-    Write-Verbose 'Removing translation rules from PSTN gateways'
-    $null = (Get-CsOnlinePSTNGateway -ErrorAction SilentlyContinue | Set-CsOnlinePSTNGateway -OutbundTeamsNumberTranslationRules $NULL -OutboundPstnNumberTranslationRules $NULL -ErrorAction SilentlyContinue)
-    Write-Verbose 'Removing translation rules'
-    $null = (Get-CsTeamsTranslationRule -ErrorAction SilentlyContinue | Remove-CsTeamsTranslationRule -ErrorAction SilentlyContinue)
-  }
-
-  # Rebuild tenant dialplans from backup
-  Write-Host -Object 'Restoring tenant dialplans'
-
-  ForEach ($Dialplan in $Dialplans) {
-    Write-Verbose -Message "Restoring $($Dialplan.Identity) dialplan"
-    $DPExists = (Get-CsTenantDialPlan -Identity $Dialplan.Identity -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Identity)
-
-    $DPDetails = @{
-      Identity              = $Dialplan.Identity
-      OptimizeDeviceDialing = $Dialplan.OptimizeDeviceDialing
-      Description           = $Dialplan.Description
-    }
-
-    # Only include the external access prefix if one is defined. MS throws an error if you pass a null/empty ExternalAccessPrefix
-    If ($Dialplan.ExternalAccessPrefix) {
-      [void]$DPDetails.Add("ExternalAccessPrefix", $Dialplan.ExternalAccessPrefix)
-    }
-
-    If ($DPExists) {
-      $null = (Set-CsTenantDialPlan @DPDetails)
+    If ((Get-PSSession | Where-Object -FilterScript { $_.ComputerName -like '*.online.lync.com' }).State -eq 'Opened') {
+      Write-Host -Object 'Using existing session credentials'
     }
     Else {
-      $null = (New-CsTenantDialPlan @DPDetails)
-    }
+      Write-Host -Object 'Logging into Office 365...'
 
-    # Create a new Object
-    $NormRules = @()
-
-    ForEach ($NormRule in $Dialplan.NormalizationRules) {
-      $NRDetails = @{
-        Parent              = $Dialplan.Identity
-        Name                = [regex]::Match($NormRule, '(?ms)Name=(.*?);').Groups[1].Value
-        Pattern             = [regex]::Match($NormRule, '(?ms)Pattern=(.*?);').Groups[1].Value
-        Translation         = [regex]::Match($NormRule, '(?ms)Translation=(.*?);').Groups[1].Value
-        Description         = [regex]::Match($NormRule, '(?ms)^Description=(.*?);').Groups[1].Value
-        IsInternalExtension = [Convert]::ToBoolean([regex]::Match($NormRule, '(?ms)IsInternalExtension=(.*?)$').Groups[1].Value)
+      If ($OverrideAdminDomain) {
+        $O365Session = (New-CsOnlineSession -OverrideAdminDomain $OverrideAdminDomain)
       }
-      $NormRules += New-CsVoiceNormalizationRule @NRDetails -InMemory
+      Else {
+        $O365Session = (New-CsOnlineSession)
+      }
+      $null = (Import-PSSession -Session $O365Session -AllowClobber)
     }
-    $null = (Set-CsTenantDialPlan -Identity $Dialplan.Identity -NormalizationRules $NormRules)
+
   }
 
-  # Rebuild PSTN usages from backup
-  Write-Host -Object 'Restoring PSTN usages'
+  process {
+    $EV_Entities = 'Dialplans', 'VoiceRoutes', 'VoiceRoutingPolicies', 'PSTNUsages', 'TranslationRules', 'PSTNGateways'
 
-  ForEach ($PSTNUsage in $PSTNUsages.Usage) {
-    Write-Verbose -Message "Restoring $PSTNUsage PSTN usage"
-    $null = (Set-CsOnlinePstnUsage -Identity Global -Usage @{Add = $PSTNUsage } -WarningAction SilentlyContinue -ErrorAction SilentlyContinue)
+    Write-Host -Object 'Validating backup files.'
+
+    ForEach ($EV_Entity in $EV_Entities) {
+      Try {
+        $ZipItem = $ZipStream.GetEntry("$EV_Entity.txt")
+        $ItemReader = (New-Object -TypeName System.IO.StreamReader -ArgumentList ($ZipItem.Open()))
+
+        $null = (Set-Variable -Name $EV_Entity -Value ($ItemReader.ReadToEnd() | ConvertFrom-Json))
+
+        # Throw error if there is no Identity field, which indicates this isn't a proper backup file
+        If ($null -eq ((Get-Variable -Name $EV_Entity).Value[0].Identity)) {
+          $null = (Set-Variable -Name $EV_Entity -Value $NULL)
+          Throw ('Error')
+        }
+      }
+      Catch {
+        Write-Error -Message ($EV_Entity + '.txt could not be found, was empty or could not be parsed. ' + $EV_Entity + ' will not be restored.') -ErrorAction Continue
+      }
+      $ItemReader.Close()
+    }
+
+    If (!$KeepExisting) {
+      $Confirm = Read-Host -Prompt 'WARNING: This will ERASE all existing dialplans/voice routes/policies etc prior to restoring from backup. Continue (Y/N)?'
+      If ($Confirm -notmatch '^[Yy]$') {
+        Write-Host -Object 'returning without making changes.'
+        return
+      }
+
+      Write-Host -Object 'Erasing all existing dialplans/voice routes/policies etc.'
+
+      Write-Verbose 'Erasing all tenant dialplans'
+      $null = (Get-CsTenantDialPlan -ErrorAction SilentlyContinue | Remove-CsTenantDialPlan -ErrorAction SilentlyContinue)
+      Write-Verbose 'Erasing all online voice routes'
+      $null = (Get-CsOnlineVoiceRoute -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoute -ErrorAction SilentlyContinue)
+      Write-Verbose 'Erasing all online voice routing policies'
+      $null = (Get-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue)
+      Write-Verbose 'Erasing all PSTN usages'
+      $null = (Set-CsOnlinePstnUsage -Identity Global -Usage $NULL -ErrorAction SilentlyContinue)
+      Write-Verbose 'Removing translation rules from PSTN gateways'
+      $null = (Get-CsOnlinePSTNGateway -ErrorAction SilentlyContinue | Set-CsOnlinePSTNGateway -OutbundTeamsNumberTranslationRules $NULL -OutboundPstnNumberTranslationRules $NULL -ErrorAction SilentlyContinue)
+      Write-Verbose 'Removing translation rules'
+      $null = (Get-CsTeamsTranslationRule -ErrorAction SilentlyContinue | Remove-CsTeamsTranslationRule -ErrorAction SilentlyContinue)
+    }
+
+    # Rebuild tenant dialplans from backup
+    Write-Host -Object 'Restoring tenant dialplans'
+
+    ForEach ($Dialplan in $Dialplans) {
+      Write-Verbose -Message "Restoring $($Dialplan.Identity) dialplan"
+      $DPExists = (Get-CsTenantDialPlan -Identity $Dialplan.Identity -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Identity)
+
+      $DPDetails = @{
+        Identity              = $Dialplan.Identity
+        OptimizeDeviceDialing = $Dialplan.OptimizeDeviceDialing
+        Description           = $Dialplan.Description
+      }
+
+      # Only include the external access prefix if one is defined. MS throws an error if you pass a null/empty ExternalAccessPrefix
+      If ($Dialplan.ExternalAccessPrefix) {
+        [void]$DPDetails.Add("ExternalAccessPrefix", $Dialplan.ExternalAccessPrefix)
+      }
+
+      If ($DPExists) {
+        $null = (Set-CsTenantDialPlan @DPDetails)
+      }
+      Else {
+        $null = (New-CsTenantDialPlan @DPDetails)
+      }
+
+      # Create a new Object
+      $NormRules = @()
+
+      ForEach ($NormRule in $Dialplan.NormalizationRules) {
+        $NRDetails = @{
+          Parent              = $Dialplan.Identity
+          Name                = [regex]::Match($NormRule, '(?ms)Name=(.*?);').Groups[1].Value
+          Pattern             = [regex]::Match($NormRule, '(?ms)Pattern=(.*?);').Groups[1].Value
+          Translation         = [regex]::Match($NormRule, '(?ms)Translation=(.*?);').Groups[1].Value
+          Description         = [regex]::Match($NormRule, '(?ms)^Description=(.*?);').Groups[1].Value
+          IsInternalExtension = [Convert]::ToBoolean([regex]::Match($NormRule, '(?ms)IsInternalExtension=(.*?)$').Groups[1].Value)
+        }
+        $NormRules += New-CsVoiceNormalizationRule @NRDetails -InMemory
+      }
+      $null = (Set-CsTenantDialPlan -Identity $Dialplan.Identity -NormalizationRules $NormRules)
+    }
+
+    # Rebuild PSTN usages from backup
+    Write-Host -Object 'Restoring PSTN usages'
+
+    ForEach ($PSTNUsage in $PSTNUsages.Usage) {
+      Write-Verbose -Message "Restoring $PSTNUsage PSTN usage"
+      $null = (Set-CsOnlinePstnUsage -Identity Global -Usage @{Add = $PSTNUsage } -WarningAction SilentlyContinue -ErrorAction SilentlyContinue)
+    }
+
+    # Rebuild voice routes from backup
+    Write-Host -Object 'Restoring voice routes'
+
+    ForEach ($VoiceRoute in $VoiceRoutes) {
+      Write-Verbose -Message "Restoring $($VoiceRoute.Identity) voice route"
+      $VRExists = (Get-CsOnlineVoiceRoute -Identity $VoiceRoute.Identity -ErrorAction SilentlyContinue).Identity
+
+      $VRDetails = @{
+        Identity              = $VoiceRoute.Identity
+        NumberPattern         = $VoiceRoute.NumberPattern
+        Priority              = $VoiceRoute.Priority
+        OnlinePstnUsages      = $VoiceRoute.OnlinePstnUsages
+        OnlinePstnGatewayList = $VoiceRoute.OnlinePstnGatewayList
+        Description           = $VoiceRoute.Description
+      }
+
+      If ($VRExists) {
+        $null = (Set-CsOnlineVoiceRoute @VRDetails)
+      }
+      Else {
+        $null = (New-CsOnlineVoiceRoute @VRDetails)
+      }
+    }
+
+    # Rebuild voice routing policies from backup
+    Write-Host -Object 'Restoring voice routing policies'
+
+    ForEach ($VoiceRoutingPolicy in $VoiceRoutingPolicies) {
+      Write-Verbose -Message "Restoring $($VoiceRoutingPolicy.Identity) voice routing policy"
+      $VPExists = (Get-CsOnlineVoiceRoutingPolicy -Identity $VoiceRoutingPolicy.Identity -ErrorAction SilentlyContinue).Identity
+
+      $VPDetails = @{
+        Identity         = $VoiceRoutingPolicy.Identity
+        OnlinePstnUsages = $VoiceRoutingPolicy.OnlinePstnUsages
+        Description      = $VoiceRoutingPolicy.Description
+      }
+
+      If ($VPExists) {
+        $null = (Set-CsOnlineVoiceRoutingPolicy @VPDetails)
+      }
+      Else {
+        $null = (New-CsOnlineVoiceRoutingPolicy @VPDetails)
+      }
+    }
+
+    # Rebuild outbound translation rules from backup
+    Write-Host -Object 'Restoring outbound translation rules'
+
+    ForEach ($TranslationRule in $TranslationRules) {
+      Write-Verbose -Message "Restoring $($TranslationRule.Identity) translation rule"
+      $TRExists = (Get-CsTeamsTranslationRule -Identity $TranslationRule.Identity -ErrorAction SilentlyContinue).Identity
+
+      $TRDetails = @{
+        Identity    = $TranslationRule.Identity
+        Pattern     = $TranslationRule.Pattern
+        Translation = $TranslationRule.Translation
+        Description = $TranslationRule.Description
+      }
+
+      If ($TRExists) {
+        $null = (Set-CsTeamsTranslationRule @TRDetails)
+      }
+      Else {
+        $null = (New-CsTeamsTranslationRule @TRDetails)
+      }
+    }
+
+    # Re-add translation rules to PSTN gateways
+    Write-Host -Object 'Re-adding translation rules to PSTN gateways'
+
+    ForEach ($PSTNGateway in $PSTNGateways) {
+      Write-Verbose -Message "Restoring translation rules to $($PSTNGateway.Identity)"
+      $GWExists = (Get-CsOnlinePSTNGateway -Identity $PSTNGateway.Identity -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Identity)
+
+      $GWDetails = @{
+        Identity                           = $PSTNGateway.Identity
+        OutbundTeamsNumberTranslationRules = $PSTNGateway.OutbundTeamsNumberTranslationRules #Sadly Outbund isn't a spelling mistake here. That's what the command uses.
+        OutboundPstnNumberTranslationRules = $PSTNGateway.OutboundPstnNumberTranslationRules
+        InboundTeamsNumberTranslationRules = $PSTNGateway.InboundTeamsNumberTranslationRules
+        InboundPstnNumberTranslationRules  = $PSTNGateway.InboundPstnNumberTranslationRules
+      }
+      If ($GWExists) {
+        $null = (Set-CsOnlinePSTNGateway @GWDetails)
+      }
+    }
   }
 
-  # Rebuild voice routes from backup
-  Write-Host -Object 'Restoring voice routes'
-
-  ForEach ($VoiceRoute in $VoiceRoutes) {
-    Write-Verbose -Message "Restoring $($VoiceRoute.Identity) voice route"
-    $VRExists = (Get-CsOnlineVoiceRoute -Identity $VoiceRoute.Identity -ErrorAction SilentlyContinue).Identity
-
-    $VRDetails = @{
-      Identity              = $VoiceRoute.Identity
-      NumberPattern         = $VoiceRoute.NumberPattern
-      Priority              = $VoiceRoute.Priority
-      OnlinePstnUsages      = $VoiceRoute.OnlinePstnUsages
-      OnlinePstnGatewayList = $VoiceRoute.OnlinePstnGatewayList
-      Description           = $VoiceRoute.Description
-    }
-
-    If ($VRExists) {
-      $null = (Set-CsOnlineVoiceRoute @VRDetails)
-    }
-    Else {
-      $null = (New-CsOnlineVoiceRoute @VRDetails)
-    }
+  end {
+    Write-Host -Object 'Finished!'
   }
-
-  # Rebuild voice routing policies from backup
-  Write-Host -Object 'Restoring voice routing policies'
-
-  ForEach ($VoiceRoutingPolicy in $VoiceRoutingPolicies) {
-    Write-Verbose -Message "Restoring $($VoiceRoutingPolicy.Identity) voice routing policy"
-    $VPExists = (Get-CsOnlineVoiceRoutingPolicy -Identity $VoiceRoutingPolicy.Identity -ErrorAction SilentlyContinue).Identity
-
-    $VPDetails = @{
-      Identity         = $VoiceRoutingPolicy.Identity
-      OnlinePstnUsages = $VoiceRoutingPolicy.OnlinePstnUsages
-      Description      = $VoiceRoutingPolicy.Description
-    }
-
-    If ($VPExists) {
-      $null = (Set-CsOnlineVoiceRoutingPolicy @VPDetails)
-    }
-    Else {
-      $null = (New-CsOnlineVoiceRoutingPolicy @VPDetails)
-    }
-  }
-
-  # Rebuild outbound translation rules from backup
-  Write-Host -Object 'Restoring outbound translation rules'
-
-  ForEach ($TranslationRule in $TranslationRules) {
-    Write-Verbose -Message "Restoring $($TranslationRule.Identity) translation rule"
-    $TRExists = (Get-CsTeamsTranslationRule -Identity $TranslationRule.Identity -ErrorAction SilentlyContinue).Identity
-
-    $TRDetails = @{
-      Identity    = $TranslationRule.Identity
-      Pattern     = $TranslationRule.Pattern
-      Translation = $TranslationRule.Translation
-      Description = $TranslationRule.Description
-    }
-
-    If ($TRExists) {
-      $null = (Set-CsTeamsTranslationRule @TRDetails)
-    }
-    Else {
-      $null = (New-CsTeamsTranslationRule @TRDetails)
-    }
-  }
-
-  # Re-add translation rules to PSTN gateways
-  Write-Host -Object 'Re-adding translation rules to PSTN gateways'
-
-  ForEach ($PSTNGateway in $PSTNGateways) {
-    Write-Verbose -Message "Restoring translation rules to $($PSTNGateway.Identity)"
-    $GWExists = (Get-CsOnlinePSTNGateway -Identity $PSTNGateway.Identity -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Identity)
-
-    $GWDetails = @{
-      Identity                           = $PSTNGateway.Identity
-      OutbundTeamsNumberTranslationRules = $PSTNGateway.OutbundTeamsNumberTranslationRules #Sadly Outbund isn't a spelling mistake here. That's what the command uses.
-      OutboundPstnNumberTranslationRules = $PSTNGateway.OutboundPstnNumberTranslationRules
-      InboundTeamsNumberTranslationRules = $PSTNGateway.InboundTeamsNumberTranslationRules
-      InboundPstnNumberTranslationRules  = $PSTNGateway.InboundPstnNumberTranslationRules
-    }
-    If ($GWExists) {
-      $null = (Set-CsOnlinePSTNGateway @GWDetails)
-    }
-  }
-
-  Write-Host -Object 'Finished!'
-
 }
 
 # Extended to do a full backup
@@ -8047,117 +8331,122 @@ function Backup-TeamsTenant {
     $OverrideAdminDomain
   )
 
-  # Asserting SkypeOnline Connection
-  if (-not (Assert-SkypeOnlineConnection)) { return }
+  begin {
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { return }
 
-  $Filenames = '*.txt'
+    $Filenames = '*.txt'
 
-  If ((Get-PSSession | Where-Object -FilterScript {
-        $_.ComputerName -like '*.online.lync.com'
-      }).State -eq 'Opened') {
-    Write-Host -Object 'Using existing session credentials'
-  }
-  Else {
-    Write-Host -Object 'Logging into Office 365...'
-
-    If ($OverrideAdminDomain) {
-      $O365Session = (New-CsOnlineSession -OverrideAdminDomain $OverrideAdminDomain)
+    If ((Get-PSSession | Where-Object -FilterScript {
+          $_.ComputerName -like '*.online.lync.com'
+        }).State -eq 'Opened') {
+      Write-Host -Object 'Using existing session credentials'
     }
     Else {
-      $O365Session = (New-CsOnlineSession)
+      Write-Host -Object 'Logging into Office 365...'
+
+      If ($OverrideAdminDomain) {
+        $O365Session = (New-CsOnlineSession -OverrideAdminDomain $OverrideAdminDomain)
+      }
+      Else {
+        $O365Session = (New-CsOnlineSession)
+      }
+      $null = (Import-PSSession -Session $O365Session -AllowClobber)
     }
-    $null = (Import-PSSession -Session $O365Session -AllowClobber)
+
+    $ErrorActionP
+
+    $CommandParams += @{'WarningAction' = 'SilentlyContinue' }
+    $CommandParams += @{'ErrorAction' = 'SilentlyContinue' }
+
   }
 
-  $ErrorActionP
+  process {
+    # Tenant Configuration
+    $null = (Get-CsOnlineDialInConferencingBridge @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingBridge.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialInConferencingLanguagesSupported @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingLanguagesSupported.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialInConferencingServiceNumber @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingServiceNumber.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialinConferencingTenantConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingTenantConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialInConferencingTenantSettings @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingTenantSettings.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineLisCivicAddress @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisCivicAddress.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineLisLocation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisLocation.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsClientConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsClientConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsGuestCallingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestCallingConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsGuestMeetingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMeetingConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsGuestMessagingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMessagingConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsMeetingBroadcastConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsMeetingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsUpgradeConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradeConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTenant @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenant.txt" -Force -Encoding utf8)
+    $null = (Get-CsTenantFederationConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantFederationConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTenantNetworkConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantNetworkConfiguration.txt" -Force -Encoding utf8)
+    $null = (Get-CsTenantPublicProvider @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantPublicProvider.txt" -Force -Encoding utf8)
 
-  $CommandParams += @{'WarningAction' = 'SilentlyContinue' }
-  $CommandParams += @{'ErrorAction' = 'SilentlyContinue' }
+    # Tenant Policies (except voice)
+    $null = (Get-CsTeamsUpgradePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradePolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsAppPermissionPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppPermissionPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsAppSetupPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppSetupPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsCallParkPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallParkPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsChannelsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsChannelsPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsComplianceRecordingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsComplianceRecordingPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsEducationAssignmentsAppPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEducationAssignmentsAppPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsFeedbackPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsFeedbackPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsMeetingBroadcastPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsMeetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsMessasgingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMessagingPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsMobilityPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMobilityPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsNotificationAndFeedsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsNotificationAndFeedsPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsTargetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTargetingPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsVerticalPackagePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVerticalPackagePolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsVideoInteropServicePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVideoInteropServicePolicy.txt" -Force -Encoding utf8)
 
-  # Tenant Configuration
-  $null = (Get-CsOnlineDialInConferencingBridge @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingBridge.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingLanguagesSupported @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingLanguagesSupported.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingServiceNumber @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingServiceNumber.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialinConferencingTenantConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingTenantConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingTenantSettings @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingTenantSettings.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineLisCivicAddress @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisCivicAddress.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineLisLocation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineLisLocation.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsClientConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsClientConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsGuestCallingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestCallingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsGuestMeetingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMeetingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsGuestMessagingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsGuestMessagingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingBroadcastConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsUpgradeConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradeConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenant @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenant.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantFederationConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantFederationConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantNetworkConfiguration @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantNetworkConfiguration.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantPublicProvider @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantPublicProvider.txt" -Force -Encoding utf8)
+    # Tenant Voice Configuration
+    $null = (Get-CsTeamsTranslationRule @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTranslationRule.txt" -Force -Encoding utf8)
+    $null = (Get-CsTenantDialPlan @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantDialPlan.txt" -Force -Encoding utf8)
 
-  # Tenant Policies (except voice)
-  $null = (Get-CsTeamsUpgradePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsUpgradePolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsAppPermissionPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppPermissionPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsAppSetupPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsAppSetupPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsCallParkPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallParkPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsChannelsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsChannelsPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsComplianceRecordingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsComplianceRecordingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsEducationAssignmentsAppPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEducationAssignmentsAppPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsFeedbackPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsFeedbackPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingBroadcastPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingBroadcastPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMeetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMeetingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMessasgingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMessagingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsMobilityPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsMobilityPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsNotificationAndFeedsPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsNotificationAndFeedsPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsTargetingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTargetingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsVerticalPackagePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVerticalPackagePolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsVideoInteropServicePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsVideoInteropServicePolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlinePSTNGateway @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePSTNGateway.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineVoiceRoute @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoute.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlinePstnUsage @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePstnUsage.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineVoiceRoutingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoutingPolicy.txt" -Force -Encoding utf8)
 
-  # Tenant Voice Configuration
-  $null = (Get-CsTeamsTranslationRule @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsTranslationRule.txt" -Force -Encoding utf8)
-  $null = (Get-CsTenantDialPlan @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTenantDialPlan.txt" -Force -Encoding utf8)
+    # Tenant Voice related Configuration and Policies
+    $null = (Get-CsTeamsIPPhonePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsIPPhonePolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsEmergencyCallingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallingPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsEmergencyCallRoutingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallRoutingPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialinConferencingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineVoicemailPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoicemailPolicy.txt" -Force -Encoding utf8)
+    $null = (Get-CsTeamsCallingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallingPolicy.txt" -Force -Encoding utf8)
 
-  $null = (Get-CsOnlinePSTNGateway @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePSTNGateway.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoiceRoute @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoute.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlinePstnUsage @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlinePstnUsage.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoiceRoutingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceRoutingPolicy.txt" -Force -Encoding utf8)
+    # Tenant Telephone Numbers
+    $null = (Get-CsOnlineTelephoneNumber @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumber.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineTelephoneNumberAvailableCount @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberAvailableCount.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineTelephoneNumberInventoryTypes @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberInventoryTypes.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineTelephoneNumberReservationsInformation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberReservationsInformation.txt" -Force -Encoding utf8)
 
-  # Tenant Voice related Configuration and Policies
-  $null = (Get-CsTeamsIPPhonePolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsIPPhonePolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsEmergencyCallingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsEmergencyCallRoutingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsEmergencyCallRoutingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialinConferencingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialinConferencingPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoicemailPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoicemailPolicy.txt" -Force -Encoding utf8)
-  $null = (Get-CsTeamsCallingPolicy @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsTeamsCallingPolicy.txt" -Force -Encoding utf8)
+    # Resource Accounts, Call Queues and Auto Attendants
+    $null = (Get-CsOnlineApplicationInstance @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineApplicationInstance.txt" -Force -Encoding utf8)
+    $null = (Get-CsCallQueue @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsCallQueue.txt" -Force -Encoding utf8)
+    $null = (Get-CsAutoAttendant @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendant.txt" -Force -Encoding utf8)
+    $null = (Get-CsAutoAttendantSupportedLanguage @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
+    $null = (Get-CsAutoAttendantSupportedTimeZone @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
+    $null = (Get-CsAutoAttendantTenantInformation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
 
-  # Tenant Telephone Numbers
-  $null = (Get-CsOnlineTelephoneNumber @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumber.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineTelephoneNumberAvailableCount @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberAvailableCount.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineTelephoneNumberInventoryTypes @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberInventoryTypes.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineTelephoneNumberReservationsInformation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineTelephoneNumberReservationsInformation.txt" -Force -Encoding utf8)
-
-  # Resource Accounts, Call Queues and Auto Attendants
-  $null = (Get-CsOnlineApplicationInstance @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineApplicationInstance.txt" -Force -Encoding utf8)
-  $null = (Get-CsCallQueue @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsCallQueue.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendant @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendant.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendantSupportedLanguage @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedLanguage.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendantSupportedTimeZone @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantSupportedTimeZone.txt" -Force -Encoding utf8)
-  $null = (Get-CsAutoAttendantTenantInformation @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsAutoAttendantTenantInformation.txt" -Force -Encoding utf8)
-
-  # User Configuration
-  $null = (Get-CsOnlineUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineUser.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineVoiceUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceUser.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUser.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingUserInfo @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserInfo.txt" -Force -Encoding utf8)
-  $null = (Get-CsOnlineDialInConferencingUserState @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserState.txt" -Force -Encoding utf8)
+    # User Configuration
+    $null = (Get-CsOnlineUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineUser.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineVoiceUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineVoiceUser.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialInConferencingUser @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUser.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialInConferencingUserInfo @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserInfo.txt" -Force -Encoding utf8)
+    $null = (Get-CsOnlineDialInConferencingUserState @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserState.txt" -Force -Encoding utf8)
 
 
-  $TenantName = (Get-CsTenant).Displayname
-  $BackupFile = ('TeamsBackup_' + (Get-Date -Format yyyy-MM-dd) + " " + $TenantName + '.zip')
-  $null = (Compress-Archive -Path $Filenames -DestinationPath $BackupFile -Force)
-  $null = (Remove-Item -Path $Filenames -Force -Confirm:$false)
+    $TenantName = (Get-CsTenant).Displayname
+    $BackupFile = ('TeamsBackup_' + (Get-Date -Format yyyy-MM-dd) + " " + $TenantName + '.zip')
+    $null = (Compress-Archive -Path $Filenames -DestinationPath $BackupFile -Force)
+    $null = (Remove-Item -Path $Filenames -Force -Confirm:$false)
 
-  Write-Host -Object ('Microsoft Teams configuration backed up to {0}' -f $BackupFile)
+    Write-Host -Object ('Microsoft Teams configuration backed up to {0}' -f $BackupFile)
 
+  }
 }
 #endregion
 
@@ -8189,23 +8478,26 @@ function Get-AzureAdAssignedAdminRoles {
     [string]$Identity
   )
 
-  # Asserting AzureAD Connection
-  if (-not (Assert-AzureADConnection)) { return }
-
-  #Querying Admin Rights of authenticated Administator
-  $AssignedRoles = @()
-  $Roles = Get-AzureADDirectoryRole
-  FOREACH ($R in $Roles) {
-    $Members = (Get-AzureADDirectoryRoleMember -ObjectId $R.ObjectId).UserprincipalName
-    IF ($Identity -in $Members) {
-      #Builing list of Roles assigned to $AdminUPN
-      $AssignedRoles += $R
-    }
-
+  begin {
+    # Asserting AzureAD Connection
+    if (-not (Assert-AzureADConnection)) { return }
   }
 
-  #Output
-  return $AssignedRoles
+  process {
+    #Querying Admin Rights of authenticated Administator
+    $AssignedRoles = @()
+    $Roles = Get-AzureADDirectoryRole
+    FOREACH ($R in $Roles) {
+      $Members = (Get-AzureADDirectoryRoleMember -ObjectId $R.ObjectId).UserprincipalName
+      IF ($Identity -in $Members) {
+        #Builing list of Roles assigned to $AdminUPN
+        $AssignedRoles += $R
+      }
+    }
+
+    #Output
+    return $AssignedRoles
+  }
 }
 
 # Helper Function to create new Azure AD License Objects
