@@ -1725,6 +1725,8 @@ function Get-TeamsTenantVoiceConfig {
   }
 
   process {
+    $User = Get-CsOnlineUser $Identity
+    $User
 
   }
 
@@ -1772,9 +1774,13 @@ function Get-TeamsUserVoiceConfig {
   )
 
   begin {
+
   }
 
   process {
+    $User = Get-CsOnlineUser $Identity
+    $User
+
 
   }
 
@@ -1829,6 +1835,8 @@ function Set-TeamsUserVoiceConfig {
   }
 
   process {
+    $User = Get-CsOnlineUser $Identity
+    $User
 
     #Snippet for ShouldProcess:
     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
@@ -1860,7 +1868,7 @@ function Remove-TeamsUserVoiceConfig {
 		Removes a Teams Users Voice Configuration and disables them from placing PSTN calls
 	#>
 
-  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [string]$Identity,
@@ -1884,7 +1892,7 @@ function Remove-TeamsUserVoiceConfig {
   }
 
   process {
-    $User = Get-AzureADUser -SearchString $Identity
+    $User = Get-CsOnlineUser $Identity
     $User
 
     #Snippet for ShouldProcess:
@@ -1942,6 +1950,8 @@ function Test-TeamsUserVoiceConfig {
   }
 
   process {
+    $User = Get-CsOnlineUser $Identity
+    $User
 
   }
 
