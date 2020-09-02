@@ -1858,7 +1858,7 @@ function Set-TeamsUserVoiceConfig {
 function Remove-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
-		Removes Voice Configuration from a user
+		Removes existing Voice Configuration for one or more Users
 	.DESCRIPTION
 		Deprovisions a user from Enterprise Voice, removes the Telephone Number, Tenant Dial Plan and Voice Routing Policy
 	.PARAMETER Identity
@@ -1874,25 +1874,38 @@ function Remove-TeamsUserVoiceConfig {
 		Optional. Suppreses Confirmation for license Removal unless -Confirm is specified explicietely.
 	.EXAMPLE
 		Remove-TeamsUserVoiceConfig -Identity John@domain.com [-Scope All]
-		Removes all Phone Numbers, Voice Routing Policy, Tenant Dial Plan and then disables John for Enterprise Voice
+		Disables John for Enterprise Voice, then removes all Phone Numbers, Voice Routing Policy, Tenant Dial Plan and Call Plan licenses
 	.EXAMPLE
 		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope DirectRouting
-		Removes Phone Number, Voice Routing Policy, Tenant Dial Plan and then disables John for Enterprise Voice
 		Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com
-		Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned
-	.NOTES
+		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans [-Confirm]
+    Disables John for Enterprise Voice, Removes Phone Number and subsequntly removes all Call Plan Licenses assigned
+    Prompts for Confirmation before removing Call Plan licenses
+	.EXAMPLE
+		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans -Force
+    Disables John for Enterprise Voice, Removes Phone Number and subsequntly removes all Call Plan Licenses assigned
+    Does not prompt for Confirmation (unless -Confirm is specified explicitely)
+  .NOTES
+    Prompting for Confirmation for disabling of EnterpriseVoice
     For DirectRouting, this Script does not remove any licenses.
     For CallingPlans it will prompt for Calling Plan licenses to be removed.
 	.FUNCTIONALITY
-		Removes a Teams Users Voice Configuration and disables them from placing PSTN calls
+    Removes a Users Voice Configuration (through Microsoft Call Plans or Direct Routing)
+    This will leave the users in a clean and unprovisioned state and enables them to receive a new Configuration Set
+
+  .LINK
+    Get-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+    Remove-TeamsUserVoiceConfig
+    Test-TeamsUserVoiceConfig
 	#>
 
-  [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = "DirectRouting", ConfirmImpact = 'High')]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [string]$Identity,
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [string[]]$Identity,
 
     [Parameter(HelpMessage = "Defines Scope to remove Voice Configuration")]
     [ValidateSet('All', 'DirectRouting', 'CallPlans')]
@@ -1926,143 +1939,164 @@ function Remove-TeamsUserVoiceConfig {
   }
 
   process {
-    #region Information Gathering
-    # Querying Identity
-    try {
-      $CsUser = Get-CsOnlineUser $Identity -ErrorAction Stop
-    }
-    catch {
-      Write-Error "User '$Identity' not found" -Category ObjectNotFound -ErrorAction Stop
-    }
-
-    # Querying User Licenses
-    $CsUserLicense = Get-TeamsUserLicense $Identity
-    #endregion
-
-
-    #region Generic/shared Configuration
-    # Disabling EnterpriseVoice
-    Write-Verbose -Message "User '$Identity' - Disabling: EnterpriseVoice"
-    if ($PSBoundParameters.ContainsKey('DoNotDisableEV')) {
-      if ($CsUser.EnterpriseVoiceEnabled) { $EV = "Enabled" } else { $EV = "Disabled" }
-      Write-Verbose -Message "User '$Identity' - Disabling: EnterpriseVoice: Skipped. (Current Status is: '$EV')" -Verbose
-    }
-    else {
+    foreach ($User in $Identity) {
+      #region Information Gathering
+      # Querying Identity
       try {
-        $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
-        Write-Verbose -Message "User '$Identity' - Disabling: EnterpriseVoice: OK"
+        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
       }
       catch {
-        Write-Verbose -Message "User '$Identity' - Disabling: EnterpriseVoice: Failed" -Verbose
-        Write-Error -Message "Error:  $($error.Exception.Message)"
-      }
-    }
-
-    # Removing Tenant DialPlan
-    Write-Verbose -Message "User '$Identity' - Removing: Tenant Dial Plan"
-    try {
-      $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
-      Write-Verbose -Message "User '$Identity' - Removing: Tenant Dial Plan: OK"
-    }
-    catch {
-      Write-Verbose -Message "User '$Identity' - Removing: Tenant Dial Plan: Failed" -Verbose
-      Write-Error -Message "Error:  $($error.Exception.Message)"
-    }
-    #endregion
-
-
-    #region Direct Routing Configuration
-    if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
-      # Removing Online Voice Routing Policy
-      Write-Verbose -Message "User '$Identity' - Removing: Online Voice Routing Policy"
-      try {
-        $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
-        Write-Verbose -Message "User '$Identity' - Removing: Online Voice Routing Policy: OK"
-      }
-      catch {
-        Write-Verbose -Message "User '$Identity' - Removing: Online Voice Routing Policy: Failed" -Verbose
-        Write-Error -Message "Error:  $($error.Exception.Message)"
+        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
       }
 
-      # Removing OnPremLineURI
-      Write-Verbose -Message "User '$Identity' - Removing: OnPremLineURI"
-      if ($null -ne $CsUser.OnPremLineURI) {
+      # Querying User Licenses
+      $CsUserLicense = Get-TeamsUserLicense $User
+      #endregion
+
+
+      #region Generic/shared Configuration
+      # Disabling EnterpriseVoice
+      Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice"
+      if ($CsUser.EnterpriseVoiceEnabled) {
+        if ($PSBoundParameters.ContainsKey('DoNotDisableEV')) {
+          Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
+        }
+        else {
+          try {
+            if ($Force -or $PSCmdlet.ShouldProcess("$User", "Disabling EnterpriseVoice")) {
+              $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
+              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: OK"
+            }
+            else {
+              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not confirmed)"
+            }
+          }
+          catch {
+            Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Failed" -Verbose
+            Write-Error -Message "Error:  $($error.Exception.Message)"
+          }
+        }
+      }
+      else {
+        Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not enabled)" -Verbose
+      }
+
+
+      # Removing Tenant DialPlan
+      Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan"
+      if ($null -ne $CsUser.TenantDialPlan) {
         try {
-          $CsUser | Set-CsUser -OnPremLineURI $Null
-          Write-Verbose -Message "User '$Identity' - Removing: OnPremLineURI: OK"
+          $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
+          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: OK"
         }
         catch {
-          Write-Verbose -Message "User '$Identity' - Removing: OnPremLineURI: Failed" -Verbose
+          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Failed" -Verbose
           Write-Error -Message "Error:  $($error.Exception.Message)"
         }
       }
       else {
-        Write-Verbose -Message "User '$Identity' - Removing: OnPremLineURI: Not assigned"
+        Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Not assigned"
       }
-    }
-    #endregion
+      #endregion
 
 
-    #region Call Plan Configuration
-    if ($Scope -eq "All" -or $Scope -eq "CallPlans") {
-      if ($null -ne $CsUserLicense.Licenses) {
-        # Determine Call Plan Licenses - Building Scope
-        $RemoveLicenses = @()
-        if ($CsUserLicense.CallingPlanInternational) {
-          $RemoveLicenses.Add('InternationalCallingPlan')
-        }
-        if ($CsUserLicense.CallingPlanDomestic) {
-          $RemoveLicenses.Add('DomesticCallingPlan')
-        }
-        if ($CsUserLicense.CallingPlanDomestic120) {
-          $RemoveLicenses.Add('DomesticCallingPlan120')
-        }
-        if ($CsUserLicense.CommunicationsCredits) {
-          $RemoveLicenses.Add('CommunicationCredits')
-        }
-
-        # Actioning only if Call Plan licenses found
-        if ($null -ne $RemoveLicenses) {
-          # Removing TelephoneNumber
-          Write-Verbose -Message "User '$Identity' - Removing: TelephoneNumber"
-          if ($null -ne $CsUser.TelephoneNumber) {
-            try {
-              $CsUser | Set-CsUser -Telephonenumber $Null
-              Write-Verbose -Message "User '$Identity' - Removing: TelephoneNumber: OK"
-            }
-            catch {
-              Write-Verbose -Message "User '$Identity' - Removing: TelephoneNumber: Failed" -Verbose
-              Write-Error -Message "Error:  $($error.Exception.Message)"
-            }
-          }
-          else {
-            Write-Verbose -Message "User '$Identity' - Removing: TelephoneNumber: Not assigned"
-          }
-
-          # Removing Call Plan Licenses (with Confirmation)
-          Write-Verbose -Message "User '$Identity' - Removing: Call Plan Licenses"
+      #region Direct Routing Configuration
+      if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
+        # Removing Online Voice Routing Policy
+        Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy"
+        if ($null -ne $CsUser.OnlineVoiceRoutingPolicy) {
           try {
-            if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Removing Licenses: $RemoveLicenses")) {
-              Set-TeamsUserLicense -Identity $Identity -RemoveLicenses $RemoveLicenses
-              Write-Verbose -Message "User '$Identity' - Removing: Call Plan Licenses: OK"
-            }
+            $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
+            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: OK"
           }
           catch {
-            Write-Verbose -Message "User '$Identity' - Removing: Call Plan Licenses: Failed" -Verbose
+            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
         }
         else {
-          Write-Verbose -Message "User '$Identity' - Removing: Call Plan Licenses: None assigned"
+          Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Not assigned"
         }
+        # Removing OnPremLineURI
+        Write-Verbose -Message "User '$User' - Removing: OnPremLineURI"
+        if ($null -ne $CsUser.OnPremLineURI) {
+          try {
+            $CsUser | Set-CsUser -OnPremLineURI $Null
+            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: OK"
+          }
+          catch {
+            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Failed" -Verbose
+            Write-Error -Message "Error:  $($error.Exception.Message)"
+          }
+        }
+        else {
+          Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Not assigned"
+        }
+      }
+      #endregion
 
+
+      #region Call Plan Configuration
+      if ($Scope -eq "All" -or $Scope -eq "CallPlans") {
+        if ($null -ne $CsUserLicense.Licenses) {
+          # Determine Call Plan Licenses - Building Scope
+          $RemoveLicenses = @()
+          if ($CsUserLicense.CallingPlanInternational) {
+            $RemoveLicenses.Add('InternationalCallingPlan')
+          }
+          if ($CsUserLicense.CallingPlanDomestic) {
+            $RemoveLicenses.Add('DomesticCallingPlan')
+          }
+          if ($CsUserLicense.CallingPlanDomestic120) {
+            $RemoveLicenses.Add('DomesticCallingPlan120')
+          }
+          if ($CsUserLicense.CommunicationsCredits) {
+            $RemoveLicenses.Add('CommunicationCredits')
+          }
+
+          # Actioning only if Call Plan licenses found
+          if ($null -ne $RemoveLicenses) {
+            # Removing TelephoneNumber
+            Write-Verbose -Message "User '$User' - Removing: TelephoneNumber"
+            if ($null -ne $CsUser.TelephoneNumber) {
+              try {
+                $CsUser | Set-CsUser -Telephonenumber $Null
+                Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: OK"
+              }
+              catch {
+                Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: Failed" -Verbose
+                Write-Error -Message "Error:  $($error.Exception.Message)"
+              }
+            }
+            else {
+              Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: Not assigned"
+            }
+
+            # Removing Call Plan Licenses (with Confirmation)
+            Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses"
+            try {
+              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
+                Set-TeamsUserLicense -Identity $User -RemoveLicenses $RemoveLicenses
+                Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: OK"
+              }
+            }
+            catch {
+              Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: Failed" -Verbose
+              Write-Error -Message "Error:  $($error.Exception.Message)"
+            }
+          }
+          else {
+            Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: None assigned"
+          }
+
+        }
+        else {
+          Write-Error -Message "User '$User' - Removing: Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
+        }
       }
-      else {
-        Write-Error -Message "User '$Identity' - Removing: Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
-      }
+      #endregion
+
     }
-    #endregion
-
   }
 
   end {
@@ -2073,7 +2107,7 @@ function Remove-TeamsUserVoiceConfig {
 function Test-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
-		Tests whether any Voice Configuration has been applied to this User
+		Tests whether any Voice Configuration has been applied to one or more Users
 	.DESCRIPTION
     For Microsoft Call Plans: Tests for EnterpriseVoice enablement, License AND Phone Number
     For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
@@ -2115,11 +2149,11 @@ function Test-TeamsUserVoiceConfig {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true)]
-    [string]$Identity,
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [string[]]$Identity,
 
-    [Parameter(Mandatory = $true, HelpMessage = "Defines Scope to remove Voice Configuration")]
-    [ValidateSet('All', 'DirectRouting', 'CallPlans')]
+    [Parameter(Mandatory, HelpMessage = "Defines Scope to remove Voice Configuration")]
+    [ValidateSet('DirectRouting', 'CallPlans')]
     [string]$Scope,
 
     [Parameter(Helpmessage = 'Queries a partial implementation')]
@@ -2141,70 +2175,72 @@ function Test-TeamsUserVoiceConfig {
   }
 
   process {
-    # Querying Identity
-    try {
-      $CsUser = Get-CsOnlineUser $Identity -ErrorAction Stop
-    }
-    catch {
-      Write-Error "User '$Identity' not found" -Category ObjectNotFound -ErrorAction Stop
-    }
+    foreach ($User in $Identity) {
+      # Querying Identity
+      try {
+        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
+      }
+      catch {
+        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
+      }
 
-    if ( $Scope -eq "DirectRouting" ) {
-      if ($PSBoundParameters.ContainsKey('Partial')) {
-        # Query partial configuration
-        # Returns TRUE if some conditions are fulfilled
-        if ($true -eq $CsUser.EnterpriseVoiceEnabled -and ($null -ne $CsUser.OnlineVoiceRoutingPolicy -or $null -ne $CsUser.OnPremLineURI)) {
-          return $true
+      if ( $Scope -eq "DirectRouting" ) {
+        if ($PSBoundParameters.ContainsKey('Partial')) {
+          # Query partial configuration
+          # Returns TRUE if some conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and ($null -ne $CsUser.OnlineVoiceRoutingPolicy -or $null -ne $CsUser.OnPremLineURI)) {
+            return $true
+          }
+          else {
+            return $false
+          }
         }
         else {
-          return $false
+          # Query complete configuration
+          # Returns TRUE only if all conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
+            return $true
+          }
+          else {
+            return $false
+          }
         }
       }
-      else {
-        # Query complete configuration
-        # Returns TRUE only if all conditions are fulfilled
-        if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
-          return $true
+      elseif ( $Scope -eq "CallPlans" ) {
+        # Determining Call Plan License Assignment
+        $IntCallPlan = Test-TeamsUserLicense -Identity $User -LicensePackage InternationalCallingPlan
+        $DomCallPlan = Test-TeamsUserLicense -Identity $User -LicensePackage DomesticCallingPlan
+        $Dom120CallPlan = Test-TeamsUserLicense -Identity $User -LicensePackage DomesticCallingPlan120
+        $CommunicationC = Test-TeamsUserLicense -Identity $User -LicensePackage CommunicationCredits
+
+        if ($IntCallPlan -or $DomCallPlan -or $Dom120CallPlan -or $CommunicationC) {
+          $UserHasCallPlan = $true
         }
         else {
-          return $false
+          $UserHasCallPlan = $false
         }
-      }
-    }
-    elseif ( $Scope -eq "CallPlans" ) {
-      # Determining Call Plan License Assignment
-      $IntCallPlan = Test-TeamsUserLicense -Identity $Identity -LicensePackage InternationalCallingPlan
-      $DomCallPlan = Test-TeamsUserLicense -Identity $Identity -LicensePackage DomesticCallingPlan
-      $Dom120CallPlan = Test-TeamsUserLicense -Identity $Identity -LicensePackage DomesticCallingPlan120
-      $CommunicationC = Test-TeamsUserLicense -Identity $Identity -LicensePackage CommunicationCredits
-
-      if ($IntCallPlan -or $DomCallPlan -or $Dom120CallPlan -or $CommunicationC) {
-        $UserHasCallPlan = $true
-      }
-      else {
-        $UserHasCallPlan = $false
-      }
 
 
-      if ($PSBoundParameters.ContainsKey('Partial')) {
-        # Query partial configuration
-        # Returns TRUE if some conditions are fulfilled
-        if ($true -eq $CsUser.EnterpriseVoiceEnabled -and ($UserHasCallPlan -or $null -ne $CsUser.TelephoneNumber)) {
-          return $true
+        if ($PSBoundParameters.ContainsKey('Partial')) {
+          # Query partial configuration
+          # Returns TRUE if some conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and ($UserHasCallPlan -or $null -ne $CsUser.TelephoneNumber)) {
+            return $true
+          }
+          else {
+            return $false
+          }
+
         }
         else {
-          return $false
-        }
-
-      }
-      else {
-        # Query complete configuration
-        # Returns TRUE only if all conditions are fulfilled
-        if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $UserHasCallPlan -and $null -ne $CsUser.TelephoneNumber) {
-          return $true
-        }
-        else {
-          return $false
+          # Query complete configuration
+          # Returns TRUE only if all conditions are fulfilled
+          if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $UserHasCallPlan -and $null -ne $CsUser.TelephoneNumber) {
+            return $true
+          }
+          else {
+            return $false
+          }
         }
       }
     }
@@ -2214,10 +2250,11 @@ function Test-TeamsUserVoiceConfig {
   }
 } #Test-TeamsUserVoiceConfig
 
-Set-Alias -Name Get-TeamsEVConfig -Value Get-TeamsUserVoiceConfig
-Set-Alias -Name New-TeamsEVConfig -Value New-TeamsUserVoiceConfig
-Set-Alias -Name Remove-TeamsEVConfig -Value Remove-TeamsUserVoiceConfig
-Set-Alias -Name Test-TeamsEVConfig -Value Test-TeamsUserVoiceConfig
+Set-Alias -Name Get-TUVC -Value Get-TeamsUserVoiceConfig
+Set-Alias -Name New-TUVC -Value New-TeamsUserVoiceConfig
+Set-Alias -Name Set-TUVC -Value Set-TeamsUserVoiceConfig
+Set-Alias -Name Remove-TUVC -Value Remove-TeamsUserVoiceConfig
+Set-Alias -Name Test-TUVC -Value Test-TeamsUserVoiceConfig
 #endregion
 
 
@@ -2260,6 +2297,9 @@ function Get-TeamsCallQueue {
     New-TeamsResourceAccountAssociation
     Remove-TeamsResourceAccountAssociation
   #>
+
+  [CmdletBinding()]
+  [OutputType([System.Object[]])]
   param(
     [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = 'Partial or full Name of the Call Queue to search')]
     [AllowNull()]
@@ -2717,6 +2757,7 @@ function New-TeamsCallQueue {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  #[OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
     [string]$Name,
@@ -3868,6 +3909,7 @@ function Set-TeamsCallQueue {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  #[OutputType([System.Void])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UserPrincipalName of the Call Queue")]
     [string]$Name,
@@ -4900,6 +4942,7 @@ function Remove-TeamsCallQueue {
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
+  #[OutputType([System.Void])]
   param(
     # Pipline does not work properly - rebind to Identity? or query with Get-TeamsCallQueue instead?
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
@@ -4987,7 +5030,7 @@ function Get-TeamsResourceAccountAssociation {
 		Remove-TeamsResourceAccountAssociation
 	#>
   [CmdletBinding()]
-  [OutputType([System.Object[]])]
+  [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
     [Alias('Identity')]
