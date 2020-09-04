@@ -1641,7 +1641,7 @@ function Get-TeamsUserLicense {
       }
 
       $output = [PSCustomObject][ordered]@{
-        User                      = $User
+        UserPrincipalName         = $User
         DisplayName               = $DisplayName
         UsageLocation             = $UserObject.UsageLocation
         LicensesFriendlyNames     = $LicensesFriendlyNames
@@ -1922,6 +1922,7 @@ function Get-TeamsTenantVoiceConfig {
     $OPU = (Get-CsOnlinePSTNusage -WarningAction SilentlyContinue).Usage
     $OVR = Get-CsOnlineVoiceRoute -WarningAction SilentlyContinue
     $OGW = Get-CsOnlinePSTNGateway -WarningAction SilentlyContinue
+    #endregion
 
     #region Creating Base Custom Object
     $Object = [PSCustomObject][ordered]@{
@@ -2025,7 +2026,6 @@ function Get-TeamsTenantVoiceConfig {
   } #end
 } #Get-TeamsTenantVoiceConfig
 
-
 function Get-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
@@ -2044,6 +2044,10 @@ function Get-TeamsUserVoiceConfig {
 	.EXAMPLE
     Get-TeamsUserVoiceConfig -Identity John@domain.com -DiagnosticLevel 2
     Shows Voice Configuration for John with a extended list of Parameters (see NOTES)
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     DiagnosticLevel details:
     1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype
@@ -2066,7 +2070,7 @@ function Get-TeamsUserVoiceConfig {
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig
-#>
+  #>
 
   [CmdletBinding()]
   param(
@@ -2124,8 +2128,8 @@ function Get-TeamsUserVoiceConfig {
         TeamsUpgradeEffectiveMode = $CsUser.TeamsUpgradeEffectiveMode
         UsageLocation             = $CsUser.UsageLocation
         LicensesAssigned          = $CsUserLicense.LicensesFriendlyNames
-        CurrentCallingPlan        = $CsUserLicense.currentCallingPlan
-        PhoneSystem               = $CsUserLicense.PhoneSystemLicense
+        CurrentCallingPlan        = $CsUserLicense.CallingPlan
+        PhoneSystem               = $CsUserLicense.PhoneSystem
         TeamsVoiceRoute           = $CsUser.TeamsVoiceRoute
         EnterpriseVoiceEnabled    = $CsUser.EnterpriseVoiceEnabled
         OnlineVoiceRoutingPolicy  = $CsUser.OnlineVoiceRoutingPolicy
@@ -2219,29 +2223,93 @@ function Get-TeamsUserVoiceConfig {
 function Find-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
-		Displays User Voice Configuration based on specific Parameters
+		Displays User Accounts matching a specific Voice Configuration Parameter
 	.DESCRIPTION
-    Finds User Objects matching specific parameters and displays their Voice Configuration
-    This script can find duplicate assignments of PhoneNumbers
+    Returns UserPrincipalNames of Objects matching specific parameters. For PhoneNumbers also displays their basic Voice Configuration
+    Search parameters are mutually exclusive, only one Parameter can be specified at the same time.
+    Available parameters are:
+    - PhoneNumber: Part of the LineURI (ideally without 'tel:','+' or ';ext=...')
+    - ConfigurationType: 'CallPlans' or 'DirectRouting'. Will deliver partially configured accounts as well.
+    - VoicePolicy: 'BusinessVoice' (CallPlans) or 'HybridVoice' (DirectRouting or any other Hybrid PSTN configuration)
+    - OnlineVoiceRoutingPolicy: Any string value (incl. $Null), but not empty ones.
+    - TenantDialPlan: Any string value (incl. $Null), but not empty ones.
   .PARAMETER Identity
     Optional. UserPrincipalName (UPN) of the User
     Behaves like Get-TeamsUserVoiceConfig, displaying the Users Voice Configuration
-	.PARAMETER Number
-    Optional. Searches all Users matching the given String.
+	.PARAMETER PhoneNumber
+    Optional. Searches all Users matching the given String in their LineURI.
+    The expected ResultSize is limited, the full Object is displayed (Get-TeamsUserVoiceConfig)
+    Please see NOTES for details
+	.PARAMETER ConfigurationType
+    Optional. Searches all Users which are at least partially configured for 'CallPlans' or 'DirectRouting'.
+    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
+    Please see NOTES for details
+	.PARAMETER VoicePolicy
+    Optional. Searches all Users which are reported as 'BusinessVoice' or 'HybridVoice'.
+    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
+    Please see NOTES for details
+	.PARAMETER OnlineVoiceRoutingPolicy
+    Optional. Searches all Users which have the OnlineVoiceRoutingPolicy specified assignd.
+    Please specify full and correct name or '$null' to receive all Users without one
+    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
+    Please see NOTES for details
+	.PARAMETER TenantDialPlan
+    Optional. Searches all Users which have the TenantDialPlan specified assignd.
+    Please specify full and correct name or '$null' to receive all Users without one
+    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
     Please see NOTES for details
 	.EXAMPLE
     Find-TeamsUserVoiceConfig -Identity John@domain.com
     Shows Voice Configuration for John with a concise view of Parameters
 	.EXAMPLE
-    Find-TeamsUserVoiceConfig -Number "15551234567"
-    Shows all Users which have this String in their TelephoneNumber or OnPremLineURI
+    Find-TeamsUserVoiceConfig -PhoneNumber "15551234567"
+    Shows all Users which have this String in their LineURI (TelephoneNumber or OnPremLineURI)
+    The expected ResultSize is limited, the full Object is displayed (Get-TeamsUserVoiceConfig)
     Please see NOTES for details
+	.EXAMPLE
+    Find-TeamsUserVoiceConfig -ConfigurationType CallPlans
+    Shows all Users which are configured for CallPlans (Partially or Full)
+    The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
+    Pipe to Get-TeamsUserVoiceConfiguration for full output.
+    Please see NOTES for details
+  .EXAMPLE
+    Find-TeamsUserVoiceConfig -VoicePolicy BusinessVoice
+    Shows all Users which are configured for PhoneSystem with CallPlans
+    The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
+    Pipe to Get-TeamsUserVoiceConfiguration for full output.
+    Please see NOTES and LINK for details
+  .EXAMPLE
+    Find-TeamsUserVoiceConfig -OnlineVoiceRoutingPolicy O_VP_EMEA
+    Shows all Users which have the OnlineVoiceRoutingPolicy O_VP_EMEA assigned
+    The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
+    Pipe to Get-TeamsUserVoiceConfiguration for full output.
+    Please see NOTES for details
+  .EXAMPLE
+    Find-TeamsUserVoiceConfig -TenantDialPlan DP-US
+    Shows all Users which have the TenantDialPlan DP-US assigned.
+
+    Please see NOTES for details
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object (UPNs) - With any Parameter except Identity or PhonNumber
+    System.Object (VoiceConfiguration) - With Parameter Identity or PhonNumber
   .NOTES
-    Search by Number will take some time and may run for a few minutes.
-    For best compatibility, provide Number in E.164 format (with or without the +)
+    All searches are targetting "Get-CsOnlineUser | Where-Object ..." and will take time to complete
+    Depending on the number of Users in the Tenant, this may take a few minutes!
+    All Parameters except Identity or PhoneNumber will only display UPNs as a single Object
+    - PhoneNumber: Searches against the LineURI parameter. For best compatibility, provide in E.164 format (with or without the +)
     This script can find duplicate assignments if the Number was assigned with and without an extension.
+    - ConfigurationType: This is determined with Test-TeamsUserVoiceConfig -Partial and will return all Accounts found
+    - VoicePolicy: BusinessVoice are PhoneSystem Users exclusively configured for Microsoft Calling Plans.
+      HybridVoice are PhoneSystem Users who are configured for TDR, Hybrid SkypeOnPrem PSTN or Hybrid CloudConnector PSTN breakouts
+    - OnlineVoiceRoutingPolicy: Finds all users which have this particular Policy assigned
+    - TenantDialPlan: Finds all users which have this particular DialPlan assigned.
+    Please see Related Link for more information
 	.FUNCTIONALITY
-		Finding Users with a specific Voice Configuration
+    Finding Users with a specific values in their Voice Configuration
+  .LINK
+    https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   .LINK
     Get-TeamsTenantVoiceConfig
     Get-TeamsUserVoiceConfig
@@ -2250,16 +2318,35 @@ function Find-TeamsUserVoiceConfig {
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig
-#>
+  #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = "Tel")]
+  [OutputType([PSCustomObject])]
   param(
-    [Parameter(ValueFromPipelineByPropertyName)]
-    [string[]]$Identity,
+    [Parameter(ParameterSetName = "ID")]
+    [string]$Identity,
 
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
-    [Alias('Number', 'TelephoneNumber', 'Tel')]
-    [string[]]$PhoneNumber
+    [Parameter(ParameterSetName = "Tel", Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]
+    [Alias('Number', 'TelephoneNumber', 'Tel', 'LineURI', 'OnPremLineURI')]
+    [string[]]$PhoneNumber,
+
+    [Parameter(ParameterSetName = "CT", HelpMessage = 'Filters based on Configuration Type')]
+    [ValidateSet('CallPlans', 'DirectRouting')]
+    [String]$ConfigurationType,
+
+    [Parameter(ParameterSetName = "VP", HelpMessage = 'Filters based on VoicePolicy')]
+    [ValidateSet('BusinessVoice', 'HybridVoice')]
+    [String]$VoicePolicy,
+
+    [Parameter(ParameterSetName = "OVP", HelpMessage = 'Filters based on OnlineVoiceRoutingPolicy')]
+    [AllowNull()]
+    [Alias('OVP')]
+    [String]$OnlineVoiceRoutingPolicy,
+
+    [Parameter(ParameterSetName = "TDP", HelpMessage = 'Filters based on TenantDialPlan')]
+    [AllowNull()]
+    [Alias('TDP')]
+    [String]$TenantDialPlan
   ) #param
 
   begin {
@@ -2281,115 +2368,108 @@ function Find-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
-    foreach ($User in $Identity) {
-      #region Information Gathering
-      Write-Verbose -Message "[PROCESS] Processing '$User'"
-      # Querying Identity
-      try {
-        $AdUser = Get-AzureADUserFromUPN $User -ErrorAction Stop
-        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
-      }
-      catch {
-        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
-      }
+    switch ($PsCmdlet.ParameterSetName) {
+      "ID" {
+        Write-Verbose -Message "Finding Users with Identity '$Identity': Executing Get-TeamsUserVoiceConfig" -Verbose
+        Get-TeamsUserVoiceConfig $Identity -DiagnosticLevel 1
 
-      # Querying User Licenses
-      $CsUserLicense = Get-TeamsUserLicense $User
-      #endregion
+        break
+      } #ID
 
-      #region Creating Base Custom Object
-      $UserObject = [PSCustomObject][ordered]@{
-        UserPrincipalName         = $AdUser.UserPrincipalName
-        SipAddress                = $CsUser.SipAddress
-        ObjectId                  = $CsUser.ObjectId
-        HostingProvider           = $CsUser.HostingProvider
-        InterpretedUserType       = $CsUser.InterpretedUserType
-        TeamsUpgradeEffectiveMode = $CsUser.TeamsUpgradeEffectiveMode
-        UsageLocation             = $CsUser.UsageLocation
-        LicensesAssigned          = $CsUserLicense.LicensesFriendlyNames
-        CurrentCallingPlan        = $CsUserLicense.currentCallingPlan
-        PhoneSystem               = $CsUserLicense.PhoneSystemLicense
-        TeamsVoiceRoute           = $CsUser.TeamsVoiceRoute
-        EnterpriseVoiceEnabled    = $CsUser.EnterpriseVoiceEnabled
-        OnlineVoiceRoutingPolicy  = $CsUser.OnlineVoiceRoutingPolicy
-        TenantDialPlan            = $CsUser.TenantDialPlan
-        TelephoneNumber           = $CsUser.TelephoneNumber
-        PrivateLine               = $CsUser.PrivateLine
-        LineURI                   = $CsUser.LineURI
-        OnPremLineURI             = $CsUser.OnPremLineURI
+      "Tel" {
+        foreach ($Number in $PhoneNumber) {
+          Write-Verbose -Message "Finding Users with PhoneNumber '$Number': Searching... (this will take some time!)" -Verbose
+          $Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object LineURI -EQ $Number
+          Write-Output $Users.UserPrincipalName
+        }
 
-      }
-      #endregion
+        break
+      } #Tel
 
-      #region Adding Diagnostic Parameters
-      if ($PSBoundParameters.ContainsKey('DiagnosticLevel')) {
-        switch ($DiagnosticLevel) {
-          { $PSItem -eq 1 } {
-            # Displaying basic dignostic parameters (Hybrid)
-            $Diag1Params = [PSCustomObject][ordered]@{
-              OnPremLineURIManuallySet        = $CsUser.OnPremLineURIManuallySet
-              OnPremEnterPriseVoiceEnabled    = $CsUser.OnPremEnterPriseVoiceEnabled
-              VoicePolicy                     = $CsUser.VoicePolicy
-              TeamsUpgradePolicy              = $CsUser.TeamsUpgradePolicy
-              TeamsEmergencyCallRoutingPolicy = $CsUser.TeamsEmergencyCallRoutingPolicy
+      "CT" {
+        Write-Verbose -Message "Finding Users enabled for Teams: Searching..." -Verbose
+        try {
+          $CsUsers = Get-CsOnlineUser -WarningAction SilentlyContinue -ErrorAction Stop
+
+        }
+        catch {
+          Write-Error -Message "Error encountered when searching for Users: $($_.Exception.Message)"
+          break
+        }
+
+        Write-Verbose -Message "Sifting through License Information for $($CsUsers.Count) Users: Parsing..." -Verbose
+        [System.Collections.ArrayList]$Users = @()
+        switch ($ConfigurationType) {
+          "CallPlans" {
+            Write-Verbose -Message "Adding all Users that currently have a CallPlan license assigned..." -Verbose
+            foreach ($U in $CsUsers) {
+              $LicenseObject = Get-TeamsUserLicense $U | Where-Object currentCallingPlan -NE $null
+              $Users.Add($LicenseObject)
             }
 
-            [void]$UserObject.Add($Diag1Params)
+            break
           }
-          { $PSItem -gt 1 -and $PSItem -le 2 } {
-            # Displaying extended dignostic parameters
-            $Diag2Params = [PSCustomObject][ordered]@{
-              TeamsEmergencyCallingPolicy          = $CsUser.TeamsEmergencyCallingPolicy
-              CallingPolicy                        = $CsUser.CallingPolicy
-              CallingLineIdentity                  = $CsUser.CallingLineIdentity
-              TeamsIPPhonePolicy                   = $CsUser.TeamsIPPhonePolicy
-              TeamsVdiPolicy                       = $CsUser.TeamsVdiPolicy
-              OnlineDialOutPolicy                  = $CsUser.OnlineDialOutPolicy
-              OnlineAudioConferencingRoutingPolicy = $CsUser.OnlineAudioConferencingRoutingPolicy
-              HostedVoiceMail                      = $CsUser.HostedVoiceMail
+          "DirectRouting" {
+            Write-Verbose -Message "Adding all Users that currently have no CallPlan license assigned..." -Verbose
+            foreach ($U in $CsUsers) {
+              $LicenseObject = Get-TeamsUserLicense $U | Where-Object currentCallingPlan -EQ $null
+              $Users.Add($LicenseObject)
             }
 
-            [void]$UserObject.Add($Diag2Params)
-          }
-          { $PSItem -gt 1 -and $PSItem -le 3 } {
-            # Displaying advanced dignostic parameters
-            $Diag3Params = [PSCustomObject][ordered]@{
-              AdAccountEnabled = $AdUser.AccountEnabled
-              CsAccountEnabled = $CsUser.Enabled
-              CsAccountIsValid = $CsUser.IsValid
-              CsWhenCreated    = $CsUser.WhenCreated
-              CsWhenChanged    = $CsUser.WhenChanged
-              ObjectType       = $AdUser.ObjectType
-              ObjectClass      = $CsUser.ObjectClss
-            }
-
-            [void]$UserObject.Add($Diag3Params)
-          }
-          { $PSItem -gt 1 -and $PSItem -le 4 } {
-            # Displaying all of CsOnlineUser (previously omitted)
-            $Diag4Params = [PSCustomObject][ordered]@{
-              DirSyncEnabled             = $AdUser.DirSyncEnabled
-              LastDirSyncTime            = $AdUser.LastDirSyncTime
-              AdDeletionTimestamp        = $AdUser.DeletionTimestamp
-              CsSoftDeletionTimestamp    = $CsUser.SoftDeletionTimestamp
-              CsPendingDeletion          = $CsUser.PendingDeletion
-              HideFromAddressLists       = $CsUser.HideFromAddressLists
-              OnPremHideFromAddressLists = $CsUser.OnPremHideFromAddressLists
-              OriginatingServer          = $AdUser.OriginatingServer
-              ServiceInstance            = $CsUser.ServiceInstance
-              SipProxyAddress            = $CsUser.SipProxyAddress
-            }
-
-            [void]$UserObject.Add($Diag4Params)
+            break
           }
         }
-      }
-      #endregion
 
-      # Output
-      Write-Output $UserObject
+        Write-Output $Users.UserPrincipalName
+        break
+      } #CT
 
-    }
+      "VP" {
+        Write-Verbose -Message "Finding Users with VoicePolicy '$VoicePolicy': Searching..." -Verbose
+        $Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object VoicePolicy -EQ $VoicePolicy
+        Write-Output $Users.UserPrincipalName
+
+        break
+      } #VP
+
+      "OVP" {
+        Write-Verbose -Message "Finding OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..." -Verbose
+        $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy
+        if ($null -ne $OVP) {
+          Write-Verbose -Message "Finding Users with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..." -Verbose
+          $Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object OnlineVoiceRoutingPolicy -EQ $OnlineVoiceRoutingPolicy
+          Write-Output $Users.UserPrincipalName
+        }
+        else {
+          Write-Error -Message "OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy' not found" -Category ObjectNotFound -ErrorAction Stop
+        }
+
+        break
+      } #OVP
+
+      "TDP" {
+        Write-Verbose -Message "Finding OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..." -Verbose
+        $TDP = Get-CsTenantDialPlan $TenantDialPlan
+        if ($null -ne $TDP) {
+          Write-Verbose -Message "Finding Users with TenantDialPlan '$TenantDialPlan': Searching..." -Verbose
+          $Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object TenantDialPlan -EQ $TenantDialPlan
+          Write-Output $Users.UserPrincipalName
+        }
+        else {
+          Write-Error -Message "TenantDialPlan '$TenantDialPlan' not found" -Category ObjectNotFound -ErrorAction Stop
+        }
+
+        break
+      } #TDP
+
+      default {
+        # No Parameter is specified
+        Write-Warning -Message "No Parameters specified. Cannot find anything. Aborting" -Verbose
+
+        break
+      } #default
+
+    } #Switch
 
   } #process
 
@@ -2399,28 +2479,28 @@ function Find-TeamsUserVoiceConfig {
 } #Find-TeamsUserVoiceConfig
 
 
-function Set-TeamsUserVoiceConfig {
+function New-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
 		Short description
 	.DESCRIPTION
 		Long description
-	.PARAMETER
-
-	.PARAMETER
-
-	.PARAMETER
-
+  .PARAMETER Identity
+    UserPrincipalName (UPN) of the User to change the configuration for
+  .PARAMETER TBA
+    To be decided
+	.PARAMETER Force
+    Suppresses confirmation inputs except when $Confirm is explicitely specified
 	.EXAMPLE
 		C:\PS>
 		Example of how to use this cmdlet
 	.EXAMPLE
 		C:\PS>
 		Another example of how to use this cmdlet
-	.INPUTS
-		Inputs to this cmdlet (if any)
-	.OUTPUTS
-		Output from this cmdlet (if any)
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		General notes
 	.COMPONENT
@@ -2439,6 +2519,7 @@ function Set-TeamsUserVoiceConfig {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true)]
     [string]$Identity,
@@ -2449,6 +2530,84 @@ function Set-TeamsUserVoiceConfig {
 
   begin {
     Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
+
+    Write-Warning -Message "This function is not yet implemented, sorry"
+    break
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    $User = Get-CsOnlineUser $Identity
+    $User
+
+    #Snippet for ShouldProcess:
+    if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
+      # do harm
+    }
+
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
+} #New-TeamsUserVoiceConfig
+
+
+function Set-TeamsUserVoiceConfig {
+  <#
+	.SYNOPSIS
+		Short description
+	.DESCRIPTION
+		Long description
+  .PARAMETER Identity
+    UserPrincipalName (UPN) of the User to change the configuration for
+  .PARAMETER TBA
+    To be decided
+	.PARAMETER Force
+    Suppresses confirmation inputs except when $Confirm is explicitely specified
+	.EXAMPLE
+		C:\PS>
+		Example of how to use this cmdlet
+	.EXAMPLE
+		C:\PS>
+		Another example of how to use this cmdlet
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
+	.NOTES
+		General notes
+	.COMPONENT
+		The component this cmdlet belongs to
+	.ROLE
+		The role this cmdlet belongs to
+	.FUNCTIONALITY
+		The functionality that best describes this cmdlet
+  .LINK
+    Get-TeamsUserVoiceConfig
+    Find-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+    Remove-TeamsUserVoiceConfig
+    Test-TeamsUserVoiceConfig
+	#>
+
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [OutputType([System.Object])]
+  param(
+    [Parameter(Mandatory = $true)]
+    [string]$Identity,
+
+    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
+    [switch]$Force
+  ) #param
+
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
+
+    Write-Warning -Message "This function is not yet implemented, sorry"
+    break
 
   } #begin
 
@@ -2501,6 +2660,10 @@ function Remove-TeamsUserVoiceConfig {
 		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans -Force
     Disables John for Enterprise Voice, Removes Phone Number and subsequntly removes all Call Plan Licenses assigned
     Does not prompt for Confirmation (unless -Confirm is specified explicitely)
+  .INPUTS
+    System.String
+  .OUTPUTS
+    None
   .NOTES
     Prompting for Confirmation for disabling of EnterpriseVoice
     For DirectRouting, this Script does not remove any licenses.
@@ -2518,6 +2681,7 @@ function Remove-TeamsUserVoiceConfig {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+  [OutputType([System.Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [string[]]$Identity,
@@ -2751,6 +2915,10 @@ function Test-TeamsUserVoiceConfig {
 	.EXAMPLE
     Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope CallPlans -Partial
     Tests for Call Plans but returns TRUE if ANY configuration is found
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Boolean
   .NOTES
     All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
     Partial configuration provides insight for incorrectly deprovisioned configuration that could block configuration for the other.
@@ -2909,6 +3077,10 @@ function Get-TeamsCallQueue {
 		Get-TeamsCallQueue -Name "My CallQueue"
 		Returns an Object for every Call Queue found with the String "My CallQueue"
 		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		This is as-is as it was built for a specific purpose to look up and query current status of a CQ
 		Some Parameters are not shown as they are also omitted from NEW and SET commands (not live yet)
@@ -3369,6 +3541,10 @@ function New-TeamsCallQueue {
 		New-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
 		Creates a new Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
 		All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		Currently in Testing
 	.FUNCTIONALITY
@@ -4524,6 +4700,10 @@ function Set-TeamsCallQueue {
 	.EXAMPLE
 		Set-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
 		Changes the Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object or None
 	.NOTES
 		Currently in Testing
 	.FUNCTIONALITY
