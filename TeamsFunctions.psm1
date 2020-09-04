@@ -115,18 +115,25 @@
         More bugfixes. Updated parameter list for Get-TeamsCallQueue as Get-CsCallQueue provides more information (AgentsCapped, etc.)
         New-/Set-TeamsCallQueue - Removed ValidateScript for Users as verification is done when processing Users.
         New-/Set-TeamsCallQueue - Added enablement of Users for EnterpriseVoice for Agents (Users), OverflowAction and TimeoutAction 'Forward'
-  20.09.01-prerelease
-        Adopted better Style guides to help clarify script exit scenarios and provide better output.
-        Cleaned up all BEGIN-blocks: Assert functions now called in all scripts. Preference variables for Confirm, Whatif and Verbose are now handled for all functions that need them.
-        Cleaned up all END-blocks: They are mostly empty anyway, but returning an object now happens in the Process block
-
-        Replaced all BREAK keywords that are not in switches or loops (43) with a terminating Write-Error that was there in the first place.
-        Replaced all RETURN keywords (15) that accumulated multiple objects into one to behave better for pipeline output (Write-Output is now displayed within the ForEach)
-        Added CMDLETBINDING, OUTPUTTYPE, BEGIN, PROCESS and END Clauses to all functions that did not have them set yet (with the exception of short Helper functions)
-        Added Verbose Output to all BEGIN, PROCESS and END clauses for easier troubleshooting
-        Function Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD were renamed to its alias (swapped places)
-        This is due to a change in the default behaviour of the Command to only connect to SkypeOnline and AzureAD without any Parameters
-        MicrosoftTeams and ExchangeOnline are still available as options.
+  20.09.05-prerelease
+        IMPROVED: Adopted better Style guides to help clarify script exit scenarios and provide better output.
+          Cleaned up all BEGIN-blocks: Assert functions now called in all scripts. Preference variables for Confirm, Whatif and Verbose are now handled for all functions that need them.
+          Cleaned up all END-blocks: They are mostly empty anyway, but returning an object now happens consistently in the Process block (1 instance fixed)
+          Replaced all BREAK keywords that are not in switches or loops (43) with a terminating Write-Error that was there in the first place.
+          Replaced all RETURN keywords (15) that accumulated multiple objects into one to behave better for pipeline output (Write-Output is now displayed within the ForEach)
+          Added CMDLETBINDING, OUTPUTTYPE, BEGIN, PROCESS and END Clauses to all functions that did not have them set yet (with the exception of short Helper functions)
+          Added Verbose Output to all BEGIN, PROCESS and END clauses for easier troubleshooting
+        CHANGED: Function Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD were renamed to its alias (swapped places)
+          This is due to a change in the default behaviour of the Command to only connect to SkypeOnline and AzureAD without any Parameters
+          MicrosoftTeams and ExchangeOnline are still available as options.
+        ADDED: Voice Configuration Scripts as Work-in-progress:
+          Get-TeamsTenantVoiceConfig - Lists Tenant Voice Configuration
+          Get-TeamsUserVoiceConfig - Lists Voice Configuration for one or more users
+          Find-TeamsUserVoiceConfig - Search function to find a List of Users matching the criteria: PhoneNumber, VoicePolicy, VoiceRoutingPolicy, etc.
+          New-TeamsUserVoiceConfig - Not implemented yet. Should apply a new Voice Configuration (provided there currently is none!)
+          Set-TeamsUserVoiceConfig - Not implemented yet. Amends an existing Voice Configuration (provided there currently is no other (Force is available))
+          Remove-TeamsUserVoiceConfig - Removes Voice Configuration for either CallPlans or DirectRouting
+          Test-TeamsUserVoiceConfig - Tests whether either CallPlan or DirectRouting config is found. Partial or Full configuration testable
 #>
 
 #region Session Connection
