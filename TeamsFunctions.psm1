@@ -121,21 +121,29 @@
         Cleaned up all END-blocks: They are mostly empty anyway, but returning an object now happens in the Process block
 
         Replaced all BREAK keywords that are not in switches or loops (43) with a terminating Write-Error that was there in the first place.
-
+        Replaced all RETURN keywords (15) that accumulated multiple objects into one to behave better for pipeline output (Write-Output is now displayed within the ForEach)
+        Added CMDLETBINDING, OUTPUTTYPE, BEGIN, PROCESS and END Clauses to all functions that did not have them set yet (with the exception of short Helper functions)
+        Added Verbose Output to all BEGIN, PROCESS and END clauses for easier troubleshooting
+        Function Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD were renamed to its alias (swapped places)
+        This is due to a change in the default behaviour of the Command to only connect to SkypeOnline and AzureAD without any Parameters
+        MicrosoftTeams and ExchangeOnline are still available as options.
 #>
 
 #region Session Connection
 function Connect-SkypeOnline {
   <#
 	.SYNOPSIS
-		Creates a remote PowerShell session out to Skype for Business Online and Teams
+		Creates a remote PowerShell session to Skype for Business Online and Teams
 	.DESCRIPTION
 		Connecting to a remote PowerShell session to Skype for Business Online requires several components
 		and steps. This function consolidates those activities by
-		1) verifying the SkypeOnlineConnector is installed and imported
-		2) prompting for username and password to make and to import the session.
-		3) extnding the session time-out limit beyond 60mins (SkypeOnlineConnector v7 or higher only!)
-		A SkypeOnline Session requires one of the Teams Admin roles or Skype For Business Admin to connect.
+		- verifying the SkypeOnlineConnector is installed and imported
+    - prompting for username and password (once) to establish the session
+    - prompting for MFA if required (once)
+    - prompting for OverrideAdminDomain if connection fails to establish and retries connection attempt
+		- extending the session time-out limit beyond 60mins (SkypeOnlineConnector v7 or higher only!)
+    A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect
+    To execute commands against Teams, one of the Teams Admin roles is required.
 	.PARAMETER UserName
 		Optional String. The username or sign-in address to use when making the remote PowerShell session connection.
 	.PARAMETER OverrideAdminDomain
@@ -144,11 +152,13 @@ function Connect-SkypeOnline {
 		Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
 		Note, by default, creating a session with New-CsSkypeOnlineSession results in a Timeout of 15mins!
 	.EXAMPLE
-		$null = Connect-SkypeOnline
-		Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
+		Connect-SkypeOnline
+    Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
+    Additional prompts for Multi Factor Authentication are displayed as required
 	.EXAMPLE
-		$null = Connect-SkypeOnline -UserName admin@contoso.com
+		Connect-SkypeOnline -UserName admin@contoso.com
 		Example 2 will prefill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
+    Additional prompts for Multi Factor Authentication are displayed as required
 	.NOTES
 		Requires that the Skype Online Connector PowerShell module be installed.
 		If the PowerShell Module SkypeOnlineConnector is v7 or higher, the Session TimeOut of 60min can be circumvented.
@@ -157,8 +167,21 @@ function Connect-SkypeOnline {
 		The SkypeOnline Session allows you to administer SkypeOnline and Teams respectively.
 		To manage Teams, Channels, etc. within Microsoft Teams, use Connect-MicrosoftTeams
 		Connect-MicrosoftTeams requires a Teams Admin role and is part of the PowerShell Module MicrosoftTeams
-		https://www.powershellgallery.com/packages/MicrosoftTeams
-	#>
+    https://www.powershellgallery.com/packages/MicrosoftTeams
+    Please note, that the session timeout is broken and does currently not work as intended
+    To help reconnect sessions, Assert-SkypeOnlineConnection can be used (Alias: pol) which runs Get-CsTenant to trigger the reconnect
+    This will require additional authentication.
+  .LINK
+    Connect-Me
+    Connect-SkypeOnline
+    Connect-AzureAD
+    Connect-MicrosoftTeams
+    Assert-SkypeOnlineConnection
+    Disconnect-Me
+    Disconnect-SkypeOnline
+    Disconnect-AzureAD
+    Disconnect-MicrosoftTeams
+  #>
 
   [CmdletBinding()]
   param(
@@ -172,164 +195,179 @@ function Connect-SkypeOnline {
     [Parameter(Helpmessage = "Idle Timeout of the session in hours between 1 and 8; Default is 4")]
     [ValidateRange(1, 8)]
     [int]$IdleTimeout = 4
-  )
+  ) #param
 
-  # Required as Warnings on the OriginalRegistrarPool may halt Script execution
-  $WarningPreference = "Continue"
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  #region SessionOptions
-  # Generating Session Options (Timeout) based on input
-  $IdleTimeoutInMS = $IdleTimeout * 3600000
-  if ($PSboundparameters.ContainsKey('IdleTimeout')) {
-    $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutInMS
-  }
-  else {
-    $SessionOption = New-PSSessionOption -IdleTimeout 14400000
-  }
-  Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
+    # Required as Warnings on the OriginalRegistrarPool may halt Script execution
+    $WarningPreference = "Continue"
 
-  #endregion
+  } #begin
 
-  # Testing exisiting Module and Connection
-  if (Test-Module SkypeOnlineConnector) {
-    if ((Test-SkypeOnlineConnection) -eq $false) {
-      $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
-      Write-Verbose -Message "Module SkypeOnlineConnctor installed in Version: $moduleVersion"
-      if ($moduleVersion.Major -le "6") {
-        # Version 6 and lower do not support MFA authentication for Skype Module PowerShell; also allows use of older PSCredential objects
-        try {
-          $SkypeOnlineSession = New-CsOnlineSession -Credential (Get-Credential $UserName -Message "Enter the sign-in address and password of a Global or Skype for Business Admin") -ErrorAction STOP
-          Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
-        }
-        catch {
-          $errorMessage = $_
-          if ($errorMessage -like "*Making sure that you have used the correct user name and password*") {
-            Write-Warning -Message "Logon failed. Please try again and make sure that you have used the correct user name and password."
-          }
-          elseif ($errorMessage -like "*Please create a new credential object*") {
-            Write-Warning -Message "Logon failed. This may be due to multi-factor being enabled for the user account and not using the latest Skype for Business Online PowerShell module."
-          }
-          else {
-            Write-Warning -Message $_
-          }
-        }
-      }
-      else {
-        # This should be all newer version than 6; does not support PSCredential objects but supports MFA
-        try {
-          # Constructing Parameters to be passed to New-CsOnlineSession
-          Write-Verbose -Message "Constructing parameter list to be passed on to New-CsOnlineSession"
-          $Parameters = $null
-          if ($PSBoundParameters.ContainsKey("UserName")) {
-            Write-Verbose -Message "Adding: Username: $Username"
-            $Parameters += @{'UserName' = $UserName }
-          }
-          if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-            Write-Verbose -Message "OverrideAdminDomain: Provided: $OverrideAdminDomain"
-            $Parameters += @{'OverrideAdminDomain' = $OverrideAdminDomain }
-          }
-          else {
-            $UserNameDomain = $UserName.Split('@')[1]
-            $Parameters += @{'OverrideAdminDomain' = $UserNameDomain }
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
-          }
-          Write-Verbose -Message "Adding: SessionOption with IdleTimeout $IdleTimeout (hrs)"
-          $Parameters += @{'SessionOption' = $SessionOption }
-          Write-Verbose -Message "Adding: Common Parameters"
-          $Parameters += @{'ErrorAction' = 'STOP' }
-          $Parameters += @{'WarningAction' = 'Continue' }
+    #region SessionOptions
+    # Generating Session Options (Timeout) based on input
+    $IdleTimeoutInMS = $IdleTimeout * 3600000
+    if ($PSboundparameters.ContainsKey('IdleTimeout')) {
+      $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutInMS
+    }
+    else {
+      $SessionOption = New-PSSessionOption -IdleTimeout 14400000
+    }
+    Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
 
-          # Creating Session
-          Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
-          $SkypeOnlineSession = New-CsOnlineSession @Parameters
-        }
-        catch [System.Net.WebException] {
+    #endregion
+
+    # Testing exisiting Module and Connection
+    if (Test-Module SkypeOnlineConnector) {
+      if ((Test-SkypeOnlineConnection) -eq $false) {
+        $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+        Write-Verbose -Message "Module SkypeOnlineConnctor installed in Version: $moduleVersion"
+        if ($moduleVersion.Major -le "6") {
+          # Version 6 and lower do not support MFA authentication for Skype Module PowerShell; also allows use of older PSCredential objects
           try {
-            Write-Warning -Message "Session could not be created. Maybe missing OverrideAdminDomain to connect?"
-            $Domain = Read-Host "Please enter an OverrideAdminDomain for this Tenant"
-            # $Paramters +=@{'OverrideAdminDomain' = $Domain} # This works only if no OverrideAdminDomain is yet in the $Parameters Array. Current config means it will be there!
-            $Parameters.OverrideAdminDomain = $Domain
-            # Creating Session (again)
+            $SkypeOnlineSession = New-CsOnlineSession -Credential (Get-Credential $UserName -Message "Enter the sign-in address and password of a Global or Skype for Business Admin") -ErrorAction STOP
+            Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
+          }
+          catch {
+            $errorMessage = $_
+            if ($errorMessage -like "*Making sure that you have used the correct user name and password*") {
+              Write-Warning -Message "Logon failed. Please try again and make sure that you have used the correct user name and password."
+            }
+            elseif ($errorMessage -like "*Please create a new credential object*") {
+              Write-Warning -Message "Logon failed. This may be due to multi-factor being enabled for the user account and not using the latest Skype for Business Online PowerShell module."
+            }
+            else {
+              Write-Warning -Message $_
+            }
+          }
+        }
+        else {
+          # This should be all newer version than 6; does not support PSCredential objects but supports MFA
+          try {
+            # Constructing Parameters to be passed to New-CsOnlineSession
+            Write-Verbose -Message "Constructing parameter list to be passed on to New-CsOnlineSession"
+            $Parameters = $null
+            if ($PSBoundParameters.ContainsKey("UserName")) {
+              Write-Verbose -Message "Adding: Username: $Username"
+              $Parameters += @{'UserName' = $UserName }
+            }
+            if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+              Write-Verbose -Message "OverrideAdminDomain: Provided: $OverrideAdminDomain"
+              $Parameters += @{'OverrideAdminDomain' = $OverrideAdminDomain }
+            }
+            else {
+              $UserNameDomain = $UserName.Split('@')[1]
+              $Parameters += @{'OverrideAdminDomain' = $UserNameDomain }
+
+            }
+            Write-Verbose -Message "Adding: SessionOption with IdleTimeout $IdleTimeout (hrs)"
+            $Parameters += @{'SessionOption' = $SessionOption }
+            Write-Verbose -Message "Adding: Common Parameters"
+            $Parameters += @{'ErrorAction' = 'STOP' }
+            $Parameters += @{'WarningAction' = 'Continue' }
+
+            # Creating Session
             Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
             $SkypeOnlineSession = New-CsOnlineSession @Parameters
+          }
+          catch [System.Net.WebException] {
+            try {
+              Write-Warning -Message "Session could not be created. Maybe missing OverrideAdminDomain to connect?"
+              $Domain = Read-Host "Please enter an OverrideAdminDomain for this Tenant"
+              # $Paramters +=@{'OverrideAdminDomain' = $Domain} # This works only if no OverrideAdminDomain is yet in the $Parameters Array. Current config means it will be there!
+              $Parameters.OverrideAdminDomain = $Domain
+              # Creating Session (again)
+              Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
+              $SkypeOnlineSession = New-CsOnlineSession @Parameters
+            }
+            catch {
+              Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
+              Write-ErrorRecord $_
+            }
           }
           catch {
             Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
             Write-ErrorRecord $_
           }
-        }
-        catch {
-          Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
-          Write-ErrorRecord $_
-        }
 
-        # Separated session creation from Import for better troubleshooting
-        if ($Null -ne $SkypeOnlineSession) {
-          try {
-            Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
-            $null = Enable-CsOnlineSessionForReconnection
-          }
-          catch {
-            Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
-            Write-ErrorRecord $_
-          }
+          # Separated session creation from Import for better troubleshooting
+          if ($Null -ne $SkypeOnlineSession) {
+            try {
+              Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
+              $null = Enable-CsOnlineSessionForReconnection
+            }
+            catch {
+              Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
+              Write-ErrorRecord $_
+            }
 
-          #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
-          if (Test-SkypeOnlineConnection) {
-            $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
-            Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
-            Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
-            if ($moduleVersion.Major -ge "7") {
-              # v7 and higher can run Session Limit Extension
-              try {
-                Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
-                Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+            #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
+            if (Test-SkypeOnlineConnection) {
+              $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+              Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
+              Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
+              if ($moduleVersion.Major -ge "7") {
+                # v7 and higher can run Session Limit Extension
+                try {
+                  Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
+                  Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+                }
+                catch {
+                  Write-ErrorRecord $_
+                }
               }
-              catch {
-                Write-ErrorRecord $_
+              else {
+                Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
+                Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
               }
             }
-            else {
-              Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
-              Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
-            }
+            #endregion
           }
-          #endregion
-        }
-      } # End of if statement for module version checking
+        } # End of if statement for module version checking
+      }
+      else {
+        Write-Warning -Message "A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
+      } # End checking for existing Skype Online Connection
     }
     else {
-      Write-Warning -Message "A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
-    } # End checking for existing Skype Online Connection
-  }
-  else {
-    Write-Warning -Message "Skype Online PowerShell Connector module is not installed. Please install and try again."
-    Write-Warning -Message "The module can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
-  } # End of testing module existence
+      Write-Warning -Message "Skype Online PowerShell Connector module is not installed. Please install and try again."
+      Write-Warning -Message "The module can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
+    } # End of testing module existence
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Connect-SkypeOnline
 
-function Connect-SkypeTeamsAndAAD {
+function Connect-Me {
   <#
 	.SYNOPSIS
-		Connect to SkypeOnline Teams and AzureActiveDirectory
+		Connect to SkypeOnline and AzureActiveDirectory and optionally also to Teams and Exchange
 	.DESCRIPTION
 		One function to connect them all.
-		This function tries to solves the requirement for individual authentication prompts for
-		SkypeOnline, MicrosoftTeams and AzureAD when multiple connections are required.
+		This function solves the requirement for individual authentication prompts for
+		SkypeOnline and AzureAD (and optionally also to MicrosoftTeams and ExchangeOnline) when multiple connections are required.
 		For SkypeOnline, the Skype for Business Legacy Administrator Roles is required
-		For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin)
 		For AzureAD, no particular role is needed as GET-commands are available without a role.
+		For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin)
 		Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
-		Disconnects current SkypeOnline, MicrosoftTeams and AzureAD session in order to establish a clean new session to each service.
-		Combine as desired
+		Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
+    By default SkypeOnline and AzureAD are selected (without parameters).
+    Combine as desired, if Parameters are specified, only connections to these services are established.
+    Available: SkypeOnline, AzureAD, MicrosoftTeams and ExchangeOnline
 	.PARAMETER UserName
 		Requried. UserPrincipalName or LoginName of the Office365 Administrator
 	.PARAMETER SkypeOnline
 		Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator
-	.PARAMETER MicrosoftTeams
-		Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator
 	.PARAMETER AzureAD
 		Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)
+	.PARAMETER MicrosoftTeams
+		Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator
 	.PARAMETER ExchangeOnline
 		Optional. Connects to Exchange Online Management. Requires Exchange Admin Role
 	.PARAMETER OverrideAdminDomain
@@ -340,10 +378,10 @@ function Connect-SkypeTeamsAndAAD {
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
 		Connect-SkypeTeamsAndAAD -Username admin@domain.com
-		Connects to SkypeOnline, MicrosoftTeams & AzureAD prompting ONCE for a Password for 'admin@domain.com'
+		Connects to SkypeOnline & AzureAD prompting ONCE for a Password for 'admin@domain.com'
 	.EXAMPLE
-		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -AzureAD
-		Connects to SkypeOnline and AzureAD prompting ONCE for a Password for 'admin@domain.com'
+		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -AzureAD -MicrosoftTeams
+		Connects to SkypeOnline, AzureAD & MicrosoftTeams prompting ONCE for a Password for 'admin@domain.com'
 	.EXAMPLE
 		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -ExchangeOnline
     Connects to SkypeOnline and ExchangeOnline prompting ONCE for a Password for 'admin@domain.com'
@@ -351,9 +389,21 @@ function Connect-SkypeTeamsAndAAD {
 		Connect-SkypeTeamsAndAAD -Username admin@domain.com -SkypeOnline -OverrideAdminDomain domain.co.uk
     Connects to SkypeOnline prompting ONCE for a Password for 'admin@domain.com' using the explicit OverrideAdminDomain domain.co.uk
   .FUNCTIONALITY
-		Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
+    Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
+  .NOTES
+    The base command (without any )
+  .LINK
+    Connect-Me
+    Connect-SkypeOnline
+    Connect-AzureAD
+    Connect-MicrosoftTeams
+    Disconnect-Me
+    Disconnect-SkypeOnline
+    Disconnect-AzureAD
+    Disconnect-MicrosoftTeams
 	#>
 
+  [CmdletBinding()]
   param(
     [Parameter(Mandatory = $true, Position = 0, HelpMessage = 'UserPrincipalName, Administrative Account')]
     [string]$UserName,
@@ -381,210 +431,293 @@ function Connect-SkypeTeamsAndAAD {
     [Parameter(Mandatory = $false, HelpMessage = 'Suppresses Session Information output')]
     $Silent
 
-  )
+  ) #param
 
-  #region Preparation
-  $WarningPreference = "Continue"
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  # Preparing variables
-  if ($PSBoundParameters.ContainsKey('SkypeOnline') -or $PSBoundParameters.ContainsKey('AzureAD') -or $PSBoundParameters.ContainsKey('MicrosoftTeams')) {
-    # No parameter provided. Assuming connection to all three!
-    $ConnectALL = $false
-  }
-  else {
-    $ConnectAll = $true
-  }
-  if ($PSBoundParameters.ContainsKey('SkypeOnline')) {
-    $ConnectToSkype = $true
-  }
-  if ($PSBoundParameters.ContainsKey('AzureAD')) {
-    $ConnectToAAD = $true
-  }
-  if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
-    $ConnectToTeams = $true
-  }
+    $WarningPreference = "Continue"
 
-  # Cleaning up existing sessions
-  Write-Verbose -Message "Disconnecting from all existing sessions for SkypeOnline, AzureAD and MicrosoftTeams" -Verbose
-  $null = (Disconnect-SkypeTeamsAndAAD -ErrorAction SilentlyContinue)
-  #endregion
-
-
-  #region Connections
-  #region SkypeOnline
-  if ($ConnectALL -or $ConnectToSkype) {
-    Write-Verbose -Message "Establishing connection to SkypeOnline" -Verbose
-    try {
-      if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-        $null = (Connect-SkypeOnline -UserName $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
-      }
-      else {
-        $null = (Connect-SkypeOnline -UserName $Username -ErrorAction STOP)
-      }
+    # Preparing variables
+    if ($PSBoundParameters.ContainsKey('SkypeOnline') -or $PSBoundParameters.ContainsKey('AzureAD') -or $PSBoundParameters.ContainsKey('MicrosoftTeams') -or $PSBoundParameters.ContainsKey('ExchangeOnline')) {
+      # No parameter provided. Assuming connection to both Skype and AzureAD!
+      $ConnectDefault = $false
     }
-    catch {
-      Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain, Admin Role Activation (PIM) and Session Exhaustion (2 max!)" -ForegroundColor Red
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+    else {
+      Write-Verbose -Message "No Connection Parameters for individual Services provided. Connecting to SkypeOnline and AzureAD only (default)" -Verbose
+      $ConnectDefault = $true
     }
 
-    Start-Sleep 1
-    if ((Test-SkypeOnlineConnection) -and -not $Silent) {
-      $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
-      $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
-      $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
-      $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
+    if ($PSBoundParameters.ContainsKey('SkypeOnline')) {
+      $ConnectToSkype = $true
+    }
+    if ($PSBoundParameters.ContainsKey('AzureAD')) {
+      $ConnectToAAD = $true
+    }
 
-      $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
-        Account                   = $UserName
-        Environment               = 'SfBPowerShellSession'
-        Tenant                    = $TenantInformation.DisplayName
-        TenantId                  = $TenantInformation.TenantId
-        TenantDomain              = $TenantDomain
-        ComputerName              = $PSSkypeOnlineSession.ComputerName
-        IdleTimeoutInHours        = $Timeout
-        TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
+    # Cleaning up existing sessions
+    Write-Verbose -Message "Disconnecting from all existing sessions for SkypeOnline, AzureAD and MicrosoftTeams" -Verbose
+    $null = (Disconnect-SkypeTeamsAndAAD -ErrorAction SilentlyContinue)
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    #region Connections
+    #region SkypeOnline
+    if ($ConnectDefault -or $ConnectToSkype) {
+      Write-Verbose -Message "Establishing connection to SkypeOnline" -Verbose
+      try {
+        if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+          $null = (Connect-SkypeOnline -UserName $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+        }
+        else {
+          $null = (Connect-SkypeOnline -UserName $Username -ErrorAction STOP)
+        }
+      }
+      catch {
+        Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain, Admin Role Activation (PIM) and Session Exhaustion (2 max!)" -ForegroundColor Red
+        Write-ErrorRecord $_ #This handles the eror message in human readable format.
       }
 
-      $PSSkypeOnlineSessionInfo
-    }
-  }
-  #endregion
-
-  #region AzureAD
-  if ($ConnectALL -or $ConnectToAAD) {
-    try {
-      Write-Verbose -Message "Establishing connection to AzureAD" -Verbose
-      $null = (Connect-AzureAD -AccountId $Username)
       Start-Sleep 1
-      if ((Test-AzureADConnection) -and -not $Silent) {
-        Get-AzureADCurrentSessionInfo
-      }
-    }
-    catch {
-      Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -ForegroundColor Red
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
-    }
-  }
-  #endregion
+      if ((Test-SkypeOnlineConnection) -and -not $Silent) {
+        $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
+        $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
+        $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
+        $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
 
-  #region MicrosoftTeams
-  if ($ConnectALL -or $ConnectToTeams) {
-    try {
-      if ( !(Test-Module MicrosoftTeams)) {
-        Import-Module MicrosoftTeams -Force -ErrorAction SilentlyContinue
-      }
-      Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
-      if ((Test-MicrosoftTeamsConnection) -and -not $Silent) {
-        Connect-MicrosoftTeams -AccountId $Username
-      }
-      else {
-        $null = (Connect-MicrosoftTeams -AccountId $Username)
-      }
-    }
-    catch {
-      Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -ForegroundColor Red
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
-    }
-  }
-  #endregion
+        $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
+          Account                   = $UserName
+          Environment               = 'SfBPowerShellSession'
+          Tenant                    = $TenantInformation.DisplayName
+          TenantId                  = $TenantInformation.TenantId
+          TenantDomain              = $TenantDomain
+          ComputerName              = $PSSkypeOnlineSession.ComputerName
+          IdleTimeoutInHours        = $Timeout
+          TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
+        }
 
-  #region ExchangeOnline
-  if ($PSBoundParameters.ContainsKey('ExchangeOnline')) {
-    try {
-      if ( !(Test-Module ExchangeOnlineManagement)) {
-        Import-Module ExchangeOnlineManagement -Force -ErrorAction SilentlyContinue
-      }
-      Write-Verbose -Message "Establishing connection to ExchangeOnlineManagement" -Verbose
-      if ((Test-ExchangeOnlineConnection) -and -not $Silent) {
-        Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false
-      }
-      else {
-        $null = (Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false)
+        $PSSkypeOnlineSessionInfo
       }
     }
-    catch {
-      Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -ForegroundColor Red
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+    #endregion
+
+    #region AzureAD
+    if ($ConnectDefault -or $ConnectToAAD) {
+      try {
+        Write-Verbose -Message "Establishing connection to AzureAD" -Verbose
+        $null = (Connect-AzureAD -AccountId $Username)
+        Start-Sleep 1
+        if ((Test-AzureADConnection) -and -not $Silent) {
+          Get-AzureADCurrentSessionInfo
+        }
+      }
+      catch {
+        Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -ForegroundColor Red
+        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      }
     }
-  }
-  #endregion
+    #endregion
 
-  #region Display Admin Roles
-  if ((Test-AzureADConnection) -and -not $Silent) {
-    Write-Host "Displaying assigned Admin Roles for Account: " -ForegroundColor Magenta -NoNewline
-    Write-Host "$Username"
-    Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account | Select-Object DisplayName, Description | Format-Table -AutoSize
-  }
-  #endregion
-  #endregion
-  return
-} #Connect-SkypeTeamsAndAAD
 
-function Disconnect-SkypeTeamsAndAAD {
+    #region MicrosoftTeams
+    if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+      try {
+        if ( !(Test-Module MicrosoftTeams)) {
+          Import-Module MicrosoftTeams -Force -ErrorAction SilentlyContinue
+        }
+        Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
+        if ((Test-MicrosoftTeamsConnection) -and -not $Silent) {
+          Connect-MicrosoftTeams -AccountId $Username
+        }
+        else {
+          $null = (Connect-MicrosoftTeams -AccountId $Username)
+        }
+      }
+      catch {
+        Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -ForegroundColor Red
+        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      }
+    }
+    #endregion
+
+    #region ExchangeOnline
+    if ($PSBoundParameters.ContainsKey('ExchangeOnline')) {
+      try {
+        if ( !(Test-Module ExchangeOnlineManagement)) {
+          Import-Module ExchangeOnlineManagement -Force -ErrorAction SilentlyContinue
+        }
+        Write-Verbose -Message "Establishing connection to ExchangeOnlineManagement" -Verbose
+        if ((Test-ExchangeOnlineConnection) -and -not $Silent) {
+          Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false
+        }
+        else {
+          $null = (Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false)
+        }
+      }
+      catch {
+        Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -ForegroundColor Red
+        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      }
+    }
+    #endregion
+    #endregion
+
+
+    #region Display Admin Roles
+    if ((Test-AzureADConnection) -and -not $Silent) {
+      Write-Host "Displaying assigned Admin Roles for Account: " -ForegroundColor Magenta -NoNewline
+      Write-Host "$Username"
+      Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account | Select-Object DisplayName, Description | Format-Table -AutoSize
+    }
+    #endregion
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
+} #Connect-Me
+
+function Disconnect-Me {
   <#
 	.SYNOPSIS
-		Disconnect from SkypeOnline, Teams, AzureAD
+		Disconnects all sessions for SkypeOnline, AzureAD & MicrosoftTeams
 	.DESCRIPTION
-		Helper function to disconnect from SkypeOnline, Teams, AzureAD
+    Helper function to disconnect from SkypeOnline, AzureAD & MicrosoftTeams
+    By default Office 365 allows two (!) concurrent sessions per User.
+    Session exhaustion may occur if sessions hang or incorrectly closed.
+    Avoid this by cleanly disconnecting the sessions with this function before timeout
+  .EXAMPLE
+    Disconnect-Me
+    Disconnects from SkypeOnline, AzureAD, MicrosoftTeams
+    Errors and Warnings are suppressed as no verification of existing sessions is undertaken
 	.NOTES
-    Helper function to disconnect from SkypeOnline, Teams, AzureAD
+    Helper function to disconnect from SkypeOnline, AzureAD & MicrosoftTeams
     To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
+    By default Office 365 allows two (!) concurrent sessions per User.
+    If sessions hang or are incorrectly closed (not properly disconnectd),
+    this can lead to session exhaustion which results in not being able to connect again.
+    An admin can sign-out this user from all Sessions through the Office 365 Admin Center
+    This process may take up to 15 mins and is best avoided, through proper disconnect after use
+    An Alias is available for this function: dis
+  .LINK
+    Connect-Me
+    Connect-SkypeOnline
+    Connect-AzureAD
+    Connect-MicrosoftTeams
+    Disconnect-Me
+    Disconnect-SkypeOnline
+    Disconnect-AzureAD
+    Disconnect-MicrosoftTeams
 	#>
 
-  Import-Module SkypeOnlineConnector
-  Import-Module MicrosoftTeams -Force # Must import Forcefully as the command otherwise fails (not available)
-  Import-Module AzureAD
+  [CmdletBinding()]
+  param() #param
 
-  try {
-    $null = (Disconnect-SkypeOnline -ErrorAction SilentlyContinue)
-    $null = (Disconnect-MicrosoftTeams -ErrorAction SilentlyContinue)
-    $null = (Disconnect-AzureAD -ErrorAction SilentlyContinue)
-  }
-  catch [NullReferenceException] {
-    # Disconnecting from AzureAD results in a duplicated error which the ERRORACTION only suppresses one of.
-    # This is to capture the second
-    Write-Verbose -Message "AzureAD: Caught NullReferenceException. Not to worry"
-  }
-  catch {
-    Write-ErrorRecord $_
-  }
-} #Disconnect-SkypeTeamsAndAAD
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
+
+    $WarningPreference = "SilentlyContinue"
+    $ErrorActionPreference = "SilentlyContinue"
+
+    Import-Module SkypeOnlineConnector
+    Import-Module MicrosoftTeams -Force # Must import Forcefully as the command otherwise fails (not available)
+    Import-Module AzureAD
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    try {
+      $null = (Disconnect-SkypeOnline)
+      $null = (Disconnect-MicrosoftTeams)
+      $null = (Disconnect-AzureAD)
+    }
+    catch [NullReferenceException] {
+      # Disconnecting from AzureAD results in a duplicated error which the ERRORACTION only suppresses one of.
+      # This is to capture the second
+      Write-Verbose -Message "AzureAD: Caught NullReferenceException. Not to worry"
+    }
+    catch {
+      Write-ErrorRecord $_
+    }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
+} #Disconnect-Me
 
 function Disconnect-SkypeOnline {
   <#
 		.SYNOPSIS
-			Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
-		.EXAMPLE
+			Disconnects Sessions established to SkypeOnline
+    .DESCRIPTION
+      Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
+      By default Office 365 allows two (!) concurrent sessions per User.
+      Session exhaustion may occur if sessions hang or incorrectly closed.
+      Avoid this by cleanly disconnecting the sessions with this function before timeout
+    .EXAMPLE
 			Disconnect-SkypeOnline
 			Removes any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
-	#>
+    .NOTES
+      Helper function to disconnect from SkypeOnline
+      By default Office 365 allows two (!) concurrent sessions per User.
+      If sessions hang or are incorrectly closed (not properly disconnectd),
+      this can lead to session exhaustion which results in not being able to connect again.
+      An admin can sign-out this user from all Sessions through the Office 365 Admin Center
+      This process may take up to 15 mins and is best avoided, through proper disconnect after use
+    .LINK
+      Connect-Me
+      Connect-SkypeOnline
+      Connect-AzureAD
+      Connect-MicrosoftTeams
+      Disconnect-Me
+      Disconnect-SkypeOnline
+      Disconnect-AzureAD
+      Disconnect-MicrosoftTeams
+    #>
 
   [CmdletBinding()]
-  param()
+  param() #param
 
-  [bool]$sessionFound = $false
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  $PSSesssions = Get-PSSession  -WarningAction SilentlyContinue
+    [bool]$sessionFound = $false
 
-  foreach ($session in $PSSesssions) {
-    if ($session.ComputerName -like "*.online.lync.com") {
-      $sessionFound = $true
-      Remove-PSSession $session
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    $PSSesssions = Get-PSSession  -WarningAction SilentlyContinue
+
+    foreach ($session in $PSSesssions) {
+      if ($session.ComputerName -like "*.online.lync.com") {
+        $sessionFound = $true
+        Remove-PSSession $session
+      }
     }
-  }
 
-  Get-Module | Where-Object { $_.Description -like "*.online.lync.com*" } | Remove-Module
+    if ($sessionFound -eq $false) {
+      Get-Module | Where-Object { $_.Description -like "*.online.lync.com*" } | Remove-Module
+    }
+    else {
+      Write-Verbose -Message "No remote PowerShell sessions to Skype Online currently exist"
+    }
+  } #process
 
-  if ($sessionFound -eq $false) {
-    Write-Verbose -Message "No remote PowerShell sessions to Skype Online currently exist"
-  }
-
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Disconnect-SkypeOnline
 
-Set-Alias -Name con -Value Connect-SkypeTeamsAndAAD
-Set-Alias -Name Connect-Me -Value Connect-SkypeTeamsAndAAD
-Set-Alias -Name Disconnect-Me -Value Disconnect-SkypeTeamsAndAAD
-Set-Alias -Name dis -Value Disconnect-SkypeTeamsAndAAD
+Set-Alias -Name con -Value Connect-Me
+Set-Alias -Name Connect-SkypeTeamsAndAAD -Value Connect-Me
+Set-Alias -Name Disconnect-SkypeTeamsAndAAD -Value Disconnect-Me
+Set-Alias -Name dis -Value Disconnect-Me
 #endregion
 
 
@@ -710,11 +843,12 @@ function Set-TeamsUserLicense {
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
     [Switch]$RemoveAllLicenses
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -975,9 +1109,10 @@ function Set-TeamsUserLicense {
     #endregion
 
     # Parsing RemoveAllLicenses is user specific and has to be done in PROCESS
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($ID in $Identity) {
       #region Object Verification
       # Querying User
@@ -1056,7 +1191,11 @@ function Set-TeamsUserLicense {
         Write-Verbose -Message "'$ID' - Applying License: Done"
       }
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Set-TeamsUserLicense
 
 function Add-TeamsUserLicense {
@@ -1194,11 +1333,12 @@ function Add-TeamsUserLicense {
     [Parameter(Mandatory = $false, ParameterSetName = 'PhoneSystem', HelpMessage = 'Will swap a PhoneSystem License to a Virtual User License and vice versa')]
     [Parameter(Mandatory = $false, ParameterSetName = 'PhoneSystemVirtualUser', HelpMessage = 'Will swap a PhoneSystem License to a Virtual User License and vice versa')]
     [switch]$Replace
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -1239,9 +1379,10 @@ function Add-TeamsUserLicense {
         "MCOCAP" { $CommonAreaPhone = $tenantSKU.SkuId; break }
       } # End of switch statement
     } # End of foreach $tenantSKUs
-  } # End of BEGIN
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($ID in $Identity) {
       try {
         $UserObject = Get-AzureADUser -ObjectId "$ID" -ErrorAction STOP
@@ -1352,7 +1493,11 @@ function Add-TeamsUserLicense {
         ProcessLicense -UserID $ID -LicenseSkuID $CommonAreaPhone
       }
     } # End of foreach ($ID in $Identity)
-  } # End of PROCESS
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Add-TeamsUserLicense
 
 function Get-TeamsUserLicense {
@@ -1390,6 +1535,7 @@ function Get-TeamsUserLicense {
   #>
 
   [CmdletBinding()]
+  [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true,
       HelpMessage = "Enter the UPN or login name of the user account, typically <user>@<domain>.")]
@@ -1398,11 +1544,12 @@ function Get-TeamsUserLicense {
 
     [Parameter(Mandatory = $false, HelpMessage = "Displays all ServicePlans")]
     [switch]$DisplayAll
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -1424,9 +1571,10 @@ function Get-TeamsUserLicense {
     $AllServicePlans = $null
     $AllServicePlans = $TeamsServicePlans
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($User in $Identity) {
       try {
         Get-AzureADUser -ObjectId "$User" -ErrorAction STOP | Out-Null
@@ -1514,7 +1662,11 @@ function Get-TeamsUserLicense {
 
       Write-Output $output
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Get-TeamsUserLicense
 
 function Get-TeamsTenantLicense {
@@ -1572,11 +1724,12 @@ function Get-TeamsTenantLicense {
 
     [Parameter(Mandatory = $false, HelpMessage = "Displays all ServicePlans")]
     [switch]$DisplayAll
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -1620,9 +1773,10 @@ function Get-TeamsTenantLicense {
       return
     }
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     [System.Collections.ArrayList]$TenantLicenses = @()
     foreach ($tenantSKU in $tenantSKUs) {
@@ -1679,119 +1833,570 @@ function Get-TeamsTenantLicense {
 
       return $TenantLicenses
     }
-  }
-  end {
+  } #process
 
-  }
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+
+  } #end
 } #Get-TeamsTenantLicense
 #endregion
 
 
-#region Voice Configuration
+#region Voice Configuration - Work in Progress
 function Get-TeamsTenantVoiceConfig {
   <#
 	.SYNOPSIS
-		Short description
+		Displays Information about available Voice Configuration in the Tenant
 	.DESCRIPTION
-		Long description
-	.PARAMETER
-
-	.PARAMETER
-
-	.PARAMETER
-
+		Displays all Voice relevant information configured in the Tenant incl. counters for free Licenses and Numbers
+  .PARAMETER DisplayUserCounters
+    Optional. Displays information about Users enabled for Teams and for EnterpriseVoice
+    This extends Script execution depending on number of Users in the Tenant
+  .PARAMETER Detailed
+    Optional. Displays more information about Voice Routing Policies, Dial Plans, etc.
 	.EXAMPLE
-		C:\PS>
-		Example of how to use this cmdlet
+		Get-TeamsTenantVoiceConfig
+    Displays Licenses for Call Plans, available Numbers, as well as
+    Counters for all relevant Policies, available VoiceRoutingPolicies
 	.EXAMPLE
-		C:\PS>
-		Another example of how to use this cmdlet
-	.INPUTS
-		Inputs to this cmdlet (if any)
-	.OUTPUTS
-		Output from this cmdlet (if any)
+		Get-TeamsTenantVoiceConfig -Detailed
+    Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways
+    Also displays diagnostic parameters for troubleshooting
 	.NOTES
 		General notes
-	.COMPONENT
-		The component this cmdlet belongs to
-	.ROLE
-		The role this cmdlet belongs to
-	.FUNCTIONALITY
-		The functionality that best describes this cmdlet
-	#>
+  .LINK
+    Get-TeamsTenantVoiceConfig
+    Get-TeamsUserVoiceConfig
+    Find-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+    Remove-TeamsUserVoiceConfig
+    Test-TeamsUserVoiceConfig
+  #>
 
   [CmdletBinding()]
   param(
-    [Parameter(Mandatory = $true)]
-    [string]$Identity
-  )
+    [Parameter(HelpMessage = 'Displays counters for User information')]
+    [switch]$DisplayUserCounters,
+
+    [Parameter(HelpMessage = 'Displays detailed information')]
+    [switch]$Detailed
+  ) #param
 
   begin {
-  }
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
+
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
+
+    # Asserting AzureAD Connection
+    if (-not (Assert-AzureADConnection)) { break }
+
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { break }
+
+  } #begin
 
   process {
-    $User = Get-CsOnlineUser $Identity
-    $User
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    #region Information Gathering
+    Write-Verbose -Message "Querying Tenant"
+    $Tenant = Get-CsTenant -WarningAction SilentlyContinue
 
-  }
+    Write-Verbose -Message "Querying SIP Domains"
+    $SipDomains = Get-CsOnlineSipDomain -WarningAction SilentlyContinue
+
+    Write-Verbose -Message "Querying Tenant Licenses"
+    $TenantLicenses = Get-TeamsTenantLicense
+    $CallPlanINT = $TenantLicenses | Where-Object ParameterName -EQ "InternationalCallingPlan"
+    $CallPlanDOM = $TenantLicenses | Where-Object ParameterName -EQ "DomesticCallingPlan"
+    $CallPlanDOM120 = $TenantLicenses | Where-Object ParameterName -EQ "DomesticCallingPlan120"
+    $CommunicationC = $TenantLicenses | Where-Object ParameterName -EQ "CommunicationCredits"
+
+    Write-Verbose -Message "Querying Direct Routing Information"
+    $TDP = Get-CsTenantDialPlan -WarningAction SilentlyContinue
+    $OVP = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
+    $OPU = (Get-CsOnlinePSTNusage -WarningAction SilentlyContinue).Usage
+    $OVR = Get-CsOnlineVoiceRoute -WarningAction SilentlyContinue
+    $OGW = Get-CsOnlinePSTNGateway -WarningAction SilentlyContinue
+
+    #region Creating Base Custom Object
+    $Object = [PSCustomObject][ordered]@{
+      DisplayName                            = $Tenant.DisplayName
+      Domains                                = $Tenant.Domains
+      SipDomains                             = $SipDomains
+      TeamsUpgradeEffectiveMode              = $Tenant.TeamsUpgradeEffectiveMode
+      TenantLicenses                         = $TenantLicenses
+      InternationalCallingPlanUnitsRemaining = $CallPlanINT.Remaining
+      DomesticCallingPlanUnitsRemaining      = $CallPlanDOM.Remaining
+      DomesticCallingPlan120UnitsRemaining   = $CallPlanDOM120.Remaining
+      CommunicationCreditsUnitsRemaining     = $CommunicationC.Remaining
+      ConfiguredTenantDialPlans              = $TDP.Count
+      ConfiguredOnlineVoiceRoutingPolicies   = $OVP.Count
+      ConfiguredOnlinePSTNUsages             = $OPU.Count
+      ConfiguredOnlineVoiceRoutes            = $OVR.Count
+      ConfiguredOnlinePSTNGateways           = $OGW.Count
+    }
+    #endregion
+
+    #region User Information
+    if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
+      Write-Verbose -Message "Querying User Information - This might take some time" -Verbose
+      $AdUsers = (Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE).Count
+      $CsOnlineUsers = (Get-CsonlineUser -WarningAction SilentlyContinue).Count
+      $CsOnlineUsersEV = (Get-CsonlineUser -WarningAction SilentlyContinue | Where-Object EnterpriseVoiceEnabled -EQ $TRUE).Count
+
+      $UserCountParams = [PSCustomObject][ordered]@{
+        UsersEnabledInAzureAD                  = $AdUsers
+        UsersEnabledForTeams                   = $CsOnlineUsers
+        UsersEnabledForTeamsAndEnterpriseVoice = $CsOnlineUsersEV
+      }
+
+      [void]$Object.Add($UserCountParams)
+    }
+    #endregion
+
+    #region Detailed Information
+    if ($PSBoundParameters.ContainsKey('Detailed')) {
+      Write-Verbose -Message "Querying Microsoft Telephone Numbers Information"
+      $MSNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      if ( $null -ne $MSNumbers ) {
+        $MSTelephoneNumbers = $MSNumbers.Count
+        $MSTelephoneNumbersFree = $MSNumbers.IsNotAssigned.Count
+
+        $MSNumbersUser = $MSNumbers | Where-Object InventoryType -EQ "Subscriber"
+        $MSTelephoneNumbersUser = $MSNumbersUser.Count
+        $MSTelephoneNumbersUserFree = $MSNumbersUser | Where-Object IsNotAssigned -EQ "True"
+
+        $MSNumbersService = $MSNumbers | Where-Object InventoryType -EQ "Service"
+        $MSTelephoneNumbersService = $MSNumbersService.Count
+        $MSTelephoneNumbersServiceFree = $MSNumbersService | Where-Object IsNotAssigned -EQ "True"
+
+        $MSNumbersTollFree = $MSNumbers | Where-Object InventoryType -EQ "Subscriber"
+        $MSTelephoneNumbersTollFree = $MSNumbersTollFree.Count
+        $MSTelephoneNumbersTollFreeFree = $MSNumbersTollFree | Where-Object IsNotAssigned -EQ "True"
+
+      }
+      else {
+        $MSTelephoneNumbers = 0
+        $MSTelephoneNumbersFree = 0
+        $MSTelephoneNumbersUser = 0
+        $MSTelephoneNumbersUserFree = 0
+        $MSTelephoneNumbersService = 0
+        $MSTelephoneNumbersServiceFree = 0
+        $MSTelephoneNumbersTollFree = 0
+        $MSTelephoneNumbersTollFreeFree = 0
+      }
+
+      $DetailedParams = [PSCustomObject][ordered]@{
+        MSTelephoneNumbers             = $MSTelephoneNumbers
+        MSTelephoneNumbersFree         = $MSTelephoneNumbersFree
+        MSTelephoneNumbersUser         = $MSTelephoneNumbersUser
+        MSTelephoneNumbersUserFree     = $MSTelephoneNumbersUserFree
+        MSTelephoneNumbersService      = $MSTelephoneNumbersService
+        MSTelephoneNumbersServiceFree  = $MSTelephoneNumbersServiceFree
+        MSTelephoneNumbersTollFree     = $MSTelephoneNumbersTollFree
+        MSTelephoneNumbersTollFreeFree = $MSTelephoneNumbersTollFreeFree
+        TenantDialPlans                = $TDP.Identity
+        OnlineVoiceRoutingPolicies     = $OVP.Identity
+        OnlinePSTNUsages               = $OPU
+        OnlineVoiceRoutes              = $OVR.Identity
+        OnlinePSTNGateways             = $OGW.Identity
+
+        DirSyncEnabled                 = $Tenant.DirSyncEnabled
+        LastSyncTimeStamp              = $Tenant.LastSyncTimeStamp
+      }
+
+      [void]$Object.Add($DetailedParams)
+
+    }
+    #endregion
+
+    # Output
+    Write-Output $Object
+
+  } #process
 
   end {
-  }
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Get-TeamsTenantVoiceConfig
 
 
 function Get-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
-		Short description
+		Displays Voice Configuration Parameters for one or more Users
 	.DESCRIPTION
-		Long description
-	.PARAMETER
-
-	.PARAMETER
-
-	.PARAMETER
-
+    Displays Voice Configuration Parameters with different Diagnostic Levels
+    ranging from basic Voice Configuration up to Policies, Account Status & DirSync Information
+  .PARAMETER Identity
+    Required. UserPrincipalName (UPN) of the User
+	.PARAMETER DiagnosticLevel
+    Optional. Value from 1 to 4. Higher values will display more parameters
+    See NOTES below for details.
 	.EXAMPLE
-		C:\PS>
-		Example of how to use this cmdlet
+    Get-TeamsUserVoiceConfig -Identity John@domain.com
+    Shows Voice Configuration for John with a concise view of Parameters
 	.EXAMPLE
-		C:\PS>
-		Another example of how to use this cmdlet
-	.INPUTS
-		Inputs to this cmdlet (if any)
-	.OUTPUTS
-		Output from this cmdlet (if any)
-	.NOTES
-		General notes
-	.COMPONENT
-		The component this cmdlet belongs to
-	.ROLE
-		The role this cmdlet belongs to
+    Get-TeamsUserVoiceConfig -Identity John@domain.com -DiagnosticLevel 2
+    Shows Voice Configuration for John with a extended list of Parameters (see NOTES)
+  .NOTES
+    DiagnosticLevel details:
+    1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype
+    2 Extended diagnostics displaying additional Voice-related Policies
+    3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc.
+    4 Extended troubleshooting parameters from AzureAD like LastDirSyncTime
+    Parameters are additive, meaning with each DiagnosticLevel more information is displayed
+
+    This script takes a select set of Parameters from AzureAD, Teams & Licensing. For a full parameterset, please run:
+    - for AzureAD:    "Get-AzureADUserFromUPN $Identity | FL"
+    - for Licensing:  "Get-TeamsUserLicense $Identity"
+    - for Teams:      "Get-CsOnlineUser $Identity"
 	.FUNCTIONALITY
 		The functionality that best describes this cmdlet
-	#>
+  .LINK
+    Get-TeamsTenantVoiceConfig
+    Get-TeamsUserVoiceConfig
+    Find-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+    Remove-TeamsUserVoiceConfig
+    Test-TeamsUserVoiceConfig
+#>
 
   [CmdletBinding()]
   param(
-    [Parameter(Mandatory = $true)]
-    [string]$Identity
-  )
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [string[]]$Identity,
+
+    [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
+    [Alias('DiagLevel', 'Level', 'DL')]
+    [ValidateRange(1, 4)]
+    [switch]$DiagnosticLevel
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  }
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
+
+    # Asserting AzureAD Connection
+    if (-not (Assert-AzureADConnection)) { break }
+
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { break }
+
+  } #begin
 
   process {
-    $User = Get-CsOnlineUser $Identity
-    $User
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
+    foreach ($User in $Identity) {
+      #region Information Gathering
+      Write-Verbose -Message "[PROCESS] Processing '$User'"
+      # Querying Identity
+      try {
+        $AdUser = Get-AzureADUserFromUPN $User -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
+      }
+      catch {
+        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
+      }
 
-  }
+      # Querying User Licenses
+      $CsUserLicense = Get-TeamsUserLicense $User
+      #endregion
+
+      #region Creating Base Custom Object
+      $UserObject = [PSCustomObject][ordered]@{
+        UserPrincipalName         = $AdUser.UserPrincipalName
+        SipAddress                = $CsUser.SipAddress
+        ObjectId                  = $CsUser.ObjectId
+        HostingProvider           = $CsUser.HostingProvider
+        InterpretedUserType       = $CsUser.InterpretedUserType
+        TeamsUpgradeEffectiveMode = $CsUser.TeamsUpgradeEffectiveMode
+        UsageLocation             = $CsUser.UsageLocation
+        LicensesAssigned          = $CsUserLicense.LicensesFriendlyNames
+        CurrentCallingPlan        = $CsUserLicense.currentCallingPlan
+        PhoneSystem               = $CsUserLicense.PhoneSystemLicense
+        TeamsVoiceRoute           = $CsUser.TeamsVoiceRoute
+        EnterpriseVoiceEnabled    = $CsUser.EnterpriseVoiceEnabled
+        OnlineVoiceRoutingPolicy  = $CsUser.OnlineVoiceRoutingPolicy
+        TenantDialPlan            = $CsUser.TenantDialPlan
+        TelephoneNumber           = $CsUser.TelephoneNumber
+        PrivateLine               = $CsUser.PrivateLine
+        LineURI                   = $CsUser.LineURI
+        OnPremLineURI             = $CsUser.OnPremLineURI
+
+      }
+      #endregion
+
+      #region Adding Diagnostic Parameters
+      if ($PSBoundParameters.ContainsKey('DiagnosticLevel')) {
+        switch ($DiagnosticLevel) {
+          { $PSItem -eq 1 } {
+            # Displaying basic dignostic parameters (Hybrid)
+            $Diag1Params = [PSCustomObject][ordered]@{
+              OnPremLineURIManuallySet        = $CsUser.OnPremLineURIManuallySet
+              OnPremEnterPriseVoiceEnabled    = $CsUser.OnPremEnterPriseVoiceEnabled
+              VoicePolicy                     = $CsUser.VoicePolicy
+              TeamsUpgradePolicy              = $CsUser.TeamsUpgradePolicy
+              TeamsEmergencyCallRoutingPolicy = $CsUser.TeamsEmergencyCallRoutingPolicy
+            }
+
+            [void]$UserObject.Add($Diag1Params)
+          }
+          { $PSItem -gt 1 -and $PSItem -le 2 } {
+            # Displaying extended dignostic parameters
+            $Diag2Params = [PSCustomObject][ordered]@{
+              TeamsEmergencyCallingPolicy          = $CsUser.TeamsEmergencyCallingPolicy
+              CallingPolicy                        = $CsUser.CallingPolicy
+              CallingLineIdentity                  = $CsUser.CallingLineIdentity
+              TeamsIPPhonePolicy                   = $CsUser.TeamsIPPhonePolicy
+              TeamsVdiPolicy                       = $CsUser.TeamsVdiPolicy
+              OnlineDialOutPolicy                  = $CsUser.OnlineDialOutPolicy
+              OnlineAudioConferencingRoutingPolicy = $CsUser.OnlineAudioConferencingRoutingPolicy
+              HostedVoiceMail                      = $CsUser.HostedVoiceMail
+            }
+
+            [void]$UserObject.Add($Diag2Params)
+          }
+          { $PSItem -gt 1 -and $PSItem -le 3 } {
+            # Displaying advanced dignostic parameters
+            $Diag3Params = [PSCustomObject][ordered]@{
+              AdAccountEnabled = $AdUser.AccountEnabled
+              CsAccountEnabled = $CsUser.Enabled
+              CsAccountIsValid = $CsUser.IsValid
+              CsWhenCreated    = $CsUser.WhenCreated
+              CsWhenChanged    = $CsUser.WhenChanged
+              ObjectType       = $AdUser.ObjectType
+              ObjectClass      = $CsUser.ObjectClss
+            }
+
+            [void]$UserObject.Add($Diag3Params)
+          }
+          { $PSItem -gt 1 -and $PSItem -le 4 } {
+            # Displaying all of CsOnlineUser (previously omitted)
+            $Diag4Params = [PSCustomObject][ordered]@{
+              DirSyncEnabled             = $AdUser.DirSyncEnabled
+              LastDirSyncTime            = $AdUser.LastDirSyncTime
+              AdDeletionTimestamp        = $AdUser.DeletionTimestamp
+              CsSoftDeletionTimestamp    = $CsUser.SoftDeletionTimestamp
+              CsPendingDeletion          = $CsUser.PendingDeletion
+              HideFromAddressLists       = $CsUser.HideFromAddressLists
+              OnPremHideFromAddressLists = $CsUser.OnPremHideFromAddressLists
+              OriginatingServer          = $AdUser.OriginatingServer
+              ServiceInstance            = $CsUser.ServiceInstance
+              SipProxyAddress            = $CsUser.SipProxyAddress
+            }
+
+            [void]$UserObject.Add($Diag4Params)
+          }
+        }
+      }
+      #endregion
+
+      # Output
+      Write-Output $UserObject
+
+    }
+
+  } #process
 
   end {
-  }
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Get-TeamsUserVoiceConfig
+
+
+function Find-TeamsUserVoiceConfig {
+  <#
+	.SYNOPSIS
+		Displays User Voice Configuration based on specific Parameters
+	.DESCRIPTION
+    Finds User Objects matching specific parameters and displays their Voice Configuration
+    This script can find duplicate assignments of PhoneNumbers
+  .PARAMETER Identity
+    Optional. UserPrincipalName (UPN) of the User
+    Behaves like Get-TeamsUserVoiceConfig, displaying the Users Voice Configuration
+	.PARAMETER Number
+    Optional. Searches all Users matching the given String.
+    Please see NOTES for details
+	.EXAMPLE
+    Find-TeamsUserVoiceConfig -Identity John@domain.com
+    Shows Voice Configuration for John with a concise view of Parameters
+	.EXAMPLE
+    Find-TeamsUserVoiceConfig -Number "15551234567"
+    Shows all Users which have this String in their TelephoneNumber or OnPremLineURI
+    Please see NOTES for details
+  .NOTES
+    Search by Number will take some time and may run for a few minutes.
+    For best compatibility, provide Number in E.164 format (with or without the +)
+    This script can find duplicate assignments if the Number was assigned with and without an extension.
+	.FUNCTIONALITY
+		Finding Users with a specific Voice Configuration
+  .LINK
+    Get-TeamsTenantVoiceConfig
+    Get-TeamsUserVoiceConfig
+    Find-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+    Remove-TeamsUserVoiceConfig
+    Test-TeamsUserVoiceConfig
+#>
+
+  [CmdletBinding()]
+  param(
+    [Parameter(ValueFromPipelineByPropertyName)]
+    [string[]]$Identity,
+
+    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
+    [Alias('Number', 'TelephoneNumber', 'Tel')]
+    [string[]]$PhoneNumber
+  ) #param
+
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
+
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
+
+    # Asserting AzureAD Connection
+    if (-not (Assert-AzureADConnection)) { break }
+
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { break }
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    foreach ($User in $Identity) {
+      #region Information Gathering
+      Write-Verbose -Message "[PROCESS] Processing '$User'"
+      # Querying Identity
+      try {
+        $AdUser = Get-AzureADUserFromUPN $User -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
+      }
+      catch {
+        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
+      }
+
+      # Querying User Licenses
+      $CsUserLicense = Get-TeamsUserLicense $User
+      #endregion
+
+      #region Creating Base Custom Object
+      $UserObject = [PSCustomObject][ordered]@{
+        UserPrincipalName         = $AdUser.UserPrincipalName
+        SipAddress                = $CsUser.SipAddress
+        ObjectId                  = $CsUser.ObjectId
+        HostingProvider           = $CsUser.HostingProvider
+        InterpretedUserType       = $CsUser.InterpretedUserType
+        TeamsUpgradeEffectiveMode = $CsUser.TeamsUpgradeEffectiveMode
+        UsageLocation             = $CsUser.UsageLocation
+        LicensesAssigned          = $CsUserLicense.LicensesFriendlyNames
+        CurrentCallingPlan        = $CsUserLicense.currentCallingPlan
+        PhoneSystem               = $CsUserLicense.PhoneSystemLicense
+        TeamsVoiceRoute           = $CsUser.TeamsVoiceRoute
+        EnterpriseVoiceEnabled    = $CsUser.EnterpriseVoiceEnabled
+        OnlineVoiceRoutingPolicy  = $CsUser.OnlineVoiceRoutingPolicy
+        TenantDialPlan            = $CsUser.TenantDialPlan
+        TelephoneNumber           = $CsUser.TelephoneNumber
+        PrivateLine               = $CsUser.PrivateLine
+        LineURI                   = $CsUser.LineURI
+        OnPremLineURI             = $CsUser.OnPremLineURI
+
+      }
+      #endregion
+
+      #region Adding Diagnostic Parameters
+      if ($PSBoundParameters.ContainsKey('DiagnosticLevel')) {
+        switch ($DiagnosticLevel) {
+          { $PSItem -eq 1 } {
+            # Displaying basic dignostic parameters (Hybrid)
+            $Diag1Params = [PSCustomObject][ordered]@{
+              OnPremLineURIManuallySet        = $CsUser.OnPremLineURIManuallySet
+              OnPremEnterPriseVoiceEnabled    = $CsUser.OnPremEnterPriseVoiceEnabled
+              VoicePolicy                     = $CsUser.VoicePolicy
+              TeamsUpgradePolicy              = $CsUser.TeamsUpgradePolicy
+              TeamsEmergencyCallRoutingPolicy = $CsUser.TeamsEmergencyCallRoutingPolicy
+            }
+
+            [void]$UserObject.Add($Diag1Params)
+          }
+          { $PSItem -gt 1 -and $PSItem -le 2 } {
+            # Displaying extended dignostic parameters
+            $Diag2Params = [PSCustomObject][ordered]@{
+              TeamsEmergencyCallingPolicy          = $CsUser.TeamsEmergencyCallingPolicy
+              CallingPolicy                        = $CsUser.CallingPolicy
+              CallingLineIdentity                  = $CsUser.CallingLineIdentity
+              TeamsIPPhonePolicy                   = $CsUser.TeamsIPPhonePolicy
+              TeamsVdiPolicy                       = $CsUser.TeamsVdiPolicy
+              OnlineDialOutPolicy                  = $CsUser.OnlineDialOutPolicy
+              OnlineAudioConferencingRoutingPolicy = $CsUser.OnlineAudioConferencingRoutingPolicy
+              HostedVoiceMail                      = $CsUser.HostedVoiceMail
+            }
+
+            [void]$UserObject.Add($Diag2Params)
+          }
+          { $PSItem -gt 1 -and $PSItem -le 3 } {
+            # Displaying advanced dignostic parameters
+            $Diag3Params = [PSCustomObject][ordered]@{
+              AdAccountEnabled = $AdUser.AccountEnabled
+              CsAccountEnabled = $CsUser.Enabled
+              CsAccountIsValid = $CsUser.IsValid
+              CsWhenCreated    = $CsUser.WhenCreated
+              CsWhenChanged    = $CsUser.WhenChanged
+              ObjectType       = $AdUser.ObjectType
+              ObjectClass      = $CsUser.ObjectClss
+            }
+
+            [void]$UserObject.Add($Diag3Params)
+          }
+          { $PSItem -gt 1 -and $PSItem -le 4 } {
+            # Displaying all of CsOnlineUser (previously omitted)
+            $Diag4Params = [PSCustomObject][ordered]@{
+              DirSyncEnabled             = $AdUser.DirSyncEnabled
+              LastDirSyncTime            = $AdUser.LastDirSyncTime
+              AdDeletionTimestamp        = $AdUser.DeletionTimestamp
+              CsSoftDeletionTimestamp    = $CsUser.SoftDeletionTimestamp
+              CsPendingDeletion          = $CsUser.PendingDeletion
+              HideFromAddressLists       = $CsUser.HideFromAddressLists
+              OnPremHideFromAddressLists = $CsUser.OnPremHideFromAddressLists
+              OriginatingServer          = $AdUser.OriginatingServer
+              ServiceInstance            = $CsUser.ServiceInstance
+              SipProxyAddress            = $CsUser.SipProxyAddress
+            }
+
+            [void]$UserObject.Add($Diag4Params)
+          }
+        }
+      }
+      #endregion
+
+      # Output
+      Write-Output $UserObject
+
+    }
+
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
+} #Find-TeamsUserVoiceConfig
 
 
 function Set-TeamsUserVoiceConfig {
@@ -1824,6 +2429,13 @@ function Set-TeamsUserVoiceConfig {
 		The role this cmdlet belongs to
 	.FUNCTIONALITY
 		The functionality that best describes this cmdlet
+  .LINK
+    Get-TeamsUserVoiceConfig
+    Find-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+    Remove-TeamsUserVoiceConfig
+    Test-TeamsUserVoiceConfig
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -1833,13 +2445,15 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
     [switch]$Force
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     $User = Get-CsOnlineUser $Identity
     $User
 
@@ -1848,10 +2462,11 @@ function Set-TeamsUserVoiceConfig {
       # do harm
     }
 
-  }
+  } #process
 
   end {
-  }
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Set-TeamsUserVoiceConfig
 
 
@@ -1893,9 +2508,9 @@ function Remove-TeamsUserVoiceConfig {
 	.FUNCTIONALITY
     Removes a Users Voice Configuration (through Microsoft Call Plans or Direct Routing)
     This will leave the users in a clean and unprovisioned state and enables them to receive a new Configuration Set
-
   .LINK
     Get-TeamsUserVoiceConfig
+    Find-TeamsUserVoiceConfig
     New-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
@@ -1918,29 +2533,32 @@ function Remove-TeamsUserVoiceConfig {
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
     [switch]$Force
 
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
       $ConfirmPreference = 'None'
     }
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($User in $Identity) {
       #region Information Gathering
+      Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
         $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
@@ -2097,10 +2715,11 @@ function Remove-TeamsUserVoiceConfig {
       #endregion
 
     }
-  }
+  } #process
 
   end {
-  }
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Remove-TeamsUserVoiceConfig
 
 
@@ -2140,6 +2759,7 @@ function Test-TeamsUserVoiceConfig {
       "Remove-TeamsUserVoiceConfig -Force" can help
 	.LINK
     Get-TeamsUserVoiceConfig
+    Find-TeamsUserVoiceConfig
     New-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
@@ -2159,22 +2779,24 @@ function Test-TeamsUserVoiceConfig {
     [Parameter(Helpmessage = 'Queries a partial implementation')]
     [switch]$Partial
 
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
-  }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($User in $Identity) {
       # Querying Identity
       try {
@@ -2244,17 +2866,20 @@ function Test-TeamsUserVoiceConfig {
         }
       }
     }
-  }
+  } #process
 
   end {
-  }
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Test-TeamsUserVoiceConfig
 
 Set-Alias -Name Get-TUVC -Value Get-TeamsUserVoiceConfig
+Set-Alias -Name Find-TUVC -Value Find-TeamsUserVoiceConfig
 Set-Alias -Name New-TUVC -Value New-TeamsUserVoiceConfig
 Set-Alias -Name Set-TUVC -Value Set-TeamsUserVoiceConfig
 Set-Alias -Name Remove-TUVC -Value Remove-TeamsUserVoiceConfig
 Set-Alias -Name Test-TUVC -Value Test-TeamsUserVoiceConfig
+
 #endregion
 
 
@@ -2306,14 +2931,15 @@ function Get-TeamsCallQueue {
     [string]$Name,
 
     [switch]$ConciseView
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -2326,9 +2952,10 @@ function Get-TeamsCallQueue {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       if (-not $PSBoundParameters.ContainsKey('Name')) {
         Write-Verbose -Message "No parameters specified. Acting as an Alias to Get-CsCallQueue" -Verbose
@@ -2347,8 +2974,6 @@ function Get-TeamsCallQueue {
         }
 
         # Initialising Arrays
-        [System.Collections.ArrayList]$DEQueueObjects = @()
-
         [System.Collections.ArrayList]$UserObjects = @()
         [System.Collections.ArrayList]$DLobjects = @()
         [System.Collections.ArrayList]$AgentObjects = @()
@@ -2597,12 +3222,11 @@ function Get-TeamsCallQueue {
             }
 
           }
-          [void]$DEQueueObjects.Add($Q)
           #endregion
-        }
-        # Output
-        return $DEQueueObjects
 
+          # Output
+          Write-Output $Q
+        }
       }
     }
     catch {
@@ -2611,10 +3235,12 @@ function Get-TeamsCallQueue {
       return
     }
 
-  }
-  end {
+  } #process
 
-  }
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+
+  } #end
 } #Get-TeamsCallQueue
 
 function New-TeamsCallQueue {
@@ -2757,7 +3383,7 @@ function New-TeamsCallQueue {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  #[OutputType([System.Object])]
+  [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
     [string]$Name,
@@ -2965,19 +3591,20 @@ function New-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -3030,9 +3657,10 @@ function New-TeamsCallQueue {
         return
       }
     }
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     #region PREPARATION
     # preparing Splatting Object
     $Parameters = $null
@@ -3780,11 +4408,12 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
 
-  }
+  } #end
 } #New-TeamsCallQueue
 
 function Set-TeamsCallQueue {
@@ -3909,7 +4538,7 @@ function Set-TeamsCallQueue {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  #[OutputType([System.Void])]
+  [OutputType([System.Void], [System.Object])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UserPrincipalName of the Call Queue")]
     [string]$Name,
@@ -4114,19 +4743,20 @@ function Set-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -4167,9 +4797,10 @@ function Set-TeamsCallQueue {
         Write-Warning "LanguageId '$Language' - Voice Responses are not supported"
       }
     }
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     #region PREPARATION
     # preparing Splatting Object
     $Parameters = $null
@@ -4914,11 +5545,12 @@ function Set-TeamsCallQueue {
     }
     #endregion
 
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
 
-  }
+  } #end
 } #Set-TeamsCallQueue
 
 function Remove-TeamsCallQueue {
@@ -4931,7 +5563,11 @@ function Remove-TeamsCallQueue {
 		DisplayName of the Call Queue
 	.EXAMPLE
 		Remove-TeamsCallQueue -Name "My Queue"
-		Prompts for removal for all queues found with the string "My Queue"
+    Prompts for removal for all queues found with the string "My Queue"
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.LINK
 		New-TeamsCallQueue
 		Get-TeamsCallQueue
@@ -4942,24 +5578,25 @@ function Remove-TeamsCallQueue {
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
-  #[OutputType([System.Void])]
+  [OutputType([System.Object])]
   param(
     # Pipline does not work properly - rebind to Identity? or query with Get-TeamsCallQueue instead?
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Call Queue")]
     [string]$Name
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Caveat - Script in Testing
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     #Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed back to TeamsFunctions@outlook.com"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -4972,9 +5609,10 @@ function Remove-TeamsCallQueue {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-  } # end of begin
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       Write-Verbose -Message "The listed Queues have been removed" -Verbose
       $QueueToRemove = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue
@@ -4990,10 +5628,12 @@ function Remove-TeamsCallQueue {
       return
     }
 
-  }
-  end {
+  } #process
 
-  }
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+
+  } #end
 } #Remove-TeamsCallQueue
 #endregion
 
@@ -5013,6 +5653,10 @@ function Get-TeamsResourceAccountAssociation {
 	.EXAMPLE
 		Get-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
 		Queries the Association of the Account 'ResourceAccount@domain.com'
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
 		Without any Parameters, can be used to enumerate all Resource Accounts
@@ -5035,13 +5679,15 @@ function Get-TeamsResourceAccountAssociation {
     [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
     [Alias('Identity')]
     [string[]]$UserPrincipalName
-  )
+  ) #param
+
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -5060,8 +5706,10 @@ function Get-TeamsResourceAccountAssociation {
     }
 
 
-  }
+  } #begin
+
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Querying ObjectId from provided UPNs
     if ($null -eq $UserPrincipalName) {
       # Getting all RAs
@@ -5070,7 +5718,6 @@ function Get-TeamsResourceAccountAssociation {
     }
     else {
       # Query $UserPrincipalName
-      [System.Collections.ArrayList]$Accounts = @()
       foreach ($UPN in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account '$UPN'"
         try {
@@ -5087,7 +5734,6 @@ function Get-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
-    [System.Collections.ArrayList]$AllAccounts = @()
     if ($null -ne $Accounts) {
       foreach ($Account in $Accounts) {
         $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
@@ -5117,22 +5763,26 @@ function Get-TeamsResourceAccountAssociation {
 
         }
 
-        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+        # Output
+        Write-Output $ResourceAccountAssociationObject
       }
-      return $AllAccounts
     }
     else {
       Write-Verbose -Message "No Accounts found" -Verbose
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Get-TeamsResourceAccountAssociation
 
 function New-TeamsResourceAccountAssociation {
   <#
 	.SYNOPSIS
-		Connects a Resource Account to a CQ or AA
+		Connects one or more Resource Accounts to a single CallQueue or AutoAttendant
 	.DESCRIPTION
-		Associates an existing Resource Account to a Call Queue or Auto Attendant
+		Associates one or more existing Resource Accounts to a Call Queue or Auto Attendant
 		Resource Account Type is checked against the ApplicationType.
 		User is prompted if types do not match
 	.PARAMETER UserPrincipalName
@@ -5148,12 +5798,14 @@ function New-TeamsResourceAccountAssociation {
 	.EXAMPLE
 		New-TeamsResourceAccountAssociation -UserPrincipalName Account1@domain.com -
 		Explanation of what the example does
-	.INPUTS
-		Inputs (if any)
-	.OUTPUTS
-		Output (if any)
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
-		General notes
+    Connects multiple Resource Accounts to ONE CallQueue or AutoAttendant
+    The Type of the Resource Account has to corellate to the entity connected.
+    Parameter Force can be used to change the type of RA to align to the entity if possible.
   .LINK
 		New-TeamsCallQueue
 		Get-TeamsCallQueue
@@ -5167,6 +5819,7 @@ function New-TeamsResourceAccountAssociation {
     Remove-TeamsResourceAccountAssociation
   #>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'CallQueue')]
+  [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
     [string[]]$UserPrincipalName,
@@ -5179,13 +5832,15 @@ function New-TeamsResourceAccountAssociation {
 
     [Parameter(Mandatory = $false)]
     [switch]$Force
-  )
+  ) #param
+
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -5203,8 +5858,10 @@ function New-TeamsResourceAccountAssociation {
       $ConfirmPreference = 'None'
     }
 
-  }
+  } #begin
+
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Query $UserPrincipalName
     [System.Collections.ArrayList]$Accounts = @()
     foreach ($UPN in $UserPrincipalName) {
@@ -5222,7 +5879,6 @@ function New-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
-    [System.Collections.ArrayList]$AllAccounts = @()
     if ($null -ne $Accounts) {
       #region Connection to Call Queue
       if ($PSBoundParameters.ContainsKey('CallQueue')) {
@@ -5298,7 +5954,7 @@ function New-TeamsResourceAccountAssociation {
           AssociatedTo      = $AssociationTarget.Name
 
         }
-        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+        Write-Output $ResourceAccountAssociationObject
       }
       #endregion
 
@@ -5378,16 +6034,19 @@ function New-TeamsResourceAccountAssociation {
           AssociatedTo      = $AssociationTarget.Name
 
         }
-        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+        Write-Output $ResourceAccountAssociationObject
       }
       #endregion
 
-      return $AllAccounts
     }
     else {
       Write-Warning -Message "No Accounts found"
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #New-TeamsResourceAccountAssociation
 
 function Remove-TeamsResourceAccountAssociation {
@@ -5406,6 +6065,10 @@ function Remove-TeamsResourceAccountAssociation {
 	.NOTES
 		Does the same as Remove-CsOnlineApplicationInstanceAssociation, but with friendly Names
 		General notes
+  .INPUTS
+    System.String
+  .OUTPUTS
+    None
   .LINK
 		New-TeamsCallQueue
 		Get-TeamsCallQueue
@@ -5419,6 +6082,7 @@ function Remove-TeamsResourceAccountAssociation {
     New-TeamsResourceAccountAssociation
     #>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [OutputType([System.Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
     [Alias('Identity')]
@@ -5426,13 +6090,15 @@ function Remove-TeamsResourceAccountAssociation {
 
     [Parameter(Mandatory = $false)]
     [switch]$Force
-  )
+  ) #param
+
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -5451,8 +6117,10 @@ function Remove-TeamsResourceAccountAssociation {
     }
 
 
-  }
+  } #begin
+
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Querying ObjectId from provided UPNs
     [System.Collections.ArrayList]$Accounts = @()
     foreach ($UPN in $UserPrincipalName) {
@@ -5469,7 +6137,6 @@ function Remove-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
-    [System.Collections.ArrayList]$AllAccounts = @()
     if ($null -ne $Accounts) {
       foreach ($Account in $Accounts) {
         $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
@@ -5510,14 +6177,17 @@ function Remove-TeamsResourceAccountAssociation {
           AssociationRemoved = $AssocObject.Name
 
         }
-        [void]$AllAccounts.Add($ResourceAccountAssociationObject)
+        Write-Ouput $ResourceAccountAssociationObject
       }
-      return $AllAccounts
     }
     else {
       Write-Warning -Message "No Accounts found"
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Remove-TeamsResourceAccountAssociation
 #endregion
 
@@ -5569,6 +6239,10 @@ function New-TeamsResourceAccount {
 		Creates a Resource Account for Auto Attendants with a Usage Location for 'US'
 		Applies the specified PhoneSystem License (if available in the Tenant)
 		Assigns the Telephone Number if object could be licensed correctly.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		CmdLet currently in testing.
 		Please feed back any issues to david.eberhardt@outlook.com
@@ -5585,6 +6259,7 @@ function New-TeamsResourceAccount {
     #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [OutputType([System.Object])]
   param (
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, HelpMessage = "UPN of the Object to create.")]
     [ValidateScript( {
@@ -5635,14 +6310,15 @@ function New-TeamsResourceAccount {
       })]
     [Alias("Tel", "Number", "TelephoneNumber")]
     [string]$PhoneNumber
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -5655,9 +6331,10 @@ function New-TeamsResourceAccount {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-  } # end of begin
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     #region PREPARATION
     Write-Verbose -Message "Verifying input"
     #region Normalising $UserPrincipalname
@@ -5932,7 +6609,8 @@ function New-TeamsResourceAccount {
       if ($PSBoundParameters.ContainsKey("PhoneNumber") -and $Islicensed -and $ResourceAccount.PhoneNumber -eq "") {
         Write-Warning -Message "Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount to verify"
       }
-      return $ResourceAccountObject
+
+      Write-Output $ResourceAccountObject
 
     }
     catch {
@@ -5940,11 +6618,12 @@ function New-TeamsResourceAccount {
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     #endregion
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
 
-  }
+  } #end
 } #New-TeamsResourceAccount
 
 function Set-TeamsResourceAccount {
@@ -6002,6 +6681,10 @@ function Set-TeamsResourceAccount {
 		Switches MyResourceAccount to the Type AutoAttendant
 		NOTE: This is currently untested, errors might occur simply because not all caveats could be captured.
 		Handle with care!
+  .INPUTS
+    System.String
+  .OUTPUTS
+    None
 	.NOTES
 		CmdLet currently in testing.
 		Please feed back any issues to david.eberhardt@outlook.com
@@ -6018,6 +6701,7 @@ function Set-TeamsResourceAccount {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [OutputType([System.Void])]
   param (
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
     [ValidateScript( {
@@ -6068,14 +6752,15 @@ function Set-TeamsResourceAccount {
         }
       })]
     [string]$PhoneNumber
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -6088,9 +6773,10 @@ function Set-TeamsResourceAccount {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-  } # end of begin
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     #region PREPARATION
     Write-Verbose -Message "Verifying input"
     #region Lookup of UserPrincipalName
@@ -6399,11 +7085,12 @@ function Set-TeamsResourceAccount {
     }
     #endregion
     #endregion
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
 
-  }
+  } #end
 } #Set-TeamsResourceAccount
 
 function Get-TeamsResourceAccount {
@@ -6438,6 +7125,10 @@ function Get-TeamsResourceAccount {
 	.EXAMPLE
 		Get-TeamsResourceAccount -PhoneNumber +1555123456
 		Returns the Resource Account with the Phone Number specifed, if found.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		CmdLet currently in testing.
 		Pipeline input possible, though untested. Requires figuring out :)
@@ -6455,6 +7146,7 @@ function Get-TeamsResourceAccount {
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Identity")]
+  [OutputType([System.Object])]
   param (
     [Parameter(ParameterSetName = "Identity", Position = 0, ValueFromPipelineByPropertyName = $true, HelpMessage = "User Principal Name of the Object.")]
     [Alias("UPN", "UserPrincipalName")]
@@ -6473,14 +7165,15 @@ function Get-TeamsResourceAccount {
     [ValidateLength(3, 16)]
     [Alias("Tel", "Number", "TelephoneNumber")]
     [string]$PhoneNumber
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -6493,9 +7186,10 @@ function Get-TeamsResourceAccount {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-  } # end of begin
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     $ResourceAccounts = $null
 
     #region Data gathering
@@ -6549,7 +7243,6 @@ function Get-TeamsResourceAccount {
     #region Output
     # Creating new PS Object
     try {
-      [System.Collections.ArrayList]$AllAccounts = @()
       Write-Verbose -Message "Parsing Resource Accounts, please wait..."
       foreach ($ResourceAccount in $ResourceAccounts) {
         # readable Application type
@@ -6621,9 +7314,8 @@ function Get-TeamsResourceAccount {
           AssocationStatus  = $AssociationStatus.Status
         }
 
-        [void]$AllAccounts.Add($ResourceAccountObject)
+        Write-Output $ResourceAccountObject
       }
-      return $AllAccounts
 
     }
     catch {
@@ -6631,11 +7323,12 @@ function Get-TeamsResourceAccount {
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     #endregion
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
 
-  }
+  } #end
 } #Get-TeamsResourceAccount
 
 #TODO Add Association filter -AssociatedOnly, -UnassociatedOnly - use Find-CsOnlineApplicationInstance to do that
@@ -6661,6 +7354,10 @@ function Find-TeamsResourceAccount {
 	.EXAMPLE
 		Find-TeamsResourceAccount -SearchQuery "Office" -UnassiciatedOnly
 		Returns all unassociated Resource Accounts with "Office" as part of their DisplayName
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		CmdLet currently in testing.
 		Please feed back any issues to david.eberhardt@outlook.com
@@ -6677,7 +7374,7 @@ function Find-TeamsResourceAccount {
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Search")]
-  [OutputType([System.Object[]])]
+  [OutputType([System.Object])]
   param (
     [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", HelpMessage = "Part of the DisplayName to be found")]
     [Parameter(Mandatory, Position = 0, ParameterSetName = "AssociatedOnly", HelpMessage = "Part of the DisplayName to be found")]
@@ -6692,14 +7389,15 @@ function Find-TeamsResourceAccount {
     [Parameter(Mandatory, Position = 1, ParameterSetName = "UnAssociatedOnly", HelpMessage = "Returns only Objects not assigned to CQ or AA")]
     [Alias("Unassigned", "Free")]
     [switch]$UnAssociatedOnly
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -6712,9 +7410,10 @@ function Find-TeamsResourceAccount {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-  } # end of begin
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     $FoundResourceAccounts = $null
     $ResourceAccounts = $null
 
@@ -6758,7 +7457,6 @@ function Find-TeamsResourceAccount {
     #region Output
     # Creating new PS Object
     try {
-      [System.Collections.ArrayList]$AllAccounts = @()
       Write-Verbose -Message "Parsing Resource Accounts, please wait..." -Verbose
       foreach ($ResourceAccount in $ResourceAccounts) {
         # readable Application type
@@ -6824,21 +7522,21 @@ function Find-TeamsResourceAccount {
           AssocationStatus  = $AssociationStatus.Status
         }
 
-        [void]$AllAccounts.Add($ResourceAccountObject)
-      }
-      return $AllAccounts
+        Write-Output $ResourceAccountObject
 
+      }
     }
     catch {
       Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
     #endregion
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
 
-  }
+  } #end
 } #Find-TeamsResourceAccount
 
 function Remove-TeamsResourceAccount {
@@ -6860,6 +7558,10 @@ function Remove-TeamsResourceAccount {
 		Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
 		Removes a ResourceAccount
 		Removes in order: Association, Phone Number, License and Account
+  .INPUTS
+    System.String
+  .OUTPUTS
+    None
 	.NOTES
 		CmdLet currently in testing.
 		Execution requires User Admin Role in Azure AD
@@ -6877,6 +7579,7 @@ function Remove-TeamsResourceAccount {
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
+  [OutputType([System.Void])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to create.")]
     [ValidateScript( {
@@ -6893,18 +7596,19 @@ function Remove-TeamsResourceAccount {
 
     [Parameter(Mandatory = $false)]
     [switch]$Force
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Caveat - Access rights
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
     Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -6925,9 +7629,10 @@ function Remove-TeamsResourceAccount {
     # Adding Types - Required for License manipulation in Process
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
 
-  } # end of begin
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     #region Lookup of UserPrincipalName
     try {
       #Trying to query the Resource Account
@@ -6971,7 +7676,7 @@ function Remove-TeamsResourceAccount {
       }
       else {
         Write-Error -Message "Associations detected. Please remove first or use -Force" -Category ResourceExists
-        return $Associations
+        Write-Output $Associations
       }
     }
     #endregion
@@ -7047,11 +7752,12 @@ function Remove-TeamsResourceAccount {
 
     #endregion
 
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
 
-  }
+  } #end
 } #Remove-TeamsResourceAccount
 
 #Alias is set to provide default behaviour to CsOnlineApplicationInstance
@@ -7069,10 +7775,18 @@ function Import-TeamsAudioFile {
 	.PARAMETER File
 		File to be imported
 	.PARAMETER ApplicationType
-		ApplicationType of the entity it is for
+    ApplicationType of the entity it is for
+  .EXAMPLE
+    Import-TeamsAudioFile -File C:\Temp\MyMusicOnHold.wav -ApplicationType CallQueue
+    Imports MyMusicOnHold.wav into Teams, assigns it the type CallQueue and returns the imported Object for further use.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile
 	.NOTES
-		This is currently in development.
-		Not tested yet. Will replace some code in New/Set-TeamsResourceAccount
+    Translation of Import-CsOnlineAudioFile to process with New/Set-TeamsResourceAccount
+    Simplifies the ApplicationType input for friendly names
+    Captures different behaviour of Get-Conent (ByteStream syntax) in PowerShell 6 and above VS PowerShell 5 and below
 	.FUNCTIONALITY
 		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
 	.LINK
@@ -7081,6 +7795,7 @@ function Import-TeamsAudioFile {
 	#>
 
   [CmdletBinding()]
+  [OutputType([Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile])]
   #[OutputType()] # To be determined
   param(
     [Parameter(Mandatory = $true)]
@@ -7090,15 +7805,17 @@ function Import-TeamsAudioFile {
     [ValidateSet('CallQueue', 'AutoAttendant')]
     [string]$ApplicationType
 
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Testing File
     if (-not (Test-Path $File)) {
       Write-Error -Message "File not found!" -ErrorAction Stop
@@ -7131,10 +7848,11 @@ function Import-TeamsAudioFile {
       Write-ErrorRecord $_
       return
     }
-  }
+  } #process
 
   end {
-  }
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Import-TeamsAudioFile
 
 #ToDo: Add more policies
@@ -7169,12 +7887,17 @@ function Set-TeamsUserPolicy {
 	.EXAMPLE
 		Set-TeamsUserPolicy -Identity John.Doe@contoso.com -ClientPolicy ClientPolicyNoIMURL -ConferencingPolicy BposSAllModalityNoFT -ExternalAccessPolicy FederationOnly -MobilityPolicy
 		Example 3 will set the user John.Does@contoso.com with a client, conferencing, external access, and mobility policy.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		TeamsUpgrade Policy has been added.
 		Multiple other policies are planned to be added to round the function off
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the identity for the user to configure")]
     [Alias("UPN", "UserPrincipalName", "Username")]
@@ -7194,11 +7917,12 @@ function Set-TeamsUserPolicy {
 
     [Parameter(ValueFromPipelineByPropertyName = $true)]
     [string]$MobilityPolicy
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -7218,9 +7942,10 @@ function Set-TeamsUserPolicy {
     $tenantConferencingPolicies = (Get-CsConferencingPolicy -Include SubscriptionDefaults -WarningAction SilentlyContinue).Identity
     $tenantExternalAccessPolicies = (Get-CsExternalAccessPolicy -WarningAction SilentlyContinue).Identity
     $tenantMobilityPolicies = (Get-CsMobilityPolicy -WarningAction SilentlyContinue).Identity
-  } # End of BEGIN
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($ID in $Identity) {
       #User Validation
       # NOTE: Validating users in a try/catch block does not catch the error properly and does not allow for custom outputting of an error message
@@ -7361,7 +8086,11 @@ function Set-TeamsUserPolicy {
         Write-Output -InputObject $output
       }
     } # End of foreach ($ID in $Identity)
-  } # End of PROCESS block
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Set-TeamsUserPolicy
 
 function Remove-TenantDialPlanNormalizationRule {
@@ -7393,11 +8122,12 @@ function Remove-TenantDialPlanNormalizationRule {
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the name of the dial plan to modify the normalization rules.")]
     [string]$DialPlan
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
       $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
@@ -7408,9 +8138,10 @@ function Remove-TenantDialPlanNormalizationRule {
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -ErrorAction SilentlyContinue
 
     if ($null -ne $dpInfo) {
@@ -7469,42 +8200,55 @@ function Remove-TenantDialPlanNormalizationRule {
     else {
       Write-Warning -Message "$DialPlan is not a valid dial plan for the tenant. Please try again."
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Remove-TenantDialPlanNormalizationRule
 
 function Get-AzureADUserFromUPN {
   <#
 	.SYNOPSIS
-		Returns User Object in Azure AD from UPN
+		Returns User Object in Azure AD from a provided UPN
 	.DESCRIPTION
-		Enables UPN lookup for AzureAD user the User Object exist
+    Enables UPN lookup for AzureAD user the User Object exist
+    This simplifies the query without having to rely on -ObjectId or -SearchString parameters in Get-AzureAdUser
 	.PARAMETER Identity
-		Mandatory. The sign-in address or User Principal Name of the user account to test.
+		Required. The sign-in address or User Principal Name of the user account to query.
 	.EXAMPLE
 		Get-AzureADUserFromUPN $UPN
 		Will Return the Object if UPN is found, otherwise returns error message from Get-AzureAdUser
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Microsoft.Open.AzureAD.Model.User
 	#>
   [CmdletBinding()]
+  [OutputType([Microsoft.Open.AzureAD.Model.User])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "This is the UserID (UPN)")]
     [Alias('UserPrincipalName')]
     [string]$Identity
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
     Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
-  }
+  } #begin
+
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       # This is functional but slow in bigger environments!
       #$User = Get-AzureADUser -All:$true | Where-Object {$_.UserPrincipalName -eq $Identity} -ErrorAction STOP
       $User = Get-AzureADUser -ObjectId "$Identity" -ErrorAction STOP
-      return $User
+      Write-Output $User
     }
     catch [Microsoft.Open.AzureAD16.Client.ApiException] {
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
@@ -7512,7 +8256,11 @@ function Get-AzureADUserFromUPN {
     catch {
       Write-ErrorRecord $_ #This handles the eror message in human readable format.
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Get-AzureADUserFromUPN
 
 function Get-SkypeOnlineConferenceDialInNumbers {
@@ -7536,39 +8284,52 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Enter the domain name to gather the available conference dial-in numbers")]
     [string]$Domain
-  )
+  ) #param
 
-  # Asserting SkypeOnline Connection
-  if (-not (Assert-SkypeOnlineConnection)) { return }
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  try {
-    $siteContents = Invoke-WebRequest https://webdir1a.online.lync.com/DialinOnline/Dialin.aspx?path=$Domain -ErrorAction STOP
-  }
-  catch {
-    Write-Warning -Message "Unable to access that dial-in page. Please check the domain name and try again. Also try to manually navigate to the page using the URL http://dialin.lync.com/DialInOnline/Dialin.aspx?path=$Domain."
-    return
-  }
+    # Asserting SkypeOnline Connection
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
-  $tables = $siteContents.ParsedHtml.getElementsByTagName("TABLE")
-  $table = $tables[0]
-  $rows = @($table.rows)
+  } #begin
 
-  $output = [PSCustomObject][ordered]@{
-    Location  = $null
-    Number    = $null
-    Languages = $null
-  }
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
-  for ($n = 0; $n -lt $rows.Count; $n += 1) {
-    if ($rows[$n].innerHTML -like "<TH*") {
-      $output.Location = $rows[$n].innerText
+    try {
+      $siteContents = Invoke-WebRequest https://webdir1a.online.lync.com/DialinOnline/Dialin.aspx?path=$Domain -ErrorAction STOP
     }
-    else {
-      $output.Number = $rows[$n].cells[0].innerText
-      $output.Languages = $rows[$n].cells[1].innerText
-      Write-Output $output
+    catch {
+      Write-Warning -Message "Unable to access that dial-in page. Please check the domain name and try again. Also try to manually navigate to the page using the URL http://dialin.lync.com/DialInOnline/Dialin.aspx?path=$Domain."
+      return
     }
-  }
+
+    $tables = $siteContents.ParsedHtml.getElementsByTagName("TABLE")
+    $table = $tables[0]
+    $rows = @($table.rows)
+
+    $output = [PSCustomObject][ordered]@{
+      Location  = $null
+      Number    = $null
+      Languages = $null
+    }
+
+    for ($n = 0; $n -lt $rows.Count; $n += 1) {
+      if ($rows[$n].innerHTML -like "<TH*") {
+        $output.Location = $rows[$n].innerText
+      }
+      else {
+        $output.Number = $rows[$n].cells[0].innerText
+        $output.Languages = $rows[$n].cells[1].innerText
+        Write-Output $output
+      }
+    }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Get-SkypeOnlineConferenceDialInNumbers
 #endregion
 
@@ -7586,7 +8347,7 @@ function Assert-AzureADConnection {
   #>
   [CmdletBinding()]
   [OutputType([Boolean])]
-  param()
+  param() #param
 
   if (Test-AzureADConnection) {
     Write-Verbose -Message "AzureAD(v2): Valid session found, reusing existing connection - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
@@ -7594,9 +8355,9 @@ function Assert-AzureADConnection {
   }
   else {
     Write-Host "ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, MicrosoftTeams and AzureAD in one step!" -ForegroundColor DarkCyan
+    Write-Host "INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, AzureAD & MicrosoftTeams and in one step!" -ForegroundColor DarkCyan
     return $false
-  }
+  } #end
 } #Assert-AzureADConnection
 
 function Assert-MicrosoftTeamsConnection {
@@ -7612,7 +8373,7 @@ function Assert-MicrosoftTeamsConnection {
   #>
   [CmdletBinding()]
   [OutputType([Boolean])]
-  param()
+  param() #param
 
   if (Test-MicrosoftTeamsConnection) {
     Write-Verbose -Message "Microsoft Teams: Valid session found, reusing existing connection"
@@ -7620,9 +8381,9 @@ function Assert-MicrosoftTeamsConnection {
   }
   else {
     Write-Host "ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets." -ForegroundColor Red
-    Write-Host "INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, MicrosoftTeams and AzureAD in one step!" -ForegroundColor DarkCyan
+    Write-Host "INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, AzureAD & MicrosoftTeams and in one step!" -ForegroundColor DarkCyan
     return $false
-  }
+  } #end
 } #Assert-MicrosoftTeamsConnection
 
 function Assert-SkypeOnlineConnection {
@@ -7639,7 +8400,7 @@ function Assert-SkypeOnlineConnection {
   #>
   [CmdletBinding()]
   [OutputType([Boolean])]
-  param()
+  param() #param
 
   if (Test-SkypeOnlineConnection) {
     Write-Verbose -Message "SkypeOnline: Valid session found, reusing existing connection"
@@ -7660,10 +8421,10 @@ function Assert-SkypeOnlineConnection {
     }
     else {
       Write-Host "ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, MicrosoftTeams and AzureAD in one step!" -ForegroundColor DarkCyan
+      Write-Host "INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, AzureAD & MicrosoftTeams and in one step!" -ForegroundColor DarkCyan
       return $false
     }
-  }
+  } #end
 } #Assert-SkypeOnlineConnection
 
 Set-Alias -Name PoL -Value Assert-SkypeOnlineConnection
@@ -7679,10 +8440,11 @@ function Test-AzureADConnection {
 	.EXAMPLE
 		Test-AzureADConnection
 		Will Return $TRUE only if a session is found.
-	#>
+  #>
+
   [CmdletBinding()]
   [OutputType([Boolean])]
-  param()
+  param() #param
 
   try {
     $null = (Get-AzureADCurrentSessionInfo -ErrorAction STOP)
@@ -7690,7 +8452,7 @@ function Test-AzureADConnection {
   }
   catch {
     return $false
-  }
+  } #end
 } #Test-AzureADConnection
 
 function Test-MicrosoftTeamsConnection {
@@ -7705,7 +8467,7 @@ function Test-MicrosoftTeamsConnection {
 	#>
   [CmdletBinding()]
   [OutputType([Boolean])]
-  param()
+  param() #param
 
   try {
     $null = (Get-CsPolicyPackage | Select-Object -First 1 -ErrorAction STOP)
@@ -7713,7 +8475,7 @@ function Test-MicrosoftTeamsConnection {
   }
   catch {
     return $false
-  }
+  } #end
 } #Test-MicrosoftTeamsConnection
 
 function Test-SkypeOnlineConnection {
@@ -7733,7 +8495,7 @@ function Test-SkypeOnlineConnection {
 
   [CmdletBinding()]
   [OutputType([Boolean])]
-  param()
+  param() #param
 
   $Sessions = Get-PSSession
   if ([bool]($Sessions.Computername -match "online.lync.com")) {
@@ -7747,7 +8509,7 @@ function Test-SkypeOnlineConnection {
   }
   else {
     return $false
-  }
+  } #end
 } #Test-SkypeOnlineConnection
 
 function Test-ExchangeOnlineConnection {
@@ -7760,10 +8522,11 @@ function Test-ExchangeOnlineConnection {
 	.EXAMPLE
 		Test-ExchangeOnlineConnection
 		Will Return $TRUE only if a session is found.
-	#>
+  #>
+
   [CmdletBinding()]
   [OutputType([Boolean])]
-  param()
+  param() #param
 
   $Sessions = Get-PSSession
   if ([bool]($Sessions.Computername -match "outlook.office365.com")) {
@@ -7789,7 +8552,8 @@ function Test-Module {
 	.EXAMPLE
 		Test-AzureADModule
 		Will Return $TRUE if the Module is loaded
-	#>
+  #>
+
   [CmdletBinding()]
   [OutputType([Boolean])]
   Param
@@ -7797,6 +8561,7 @@ function Test-Module {
     [Parameter(Mandatory = $true, HelpMessage = "Module to test.")]
     [string]$Module
   )
+
   Write-Verbose -Message "Verifying if Module '$Module' is installed and available"
   Import-Module -Name $Module -ErrorAction SilentlyContinue
   if (Get-Module -Name $Module) {
@@ -7804,7 +8569,7 @@ function Test-Module {
   }
   else {
     return $false
-  }
+  } #end
 } #Test-Module
 
 function Test-AzureADUser {
@@ -7819,23 +8584,27 @@ function Test-AzureADUser {
 		Test-AzureADUser -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
-	#>
+  #>
+
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
     Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
-  }
+  } #begin
+
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       $null = Get-AzureADUser -ObjectId "$Identity" -ErrorAction STOP
       return $true
@@ -7846,7 +8615,11 @@ function Test-AzureADUser {
     catch {
       return $False
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Test-AzureADUser
 
 function Test-AzureADGroup {
@@ -7868,17 +8641,20 @@ function Test-AzureADGroup {
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the UserPrincipalName of the Group")]
     [string]$Identity
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
     Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
-  }
+  } #begin
+
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       $Group2 = Get-AzureADGroup -SearchString "$Identity" -ErrorAction STOP
       if ($null -ne $Group2) {
@@ -7905,7 +8681,11 @@ function Test-AzureADGroup {
         return $false
       }
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Test-AzureADGroup
 
 function Test-TeamsUser {
@@ -7920,20 +8700,24 @@ function Test-TeamsUser {
 		Test-TeamsUser -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
-	#>
+  #>
+
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
-  }
+  } #begin
+
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       $null = Get-CsOnlineUser -Identity $Identity -ErrorAction STOP
       return $true
@@ -7941,8 +8725,11 @@ function Test-TeamsUser {
     catch [System.Exception] {
       return $False
     }
-  }
+  } #process
 
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Test-TeamsUser
 
 function Test-TeamsUserLicense {
@@ -7983,7 +8770,7 @@ function Test-TeamsUserLicense {
     Set-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
   #>
-  #region Parameters
+
   [CmdletBinding(DefaultParameterSetName = "ServicePlan")]
   [OutputType([Boolean])]
   param(
@@ -8006,16 +8793,17 @@ function Test-TeamsUserLicense {
       })]
     [string]$LicensePackage
 
-  )
-  #endregion
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
+    if (-not (Assert-AzureADConnection)) { break }
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Query User
     $UserObject = Get-AzureADUser -ObjectId "$Identity"
     $DisplayName = $UserObject.DisplayName
@@ -8056,7 +8844,11 @@ function Test-TeamsUserLicense {
         }
       }
     }
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Test-TeamsUserLicense
 
 function Test-TeamsTenantPolicy {
@@ -8075,7 +8867,8 @@ function Test-TeamsTenantPolicy {
 	.NOTES
     This is a crude but universal way of testing it, intended for check of multiple at a time.
     NOTE: Uses Invoke-Expression for the PolicyName provided to from Get-$($PolicyName)
-	#>
+  #>
+
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
@@ -8085,10 +8878,12 @@ function Test-TeamsTenantPolicy {
 
     [Parameter(Mandatory = $true, HelpMessage = "This is the Name of the Policy to test")]
     [string]$PolicyName
-  )
+  ) #param
+
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Data Gathering
     try {
@@ -8102,9 +8897,10 @@ function Test-TeamsTenantPolicy {
     finally {
       $Error.clear()
     }
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       $Command = "Get-" + $Policy + " -Identity " + $PolicyName + " -ErrorAction Stop"
       Invoke-Expression "$Command" -ErrorAction STOP | Out-Null
@@ -8122,7 +8918,11 @@ function Test-TeamsTenantPolicy {
       $Error.clear()
     }
 
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Test-TeamsTenantPolicy
 
 function Test-TeamsExternalDNS {
@@ -8146,129 +8946,140 @@ function Test-TeamsExternalDNS {
   (
     [Parameter(Mandatory = $true, HelpMessage = "This is the domain name to test the external DNS Skype Online records.")]
     [string]$Domain
-  )
+  ) #param
 
-  # VARIABLES
-  [string]$federationSRV = "_sipfederationtls._tcp.$Domain"
-  [string]$sipSRV = "_sip._tls.$Domain"
-  [string]$lyncdiscover = "lyncdiscover.$Domain"
-  [string]$sip = "sip.$Domain"
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  # Federation SRV Record Check
-  $federationSRVResult = Resolve-DnsName -Name "_sipfederationtls._tcp.$Domain" -Type SRV -ErrorAction SilentlyContinue
-  $federationOutput = [PSCustomObject][ordered]@{
-    Name    = $federationSRV
-    Type    = "SRV"
-    Target  = $null
-    Port    = $null
-    Correct = "Yes"
-    Notes   = $null
-  }
+    # VARIABLES
+    [string]$federationSRV = "_sipfederationtls._tcp.$Domain"
+    [string]$sipSRV = "_sip._tls.$Domain"
+    [string]$lyncdiscover = "lyncdiscover.$Domain"
+    [string]$sip = "sip.$Domain"
+  } #begin
 
-  if ($null -ne $federationSRVResult) {
-    $federationOutput.Target = $federationSRVResult.NameTarget
-    $federationOutput.Port = $federationSRVResult.Port
-    if ($federationOutput.Target -ne "sipfed.online.lync.com") {
-      $federationOutput.Notes += "Target FQDN is not correct for Skype Online. "
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    # Federation SRV Record Check
+    $federationSRVResult = Resolve-DnsName -Name "_sipfederationtls._tcp.$Domain" -Type SRV -ErrorAction SilentlyContinue
+    $federationOutput = [PSCustomObject][ordered]@{
+      Name    = $federationSRV
+      Type    = "SRV"
+      Target  = $null
+      Port    = $null
+      Correct = "Yes"
+      Notes   = $null
+    }
+
+    if ($null -ne $federationSRVResult) {
+      $federationOutput.Target = $federationSRVResult.NameTarget
+      $federationOutput.Port = $federationSRVResult.Port
+      if ($federationOutput.Target -ne "sipfed.online.lync.com") {
+        $federationOutput.Notes += "Target FQDN is not correct for Skype Online. "
+        $federationOutput.Correct = "No"
+      }
+
+      if ($federationOutput.Port -ne "5061") {
+        $federationOutput.Notes += "Port is not set to 5061. "
+        $federationOutput.Correct = "No"
+      }
+    }
+    else {
+      $federationOutput.Notes = "Federation SRV record does not exist. "
       $federationOutput.Correct = "No"
     }
 
-    if ($federationOutput.Port -ne "5061") {
-      $federationOutput.Notes += "Port is not set to 5061. "
-      $federationOutput.Correct = "No"
+    Write-Output -InputObject $federationOutput
+
+    # SIP SRV Record Check
+    $sipSRVResult = Resolve-DnsName -Name $sipSRV -Type SRV -ErrorAction SilentlyContinue
+    $sipOutput = [PSCustomObject][ordered]@{
+      Name    = $sipSRV
+      Type    = "SRV"
+      Target  = $null
+      Port    = $null
+      Correct = "Yes"
+      Notes   = $null
     }
-  }
-  else {
-    $federationOutput.Notes = "Federation SRV record does not exist. "
-    $federationOutput.Correct = "No"
-  }
 
-  Write-Output -InputObject $federationOutput
+    if ($null -ne $sipSRVResult) {
+      $sipOutput.Target = $sipSRVResult.NameTarget
+      $sipOutput.Port = $sipSRVResult.Port
+      if ($sipOutput.Target -ne "sipdir.online.lync.com") {
+        $sipOutput.Notes += "Target FQDN is not correct for Skype Online. "
+        $sipOutput.Correct = "No"
+      }
 
-  # SIP SRV Record Check
-  $sipSRVResult = Resolve-DnsName -Name $sipSRV -Type SRV -ErrorAction SilentlyContinue
-  $sipOutput = [PSCustomObject][ordered]@{
-    Name    = $sipSRV
-    Type    = "SRV"
-    Target  = $null
-    Port    = $null
-    Correct = "Yes"
-    Notes   = $null
-  }
-
-  if ($null -ne $sipSRVResult) {
-    $sipOutput.Target = $sipSRVResult.NameTarget
-    $sipOutput.Port = $sipSRVResult.Port
-    if ($sipOutput.Target -ne "sipdir.online.lync.com") {
-      $sipOutput.Notes += "Target FQDN is not correct for Skype Online. "
+      if ($sipOutput.Port -ne "443") {
+        $sipOutput.Notes += "Port is not set to 443. "
+        $sipOutput.Correct = "No"
+      }
+    }
+    else {
+      $sipOutput.Notes = "SIP SRV record does not exist. "
       $sipOutput.Correct = "No"
     }
 
-    if ($sipOutput.Port -ne "443") {
-      $sipOutput.Notes += "Port is not set to 443. "
-      $sipOutput.Correct = "No"
+    Write-Output -InputObject $sipOutput
+
+    #Lyncdiscover Record Check
+    $lyncdiscoverResult = Resolve-DnsName -Name $lyncdiscover -Type CNAME -ErrorAction SilentlyContinue
+    $lyncdiscoverOutput = [PSCustomObject][ordered]@{
+      Name    = $lyncdiscover
+      Type    = "CNAME"
+      Target  = $null
+      Port    = $null
+      Correct = "Yes"
+      Notes   = $null
     }
-  }
-  else {
-    $sipOutput.Notes = "SIP SRV record does not exist. "
-    $sipOutput.Correct = "No"
-  }
 
-  Write-Output -InputObject $sipOutput
-
-  #Lyncdiscover Record Check
-  $lyncdiscoverResult = Resolve-DnsName -Name $lyncdiscover -Type CNAME -ErrorAction SilentlyContinue
-  $lyncdiscoverOutput = [PSCustomObject][ordered]@{
-    Name    = $lyncdiscover
-    Type    = "CNAME"
-    Target  = $null
-    Port    = $null
-    Correct = "Yes"
-    Notes   = $null
-  }
-
-  if ($null -ne $lyncdiscoverResult) {
-    $lyncdiscoverOutput.Target = $lyncdiscoverResult.NameHost
-    $lyncdiscoverOutput.Port = "----"
-    if ($lyncdiscoverOutput.Target -ne "webdir.online.lync.com") {
-      $lyncdiscoverOutput.Notes += "Target FQDN is not correct for Skype Online. "
+    if ($null -ne $lyncdiscoverResult) {
+      $lyncdiscoverOutput.Target = $lyncdiscoverResult.NameHost
+      $lyncdiscoverOutput.Port = "----"
+      if ($lyncdiscoverOutput.Target -ne "webdir.online.lync.com") {
+        $lyncdiscoverOutput.Notes += "Target FQDN is not correct for Skype Online. "
+        $lyncdiscoverOutput.Correct = "No"
+      }
+    }
+    else {
+      $lyncdiscoverOutput.Notes = "Lyncdiscover record does not exist. "
       $lyncdiscoverOutput.Correct = "No"
     }
-  }
-  else {
-    $lyncdiscoverOutput.Notes = "Lyncdiscover record does not exist. "
-    $lyncdiscoverOutput.Correct = "No"
-  }
 
-  Write-Output -InputObject $lyncdiscoverOutput
+    Write-Output -InputObject $lyncdiscoverOutput
 
-  #SIP Record Check
-  $sipResult = Resolve-DnsName -Name $sip -Type CNAME -ErrorAction SilentlyContinue
-  $sipOutput = [PSCustomObject][ordered]@{
-    Name    = $sip
-    Type    = "CNAME"
-    Target  = $null
-    Port    = $null
-    Correct = "Yes"
-    Notes   = $null
-  }
+    #SIP Record Check
+    $sipResult = Resolve-DnsName -Name $sip -Type CNAME -ErrorAction SilentlyContinue
+    $sipOutput = [PSCustomObject][ordered]@{
+      Name    = $sip
+      Type    = "CNAME"
+      Target  = $null
+      Port    = $null
+      Correct = "Yes"
+      Notes   = $null
+    }
 
-  if ($null -ne $sipResult) {
-    $sipOutput.Target = $sipResult.NameHost
-    $sipOutput.Port = "----"
-    if ($sipOutput.Target -ne "sipdir.online.lync.com") {
-      $sipOutput.Notes += "Target FQDN is not correct for Skype Online. "
+    if ($null -ne $sipResult) {
+      $sipOutput.Target = $sipResult.NameHost
+      $sipOutput.Port = "----"
+      if ($sipOutput.Target -ne "sipdir.online.lync.com") {
+        $sipOutput.Notes += "Target FQDN is not correct for Skype Online. "
+        $sipOutput.Correct = "No"
+      }
+    }
+    else {
+      $sipOutput.Notes = "SIP record does not exist. "
       $sipOutput.Correct = "No"
     }
-  }
-  else {
-    $sipOutput.Notes = "SIP record does not exist. "
-    $sipOutput.Correct = "No"
-  }
 
-  Write-Output -InputObject $sipOutput
+    Write-Output -InputObject $sipOutput
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Test-TeamsExternalDNS
-
 #endregion
 
 
@@ -8300,9 +9111,10 @@ function Backup-TeamsEV {
     [Parameter(ValueFromPipelineByPropertyName)]
     [string]
     $OverrideAdminDomain
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     $Filenames = 'Dialplans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
 
     If ((Get-PSSession | Where-Object -FilterScript {
@@ -8322,9 +9134,10 @@ function Backup-TeamsEV {
       $null = (Import-PSSession -Session $O365Session -AllowClobber)
     }
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     Try {
       $null = (Get-CsTenantDialPlan -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath Dialplans.txt -Force -Encoding utf8)
       $null = (Get-CsOnlineVoiceRoute -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutes.txt -Force -Encoding utf8)
@@ -8343,8 +9156,11 @@ function Backup-TeamsEV {
     $null = (Remove-Item -Path $Filenames -Force -Confirm:$false)
 
     Write-Host -Object ('Microsoft Teams Enterprise Voice configuration backed up to {0}' -f $BackupFile)
-  }
+  } #process
 
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Backup-TeamsEV
 
 function Restore-TeamsEV {
@@ -8390,9 +9206,10 @@ function Restore-TeamsEV {
     $KeepExisting,
     [string]
     $OverrideAdminDomain
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     Try {
       $ZipPath = (Resolve-Path -Path $File)
       $null = (Add-Type -AssemblyName System.IO.Compression.FileSystem)
@@ -8418,9 +9235,10 @@ function Restore-TeamsEV {
       $null = (Import-PSSession -Session $O365Session -AllowClobber)
     }
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     $EV_Entities = 'Dialplans', 'VoiceRoutes', 'VoiceRoutingPolicies', 'PSTNUsages', 'TranslationRules', 'PSTNGateways'
 
     Write-Host -Object 'Validating backup files.'
@@ -8602,11 +9420,12 @@ function Restore-TeamsEV {
         $null = (Set-CsOnlinePSTNGateway @GWDetails)
       }
     }
-  }
+  } #process
 
   end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
     Write-Host -Object 'Finished!'
-  }
+  } #end
 } #Restore-TeamsEV
 
 # Extended to do a full backup
@@ -8643,11 +9462,12 @@ function Backup-TeamsTenant {
     [Parameter(ValueFromPipelineByPropertyName)]
     [string]
     $OverrideAdminDomain
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { return }
+    if (-not (Assert-SkypeOnlineConnection)) { break }
 
     $Filenames = '*.txt'
 
@@ -8673,9 +9493,10 @@ function Backup-TeamsTenant {
     $CommandParams += @{'WarningAction' = 'SilentlyContinue' }
     $CommandParams += @{'ErrorAction' = 'SilentlyContinue' }
 
-  }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Tenant Configuration
     $null = (Get-CsOnlineDialInConferencingBridge @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingBridge.txt" -Force -Encoding utf8)
     $null = (Get-CsOnlineDialInConferencingLanguagesSupported @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingLanguagesSupported.txt" -Force -Encoding utf8)
@@ -8760,7 +9581,11 @@ function Backup-TeamsTenant {
 
     Write-Host -Object ('Microsoft Teams configuration backed up to {0}' -f $BackupFile)
 
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Backup-TeamsTenant
 #endregion
 
@@ -8771,33 +9596,36 @@ function Get-AzureAdAssignedAdminRoles {
 	.SYNOPSIS
 		Queries Admin Roles assigned to an Object
 	.DESCRIPTION
-		Azure Active Directory Admin Roles assigned to an Object are returned
+		Azure Active Directory Admin Roles assigned to an Object
 		Requires a Connection to AzureAd
 	.EXAMPLE
 		Get-AzureAdAssignedAdminRoles user@domain.com
 		Returns an Object for all Admin Roles assigned
 	.INPUTS
-		Identity in from of a UserPrincipalName (UPN)
+		System.String
 	.OUTPUTS
-		PS Object containing all Admin Roles assigned to this Object
+		PSCustomObject
 	.NOTES
-		Script Development information
-		This was intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
-		Based on the output of this script we could then run activate ohter functions, like License Assignments (if License Admin), etc.
+    Returns an Object containing all Admin Roles assigned to a User.
+    This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
+    The Output can be used as baseline for other functions (-contains "Teams Service Admin")
 	#>
   [CmdletBinding()]
+  [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the identity of the User to Query")]
     [Alias("UPN", "UserPrincipalName", "Username")]
     [string]$Identity
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { return }
-  }
+    if (-not (Assert-AzureADConnection)) { break }
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     #Querying Admin Rights of authenticated Administator
     $AssignedRoles = @()
     $Roles = Get-AzureADDirectoryRole
@@ -8810,35 +9638,43 @@ function Get-AzureAdAssignedAdminRoles {
     }
 
     #Output
-    return $AssignedRoles
-  }
+    Write-Output $AssignedRoles
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Get-AzureAdAssignedAdminRoles
 
 # Helper Function to create new Azure AD License Objects
 function New-AzureAdLicenseObject {
   <#
 	.SYNOPSIS
-		Creates a new License Object based on existing License assigned
+		Creates a new License Object for processing
 	.DESCRIPTION
 		Helper function to create a new License Object
-		To execute Teams Commands, a connection via SkypeOnline must be established.
-		This connection must be valid (Available and Opened)
 	.PARAMETER SkuId
-		SkuId of the License to be added
+		SkuId(s) of the License to be added
 	.PARAMETER RemoveSkuId
-		SkuId of the License to be removed
+		SkuId(s) of the License to be removed
 	.EXAMPLE
 		New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd
 		Will create a license Object for the MCOEV license .
 	.EXAMPLE
 		New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd -RemoveSkuId 440eaaa8-b3e0-484b-a8be-62870b9ba70a
 		Will create a license Object based on the existing users License
-		Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.
-	.NOTES
-		This function currently only accepts ONE license to be added and optionally ONE license to be removed.
-		Rework to support multiple assignements is to be evaluated.
+    Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Microsoft.Open.AzureAD.Model.AssignedLicenses
+  .NOTES
+    This function does not require any connections to AzureAD.
+    However, applying the output of this Function does.
+    Used in Set-TeamsUserLicense and Add-TeamsUserLicense
 	#>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [OutputType([Microsoft.Open.AzureAD.Model.AssignedLicenses])] #LicenseObject
   param(
     [Parameter(Mandatory = $true, Position = 0, HelpMessage = "SkuId of the license to Add")]
     [Alias('AddSkuId')]
@@ -8846,43 +9682,55 @@ function New-AzureAdLicenseObject {
 
     [Parameter(Mandatory = $false, Position = 1, HelpMessage = "SkuId of the license to Remove")]
     [switch[]]$RemoveSkuId
-  )
+  ) #param
 
-  if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-    $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-  }
-  if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-    $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-  }
-  if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-    $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-  }
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
 
-  # Asserting AzureAD Connection
-  if (-not (Assert-AzureADConnection)) { return }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
 
-  Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
-  $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
+    # Adding Types
+    Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
 
-  foreach ($Sku in $SkuId) {
-    $AddLicenseObj.SkuId += $Sku
-  }
+  } #begin
 
-  $newLicensesObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-  if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "AddLicenses")) {
-    $newLicensesObj.AddLicenses = $AddLicenseObj
-  }
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
+
+    foreach ($Sku in $SkuId) {
+      $AddLicenseObj.SkuId += $Sku
+    }
+
+    $newLicensesObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
+    if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "AddLicenses")) {
+      $newLicensesObj.AddLicenses = $AddLicenseObj
+    }
 
 
-  if ($PSBoundParameters.ContainsKey('RemoveSkuId')) {
-    foreach ($Sku in $RemoveSkuId) {
-      if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "RemoveLicenses")) {
-        $newLicensesObj.RemoveLicenses += $Sku
+    if ($PSBoundParameters.ContainsKey('RemoveSkuId')) {
+      foreach ($Sku in $RemoveSkuId) {
+        if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "RemoveLicenses")) {
+          $newLicensesObj.RemoveLicenses += $Sku
+        }
       }
     }
-  }
 
-  return $newLicensesObj
+    return $newLicensesObj
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #New-AzureAdLicenseObject
 
 # Helper functions to test and format strings
@@ -8909,8 +9757,12 @@ function Format-StringRemoveSpecialCharacter {
 		wow
 	.EXAMPLE
 		Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
-		wow-_*
-	.NOTES
+    wow-_*
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.String
+  .NOTES
 		Francois-Xavier Cat
 		@lazywinadmin
 		lazywinadmin.com
@@ -8928,9 +9780,15 @@ function Format-StringRemoveSpecialCharacter {
     [Alias("Keep")]
     #[ValidateNotNullOrEmpty()]
     [String[]]$SpecialCharacterToKeep
-  )
+  ) #param
+
+  begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
+
+  } #begin
 
   process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
       if ($PSBoundParameters["SpecialCharacterToKeep"]) {
         $Regex = "[^\p{L}\p{Nd}"
@@ -8956,7 +9814,11 @@ function Format-StringRemoveSpecialCharacter {
     catch {
       $PSCmdlet.ThrowTerminatingError($_)
     }
-  } #PROCESS
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Format-StringRemoveSpecialCharacter
 
 function Format-StringForUse {
@@ -8979,6 +9841,10 @@ function Format-StringForUse {
 		Cannot be used together with -As
 	.PARAMETER Replacement
 		Optional String. Manually replaces removed characters with this string.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.String
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Manual")]
@@ -8996,9 +9862,15 @@ function Format-StringForUse {
 
     [Parameter(ParameterSetName = "Manual")]
     [string]$SpecialChars = "?()[]{}"
-  )
+  ) #param
 
   begin {
+    Write-Verbose -Message "[BEGIN ] $($MyInvocation.Mycommand)"
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     switch ($PsCmdlet.ParameterSetName) {
       "Specific" {
         switch ($As) {
@@ -9012,14 +9884,15 @@ function Format-StringForUse {
       "Manual" { $CharactersToRemove = $SpecialChars }
       Default { }
     }
-  }
-
-  process {
 
     $rePattern = ($CharactersToRemove.ToCharArray() | ForEach-Object { [regex]::Escape($_) }) -join "|"
 
     $InputString -replace $rePattern, $Replacement
-  }
+  } #process
+
+  end {
+    Write-Verbose -Message "[END ] $($MyInvocation.Mycommand)"
+  } #end
 } #Format-StringForUse
 
 # SkuID and Partnumber are useful to look up dynamically, but would need a data source...
@@ -9253,7 +10126,7 @@ function Get-SkuPartNumberfromSkuID {
   switch ($Output) {
     "SkuPartNumber" { return $SkuPartNumber }
     "ProductName" { return $ProductName }
-  }
+  } #end
 } #Get-SkuPartNumberfromSkuID
 
 function Write-ErrorRecord ($ErrorRecord) {
@@ -9262,7 +10135,10 @@ function Write-ErrorRecord ($ErrorRecord) {
 		Returns the provided Error-Record as an Object
 	.DESCRIPTION
 		Helper Function for Troubleshooting
-	.NOTES
+  .EXAMPLE
+    Write-ErrorRecord $_
+    In a catch block, the Function should be called like this to write the Error Record in this format.
+  .NOTES
 		get error record (this is $_ from the parent function)
 		This function must be called with 'Write-ErrorRecord $_'
 	#>
@@ -9971,14 +10847,14 @@ $SkuID = "488ba24a-39a9-4473-8ee5-19291e71b002"; $SkuPartNumber = "WIN10_VDA_E5"
 #region *** Non-Exported Helper Functions ***
 function GetActionOutputObject2 {
   <#
-			.SYNOPSIS
-			Tests whether a valid PS Session exists for SkypeOnline (Teams)
-			.DESCRIPTION
-			Helper function for Output with 2 Parameters
-			.PARAMETER Name
-			Name of account being modified
-			.PARAMETER Result
-			Result of action being performed
+    .SYNOPSIS
+    Tests whether a valid PS Session exists for SkypeOnline (Teams)
+    .DESCRIPTION
+    Helper function for Output with 2 Parameters
+    .PARAMETER Name
+    Name of account being modified
+    .PARAMETER Result
+    Result of action being performed
 	#>
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Name of account being modified")]
@@ -9998,16 +10874,16 @@ function GetActionOutputObject2 {
 
 function GetActionOutputObject3 {
   <#
-			.SYNOPSIS
-			Tests whether a valid PS Session exists for SkypeOnline (Teams)
-			.DESCRIPTION
-			Helper function for Output with 3 Parameters
-			.PARAMETER Name
-			Name of account being modified
-			.PARAMETER Property
-			Object/property that is being modified
-			.PARAMETER Result
-			Result of action being performed
+    .SYNOPSIS
+    Tests whether a valid PS Session exists for SkypeOnline (Teams)
+    .DESCRIPTION
+    Helper function for Output with 3 Parameters
+    .PARAMETER Name
+    Name of account being modified
+    .PARAMETER Property
+    Object/property that is being modified
+    .PARAMETER Result
+    Result of action being performed
 	#>
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Name of account being modified")]
@@ -10031,21 +10907,21 @@ function GetActionOutputObject3 {
 
 function ProcessLicense {
   <#
-			.SYNOPSIS
-			Processes one License against a user account.
-			.DESCRIPTION
-			Helper function for Add-TeamsUserLicense
-			Teams services are available through assignment of different types of licenses.
-			This command allows assigning one Skype related Office 365 licenses to a user account.
-			.PARAMETER UserID
-			The sign-in address or User Principal Name of the user account to modify.
-			.PARAMETER LicenseSkuID
-			The SkuID for the License to assign.
-			.PARAMETER ReplaceLicense
-			The SkuID for the License to replace (Resource Accounts only).
-			.NOTES
-			Uses Microsoft List for Licenses in SWITCH statement, update periodically or switch to lookup from DB(CSV or XLSX)
-			https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
+    .SYNOPSIS
+    Processes one License against a user account.
+    .DESCRIPTION
+    Helper function for Add-TeamsUserLicense
+    Teams services are available through assignment of different types of licenses.
+    This command allows assigning one Skype related Office 365 licenses to a user account.
+    .PARAMETER UserID
+    The sign-in address or User Principal Name of the user account to modify.
+    .PARAMETER LicenseSkuID
+    The SkuID for the License to assign.
+    .PARAMETER ReplaceLicense
+    The SkuID for the License to replace (Resource Accounts only).
+    .NOTES
+    Uses Microsoft List for Licenses in SWITCH statement, update periodically or switch to lookup from DB(CSV or XLSX)
+    https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
@@ -10141,16 +11017,20 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
 #endregion *** Non-Exported Helper Functions ***
 
 # Exporting ModuleMembers
-
 Export-ModuleMember -Variable TeamsLicenses, TeamsServicePlans
-Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-Me, dis, Disconnect-Me, PoL
-Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-SkypeTeamsAndAAD, Disconnect-SkypeTeamsAndAAD, Test-Module, `
+
+Export-ModuleMember -Alias    Remove-CsOnlineApplicationInstance, con, Connect-SkypeTeamsAndAAD, dis, Disconnect-SkypeTeamsAndAAD, PoL, `
+  Get-TUVC, Find-TUVC, Set-TUVC, New-TUVC, Remove-TUVC, Test-TUVC
+
+Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Connect-Me, Disconnect-Me, Test-Module, `
   Get-AzureAdAssignedAdminRoles, Get-AzureADUserFromUPN, `
   Add-TeamsUserLicense, Set-TeamsUserLicense, New-AzureAdLicenseObject, Get-TeamsUserLicense, Get-TeamsTenantLicense, `
   Test-TeamsUserLicense, Set-TeamsUserPolicy, Test-TeamsTenantPolicy, `
   Test-AzureADModule, Test-AzureADConnection, Test-AzureADUser, Test-AzureADGroup, `
   Test-SkypeOnlineConnection, Test-MicrosoftTeamsConnection, Test-ExchangeOnlineConnection, Test-TeamsUser, `
   Assert-AzureADConnection, Assert-SkypeOnlineConnection, Assert-MicrosoftTeamsConnection, `
+  Get-TeamsTenantVoiceConfig, Get-TeamsUserVoiceConfig, Find-TeamsUserVoiceConfig, Set-TeamsUserVoiceConfig, `
+  New-TeamsUserVoiceConfig, Remove-TeamsUserVoiceConfig, Test-TeamsUserVoiceConfig, `
   New-TeamsResourceAccount, Get-TeamsResourceAccount, Find-TeamsResourceAccount, Set-TeamsResourceAccount, Remove-TeamsResourceAccount, `
   New-TeamsResourceAccountAssociation, Get-TeamsResourceAccountAssociation, Remove-TeamsResourceAccountAssociation, `
   New-TeamsCallQueue, Get-TeamsCallQueue, Set-TeamsCallQueue, Remove-TeamsCallQueue, `
