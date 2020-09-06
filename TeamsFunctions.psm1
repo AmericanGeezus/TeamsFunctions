@@ -1824,7 +1824,7 @@ function Get-TeamsTenantLicense {
         }
         else {
           if (!$PSBoundParameters.ContainsKey('Detailed')) {
-            Write-Verbose "No entry in Database found for '$($tenantSKU.SkuId)' - To show them, use -DisplayAll"
+            Write-Verbose "No entry found for '$($tenantSKU.SkuId)'"
           }
         }
       }
@@ -1951,7 +1951,7 @@ function Get-TeamsTenantVoiceConfig {
 
     #region User Information
     if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
-      Write-Verbose -Message "Querying User Information - This might take some time" -Verbose
+      Write-Verbose -Message "Querying User Information - This will take some time!" -Verbose
       $AdUsers = (Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE).Count
       $CsOnlineUsers = (Get-CsonlineUser -WarningAction SilentlyContinue).Count
       $CsOnlineUsersEV = (Get-CsonlineUser -WarningAction SilentlyContinue | Where-Object EnterpriseVoiceEnabled -EQ $TRUE).Count
@@ -2246,39 +2246,39 @@ function Find-TeamsUserVoiceConfig {
     The expected ResultSize is limited, the full Object is displayed (Get-TeamsUserVoiceConfig)
     Please see NOTES for details
 	.PARAMETER ConfigurationType
-    Optional. Searches all Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'.
-    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
+    Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'.
+    The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
 	.PARAMETER VoicePolicy
-    Optional. Searches all Users which are reported as 'BusinessVoice' or 'HybridVoice'.
-    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
+    Optional. Searches all enabled Users which are reported as 'BusinessVoice' or 'HybridVoice'.
+    The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
 	.PARAMETER OnlineVoiceRoutingPolicy
-    Optional. Searches all Users which have the OnlineVoiceRoutingPolicy specified assignd.
+    Optional. Searches all enabled Users which have the OnlineVoiceRoutingPolicy specified assignd.
     Please specify full and correct name or '$null' to receive all Users without one
-    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
+    The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
 	.PARAMETER TenantDialPlan
-    Optional. Searches all Users which have the TenantDialPlan specified assignd.
+    Optional. Searches all enabled Users which have the TenantDialPlan specified assignd.
     Please specify full and correct name or '$null' to receive all Users without one
-    The expected ResultSize is big, therefore only UserPrincipalNames are displayed
+    The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
 	.PARAMETER ValidateLicense
     Optional. Can be combined only with -ConfigurationType
-    In addition to validation of Parameter, also validates License assignment for the found user.
-    License Check is performed AFTER parameters are verified, meaning this switch will
+    In addition to validation of Parameters, also validates License assignment for the found user.
+    License Check is performed AFTER parameters are verified.
 	.EXAMPLE
     Find-TeamsUserVoiceConfig -Identity John@domain.com
-    Shows Voice Configuration for John with a concise view of Parameters
+    Shows Voice Configuration for John, returning the full Object
 	.EXAMPLE
     Find-TeamsUserVoiceConfig -PhoneNumber "15551234567"
     Shows all Users which have this String in their LineURI (TelephoneNumber or OnPremLineURI)
-    The expected ResultSize is limited, the full Object is displayed (Get-TeamsUserVoiceConfig)
+    The expected ResultSize is limited, the full Object is returned (Get-TeamsUserVoiceConfig)
     Please see NOTES for details
 	.EXAMPLE
     Find-TeamsUserVoiceConfig -ConfigurationType CallingPlans
     Shows all Users which are configured for CallingPlans (Full)
-    The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
+    The expected ResultSize is big, therefore only Names (UPNs) of Users are returned
     Pipe to Get-TeamsUserVoiceConfiguration for full output.
     Please see NOTES for details
   .EXAMPLE
@@ -2418,7 +2418,7 @@ function Find-TeamsUserVoiceConfig {
           "DirectRouting" {
             Write-Verbose -Message "Returning all Users that are correctly configured for DirectRouting... This will take a bit of time!" -Verbose
             foreach ($U in $CsUsers) {
-              if ($U.VoicePolicy -eq "HybridVoice" -and $null -ne $U.OnPremLineURI -and $null -ne $U.OnlineVoiceRoutingPolicy) {
+              if ($U.VoicePolicy -eq "HybridVoice" -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
                   if (Test-TeamsUserLicense $U -ServivePlan MCOEV) {
                     $U.UserPrincipalName
@@ -2427,8 +2427,6 @@ function Find-TeamsUserVoiceConfig {
                 else {
                   $U.UserPrincipalName
                 }
-
-                break
               }
             }
 
@@ -2438,7 +2436,7 @@ function Find-TeamsUserVoiceConfig {
           "SkypeHybridPSTN" {
             Write-Verbose -Message "Returning all Users that are correctly configured for SkypeHybridPSTN... This will take a bit of time!" -Verbose
             foreach ($U in $CsUsers) {
-              if ($U.VoicePolicy -eq "HybridVoice" -and $null -ne $U.OnPremLineURI -and $null -ne $U.VoiceRoutingPolicy -and $null -eq $U.OnlineVoiceRoutingPolicy) {
+              if ($U.VoicePolicy -eq "HybridVoice" -and $null -eq $U.OnlineVoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.VoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
                   if (Test-TeamsUserLicense $U -ServivePlan MCOEV) {
                     $U.UserPrincipalName
@@ -2447,8 +2445,6 @@ function Find-TeamsUserVoiceConfig {
                 else {
                   $U.UserPrincipalName
                 }
-
-                break
               }
 
               break
@@ -2458,7 +2454,7 @@ function Find-TeamsUserVoiceConfig {
           "CallingPlans" {
             Write-Verbose -Message "Returning all Users that are correctly configured for CallingPlans... This will take a bit of time!" -Verbose
             foreach ($U in $CsUsers) {
-              if ($U.VoicePolicy -eq "BusinessVoice" -and $null -ne $U.TelephoneNumber) {
+              if ($U.VoicePolicy -eq "BusinessVoice" -or $null -ne $U.TelephoneNumber) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
                   if (Test-TeamsUserHasCallPlan $U) {
                     $U.UserPrincipalName
@@ -2467,10 +2463,7 @@ function Find-TeamsUserVoiceConfig {
                 else {
                   $U.UserPrincipalName
                 }
-
-                break
               }
-              #>
             }
 
             break
@@ -2482,7 +2475,7 @@ function Find-TeamsUserVoiceConfig {
 
       "VP" {
         Write-Verbose -Message "Finding Users with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!" -Verbose
-        Get-CsOnlineUser -Filter { VoicePolicy -EQ $VoicePolicy } | Select-Object UserPrincipalName -WarningAction SilentlyContinue
+        Get-CsOnlineUser -Filter { VoicePolicy -EQ $VoicePolicy -AND Enabled -EQ $TRUE } -WarningAction SilentlyContinue | Select-Object UserPrincipalName
 
         break
       } #VP
@@ -2492,7 +2485,7 @@ function Find-TeamsUserVoiceConfig {
         $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy
         if ($null -ne $OVP) {
           Write-Verbose -Message "Finding Users with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..." -Verbose
-          Get-CsOnlineUser -Filter { OnlineVoiceRoutingPolicy -EQ $OnlineVoiceRoutingPolicy } | Select-Object UserPrincipalName -WarningAction SilentlyContinue
+          Get-CsOnlineUser -Filter { OnlineVoiceRoutingPolicy -EQ $OnlineVoiceRoutingPolicy -AND Enabled -EQ $TRUE } -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
         else {
           Write-Error -Message "OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -2506,7 +2499,7 @@ function Find-TeamsUserVoiceConfig {
         $TDP = Get-CsTenantDialPlan $TenantDialPlan
         if ($null -ne $TDP) {
           Write-Verbose -Message "Finding Users with TenantDialPlan '$TenantDialPlan': Searching..." -Verbose
-          Get-CsOnlineUser -Filter { TenantDialPlan -EQ $TenantDialPlan } | Select-Object UserPrincipalName -WarningAction SilentlyContinue
+          Get-CsOnlineUser -Filter { TenantDialPlan -EQ $TenantDialPlan -AND Enabled -EQ $TRUE } -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
         else {
           Write-Error -Message "TenantDialPlan '$TenantDialPlan' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -3032,65 +3025,58 @@ function Test-TeamsUserVoiceConfig {
 
       switch ($Scope) {
         "DirectRouting" {
-          if ($U.VoicePolicy -eq "HybridVoice") {
-            if ($null -eq $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnlineVoiceRoutingPolicy) {
-              if ($PSBoundParameters.ContainsKey('Partial')) {
-                return $true
-              }
-              else {
-                if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.OnPremLineURI) {
-                  return $true
-                }
-                else {
-                  return $false
-                }
-              }
+          if ($PSBoundParameters.ContainsKey('Partial')) {
+            if ($CsUser.VoicePolicy -eq "HybridVoice" -and $null -eq $CsUser.VoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.OnlineVoiceRoutingPolicy)) {
+              return $true
             }
             else {
               return $false
             }
           }
           else {
-            return $false
+            if ($CsUser.VoicePolicy -eq "HybridVoice" -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
+              return $true
+            }
+            else {
+              return $false
+            }
           }
         }
 
         "SkypeHybridPSTN" {
-          if ($U.VoicePolicy -eq "HybridVoice") {
-            if ($null -ne $CsUser.VoiceRoutingPolicy -and $null -eq $CsUser.OnlineVoiceRoutingPolicy) {
-              if ($PSBoundParameters.ContainsKey('Partial')) {
+          if ($PSBoundParameters.ContainsKey('Partial')) {
+            if ($CsUser.VoicePolicy -eq "HybridVoice" -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.VoiceRoutingPolicy)) {
+              return $true
+            }
+            else {
+              return $false
+            }
+            else {
+              if ($CsUser.VoicePolicy -eq "HybridVoice" -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
                 return $true
-              }
-              else {
-                if ($true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.OnPremLineURI) {
-                  return $true
-                }
-                else {
-                  return $false
-                }
               }
               else {
                 return $false
               }
             }
-          }
-          else {
-            return $false
           }
         }
 
         "CallingPlans" {
-          if ($User.VoicePolicy -eq "BusinessVoice") {
-            if ($PSBoundParameters.ContainsKey('Partial')) {
+          if ($PSBoundParameters.ContainsKey('Partial')) {
+            if ($CsUser.VoicePolicy -eq "BusinessVoice" -or (Test-TeamsUserHasCallPlan $User) -or $null -ne $CsUser.TelephoneNumber) {
               return $true
             }
             else {
-              if ($true -eq $CsUser.EnterpriseVoiceEnabled -and (Test-TeamsUserHasCallPlan $User) -and $null -ne $CsUser.TelephoneNumber) {
-                return $true
-              }
-              else {
-                return $false
-              }
+              return $false
+            }
+          }
+          else {
+            if ($CsUser.VoicePolicy -eq "BusinessVoice" -and (Test-TeamsUserHasCallPlan $User) -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.TelephoneNumber) {
+              return $true
+            }
+            else {
+              return $false
             }
           }
           else {
