@@ -115,7 +115,7 @@
         More bugfixes. Updated parameter list for Get-TeamsCallQueue as Get-CsCallQueue provides more information (AgentsCapped, etc.)
         New-/Set-TeamsCallQueue - Removed ValidateScript for Users as verification is done when processing Users.
         New-/Set-TeamsCallQueue - Added enablement of Users for EnterpriseVoice for Agents (Users), OverflowAction and TimeoutAction 'Forward'
-  20.09.05-prerelease
+  20.09.06-prerelease
         IMPROVED: Adopted better Style guides to help clarify script exit scenarios and provide better output.
           Cleaned up all BEGIN-blocks: Assert functions now called in all scripts. Preference variables for Confirm, Whatif and Verbose are now handled for all functions that need them.
           Cleaned up all END-blocks: They are mostly empty anyway, but returning an object now happens consistently in the Process block (1 instance fixed)
@@ -2399,10 +2399,11 @@ function Find-TeamsUserVoiceConfig {
 
       "Tel" {
         foreach ($Number in $PhoneNumber) {
-          Write-Verbose -Message "Finding Users with PhoneNumber '$Number': Searching... This will take quite some time!" -Verbose
-          #This would be the faster option, but LIKE is not liked by the -Filter, have to use 'Where-Object' for now.
-          #$Users = Get-CsOnlineUser -Filter { LineURI -Like "*$Number*" } | Select-Object UserPrincipalName -WarningAction SilentlyContinue
-          $Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object LineURI -Like "*$Number*"
+          Write-Verbose -Message "Finding Users with PhoneNumber '$Number': Searching... This will take a bit of time!" -Verbose
+          #Old, slow (5mins!) option. new one is blazing fast.
+          #$Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object LineURI -Like "*$Number*"
+          $Filter = 'LineURI -like "*{0}*"' -f $Number
+          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
           Get-TeamsUserVoiceConfig $Users -DiagnosticLevel 1
         }
 
@@ -2411,7 +2412,8 @@ function Find-TeamsUserVoiceConfig {
 
       "CT" {
         Write-Verbose -Message "Finding all Users enabled for Teams: Searching... This will take quite some time!" -Verbose
-        $CsUsers = Get-CsOnlineUser -Filter { Enabled -EQ $TRUE } -WarningAction SilentlyContinue -ErrorAction Stop
+        $Filter = 'Enabled -eq $TRUE'
+        $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction Stop
 
         Write-Verbose -Message "Sifting through Information for $($CsUsers.Count) Users: Parsing..." -Verbose
         switch ($ConfigurationType) {
@@ -2475,7 +2477,8 @@ function Find-TeamsUserVoiceConfig {
 
       "VP" {
         Write-Verbose -Message "Finding Users with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!" -Verbose
-        Get-CsOnlineUser -Filter { VoicePolicy -EQ $VoicePolicy -AND Enabled -EQ $TRUE } -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+        $Filter = 'Enabled -eq $TRUE -and  VoicePolicy -EQ "{0}"' -f $VoicePolicy
+        Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
 
         break
       } #VP
@@ -2485,7 +2488,8 @@ function Find-TeamsUserVoiceConfig {
         $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy
         if ($null -ne $OVP) {
           Write-Verbose -Message "Finding Users with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..." -Verbose
-          Get-CsOnlineUser -Filter { OnlineVoiceRoutingPolicy -EQ $OnlineVoiceRoutingPolicy -AND Enabled -EQ $TRUE } -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          $Filter = 'Enabled -eq $TRUE -and  OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy
+          Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
         else {
           Write-Error -Message "OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -2499,7 +2503,8 @@ function Find-TeamsUserVoiceConfig {
         $TDP = Get-CsTenantDialPlan $TenantDialPlan
         if ($null -ne $TDP) {
           Write-Verbose -Message "Finding Users with TenantDialPlan '$TenantDialPlan': Searching..." -Verbose
-          Get-CsOnlineUser -Filter { TenantDialPlan -EQ $TenantDialPlan -AND Enabled -EQ $TRUE } -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          $Filter = 'Enabled -eq $TRUE -and  TenantDialPlan -EQ "{0}"' -f $TenantDialPlan
+          Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
         else {
           Write-Error -Message "TenantDialPlan '$TenantDialPlan' not found" -Category ObjectNotFound -ErrorAction Stop
