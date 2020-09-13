@@ -5135,29 +5135,28 @@ function New-TeamsCallQueue {
     # PresenceBasedRouting
     if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
       if ($PresenceBasedRouting) {
-        $Parameters += @{'PresenceBasedRouting' = $true
+        $Parameters += @{'PresenceBasedRouting' = $true }
       }
       else {
-        $Parameters += @{'PresenceBasedRouting' = $false
+        $Parameters += @{'PresenceBasedRouting' = $false }
       }
-     }
     }
     # AllowOptOut
     if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
       if ($AllowOptOut) {
-        $Parameters += @{'AllowOptOut' = $true
+        $Parameters += @{'AllowOptOut' = $true }
       }
       else {
-        $Parameters += @{'AllowOptOut' = $false
+        $Parameters += @{'AllowOptOut' = $false }
       }
     }
     # ConferenceMode
     if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
       if ($ConferenceMode) {
-        $Parameters += @{'ConferenceMode' = $true
+        $Parameters += @{'ConferenceMode' = $true }
       }
       else {
-        $Parameters += @{'ConferenceMode' = $false
+        $Parameters += @{'ConferenceMode' = $false }
       }
     }
     #endregion
@@ -5675,6 +5674,8 @@ function New-TeamsCallQueue {
       foreach ($User in $Users) {
         if (Test-AzureADUser $User) {
           # Determine ID from UPN
+          $UserIdList = $null
+          $UserObject = $null
           $UserObject = Get-AzureADUser -ObjectId "$User"
           $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
           $ServicePlanName = "MCOEV"
@@ -5729,6 +5730,7 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
+        $DLObject = $null
         if (Test-AzureADGroup "$DL") {
           $DLObject = Get-AzureADGroup -SearchString "$DL"
           if ($null -eq $DLObject) {
@@ -6311,29 +6313,28 @@ function Set-TeamsCallQueue {
     # PresenceBasedRouting
     if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
       if ($PresenceBasedRouting) {
-        $Parameters += @{'PresenceBasedRouting' = $true
+        $Parameters += @{'PresenceBasedRouting' = $true }
       }
       else {
-        $Parameters += @{'PresenceBasedRouting' = $false
+        $Parameters += @{'PresenceBasedRouting' = $false }
       }
-     }
     }
     # AllowOptOut
     if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
       if ($AllowOptOut) {
-        $Parameters += @{'AllowOptOut' = $true
+        $Parameters += @{'AllowOptOut' = $true }
       }
       else {
-        $Parameters += @{'AllowOptOut' = $false
+        $Parameters += @{'AllowOptOut' = $false }
       }
     }
     # ConferenceMode
     if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
       if ($ConferenceMode) {
-        $Parameters += @{'ConferenceMode' = $true
+        $Parameters += @{'ConferenceMode' = $true }
       }
       else {
-        $Parameters += @{'ConferenceMode' = $false
+        $Parameters += @{'ConferenceMode' = $false }
       }
     }
     #endregion
@@ -6852,6 +6853,8 @@ function Set-TeamsCallQueue {
       foreach ($User in $Users) {
         if (Test-AzureADUser $User) {
           # Determine ID from UPN
+          $UserIdList = $null
+          $UserObject = $null
           $UserObject = Get-AzureADUser -ObjectId "$User"
           $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
           $ServicePlanName = "MCOEV"
@@ -6906,6 +6909,7 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         # Determine ID from UPN
+        $DLObject = $null
         if (Test-AzureADGroup "$DL") {
           $DLObject = Get-AzureADGroup -SearchString "$DL"
           if ($null -eq $DLObject) {
