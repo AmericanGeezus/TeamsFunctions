@@ -135,6 +135,7 @@
           Remove-TeamsUserVoiceConfig - Removes Voice Configuration for either CallPlans or DirectRouting
           Test-TeamsUserVoiceConfig - Tests whether either CallPlan or DirectRouting config is found. Partial or Full configuration testable
           Test-TeamsUserHasCallPlan - Added Helper function to determine whether the User has a Call Plan assigned.
+<<<<<<< HEAD
   20.09.13-prerelease
         ADDED: Auto Attendent Scripts! Get-TeamsAutoAttendant, Remove-TeamsAutoAttendant are done
           New-TeamsAutoAttendant is currently being sketched out. Use case is hard to define as the topic is complex.
@@ -148,6 +149,11 @@
           TeamsResourceAccount (TeamsRA), TeamsResourceAccountAssociation (TeamsRAassoc)
         IMPROVED: Bug fixing for CallQueue Scripts (continuous)
 
+=======
+  20.09.12-prerelease
+          Improved Find-TeamsUserVoiceConfig for PhoneNumber Lookup. Lookups now take under a minute instead of several minutes!
+          Bugfixing for Set-TeamsCallQueue, New-TeamsCallQueue (Boolean Parameters & Shared Voicemail for Queue Timeout).
+>>>>>>> 7c544b973ba5fc3190765808ce64e7b4d2e52680
 #>
 
 #region Session Connection
@@ -5128,15 +5134,31 @@ function New-TeamsCallQueue {
     #region Boolean Parameters
     # PresenceBasedRouting
     if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
-      $Parameters += @{'PresenceBasedRouting' = $PresenceBasedRouting }
+      if ($PresenceBasedRouting) {
+        $Parameters += @{'PresenceBasedRouting' = $true
+      }
+      else {
+        $Parameters += @{'PresenceBasedRouting' = $false
+      }
+     }
     }
     # AllowOptOut
     if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
-      $Parameters += @{'AllowOptOut' = $AllowOptOut }
+      if ($AllowOptOut) {
+        $Parameters += @{'AllowOptOut' = $true
+      }
+      else {
+        $Parameters += @{'AllowOptOut' = $false
+      }
     }
     # ConferenceMode
     if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
-      $Parameters += @{'ConferenceMode' = $ConferenceMode }
+      if ($ConferenceMode) {
+        $Parameters += @{'ConferenceMode' = $true
+      }
+      else {
+        $Parameters += @{'ConferenceMode' = $false
+      }
     }
     #endregion
 
@@ -6288,15 +6310,31 @@ function Set-TeamsCallQueue {
     #region Boolean Parameters
     # PresenceBasedRouting
     if ($PSBoundParameters.ContainsKey('PresenceBasedRouting')) {
-      $Parameters += @{'PresenceBasedRouting' = $PresenceBasedRouting }
+      if ($PresenceBasedRouting) {
+        $Parameters += @{'PresenceBasedRouting' = $true
+      }
+      else {
+        $Parameters += @{'PresenceBasedRouting' = $false
+      }
+     }
     }
     # AllowOptOut
     if ($PSBoundParameters.ContainsKey('AllowOptOut')) {
-      $Parameters += @{'AllowOptOut' = $AllowOptOut }
+      if ($AllowOptOut) {
+        $Parameters += @{'AllowOptOut' = $true
+      }
+      else {
+        $Parameters += @{'AllowOptOut' = $false
+      }
     }
     # ConferenceMode
     if ($PSBoundParameters.ContainsKey('ConferenceMode')) {
-      $Parameters += @{'ConferenceMode' = $ConferenceMode }
+      if ($ConferenceMode) {
+        $Parameters += @{'ConferenceMode' = $true
+      }
+      else {
+        $Parameters += @{'ConferenceMode' = $false
+      }
     }
     #endregion
 
@@ -7288,7 +7326,8 @@ function New-TeamsResourceAccountAssociation {
         Write-Verbose -Message "Querying Call Queue '$CallQueue'"
         $CallQueueObj = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
         if ($null -eq $CallQueueObj) {
-          Write-Error "'$CallQueue' - Not found" -Category ParserError -RecommendedAction  "Please check 'CallQueue' exists with this Name" -ErrorAction Stop
+          Write-Error "Call Queue: '$CallQueue' - Not found" -Category ParserError -RecommendedAction  "Please check 'CallQueue' exists with this Name"
+          return
         }
         elseif ($CallQueueObj.GetType().BaseType.Name -eq "Array") {
           Write-Verbose -Message "'$CallQueue' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons, a unique Name to process." -Verbose
@@ -7366,7 +7405,8 @@ function New-TeamsResourceAccountAssociation {
         Write-Verbose -Message "Querying Auto Attendant '$AutoAttendant'"
         $AutoAttendantObj = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
         if ($null -eq $AutoAttendantObj) {
-          Write-Error "'$AutoAttendant' - Not found" -Category ParserError -RecommendedAction  "Please check 'AutoAttendant' exists with this Name" -ErrorAction Stop
+          Write-Error "Auto Attendant: '$AutoAttendant' - Not found" -Category ParserError -RecommendedAction  "Please check 'AutoAttendant' exists with this Name"
+          return
         }
         elseif ($AutoAttendantObj.GetType().BaseType.Name -eq "Array") {
           Write-Verbose -Message "'$AutoAttendant' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons,  a unique Name to process." -Verbose
@@ -8377,8 +8417,8 @@ function Set-TeamsResourceAccount {
         }
         else {
           try {
-            if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses PhoneSystemVirtualUser")) {
-              $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
+            if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-TeamsUserLicense -AddLicenses PhoneSystemVirtualUser")) {
+              $null = (Set-TeamsUserLicense -Identity $UserPrincipalName -AddLicenses $License -ErrorAction STOP)
               Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
               $Islicensed = $true
             }
