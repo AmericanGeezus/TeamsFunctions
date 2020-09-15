@@ -135,7 +135,6 @@
           Remove-TeamsUserVoiceConfig - Removes Voice Configuration for either CallPlans or DirectRouting
           Test-TeamsUserVoiceConfig - Tests whether either CallPlan or DirectRouting config is found. Partial or Full configuration testable
           Test-TeamsUserHasCallPlan - Added Helper function to determine whether the User has a Call Plan assigned.
-<<<<<<< HEAD
   20.09.13-prerelease
         ADDED: Auto Attendent Scripts! Get-TeamsAutoAttendant, Remove-TeamsAutoAttendant are done
           New-TeamsAutoAttendant is currently being sketched out. Use case is hard to define as the topic is complex.
@@ -148,12 +147,8 @@
           TeamsUserVoiceConfig (TeamsUVC), TeamsCallQueue (TeamsCQ), TeamsAutoAttendant (TeamsAA),
           TeamsResourceAccount (TeamsRA), TeamsResourceAccountAssociation (TeamsRAassoc)
         IMPROVED: Bug fixing for CallQueue Scripts (continuous)
-
-=======
-  20.09.12-prerelease
-          Improved Find-TeamsUserVoiceConfig for PhoneNumber Lookup. Lookups now take under a minute instead of several minutes!
           Bugfixing for Set-TeamsCallQueue, New-TeamsCallQueue (Boolean Parameters & Shared Voicemail for Queue Timeout).
->>>>>>> 7c544b973ba5fc3190765808ce64e7b4d2e52680
+          Improved Find-TeamsUserVoiceConfig for PhoneNumber Lookup. Lookups now take under a minute instead of several minutes!
 #>
 
 #region Session Connection
