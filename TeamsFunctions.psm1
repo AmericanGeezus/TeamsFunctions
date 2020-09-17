@@ -2418,7 +2418,7 @@ function Find-TeamsUserVoiceConfig {
           #$Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object LineURI -Like "*$Number*"
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
-          Get-TeamsUserVoiceConfig $Users -DiagnosticLevel 1
+          Get-TeamsUserVoiceConfig $Users.UserPrincipalName -DiagnosticLevel 1
         }
 
         break
@@ -5431,6 +5431,7 @@ function New-TeamsCallQueue {
     #region OverflowAction Parameter cleanup
     if (-not $Parameters.ContainsKey('OverflowActionTarget') -and ($OverflowAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action not set as OverflowActionTarget was not correctly enumerated" -Verbose
+      Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action set to 'DisconnectWithBusy'" -Verbose
       [void]$Parameters.Remove('OverflowAction')
     }
     #endregion
@@ -5656,6 +5657,7 @@ function New-TeamsCallQueue {
     #region TimeoutAction Parameter cleanup
     if (-not $Parameters.ContainsKey('TimeoutActionTarget') -and ($TimeoutAction -ne 'Disconnect')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
+      Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action set to 'Disconnect'" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
     }
     #endregion
@@ -6601,6 +6603,7 @@ function Set-TeamsCallQueue {
     #region OverflowAction Parameter cleanup
     if (-not $Parameters.ContainsKey('OverflowActionTarget') -and ($OverflowAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action not set as OverflowActionTarget was not correctly enumerated" -Verbose
+      Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action set to 'DisconnectWithBusy'" -Verbose
       [void]$Parameters.Remove('OverflowAction')
     }
     #endregion
@@ -6835,6 +6838,7 @@ function Set-TeamsCallQueue {
     #region TimeoutAction Parameter cleanup
     if (-not $Parameters.ContainsKey('TimeoutActionTarget') -and ($TimeoutAction -ne 'Disconnect')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
+      Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action set to 'Disconnect'" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
     }
     #endregion
