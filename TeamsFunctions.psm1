@@ -3489,8 +3489,10 @@ function New-TeamsAutoAttendant {
     Required. TimeZone Identifier based on Get-CsAutoAttendantSupportedTimeZone, but abbreviated for easier input.
     Warning: Due to multiple time zone names with in the same relative difference to UTC this MAY produce incongruent output
     The time zone will be correct, but only specifiying "UTC+01:00" for example will select the first entry.
+    Default Value: "UTC"
   .PARAMETER LanguageId
     Required. Language Identifier indicating the language that is used to play text and identify voice prompts.
+    Default Value: "en-US"
 	.PARAMETER Silent
 		Optional. Supresses output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
@@ -3546,27 +3548,49 @@ function New-TeamsAutoAttendant {
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "Name of the Auto Attendant")]
+    [Parameter(ParametersetName = "Default", Mandatory = $true, ValueFromPipeline, HelpMessage = "Name of the Auto Attendant")]
+    [Parameter(ParametersetName = "Operator", Mandatory = $true, HelpMessage = "Name of the Auto Attendant")]
     [string]$Name,
+
+    [Parameter(ParametersetName = "Operator", Mandatory = $false, HelpMessage = "Target Name of the Operator")]
+    [string]$Operator,
+
+    [Parameter(ParametersetName = "Operator", Mandatory = $true, HelpMessage = "Type of target")]
+    [ValidateSet('User', 'ExternalPstn', 'SharedVoicemail', 'ApplicationEndpoint', 'HuntGroup', 'OrganizationalAutoAttendant')]
+    [string]$OperatorType,
+
+    [Parameter(HelpMessage = "Voice Responses")]
+    [switch]$EnableVoiceResponse,
+
+    [Parameter(HelpMessage = "Default Call Flow")]
+    [object]$DefaultCallFlow,
+
+    [Parameter(HelpMessage = "Call Flows")]
+    [object]$CallFlows,
+
+    [Parameter(HelpMessage = "Schedule")]
+    [object]$Schedule,
 
 
     #TODO add more params
 
 
 
-    [Parameter(Mandatory = $true, HelpMessage = "TimeZone Identifier")]
-    [ValidateSet("UTC-12:00", "UTC-11:00", "UTC-10:00", "UTC-09:00", "UTC-08:00", "UTC-07:00", "UTC-06:00", "UTC-05:00", "UTC-04:30", "UTC-04:00", "UTC-03:30", "UTC-03:00", "UTC-02:00", "UTC-01:00", "UTC", "UTC+01:00", "UTC+02:00", "UTC+03:00", "UTC+03:30", "UTC+04:00", "UTC+04:30", "UTC+05:00", "UTC+05:30", "UTC+05:45", "UTC+06:00", "UTC+06:30", "UTC+07:00", "UTC+08:00", "UTC+09:00", "UTC+09:30", "UTC+10:00", "UTC+11:00", "UTC+12:00", "UTC+13:00", "UTC+14:00")]
-    [string]$TimeZone,
 
-    [Parameter(Mandatory = $true, HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
+    [Parameter(HelpMessage = "TimeZone Identifier")]
+    [ValidateSet("UTC-12:00", "UTC-11:00", "UTC-10:00", "UTC-09:00", "UTC-08:00", "UTC-07:00", "UTC-06:00", "UTC-05:00", "UTC-04:30", "UTC-04:00", "UTC-03:30", "UTC-03:00", "UTC-02:00", "UTC-01:00", "UTC", "UTC+01:00", "UTC+02:00", "UTC+03:00", "UTC+03:30", "UTC+04:00", "UTC+04:30", "UTC+05:00", "UTC+05:30", "UTC+05:45", "UTC+06:00", "UTC+06:30", "UTC+07:00", "UTC+08:00", "UTC+09:00", "UTC+09:30", "UTC+10:00", "UTC+11:00", "UTC+12:00", "UTC+13:00", "UTC+14:00")]
+    [string]$TimeZone = "UTC",
+
+    [Parameter(HelpMessage = "Language Identifier from Get-CsAutoAttendantSupportedLanguage.")]
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
-    [string]$LanguageId,
+    [string]$LanguageId = "en-US",
 
     [Parameter(HelpMessage = "No output is written to the screen, but Object returned for processing")]
     [switch]$Silent,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
+
   ) #param
 
   begin {
@@ -3607,11 +3631,13 @@ function New-TeamsAutoAttendant {
         Write-Verbose -Message "LanguageId '$Language' - Voice Responses not supported"
       }
     }
+    <# Language has been granted a default
     else {
       # Checking for Parameters which would require LanguageId
       Write-Error "Parameter LanguageId is required and missing." -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
       return
     }
+    #>
 
     # TimeZoneId
     if ($TimeZone -eq "UTC") {
@@ -3626,12 +3652,13 @@ function New-TeamsAutoAttendant {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     #region PREPARATION
-    # preparing Splatting Object
+    #region preparing Splatting Object
     $Parameters = $null
 
     # adding required parameters
     $Parameters += @{'LanguageId' = $Language }
     $Parameters += @{'TimeZoneId' = $TimeZoneId }
+    #endregion
 
     #region Required Parameters: Name
     # Normalising $Name
@@ -3640,10 +3667,168 @@ function New-TeamsAutoAttendant {
     $Parameters += @{'Name' = $NameNormalised }
     #endregion
 
-    #region Construction
-    Write-Warning -Message "This function is not yet implemented, sorry"
-    break
+    #region Operator
+    if ($PSBoundParameters.ContainsKey('Operator')) {
+      # determining Object Type
+      switch ($Operatortype) {
+        "ExternalPstn" {
+          try {
+            if ($Operator -match "^tel:\+\d") {
+              #Telephone URI
+              $OperatorIdentity = "tel:$Operator"
+            }
+            elseif ($Operator -match "^\+\d") {
+              #Telephone Number (E.164)
+              $OperatorIdentity = "$Operator"
+            }
+            else {
+              Write-Error -Message "Invalid format of Operator Target" -Category InvalidType -RecommendedAction "Please correct and retry" -ErrorAction Continue
+              return
+            }
 
+            Write-Verbose -Message "'$NameNormalised' Operator '$Operator' used (TelURI)"
+            $OperatorEntity = New-CsAutoAttendantCallableEntity -Type ExternalPstn -Identity "$OperatorIdentity"
+            $Parameters += @{'Operator' = $OperatorEntity.ObjectId }
+          }
+          catch {
+            Write-Warning -Message "'$NameNormalised' Operator Target not enumerated. Omitting Operator"
+          }
+        }
+        "User" {
+          #initialising variables (code copied from region Users)
+          $EVenabled = $false
+          $User = $Operator
+          if (Test-AzureADUser $User) {
+            # Determine ID from UPN
+            $UserObject = Get-AzureADUser -ObjectId "$User"
+            $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
+            $ServicePlanName = "MCOEV"
+            $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
+            if ($ServicePlanStatus -ne "Success") {
+              # User not licensed (doesn't have Phone System)
+              Write-Error -Message "User: '$User' License (PhoneSystem): User is not correctly licensed" -ErrorAction STOP
+            }
+            else {
+              Write-Verbose -Message "User '$User' License (PhoneSystem):   SUCCESS"
+              $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
+              if (-not $EVenabled) {
+                # User not EV-Enabled
+                if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
+                  Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
+                  $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                  $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
+                  Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
+                }
+              }
+
+              # Add Operator
+              if ($EVenabled) {
+                Write-Verbose -Message "'$NameNormalised' Operator '$Operator' used (User)"
+                $OperatorId = (Get-AzureADUser -ObjectId "$User" -ErrorAction STOP).ObjectId
+                $OperatorEntity = New-CsAutoAttendantCallableEntity -Type User -Identity $OperatorId
+                $Parameters += @{'Operator' = $OperatorEntity.ObjectId }
+              }
+              else {
+                break
+              }
+            }
+          }
+          else {
+            Write-Warning -Message "'$NameNormalised' Operator '$User' not found in as a User in AzureAd, omitting user!"
+            break
+          }
+        }
+        "SharedVoicemail" {
+          #initialising variables (code copied from region Groups)
+          $DL = $Operator
+          $DLObject = $null
+          if (Test-AzureADGroup "$DL") {
+            $DLObject = Get-AzureADGroup -SearchString "$DL"
+            if ($null -eq $DLObject) {
+              $DL2 = $DL.Split('@')[0]
+              $DLObject = Get-AzureADGroup -SearchString "$DL2"
+              if ($null -eq $DLObject) {
+                try {
+                  $DLObject = Get-AzureADGroup -ObjectId "$DL"
+                }
+                catch {
+                  Write-Warning -Message "'$NameNormalised' Operator '$DL' not found in AzureAd, omitting Group!"
+                }
+              }
+            }
+          }
+
+          if ($DLObject) {
+            Write-Verbose -Message "'$NameNormalised' Operator '$Operator' used (Group)"
+            $OperatorEntity = New-CsAutoAttendantCallableEntity -Type ExternalPstn -Identity "$OperatorIdentity"
+            $Parameters += @{'Operator' = $OperatorEntity.ObjectId }
+          }
+          else {
+            Write-Warning -Message "'$NameNormalised' Operator '$DL' not found in AzureAd, omitting Group!"
+          }
+
+        }
+        "ApplicationEndpoint" {
+          if (Test-AzureADUser $Operator) {
+            Write-Verbose -Message "'$NameNormalised' Operator '$Operator' used (User)"
+            $OperatorId = (Get-TeamsResourceAccount "$Operator" -ErrorAction STOP).ObjectId
+            $OperatorEntity = New-CsAutoAttendantCallableEntity -Type User -Identity $OperatorId
+            $Parameters += @{'Operator' = $OperatorEntity.ObjectId }
+
+          }
+          else {
+            Write-Warning -Message "'$NameNormalised' Operator '$User' not found in as a User in AzureAd, omitting user!"
+            break
+
+          }
+
+        }
+        "HuntGroup" {
+          Write-Warning -Message "'$NameNormalised' Operator Type '$OperatorType' not built right now, sorry. Omitting Operator"
+
+        }
+        "OrganizationalAutoAttendant" {
+          Write-Warning -Message "'$NameNormalised' Operator Type '$OperatorType' not built right now, sorry. Omitting Operator"
+
+        }
+      }
+    }
+    #endregion
+
+
+    #region EnableVoiceResponse
+    if ($PSBoundParameters.ContainsKey('EnableVoiceResponse')) {
+      # Using As-Is
+      $Parameters += @{'EnableVoiceResponse' = $true }
+
+    }
+    #region
+
+    #region Default Call Flow
+    if ($PSBoundParameters.ContainsKey('DefaultCallFlow')) {
+      # Using As-Is
+      $Parameters += @{'DefaultCallFlow' = $DefaultCallFlow }
+
+    }
+    else {
+      #Default
+
+    }
+    #region
+
+    #region Schedule
+    if ($PSBoundParameters.ContainsKey('Schedule')) {
+      # Using As-Is
+      $Parameters += @{'Schedule' = $Schedule }
+
+    }
+    else {
+      #Default
+
+    }
+    #region
+
+    #region ToDo
     <#
 ######################
 $Name = ""
@@ -3775,7 +3960,6 @@ New-TeamsAutoAttendant -Name $Name -LanguageId $language -CallFlows @($afterHour
 
 #>
 
-    #endregion
     #endregion
 
 
@@ -5542,7 +5726,7 @@ function New-TeamsCallQueue {
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
           try {
-            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$($TimeoutActionTarget)" -ErrorAction STOP).ObjectId
+            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
             $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
           catch {
@@ -6711,7 +6895,7 @@ function Set-TeamsCallQueue {
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
           try {
-            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$($TimeoutActionTarget)" -ErrorAction STOP).ObjectId
+            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
             $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
           catch {
