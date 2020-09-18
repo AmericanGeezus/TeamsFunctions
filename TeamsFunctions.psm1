@@ -245,7 +245,7 @@ function Connect-SkypeOnline {
     if (Test-Module SkypeOnlineConnector) {
       if ((Test-SkypeOnlineConnection) -eq $false) {
         $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
-        Write-Verbose -Message "Module SkypeOnlineConnctor installed in Version: $moduleVersion"
+        Write-Verbose -Message "Module SkypeOnlineConnector installed in Version: $moduleVersion"
         if ($moduleVersion.Major -le "6") {
           # Version 6 and lower do not support MFA authentication for Skype Module PowerShell; also allows use of older PSCredential objects
           try {
@@ -298,19 +298,19 @@ function Connect-SkypeOnline {
             try {
               Write-Warning -Message "Session could not be created. Maybe missing OverrideAdminDomain to connect?"
               $Domain = Read-Host "Please enter an OverrideAdminDomain for this Tenant"
-              # $Paramters +=@{'OverrideAdminDomain' = $Domain} # This works only if no OverrideAdminDomain is yet in the $Parameters Array. Current config means it will be there!
+              # $Parameters +=@{'OverrideAdminDomain' = $Domain} # This works only if no OverrideAdminDomain is yet in the $Parameters Array. Current config means it will be there!
               $Parameters.OverrideAdminDomain = $Domain
               # Creating Session (again)
               Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
               $SkypeOnlineSession = New-CsOnlineSession @Parameters
             }
             catch {
-              Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
+              Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
               Write-ErrorRecord $_
             }
           }
           catch {
-            Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Managment Role activation"
+            Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
             Write-ErrorRecord $_
           }
 
@@ -334,14 +334,14 @@ function Connect-SkypeOnline {
                 # v7 and higher can run Session Limit Extension
                 try {
                   Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
-                  Write-Verbose -Message "Enable-CsOnlienSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
+                  Write-Verbose -Message "Enable-CsOnlineSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
                 }
                 catch {
                   Write-ErrorRecord $_
                 }
               }
               else {
-                Write-Verbose -Message "Enable-CsOnlienSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
+                Write-Verbose -Message "Enable-CsOnlineSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
                 Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
               }
             }
@@ -381,7 +381,7 @@ function Connect-Me {
     Combine as desired, if Parameters are specified, only connections to these services are established.
     Available: SkypeOnline, AzureAD, MicrosoftTeams and ExchangeOnline
 	.PARAMETER UserName
-		Requried. UserPrincipalName or LoginName of the Office365 Administrator
+		Required. UserPrincipalName or LoginName of the Office365 Administrator
 	.PARAMETER SkypeOnline
 		Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator
 	.PARAMETER AzureAD
@@ -393,7 +393,7 @@ function Connect-Me {
 	.PARAMETER OverrideAdminDomain
 		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
     NOTE: The OverrideAdminDomain is handled by Connect-SkypeOnline (prompts if no connection can be established)
-    Using the Parameter here is using it explicitely
+    Using the Parameter here is using it explicitly
 	.PARAMETER Silent
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
@@ -428,19 +428,19 @@ function Connect-Me {
     [Parameter(Mandatory = $true, Position = 0, HelpMessage = 'UserPrincipalName, Administrative Account')]
     [string]$UserName,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to SkypeOnline. Prompts for new credentials.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to SkypeOnline. Prompts for new credentials.')]
     [Alias('SFBO')]
     [switch]$SkypeOnline,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to Azure AD. Reuses credentials if authenticated already.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to Azure AD. Reuses credentials if authenticated already.')]
     [Alias('AAD')]
     [switch]$AzureAD,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to MicrosoftTeams. Reuses credentials if authenticated already.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to MicrosoftTeams. Reuses credentials if authenticated already.')]
     [Alias('Teams')]
     [switch]$MicrosoftTeams,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Establises a connection to Exchange Online. Reuses credentials if authenticated already.')]
+    [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to Exchange Online. Reuses credentials if authenticated already.')]
     [Alias('Exchange')]
     [switch]$ExchangeOnline,
 
@@ -498,7 +498,7 @@ function Connect-Me {
       }
       catch {
         Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain, Admin Role Activation (PIM) and Session Exhaustion (2 max!)" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
 
       Start-Sleep 1
@@ -536,7 +536,7 @@ function Connect-Me {
       }
       catch {
         Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     #endregion
@@ -558,7 +558,7 @@ function Connect-Me {
       }
       catch {
         Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     #endregion
@@ -579,7 +579,7 @@ function Connect-Me {
       }
       catch {
         Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     #endregion
@@ -617,7 +617,7 @@ function Disconnect-Me {
     Helper function to disconnect from SkypeOnline, AzureAD & MicrosoftTeams
     To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
     By default Office 365 allows two (!) concurrent sessions per User.
-    If sessions hang or are incorrectly closed (not properly disconnectd),
+    If sessions hang or are incorrectly closed (not properly disconnected),
     this can lead to session exhaustion which results in not being able to connect again.
     An admin can sign-out this user from all Sessions through the Office 365 Admin Center
     This process may take up to 15 mins and is best avoided, through proper disconnect after use
@@ -803,7 +803,7 @@ function Set-TeamsUserLicense {
 		- Audio Conferencing License - AudioConferencing (MCOMEETADV)
 		- Phone System - PhoneSystem (MCOEV)
 
-		# Standaolne Licenses (Special)
+		# Standalone Licenses (Special)
 		- Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
 		- Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
 
@@ -1540,7 +1540,7 @@ function Get-TeamsUserLicense {
 		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 	.EXAMPLE
 		Import-Csv User.csv | Get-TeamsUserLicense
-    Displays all liceneses assigned to Users from User.csv, Column Identity.
+    Displays all licenses assigned to Users from User.csv, Column Identity.
     The input file must have a single column heading of "Identity" with properly formatted UPNs.
 	.NOTES
 		Requires a connection to Azure Active Directory
@@ -1697,7 +1697,7 @@ function Get-TeamsTenantLicense {
     Returns an Object containing Teams related Licenses found in the Tenant
 		Teams services can be provisioned through several different combinations of individual
 		plans as well as add-on and grouped license SKUs. This command displays these license SKUs in a more friendly
-    format with descriptive names, SKUpartNumber, active, consumed, remaining, and expiring licenses.
+    format with descriptive names, SkuPartNumber, active, consumed, remaining, and expiring licenses.
   .PARAMETER License
     Optional. Limits the Output to one license.
     Accepted Values are listed in $TeamsLicenses.ParameterName
@@ -1786,7 +1786,7 @@ function Get-TeamsTenantLicense {
     try {
       if ($PSBoundParameters.ContainsKey('License')) {
         $SkuPartNumber = ($TeamsLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
-        $tenantSKUs = Get-AzureADSubscribedSku | Where-Object SkuPartnUmber -EQ $SkuPartNumber -ErrorAction STOP
+        $tenantSKUs = Get-AzureADSubscribedSku | Where-Object SkuPartNumber -EQ $SkuPartNumber -ErrorAction STOP
       }
       else {
         $tenantSKUs = Get-AzureADSubscribedSku -ErrorAction STOP
@@ -1965,8 +1965,8 @@ function Get-TeamsTenantVoiceConfig {
     if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
       Write-Verbose -Message "Querying User Information - This will take some time!" -Verbose
       $AdUsers = (Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE).Count
-      $CsOnlineUsers = (Get-CsonlineUser -WarningAction SilentlyContinue).Count
-      $CsOnlineUsersEV = (Get-CsonlineUser -WarningAction SilentlyContinue | Where-Object EnterpriseVoiceEnabled -EQ $TRUE).Count
+      $CsOnlineUsers = (Get-CsOnlineUser -WarningAction SilentlyContinue).Count
+      $CsOnlineUsersEV = (Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object EnterpriseVoiceEnabled -EQ $TRUE).Count
 
       $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledInAzureAD -Value $AdUsers
       $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledForTeams -Value $CsOnlineUsers
@@ -2177,7 +2177,7 @@ function Get-TeamsUserVoiceConfig {
       if ($PSBoundParameters.ContainsKey('DiagnosticLevel')) {
         switch ($DiagnosticLevel) {
           { $PSItem -ge 1 } {
-            # Displaying basic dignostic parameters (Hybrid)
+            # Displaying basic diagnostic parameters (Hybrid)
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremLineURIManuallySet -Value $CsUser.OnPremLineURIManuallySet
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremEnterPriseVoiceEnabled -Value $CsUser.OnPremEnterPriseVoiceEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name VoicePolicy -Value $CsUser.VoicePolicy
@@ -2186,7 +2186,7 @@ function Get-TeamsUserVoiceConfig {
           }
 
           { $PSItem -ge 2 } {
-            # Displaying extended dignostic parameters
+            # Displaying extended diagnostic parameters
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallingPolicy -Value $CsUser.TeamsEmergencyCallingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name CallingPolicy -Value $CsUser.CallingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name CallingLineIdentity -Value $CsUser.CallingLineIdentity
@@ -2197,7 +2197,7 @@ function Get-TeamsUserVoiceConfig {
           }
 
           { $PSItem -ge 3 } {
-            # Displaying advanced dignostic parameters
+            # Displaying advanced diagnostic parameters
             $UserObject | Add-Member -MemberType NoteProperty -Name AdAccountEnabled -Value $AdUser.AccountEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountEnabled -Value $CsUser.Enabled
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountIsValid -Value $CsUser.IsValid
@@ -2266,12 +2266,12 @@ function Find-TeamsUserVoiceConfig {
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
 	.PARAMETER OnlineVoiceRoutingPolicy
-    Optional. Searches all enabled Users which have the OnlineVoiceRoutingPolicy specified assignd.
+    Optional. Searches all enabled Users which have the OnlineVoiceRoutingPolicy specified assigned.
     Please specify full and correct name or '$null' to receive all Users without one
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
 	.PARAMETER TenantDialPlan
-    Optional. Searches all enabled Users which have the TenantDialPlan specified assignd.
+    Optional. Searches all enabled Users which have the TenantDialPlan specified assigned.
     Please specify full and correct name or '$null' to receive all Users without one
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
@@ -2315,7 +2315,7 @@ function Find-TeamsUserVoiceConfig {
     String (UPN)  - With any Parameter except Identity or PhoneNumber
     System.Object - With Parameter Identity or PhoneNumber
   .NOTES
-    With the exception of Identiy and PhoneNumber, all searches are filtering on Get-CsOnlineUser
+    With the exception of Identity and PhoneNumber, all searches are filtering on Get-CsOnlineUser
     This usually should not take longer than a minute to complete.
     Identity is querying the provided UPN and only wraps Get-TeamsUserVoiceConfig
     PhoneNumber has to do a full search with 'Where-Object' which will take time to complete
@@ -2434,7 +2434,7 @@ function Find-TeamsUserVoiceConfig {
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq "HybridVoice" -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-                  if (Test-TeamsUserLicense $U -ServivePlan MCOEV) {
+                  if (Test-TeamsUserLicense $U -ServicePlan MCOEV) {
                     $U.UserPrincipalName
                   }
                 }
@@ -2452,7 +2452,7 @@ function Find-TeamsUserVoiceConfig {
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq "HybridVoice" -and $null -eq $U.OnlineVoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.VoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-                  if (Test-TeamsUserLicense $U -ServivePlan MCOEV) {
+                  if (Test-TeamsUserLicense $U -ServicePlan MCOEV) {
                     $U.UserPrincipalName
                   }
                 }
@@ -2553,7 +2553,7 @@ function New-TeamsUserVoiceConfig {
   .PARAMETER TBA
     To be decided
 	.PARAMETER Force
-    Suppresses confirmation inputs except when $Confirm is explicitely specified
+    Suppresses confirmation inputs except when $Confirm is explicitly specified
 	.EXAMPLE
 		C:\PS>
 		Example of how to use this cmdlet
@@ -2587,7 +2587,7 @@ function New-TeamsUserVoiceConfig {
     [Parameter(Mandatory = $true)]
     [string]$Identity,
 
-    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
+    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force
   ) #param
 
@@ -2649,7 +2649,7 @@ function Set-TeamsUserVoiceConfig {
   .PARAMETER TBA
     To be decided
 	.PARAMETER Force
-    Suppresses confirmation inputs except when $Confirm is explicitely specified
+    Suppresses confirmation inputs except when $Confirm is explicitly specified
 	.EXAMPLE
 		C:\PS>
 		Example of how to use this cmdlet
@@ -2683,7 +2683,7 @@ function Set-TeamsUserVoiceConfig {
     [Parameter(Mandatory = $true)]
     [string]$Identity,
 
-    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
+    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force
   ) #param
 
@@ -2739,7 +2739,7 @@ function Remove-TeamsUserVoiceConfig {
 	.SYNOPSIS
 		Removes existing Voice Configuration for one or more Users
 	.DESCRIPTION
-		Deprovisions a user from Enterprise Voice, removes the Telephone Number, Tenant Dial Plan and Voice Routing Policy
+		De-provisions a user from Enterprise Voice, removes the Telephone Number, Tenant Dial Plan and Voice Routing Policy
 	.PARAMETER Identity
 		Required. UserPrincipalName of the User.
 	.PARAMETER Scope
@@ -2750,7 +2750,7 @@ function Remove-TeamsUserVoiceConfig {
     This is useful for migrating Users between Voice Configuration as it retains the users DialPad in Teams.
     NOTE: The User will be Enabled, but will not have an option to use the PhoneSystem as no valid Voice Configuration is in place.
 	.PARAMETER Force
-		Optional. Suppreses Confirmation for license Removal unless -Confirm is specified explicietely.
+		Optional. Suppresses Confirmation for license Removal unless -Confirm is specified explicitly.
 	.EXAMPLE
 		Remove-TeamsUserVoiceConfig -Identity John@domain.com [-Scope All]
 		Disables John for Enterprise Voice, then removes all Phone Numbers, Voice Routing Policy, Tenant Dial Plan and Call Plan licenses
@@ -2759,12 +2759,12 @@ function Remove-TeamsUserVoiceConfig {
 		Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned
 	.EXAMPLE
 		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans [-Confirm]
-    Disables John for Enterprise Voice, Removes Phone Number and subsequntly removes all Call Plan Licenses assigned
+    Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
     Prompts for Confirmation before removing Call Plan licenses
 	.EXAMPLE
 		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans -Force
-    Disables John for Enterprise Voice, Removes Phone Number and subsequntly removes all Call Plan Licenses assigned
-    Does not prompt for Confirmation (unless -Confirm is specified explicitely)
+    Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
+    Does not prompt for Confirmation (unless -Confirm is specified explicitly)
   .INPUTS
     System.String
   .OUTPUTS
@@ -2775,7 +2775,7 @@ function Remove-TeamsUserVoiceConfig {
     For CallingPlans it will prompt for Calling Plan licenses to be removed.
 	.FUNCTIONALITY
     Removes a Users Voice Configuration (through Microsoft Call Plans or Direct Routing)
-    This will leave the users in a clean and unprovisioned state and enables them to receive a new Configuration Set
+    This will leave the users in a clean and un-provisioned state and enables them to receive a new Configuration Set
   .LINK
     Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
@@ -2799,7 +2799,7 @@ function Remove-TeamsUserVoiceConfig {
     [Alias('DoNotDisableEnterpriseVoice')]
     [switch]$DoNotDisableEV,
 
-    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitely")]
+    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force
 
   ) #param
@@ -2954,13 +2954,13 @@ function Remove-TeamsUserVoiceConfig {
             $RemoveLicenses.Add('CommunicationCredits')
           }
 
-          # Actioning only if Call Plan licenses found
+          # Action only if Call Plan licenses found
           if ($null -ne $RemoveLicenses) {
             # Removing TelephoneNumber
             Write-Verbose -Message "User '$User' - Removing: TelephoneNumber"
             if ($null -ne $CsUser.TelephoneNumber) {
               try {
-                $CsUser | Set-CsUser -Telephonenumber $Null
+                $CsUser | Set-CsUser -TelephoneNumber $Null
                 Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: OK"
               }
               catch {
@@ -3017,7 +3017,7 @@ function Test-TeamsUserVoiceConfig {
 	.PARAMETER Scope
     Required. Value to focus the Script on. Allowed Values are DirectRouting,CallingPlans,SkypeHybridPSTN
     Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
-    Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or Interanational Calling Plan), TelephoneNumber
+    Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
     Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
   .PARAMETER Partial
     Optional. By default, returns TRUE only if all required Parameters for the Scope are configured (User is fully provisioned)
@@ -3040,7 +3040,7 @@ function Test-TeamsUserVoiceConfig {
     Boolean
   .NOTES
     All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
-    Partial configuration provides insight for incorrectly deprovisioned configuration that could block configuration for the other.
+    Partial configuration provides insight for incorrectly de-provisioned configuration that could block configuration for the other.
     For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI
       This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.
       "Remove-TeamsUserVoiceConfig -Force" can help
@@ -3177,7 +3177,7 @@ Set-Alias -Name Test-TeamsUVC -Value Test-TeamsUserVoiceConfig
 function Get-TeamsAutoAttendant {
   <#
 	.SYNOPSIS
-		Queries Auto Attendants and displays friendly Names (UPN or Displayname)
+		Queries Auto Attendants and displays friendly Names (UPN or DisplayName)
 	.DESCRIPTION
 		Same functionality as Get-CsAutoAttendant, but display reveals friendly Names,
 		like UserPrincipalName or DisplayName for the following connected Objects
@@ -3187,7 +3187,7 @@ function Get-TeamsAutoAttendant {
     If omitted, Get-TeamsAutoAttendant acts like an Alias to Get-CsAutoAttendant (no friendly names)
   .PARAMETER ConciseView
     Optional Switch. Displays reduced set of Parameters for better visibility
-    This View is congurent with output from Get-CsAutoAttendant.
+    This View is congruent with output from Get-CsAutoAttendant.
     Parameters relating to linked Objects are not shown
     Omitting this Switch will display output like Get-CsAutoAttendant | Select *
 	.EXAMPLE
@@ -3241,7 +3241,7 @@ function Get-TeamsAutoAttendant {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    # Asserti"g SkypeOnline Connection
+    # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
@@ -3383,15 +3383,15 @@ function Get-TeamsAutoAttendant {
             #region Application Instance UPNs
             Write-Verbose -Message "'$($AA.Name)' - Parsing Resource Accounts"
             foreach ($AI in $AA.ApplicationInstances) {
-              $AIobject = $null
-              $AIobject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
+              $AIObject = $null
+              $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
               #TODO: Verify what to do if RA cannot be enumerated. Currently empty. Show ObjectId instead?
-              if ($null -ne $AIobject) {
-                [void]$AIObjects.Add($AIobject)
+              if ($null -ne $AIObject) {
+                [void]$AIObjects.Add($AIObject)
               }
               else {
                 # Create new Object with ObjectId as UPN and ObjectId?
-                [void]$AIObjects.Add($AIobject)
+                [void]$AIObjects.Add($AIObject)
               }
             }
 
@@ -3419,7 +3419,7 @@ function Get-TeamsAutoAttendant {
                 DisplayCallHandlingAssociations = $AA.DisplayCallHandlingAssociations
                 DisplayDirectoryLookupScope     = $AA.DisplayDirectoryLookupScope
 
-                ApplicationInstances            = $AIObjects.Userprincipalname
+                ApplicationInstances            = $AIObjects.UserPrincipalName
               }
             }
             else {
@@ -3447,7 +3447,7 @@ function Get-TeamsAutoAttendant {
                 CallHandlingAssociations        = $AA.CallHandlingAssociations
                 DirectoryLookupScope            = $AA.DirectoryLookupScope
 
-                ApplicationInstances            = $AIObjects.Userprincipalname
+                ApplicationInstances            = $AIObjects.UserPrincipalName
               }
 
             }
@@ -3461,7 +3461,7 @@ function Get-TeamsAutoAttendant {
     }
     catch {
       Write-Error -Message 'Could not query Auto Attendants' -Category OperationStopped
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      Write-ErrorRecord $_ #This handles the error message in human readable format.
       return
     }
   } #process
@@ -3488,7 +3488,7 @@ function New-TeamsAutoAttendant {
   .PARAMETER TimeZone
     Required. TimeZone Identifier based on Get-CsAutoAttendantSupportedTimeZone, but abbreviated for easier input.
     Warning: Due to multiple time zone names with in the same relative difference to UTC this MAY produce incongruent output
-    The time zone will be correct, but only specifiying "UTC+01:00" for example will select the first entry.
+    The time zone will be correct, but only specifying "UTC+01:00" for example will select the first entry.
     Default Value: "UTC"
   .PARAMETER LanguageId
     Required. Language Identifier indicating the language that is used to play text and identify voice prompts.
@@ -3620,7 +3620,7 @@ function New-TeamsAutoAttendant {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-    # Language has to be normalised as the Id is case sensititve
+    # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
       Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
@@ -3866,10 +3866,10 @@ $callFlow = New-CsAutoAttendantCallFlow -Name "Default" -Menu $menu -Greetings $
 
 #Construct:
 # FWD to CQ: Provide "$CQName"
-#$CQName = "Name of Queue" # RA or CQ Entitiy? Better safe to use RA!
+#$CQName = "Name of Queue" # RA or CQ Entity? Better safe to use RA!
 $ResourceAccount = "UPN@domain.com" # UPN or DN of an RA that is connected to a CQ (test!)
 $RAObject = Get-TeamsResourceAccount $ResourceAccount
-if($RAObject.AssociatedAs -eq "CallQueue" -and $RAObject.AssocationStatus -eq "Success") {
+if($RAObject.AssociatedAs -eq "CallQueue" -and $RAObject.AssociationStatus -eq "Success") {
   $CallAbleId = New-CsAutoAttendantCallableEntity -Identity $RAObject.ObjectId -Type applicationendpoint
 }
 else {
@@ -3906,7 +3906,7 @@ $MenuOptionDisconnect = New-CsAutoAttendantMenuOption -Action DisconnectCall
 # FWD to CQ: Provide "$CQName"
 $ResourceAccount = "UPN@domain.com" # UPN or DN of an RA that is connected to a CQ (test!)
 $RAObject = Get-TeamsResourceAccount $ResourceAccount
-if($RAObject.AssocationStatus -eq "Success") { # connected
+if($RAObject.AssociationStatus -eq "Success") { # connected
   if($RAObject.AssociatedAs -eq "CallQueue") { # is CQ
     $CallAbleId = New-CsAutoAttendantCallableEntity -Identity $RAObject.ObjectId -Type applicationendpoint
   }
@@ -3986,8 +3986,8 @@ New-TeamsAutoAttendant -Name $Name -LanguageId $language -CallFlows @($afterHour
         Write-Verbose -Message "SUCCESS: '$NameNormalised' Auto Attendant created with all Parameters"
       }
       catch {
-        Write-Error -Message "Error creating the Auto Attendant" -Category WriteError -Exception "Erorr Creating Auto Attendant"
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-Error -Message "Error creating the Auto Attendant" -Category WriteError -Exception "errorr Creating Auto Attendant"
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }
@@ -4096,7 +4096,7 @@ function Remove-TeamsAutoAttendant {
       }
       catch {
         Write-Error -Message "Removal of Auto Attendant '$DN' failed" -Category OperationStopped
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }
@@ -4179,7 +4179,6 @@ function New-TeamsAutoAttendantDialScope {
       }
 
     }
-    # ALT:   $groupIds = Find-CsGroup -SearchQuery "Contoso Sales" | % { $_.Id }
 
     # Create dial Scope
     Write-Verbose -Message "[PROCESS] Creating Dial Scope"
@@ -4213,7 +4212,7 @@ function New-TeamsAutoAttendantSchedule {
   .PARAMETER BusinessDays
     Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule
   .PARAMETER BusinessHours
-    Predefined businss hours. Combined with BusinessDay, forms the WeeklyRecurrentSchedule
+    Predefined business hours. Combined with BusinessDay, forms the WeeklyRecurrentSchedule
   .PARAMETER DateTimeRanges
     Object or Objects defined with New-CsOnlineTimeRange
     Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed
@@ -4380,7 +4379,7 @@ function New-TeamsAutoAttendantSchedule {
         }
       }
 
-      # Alternatively adding provided $DateTimeRanges as $IimeFrame
+      # Alternatively adding provided $DateTimeRanges as $TimeFrame
       "DateTimeRanges" {
         Write-Verbose -Message "[PROCESS] Processing 'DateTimeRanges'"
         Write-Verbose -Message "Please note, the DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care" -Verbose
@@ -4565,7 +4564,7 @@ function Get-TeamsCallQueue {
 
             # Initialising Arrays
             [System.Collections.ArrayList]$UserObjects = @()
-            [System.Collections.ArrayList]$DLobjects = @()
+            [System.Collections.ArrayList]$DLObjects = @()
             [System.Collections.ArrayList]$AgentObjects = @()
             [System.Collections.ArrayList]$AIObjects = @()
 
@@ -4696,9 +4695,9 @@ function Get-TeamsCallQueue {
               Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
               foreach ($DL in $Q.DistributionLists) {
                 $DLobject = Get-AzureADGroup -ObjectId $DL | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
-                [void]$DLobjects.Add($DLobject)
+                [void]$DLObjects.Add($DLobject)
               }
-              # Output: $DLobjects.DisplayName
+              # Output: $DLObjects.DisplayName
 
               Write-Verbose -Message "'$($Q.Name)' - Parsing Users"
               foreach ($User in $Q.Users) {
@@ -4718,15 +4717,15 @@ function Get-TeamsCallQueue {
               #region Application Instance UPNs
               Write-Verbose -Message "'$($Q.Name)' - Parsing Resource Accounts"
               foreach ($AI in $Q.ApplicationInstances) {
-                $AIobject = $null
-                $AIobject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
+                $AIObject = $null
+                $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
                 #TODO: Verify what to do if RA cannot be enumerated. Currently empty. Show ObjectId instead?
-                if ($null -ne $AIobject) {
-                  [void]$AIObjects.Add($AIobject)
+                if ($null -ne $AIObject) {
+                  [void]$AIObjects.Add($AIObject)
                 }
                 else {
                   # Create new Object with ObjectId as UPN and ObjectId?
-                  [void]$AIObjects.Add($AIobject)
+                  [void]$AIObjects.Add($AIObject)
                 }
               }
 
@@ -4759,7 +4758,7 @@ function Get-TeamsCallQueue {
                   TimeoutActionTargetType   = $Q.TimeoutActionTarget.Type
 
                   Users                     = $UserObjects.UserPrincipalName
-                  DistributionLists         = $DLobjects.DisplayName
+                  DistributionLists         = $DLObjects.DisplayName
 
                   Agents                    = $AgentObjects.UserPrincipalName
                   ApplicationInstances      = $AIObjects.Userprincipalname
@@ -4799,7 +4798,7 @@ function Get-TeamsCallQueue {
                   MusicOnHoldAudioFileId                     = $Q.MusicOnHoldAudioFileId
                   WelcomeMusicAudioFileId                    = $Q.WelcomeMusicAudioFileId
                   Users                                      = $UserObjects.UserPrincipalName
-                  DistributionLists                          = $DLobjects.DisplayName
+                  DistributionLists                          = $DLObjects.DisplayName
                   DistributionListsLastExpanded              = $Q.DistributionListsLastExpanded
                   AgentsInSyncWithDistributionLists          = $Q.AgentsInSyncWithDistributionLists
                   AgentsCapped                               = $Q.AgentsCapped
@@ -4818,7 +4817,7 @@ function Get-TeamsCallQueue {
       }
       catch {
         Write-Error -Message 'Could not query Call Queues' -Category OperationStopped
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
   } #process
@@ -5038,7 +5037,7 @@ function New-TeamsCallQueue {
     [string]$OverflowSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
-    [Alias('OAsharedVMtranscript')]
+    [Alias('OASharedVMTranscript')]
     [bool]$EnableOverflowSharedVoicemailTranscription,
     #endregion
 
@@ -5075,7 +5074,7 @@ function New-TeamsCallQueue {
     [string]$TimeoutSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = "Path to Audio File for the SharedVoiceMail Message")]
-    [Alias('TOsharedVMfile', 'TimeoutSharedVMFile')]
+    [Alias('TOSharedVMFile', 'TimeoutSharedVMFile')]
     [ValidateScript( {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
@@ -5094,13 +5093,13 @@ function New-TeamsCallQueue {
     [string]$TimeoutSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
-    [Alias('TOsharedVMtranscript')]
+    [Alias('TOSharedVMTranscript')]
     [bool]$EnableTimeoutSharedVoicemailTranscription,
     #endregion
 
     #Deviation from MS Default (1200s)
     [Parameter(HelpMessage = "Time in seconds (0-2700s) before timeout action is triggered (Default: 30, Note: Microsoft default: 1200)")]
-    [Alias('TOthreshold')]
+    [Alias('TOThreshold')]
     [ValidateScript( {
         If ($_ -ge 0 -and $_ -le 2700) {
           $True
@@ -5194,7 +5193,7 @@ function New-TeamsCallQueue {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-    # Language has to be normalised as the Id is case sensititve
+    # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
       Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
@@ -5428,7 +5427,7 @@ function New-TeamsCallQueue {
     #endregion
 
     #region OverflowActionTarget
-    # Processing for Target is depenent on Action
+    # Processing for Target is dependent on Action
     if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
       switch ($OverflowAction) {
         "DisconnectWithBusy" {
@@ -5654,7 +5653,7 @@ function New-TeamsCallQueue {
     #endregion
 
     #region TimeoutActionTarget
-    # Processing for Target is depenent on Action
+    # Processing for Target is dependent on Action
     if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
       switch ($TimeoutAction) {
         "Disconnect" {
@@ -5977,8 +5976,8 @@ function New-TeamsCallQueue {
         Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue created with all Parameters"
       }
       catch {
-        Write-Error -Message "Error creating the Call Queue" -Category WriteError -Exception "Erorr Creating Call Queue"
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-Error -Message "Error creating the Call Queue" -Category WriteError -Exception "errorr Creating Call Queue"
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }
@@ -6021,7 +6020,7 @@ function Set-TeamsCallQueue {
 	.PARAMETER DisplayName
 		Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
 	.PARAMETER Silent
-		Optional. Supresses output. Use for Bulk provisioning only.
+		Optional. Suppresses output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
 	.PARAMETER AgentAlertTime
 		Optional. Time in Seconds to alert each agent. Works depending on Routing method
@@ -6102,7 +6101,7 @@ function Set-TeamsCallQueue {
 		Changes the DisplayName of Call Queue "My Queue" to "My new Queue Name"
 	.EXAMPLE
 		Set-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefaults
-		Changes the Call Queue "My Queue" to use Microsft Default Values
+		Changes the Call Queue "My Queue" to use Microsoft Default Values
 	.EXAMPLE
 		Set-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
 		Changes the Call Queue "My Queue" to overflow with more than 5 Callers waiting and a timeout window of 90s
@@ -6200,7 +6199,7 @@ function Set-TeamsCallQueue {
     [string]$OverflowSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
-    [Alias('OAsharedVMtranscript')]
+    [Alias('OASharedVMTranscript')]
     [bool]$EnableOverflowSharedVoicemailTranscription,
     #endregion
 
@@ -6236,7 +6235,7 @@ function Set-TeamsCallQueue {
     [string]$TimeoutSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = "Path to Audio File for the SharedVoiceMail Message")]
-    [Alias('TOsharedVMfile', 'TimeoutSharedVMFile')]
+    [Alias('TOSharedVMFile', 'TimeoutSharedVMFile')]
     [ValidateScript( {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
@@ -6255,12 +6254,12 @@ function Set-TeamsCallQueue {
     [string]$TimeoutSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
-    [Alias('TOsharedVMtranscript')]
+    [Alias('TOSharedVMTranscript')]
     [bool]$EnableTimeoutSharedVoicemailTranscription,
     #endregion
 
     [Parameter(HelpMessage = "Time in seconds (0-2700s) before timeout action is triggered (Default: 30, Note: Microsoft default: 1200)")]
-    [Alias('TOthreshold')]
+    [Alias('TOThreshold')]
     [ValidateScript( {
         If ($_ -ge 0 -and $_ -le 2700) {
           $True
@@ -6368,7 +6367,7 @@ function Set-TeamsCallQueue {
       }
     }
 
-    # Language has to be normalised as the Id is case sensititve
+    # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
       Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
@@ -6389,7 +6388,7 @@ function Set-TeamsCallQueue {
     $Parameters = $null
 
     #region Query Unique Element
-    # Initial Query to determine uniqure result (single object)
+    # Initial Query to determine unique result (single object)
     $CallQueue = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue
     if ($null -eq $CallQueue) {
       Write-Error "'$Name' No Object found" -Category ParserError -RecommendedAction  "Please check 'Name' provided" -ErrorAction Stop
@@ -6597,7 +6596,7 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region OverflowActionTarget
-    # Processing for Target is depenent on Action
+    # Processing for Target is dependent on Action
     if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
       switch ($OverflowAction) {
         "DisconnectWithBusy" {
@@ -6832,7 +6831,7 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region TimeoutActionTarget
-    # Processing for Target is depenent on Action
+    # Processing for Target is dependent on Action
     if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
       switch ($TimeoutAction) {
         "Disconnect" {
@@ -7261,7 +7260,7 @@ function Remove-TeamsCallQueue {
       }
       catch {
         Write-Error -Message "Removal of Call Queue '$DN' failed" -Category OperationStopped
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }
@@ -7580,7 +7579,7 @@ function New-TeamsResourceAccountAssociation {
             $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType CallQueue -ConfigurationId $CallQueueObj.Identity
           }
         }
-        # Requery Association Target
+        # Re-query Association Target
         $AssociationTarget = Get-CsCallQueue -Identity $OperationStatus.Results.ConfigurationId -ErrorAction SilentlyContinue
 
         # Output
@@ -7625,7 +7624,7 @@ function New-TeamsResourceAccountAssociation {
         else {
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - This account is already assigned to the following entity:" -Verbose
           $ExistingConnection
-          Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associatd as it is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'" -ErrorAction Stop
+          Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'" -ErrorAction Stop
         }
 
 
@@ -7661,7 +7660,7 @@ function New-TeamsResourceAccountAssociation {
             $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType AutoAttendant -ConfigurationId $AutoAttendantObj.Identity
           }
         }
-        # Requery Association Target
+        # Re-query Association Target
         $AssociationTarget = Get-CsAutoAttendant -Identity $OperationStatus.Results.ConfigurationId -ErrorAction SilentlyContinue
 
         # Output
@@ -7815,7 +7814,7 @@ function Remove-TeamsResourceAccountAssociation {
           AssociationRemoved = $AssocObject.Name
 
         }
-        Write-Ouput $ResourceAccountAssociationObject
+        Write-Output $ResourceAccountAssociationObject
       }
     }
     else {
@@ -8045,7 +8044,7 @@ function New-TeamsResourceAccount {
         Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
         while ( -not (Test-AzureADUser $UPN)) {
           if ($i -gt $imax) {
-            Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been creaated (UserPrincipalName); Continue with Set-TeamsResourceAccount"
+            Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount"
             return
           }
           Write-Progress -Activity "'$Name' Azure Active Directory is creating the Object. Please wait" `
@@ -8094,9 +8093,9 @@ function New-TeamsResourceAccount {
 
       # Verifying License is available
       if ($License -eq "PhoneSystemVirtualUser") {
-        $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
-        Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
-        if ($RemainingPSVUlicenses -lt 1) {
+        $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
+        Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
+        if ($RemainingPSVULicenses -lt 1) {
           Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
         }
         else {
@@ -8104,12 +8103,12 @@ function New-TeamsResourceAccount {
             if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses PhoneSystemVirtualUser")) {
               $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
               Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
-              $Islicensed = $true
+              $IsLicensed = $true
             }
           }
           catch {
             Write-Error -Message "'$Name' License assignment failed for '$License'"
-            Write-ErrorRecord $_ #This handles the eror message in human readable format.
+            Write-ErrorRecord $_ #This handles the error message in human readable format.
           }
         }
       }
@@ -8118,12 +8117,12 @@ function New-TeamsResourceAccount {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses $License")) {
             $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
             Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
-            $Islicensed = $true
+            $IsLicensed = $true
           }
         }
         catch {
           Write-Error -Message "'$Name' License assignment failed for '$License'"
-          Write-ErrorRecord $_ #This handles the eror message in human readable format.
+          Write-ErrorRecord $_ #This handles the error message in human readable format.
         }
       }
       #endregion
@@ -8154,7 +8153,7 @@ function New-TeamsResourceAccount {
       # Assigning Telephone Number
       Write-Verbose -Message "'$Name' Processing Phone Number"
       Write-Verbose -Message "NOTE: Assigning a phone number might fail if the Object is not yet replicated" -Verbose
-      if (-not $Islicensed) {
+      if (-not $IsLicensed) {
         Write-Host "ERROR: A Phone Number can only be assigned to licensed objects." -ForegroundColor Red
         Write-Host "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
       }
@@ -8204,7 +8203,7 @@ function New-TeamsResourceAccount {
 
       # Resource Account License
       #TODO Change License output and verification against $TeamsLicenses
-      if ($Islicensed) {
+      if ($IsLicensed) {
         # License
         if (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV) {
           $ResourceAccuntLicense = "PhoneSystem"
@@ -8250,7 +8249,7 @@ function New-TeamsResourceAccount {
       }
 
       Write-Verbose -Message "Resource Account Created:" -Verbose
-      if ($PSBoundParameters.ContainsKey("PhoneNumber") -and $Islicensed -and $ResourceAccount.PhoneNumber -eq "") {
+      if ($PSBoundParameters.ContainsKey("PhoneNumber") -and $IsLicensed -and $ResourceAccount.PhoneNumber -eq "") {
         Write-Warning -Message "Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount to verify"
       }
 
@@ -8259,7 +8258,7 @@ function New-TeamsResourceAccount {
     }
     catch {
       Write-Warning -Message "Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance"
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      Write-ErrorRecord $_ #This handles the error message in human readable format.
     }
     #endregion
   } #process
@@ -8550,7 +8549,7 @@ function Set-TeamsResourceAccount {
       catch {
         Write-Verbose -Message "FAILED - Error encountered changing DisplayName"
         Write-Error -Message "Problem encountered with changing DisplayName" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     #endregion
@@ -8568,7 +8567,7 @@ function Set-TeamsResourceAccount {
         }
         catch {
           Write-Error -Message "Problem encountered changing Application Type" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
-          Write-ErrorRecord $_ #This handles the eror message in human readable format.
+          Write-ErrorRecord $_ #This handles the error message in human readable format.
         }
       }
     }
@@ -8604,13 +8603,13 @@ function Set-TeamsResourceAccount {
       if ($License -eq $CurrentLicense) {
         # No action required
         Write-Verbose -Message "'$Name' License '$License' already assigned." -Verbose
-        $Islicensed = $true
+        $IsLicensed = $true
       }
       # Verifying License is available
       elseif ($License -eq "PhoneSystemVirtualUser") {
-        $RemainingPSVUlicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
-        Write-Verbose -Message "INFO: $RemainingPSVUlicenses remaining Phone System Virtual User Licenses"
-        if ($RemainingPSVUlicenses -lt 1) {
+        $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
+        Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
+        if ($RemainingPSVULicenses -lt 1) {
           Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
         }
         else {
@@ -8618,12 +8617,12 @@ function Set-TeamsResourceAccount {
             if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-TeamsUserLicense -AddLicenses PhoneSystemVirtualUser")) {
               $null = (Set-TeamsUserLicense -Identity $UserPrincipalName -AddLicenses $License -ErrorAction STOP)
               Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
-              $Islicensed = $true
+              $IsLicensed = $true
             }
           }
           catch {
             Write-Error -Message "'$Name' License assignment failed for '$License'"
-            Write-ErrorRecord $_ #This handles the eror message in human readable format.
+            Write-ErrorRecord $_ #This handles the error message in human readable format.
           }
         }
       }
@@ -8632,12 +8631,12 @@ function Set-TeamsResourceAccount {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses $License")) {
             $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
             Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
-            $Islicensed = $true
+            $IsLicensed = $true
           }
         }
         catch {
           Write-Error -Message "'$Name' License assignment failed for '$License'"
-          Write-ErrorRecord $_ #This handles the eror message in human readable format.
+          Write-ErrorRecord $_ #This handles the error message in human readable format.
         }
       }
     }
@@ -8666,7 +8665,7 @@ function Set-TeamsResourceAccount {
 
     #region PhoneNumber
     if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
-      if ($null -eq $CurrentLicense -and -not $Islicensed) {
+      if ($null -eq $CurrentLicense -and -not $IsLicensed) {
         Write-Error -Message "A Phone Number can only be assigned to licensed objects." -Category ResourceUnavailable -RecommendedAction "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
       }
       else {
@@ -8689,7 +8688,7 @@ function Set-TeamsResourceAccount {
           }
           catch {
             Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-            Write-ErrorRecord $_ #This handles the eror message in human readable format.
+            Write-ErrorRecord $_ #This handles the error message in human readable format.
           }
         }
         # Assigning Telephone Number
@@ -8708,7 +8707,7 @@ function Set-TeamsResourceAccount {
             }
             catch {
               Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
+              Write-ErrorRecord $_ #This handles the error message in human readable format.
             }
           }
           else {
@@ -8722,7 +8721,7 @@ function Set-TeamsResourceAccount {
             }
             catch {
               Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
-              Write-ErrorRecord $_ #This handles the eror message in human readable format.
+              Write-ErrorRecord $_ #This handles the error message in human readable format.
             }
           }
         }
@@ -8966,7 +8965,7 @@ function Get-TeamsResourceAccount {
     }
     catch {
       Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      Write-ErrorRecord $_ #This handles the error message in human readable format.
     }
     #endregion
   } #process
@@ -9174,7 +9173,7 @@ function Find-TeamsResourceAccount {
     }
     catch {
       Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      Write-ErrorRecord $_ #This handles the error message in human readable format.
     }
     #endregion
   } #process
@@ -9316,7 +9315,7 @@ function Remove-TeamsResourceAccount {
           }
           catch {
             Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
-            Write-ErrorRecord $_ #This handles the eror message in human readable format.
+            Write-ErrorRecord $_ #This handles the error message in human readable format.
             return
           }
         }
@@ -9347,7 +9346,7 @@ function Remove-TeamsResourceAccount {
     }
     catch {
       Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      Write-ErrorRecord $_ #This handles the error message in human readable format.
       return
     }
     #endregion
@@ -9372,7 +9371,7 @@ function Remove-TeamsResourceAccount {
     }
     catch {
       Write-Error -Message "Unassignment of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
-      Write-ErrorRecord $_ #This handles the eror message in human readable format.
+      Write-ErrorRecord $_ #This handles the error message in human readable format.
       return
     }
 
@@ -9388,7 +9387,7 @@ function Remove-TeamsResourceAccount {
       }
       catch {
         Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     else {
@@ -9907,10 +9906,10 @@ function Get-AzureADUserFromUPN {
         Write-Output $User
       }
       catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
       catch {
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
 
@@ -10646,7 +10645,7 @@ function Test-TeamsTenantPolicy {
         Return $False
       }
       else {
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     finally {
@@ -11753,7 +11752,7 @@ function Get-SkuPartNumberfromSkuID {
 	.PARAMETER SkuId
 		Identity of the License
 	.PARAMETER Output
-		Changes the Output Object. Can Return ProductName or SkuPartnumber (default)
+		Changes the Output Object. Can Return ProductName or SkuPartNumber (default)
 	.FUNCTIONALITY
 		Helper Function for Licensing, translating ID to FriendlyName
 	#>
@@ -12714,7 +12713,7 @@ function ProcessLicense {
       }
       catch {
         #$Result = GetActionOutputObject2 -Name $UserID -Result "ERROR: Unable to assign $SkuPartNumber`: $_"
-        Write-ErrorRecord $_ #This handles the eror message in human readable format.
+        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     else {
