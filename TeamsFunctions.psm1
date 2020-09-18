@@ -25,7 +25,7 @@
 
   # Versioning
   This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
-  Major v20 is the the first one published in 2020, followed by Minor verson for Month and Day.
+  Major v20 is the the first one published in 2020, followed by Minor version for Month and Day.
   Subsequent Minor versions indicate additional publications on this day.
   Revisions are planned quarterly
 
@@ -38,7 +38,7 @@
         Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
         Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
         Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
-        Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assinged
+        Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assigned
   20.05.03.1  First Publication
         Bug fixing, erroneously incorporated all local modules.
   20.05.09.1  Bug fixing, minor improvements
@@ -79,14 +79,14 @@
         Exposed Import-TeamsAudioFile for public use.
         Updated New-TeamsCallQueue and Set-TeamsCallQueue to use Import-TeamsAudioFile for Welcome Message and Music On Hold
         Updated Set-TeamsCallQueue to allow $NULL for Parameter WelcomeMusicAudioFile
-  20.07.18-prerelase    License Update
+  20.07.18-prerelease    License Update
         Added Variable $TeamsLicenses - Fully populated with 38 Microsoft Licenses
         Updated Get-TeamsTenantLicense - now returns a proper Object, based on Variable $TeamsLicenses
         Updated Get-TeamsUserLicense - now returns a proper Object, based on Variable $TeamsLicenses
-        Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicnese
+        Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicense
         This function now supports multiple adds and removes including purges
         Added Disclaimer for Add-TeamsUserLicense as it is now deprecated
-        Removed Get-TeamsTenantLicneses (plural)
+        Removed Get-TeamsTenantLicenses (plural)
   20.07.26-prerelease   Voicemail and SharedVoicemail for TeamsCallQueue
         Updated New-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
         Updated Set-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
@@ -124,7 +124,7 @@
           Added CMDLETBINDING, OUTPUTTYPE, BEGIN, PROCESS and END Clauses to all functions that did not have them set yet (with the exception of short Helper functions)
           Added Verbose Output to all BEGIN, PROCESS and END clauses for easier troubleshooting
         CHANGED: Function Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD were renamed to its alias (swapped places)
-          This is due to a change in the default behaviour of the Command to only connect to SkypeOnline and AzureAD without any Parameters
+          This is due to a change in the default behavior of the Command to only connect to SkypeOnline and AzureAD without any Parameters
           MicrosoftTeams and ExchangeOnline are still available as options.
         ADDED: Voice Configuration Scripts as Work-in-progress:
           Get-TeamsTenantVoiceConfig - Lists Tenant Voice Configuration
@@ -136,7 +136,7 @@
           Test-TeamsUserVoiceConfig - Tests whether either CallPlan or DirectRouting config is found. Partial or Full configuration testable
           Test-TeamsUserHasCallPlan - Added Helper function to determine whether the User has a Call Plan assigned.
   20.09.13-prerelease
-        ADDED: Auto Attendent Scripts! Get-TeamsAutoAttendant, Remove-TeamsAutoAttendant are done
+        ADDED: Auto Attendant Scripts! Get-TeamsAutoAttendant, Remove-TeamsAutoAttendant are done
           New-TeamsAutoAttendant is currently being sketched out. Use case is hard to define as the topic is complex.
           Currently, developing creation of a generic default configuration set:
           Default Call Flow (Disconnect) with default AfterHours Flow (Disconnect),
@@ -177,7 +177,7 @@ function Connect-SkypeOnline {
     Additional prompts for Multi Factor Authentication are displayed as required
 	.EXAMPLE
 		Connect-SkypeOnline -UserName admin@contoso.com
-		Example 2 will prefill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
+		Example 2 will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
     Additional prompts for Multi Factor Authentication are displayed as required
 	.NOTES
 		Requires that the Skype Online Connector PowerShell module be installed.
@@ -241,7 +241,7 @@ function Connect-SkypeOnline {
 
     #endregion
 
-    # Testing exisiting Module and Connection
+    # Testing existing Module and Connection
     if (Test-Module SkypeOnlineConnector) {
       if ((Test-SkypeOnlineConnection) -eq $false) {
         $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
@@ -685,7 +685,7 @@ function Disconnect-SkypeOnline {
     .NOTES
       Helper function to disconnect from SkypeOnline
       By default Office 365 allows two (!) concurrent sessions per User.
-      If sessions hang or are incorrectly closed (not properly disconnectd),
+      If sessions hang or are incorrectly closed (not properly disconnected),
       this can lead to session exhaustion which results in not being able to connect again.
       An admin can sign-out this user from all Sessions through the Office 365 Admin Center
       This process may take up to 15 mins and is best avoided, through proper disconnect after use
@@ -712,9 +712,9 @@ function Disconnect-SkypeOnline {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
-    $PSSesssions = Get-PSSession  -WarningAction SilentlyContinue
+    $PSSessions = Get-PSSession  -WarningAction SilentlyContinue
 
-    foreach ($session in $PSSesssions) {
+    foreach ($session in $PSSessions) {
       if ($session.ComputerName -like "*.online.lync.com") {
         $sessionFound = $true
         Remove-PSSession $session
@@ -760,7 +760,7 @@ function Set-TeamsUserLicense {
 		Optional. Licenses to be added (main function)
     Accepted Values are listed in $TeamsLicenses.ParameterName
 	.PARAMETER RemoveLicenses
-		Optional. Licesnses to be removed (alternative function)
+		Optional. Licenses to be removed (alternative function)
     Accepted Values are listed in $TeamsLicenses.ParameterName
 	.PARAMETER RemoveAllLicenses
 		Optional Switch. Removes all licenses currently assigned (intended for replacements)
@@ -3716,6 +3716,7 @@ function New-TeamsAutoAttendant {
                 if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                   $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                  Start-Process Sleep 10
                   $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                 }
@@ -4699,7 +4700,7 @@ function Get-TeamsCallQueue {
               }
               # Output: $DLobjects.DisplayName
 
-              Write-Verbose -Message "'$($Q.Name)' Parsing Users"
+              Write-Verbose -Message "'$($Q.Name)' - Parsing Users"
               foreach ($User in $Q.Users) {
                 $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
                 [void]$UserObjects.Add($UserObject)
@@ -5127,26 +5128,7 @@ function New-TeamsCallQueue {
 
     #region Music files
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
-    [ValidateScript( {
-        if ($null -eq $_) {
-          $True
-        }
-        else {
-          If (Test-Path $_) {
-            If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
-              $True
-            }
-            else {
-              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
-              $false
-            }
-          }
-          else {
-            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForegroundColor Red
-            $false
-          }
-        }
-      })]
+    [AllowNull()]
     [string]$WelcomeMusicAudioFile,
 
     [Parameter(HelpMessage = "Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)")]
@@ -5278,8 +5260,33 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
+    #TODO: Run New-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed) = Continue
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
+        # Validation - File Exists
+        try{
+          $null = Test-Path $WelcomeMusicAudioFile
+        }
+        catch {
+          Write-Error -Message "WelcomeMusicAudioFile: File not found" -Category InvalidData
+          return
+        }
+
+        # Validation - File is provided in the correct format
+        try{
+          If ((Get-Item $WelcomeMusicAudioFile).length -le 5242880 -and ($WelcomeMusicAudioFile -match '.mp3' -or $WelcomeMusicAudioFile -match '.wav' -or $WelcomeMusicAudioFile -match '.wma')) {
+            Write-Verbose -Message "WelcomeMusicAudioFile: Format check passed - SUCCESS"
+          }
+          else {
+            throw
+          }
+        }
+        catch {
+          Write-Error -Message "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -Category InvalidData
+          return
+        }
+
+        # File Import
         $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
         try {
@@ -5466,6 +5473,7 @@ function New-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                      Start-Process Sleep 10
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -5691,6 +5699,7 @@ function New-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                      Start-Process Sleep 10
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -5847,11 +5856,10 @@ function New-TeamsCallQueue {
     #region Users - Parsing and verifying Users
     [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
-      Write-Verbose -Message "'$NameNormalised' Parsing Users"
+      Write-Verbose -Message "'$NameNormalised' - Parsing Users"
       foreach ($User in $Users) {
         if (Test-AzureADUser $User) {
           # Determine ID from UPN
-          $UserIdList = $null
           $UserObject = $null
           $UserObject = Get-AzureADUser -ObjectId "$User"
           $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
@@ -5870,6 +5878,7 @@ function New-TeamsCallQueue {
                 try {
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                   $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                  Start-Process Sleep 10
                   $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                 }
@@ -6279,26 +6288,7 @@ function Set-TeamsCallQueue {
 
     #region Music files
     [Parameter(HelpMessage = "Path to Audio File for Welcome Message")]
-    [ValidateScript( {
-        if ($null -eq $_) {
-          $True
-        }
-        else {
-          If (Test-Path $_) {
-            If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
-              $True
-            }
-            else {
-              Write-Host "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -ForegroundColor Red
-              $false
-            }
-          }
-          else {
-            Write-Host "WelcomeMusicAudioFile: File not found, please verify" -ForegroundColor Red
-            $false
-          }
-        }
-      })]
+    [AllowNull()]
     [string]$WelcomeMusicAudioFile,
 
     [Parameter(HelpMessage = "Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)")]
@@ -6455,8 +6445,33 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
+    #TODO: Run Set-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed)
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
+        # Validation - File Exists
+        try{
+          $null = Test-Path $WelcomeMusicAudioFile
+        }
+        catch {
+          Write-Error -Message "WelcomeMusicAudioFile: File not found" -Category InvalidData
+          return
+        }
+
+        # Validation - File is provided in the correct format
+        try{
+          If ((Get-Item $WelcomeMusicAudioFile).length -le 5242880 -and ($WelcomeMusicAudioFile -match '.mp3' -or $WelcomeMusicAudioFile -match '.wav' -or $WelcomeMusicAudioFile -match '.wma')) {
+            Write-Verbose -Message "WelcomeMusicAudioFile: Format check passed - SUCCESS"
+          }
+          else {
+            throw
+          }
+        }
+        catch {
+          Write-Error -Message "WelcomeMusicAudioFile: Must be a file of MP3, WAV or WMA format, max 5MB" -Category InvalidData
+          return
+        }
+
+        # File Import
         $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
         try {
@@ -6627,6 +6642,7 @@ function Set-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                      Start-Process Sleep 10
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -6861,6 +6877,7 @@ function Set-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                      Start-Process Sleep 10
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -7030,7 +7047,6 @@ function Set-TeamsCallQueue {
       foreach ($User in $Users) {
         if (Test-AzureADUser $User) {
           # Determine ID from UPN
-          $UserIdList = $null
           $UserObject = $null
           $UserObject = Get-AzureADUser -ObjectId "$User"
           $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
@@ -7049,6 +7065,7 @@ function Set-TeamsCallQueue {
                 try {
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                   $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+                  Start-Process Sleep 10
                   $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                 }
