@@ -3716,7 +3716,21 @@ function New-TeamsAutoAttendant {
                 if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                   $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                  Start-Process Sleep 10
+                  $i = 0
+                  $imax = 20
+                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
+                    if ($i -gt $imax) {
+                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+                      return
+                    }
+                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
+                      -PercentComplete (($i * 100) / $imax) `
+                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+
+                    Start-Sleep -Milliseconds 1000
+                    $i++
+                  }
                   $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                 }
@@ -4605,6 +4619,15 @@ function Get-TeamsCallQueue {
                       Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
                     }
                   }
+                  "Phone" {
+                    try {
+                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                      $OAT = $OATobject.UserPrincipalName
+                    }
+                    catch {
+                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                    }
+                  }
                   default {
                     try {
                       $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
@@ -5472,7 +5495,21 @@ function New-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                      Start-Process Sleep 10
+                                        $i = 0
+                  $imax = 20
+                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
+                    if ($i -gt $imax) {
+                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+                      return
+                    }
+                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
+                      -PercentComplete (($i * 100) / $imax) `
+                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+
+                    Start-Sleep -Milliseconds 1000
+                    $i++
+                  }
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -5698,7 +5735,21 @@ function New-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                      Start-Process Sleep 10
+                                        $i = 0
+                  $imax = 20
+                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
+                    if ($i -gt $imax) {
+                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+                      return
+                    }
+                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
+                      -PercentComplete (($i * 100) / $imax) `
+                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+
+                    Start-Sleep -Milliseconds 1000
+                    $i++
+                  }
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -5877,7 +5928,21 @@ function New-TeamsCallQueue {
                 try {
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                   $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                  Start-Process Sleep 10
+                                    $i = 0
+                  $imax = 20
+                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
+                    if ($i -gt $imax) {
+                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+                      return
+                    }
+                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
+                      -PercentComplete (($i * 100) / $imax) `
+                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+
+                    Start-Sleep -Milliseconds 1000
+                    $i++
+                  }
                   $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                 }
@@ -6641,7 +6706,21 @@ function Set-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                      Start-Process Sleep 10
+                                        $i = 0
+                  $imax = 20
+                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
+                    if ($i -gt $imax) {
+                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+                      return
+                    }
+                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
+                      -PercentComplete (($i * 100) / $imax) `
+                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+
+                    Start-Sleep -Milliseconds 1000
+                    $i++
+                  }
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -6876,7 +6955,21 @@ function Set-TeamsCallQueue {
                     if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                       $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                      Start-Process Sleep 10
+                                        $i = 0
+                  $imax = 20
+                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
+                    if ($i -gt $imax) {
+                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+                      return
+                    }
+                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
+                      -PercentComplete (($i * 100) / $imax) `
+                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+
+                    Start-Sleep -Milliseconds 1000
+                    $i++
+                  }
                       $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                       Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                     }
@@ -7064,7 +7157,21 @@ function Set-TeamsCallQueue {
                 try {
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
                   $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                  Start-Process Sleep 10
+                                    $i = 0
+                  $imax = 20
+                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
+                    if ($i -gt $imax) {
+                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+                      return
+                    }
+                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
+                      -PercentComplete (($i * 100) / $imax) `
+                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+
+                    Start-Sleep -Milliseconds 1000
+                    $i++
+                  }
                   $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
                   Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
                 }
@@ -7516,6 +7623,9 @@ function New-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
+    #TODO Investigate how this can be simplified. Output from GET is doubled up (b/c executed twice)
+    # CQ or AA can be made into a SWITCH. $Account.UserPrincipalName is displayed before ForEach! Investigate!
+    # Add wait to requery / output?
     if ($null -ne $Accounts) {
       #region Connection to Call Queue
       if ($PSBoundParameters.ContainsKey('CallQueue')) {
@@ -8038,6 +8148,7 @@ function New-TeamsResourceAccount {
       Write-Verbose -Message "'$Name' Creating Resource Account with New-CsOnlineApplicationInstance..."
       if ($PSCmdlet.ShouldProcess("$UPN", "New-CsOnlineApplicationInstance")) {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
+        #TODO: Create helper function for this: Input: $imax, $ErrorMessage and $WaitMessage. Output, nothing
         $i = 0
         $imax = 20
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($imax s) to be able to parse the Object." -Verbose
@@ -8929,7 +9040,11 @@ function Get-TeamsResourceAccount {
 
         # Usage Location from Object
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
-        $UsageLocation = (Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)").UsageLocation
+        $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
+
+        # Parsing CsOnlineUser
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy"
+        $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue
 
         # Associations
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
@@ -8949,11 +9064,12 @@ function Get-TeamsResourceAccount {
         $ResourceAccountObject = [PSCustomObject][ordered]@{
           UserPrincipalName = $ResourceAccount.UserPrincipalName
           DisplayName       = $ResourceAccount.DisplayName
-          UsageLocation     = $UsageLocation
+          UsageLocation     = $AzureAdUser.UsageLocation
           ApplicationType   = $ResourceAccountApplicationType
           License           = $ResourceAccuntLicense
           PhoneNumberType   = $ResourceAccountPhoneNumberType
           PhoneNumber       = $ResourceAccount.PhoneNumber
+          OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy
           AssociatedTo      = $AssocObject.Name
           AssociatedAs      = $Association.ConfigurationType
           AssocationStatus  = $AssociationStatus.Status
