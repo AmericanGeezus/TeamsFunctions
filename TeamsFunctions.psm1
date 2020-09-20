@@ -2603,7 +2603,7 @@ function New-TeamsUserVoiceConfig {
     #Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
     #Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
     Write-Warning -Message "This Script is currently IN DEVELOPMENT (ALPHA). Functions may not produce any meaningful output yet"
-    Write-Debug -Message "Handle with Care. This function is not yet implemented to specifications." -Debug
+    Write-Debug -Message "Handle with Care. This function is not yet implemented fully. Use with default was tested successfully!" -Debug
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -2769,7 +2769,7 @@ function Set-TeamsUserVoiceConfig {
     if ( Test-AzureADUser $Identity ) {
       $UserObject = Get-CsOnlineUser $Identity -WarningAction SilentlyContinue
       $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-      $IsLicensed = Test-TeasmUserLicense -Identity $Identity -ServicePlan MCOEV
+      $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
     }
     else {
       Write-Error -Message "User '$Identity' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -3759,13 +3759,14 @@ function New-TeamsAutoAttendant {
       Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
       $VoiceResponsesSupported = (Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported
     }
-    <# Language has been granted a default
     else {
+      $Language = $LanguageId
+      <# Language has been granted a default value
       # Checking for Parameters which would require LanguageId
       Write-Error "Parameter LanguageId is required and missing." -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
       return
+      #>
     }
-    #>
 
     # TimeZoneId
     if ($TimeZone -eq "UTC") {
@@ -3869,7 +3870,7 @@ function New-TeamsAutoAttendant {
 
           # Building Menu Only if Successful
           if ($BusinessHoursCallTargetIdentity) {
-            $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity.Id
+            $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity.Id -DtmfResponse Automatic
             $BusinessHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionTransfer)
 
             break
@@ -3877,7 +3878,7 @@ function New-TeamsAutoAttendant {
           else {
             # Reverting to Disconnect
             Write-Warning -Message "'$NameNormalised' DefaultCallFlow - Business Hours Menu not created properly. Reverting to Disconnect" -Verbose
-            $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall
+            $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
             $BusinessHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
           }
         }
@@ -3893,7 +3894,7 @@ function New-TeamsAutoAttendant {
         default {
           # Defaulting to Disconnect
           Write-Verbose -Message "'$NameNormalised' DefaultCallFlow not provided or 'Disconnect' - Using default (Disconnect)" -Verbose
-          $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall
+          $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
           $BusinessHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
         }
       }
@@ -3917,7 +3918,6 @@ function New-TeamsAutoAttendant {
       #region Building Call Flow
       # Adding Business Hours Call Flow
       $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenu
-      $BusinessHoursCallFlowParameters += New-Object PSObject -Property $BusinessHoursCallFlowParameters
       $BusinessHoursCallFlow = New-CsAutoAttendantCallFlow @BusinessHoursCallFlowParameters
       $Parameters += @{'DefaultCallFlow' = $BusinessHoursCallFlow }
       #endregion
@@ -3962,7 +3962,7 @@ function New-TeamsAutoAttendant {
 
           # Building Menu Only if Successful
           if ($AfterHoursCallTargetEntity) {
-            $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity.Id
+            $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity.Id -DtmfResponse Automatic
             $AfterHoursMenu = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionTransfer)
 
             break
@@ -3970,7 +3970,7 @@ function New-TeamsAutoAttendant {
           else {
             # Reverting to Disconnect
             Write-Warning -Message "'$NameNormalised' Call Flow - After Hours Menu not created properly. Reverting to Disconnect" -Verbose
-            $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall
+            $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
             $AfterHoursMenu = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
           }
         }
@@ -3986,7 +3986,7 @@ function New-TeamsAutoAttendant {
         default {
           # Defaulting to Disconnect
           Write-Verbose -Message "'$NameNormalised' CallFlow - AfterHoursCallFlow not provided or Disconnect. Using default (Disconnect)" -Verbose
-          $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall
+          $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
           $AfterHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
         }
       }
@@ -4010,7 +4010,6 @@ function New-TeamsAutoAttendant {
       #region Building Call Flow
       # Adding After Hours Call Flow
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenu
-      $AfterHoursCallFlowParameters += New-Object PSObject -Property $AfterHoursCallFlowParameters
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       $Parameters += @{'CallFlow' = $AfterHoursCallFlow }
 
@@ -4023,14 +4022,12 @@ function New-TeamsAutoAttendant {
     if ($PSBoundParameters.ContainsKey('Schedule')) {
       # Custom Schedule provided - Using As-Is
       Write-Verbose -Message "'$NameNormalised' Schedule - Custom Object provided. Over-riding other options" -Verbose
-      $Parameters += @{'Schedule' = $Schedule }
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
     }
     else {
       # Defaulting to Mon-Fri 9-17
       Write-Verbose -Message "'$NameNormalised' Schedule - No Custom Object - Using (Mon-Fri 09:00-17:00)" -Verbose
       $afterHoursSchedule = New-TeamsAutoAttendantSchedule -Name "Business Hours Schedule" -WeeklyRecurrentSchedule -BusinessDays MonToFri -BusinessHours 9to5 -Complement
-      $Parameters += @{'Schedule' = $afterHoursSchedule }
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $afterHoursSchedule.Id
     }
 
@@ -4100,7 +4097,7 @@ function New-TeamsAutoAttendant {
     #region OUTPUT
     # Re-query output
     if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
-      $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -WarningAction SilentlyContinue
+      $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -ConciseView -WarningAction SilentlyContinue
       return $AAFinal
     }
     else {
@@ -4390,11 +4387,10 @@ function New-TeamsAutoAttendantCallableEntity {
         }
       }
       "User" {
-        $EVenabled = $false
         if ( Test-AzureADUser $Identity ) {
           $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
           $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-          $IsLicensed = Test-TeasmUserLicense -Identity $Identity -ServicePlan MCOEV
+          $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
         }
         else {
           Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not found" -Category ObjectNotFound -ErrorAction Stop
@@ -4407,12 +4403,12 @@ function New-TeamsAutoAttendantCallableEntity {
         if ( -not $IsEVenabled) {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
           if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-            $EVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+            $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
           }
         }
 
         # Add Operator
-        if ( $EVenabled ) {
+        if ( $IsEVenabled ) {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) used"
           $Id = (Get-AzureADUser -ObjectId "$User" -ErrorAction STOP).ObjectId
         }
@@ -4668,27 +4664,27 @@ function New-TeamsAutoAttendantSchedule {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     # Initialising Splatting Object
-    $CsOnlineScheduleParams = $null
+    $CsOnlineScheduleParams = @{}
 
     # Adding generic parameters
-    $CsOnlineScheduleParams += @{ 'Name' = $Name }
-    #$CsOnlineScheduleParams += @{ 'ErrorAction' = $Stop }
+    $CsOnlineScheduleParams.Name = $Name
+    #$CsOnlineScheduleParams.ErrorAction' = $Stop }
 
     if ($Complement) {
       Write-Verbose -Message "[PROCESS] Processing 'Complement'"
-      $CsOnlineScheduleParams += @{ 'Complement' = $true }
+      $CsOnlineScheduleParams.Complement = $true
     }
 
     switch ($PSBoundParameters.Keys) {
       # First, adding processing switches
       "WeeklyRecurrentSchedule" {
         Write-Verbose -Message "[PROCESS] Processing 'WeeklyRecurrentSchedule'"
-        $CsOnlineScheduleParams += @{ 'WeeklyRecurrentSchedule' = $true }
+        $CsOnlineScheduleParams.WeeklyRecurrentSchedule = $true
       }
 
       "Fixed" {
         Write-Verbose -Message "[PROCESS] Processing 'Fixed'"
-        $CsOnlineScheduleParams += @{ 'Fixed' = $true }
+        $CsOnlineScheduleParams.Fixed = $true
       }
 
       # Then, Adding $BusinessHours as $TimeFrame
@@ -4756,35 +4752,35 @@ function New-TeamsAutoAttendantSchedule {
         Write-Verbose -Message "[PROCESS] Processing 'BusinessDays'"
         switch ($BusinessDays) {
           'MonToFri' {
-            $CsOnlineScheduleParams += @{ 'MondayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'TuesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'WednesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'ThursdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'FridayHours' = $TimeFrame }
+            $CsOnlineScheduleParams.MondayHours = $TimeFrame
+            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
+            $CsOnlineScheduleParams.FridayHours = $TimeFrame
           }
           'MonToSat' {
-            $CsOnlineScheduleParams += @{ 'MondayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'TuesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'WednesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'ThursdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'FridayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'SaturdayHours' = $TimeFrame }
+            $CsOnlineScheduleParams.MondayHours = $TimeFrame
+            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
+            $CsOnlineScheduleParams.FridayHours = $TimeFrame
+            $CsOnlineScheduleParams.SaturdayHours = $TimeFrame
           }
           'MonToSun' {
-            $CsOnlineScheduleParams += @{ 'MondayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'TuesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'WednesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'ThursdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'FridayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'SaturdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'SundayHours' = $TimeFrame }
+            $CsOnlineScheduleParams.MondayHours = $TimeFrame
+            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
+            $CsOnlineScheduleParams.FridayHours = $TimeFrame
+            $CsOnlineScheduleParams.SaturdayHours = $TimeFrame
+            $CsOnlineScheduleParams.SundayHours = $TimeFrame
           }
           'SunToThu' {
-            $CsOnlineScheduleParams += @{ 'SundayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'MondayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'TuesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'WednesdayHours' = $TimeFrame }
-            $CsOnlineScheduleParams += @{ 'ThursdayHours' = $TimeFrame }
+            $CsOnlineScheduleParams.SundayHours = $TimeFrame
+            $CsOnlineScheduleParams.MondayHours = $TimeFrame
+            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
+            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
           }
         }
       }
@@ -5718,7 +5714,7 @@ function New-TeamsCallQueue {
     }
     #endregion
 
-    #region Valused Parameters
+    #region Valued Parameters
     if ($PSBoundParameters.ContainsKey('UseMicrosoftDefaults')) {
       Write-Verbose -Message "'$NameNormalised' Setting default values according to New-CsCallQueue (Microsoft defaults)" -Verbose
       # AgentAlertTime
@@ -5825,11 +5821,10 @@ function New-TeamsCallQueue {
             }
             elseif ($OverflowActionTarget -match '@') {
               #Assume it is a User
-              $EVenabled = $false
               $Identity = $OverflowActionTarget
               if ( Test-AzureADUser $Identity ) {
                 $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-                $IsLicensed = Test-TeasmUserLicense -Identity $Identity -ServicePlan MCOEV
+                $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
                 if ( -not $IsLicensed  ) {
                   Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                 }
@@ -5838,12 +5833,12 @@ function New-TeamsCallQueue {
                   if ( -not $IsEVenabled) {
                     Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
                     if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                      $EVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                      $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
                     }
                   }
 
                   # Add Target
-                  if ( $EVenabled ) {
+                  if ( $IsEVenabled ) {
                     Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) used" -Verbose
                     $Parameters += @{'OverflowActionTarget' = $UserObject.ObjectId }
                   }
@@ -6038,11 +6033,10 @@ function New-TeamsCallQueue {
             }
             elseif ($TimeoutActionTarget -match '@') {
               #Assume it is a User
-              $EVenabled = $false
               $Identity = $TimeoutActionTarget
               if ( Test-AzureADUser $Identity ) {
                 $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-                $IsLicensed = Test-TeasmUserLicense -Identity $Identity -ServicePlan MCOEV
+                $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
                 if ( -not $IsLicensed  ) {
                   Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                 }
@@ -6051,12 +6045,12 @@ function New-TeamsCallQueue {
                   if ( -not $IsEVenabled) {
                     Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
                     if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                      $EVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                      $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
                     }
                   }
 
                   # Add Target
-                  if ( $EVenabled ) {
+                  if ( $IsEVenabled ) {
                     Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) used" -Verbose
                     $Parameters += @{'TimeoutActionTarget' = $UserObject.ObjectId }
                   }
@@ -6205,52 +6199,23 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' - Parsing Users"
       foreach ($User in $Users) {
-        if (Test-AzureADUser $User) {
-          # Determine ID from UPN
-          $UserObject = $null
-          $UserObject = Get-AzureADUser -ObjectId "$User"
-          $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
-          $ServicePlanName = "MCOEV"
-          $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
-          if ($ServicePlanStatus -ne "Success") {
-            # User not licensed (doesn't have Phone System)
-            Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
+        if ( Test-AzureADUser $User ) {
+          $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
+          $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV
+          if ( -not $IsLicensed  ) {
+            Write-Warning -Message "User '$User' found but not licensed (PhoneSystem). Omitting User"
           }
           else {
-            Write-Verbose -Message "User '$User' License (PhoneSystem):   SUCCESS"
-            $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
-            if (-not $EVenabled) {
-              # User not EV-Enabled
-              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
-                try {
-                  Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
-                  $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                                    $i = 0
-                  $imax = 20
-                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
-                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
-                    if ($i -gt $imax) {
-                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
-                      return
-                    }
-                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
-                      -PercentComplete (($i * 100) / $imax) `
-                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
-
-                    Start-Sleep -Milliseconds 1000
-                    $i++
-                  }
-                  $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
-                  Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
-                }
-                catch {
-                  Write-Verbose -Message "User '$User' Enterprise Voice Status: FAILED. Please check User provisioning manually and run Set-TeamsCallQueue again!" -Verbose
-                }
+            $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+            if ( -not $IsEVenabled) {
+              Write-Verbose -Message "User '$User' found and licensed, but not enabled for EnterpriseVoice" -Verbose
+              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $User -Force
               }
             }
 
-            # Add enabled user to list
-            if ($EVenabled) {
+            # Add Target
+            if ( $IsEVenabled ) {
               Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
               [void]$UserIdList.Add($UserObject.ObjectId)
             }
@@ -6877,7 +6842,7 @@ function Set-TeamsCallQueue {
     }
     #endregion
 
-    #region Valused Parameters
+    #region Valued Parameters
     # AgentAlertTime
     if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
       $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
@@ -6967,11 +6932,10 @@ function Set-TeamsCallQueue {
             }
             elseif ($OverflowActionTarget -match '@') {
               #Assume it is a User
-              $EVenabled = $false
               $Identity = $OverflowActionTarget
               if ( Test-AzureADUser $Identity ) {
                 $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-                $IsLicensed = Test-TeasmUserLicense -Identity $Identity -ServicePlan MCOEV
+                $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
                 if ( -not $IsLicensed  ) {
                   Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                 }
@@ -6980,12 +6944,12 @@ function Set-TeamsCallQueue {
                   if ( -not $IsEVenabled) {
                     Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
                     if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                      $EVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                      $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
                     }
                   }
 
                   # Add Target
-                  if ( $EVenabled ) {
+                  if ( $IsEVenabled ) {
                     Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) used" -Verbose
                     $Parameters += @{'OverflowActionTarget' = $UserObject.ObjectId }
                   }
@@ -7191,11 +7155,10 @@ function Set-TeamsCallQueue {
             }
             elseif ($TimeoutActionTarget -match '@') {
               #Assume it is a User
-              $EVenabled = $false
               $Identity = $TimeoutActionTarget
               if ( Test-AzureADUser $Identity ) {
                 $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-                $IsLicensed = Test-TeasmUserLicense -Identity $Identity -ServicePlan MCOEV
+                $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
                 if ( -not $IsLicensed  ) {
                   Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                 }
@@ -7204,12 +7167,12 @@ function Set-TeamsCallQueue {
                   if ( -not $IsEVenabled) {
                     Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
                     if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                      $EVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                      $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
                     }
                   }
 
                   # Add Target
-                  if ( $EVenabled ) {
+                  if ( $IsEVenabled ) {
                     Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) used" -Verbose
                     $Parameters += @{'TimeoutActionTarget' = $UserObject.ObjectId }
                   }
@@ -7368,52 +7331,23 @@ function Set-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
       foreach ($User in $Users) {
-        if (Test-AzureADUser $User) {
-          # Determine ID from UPN
-          $UserObject = $null
-          $UserObject = Get-AzureADUser -ObjectId "$User"
-          $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
-          $ServicePlanName = "MCOEV"
-          $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object ServicePlanName -EQ $ServicePlanName).ProvisioningStatus
-          if ($ServicePlanStatus -ne "Success") {
-            # User not licensed (doesn't have Phone System)
-            Write-Warning -Message "User '$User' License (PhoneSystem):   FAILED - User is not correctly licensed, omitting User"
+        if ( Test-AzureADUser $User ) {
+          $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
+          $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV
+          if ( -not $IsLicensed  ) {
+            Write-Warning -Message "User '$User' found but not licensed (PhoneSystem). Omitting User"
           }
           else {
-            Write-Verbose -Message "User '$User' License (PhoneSystem):   SUCCESS"
-            $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
-            if (-not $EVenabled) {
-              # User not EV-Enabled
-              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Enabling User for EnterpriseVoice")) {
-                try {
-                  Write-Verbose -Message "User '$User' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
-                  $null = Set-CsUser $User -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-                                    $i = 0
-                  $imax = 20
-                  Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
-                  while ( -not $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled) {
-                    if ($i -gt $imax) {
-                      Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
-                      return
-                    }
-                    Write-Progress -Activity "'$User' Enabling for Enterprise Voice. Please wait" `
-                      -PercentComplete (($i * 100) / $imax) `
-                      -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
-
-                    Start-Sleep -Milliseconds 1000
-                    $i++
-                  }
-                  $EVenabled = $(Get-CsOnlineUser $User).EnterpriseVoiceEnabled
-                  Write-Verbose -Message "User '$User' Enterprise Voice Status: SUCCESS" -Verbose
-                }
-                catch {
-                  Write-Verbose -Message "User '$User' Enterprise Voice Status: FAILED. Please check User provisioning manually and run Set-TeamsCallQueue again!" -Verbose
-                }
+            $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+            if ( -not $IsEVenabled) {
+              Write-Verbose -Message "User '$User' found and licensed, but not enabled for EnterpriseVoice" -Verbose
+              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $User -Force
               }
             }
 
-            # Add enabled user to list
-            if ($EVenabled) {
+            # Add Target
+            if ( $IsEVenabled ) {
               Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
               [void]$UserIdList.Add($UserObject.ObjectId)
             }
@@ -7478,6 +7412,7 @@ function Set-TeamsCallQueue {
 
     #region ACTION
     # Set the Call Queue with all Parameters provided
+    $Parameters
     if ($PSCmdlet.ShouldProcess("$Name", "Set-CsCallQueue")) {
       $Null = (Set-CsCallQueue @Parameters)
       Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue settings applied"
@@ -13238,6 +13173,8 @@ function Enable-TeamsUserForEnterpriseVoice {
             $i++
           }
 
+          # re-query status after a little padding (so that the next command can query a correct status)
+          Start-Sleep -Milliseconds 3000
           $EVenabled = $(Get-CsOnlineUser $Identity).EnterpriseVoiceEnabled
           Write-Verbose -Message "User '$Identity' Enterprise Voice Status: $EVenabled"
           if ($EVenabled) {
