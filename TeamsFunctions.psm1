@@ -850,6 +850,8 @@ function Set-TeamsUserLicense {
           return $false
         }
       })]
+    [Alias('Add','License','AddLicense')]
+    #Check Singular! $AddLicense
     [string[]]$AddLicenses,
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
@@ -863,6 +865,8 @@ function Set-TeamsUserLicense {
           return $false
         }
       })]
+    [Alias('Remove','RemoveLicense')]
+    #Check Singular! $RemoveLicense
     [string[]]$RemoveLicenses,
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
@@ -2420,7 +2424,12 @@ function Find-TeamsUserVoiceConfig {
           #$Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object LineURI -Like "*$Number*"
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
-          Get-TeamsUserVoiceConfig $Users -DiagnosticLevel 1
+          if ($Users) {
+             Get-TeamsUserVoiceConfig $Users -DiagnosticLevel 1
+          }
+          else {
+            Write-Verbose -Message "No Users found with Number: '$Number'" -Verbose
+          }
         }
 
         break
@@ -2531,7 +2540,7 @@ function Find-TeamsUserVoiceConfig {
 
       default {
         # No Parameter is specified
-        Write-Warning -Message "No Parameters specified. Cannot find anything. Aborting" -Verbose
+        Write-Warning -Message "No Parameters specified. Please specify search criteria (Parameter and value)!" -Verbose
 
         break
       } #default
@@ -5216,7 +5225,9 @@ function New-TeamsCallQueue {
 		This script uses different default values for some parameters than New-CsCallQueue
 		Using this switch will instruct the Script to adhere to Microsoft defaults.
 		ChangedPARAMETER:      This Script   Microsoft    Reason:
-		- AgentAlertTime:         20s           30s         Shorter Alert Time more universally useful
+#TODO Remove AgentAlertTime from defaults! - Check Spreadsheet for Default application! (use switch MS defaults or change behaviour!)
+#TODO Investigate Language not applied!
+    - AgentAlertTime:         20s           30s         Shorter Alert Time more universally useful
 		- OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
 		- TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
 		- UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
@@ -5295,7 +5306,7 @@ function New-TeamsCallQueue {
     Optional Language Identifier indicating the language that is used to play shared voicemail prompts.
     This parameter becomes a required parameter If either OverflowAction or TimeoutAction is set to SharedVoicemail.
 	.PARAMETER Silent
-		Optional. Supresses output. Use for Bulk provisioning only.
+		Optional. Does not display output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
   .PARAMETER Force
     Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified
@@ -7608,6 +7619,8 @@ function Get-TeamsResourceAccountAssociation {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    #TODO Investigate why it doesn't work!
+
     # Querying ObjectId from provided UPNs
     if ($null -eq $UserPrincipalName) {
       # Getting all RAs
@@ -7774,6 +7787,8 @@ function New-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
+    #TODO Check double application and output!
+    #TODO Check WarningAction for queries (silent!)
     #TODO Investigate how this can be simplified. Output from GET is doubled up (b/c executed twice)
     # CQ or AA can be made into a SWITCH. $Account.UserPrincipalName is displayed before ForEach! Investigate!
     # Add wait to requery / output?
@@ -8376,8 +8391,9 @@ function New-TeamsResourceAccount {
       }
       else {
         try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses $License")) {
-            $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+            #TODO Improve output. Write verbose before
+            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
             Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
             $IsLicensed = $true
           }
@@ -8395,7 +8411,8 @@ function New-TeamsResourceAccount {
         $imax = 300
         Write-Warning -Message "Applying a License may take longer than provisioned for ($($imax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
         Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
-        while (-not (Test-TeamsUserLicense -Identity $UPN -ServicePlan $ServicePlanName)) {
+        #TODO Check Test-TeamsUserLicense can look up Licenses according to $TeamsLicenses.Parametername
+        while (-not (Test-TeamsUserLicense -Identity $UPN -LicensePackage $License)) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount" -ErrorAction Stop
           }
@@ -9098,6 +9115,7 @@ function Get-TeamsResourceAccount {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     $ResourceAccounts = $null
+    #TODO investigate Warningaction (silent!)
 
     #region Data gathering
     if ($PSBoundParameters.ContainsKey('Identity')) {
@@ -9215,8 +9233,8 @@ function Get-TeamsResourceAccount {
         $ResourceAccountObject = [PSCustomObject][ordered]@{
           UserPrincipalName = $ResourceAccount.UserPrincipalName
           DisplayName       = $ResourceAccount.DisplayName
-          UsageLocation     = $AzureAdUser.UsageLocation
           ApplicationType   = $ResourceAccountApplicationType
+          UsageLocation     = $AzureAdUser.UsageLocation
           License           = $ResourceAccuntLicense
           PhoneNumberType   = $ResourceAccountPhoneNumberType
           PhoneNumber       = $ResourceAccount.PhoneNumber
@@ -11099,7 +11117,7 @@ function Resolve-AzureAdGroupObjectFromName {
     Will Return $null if not.
   .NOTES
     This simple lookup Script is an evolution of Test-AzureAdGroup and aims to gain better
-    accurracy when looking up AzureAd Groups. It searches for Search String first, then
+    accuracy when looking up AzureAd Groups. It searches for Search String first, then
     splits the String at the '@' (if provided) to find the MailNickName (if set) and finally
     looks up the Group with ObjectId. If none are successful, it will return $null
   .LINK
