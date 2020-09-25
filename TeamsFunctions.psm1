@@ -248,7 +248,7 @@ function Connect-SkypeOnline {
     # Testing existing Module and Connection
     if (Test-Module SkypeOnlineConnector) {
       if ((Test-SkypeOnlineConnection) -eq $false) {
-        $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+        $moduleVersion = (Get-Module -Name SkypeOnlineConnector -WarningAction SilentlyContinue).Version
         Write-Verbose -Message "Module SkypeOnlineConnector installed in Version: $moduleVersion"
         if ($moduleVersion.Major -le "6") {
           # Version 6 and lower do not support MFA authentication for Skype Module PowerShell; also allows use of older PSCredential objects
@@ -331,7 +331,7 @@ function Connect-SkypeOnline {
 
             #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
             if (Test-SkypeOnlineConnection) {
-              $moduleVersion = (Get-Module -Name SkypeOnlineConnector).Version
+              $moduleVersion = (Get-Module -Name SkypeOnlineConnector -WarningAction SilentlyContinue).Version
               Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
               Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
               if ($moduleVersion.Major -ge "7") {
@@ -1145,7 +1145,7 @@ function Set-TeamsUserLicense {
       #region Object Verification
       # Querying User
       try {
-        $UserObject = Get-AzureADUser -ObjectId "$ID" -ErrorAction STOP
+        $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
         Write-Error -Message "User Account not valid" -Category ObjectNotFound -RecommendedAction "Verify UserPrincipalName"
@@ -1170,7 +1170,7 @@ function Set-TeamsUserLicense {
         Write-Verbose -Message "Parsing switch 'RemoveAllLicenses'" -Verbose
         try {
           # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
-          $AllSkus = (Get-AzureADUserLicenseDetail -ObjectId $User).SkuPartNumber
+          $AllSkus = (Get-AzureADUserLicenseDetail -ObjectId $User -WarningAction SilentlyContinue).SkuPartNumber
 
           [System.Collections.ArrayList]$RemoveAllSkuIds = @()
           foreach ($RemoveLic in $AllSkus) {
@@ -1270,7 +1270,7 @@ function Add-TeamsUserLicense {
 		Add-TeamsUserLicense -Identity Joe@contoso.com -AddMicrosoft365E3 -AddPhoneSystem
 		Example 2 will add the an Microsoft 365 E3 and Phone System add-on license to Joe@contoso.com
 	.EXAMPLE
-		Add-TeamsUserLicense -Identity Joe@contoso.com -AddSFBOS2 -AddAudioConferencing -AddPhoneSystem
+		Add-TeamsUserLicense -Identity Joe@contoso.com -AddSfBOS2 -AddAudioConferencing -AddPhoneSystem
 		Example 3 will add the a Skype for Business Plan 2 (S2) and PSTN Conferencing and PhoneSystem add-on license to Joe@contoso.com
 	.EXAMPLE
 		Add-TeamsUserLicense -Identity Joe@contoso.com -AddOffice365E3 -AddPhoneSystem
@@ -1413,7 +1413,7 @@ function Add-TeamsUserLicense {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($ID in $Identity) {
       try {
-        $UserObject = Get-AzureADUser -ObjectId "$ID" -ErrorAction STOP
+        $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
         Write-Error -Message "User Account not valid" -Category ObjectNotFound -RecommendedAction "Verify UserPrincipalName" -ErrorAction Stop
@@ -1605,18 +1605,19 @@ function Get-TeamsUserLicense {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($User in $Identity) {
       try {
-        Get-AzureADUser -ObjectId "$User" -ErrorAction STOP | Out-Null
+        Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Out-Null
       }
       catch {
         throw $_
         continue
       }
 
-      $UserObject = Get-AzureADUser -ObjectId "$User"
+      $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue
+      $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId $User -WarningAction SilentlyContinue
       [string]$DisplayName = $UserObject.DisplayName
 
       # Querying Licenses
-      $assignedSkuPartNumbers = (Get-AzureADUserLicenseDetail -ObjectId $User).SkuPartNumber
+      $assignedSkuPartNumbers = $UserLicenseDetail.SkuPartNumber
       [System.Collections.ArrayList]$UserLicenses = @()
       foreach ($PartNumber in $assignedSkuPartNumbers) {
         $Lic = $null
@@ -1629,7 +1630,7 @@ function Get-TeamsUserLicense {
       [string]$LicensesFriendlyNames = ($UserLicensesSorted | Where-Object FriendlyName -NE $null).FriendlyName
 
       # Querying Service Plans
-      $assignedServicePlans = (Get-AzureADUserLicenseDetail -ObjectId $User).ServicePlans | Sort-Object ServicePlanName
+      $assignedServicePlans = $UserLicenseDetail.ServicePlans | Sort-Object ServicePlanName
       [System.Collections.ArrayList]$UserServicePlans = @()
       foreach ($ServicePlan in $assignedServicePlans) {
         $Lic = $null
@@ -1972,7 +1973,7 @@ function Get-TeamsTenantVoiceConfig {
     #region User Information
     if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
       Write-Verbose -Message "Querying User Information - This will take some time!" -Verbose
-      $AdUsers = (Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE).Count
+      $AdUsers = (Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE -WarningAction SilentlyContinue).Count
       $CsOnlineUsers = (Get-CsOnlineUser -WarningAction SilentlyContinue).Count
       $CsOnlineUsersEV = (Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object EnterpriseVoiceEnabled -EQ $TRUE).Count
 
@@ -2126,8 +2127,8 @@ function Get-TeamsUserVoiceConfig {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
-        $AdUser = Get-AzureADUserFromUPN $User -ErrorAction Stop
-        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
+        $AdUser = Get-AzureADUserFromUPN $User -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -2510,7 +2511,7 @@ function Find-TeamsUserVoiceConfig {
 
       "OVP" {
         Write-Verbose -Message "Finding OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!" -Verbose
-        $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy
+        $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
         if ($null -ne $OVP) {
           Write-Verbose -Message "Finding Users with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..." -Verbose
           $Filter = 'Enabled -eq $TRUE -and  OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy
@@ -2525,7 +2526,7 @@ function Find-TeamsUserVoiceConfig {
 
       "TDP" {
         Write-Verbose -Message "Finding TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!" -Verbose
-        $TDP = Get-CsTenantDialPlan $TenantDialPlan
+        $TDP = Get-CsTenantDialPlan $TenantDialPlan -WarningAction SilentlyContinue
         if ($null -ne $TDP) {
           Write-Verbose -Message "Finding Users with TenantDialPlan '$TenantDialPlan': Searching..." -Verbose
           $Filter = 'Enabled -eq $TRUE -and  TenantDialPlan -EQ "{0}"' -f $TenantDialPlan
@@ -2635,7 +2636,7 @@ function New-TeamsUserVoiceConfig {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
-    $User = Get-CsOnlineUser $Identity
+    $User = Get-CsOnlineUser $Identity -WarningAction SilentlyContinue
     $User
 
     #Snippet for ShouldProcess:
@@ -2948,7 +2949,7 @@ function Remove-TeamsUserVoiceConfig {
       #region Information Gathering
       # Querying Identity
       try {
-        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -3193,7 +3194,7 @@ function Test-TeamsUserVoiceConfig {
     foreach ($User in $Identity) {
       # Querying Identity
       try {
-        $CsUser = Get-CsOnlineUser $User -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -3377,7 +3378,7 @@ function Get-TeamsAutoAttendant {
           Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand) - '$DN'"
           # Finding all AAs with this Name (Should return one Object, but since it IS a filter, handling it as an array)
           #$AAs = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
-          $AAs = Get-CsAutoAttendant -NameFilter "$DN" -ErrorAction STOP | Select-Object *
+          $AAs = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object *
 
           if ($null -ne $AAs) {
             if ($PSBoundParameters.ContainsKey('ConciseView')) {
@@ -3401,7 +3402,7 @@ function Get-TeamsAutoAttendant {
               switch ($AA.Operator.Type) {
                 "User" {
                   try {
-                    $OperatorObject = Get-AzureADUser -ObjectId "$($AA.Operator.Id)" -ErrorAction STOP
+                    $OperatorObject = Get-AzureADUser -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.UserPrincipalName
                   }
                   catch {
@@ -3410,7 +3411,7 @@ function Get-TeamsAutoAttendant {
                 }
                 "OrganizationalAutoAttendant" {
                   try {
-                    $OperatorObject = Get-CsOrganizationalAutoAttendant -Identity "$($AA.Operator.Id)" -ErrorAction STOP
+                    $OperatorObject = Get-CsOrganizationalAutoAttendant -Identity "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.Name
                   }
                   catch {
@@ -3419,7 +3420,7 @@ function Get-TeamsAutoAttendant {
                 }
                 "HuntGroup" {
                   try {
-                    $OperatorObject = Get-CsHuntGroup -Identity "$($AA.Operator.Id)" -ErrorAction STOP
+                    $OperatorObject = Get-CsHuntGroup -Identity "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.Name
                   }
                   catch {
@@ -3428,7 +3429,7 @@ function Get-TeamsAutoAttendant {
                 }
                 "ApplicationEndpoint" {
                   try {
-                    $OperatorObject = Get-CsOnlineApplicationInstance -ObjectId "$($AA.Operator.Id)" -ErrorAction STOP
+                    $OperatorObject = Get-CsOnlineApplicationInstance -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.UserPrincipalName
                   }
                   catch {
@@ -3438,7 +3439,7 @@ function Get-TeamsAutoAttendant {
                 "ExternalPstn" {
                   #TODO Verify output of Issue #6502 to query this entity
                   try {
-                    $OperatorObject = Get-AzureADUser -ObjectId "$($AA.Operator.Id)" -ErrorAction STOP
+                    $OperatorObject = Get-AzureADUser -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.UserPrincipalName
                   }
                   catch {
@@ -3449,7 +3450,7 @@ function Get-TeamsAutoAttendant {
                 }
                 "SharedVoicemail" {
                   try {
-                    $OperatorObject = Get-AzureAdGroup -ObjectId "$($AA.Operator.Id)" -ErrorAction STOP
+                    $OperatorObject = Get-AzureAdGroup -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.DisplayName
                   }
                   catch {
@@ -3458,11 +3459,11 @@ function Get-TeamsAutoAttendant {
                 }
                 default {
                   try {
-                    $OperatorObject = Get-AzureADUser -ObjectId "$($AA.Operator.Id)" -ErrorAction STOP
+                    $OperatorObject = Get-AzureADUser -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.UserPrincipalName
                     if ($null -eq $Operator) {
                       try {
-                        $OperatorObject = Get-AzureAdGroup -ObjectId "$($AA.Operator.Id)" -ErrorAction STOP
+                        $OperatorObject = Get-AzureAdGroup -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                         $Operator = $OperatorObject.DisplayName
                         if ($null -eq $Operator) {
                           throw
@@ -3489,7 +3490,7 @@ function Get-TeamsAutoAttendant {
             Write-Verbose -Message "'$($AA.Name)' - Parsing Resource Accounts"
             foreach ($AI in $AA.ApplicationInstances) {
               $AIObject = $null
-              $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
+              $AIObject = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
               #TODO: Verify what to do if RA cannot be enumerated. Currently empty. Show ObjectId instead?
               if ($null -ne $AIObject) {
                 [void]$AIObjects.Add($AIObject)
@@ -3603,7 +3604,7 @@ function New-TeamsAutoAttendant {
   .PARAMETER OperatorType
     Optional. Required with Operator. Type of the Operator Object (Type of the CallableEntity)
   .PARAMETER Silent
-		Optional. Supresses output. Use for Bulk provisioning only.
+		Optional. Does not display output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
   .PARAMETER Force
     Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified
@@ -3786,7 +3787,7 @@ function New-TeamsAutoAttendant {
     }
 
     #TODO
-    <# Add required checks to Paramers that need to go together:
+    <# Add required checks to Parameters that need to go together:
     BusinessHoursCallFlowOption (TransferCallToTarget)
     BusinessHoursCallTarget
     BusinessHoursCallTargetType
@@ -4277,7 +4278,7 @@ function New-TeamsAutoAttendantDialScope {
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
       try {
-        $Object = Get-AzureAdGroup $Group -ErrorAction Stop
+        $Object = Get-AzureAdGroup $Group -WarningAction SilentlyContinue -ErrorAction Stop
         $GroupIds += $Object.ObjectId
       }
       catch {
@@ -4419,7 +4420,7 @@ function New-TeamsAutoAttendantCallableEntity {
         # Add Operator
         if ( $IsEVenabled ) {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) used"
-          $Id = (Get-AzureADUser -ObjectId "$User" -ErrorAction STOP).ObjectId
+          $Id = (Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
         }
         else {
           Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not enumerated. Omitting Object" -Category ResourceUnavailable -ErrorAction Stop
@@ -4924,7 +4925,7 @@ function Get-TeamsCallQueue {
             # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
             #$Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
             # NOTE: Like AAs, piping to "FL *" can show more information. Here though, there is no benefit
-            $Queues = Get-CsCallQueue -NameFilter "$DN" -ErrorAction STOP
+            $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
 
             if ($null -ne $Queues) {
               if ($PSBoundParameters.ContainsKey('ConciseView')) {
@@ -4950,7 +4951,7 @@ function Get-TeamsCallQueue {
                 switch ($Q.OverflowActionTarget.Type) {
                   "ApplicationEndpoint" {
                     try {
-                      $OATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                      $OATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $OAT = $OATobject.UserPrincipalName
                     }
                     catch {
@@ -4959,7 +4960,7 @@ function Get-TeamsCallQueue {
                   }
                   "Mailbox" {
                     try {
-                      $OATobject = Get-AzureAdGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                      $OATobject = Get-AzureAdGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $OAT = $OATobject.DisplayName
                     }
                     catch {
@@ -4968,7 +4969,7 @@ function Get-TeamsCallQueue {
                   }
                   "User" {
                     try {
-                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $OAT = $OATobject.UserPrincipalName
                     }
                     catch {
@@ -4977,7 +4978,7 @@ function Get-TeamsCallQueue {
                   }
                   "Phone" {
                     try {
-                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $OAT = $OATobject.UserPrincipalName
                     }
                     catch {
@@ -4986,11 +4987,11 @@ function Get-TeamsCallQueue {
                   }
                   default {
                     try {
-                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $OAT = $OATobject.UserPrincipalName
                       if ($null -eq $OAT) {
                         try {
-                          $OATobject = Get-AzureAdGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -ErrorAction STOP
+                          $OATobject = Get-AzureAdGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                           $OAT = $OATobject.DisplayName
                           if ($null -eq $OAT) {
                             throw
@@ -5019,7 +5020,7 @@ function Get-TeamsCallQueue {
                 switch ($Q.TimeoutActionTarget.Type) {
                   "ApplicationEndpoint" {
                     try {
-                      $TATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                      $TATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $TAT = $TATObject.UserPrincipalName
                     }
                     catch {
@@ -5028,7 +5029,7 @@ function Get-TeamsCallQueue {
                   }
                   "Mailbox" {
                     try {
-                      $TATobject = Get-AzureAdGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                      $TATobject = Get-AzureAdGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $TAT = $TATObject.DisplayName
                     }
                     catch {
@@ -5037,7 +5038,7 @@ function Get-TeamsCallQueue {
                   }
                   "User" {
                     try {
-                      $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                      $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $TAT = $TATObject.UserPrincipalName
                     }
                     catch {
@@ -5046,11 +5047,11 @@ function Get-TeamsCallQueue {
                   }
                   default {
                     try {
-                      $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                      $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                       $TAT = $TATObject.UserPrincipalName
                       if ($null -eq $TAT) {
                         try {
-                          $TATobject = Get-AzureAdGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -ErrorAction STOP
+                          $TATobject = Get-AzureAdGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                           $TAT = $TATObject.DisplayName
                           if ($null -eq $TAT) {
                             throw
@@ -5073,21 +5074,21 @@ function Get-TeamsCallQueue {
               #region Endpoints - DistributionLists and Agents
               Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
               foreach ($DL in $Q.DistributionLists) {
-                $DLobject = Get-AzureAdGroup -ObjectId $DL | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
-                [void]$DLObjects.Add($DLobject)
+                $DLObject = Get-AzureAdGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
+                [void]$DLObjects.Add($DLObject)
               }
               # Output: $DLObjects.DisplayName
 
               Write-Verbose -Message "'$($Q.Name)' - Parsing Users"
               foreach ($User in $Q.Users) {
-                $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+                $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
                 [void]$UserObjects.Add($UserObject)
               }
               # Output: $UserObjects.UserPrincipalName
 
               Write-Verbose -Message "'$($Q.Name)' - Parsing Agents"
               foreach ($Agent in $Q.Agents) {
-                $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+                $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
                 [void]$AgentObjects.Add($AgentObject)
               }
               # Output: $AgentObjects.UserPrincipalName
@@ -5225,9 +5226,8 @@ function New-TeamsCallQueue {
 		This script uses different default values for some parameters than New-CsCallQueue
 		Using this switch will instruct the Script to adhere to Microsoft defaults.
 		ChangedPARAMETER:      This Script   Microsoft    Reason:
-#TODO Remove AgentAlertTime from defaults! - Check Spreadsheet for Default application! (use switch MS defaults or change behaviour!)
+#TODO Remove AgentAlertTime from defaults! - Check Spreadsheet for Default application! (use switch MS defaults or change behavior!)
 #TODO Investigate Language not applied!
-    - AgentAlertTime:         20s           30s         Shorter Alert Time more universally useful
 		- OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
 		- TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
 		- UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
@@ -5399,7 +5399,7 @@ function New-TeamsCallQueue {
     [string]$OverflowSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = "Path to Audio File for the SharedVoiceMail Message")]
-    [Alias('OAsharedVMfile', 'OverflowSharedVMFile')]
+    [Alias('OASharedVMFile', 'OverflowSharedVMFile')]
     [ValidateScript( {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
@@ -5672,7 +5672,7 @@ function New-TeamsCallQueue {
         try {
           $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
           Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
-          $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
+          $Parameters += @{'WelcomeMusicAudioFileId' = $WMFile.Id }
         }
         catch {
           Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
@@ -5875,7 +5875,7 @@ function New-TeamsCallQueue {
         "VoiceMail" {
           # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
           try {
-            $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+            $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
           }
           catch {
@@ -5909,7 +5909,7 @@ function New-TeamsCallQueue {
           #region Processing OverflowActionTarget for SharedVoiceMail
           try {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
-            $OverflowActionTargetId = (Get-AzureAdGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+            $OverflowActionTargetId = (Get-AzureAdGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $OverflowActionTargetId) {
               throw
             }
@@ -5922,10 +5922,10 @@ function New-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($OverflowActionTarget.Contains("@")) {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $OverflowActionTargetId) {
                 throw
@@ -6087,7 +6087,7 @@ function New-TeamsCallQueue {
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
           try {
-            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
+            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
           catch {
@@ -6121,7 +6121,7 @@ function New-TeamsCallQueue {
           #region Processing TimeoutActionTarget for SharedVoiceMail
           try {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
-            $TimeoutActionTargetId = (Get-AzureAdGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
+            $TimeoutActionTargetId = (Get-AzureAdGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $TimeoutActionTargetId) {
               throw
             }
@@ -6134,10 +6134,10 @@ function New-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($TimeoutActionTarget.Contains("@")) {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $TimeoutActionTargetId) {
                 throw
@@ -6503,7 +6503,7 @@ function Set-TeamsCallQueue {
     [string]$OverflowSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = "Path to Audio File for Overflow SharedVoiceMail Message")]
-    [Alias('OAsharedVMfile', 'OverflowSharedVMFile')]
+    [Alias('OASharedVMFile', 'OverflowSharedVMFile')]
     [ValidateScript( {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
@@ -6680,7 +6680,7 @@ function Set-TeamsCallQueue {
         Write-Verbose -Message "ExchangeOnline: Valid Session found, reusing existing connection"
       }
       else {
-        if ([bool]((Get-PSSession).Computername -match "outlook.office365.com")) {
+        if ([bool]((Get-PSSession -WarningAction SilentlyContinue).Computername -match "outlook.office365.com")) {
           Write-Host "ExchangeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
           $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
         }
@@ -6799,7 +6799,7 @@ function Set-TeamsCallQueue {
         try {
           $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
           Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
-          $Parameters += @{'WelcomeMusicAudioFileId' = $WMfile.Id }
+          $Parameters += @{'WelcomeMusicAudioFileId' = $WMFile.Id }
         }
         catch {
           Write-Error -Message "Import of WelcomeMusicAudioFile: '$WMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
@@ -6987,7 +6987,7 @@ function Set-TeamsCallQueue {
         "VoiceMail" {
           # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
           try {
-            $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+            $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
           }
           catch {
@@ -7026,11 +7026,11 @@ function Set-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Testing Exchange Connection"
             if (Test-ExchangeOnlineConnection) {
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Exchange Object"
-              $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ExternalDirectoryObjectId
             }
             else {
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
-              $OverflowActionTargetId = (Get-AzureAdGroup -ObjectId "$OverflowActionTarget" -ErrorAction STOP).ObjectId
+              $OverflowActionTargetId = (Get-AzureAdGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             }
             if ($null -eq $OverflowActionTargetId) {
               throw
@@ -7044,10 +7044,10 @@ function Set-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($OverflowActionTarget.Contains("@")) {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $OverflowActionTargetId) {
                 throw
@@ -7209,7 +7209,7 @@ function Set-TeamsCallQueue {
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
           try {
-            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
+            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
           catch {
@@ -7248,11 +7248,11 @@ function Set-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Testing Exchange Connection"
             if (Test-ExchangeOnlineConnection) {
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Exchange Object"
-              $TimeoutActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ExternalDirectoryObjectId
+              $TimeoutActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ExternalDirectoryObjectId
             }
             else {
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
-              $TimeoutActionTargetId = (Get-AzureAdGroup -ObjectId "$TimeoutActionTarget" -ErrorAction STOP).ObjectId
+              $TimeoutActionTargetId = (Get-AzureAdGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             }
             if ($null -eq $TimeoutActionTargetId) {
               throw
@@ -7266,10 +7266,10 @@ function Set-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($TimeoutActionTarget.Contains("@")) {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $TimeoutActionTargetId) {
                 throw
@@ -7632,8 +7632,8 @@ function Get-TeamsResourceAccountAssociation {
       foreach ($UPN in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account '$UPN'"
         try {
-          $RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
-          $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+          $RAObject = Get-AzureADUser -ObjectId $UPN -WarningAction SilentlyContinue -ErrorAction Stop
+          $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
           [void]$Accounts.Add($AppInstance)
           Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
         }
@@ -7647,15 +7647,15 @@ function Get-TeamsResourceAccountAssociation {
     # Processing found accounts
     if ($null -ne $Accounts) {
       foreach ($Account in $Accounts) {
-        $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
+        $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         $ApplicationType = GetApplicationTypeFromAppId $Account.ApplicationId
         if ($null -ne $Association) {
           # Finding associated entity
           $AssocObject = switch ($Association.ConfigurationType) {
-            'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId }
-            'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
+            'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
+            'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
           }
-          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $Account.ObjectId -ErrorAction SilentlyContinue
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
         else {
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - No Association found!" -Verbose
@@ -7775,8 +7775,8 @@ function New-TeamsResourceAccountAssociation {
     foreach ($UPN in $UserPrincipalName) {
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
-        $RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
-        $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+        $RAObject = Get-AzureADUser -ObjectId $UPN -WarningAction SilentlyContinue -ErrorAction Stop
+        $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
         [void]$Accounts.Add($AppInstance)
         Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
       }
@@ -7791,7 +7791,7 @@ function New-TeamsResourceAccountAssociation {
     #TODO Check WarningAction for queries (silent!)
     #TODO Investigate how this can be simplified. Output from GET is doubled up (b/c executed twice)
     # CQ or AA can be made into a SWITCH. $Account.UserPrincipalName is displayed before ForEach! Investigate!
-    # Add wait to requery / output?
+    # Add wait to re-query / output?
     if ($null -ne $Accounts) {
       #region Connection to Call Queue
       if ($PSBoundParameters.ContainsKey('CallQueue')) {
@@ -7814,7 +7814,7 @@ function New-TeamsResourceAccountAssociation {
 
         # Query existing connection
         $ExistingConnection = $null
-        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN
+        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN -WarningAction SilentlyContinue
         if ($null -eq $ExistingConnection.AssociatedTo) {
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
         }
@@ -7828,13 +7828,13 @@ function New-TeamsResourceAccountAssociation {
         Write-Verbose -Message "Processing assignment of all Accounts to Call Queue"
         foreach ($Account in $Accounts) {
           # Comparing ApplicationType
-          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName).ApplicationType -ne "CallQueue") {
+          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationType -ne "CallQueue") {
             if ($PSBoundParameters.ContainsKey('Force')) {
               # Changing Application Type
               Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'CallQueue'" -Verbose
-              $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType CallQueue)
+              $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdFromApplicationType CallQueue)
               Start-Process Sleep 2
-              if ("CallQueue" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
+              if ("CallQueue" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId -WarningAction SilentlyContinue).ApplicationId)) {
                 Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType -ErrorAction Stop
               }
               else {
@@ -7856,7 +7856,7 @@ function New-TeamsResourceAccountAssociation {
           }
         }
         # Re-query Association Target
-        $AssociationTarget = Get-CsCallQueue -Identity $OperationStatus.Results.ConfigurationId -ErrorAction SilentlyContinue
+        $AssociationTarget = Get-CsCallQueue -Identity $OperationStatus.Results.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
         # Output
         $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
@@ -7893,7 +7893,7 @@ function New-TeamsResourceAccountAssociation {
 
         # Query existing connection
         $ExistingConnection = $null
-        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN
+        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN -WarningAction SilentlyContinue
         if ($null -eq $ExistingConnection.AssociatedTo) {
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
         }
@@ -7908,13 +7908,13 @@ function New-TeamsResourceAccountAssociation {
         Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
         foreach ($Account in $Accounts) {
           # Comparing ApplicationType
-          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName).ApplicationType -ne "AutoAttendant") {
+          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationType -ne "AutoAttendant") {
             if ($PSBoundParameters.ContainsKey('Force')) {
               # Changing Application Type
               Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'AutoAttendant'" -Verbose
-              $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdfromApplicationType AutoAttendant)
+              $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdFromApplicationType AutoAttendant)
               Start-Process Sleep 2
-              if ("AutoAttendant" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId).ApplicationId)) {
+              if ("AutoAttendant" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId -WarningAction SilentlyContinue).ApplicationId)) {
                 Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType -ErrorAction Stop
               }
               else {
@@ -7937,7 +7937,7 @@ function New-TeamsResourceAccountAssociation {
           }
         }
         # Re-query Association Target
-        $AssociationTarget = Get-CsAutoAttendant -Identity $OperationStatus.Results.ConfigurationId -ErrorAction SilentlyContinue
+        $AssociationTarget = Get-CsAutoAttendant -Identity $OperationStatus.Results.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
         # Output
         $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
@@ -8038,8 +8038,8 @@ function Remove-TeamsResourceAccountAssociation {
     [System.Collections.ArrayList]$Accounts = @()
     foreach ($UPN in $UserPrincipalName) {
       try {
-        $RAObject = Get-AzureADUser -ObjectId $UPN -ErrorAction Stop
-        $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -ErrorAction Stop
+        $RAObject = Get-AzureADUser -ObjectId $UPN -WarningAction SilentlyContinue -ErrorAction Stop
+        $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
         [void]$Accounts.Add($AppInstance)
         Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
       }
@@ -8052,12 +8052,12 @@ function Remove-TeamsResourceAccountAssociation {
     # Processing found accounts
     if ($null -ne $Accounts) {
       foreach ($Account in $Accounts) {
-        $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -ErrorAction SilentlyContinue
+        $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         if ($null -ne $Association) {
           # Finding associated entity
           $AssocObject = switch ($Association.ConfigurationType) {
-            'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId }
-            'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
+            'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
+            'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
           }
 
           # Removing Association
@@ -8273,7 +8273,7 @@ function New-TeamsResourceAccount {
 
     #region ApplicationType
     # Translating $ApplicationType (Name) to ID used by Commands.
-    $AppId = GetAppIdfromApplicationType $ApplicationType
+    $AppId = GetAppIdFromApplicationType $ApplicationType
     Write-Verbose -Message "'$Name' ApplicationType parsed"
     #endregion
 
@@ -8293,7 +8293,7 @@ function New-TeamsResourceAccount {
     else {
       # Querying Tenant Country as basis for Usage Location
       # This is never triggered as UsageLocation is mandatory! Remaining here regardless
-      $Tenant = Get-CsTenant
+      $Tenant = Get-CsTenant -WarningAction SilentlyContinue
       if ($null -ne $Tenant.CountryAbbreviation) {
         $UsageLocation = $Tenant.CountryAbbreviation
         Write-Warning -Message "'$Name' UsageLocation not provided. Defaulting to: $UsageLocation. - Please verify and change if needed!"
@@ -8331,7 +8331,7 @@ function New-TeamsResourceAccount {
           Start-Sleep -Milliseconds 1000
           $i++
         }
-        $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN"
+        $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue
       }
       else {
         return
@@ -8475,7 +8475,7 @@ function New-TeamsResourceAccount {
     try {
       Write-Verbose -Message "'$Name' Preparing Output Object"
       # Data
-      $ResourceAccount = Get-CsOnlineApplicationInstance -Identity $UPN -ErrorAction STOP
+      $ResourceAccount = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP
 
       # readable Application type
       $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
@@ -8485,13 +8485,13 @@ function New-TeamsResourceAccount {
       if ($IsLicensed) {
         # License
         if (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV) {
-          $ResourceAccuntLicense = "PhoneSystem"
+          $ResourceAccountLicense = "PhoneSystem"
         }
         elseif (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccuntLicense = "PhoneSystemVirtualUser"
+          $ResourceAccountLicense = "PhoneSystemVirtualUser"
         }
         else {
-          $ResourceAccuntLicense = $null
+          $ResourceAccountLicense = $null
         }
 
         if ($null -ne $ResourceAccount.PhoneNumber) {
@@ -8511,7 +8511,7 @@ function New-TeamsResourceAccount {
 
       }
       else {
-        $ResourceAccuntLicense = $null
+        $ResourceAccountLicense = $null
         $ResourceAccountPhoneNumberType = $null
         # Phone Number is taken from Original Object and should be empty at this point
       }
@@ -8522,7 +8522,7 @@ function New-TeamsResourceAccount {
         DisplayName       = $ResourceAccount.DisplayName
         UsageLocation     = $UsageLocation
         ApplicationType   = $ResourceAccountApplicationType
-        License           = $ResourceAccuntLicense
+        License           = $ResourceAccountLicense
         PhoneNumberType   = $ResourceAccountPhoneNumberType
         PhoneNumber       = $ResourceAccount.PhoneNumber
       }
@@ -8582,7 +8582,7 @@ function Set-TeamsResourceAccount {
 		Required format is E.164, starting with a '+' and 10-15 digits long.
 	.EXAMPLE
 		Set-TeamsResourceAccount -UserPrincipalName ResourceAccount@TenantName.onmicrosoft.com -Displayname "My {ResourceAccount}"
-		Will normalise the Display Name (i.E. remove special characters), then set it as "My ResourceAccount"
+		Will normalize the Display Name (i.E. remove special characters), then set it as "My ResourceAccount"
 	.EXAMPLE
 		Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -UsageLocation US
 		Sets the UsageLocation for the Account in AzureAD to US.
@@ -8705,7 +8705,7 @@ function Set-TeamsResourceAccount {
     #region Lookup of UserPrincipalName
     try {
       #Trying to query the Resource Account
-      $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -ErrorAction STOP)
+      $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction STOP)
       $CurrentDisplayName = $Object.DisplayName
       Write-Verbose -Message "'$UserPrincipalName' OnlineApplicationInstance found: '$CurrentDisplayName'"
     }
@@ -8729,7 +8729,7 @@ function Set-TeamsResourceAccount {
     #region ApplicationType and Associations
     if ($PSBoundParameters.ContainsKey("ApplicationType")) {
       # Translating $ApplicationType (Name) to ID used by Commands.
-      $AppId = GetAppIdfromApplicationType $ApplicationType
+      $AppId = GetAppIdFromApplicationType $ApplicationType
       $CurrentAppId = $Object.ApplicationId
       # Does the ApplicationType differ? Does it have to be changed?
       if ($AppId -eq $CurrentAppId) {
@@ -8738,7 +8738,7 @@ function Set-TeamsResourceAccount {
       }
       else {
         # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
-        $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -ErrorAction Ignore
+        $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Ignore
         if ($Associations.count -gt 0) {
           # Associations found. Aborting
           Write-Error -Message "'$Name' ApplicationType cannot be changed! Object is associated with Call Queue or AutoAttendant." -Category OperationStopped -RecommendedAction "Remove Associations with Remove-CsOnlineApplicationInstanceAssociation manually" -ErrorAction Stop
@@ -8767,7 +8767,7 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region UsageLocation
-    $CurrentUsageLocation = (Get-AzureADUser -ObjectId "$UserPrincipalName").UsageLocation
+    $CurrentUsageLocation = (Get-AzureADUser -ObjectId "$UserPrincipalName" -WarningAction SilentlyContinue).UsageLocation
     if ($PSBoundParameters.ContainsKey('UsageLocation')) {
       if ($Usagelocation -eq $CurrentUsageLocation) {
         Write-Verbose -Message "'$Name' Usage Location already set to: $CurrentUsageLocation"
@@ -8878,7 +8878,7 @@ function Set-TeamsResourceAccount {
       Write-Verbose -Message "'$Name' Querying Licenses..."
       $TenantLicenses = Get-TeamsTenantLicense
 
-      # Changing License only if requried
+      # Changing License only if required
       if ($License -eq $CurrentLicense) {
         # No action required
         Write-Verbose -Message "'$Name' License '$License' already assigned." -Verbose
@@ -8966,7 +8966,7 @@ function Set-TeamsResourceAccount {
             }
           }
           catch {
-            Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
+            Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
             Write-ErrorRecord $_ #This handles the error message in human readable format.
           }
         }
@@ -9047,7 +9047,7 @@ function Get-TeamsResourceAccount {
 		Returns all Resource Accounts of the specified ApplicationType.
 	.EXAMPLE
 		Get-TeamsResourceAccount -PhoneNumber +1555123456
-		Returns the Resource Account with the Phone Number specifed, if found.
+		Returns the Resource Account with the Phone Number specified, if found.
   .INPUTS
     System.String
   .OUTPUTS
@@ -9135,16 +9135,16 @@ function Get-TeamsResourceAccount {
     elseif ($PSBoundParameters.ContainsKey('DisplayName')) {
       # Minimum Character length is 3
       Write-Verbose -Message "DisplayName - Searching for Accounts with DisplayName '$DisplayName'"
-      $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
+      $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
     }
     elseif ($PSBoundParameters.ContainsKey('ApplicationType')) {
       Write-Verbose -Message "ApplicationType - Searching for Accounts with ApplicationType '$ApplicationType'"
-      $AppId = GetAppIdfromApplicationType $ApplicationType
-      $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property ApplicationId -EQ -Value $AppId
+      $AppId = GetAppIdFromApplicationType $ApplicationType
+      $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property ApplicationId -EQ -Value $AppId
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
       Write-Verbose -Message "PhoneNumber - Searching for PhoneNumber '$PhoneNumber'"
-      $ResourceAccounts = Get-CsOnlineApplicationInstance | Where-Object -Property PhoneNumber -Like -Value "*$PhoneNumber*"
+      $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$PhoneNumber*"
 
       # Loading all Microsoft Telephone Numbers
       Write-Verbose -Message "Gathering Phone Numbers from the Tenant"
@@ -9153,7 +9153,7 @@ function Get-TeamsResourceAccount {
     }
     else {
       Write-Verbose -Message "Identity - Listing all Resource Accounts" -Verbose
-      $ResourceAccounts = Get-CsOnlineApplicationInstance
+      $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue
     }
 
     # Stop script if no data has been determined
@@ -9184,13 +9184,13 @@ function Get-TeamsResourceAccount {
         #TODO Change License output and verification against $TeamsLicenses
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: License"
         if (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV) {
-          $ResourceAccuntLicense = "PhoneSystem"
+          $ResourceAccountLicense = "PhoneSystem"
         }
         elseif (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccuntLicense = "PhoneSystemVirtualUser"
+          $ResourceAccountLicense = "PhoneSystemVirtualUser"
         }
         else {
-          $ResourceAccuntLicense = $null
+          $ResourceAccountLicense = $null
         }
 
         # Phone Number Type
@@ -9220,8 +9220,8 @@ function Get-TeamsResourceAccount {
         try {
           $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
           $AssocObject = switch ($Association.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId }
+            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
+            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
           }
           $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
         }
@@ -9235,13 +9235,13 @@ function Get-TeamsResourceAccount {
           DisplayName       = $ResourceAccount.DisplayName
           ApplicationType   = $ResourceAccountApplicationType
           UsageLocation     = $AzureAdUser.UsageLocation
-          License           = $ResourceAccuntLicense
+          License           = $ResourceAccountLicense
           PhoneNumberType   = $ResourceAccountPhoneNumberType
           PhoneNumber       = $ResourceAccount.PhoneNumber
           OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy
           AssociatedTo      = $AssocObject.Name
           AssociatedAs      = $Association.ConfigurationType
-          AssocationStatus  = $AssociationStatus.Status
+          AssociationStatus  = $AssociationStatus.Status
         }
 
         Write-Output $ResourceAccountObject
@@ -9278,10 +9278,10 @@ function Find-TeamsResourceAccount {
 		Find-TeamsResourceAccount -SearchQuery "Office"
 		Returns all Resource Accounts with "Office" as part of their DisplayName
 	.EXAMPLE
-		Find-TeamsResourceAccount -SearchQuery "Office" -AssiciatedOnly
+		Find-TeamsResourceAccount -SearchQuery "Office" -AssociatedOnly
 		Returns all associated Resource Accounts with "Office" as part of their DisplayName
 	.EXAMPLE
-		Find-TeamsResourceAccount -SearchQuery "Office" -UnassiciatedOnly
+		Find-TeamsResourceAccount -SearchQuery "Office" -UnAssociatedOnly
 		Returns all unassociated Resource Accounts with "Office" as part of their DisplayName
   .INPUTS
     System.String
@@ -9368,7 +9368,7 @@ function Find-TeamsResourceAccount {
       foreach ($I in $FoundResourceAccounts) {
         Write-Verbose -Message "Querying Account '$($I.Id)'"
         try {
-          $RA = Get-CsOnlineApplicationInstance -Identity $I.Id -ErrorAction Stop
+          $RA = Get-CsOnlineApplicationInstance -Identity $I.Id -WarningAction SilentlyContinue -ErrorAction Stop
           [void]$ResourceAccounts.Add($RA)
         }
         catch {
@@ -9397,13 +9397,13 @@ function Find-TeamsResourceAccount {
         # License
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: License"
         if (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV) {
-          $ResourceAccuntLicense = "PhoneSystem (Add-on)"
+          $ResourceAccountLicense = "PhoneSystem (Add-on)"
         }
         elseif (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccuntLicense = "PhoneSystem_VirtualUser"
+          $ResourceAccountLicense = "PhoneSystem_VirtualUser"
         }
         else {
-          $ResourceAccuntLicense = $null
+          $ResourceAccountLicense = $null
         }
 
         # Phone Number Type
@@ -9422,17 +9422,17 @@ function Find-TeamsResourceAccount {
 
         # Usage Location from Object
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
-        $UsageLocation = (Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)").UsageLocation
+        $UsageLocation = (Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue).UsageLocation
 
         # Associations
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
         try {
-          $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
+          $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
           $AssocObject = switch ($Association.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -ErrorAction SilentlyContinue }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -ErrorAction SilentlyContinue }
+            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
           }
-          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
         catch {
           $AssocObject	= $null
@@ -9444,12 +9444,12 @@ function Find-TeamsResourceAccount {
           DisplayName       = $ResourceAccount.DisplayName
           UsageLocation     = $UsageLocation
           ApplicationType   = $ResourceAccountApplicationType
-          License           = $ResourceAccuntLicense
+          License           = $ResourceAccountLicense
           PhoneNumberType   = $ResourceAccountPhoneNumberType
           PhoneNumber       = $ResourceAccount.PhoneNumber
           AssociatedTo      = $AssocObject.Name
           AssociatedAs      = $Association.ConfigurationType
-          AssocationStatus  = $AssociationStatus.Status
+          AssociationStatus  = $AssociationStatus.Status
         }
 
         Write-Output $ResourceAccountObject
@@ -9533,7 +9533,7 @@ function Remove-TeamsResourceAccount {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
     # Caveat - Access rights
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
-    Write-Verbose -Message "No verficication of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
+    Write-Verbose -Message "No verification of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -9568,7 +9568,7 @@ function Remove-TeamsResourceAccount {
     try {
       #Trying to query the Resource Account
       Write-Verbose -Message "Processing: $UserPrincipalName"
-      $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -ErrorAction STOP)
+      $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction STOP)
       $DisplayName = $Object.DisplayName
     }
     catch {
@@ -9581,14 +9581,14 @@ function Remove-TeamsResourceAccount {
     #region Associations
     # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
     Write-Verbose -Message "Processing: '$DisplayName' Associations to Call Queues or Auto Attendants"
-    $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -ErrorAction Ignore
+    $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Ignore
     if ($Associations.count -eq 0) {
       # Object has no associations
-      Write-Verbose -Message "'$DisplayName' Object does not have any associaions"
+      Write-Verbose -Message "'$DisplayName' Object does not have any associations"
       $Associations = $null
     }
     else {
-      Write-Verbose -Message "'$DisplayName' associaions found"
+      Write-Verbose -Message "'$DisplayName' associations found"
       if ($PSBoundParameters.ContainsKey("Force")) {
         # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
         # with: Remove-CsOnlineApplicationInstanceAssociation
@@ -9630,7 +9630,7 @@ function Remove-TeamsResourceAccount {
       }
     }
     catch {
-      Write-Error -Message "Unassignment of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
+      Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
       Write-ErrorRecord $_ #This handles the error message in human readable format.
       return
     }
@@ -9640,7 +9640,7 @@ function Remove-TeamsResourceAccount {
     # Reading User Licenses
     Write-Verbose -Message "Processing: '$DisplayName' Phone Number Assignments"
     try {
-      $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UserPrincipalName -ErrorAction STOP).SkuId
+      $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UserPrincipalName -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
 
       if ($null -eq $UserLicenseSkuIDs) {
         Write-Verbose -Message "'$DisplayName' No licenses assigned. OK"
@@ -9655,7 +9655,7 @@ function Remove-TeamsResourceAccount {
       }
     }
     catch {
-      Write-Error -Message "Unassignment of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
+      Write-Error -Message "Removal of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
       Write-ErrorRecord $_ #This handles the error message in human readable format.
       return
     }
@@ -9697,7 +9697,7 @@ Set-Alias -Name Set-TeamsRA -Value Set-TeamsResourceAccount
 Set-Alias -Name Get-TeamsRA -Value Get-TeamsResourceAccount
 Set-Alias -Name Find-TeamsRA -Value Find-TeamsResourceAccount
 Set-Alias -Name Remove-TeamsRA -Value Remove-TeamsResourceAccount
-#Alias is set to provide default behaviour to CsOnlineApplicationInstance
+#Alias is set to provide default behavior to CsOnlineApplicationInstance
 Set-Alias -Name Remove-CsOnlineApplicationInstance -Value Remove-TeamsResourceAccount
 #endregion
 
@@ -9723,7 +9723,7 @@ function Import-TeamsAudioFile {
 	.NOTES
     Translation of Import-CsOnlineAudioFile to process with New/Set-TeamsResourceAccount
     Simplifies the ApplicationType input for friendly names
-    Captures different behaviour of Get-Conent (ByteStream syntax) in PowerShell 6 and above VS PowerShell 5 and below
+    Captures different behavior of Get-Content (ByteStream syntax) in PowerShell 6 and above VS PowerShell 5 and below
 	.FUNCTIONALITY
 		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
 	.LINK
@@ -9884,9 +9884,9 @@ function Set-TeamsUserPolicy {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($ID in $Identity) {
       #User Validation
-      #TODO Check output options and harmonise!
+      #TODO Check output options and harmonize!
       # NOTE: Validating users in a try/catch block does not catch the error properly and does not allow for custom outputting of an error message
-      if ($null -ne (Get-CsOnlineUser -Identity $ID -ErrorAction SilentlyContinue)) {
+      if ($null -ne (Get-CsOnlineUser -Identity $ID -WarningAction SilentlyContinue -ErrorAction SilentlyContinue)) {
         #region Teams Upgrade Policy
         if ($PSBoundParameters.ContainsKey("TeamsUpgradePolicy")) {
           # Verify if $TeamsUpgradePolicy is a valid policy to assign
@@ -10044,7 +10044,7 @@ function Remove-TenantDialPlanNormalizationRule {
 		use the command Get-CsTenantDialPlan.
 	.EXAMPLE
 		Remove-TenantDialPlanNormalizationRule -DialPlan US-OK-OKC-DialPlan
-		Example 1 will display the availble normalization rules to remove from dial plan US-OK-OKC-DialPlan.
+		Example 1 will display the available normalization rules to remove from dial plan US-OK-OKC-DialPlan.
 	.NOTES
 		The dial plan rules will display in format similar the example below:
 		RuleIndex Name            Pattern    Translation
@@ -10080,7 +10080,7 @@ function Remove-TenantDialPlanNormalizationRule {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
-    $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -ErrorAction SilentlyContinue
+    $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
     if ($null -ne $dpInfo) {
       $currentNormRules = $dpInfo.NormalizationRules
@@ -10109,7 +10109,7 @@ function Remove-TenantDialPlanNormalizationRule {
         do {
           $indexToRemove = Read-Host -Prompt "Enter the Rule Index of the normalization rule to remove from the dial plan (leave blank to quit without changes)"
 
-          if ($indexToRemove -notin $indexArray -and $indexToRemove.Length -ne 0) {
+          if ($indexToRemove -NotIn $indexArray -and $indexToRemove.Length -ne 0) {
             Write-Warning -Message "That is not a valid Rule Index. Please try again or leave blank to quit."
           }
         } until ($indexToRemove -in $indexArray -or $indexToRemove.Length -eq 0)
@@ -10186,7 +10186,7 @@ function Get-AzureADUserFromUPN {
       try {
         # This is functional but slow in bigger environments!
         #$User = Get-AzureADUser -All:$true | Where-Object {$_.UserPrincipalName -eq $UPN} -ErrorAction STOP
-        $User = Get-AzureADUser -ObjectId "$UPN" -ErrorAction STOP
+        $User = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
         Write-Output $User
       }
       catch [Microsoft.Open.AzureAD16.Client.ApiException] {
@@ -10292,7 +10292,8 @@ function Assert-AzureADConnection {
   param() #param
 
   if (Test-AzureADConnection) {
-    Write-Verbose -Message "[ASSERT ] AzureAD(v2): Valid session found, reusing. - Tenant: $((Get-AzureADCurrentSessionInfo).TenantDomain)"
+    $TenantDomain = $((Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue).TenantDomain)
+    Write-Verbose -Message "[ASSERT ] AzureAD(v2): Valid session found, reusing. - Tenant: $TenantDomain)"
     return $true
   }
   else {
@@ -10359,7 +10360,7 @@ function Assert-SkypeOnlineConnection {
     }
   }
   else {
-    if ([bool]((Get-PSSession).Computername -match "online.lync.com")) {
+    if ([bool]((Get-PSSession -WarningAction SilentlyContinue).Computername -match "online.lync.com")) {
       Write-Host "[ASSERT ] SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
       try {
         $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
@@ -10399,7 +10400,7 @@ function Test-AzureADConnection {
   param() #param
 
   try {
-    $null = (Get-AzureADCurrentSessionInfo -ErrorAction STOP)
+    $null = (Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue -ErrorAction STOP)
     return $true
   }
   catch {
@@ -10422,7 +10423,7 @@ function Test-MicrosoftTeamsConnection {
   param() #param
 
   try {
-    $null = (Get-CsPolicyPackage | Select-Object -First 1 -ErrorAction STOP)
+    $null = (Get-CsPolicyPackage -WarningAction SilentlyContinue | Select-Object -First 1 -ErrorAction STOP)
     return $true
   }
   catch {
@@ -10449,7 +10450,7 @@ function Test-SkypeOnlineConnection {
   [OutputType([Boolean])]
   param() #param
 
-  $Sessions = Get-PSSession
+  $Sessions = Get-PSSession -WarningAction SilentlyContinue
   if ([bool]($Sessions.Computername -match "online.lync.com")) {
     $PSSkypeOnlineSession = $Sessions | Where-Object { $_.Computername -match "online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" }
     if ($PSSkypeOnlineSession.Count -ge 1) {
@@ -10480,7 +10481,7 @@ function Test-ExchangeOnlineConnection {
   [OutputType([Boolean])]
   param() #param
 
-  $Sessions = Get-PSSession
+  $Sessions = Get-PSSession -WarningAction SilentlyContinue
   if ([bool]($Sessions.Computername -match "outlook.office365.com")) {
     $PSExchangeOnlineSession = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
     if ($PSExchangeOnlineSession.Count -ge 1) {
@@ -10516,7 +10517,7 @@ function Test-Module {
 
   Write-Verbose -Message "Verifying if Module '$Module' is installed and available"
   Import-Module -Name $Module -ErrorAction SilentlyContinue
-  if (Get-Module -Name $Module) {
+  if (Get-Module -Name $Module -WarningAction SilentlyContinue) {
     return $true
   }
   else {
@@ -10558,7 +10559,7 @@ function Test-AzureADUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
-      $null = Get-AzureADUser -ObjectId "$Identity" -ErrorAction STOP
+      $null = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
       return $true
     }
     catch [Microsoft.Open.AzureAD16.Client.ApiException] {
@@ -10610,14 +10611,14 @@ function Test-AzureAdGroup {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
-      $Group2 = Get-AzureAdGroup -SearchString "$Identity" -ErrorAction STOP
+      $Group2 = Get-AzureAdGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
       if ($null -ne $Group2) {
         return $true
       }
       else {
         try {
           $MailNickName = $Identity.Split('@')[0]
-          $null = Get-AzureAdGroup -SearchString "$MailNickName" -ErrorAction STOP
+          $null = Get-AzureAdGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
           Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
           return $true
         }
@@ -10628,7 +10629,7 @@ function Test-AzureAdGroup {
     }
     catch {
       try {
-        $null = Get-AzureAdGroup -ObjectId $Identity -ErrorAction STOP
+        $null = Get-AzureAdGroup -ObjectId $Identity -WarningAction SilentlyContinue -ErrorAction STOP
         return $true
       }
       catch {
@@ -10673,7 +10674,7 @@ function Test-TeamsUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
-      $null = Get-CsOnlineUser -Identity $Identity -ErrorAction STOP
+      $null = Get-CsOnlineUser -Identity $Identity -WarningAction SilentlyContinue -ErrorAction STOP
       return $true
     }
     catch [System.Exception] {
@@ -10692,7 +10693,7 @@ function Test-TeamsUserLicense {
 		Tests a License or License Package assignment against an AzureAD-Object
 	.DESCRIPTION
 		Teams requires a specific License combination (LicensePackage) for a User.
-		Teams Direct Routing requries a specific License (ServicePlan), namely 'Phone System'
+		Teams Direct Routing requires a specific License (ServicePlan), namely 'Phone System'
 		to enable a User for Enterprise Voice
 		This Script can be used to ascertain either.
 	.PARAMETER Identity
@@ -10759,9 +10760,9 @@ function Test-TeamsUserLicense {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Query User
-    $UserObject = Get-AzureADUser -ObjectId "$Identity"
+    $UserObject = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue
     $DisplayName = $UserObject.DisplayName
-    $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
+    $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
 
     # ParameterSetName ServicePlan VS LicensePackage
     switch ($PsCmdlet.ParameterSetName) {
@@ -10848,8 +10849,8 @@ function Test-TeamsUserHasCallPlan {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     # Query User
-    $UserObject = Get-AzureADUser -ObjectId "$Identity"
-    $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId)
+    $UserObject = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue
+    $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
     $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
 
     $DOM120b = (($TeamsLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120b).SkuPartNumber -in $UserLicenseSKU)
@@ -11145,14 +11146,14 @@ function Resolve-AzureAdGroupObjectFromName {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     try {
-      $GroupObject = Get-AzureAdGroup -SearchString "$GroupName" -ErrorAction STOP
+      $GroupObject = Get-AzureAdGroup -SearchString "$GroupName" -WarningAction SilentlyContinue -ErrorAction STOP
       if ($null -ne $GroupObject) {
         return $GroupObject
       }
       else {
         try {
           $MailNickName = $GroupName.Split('@')[0]
-          $GroupObject = Get-AzureAdGroup -SearchString "$MailNickName" -ErrorAction STOP
+          $GroupObject = Get-AzureAdGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
           if ($null -ne $GroupObject) {
             return $GroupObject
           }
@@ -11247,12 +11248,12 @@ function Backup-TeamsEV {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     Try {
-      $null = (Get-CsTenantDialPlan -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath Dialplans.txt -Force -Encoding utf8)
-      $null = (Get-CsOnlineVoiceRoute -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutes.txt -Force -Encoding utf8)
-      $null = (Get-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutingPolicies.txt -Force -Encoding utf8)
-      $null = (Get-CsOnlinePstnUsage -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNUsages.txt -Force -Encoding utf8)
-      $null = (Get-CsTeamsTranslationRule -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath TranslationRules.txt -Force -Encoding utf8)
-      $null = (Get-CsOnlinePSTNGateway -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNGateways.txt -Force -Encoding utf8)
+      $null = (Get-CsTenantDialPlan -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath Dialplans.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlineVoiceRoute -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutes.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath VoiceRoutingPolicies.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlinePstnUsage -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNUsages.txt -Force -Encoding utf8)
+      $null = (Get-CsTeamsTranslationRule -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath TranslationRules.txt -Force -Encoding utf8)
+      $null = (Get-CsOnlinePSTNGateway -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | ConvertTo-Json | Out-File -FilePath PSTNGateways.txt -Force -Encoding utf8)
     }
     Catch {
       Write-Error -Message 'There was an error backing up the MS Teams Enterprise Voice configuration.'
@@ -11328,7 +11329,7 @@ function Restore-TeamsEV {
       return
     }
 
-    If ((Get-PSSession | Where-Object -FilterScript { $_.ComputerName -like '*.online.lync.com' }).State -eq 'Opened') {
+    If ((Get-PSSession -WarningAction SilentlyContinue | Where-Object -FilterScript { $_.ComputerName -like '*.online.lync.com' }).State -eq 'Opened') {
       Write-Host -Object 'Using existing session credentials'
     }
     Else {
@@ -11380,17 +11381,17 @@ function Restore-TeamsEV {
       Write-Host -Object 'Erasing all existing dialplans/voice routes/policies etc.'
 
       Write-Verbose 'Erasing all tenant dialplans'
-      $null = (Get-CsTenantDialPlan -ErrorAction SilentlyContinue | Remove-CsTenantDialPlan -ErrorAction SilentlyContinue)
+      $null = (Get-CsTenantDialPlan -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Remove-CsTenantDialPlan -ErrorAction SilentlyContinue)
       Write-Verbose 'Erasing all online voice routes'
-      $null = (Get-CsOnlineVoiceRoute -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoute -ErrorAction SilentlyContinue)
+      $null = (Get-CsOnlineVoiceRoute -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoute -ErrorAction SilentlyContinue)
       Write-Verbose 'Erasing all online voice routing policies'
-      $null = (Get-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue)
+      $null = (Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Remove-CsOnlineVoiceRoutingPolicy -ErrorAction SilentlyContinue)
       Write-Verbose 'Erasing all PSTN usages'
       $null = (Set-CsOnlinePstnUsage -Identity Global -Usage $NULL -ErrorAction SilentlyContinue)
       Write-Verbose 'Removing translation rules from PSTN gateways'
-      $null = (Get-CsOnlinePSTNGateway -ErrorAction SilentlyContinue | Set-CsOnlinePSTNGateway -OutbundTeamsNumberTranslationRules $NULL -OutboundPstnNumberTranslationRules $NULL -ErrorAction SilentlyContinue)
+      $null = (Get-CsOnlinePSTNGateway -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Set-CsOnlinePSTNGateway -OutbundTeamsNumberTranslationRules $NULL -OutboundPstnNumberTranslationRules $NULL -ErrorAction SilentlyContinue)
       Write-Verbose 'Removing translation rules'
-      $null = (Get-CsTeamsTranslationRule -ErrorAction SilentlyContinue | Remove-CsTeamsTranslationRule -ErrorAction SilentlyContinue)
+      $null = (Get-CsTeamsTranslationRule -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Remove-CsTeamsTranslationRule -ErrorAction SilentlyContinue)
     }
 
     # Rebuild tenant dialplans from backup
@@ -11398,7 +11399,7 @@ function Restore-TeamsEV {
 
     ForEach ($Dialplan in $Dialplans) {
       Write-Verbose -Message "Restoring $($Dialplan.Identity) dialplan"
-      $DPExists = (Get-CsTenantDialPlan -Identity $Dialplan.Identity -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Identity)
+      $DPExists = (Get-CsTenantDialPlan -Identity $Dialplan.Identity -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Identity)
 
       $DPDetails = @{
         Identity              = $Dialplan.Identity
@@ -11448,7 +11449,7 @@ function Restore-TeamsEV {
 
     ForEach ($VoiceRoute in $VoiceRoutes) {
       Write-Verbose -Message "Restoring $($VoiceRoute.Identity) voice route"
-      $VRExists = (Get-CsOnlineVoiceRoute -Identity $VoiceRoute.Identity -ErrorAction SilentlyContinue).Identity
+      $VRExists = (Get-CsOnlineVoiceRoute -Identity $VoiceRoute.Identity -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Identity
 
       $VRDetails = @{
         Identity              = $VoiceRoute.Identity
@@ -11493,7 +11494,7 @@ function Restore-TeamsEV {
 
     ForEach ($TranslationRule in $TranslationRules) {
       Write-Verbose -Message "Restoring $($TranslationRule.Identity) translation rule"
-      $TRExists = (Get-CsTeamsTranslationRule -Identity $TranslationRule.Identity -ErrorAction SilentlyContinue).Identity
+      $TRExists = (Get-CsTeamsTranslationRule -Identity $TranslationRule.Identity -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Identity
 
       $TRDetails = @{
         Identity    = $TranslationRule.Identity
@@ -11579,7 +11580,7 @@ function Backup-TeamsTenant {
 
     $Filenames = '*.txt'
 
-    If ((Get-PSSession | Where-Object -FilterScript {
+    If ((Get-PSSession -WarningAction SilentlyContinue | Where-Object -FilterScript {
           $_.ComputerName -like '*.online.lync.com'
         }).State -eq 'Opened') {
       Write-Host -Object 'Using existing session credentials'
@@ -11682,7 +11683,7 @@ function Backup-TeamsTenant {
     $null = (Get-CsOnlineDialInConferencingUserState @CommandParams | ConvertTo-Json | Out-File -FilePath "Get-CsOnlineDialInConferencingUserState.txt" -Force -Encoding utf8)
 
 
-    $TenantName = (Get-CsTenant).Displayname
+    $TenantName = (Get-CsTenant -WarningAction SilentlyContinue).Displayname
     $BackupFile = ('TeamsBackup_' + (Get-Date -Format yyyy-MM-dd) + " " + $TenantName + '.zip')
     $null = (Compress-Archive -Path $Filenames -DestinationPath $BackupFile -Force)
     $null = (Remove-Item -Path $Filenames -Force -Confirm:$false)
@@ -13059,8 +13060,8 @@ function ProcessLicense {
   )
 
   # Query currently assigned Licenses (SkuID) for User ($UserID)
-  $ObjectId = (Get-AzureADUser -ObjectId "$UserID").ObjectId
-  $UserLicenses = (Get-AzureADUserLicenseDetail -ObjectId $ObjectId).SkuId
+  $ObjectId = (Get-AzureADUser -ObjectId "$UserID" -WarningAction SilentlyContinue).ObjectId
+  $UserLicenses = (Get-AzureADUserLicenseDetail -ObjectId $ObjectId -WarningAction SilentlyContinue).SkuId
   $SkuPartNumber = Get-SkuPartNumberfromSkuID -SkuID "$LicenseSkuID"
 
   # Checking if the Tenant has a License of that SkuID
@@ -13117,7 +13118,7 @@ function GetApplicationTypeFromAppId ($CsAppId) {
   return $CsApplicationType
 } #GetApplicationTypeFromAppId
 
-function GetAppIdfromApplicationType ($CsApplicationType) {
+function GetAppIdFromApplicationType ($CsApplicationType) {
   <#
 	.SYNOPSIS
 		AppId for ApplicationType
@@ -13133,7 +13134,7 @@ function GetAppIdfromApplicationType ($CsApplicationType) {
     Default { }
   }
   return $CsAppId
-} #GetAppIdfromApplicationType
+} #GetAppIdFromApplicationType
 
 function Enable-TeamsUserForEnterpriseVoice {
   <#
@@ -13178,7 +13179,7 @@ function Enable-TeamsUserForEnterpriseVoice {
           $i = 0
           $imax = 20
           Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
-          while ( -not $(Get-CsOnlineUser $Identity).EnterpriseVoiceEnabled) {
+          while ( -not $(Get-CsOnlineUser $Identity -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
             if ($i -gt $imax) {
               Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
               return
