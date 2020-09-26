@@ -149,6 +149,7 @@
         IMPROVED: Bug fixing for CallQueue Scripts (continuous)
   20.09.20-prerelease
         ADDED: Resolve-AzureAdGroupObjectFromName, New-TeamsAutoAttendant (built out the main functionality)
+          WarningAction is now added to nearly all GET commands to suppress warnings. Some exceptions apply, like re-querying single Call Queues.
         IMPROVED: Re-used code samples are now transformed into proper Functions
           Bug fixes. Reworked OverflowActionTarget (Forward) and TimeoutActionTarget (Forward) for New and Set-TeamsCallQueue
 #>
@@ -748,87 +749,91 @@ Set-Alias -Name dis -Value Disconnect-Me
 #region Licensing
 function Set-TeamsUserLicense {
   <#
-	.SYNOPSIS
-		Changes the License of an AzureAD Object
-	.DESCRIPTION
-    Adds, removes or purges teams related Licenses from an AzureAD Object
-    Supports all Licenses listed in $TeamsLicenses, currently: 38 Licenses
-    Uses friendly Names for Parameter Values, supports Arrays.
-    Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
-		This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
-    Will verify major Licenses and their exclusivity, but not all.
-    Verifies whether the Licenses selected are available on the Tenant before executing
-	.PARAMETER Identity
-		Required. UserPrincipalName of the Object to be manipulated
-	.PARAMETER AddLicenses
-		Optional. Licenses to be added (main function)
-    Accepted Values are listed in $TeamsLicenses.ParameterName
-	.PARAMETER RemoveLicenses
-		Optional. Licenses to be removed (alternative function)
-    Accepted Values are listed in $TeamsLicenses.ParameterName
-	.PARAMETER RemoveAllLicenses
-		Optional Switch. Removes all licenses currently assigned (intended for replacements)
-	.EXAMPLE
-		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses MS365E5
-		Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
-	.EXAMPLE
-		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses PhoneSystem
-		Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
-		This requires a main license to be present as PhoneSystem is an add-on license
-	.EXAMPLE
-		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses MS365E3,PhoneSystem
-		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses @('MS365E3','PhoneSystem')
-		Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
-	.EXAMPLE
-		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses O365E5 -RemoveLicenses SFBOP2
-		Special Case Scenario to replace a specific license with another.
-		Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
-	.EXAMPLE
-		Set-TeamsUserLicense -Identity Name@domain.com -AddLicenses PhoneSystem_VirtualUser -RemoveAllLicenses
-		Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
-		Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
-	.EXAMPLE
-		Set-TeamsUserLicense -Identity Name@domain.com -RemoveLicenses PhoneSystem
-		Removes the Phone System License from the Object.
-	.EXAMPLE
-		Set-TeamsUserLicense -Identity Name@domain.com -RemoveAllLicenses
-		Removes all licenses the Object is currently provisioned for!
-	.NOTES
-		Many license packages are available, the following Licenses are most predominant:
-		# Main License Packages
-		- Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)
-		- Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-		- Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)
-		- Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
-		- Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-		- Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+      .SYNOPSIS
+      Changes the License of an AzureAD Object
+      .DESCRIPTION
+      Adds, removes or purges teams related Licenses from an AzureAD Object
+      Supports all Licenses listed in $TeamsLicenses, currently: 38 Licenses
+      Uses friendly Names for Parameter Values, supports Arrays.
+      Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
+      This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
+      Will verify major Licenses and their exclusivity, but not all.
+      Verifies whether the Licenses selected are available on the Tenant before executing
+      .PARAMETER Identity
+      Required. UserPrincipalName of the Object to be manipulated
+      .PARAMETER AddLicense
+      Optional. Licenses to be added (main function)
+      Accepted Values are listed in $TeamsLicenses.ParameterName
+      .PARAMETER RemoveLicense
+      Optional. Licenses to be removed (alternative function)
+      Accepted Values are listed in $TeamsLicenses.ParameterName
+      .PARAMETER RemoveAllLicenses
+      Optional Switch. Removes all licenses currently assigned (intended for replacements)
+      .PARAMETER UsageLocation
+      Optional String. ISO3166-Alpha2 CountryCode indicating the Country for the User. Required for Licensing
+      If required, the script will try to apply the UsageLocation (pending right).
+      If not provided, defaults to 'US'
+      .EXAMPLE
+      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense MS365E5
+      Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
+      .EXAMPLE
+      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense PhoneSystem
+      Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
+      This requires a main license to be present as PhoneSystem is an add-on license
+      .EXAMPLE
+      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense MS365E3,PhoneSystem
+      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense @('MS365E3','PhoneSystem')
+      Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
+      .EXAMPLE
+      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense O365E5 -RemoveLicense SFBOP2
+      Special Case Scenario to replace a specific license with another.
+      Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
+      .EXAMPLE
+      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense PhoneSystem_VirtualUser -RemoveAllLicenses
+      Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
+      Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
+      .EXAMPLE
+      Set-TeamsUserLicense -Identity Name@domain.com -RemoveLicense PhoneSystem
+      Removes the Phone System License from the Object.
+      .EXAMPLE
+      Set-TeamsUserLicense -Identity Name@domain.com -RemoveAllLicenses
+      Removes all licenses the Object is currently provisioned for!
+      .NOTES
+      Many license packages are available, the following Licenses are most predominant:
+      # Main License Packages
+      - Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)
+      - Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+      - Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)
+      - Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
+      - Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+      - Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on!
 
-		# Add-On Licenses (Require Main License Package from above)
-		- Audio Conferencing License - AudioConferencing (MCOMEETADV)
-		- Phone System - PhoneSystem (MCOEV)
+      # Add-On Licenses (Require Main License Package from above)
+      - Audio Conferencing License - AudioConferencing (MCOMEETADV)
+      - Phone System - PhoneSystem (MCOEV)
 
-		# Standalone Licenses (Special)
-		- Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
-		- Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
+      # Standalone Licenses (Special)
+      - Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
+      - Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
 
-		# Microsoft Calling Plan Licenses
-		- Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
-		- Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
+      # Microsoft Calling Plan Licenses
+      - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
+      - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
 
-    # Data in $TeamsLicenses as per Microsoft Docs Article: Published Service Plan IDs for Licensing
-    https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
+      # Data in $TeamsLicenses as per Microsoft Docs Article: Published Service Plan IDs for Licensing
+      https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 
-	.COMPONENT
-		Teams Migration and Enablement. License Assignment
-	.ROLE
-		Licensing
-	.FUNCTIONALITY
-		This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
-  .LINK
-    Get-TeamsTenantLicense
-    Get-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
-    Test-TeamsUserLicense
+      .COMPONENT
+      Teams Migration and Enablement. License Assignment
+      .ROLE
+      Licensing
+      .FUNCTIONALITY
+      This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
+      .LINK
+      Get-TeamsTenantLicense
+      Get-TeamsUserLicense
+      Add-TeamsUserLicense (deprecated)
+      Test-TeamsUserLicense
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
@@ -845,14 +850,13 @@ function Set-TeamsUserLicense {
           return $true
         }
         else {
-          Write-Host "Parameter 'AddLicenses' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
+          Write-Host "Parameter 'AddLicense' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
           Write-Host "$($TeamsLicenses.ParameterName)"
           return $false
         }
       })]
-    [Alias('Add','License','AddLicense')]
-    #Check Singular! $AddLicense
-    [string[]]$AddLicenses,
+    [Alias('Add', 'License', 'AddLicenses')]
+    [string[]]$AddLicense,
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateScript( {
@@ -860,17 +864,21 @@ function Set-TeamsUserLicense {
           return $true
         }
         else {
-          Write-Host "Parameter 'RemoveLicenses' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
+          Write-Host "Parameter 'RemoveLicense' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
           Write-Host "$($TeamsLicenses.ParameterName)"
           return $false
         }
       })]
-    [Alias('Remove','RemoveLicense')]
-    #Check Singular! $RemoveLicense
-    [string[]]$RemoveLicenses,
+    [Alias('Remove', 'RemoveLicenses')]
+    [string[]]$RemoveLicense,
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
-    [Switch]$RemoveAllLicenses
+    [Alias('RemoveAll')]
+    [Switch]$RemoveAllLicenses,
+
+    [Parameter(HelpMessage = 'Usage Location to be set if not already applied')]
+    [string]$UsageLocation = 'US'
+
   ) #param
 
   begin {
@@ -900,31 +908,31 @@ function Set-TeamsUserLicense {
     # AudioConf only for O365E5NoConf, E3 Licenses and SFBOP2
     # PhoneSystem only for E3 Licenses and SFBOP2
     <#
-			'Microsoft365E5', 'Microsoft365E3',
-			'Office365E5', 'Office365E5NoAudioConferencing', 'Office365E3', 'SkypeOnlinePlan2',
-			'AudioConferencing', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone'
-			'DomesticCallingPlan','InternationalCallingPlan'
-		#>
+        'Microsoft365E5', 'Microsoft365E3',
+        'Office365E5', 'Office365E5NoAudioConferencing', 'Office365E3', 'SkypeOnlinePlan2',
+        'AudioConferencing', 'PhoneSystem', 'PhoneSystemVirtualUser', 'CommonAreaPhone'
+        'DomesticCallingPlan','InternationalCallingPlan'
+    #>
     try {
-      if ($PSBoundParameters.ContainsKey('AddLicenses') -and $PSBoundParameters.ContainsKey('RemoveLicenses')) {
+      if ($PSBoundParameters.ContainsKey('AddLicense') -and $PSBoundParameters.ContainsKey('RemoveLicense')) {
         # Check if any are listed in both!
         Write-Verbose -Message "Validating input for Add and Remove (identifying inconsistencies)" -Verbose
 
-        foreach ($Lic in $AddLicenses) {
-          if ($Lic -in $RemoveLicenses) {
+        foreach ($Lic in $AddLicense) {
+          if ($Lic -in $RemoveLicense) {
             Write-Error -Message "Invalid combination. '$Lic' cannot be added AND removed" -Category LimitsExceeded -RecommendedAction "Please specify only once!" -ErrorAction Stop
           }
         }
       }
 
-      if ($PSBoundParameters.ContainsKey('AddLicenses')) {
+      if ($PSBoundParameters.ContainsKey('AddLicense')) {
         Write-Verbose -Message "Validating input for Adding Licenses (identifying inconsistencies)" -Verbose
         #region Disclaimer
         # Checking any other combinations then the verified
-        if ( -not ('Microsoft365E3' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses`
-              -or 'PhoneSystem' -in $AddLicenses -or 'AudioConferencing' -in $AddLicenses)) {
+        if ( -not ('Microsoft365E3' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense`
+              -or 'PhoneSystem' -in $AddLicense -or 'AudioConferencing' -in $AddLicense)) {
           Write-Warning -Message "License combination not verified. Errors due to incompatibilities may occur!"
           Write-Verbose -Message "Please check yourself which Licenses may not be assigned together" -Verbose
         }
@@ -933,20 +941,20 @@ function Set-TeamsUserLicense {
         #region Main Licenses
         #region Microsoft 365
         # Checking combinations for Microsoft365E5
-        if ('Microsoft365E5' -in $AddLicenses) {
-          if ('Microsoft365E3' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses`
-              -or 'PhoneSystem' -in $AddLicenses -or 'AudioConferencing' -in $AddLicenses) {
+        if ('Microsoft365E5' -in $AddLicense) {
+          if ('Microsoft365E3' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense`
+              -or 'PhoneSystem' -in $AddLicense -or 'AudioConferencing' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for Microsoft365E3
-        if ('Microsoft365E3' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+        if ('Microsoft365E3' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -954,29 +962,29 @@ function Set-TeamsUserLicense {
 
         #region Office 365
         # Checking combinations for Office365E5
-        if ('Office365E5' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses`
-              -or 'PhoneSystem' -in $AddLicenses -or 'AudioConferencing' -in $AddLicenses) {
+        if ('Office365E5' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense`
+              -or 'PhoneSystem' -in $AddLicense -or 'AudioConferencing' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for Office365E5NoAudioConferencing
-        if ('Office365E5NoAudioConferencing' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses -or 'Office365E5' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+        if ('Office365E5NoAudioConferencing' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense -or 'Office365E5' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for Office365E3
-        if ('Office365E3' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Microsoft365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+        if ('Office365E3' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Microsoft365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -984,10 +992,10 @@ function Set-TeamsUserLicense {
 
         #region Skype Online Plan2
         # Checking combinations for SkypeOnlinePlan2
-        if ('SkypeOnlinePlan2' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+        if ('SkypeOnlinePlan2' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -996,19 +1004,19 @@ function Set-TeamsUserLicense {
 
         #region Standalone Licenses
         # Checking combinations for CommonAreaPhone
-        if ('CommonAreaPhone' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'Microsoft365E3' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+        if ('CommonAreaPhone' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'Microsoft365E3' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for PhoneSystemVirtualUser
-        if ('PhoneSystemVirtualUser' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'Microsoft365E3' -in $AddLicenses) {
+        if ('PhoneSystemVirtualUser' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -1016,24 +1024,24 @@ function Set-TeamsUserLicense {
 
         #region Add-on Licenses
         # Checking combinations for PhoneSystem
-        if ('PhoneSystem' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+        if ('PhoneSystem' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
             Write-Error -Message "Invalid combination. 'PhoneSystem' cannot be added to the Main License specified (already integrated)" -Category LimitsExceeded -RecommendedAction "Please remove 'PhoneSystem'" -ErrorAction Stop
           }
-          elseif ('Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses) {
+          elseif ('Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense) {
             Write-Verbose -Message "Combination correct. 'PhoneSystem' can be added"
           }
         }
 
         # Checking combinations for Microsoft365E3
-        if ('AudioConferencing' -in $AddLicenses) {
-          if ('Microsoft365E5' -in $AddLicenses -or 'Office365E5' -in $AddLicenses `
-              -or 'Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses `
-              -or 'CommonAreaPhone' -in $AddLicenses -or 'PhoneSystemVirtualUser' -in $AddLicenses) {
+        if ('AudioConferencing' -in $AddLicense) {
+          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense `
+              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
+              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
             Write-Error -Message "Invalid combination. 'AudioConferencing' cannot be added to the Main License specified (already integrated)" -Category LimitsExceeded -RecommendedAction "Please remove 'AudioConferencing'" -ErrorAction Stop
           }
-          elseif ('Office365E3' -in $AddLicenses -or 'SkypeOnlinePlan2' -in $AddLicenses -or 'Office365E5NoAudioConferencing' -in $AddLicenses) {
+          elseif ('Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense) {
             Write-Verbose -Message "Combination correct. 'AudioConferencing' can be added"
           }
         }
@@ -1041,19 +1049,19 @@ function Set-TeamsUserLicense {
 
         #region Calling Plans
         # Checking combinations for Calling Plans
-        if ('DomesticCallingPlan' -in $AddLicenses -and 'InternationalCallingPlan' -in $AddLicenses) {
+        if ('DomesticCallingPlan' -in $AddLicense -and 'InternationalCallingPlan' -in $AddLicense) {
           Write-Error -Message "Invalid combination of Calling Plan Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Calling Plan License!" -ErrorAction Stop
         }
         #endregion
       }
 
-      if ($PSBoundParameters.ContainsKey('RemoveLicenses')) {
+      if ($PSBoundParameters.ContainsKey('RemoveLicense')) {
         Write-Verbose -Message "Validating input for Removing (identifying inconsistencies)"
         # No checks needed that aren't captured by the Add and Remove check! - Leaving this here just in case.
         Write-Verbose -Message "NOTE: Currently no checks for Remove Licenses necessary"
       }
 
-      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses') -and -not $PSBoundParameters.ContainsKey('AddLicenses')) {
+      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses') -and -not $PSBoundParameters.ContainsKey('AddLicense')) {
         Write-Warning -Message "This will leave the Object without ANY License!"
         if (-not (Get-Consent)) {
           throw "No consent given. Aborting execution!"
@@ -1080,13 +1088,13 @@ function Set-TeamsUserLicense {
     #endregion
 
     Write-Verbose -Message "Processing Licenses:"
-    #region AddLicenses
-    if ($PSBoundParameters.ContainsKey('AddLicenses')) {
-      Write-Verbose -Message "Parsing array 'AddLicenses'" -Verbose
+    #region AddLicense
+    if ($PSBoundParameters.ContainsKey('AddLicense')) {
+      Write-Verbose -Message "Parsing array 'AddLicense'" -Verbose
       try {
         # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
         [System.Collections.ArrayList]$AddSkuIds = @()
-        foreach ($AddLic in $AddLicenses) {
+        foreach ($AddLic in $AddLicense) {
           $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
           $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
           $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('FriendlyName')
@@ -1117,13 +1125,13 @@ function Set-TeamsUserLicense {
     }
     #endregion
 
-    #region RemoveLicenses
-    if ($PSBoundParameters.ContainsKey('RemoveLicenses')) {
-      Write-Verbose -Message "Parsing array 'RemoveLicenses'" -Verbose
+    #region RemoveLicense
+    if ($PSBoundParameters.ContainsKey('RemoveLicense')) {
+      Write-Verbose -Message "Parsing array 'RemoveLicense'" -Verbose
       try {
         # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
         [System.Collections.ArrayList]$RemoveSkuIds = @()
-        foreach ($RemoveLic in $RemoveLicenses) {
+        foreach ($RemoveLic in $RemoveLicense) {
           $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
           $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
           [void]$RemoveSkuIds.Add("$RemoveSku")
@@ -1153,14 +1161,24 @@ function Set-TeamsUserLicense {
       }
 
       # Checking Usage Location is Set
-      #TODO: Evaluate whether UsageLocation can be added as a parameter to ease execution
-      try {
-        if ($null -eq $UserObject.UsageLocation) {
-          throw
+      if ($null -eq $UserObject.UsageLocation) {
+        try {
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-AzureADUser -UsageLocation $UsageLocation")) {
+            Set-AzureADUser -ObjectId $UserObject.ObjectId -UsageLocation $UsageLocation -ErrorAction Stop
+            if ($PSBoundParameters.ContainsKey('UsageLocation')) {
+              Write-Verbose -Message "User '$ID' UsageLocation set to $UsageLocation" -Verbose
+            }
+            else {
+              Write-Warning -Message "User '$ID' UsageLocation set to $UsageLocation (Default)- Please correct if necessary"
+            }
+          }
+        }
+        catch {
+          Write-Error -Message "Usage Location not set" -Category InvalidResult -RecommendedAction "Set Usage Location, then try assigning a License again" -ErrorAction Stop
         }
       }
-      catch {
-        Write-Error -Message "Usage Location not set" -Category InvalidResult -RecommendedAction "Set Usage Location, then try assigning a License again" -ErrorAction Stop
+      else {
+        Write-Verbose -Message "User '$ID' UsageLocation already set ($UsageLocation)"
       }
       #endregion
 
@@ -1170,7 +1188,7 @@ function Set-TeamsUserLicense {
         Write-Verbose -Message "Parsing switch 'RemoveAllLicenses'" -Verbose
         try {
           # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
-          $AllSkus = (Get-AzureADUserLicenseDetail -ObjectId $User -WarningAction SilentlyContinue).SkuPartNumber
+          $AllSkus = (Get-AzureADUserLicenseDetail -ObjectId $UserObject.ObjectId -WarningAction SilentlyContinue).SkuPartNumber
 
           [System.Collections.ArrayList]$RemoveAllSkuIds = @()
           foreach ($RemoveLic in $AllSkus) {
@@ -1181,11 +1199,11 @@ function Set-TeamsUserLicense {
           }
 
           <# Alternative
-          $RemoveAllSkuIds = Get-AzureADUser -ObjectID $ID | Select-Object -ExpandProperty AssignedLicenses | Select-Object SkuID
-          [System.Collections.ArrayList]$RemoveAllSkuIds = @()
-          foreach ($Lic in $RemoveAllSkuIds) {
-            Write-Verbose -Message "Preparing License Object: Removing Sku '$Lic'"
-          }
+              $RemoveAllSkuIds = Get-AzureADUser -ObjectID $ID | Select-Object -ExpandProperty AssignedLicenses | Select-Object SkuID
+              [System.Collections.ArrayList]$RemoveAllSkuIds = @()
+              foreach ($Lic in $RemoveAllSkuIds) {
+              Write-Verbose -Message "Preparing License Object: Removing Sku '$Lic'"
+              }
           #>
         }
         catch {
@@ -1197,10 +1215,10 @@ function Set-TeamsUserLicense {
 
       #region Creating User specific License Object
       $NewLicenseObjParameters = $null
-      if ($PSBoundParameters.ContainsKey('AddLicenses')) {
+      if ($PSBoundParameters.ContainsKey('AddLicense')) {
         $NewLicenseObjParameters += @{'SkuId' = $AddSkuIds }
       }
-      if ($PSBoundParameters.ContainsKey('RemoveLicenses')) {
+      if ($PSBoundParameters.ContainsKey('RemoveLicense')) {
         $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveSkuIds }
       }
       if ($PSBoundParameters.ContainsKey('RemoveAllLicenses')) {
@@ -1225,6 +1243,7 @@ function Set-TeamsUserLicense {
     Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
   } #end
 } #Set-TeamsUserLicense
+
 
 function Add-TeamsUserLicense {
   <#
@@ -1686,7 +1705,6 @@ function Get-TeamsUserLicense {
         CallingPlan               = $currentCallingPlan
         Licenses                  = $UserLicensesSorted
         ServicePlans              = $UserServicePlansSorted
-
       }
 
       Write-Output $output
@@ -2426,10 +2444,22 @@ function Find-TeamsUserVoiceConfig {
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
           if ($Users) {
-             Get-TeamsUserVoiceConfig $Users -DiagnosticLevel 1
+            if ($Users.Count -gt 1) {
+                Write-Verbose -Message "Number: '$Number' - Found multiple Users matching the criteria!" -Verbose
+            }
+
+            foreach ($User in $Users) {
+              try {
+                Write-Output "Number: '$Number' - Found assigned to: $User"
+                Get-TeamsUserVoiceConfig $User -DiagnosticLevel 1 -ErrorAction SilentlyContinue
+              }
+              catch {
+                Write-Warning -Message "Number: '$Number' - Found assigned to: $User, but cannot display Voice Config! (May be disabled?)"
+              }
+            }
           }
           else {
-            Write-Verbose -Message "No Users found with Number: '$Number'" -Verbose
+            Write-Verbose -Message "Number: '$Number' - No Users found" -Verbose
           }
         }
 
@@ -2728,7 +2758,7 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = "DirectRouting", Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
     [Parameter(ParameterSetName = "CallingPlans", Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
-    [Alias('Number','LineURI')]
+    [Alias('Number', 'LineURI')]
     [string]$PhoneNumber,
 
     [Parameter(ParameterSetName = "CallingPlans", Mandatory, HelpMessage = "Enables an Object for Microsoft Calling Plans")]
@@ -3046,7 +3076,7 @@ function Remove-TeamsUserVoiceConfig {
       if ($Scope -eq "All" -or $Scope -eq "CallPlans") {
         if ($null -ne $CsUserLicense.Licenses) {
           # Determine Call Plan Licenses - Building Scope
-          $RemoveLicenses = @()
+          [System.Collections.ArrayList]$RemoveLicenses = @()
           if ($CsUserLicense.CallingPlanInternational) {
             $RemoveLicenses.Add('InternationalCallingPlan')
           }
@@ -3450,7 +3480,7 @@ function Get-TeamsAutoAttendant {
                 }
                 "SharedVoicemail" {
                   try {
-                    $OperatorObject = Get-AzureAdGroup -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $OperatorObject = Get-AzureADGroup -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                     $Operator = $OperatorObject.DisplayName
                   }
                   catch {
@@ -3463,7 +3493,7 @@ function Get-TeamsAutoAttendant {
                     $Operator = $OperatorObject.UserPrincipalName
                     if ($null -eq $Operator) {
                       try {
-                        $OperatorObject = Get-AzureAdGroup -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                        $OperatorObject = Get-AzureADGroup -ObjectId "$($AA.Operator.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                         $Operator = $OperatorObject.DisplayName
                         if ($null -eq $Operator) {
                           throw
@@ -3480,7 +3510,6 @@ function Get-TeamsAutoAttendant {
                 }
               }
 
-              # TODO Test whether this is Universal (should be for every Callable Entity)
               $OperatorTranscription = $AA.Operator.EnableTranscription
             }
             # Output: $Operator, $OperatorTranscription
@@ -3491,12 +3520,7 @@ function Get-TeamsAutoAttendant {
             foreach ($AI in $AA.ApplicationInstances) {
               $AIObject = $null
               $AIObject = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
-              #TODO: Verify what to do if RA cannot be enumerated. Currently empty. Show ObjectId instead?
               if ($null -ne $AIObject) {
-                [void]$AIObjects.Add($AIObject)
-              }
-              else {
-                # Create new Object with ObjectId as UPN and ObjectId?
                 [void]$AIObjects.Add($AIObject)
               }
             }
@@ -3833,6 +3857,7 @@ function New-TeamsAutoAttendant {
     #endregion
 
     #region Operator
+    #TODO Insert EnableTranscription (For SharedVoiceMail only) - Replicate for other SharedVoicemail options?
     if ($PSBoundParameters.ContainsKey('Operator')) {
       try {
         $OperatorEntity = New-TeamsAutoAttendantCallableEntity -Type $OperatorType -Identity "$Operator"
@@ -3915,7 +3940,7 @@ function New-TeamsAutoAttendant {
       if ($PSBoundParameters.ContainsKey('BusinessHoursGreeting')) {
         try {
           $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $BusinessHoursGreeting
-          if ($BusinessHoursGreetingObject){
+          if ($BusinessHoursGreetingObject) {
             $BusinessHoursCallFlowParameters.Greetings = @($BusinessHoursGreetingObject)
           }
         }
@@ -4007,7 +4032,7 @@ function New-TeamsAutoAttendant {
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) {
         try {
           $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $AfterHoursGreeting
-          if ($AfterHoursGreetingObject){
+          if ($AfterHoursGreetingObject) {
             $AfterHoursCallFlowParameters.Greetings = @($AfterHoursGreetingObject)
           }
         }
@@ -4278,7 +4303,7 @@ function New-TeamsAutoAttendantDialScope {
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
       try {
-        $Object = Get-AzureAdGroup $Group -WarningAction SilentlyContinue -ErrorAction Stop
+        $Object = Get-AzureADGroup $Group -WarningAction SilentlyContinue -ErrorAction Stop
         $GroupIds += $Object.ObjectId
       }
       catch {
@@ -4345,7 +4370,7 @@ function New-TeamsAutoAttendantCallableEntity {
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
 
-    ) #param
+  ) #param
 
   begin {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
@@ -4630,7 +4655,7 @@ function New-TeamsAutoAttendantSchedule {
     [string]$BusinessDays,
 
     [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours')]
-    [ValidateSet('9to6', '9to5', '9to4', '8to6', '8to5', '8to4', '7to6', '7to5', '7to4', '6to6', '10to6', '0830to1700', '0830to1730', '0800to1730', '0830to1800', '8to12and13to17', '8to12and13to18', '9to12and13to17', '9to12and13to18', '9to13and14to18', '8to12and14to18')]
+    [ValidateSet('9to6', '9to5', '9to4', '8to6', '8to5', '8to4', '7to6', '7to5', '7to4', '6to6', '10to6', '0830to1700', '0830to1730', '0800to1730', '0830to1800', '0900to1730', '0930to1730', '0930to1800', '8to12and13to17', '8to12and13to18', '9to12and13to17', '9to12and13to18', '9to13and14to18', '8to12and14to18')]
     [string]$BusinessHours,
 
     [Parameter(Mandatory, ParameterSetName = 'WeeklyTimeRange')]
@@ -4681,25 +4706,25 @@ function New-TeamsAutoAttendantSchedule {
     #$CsOnlineScheduleParams.ErrorAction' = $Stop }
 
     if ($Complement) {
-      Write-Verbose -Message "[PROCESS] Processing 'Complement'"
+      Write-Verbose -Message "[PROCESS] Processing Complement"
       $CsOnlineScheduleParams.Complement = $true
     }
 
     switch ($PSBoundParameters.Keys) {
       # First, adding processing switches
       "WeeklyRecurrentSchedule" {
-        Write-Verbose -Message "[PROCESS] Processing 'WeeklyRecurrentSchedule'"
+        Write-Verbose -Message "[PROCESS] Processing WeeklyRecurrentSchedule"
         $CsOnlineScheduleParams.WeeklyRecurrentSchedule = $true
       }
 
       "Fixed" {
-        Write-Verbose -Message "[PROCESS] Processing 'Fixed'"
+        Write-Verbose -Message "[PROCESS] Processing Fixed"
         $CsOnlineScheduleParams.Fixed = $true
       }
 
       # Then, Adding $BusinessHours as $TimeFrame
       "BusinessHours" {
-        Write-Verbose -Message "[PROCESS] Processing 'BusinessHours'"
+        Write-Verbose -Message "[PROCESS] Processing BusinessHours '$BusinessHours'"
         switch ($BusinessHours) {
           # Defining time of Day ($TimeFrame)
           '9to6' { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 18:00)) }
@@ -4717,6 +4742,9 @@ function New-TeamsAutoAttendantSchedule {
           '0830to1700' { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 17:00)) }
           '0830to1730' { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 17:00)) }
           '0830to1800' { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 17:00)) }
+          '0900to1730' { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 17:30)) }
+          '0930to1730' { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:30 -End 17:30)) }
+          '0930to1800' { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:30 -End 18:00)) }
           '8to12and13to17' {
             $Sta = New-CsOnlineTimeRange -Start 08:00 -End 12:00
             $End = New-CsOnlineTimeRange -Start 13:00 -End 17:00
@@ -4747,50 +4775,58 @@ function New-TeamsAutoAttendantSchedule {
             $End = New-CsOnlineTimeRange -Start 14:00 -End 18:00
             $TimeFrame = @($Sta, $End)
           }
+          default { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 17:00)) }
         }
       }
 
       # Alternatively adding provided $DateTimeRanges as $TimeFrame
       "DateTimeRanges" {
-        Write-Verbose -Message "[PROCESS] Processing 'DateTimeRanges'"
+        Write-Verbose -Message "[PROCESS] Processing DateTimeRanges"
         Write-Verbose -Message "Please note, the DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care" -Verbose
         $TimeFrame = @($DateTimeRanges)
       }
 
       # Then Using $TimeFrame to define full Schedule for $BusinessDays
       "BusinessDays" {
-        Write-Verbose -Message "[PROCESS] Processing 'BusinessDays'"
+        Write-Verbose -Message "[PROCESS] Processing BusinessDays '$BusinessDays"
         switch ($BusinessDays) {
           'MonToFri' {
-            $CsOnlineScheduleParams.MondayHours = $TimeFrame
-            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
-            $CsOnlineScheduleParams.FridayHours = $TimeFrame
+            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
           }
           'MonToSat' {
-            $CsOnlineScheduleParams.MondayHours = $TimeFrame
-            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
-            $CsOnlineScheduleParams.FridayHours = $TimeFrame
-            $CsOnlineScheduleParams.SaturdayHours = $TimeFrame
+            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
           }
           'MonToSun' {
-            $CsOnlineScheduleParams.MondayHours = $TimeFrame
-            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
-            $CsOnlineScheduleParams.FridayHours = $TimeFrame
-            $CsOnlineScheduleParams.SaturdayHours = $TimeFrame
-            $CsOnlineScheduleParams.SundayHours = $TimeFrame
+            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
           }
           'SunToThu' {
-            $CsOnlineScheduleParams.SundayHours = $TimeFrame
-            $CsOnlineScheduleParams.MondayHours = $TimeFrame
-            $CsOnlineScheduleParams.TuesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.WednesdayHours = $TimeFrame
-            $CsOnlineScheduleParams.ThursdayHours = $TimeFrame
+            $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+          }
+          default {
+            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
           }
         }
       }
@@ -4799,11 +4835,14 @@ function New-TeamsAutoAttendantSchedule {
     # Creating Schedule
     Write-Verbose -Message "[PROCESS] Creating Schedule"
     try {
+      Write-Debug -Message "$CsOnlineScheduleParams"
+      Write-Debug -Message "$($CsOnlineScheduleParams.WeeklyRecurrentSchedule)"
       if ($PSCmdlet.ShouldProcess("$Name", "New-CsOnlineSchedule")) {
         $ScheduleObject = New-CsOnlineSchedule @CsOnlineScheduleParams
       }
 
       # Output
+      Write-Debug -Message "$($ScheduleObject.WeeklyRecurrentSchedule)"
       return $ScheduleObject
     }
     catch {
@@ -4922,284 +4961,282 @@ function Get-TeamsCallQueue {
       else {
         foreach ($DN in $Name) {
           Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand) - '$DN'"
-            # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
-            #$Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
-            # NOTE: Like AAs, piping to "FL *" can show more information. Here though, there is no benefit
-            $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
+          # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
+          #$Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
+          # NOTE: Like AAs, piping to "FL *" can show more information. Here though, there is no benefit
+          $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP -WarningVariable $Warnings
 
-            if ($null -ne $Queues) {
-              if ($PSBoundParameters.ContainsKey('ConciseView')) {
-                Write-Verbose -Message "ConciseView: Parameters relating to Language & Shared Voicemail are not shown." -Verbose
+          if ($null -ne $Queues) {
+            if ($PSBoundParameters.ContainsKey('ConciseView')) {
+              Write-Verbose -Message "ConciseView: Parameters relating to Language & Shared Voicemail are not shown." -Verbose
+            }
+          }
+
+          # Initialising Arrays
+          [System.Collections.ArrayList]$UserObjects = @()
+          [System.Collections.ArrayList]$DLObjects = @()
+          [System.Collections.ArrayList]$AgentObjects = @()
+          [System.Collections.ArrayList]$AIObjects = @()
+
+          # Reworking Objects
+          Write-Verbose -Message "[PROCESS] Finding parsable Objects for $($Queues.Count) Queues"
+          foreach ($Q in $Queues) {
+            #region Finding OverflowActionTarget
+            Write-Verbose -Message "'$($Q.Name)' - Parsing OverflowActionTarget"
+            if ($null -eq $Q.OverflowActionTarget) {
+              $OAT = $null
+            }
+            else {
+              switch ($Q.OverflowActionTarget.Type) {
+                "ApplicationEndpoint" {
+                  try {
+                    $OATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $OAT = $OATobject.UserPrincipalName
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                  }
+                }
+                "Mailbox" {
+                  try {
+                    $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $OAT = $OATobject.DisplayName
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                  }
+                }
+                "User" {
+                  try {
+                    $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $OAT = $OATobject.UserPrincipalName
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                  }
+                }
+                "Phone" {
+                  try {
+                    $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $OAT = $OATobject.UserPrincipalName
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                  }
+                }
+                default {
+                  try {
+                    $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $OAT = $OATobject.UserPrincipalName
+                    if ($null -eq $OAT) {
+                      try {
+                        $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                        $OAT = $OATobject.DisplayName
+                        if ($null -eq $OAT) {
+                          throw
+                        }
+                      }
+                      catch {
+                        Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                      }
+                    }
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
+                  }
+                }
+              }
+            }
+            # Output: $OAT, $Q.OverflowActionTarget.Type
+            #endregion
+
+            #region Finding TimeoutActionTarget
+            Write-Verbose -Message "'$($Q.Name)' - Parsing OverflowActionTarget"
+            if ($null -eq $Q.TimeoutActionTarget) {
+              $TAT = $null
+            }
+            else {
+              switch ($Q.TimeoutActionTarget.Type) {
+                "ApplicationEndpoint" {
+                  try {
+                    $TATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $TAT = $TATObject.UserPrincipalName
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                  }
+                }
+                "Mailbox" {
+                  try {
+                    $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $TAT = $TATObject.DisplayName
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                  }
+                }
+                "User" {
+                  try {
+                    $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $TAT = $TATObject.UserPrincipalName
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                  }
+                }
+                default {
+                  try {
+                    $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                    $TAT = $TATObject.UserPrincipalName
+                    if ($null -eq $TAT) {
+                      try {
+                        $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                        $TAT = $TATObject.DisplayName
+                        if ($null -eq $TAT) {
+                          throw
+                        }
+                      }
+                      catch {
+                        Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                      }
+                    }
+                  }
+                  catch {
+                    Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
+                  }
+                }
+              }
+            }
+            # Output: $TAT, $Q.TimeoutActionTarget.Type
+            #endregion
+
+            #region Endpoints - DistributionLists and Agents
+            Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
+            foreach ($DL in $Q.DistributionLists) {
+              $DLObject = Get-AzureADGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
+              [void]$DLObjects.Add($DLObject)
+            }
+            # Output: $DLObjects.DisplayName
+
+            Write-Verbose -Message "'$($Q.Name)' - Parsing Users"
+            foreach ($User in $Q.Users) {
+              $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+              [void]$UserObjects.Add($UserObject)
+            }
+            # Output: $UserObjects.UserPrincipalName
+
+            Write-Verbose -Message "'$($Q.Name)' - Parsing Agents"
+            foreach ($Agent in $Q.Agents) {
+              $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+              [void]$AgentObjects.Add($AgentObject)
+            }
+            # Output: $AgentObjects.UserPrincipalName
+            #endregion
+
+            #region Application Instance UPNs
+            Write-Verbose -Message "'$($Q.Name)' - Parsing Resource Accounts"
+            foreach ($AI in $Q.ApplicationInstances) {
+              $AIObject = $null
+              $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
+              if ($null -ne $AIObject) {
+                [void]$AIObjects.Add($AIObject)
               }
             }
 
-            # Initialising Arrays
-            [System.Collections.ArrayList]$UserObjects = @()
-            [System.Collections.ArrayList]$DLObjects = @()
-            [System.Collections.ArrayList]$AgentObjects = @()
-            [System.Collections.ArrayList]$AIObjects = @()
+            # Output: $AIObjects.UserPrincipalName
+            #endregion
 
-            # Reworking Objects
-            Write-Verbose -Message "[PROCESS] Finding parsable Objects for $($Queues.Count) Queues"
-            foreach ($Q in $Queues) {
-              #region Finding OverflowActionTarget
-              Write-Verbose -Message "'$($Q.Name)' - Parsing OverflowActionTarget"
-              if ($null -eq $Q.OverflowActionTarget) {
-                $OAT = $null
+            #region Creating Output Object
+            Write-Verbose -Message "'$($Q.Name)' - Constructing Output Object"
+            # Building custom Object with Friendly Names
+            if ($PSBoundParameters.ContainsKey('ConciseView')) {
+              $QueueObject = [PSCustomObject][ordered]@{
+                Identity                  = $Q.Identity
+                Name                      = $Q.Name
+                UseDefaultMusicOnHold     = $Q.UseDefaultMusicOnHold
+                MusicOnHoldAudioFileName  = $Q.MusicOnHoldFileName
+                WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
+                RoutingMethod             = $Q.RoutingMethod
+                PresenceBasedRouting      = $Q.PresenceBasedRouting
+                AgentAlertTime            = $Q.AgentAlertTime
+                AllowOptOut               = $Q.AllowOptOut
+                ConferenceMode            = $Q.ConferenceMode
+                OverflowThreshold         = $Q.OverflowThreshold
+                OverflowAction            = $Q.OverflowAction
+                OverflowActionTarget      = $OAT
+                OverflowActionTargetType  = $Q.OverflowActionTarget.Type
+
+                TimeoutThreshold          = $Q.TimeoutThreshold
+                TimeoutAction             = $Q.TimeoutAction
+                TimeoutActionTarget       = $TAT
+                TimeoutActionTargetType   = $Q.TimeoutActionTarget.Type
+
+                Users                     = $UserObjects.UserPrincipalName
+                DistributionLists         = $DLObjects.DisplayName
+
+                Agents                    = $AgentObjects.UserPrincipalName
+                ApplicationInstances      = $AIObjects.Userprincipalname
               }
-              else {
-                switch ($Q.OverflowActionTarget.Type) {
-                  "ApplicationEndpoint" {
-                    try {
-                      $OATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $OAT = $OATobject.UserPrincipalName
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                    }
-                  }
-                  "Mailbox" {
-                    try {
-                      $OATobject = Get-AzureAdGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $OAT = $OATobject.DisplayName
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                    }
-                  }
-                  "User" {
-                    try {
-                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $OAT = $OATobject.UserPrincipalName
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                    }
-                  }
-                  "Phone" {
-                    try {
-                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $OAT = $OATobject.UserPrincipalName
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                    }
-                  }
-                  default {
-                    try {
-                      $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $OAT = $OATobject.UserPrincipalName
-                      if ($null -eq $OAT) {
-                        try {
-                          $OATobject = Get-AzureAdGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                          $OAT = $OATobject.DisplayName
-                          if ($null -eq $OAT) {
-                            throw
-                          }
-                        }
-                        catch {
-                          Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                        }
-                      }
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                    }
-                  }
-                }
-              }
-              # Output: $OAT, $Q.OverflowActionTarget.Type
-              #endregion
-
-              #region Finding TimeoutActionTarget
-              Write-Verbose -Message "'$($Q.Name)' - Parsing OverflowActionTarget"
-              if ($null -eq $Q.TimeoutActionTarget) {
-                $TAT = $null
-              }
-              else {
-                switch ($Q.TimeoutActionTarget.Type) {
-                  "ApplicationEndpoint" {
-                    try {
-                      $TATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $TAT = $TATObject.UserPrincipalName
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                    }
-                  }
-                  "Mailbox" {
-                    try {
-                      $TATobject = Get-AzureAdGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $TAT = $TATObject.DisplayName
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                    }
-                  }
-                  "User" {
-                    try {
-                      $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $TAT = $TATObject.UserPrincipalName
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                    }
-                  }
-                  default {
-                    try {
-                      $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $TAT = $TATObject.UserPrincipalName
-                      if ($null -eq $TAT) {
-                        try {
-                          $TATobject = Get-AzureAdGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                          $TAT = $TATObject.DisplayName
-                          if ($null -eq $TAT) {
-                            throw
-                          }
-                        }
-                        catch {
-                          Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                        }
-                      }
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                    }
-                  }
-                }
-              }
-              # Output: $TAT, $Q.TimeoutActionTarget.Type
-              #endregion
-
-              #region Endpoints - DistributionLists and Agents
-              Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
-              foreach ($DL in $Q.DistributionLists) {
-                $DLObject = Get-AzureAdGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
-                [void]$DLObjects.Add($DLObject)
-              }
-              # Output: $DLObjects.DisplayName
-
-              Write-Verbose -Message "'$($Q.Name)' - Parsing Users"
-              foreach ($User in $Q.Users) {
-                $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-                [void]$UserObjects.Add($UserObject)
-              }
-              # Output: $UserObjects.UserPrincipalName
-
-              Write-Verbose -Message "'$($Q.Name)' - Parsing Agents"
-              foreach ($Agent in $Q.Agents) {
-                $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-                [void]$AgentObjects.Add($AgentObject)
-              }
-              # Output: $AgentObjects.UserPrincipalName
-              #endregion
-
-              #region Application Instance UPNs
-              Write-Verbose -Message "'$($Q.Name)' - Parsing Resource Accounts"
-              foreach ($AI in $Q.ApplicationInstances) {
-                $AIObject = $null
-                $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
-                #TODO: Verify what to do if RA cannot be enumerated. Currently empty. Show ObjectId instead?
-                if ($null -ne $AIObject) {
-                  [void]$AIObjects.Add($AIObject)
-                }
-                else {
-                  # Create new Object with ObjectId as UPN and ObjectId?
-                  [void]$AIObjects.Add($AIObject)
-                }
-              }
-
-              # Output: $AIObjects.UserPrincipalName
-              #endregion
-
-              #region Creating Output Object
-              Write-Verbose -Message "'$($Q.Name)' - Constructing Output Object"
-              # Building custom Object with Friendly Names
-              if ($PSBoundParameters.ContainsKey('ConciseView')) {
-                $QueueObject = [PSCustomObject][ordered]@{
-                  Identity                  = $Q.Identity
-                  Name                      = $Q.Name
-                  UseDefaultMusicOnHold     = $Q.UseDefaultMusicOnHold
-                  MusicOnHoldAudioFileName  = $Q.MusicOnHoldFileName
-                  WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
-                  RoutingMethod             = $Q.RoutingMethod
-                  PresenceBasedRouting      = $Q.PresenceBasedRouting
-                  AgentAlertTime            = $Q.AgentAlertTime
-                  AllowOptOut               = $Q.AllowOptOut
-                  ConferenceMode            = $Q.ConferenceMode
-                  OverflowThreshold         = $Q.OverflowThreshold
-                  OverflowAction            = $Q.OverflowAction
-                  OverflowActionTarget      = $OAT
-                  OverflowActionTargetType  = $Q.OverflowActionTarget.Type
-
-                  TimeoutThreshold          = $Q.TimeoutThreshold
-                  TimeoutAction             = $Q.TimeoutAction
-                  TimeoutActionTarget       = $TAT
-                  TimeoutActionTargetType   = $Q.TimeoutActionTarget.Type
-
-                  Users                     = $UserObjects.UserPrincipalName
-                  DistributionLists         = $DLObjects.DisplayName
-
-                  Agents                    = $AgentObjects.UserPrincipalName
-                  ApplicationInstances      = $AIObjects.Userprincipalname
-                }
-              }
-              else {
-                # Displays all except reserved Parameters (Microsoft Internal)
-                $QueueObject = [PSCustomObject][ordered]@{
-                  Identity                                   = $Q.Identity
-                  Name                                       = $Q.Name
-                  UseDefaultMusicOnHold                      = $Q.UseDefaultMusicOnHold
-                  MusicOnHoldAudioFileName                   = $Q.MusicOnHoldFileName
-                  WelcomeMusicAudioFileName                  = $Q.WelcomeMusicFileName
-                  RoutingMethod                              = $Q.RoutingMethod
-                  PresenceBasedRouting                       = $Q.PresenceBasedRouting
-                  AgentAlertTime                             = $Q.AgentAlertTime
-                  AllowOptOut                                = $Q.AllowOptOut
-                  ConferenceMode                             = $Q.ConferenceMode
-                  OverflowThreshold                          = $Q.OverflowThreshold
-                  OverflowAction                             = $Q.OverflowAction
-                  OverflowActionTarget                       = $OAT
-                  OverflowActionTargetType                   = $Q.OverflowActionTarget.Type
-                  OverflowSharedVoicemailAudioFilePrompt     = $Q.OverflowSharedVoicemailAudioFilePrompt
-                  OverflowSharedVoicemailAudioFilePromptFileName = $Q.OverflowSharedVoicemailAudioFilePromptFileName
-                  OverflowSharedVoicemailTextToSpeechPrompt  = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-                  EnableOverflowSharedVoicemailTranscription = $Q.EnableOverflowSharedVoicemailTranscription
-                  TimeoutThreshold                           = $Q.TimeoutThreshold
-                  TimeoutAction                              = $Q.TimeoutAction
-                  TimeoutActionTarget                        = $TAT
-                  TimeoutActionTargetType                    = $Q.TimeoutActionTarget.Type
-                  TimeoutSharedVoicemailAudioFilePrompt      = $Q.TimeoutSharedVoicemailAudioFilePrompt
-                  TimeoutSharedVoicemailAudioFilePromptFileName = $Q.TimeoutSharedVoicemailAudioFilePromptFileName
-                  TimeoutSharedVoicemailTextToSpeechPrompt   = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-                  EnableTimeoutSharedVoicemailTranscription  = $Q.EnableTimeoutSharedVoicemailTranscription
-                  LanguageId                                 = $Q.LanguageId
-                  #LineUri                                    = $Q.LineUri
-                  MusicOnHoldAudioFileId                     = $Q.MusicOnHoldAudioFileId
-                  WelcomeMusicAudioFileId                    = $Q.WelcomeMusicAudioFileId
-                  Users                                      = $UserObjects.UserPrincipalName
-                  DistributionLists                          = $DLObjects.DisplayName
-                  DistributionListsLastExpanded              = $Q.DistributionListsLastExpanded
-                  AgentsInSyncWithDistributionLists          = $Q.AgentsInSyncWithDistributionLists
-                  AgentsCapped                               = $Q.AgentsCapped
-                  Agents                                     = $AgentObjects.UserPrincipalName
-                  ApplicationInstances                       = $AIObjects.Userprincipalname
-                }
-
-              }
-              #endregion
-
-              # Output
-              Write-Output $QueueObject
             }
+            else {
+              # Displays all except reserved Parameters (Microsoft Internal)
+              $QueueObject = [PSCustomObject][ordered]@{
+                Identity                                       = $Q.Identity
+                Name                                           = $Q.Name
+                UseDefaultMusicOnHold                          = $Q.UseDefaultMusicOnHold
+                MusicOnHoldAudioFileName                       = $Q.MusicOnHoldFileName
+                WelcomeMusicAudioFileName                      = $Q.WelcomeMusicFileName
+                RoutingMethod                                  = $Q.RoutingMethod
+                PresenceBasedRouting                           = $Q.PresenceBasedRouting
+                AgentAlertTime                                 = $Q.AgentAlertTime
+                AllowOptOut                                    = $Q.AllowOptOut
+                ConferenceMode                                 = $Q.ConferenceMode
+                OverflowThreshold                              = $Q.OverflowThreshold
+                OverflowAction                                 = $Q.OverflowAction
+                OverflowActionTarget                           = $OAT
+                OverflowActionTargetType                       = $Q.OverflowActionTarget.Type
+                OverflowSharedVoicemailAudioFilePrompt         = $Q.OverflowSharedVoicemailAudioFilePrompt
+                OverflowSharedVoicemailAudioFilePromptFileName = $Q.OverflowSharedVoicemailAudioFilePromptFileName
+                OverflowSharedVoicemailTextToSpeechPrompt      = $Q.OverflowSharedVoicemailTextToSpeechPrompt
+                EnableOverflowSharedVoicemailTranscription     = $Q.EnableOverflowSharedVoicemailTranscription
+                TimeoutThreshold                               = $Q.TimeoutThreshold
+                TimeoutAction                                  = $Q.TimeoutAction
+                TimeoutActionTarget                            = $TAT
+                TimeoutActionTargetType                        = $Q.TimeoutActionTarget.Type
+                TimeoutSharedVoicemailAudioFilePrompt          = $Q.TimeoutSharedVoicemailAudioFilePrompt
+                TimeoutSharedVoicemailAudioFilePromptFileName  = $Q.TimeoutSharedVoicemailAudioFilePromptFileName
+                TimeoutSharedVoicemailTextToSpeechPrompt       = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
+                EnableTimeoutSharedVoicemailTranscription      = $Q.EnableTimeoutSharedVoicemailTranscription
+                LanguageId                                     = $Q.LanguageId
+                #LineUri                                    = $Q.LineUri
+                MusicOnHoldAudioFileId                         = $Q.MusicOnHoldAudioFileId
+                WelcomeMusicAudioFileId                        = $Q.WelcomeMusicAudioFileId
+                Users                                          = $UserObjects.UserPrincipalName
+                DistributionLists                              = $DLObjects.DisplayName
+                DistributionListsLastExpanded                  = $Q.DistributionListsLastExpanded
+                AgentsInSyncWithDistributionLists              = $Q.AgentsInSyncWithDistributionLists
+                AgentsCapped                                   = $Q.AgentsCapped
+                Agents                                         = $AgentObjects.UserPrincipalName
+                ApplicationInstances                           = $AIObjects.Userprincipalname
+              }
+
+            }
+            #endregion
+
+            # Output
+            if ($Warnings) {
+              Write-Warning -Message $Warnings
+            }
+            Write-Output $QueueObject
           }
         }
       }
-      catch {
-        Write-Error -Message 'Could not query Call Queues' -Category OperationStopped
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
-        return
-      }
+    }
+    catch {
+      Write-Error -Message 'Could not query Call Queues' -Category OperationStopped
+      Write-ErrorRecord $_ #This handles the error message in human readable format.
+      return
+    }
   } #process
 
   end {
@@ -5226,8 +5263,6 @@ function New-TeamsCallQueue {
 		This script uses different default values for some parameters than New-CsCallQueue
 		Using this switch will instruct the Script to adhere to Microsoft defaults.
 		ChangedPARAMETER:      This Script   Microsoft    Reason:
-#TODO Remove AgentAlertTime from defaults! - Check Spreadsheet for Default application! (use switch MS defaults or change behavior!)
-#TODO Investigate Language not applied!
 		- OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
 		- TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
 		- UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
@@ -5644,7 +5679,7 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
         # Validation - File Exists
-        try{
+        try {
           $null = Test-Path $WelcomeMusicAudioFile
         }
         catch {
@@ -5653,7 +5688,7 @@ function New-TeamsCallQueue {
         }
 
         # Validation - File is provided in the correct format
-        try{
+        try {
           If ((Get-Item $WelcomeMusicAudioFile).length -le 5242880 -and ($WelcomeMusicAudioFile -match '.mp3' -or $WelcomeMusicAudioFile -match '.wav' -or $WelcomeMusicAudioFile -match '.wma')) {
             Write-Verbose -Message "WelcomeMusicAudioFile: Format check passed - SUCCESS"
           }
@@ -5693,6 +5728,12 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('RoutingMethod')) {
       $Parameters += @{'RoutingMethod' = $RoutingMethod }
     }
+
+    # AgentAlertTime
+    if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
+      Write-Verbose -Message "'$NameNormalised' AgentAlertTime: $AgentAlertTime" -Verbose
+      $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
+    }
     #endregion
 
     #region Boolean Parameters
@@ -5728,11 +5769,6 @@ function New-TeamsCallQueue {
     #region Valued Parameters
     if ($PSBoundParameters.ContainsKey('UseMicrosoftDefaults')) {
       Write-Verbose -Message "'$NameNormalised' Setting default values according to New-CsCallQueue (Microsoft defaults)" -Verbose
-      # AgentAlertTime
-      if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
-        Write-Verbose -Message "'$NameNormalised' AgentAlertTime: $AgentAlertTime" -Verbose
-        $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
-      }
       # OverflowThreshold
       if ($PSBoundParameters.ContainsKey('OverflowThreshold')) {
         Write-Verbose -Message "'$NameNormalised' OverflowThreshold: $OverflowThreshold" -Verbose
@@ -5746,13 +5782,6 @@ function New-TeamsCallQueue {
     }
     else {
       Write-Verbose -Message "'$NameNormalised' Setting default values according to New-TeamsCallQueue (optimised defaults)" -Verbose
-      # AgentAlertTime
-      if (-not $PSBoundParameters.ContainsKey('AgentAlertTime')) {
-        $AgentAlertTime = 20
-      }
-      Write-Verbose -Message "'$NameNormalised' AgentAlertTime: $AgentAlertTime" -Verbose
-      $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
-
       # OverflowThreshold
       if (-not $PSBoundParameters.ContainsKey('OverflowThreshold')) {
         $OverflowThreshold = 10
@@ -5909,7 +5938,7 @@ function New-TeamsCallQueue {
           #region Processing OverflowActionTarget for SharedVoiceMail
           try {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
-            $OverflowActionTargetId = (Get-AzureAdGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+            $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $OverflowActionTargetId) {
               throw
             }
@@ -5922,10 +5951,10 @@ function New-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($OverflowActionTarget.Contains("@")) {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $OverflowActionTargetId) {
                 throw
@@ -6121,7 +6150,7 @@ function New-TeamsCallQueue {
           #region Processing TimeoutActionTarget for SharedVoiceMail
           try {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
-            $TimeoutActionTargetId = (Get-AzureAdGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+            $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $TimeoutActionTargetId) {
               throw
             }
@@ -6134,10 +6163,10 @@ function New-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($TimeoutActionTarget.Contains("@")) {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $TimeoutActionTargetId) {
                 throw
@@ -6771,7 +6800,7 @@ function Set-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
         # Validation - File Exists
-        try{
+        try {
           $null = Test-Path $WelcomeMusicAudioFile
         }
         catch {
@@ -6780,7 +6809,7 @@ function Set-TeamsCallQueue {
         }
 
         # Validation - File is provided in the correct format
-        try{
+        try {
           If ((Get-Item $WelcomeMusicAudioFile).length -le 5242880 -and ($WelcomeMusicAudioFile -match '.mp3' -or $WelcomeMusicAudioFile -match '.wav' -or $WelcomeMusicAudioFile -match '.wma')) {
             Write-Verbose -Message "WelcomeMusicAudioFile: Format check passed - SUCCESS"
           }
@@ -6870,7 +6899,7 @@ function Set-TeamsCallQueue {
 
 
     #region Language
-    #TODO Testing application!
+    #CHECK Application of LanguageId!
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Parameters += @{'LanguageId' = $Language }
     }
@@ -7030,7 +7059,7 @@ function Set-TeamsCallQueue {
             }
             else {
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
-              $OverflowActionTargetId = (Get-AzureAdGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+              $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             }
             if ($null -eq $OverflowActionTargetId) {
               throw
@@ -7044,10 +7073,10 @@ function Set-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($OverflowActionTarget.Contains("@")) {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $OverflowActionTargetId = (Get-AzureAdGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $OverflowActionTargetId) {
                 throw
@@ -7252,7 +7281,7 @@ function Set-TeamsCallQueue {
             }
             else {
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
-              $TimeoutActionTargetId = (Get-AzureAdGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+              $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             }
             if ($null -eq $TimeoutActionTargetId) {
               throw
@@ -7266,10 +7295,10 @@ function Set-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object: Mailnickname"
             try {
               if ($TimeoutActionTarget.Contains("@")) {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               else {
-                $TimeoutActionTargetId = (Get-AzureAdGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
+                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
               }
               if ($null -eq $TimeoutActionTargetId) {
                 throw
@@ -7586,8 +7615,8 @@ function Get-TeamsResourceAccountAssociation {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
-    [Alias('Identity')]
-    [string[]]$UserPrincipalName
+    [Alias('UserPrincipalName')]
+    [string[]]$Identity
   ) #param
 
   begin {
@@ -7619,21 +7648,18 @@ function Get-TeamsResourceAccountAssociation {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
-    #TODO Investigate why it doesn't work!
-
-    # Querying ObjectId from provided UPNs
-    if ($null -eq $UserPrincipalName) {
-      # Getting all RAs
-      Write-Verbose -Message "Querying all Resource Accounts, please wait..." -Verbose
-      $Accounts = Get-CsOnlineApplicationInstance
+    $Accounts = $null
+    [System.Collections.ArrayList]$Accounts = @()
+    if (-not $PSBoundParameters.ContainsKey('Identity')) {
+      Write-Verbose -Message "Querying all Resource Accounts, this may take some time..." -Verbose
+      $Accounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue
     }
     else {
-      # Query $UserPrincipalName
-      foreach ($UPN in $UserPrincipalName) {
+      # Querying ObjectId from provided $Identity
+      foreach ($UPN in $Identity) {
         Write-Verbose -Message "Querying Resource Account '$UPN'"
         try {
-          $RAObject = Get-AzureADUser -ObjectId $UPN -WarningAction SilentlyContinue -ErrorAction Stop
-          $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
+          $AppInstance = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Stop
           [void]$Accounts.Add($AppInstance)
           Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
         }
@@ -7671,7 +7697,6 @@ function Get-TeamsResourceAccountAssociation {
           StatusMessage     = $AssociationStatus.Message
           StatusTimeStamp   = $AssociationStatus.StatusTimestamp
           AssociatedTo      = $AssocObject.Name
-
         }
 
         # Output
@@ -7744,6 +7769,9 @@ function New-TeamsResourceAccountAssociation {
 
   begin {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    # Caveat - Script in Testing
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -7787,11 +7815,6 @@ function New-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
-    #TODO Check double application and output!
-    #TODO Check WarningAction for queries (silent!)
-    #TODO Investigate how this can be simplified. Output from GET is doubled up (b/c executed twice)
-    # CQ or AA can be made into a SWITCH. $Account.UserPrincipalName is displayed before ForEach! Investigate!
-    # Add wait to re-query / output?
     if ($null -ne $Accounts) {
       #region Connection to Call Queue
       if ($PSBoundParameters.ContainsKey('CallQueue')) {
@@ -7812,23 +7835,29 @@ function New-TeamsResourceAccountAssociation {
           Write-Verbose -Message "'$CallQueue' - Unique result found: $($CallQueueObj.Identity)"
         }
 
-        # Query existing connection
-        $ExistingConnection = $null
-        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN -WarningAction SilentlyContinue
-        if ($null -eq $ExistingConnection.AssociatedTo) {
-          Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
-        }
-        else {
-          Write-Verbose -Message "'$($Account.UserPrincipalName)' - Existing connections found: Listing all connections. Remove connections or use -Force" -Verbose
-          $ExistingConnection
-          Write-Error -Message "'$($Account.UserPrincipalName)' - This account is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'" -ErrorAction Stop
-        }
-
         # Processing Call Queue
         Write-Verbose -Message "Processing assignment of all Accounts to Call Queue"
         foreach ($Account in $Accounts) {
+          # Query existing connection
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - Querying existing associations"
+          $ExistingConnection = $null
+          #CHECK Query rather with Get-CsOnlineApplicationInstanceAssociation? - Needs ObjectId though! (replicated from Get-TeamsResourceAccountAssociation)
+          $ExistingConnection = Get-TeamsResourceAccountAssociation $Account.UserPrincipalName -WarningAction SilentlyContinue
+          if ($null -eq $ExistingConnection.AssociatedTo) {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
+          }
+          else {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Existing connections found: Listing all connections. Remove connections or use -Force" -Verbose
+            $ExistingConnection
+            Write-Error -Message "'$($Account.UserPrincipalName)' - This account is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
+            break
+          }
+
           # Comparing ApplicationType
-          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationType -ne "CallQueue") {
+          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationType -eq "CallQueue") {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches Call Queue - OK"
+          }
+          else {
             if ($PSBoundParameters.ContainsKey('Force')) {
               # Changing Application Type
               Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'CallQueue'" -Verbose
@@ -7845,9 +7874,6 @@ function New-TeamsResourceAccountAssociation {
               Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch" -ErrorAction Stop
             }
           }
-          else {
-            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches Call Queue - OK"
-          }
 
           # Establishing Association
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - Assigning to Call Queue: '$CallQueue'"
@@ -7856,19 +7882,12 @@ function New-TeamsResourceAccountAssociation {
           }
         }
         # Re-query Association Target
+        #  Wating for AAD to write the Association Target so that it may be queried correctly
+        Write-Verbose -Message "'$Name' Waiting for AAD to write object. Waiting for 2s"
+        Start-Sleep -Seconds 2
+
         $AssociationTarget = Get-CsCallQueue -Identity $OperationStatus.Results.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
-        # Output
-        $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
-          UserPrincipalName = $Account.UserPrincipalName
-          ConfigurationType = $OperationStatus.Results.ConfigurationType
-          Result            = $OperationStatus.Results.Result
-          StatusCode        = $OperationStatus.Results.StatusCode
-          StatusMessage     = $OperationStatus.Results.Message
-          AssociatedTo      = $AssociationTarget.Name
-
-        }
-        Write-Output $ResourceAccountAssociationObject
       }
       #endregion
 
@@ -7891,24 +7910,28 @@ function New-TeamsResourceAccountAssociation {
           Write-Verbose -Message "'$AutoAttendant' - Unique result found: $($AutoAttendantObj.Identity)"
         }
 
-        # Query existing connection
-        $ExistingConnection = $null
-        $ExistingConnection = Get-TeamsResourceAccountAssociation $UPN -WarningAction SilentlyContinue
-        if ($null -eq $ExistingConnection.AssociatedTo) {
-          Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
-        }
-        else {
-          Write-Verbose -Message "'$($Account.UserPrincipalName)' - This account is already assigned to the following entity:" -Verbose
-          $ExistingConnection
-          Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'" -ErrorAction Stop
-        }
-
-
         # Processing Auto Attendant
         Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
         foreach ($Account in $Accounts) {
+          # Query existing connection
+          Write-Verbose -Message "'$($Account.UserPrincipalName)' - Querying existing associations"
+          $ExistingConnection = $null
+          $ExistingConnection = Get-TeamsResourceAccountAssociation $Account.UserPrincipalName -WarningAction SilentlyContinue
+          if ($null -eq $ExistingConnection.AssociatedTo) {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
+          }
+          else {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - This account is already assigned to the following entity:" -Verbose
+            $ExistingConnection
+            Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
+            break
+          }
+
           # Comparing ApplicationType
-          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationType -ne "AutoAttendant") {
+          if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationType -eq "AutoAttendant") {
+            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches Auto Attendant - OK"
+          }
+          else {
             if ($PSBoundParameters.ContainsKey('Force')) {
               # Changing Application Type
               Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'AutoAttendant'" -Verbose
@@ -7925,9 +7948,6 @@ function New-TeamsResourceAccountAssociation {
               Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match!" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
             }
           }
-          else {
-            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches Auto Attendant - OK"
-          }
 
 
           # Establishing Association
@@ -7937,20 +7957,27 @@ function New-TeamsResourceAccountAssociation {
           }
         }
         # Re-query Association Target
+        #  Wating for AAD to write the Association Target so that it may be queried correctly
+        Write-Verbose -Message "'$Name' Waiting for AAD to write object. Waiting for 2s"
+        Start-Sleep -Seconds 2
+
         $AssociationTarget = Get-CsAutoAttendant -Identity $OperationStatus.Results.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
-        # Output
-        $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
-          UserPrincipalName = $Account.UserPrincipalName
-          ConfigurationType = $OperationStatus.Results.ConfigurationType
-          Result            = $OperationStatus.Results.Result
-          StatusCode        = $OperationStatus.Results.StatusCode
-          StatusMessage     = $OperationStatus.Results.Message
-          AssociatedTo      = $AssociationTarget.Name
-
-        }
-        Write-Output $ResourceAccountAssociationObject
       }
+      #endregion
+
+      #region Output
+      $ResourceAccountAssociationObject = $null
+      $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+        UserPrincipalName = $Accounts.UserPrincipalName
+        ConfigurationType = $OperationStatus.Results.ConfigurationType
+        Result            = $OperationStatus.Results.Result
+        StatusCode        = $OperationStatus.Results.StatusCode
+        StatusMessage     = $OperationStatus.Results.Message
+        AssociatedTo      = $AssociationTarget.Name
+
+      }
+      Write-Output $ResourceAccountAssociationObject
       #endregion
 
     }
@@ -8314,7 +8341,6 @@ function New-TeamsResourceAccount {
       Write-Verbose -Message "'$Name' Creating Resource Account with New-CsOnlineApplicationInstance..."
       if ($PSCmdlet.ShouldProcess("$UPN", "New-CsOnlineApplicationInstance")) {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
-        #TODO: Create helper function for this: Input: $imax, $ErrorMessage and $WaitMessage. Output, nothing
         $i = 0
         $imax = 20
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($imax s) to be able to parse the Object." -Verbose
@@ -8391,10 +8417,9 @@ function New-TeamsResourceAccount {
       }
       else {
         try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            #TODO Improve output. Write verbose before
-            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-            Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicense $License")) {
+            $null = (Set-TeamsUserLicense -Identity $UPN -AddLicense $License -ErrorAction STOP)
+            Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'" -Verbose
             $IsLicensed = $true
           }
         }
@@ -8411,7 +8436,6 @@ function New-TeamsResourceAccount {
         $imax = 300
         Write-Warning -Message "Applying a License may take longer than provisioned for ($($imax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
         Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
-        #TODO Check Test-TeamsUserLicense can look up Licenses according to $TeamsLicenses.Parametername
         while (-not (Test-TeamsUserLicense -Identity $UPN -LicensePackage $License)) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount" -ErrorAction Stop
@@ -8476,24 +8500,12 @@ function New-TeamsResourceAccount {
       Write-Verbose -Message "'$Name' Preparing Output Object"
       # Data
       $ResourceAccount = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP
-
+      $ResourceAccountLicense = Get-TeamsUserLicense -Identity $UPN
       # readable Application type
       $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
 
       # Resource Account License
-      #TODO Change License output and verification against $TeamsLicenses
       if ($IsLicensed) {
-        # License
-        if (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV) {
-          $ResourceAccountLicense = "PhoneSystem"
-        }
-        elseif (Test-TeamsUserLicense -Identity $UPN -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccountLicense = "PhoneSystemVirtualUser"
-        }
-        else {
-          $ResourceAccountLicense = $null
-        }
-
         if ($null -ne $ResourceAccount.PhoneNumber) {
           # Phone Number Type
           if ($PhoneNumberIsMSNumber) {
@@ -8511,7 +8523,6 @@ function New-TeamsResourceAccount {
 
       }
       else {
-        $ResourceAccountLicense = $null
         $ResourceAccountPhoneNumberType = $null
         # Phone Number is taken from Original Object and should be empty at this point
       }
@@ -8520,9 +8531,9 @@ function New-TeamsResourceAccount {
       $ResourceAccountObject = [PSCustomObject][ordered]@{
         UserPrincipalName = $ResourceAccount.UserPrincipalName
         DisplayName       = $ResourceAccount.DisplayName
-        UsageLocation     = $UsageLocation
         ApplicationType   = $ResourceAccountApplicationType
-        License           = $ResourceAccountLicense
+        UsageLocation     = $UsageLocation
+        License           = $ResourceAccountLicense.LicensesFriendlyNames
         PhoneNumberType   = $ResourceAccountPhoneNumberType
         PhoneNumber       = $ResourceAccount.PhoneNumber
       }
@@ -8927,7 +8938,7 @@ function Set-TeamsResourceAccount {
       $imax = 300
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($imax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
       Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
-      while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
+      while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -LicensePackage $License)) {
         if ($i -gt $imax) {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount"
           return
@@ -8948,6 +8959,12 @@ function Set-TeamsResourceAccount {
         Write-Error -Message "A Phone Number can only be assigned to licensed objects." -Category ResourceUnavailable -RecommendedAction "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
       }
       else {
+        # Checking number is free
+        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber
+        if ($UserWithThisNumber) {
+            Write-Error -Message "'$Name' Number '$PhoneNumber' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
+        }
+
         # Removing old Number (if $null or different to current)
         if ($null -eq $PhoneNumber -or $CurrentPhoneNumber -ne $PhoneNumber) {
           Write-Verbose -Message "'$Name' ACTION: Removing Phone Number"
@@ -8975,34 +8992,30 @@ function Set-TeamsResourceAccount {
           Write-Verbose -Message "'$Name' ACTION: Assigning Phone Number"
           # Assigning new Number
           # Processing paths for Telephone Numbers depending on Type
-          if ($PhoneNumberIsMSNumber) {
+          try {
+            if ($PhoneNumberIsMSNumber) {
             # Set in VoiceApplicationInstance
-            try {
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
-                Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans"
+                Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans" -Verbose
                 $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $PhoneNumber -ErrorAction STOP)
-                Write-Verbose -Message "SUCCESS"
               }
             }
-            catch {
-              Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
-              Write-ErrorRecord $_ #This handles the error message in human readable format.
-            }
-          }
-          else {
+            else {
             # Set in ApplicationInstance
-            try {
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $PhoneNumber")) {
-                Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for: Direct Routing"
+                Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for: Direct Routing" -Verbose
                 $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $PhoneNumber -ErrorAction STOP)
-                Write-Verbose -Message "SUCCESS"
               }
             }
-            catch {
-              Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
-              Write-ErrorRecord $_ #This handles the error message in human readable format.
-            }
           }
+          catch [ApplicationInstanceManagementException] {
+            Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned! Number is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number "
+          }
+          catch {
+            Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
+            Write-ErrorRecord $_ #This handles the error message in human readable format.
+          }
+
         }
       }
     }
@@ -9115,14 +9128,13 @@ function Get-TeamsResourceAccount {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     $ResourceAccounts = $null
-    #TODO investigate Warningaction (silent!)
 
     #region Data gathering
     if ($PSBoundParameters.ContainsKey('Identity')) {
       # Default Parameterset
       [System.Collections.ArrayList]$ResourceAccounts = @()
       foreach ($I in $Identity) {
-        Write-Verbose -Message "Identity - Searching for Accounts with UserPrincipalName '$I'"
+        Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
           $RA = Get-CsOnlineApplicationInstance -Identity $I -ErrorAction Stop
           [void]$ResourceAccounts.Add($RA)
@@ -9152,7 +9164,7 @@ function Get-TeamsResourceAccount {
       $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
     }
     else {
-      Write-Verbose -Message "Identity - Listing all Resource Accounts" -Verbose
+      Write-Verbose -Message "Querying all Resource Accounts, this may take some time..." -Verbose
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue
     }
 
@@ -9179,19 +9191,17 @@ function Get-TeamsResourceAccount {
           $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
         }
 
-        # Resource Account License
-        # License
-        #TODO Change License output and verification against $TeamsLicenses
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: License"
-        if (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV) {
-          $ResourceAccountLicense = "PhoneSystem"
-        }
-        elseif (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccountLicense = "PhoneSystemVirtualUser"
-        }
-        else {
-          $ResourceAccountLicense = $null
-        }
+        # Usage Location from Object
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
+        $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
+
+        # Parsing CsOnlineUser
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy"
+        $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue
+
+        # Parsing TeamsUserLicense
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: User Licenses"
+        $ResourceAccountLicense = Get-TeamsUserLicense -Identity $UPN
 
         # Phone Number Type
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"
@@ -9206,14 +9216,6 @@ function Get-TeamsResourceAccount {
         else {
           $ResourceAccountPhoneNumberType = $null
         }
-
-        # Usage Location from Object
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
-        $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
-
-        # Parsing CsOnlineUser
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy"
-        $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue
 
         # Associations
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
@@ -9231,17 +9233,17 @@ function Get-TeamsResourceAccount {
 
         # creating new PS Object (synchronous with Get and Set)
         $ResourceAccountObject = [PSCustomObject][ordered]@{
-          UserPrincipalName = $ResourceAccount.UserPrincipalName
-          DisplayName       = $ResourceAccount.DisplayName
-          ApplicationType   = $ResourceAccountApplicationType
-          UsageLocation     = $AzureAdUser.UsageLocation
-          License           = $ResourceAccountLicense
-          PhoneNumberType   = $ResourceAccountPhoneNumberType
-          PhoneNumber       = $ResourceAccount.PhoneNumber
+          UserPrincipalName        = $ResourceAccount.UserPrincipalName
+          DisplayName              = $ResourceAccount.DisplayName
+          ApplicationType          = $ResourceAccountApplicationType
+          UsageLocation            = $AzureAdUser.UsageLocation
+          License                  = $ResourceAccountLicense.LicensesFriendlyNames
+          PhoneNumberType          = $ResourceAccountPhoneNumberType
+          PhoneNumber              = $ResourceAccount.PhoneNumber
           OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy
-          AssociatedTo      = $AssocObject.Name
-          AssociatedAs      = $Association.ConfigurationType
-          AssociationStatus  = $AssociationStatus.Status
+          AssociatedTo             = $AssocObject.Name
+          AssociatedAs             = $Association.ConfigurationType
+          AssociationStatus        = $AssociationStatus.Status
         }
 
         Write-Output $ResourceAccountObject
@@ -9449,7 +9451,7 @@ function Find-TeamsResourceAccount {
           PhoneNumber       = $ResourceAccount.PhoneNumber
           AssociatedTo      = $AssocObject.Name
           AssociatedAs      = $Association.ConfigurationType
-          AssociationStatus  = $AssociationStatus.Status
+          AssociationStatus = $AssociationStatus.Status
         }
 
         Write-Output $ResourceAccountObject
@@ -9884,7 +9886,7 @@ function Set-TeamsUserPolicy {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($ID in $Identity) {
       #User Validation
-      #TODO Check output options and harmonize!
+      #CHECK output options and harmonize!
       # NOTE: Validating users in a try/catch block does not catch the error properly and does not allow for custom outputting of an error message
       if ($null -ne (Get-CsOnlineUser -Identity $ID -WarningAction SilentlyContinue -ErrorAction SilentlyContinue)) {
         #region Teams Upgrade Policy
@@ -10611,14 +10613,14 @@ function Test-AzureAdGroup {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     try {
-      $Group2 = Get-AzureAdGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
+      $Group2 = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
       if ($null -ne $Group2) {
         return $true
       }
       else {
         try {
           $MailNickName = $Identity.Split('@')[0]
-          $null = Get-AzureAdGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
+          $null = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
           Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
           return $true
         }
@@ -10629,7 +10631,7 @@ function Test-AzureAdGroup {
     }
     catch {
       try {
-        $null = Get-AzureAdGroup -ObjectId $Identity -WarningAction SilentlyContinue -ErrorAction STOP
+        $null = Get-AzureADGroup -ObjectId $Identity -WarningAction SilentlyContinue -ErrorAction STOP
         return $true
       }
       catch {
@@ -11146,14 +11148,14 @@ function Resolve-AzureAdGroupObjectFromName {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     try {
-      $GroupObject = Get-AzureAdGroup -SearchString "$GroupName" -WarningAction SilentlyContinue -ErrorAction STOP
+      $GroupObject = Get-AzureADGroup -SearchString "$GroupName" -WarningAction SilentlyContinue -ErrorAction STOP
       if ($null -ne $GroupObject) {
         return $GroupObject
       }
       else {
         try {
           $MailNickName = $GroupName.Split('@')[0]
-          $GroupObject = Get-AzureAdGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
+          $GroupObject = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
           if ($null -ne $GroupObject) {
             return $GroupObject
           }
@@ -11168,7 +11170,7 @@ function Resolve-AzureAdGroupObjectFromName {
     }
     catch {
       try {
-        $GroupObject = Get-AzureAdGroup -ObjectId $GroupName -ErrorAction STOP
+        $GroupObject = Get-AzureADGroup -ObjectId $GroupName -ErrorAction STOP
         if ($null -ne $GroupObject) {
           return $GroupObject
         }
