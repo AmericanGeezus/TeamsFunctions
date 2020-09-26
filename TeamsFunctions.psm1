@@ -3768,7 +3768,7 @@ function New-TeamsAutoAttendant {
     #Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
     #Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
     Write-Warning -Message "This Script is currently IN DEVELOPMENT (ALPHA). Functions may not produce any meaningful output yet"
-    Write-Debug -Message "Handle with Care. This function is not yet implemented to specifications." -Debug
+    Write-Debug -Message "Handle with Care. This function is not yet implemented to specifications."
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -3807,11 +3807,14 @@ function New-TeamsAutoAttendant {
       $TimeZoneId = $TimeZone
     }
     else {
-      $TimeZoneId = (Get-CsAutoAttendantSupportedTimeZone | Where-Object DisplayName -Match $TimeZone | Select-Object -First 1).Id
+      Write-Verbose -Message "TimeZone - Parsing TimeZone '$TimeZone'"
+      $TimeZoneId = (Get-CsAutoAttendantSupportedTimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
+      Write-Verbose -Message "TimeZone - Found! Using: '$TimeZoneId'"
+      Write-Verbose -Message "TimeZone - This is an approximate match, please validate in Admin Center and select a more precise match if needed!" -Verbose
     }
 
-    #TODO
-    <# Add required checks to Parameters that need to go together:
+    <#
+    #TODO Add required checks to Parameters that need to go together:
     BusinessHoursCallFlowOption (TransferCallToTarget)
     BusinessHoursCallTarget
     BusinessHoursCallTargetType
@@ -4785,49 +4788,49 @@ function New-TeamsAutoAttendantSchedule {
         Write-Verbose -Message "Please note, the DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care" -Verbose
         $TimeFrame = @($DateTimeRanges)
       }
+    }
 
-      # Then Using $TimeFrame to define full Schedule for $BusinessDays
-      "BusinessDays" {
-        Write-Verbose -Message "[PROCESS] Processing BusinessDays '$BusinessDays"
-        switch ($BusinessDays) {
-          'MonToFri' {
-            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
-          }
-          'MonToSat' {
-            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
-          }
-          'MonToSun' {
-            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
-          }
-          'SunToThu' {
-            $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-          }
-          default {
-            $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-            $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
-          }
+    # Then Using $TimeFrame to define full Schedule for $BusinessDays
+    if ($BusinessDays) {
+      Write-Verbose -Message "[PROCESS] Processing BusinessDays '$BusinessDays"
+      switch ($BusinessDays) {
+        'MonToFri' {
+          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
+        }
+        'MonToSat' {
+          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
+        }
+        'MonToSun' {
+          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
+        }
+        'SunToThu' {
+          $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+        }
+        default {
+          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
         }
       }
     }
@@ -4835,14 +4838,11 @@ function New-TeamsAutoAttendantSchedule {
     # Creating Schedule
     Write-Verbose -Message "[PROCESS] Creating Schedule"
     try {
-      Write-Debug -Message "$CsOnlineScheduleParams"
-      Write-Debug -Message "$($CsOnlineScheduleParams.WeeklyRecurrentSchedule)"
       if ($PSCmdlet.ShouldProcess("$Name", "New-CsOnlineSchedule")) {
         $ScheduleObject = New-CsOnlineSchedule @CsOnlineScheduleParams
       }
 
       # Output
-      Write-Debug -Message "$($ScheduleObject.WeeklyRecurrentSchedule)"
       return $ScheduleObject
     }
     catch {
