@@ -29,129 +29,31 @@
   Subsequent Minor versions indicate additional publications on this day.
   Revisions are planned quarterly
 
-  # Version History
+  # Version History (abbreviated)
   1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
   20.04.17.1  Initial Version (as TeamsFunctions) - Multiple updates for Teams
-        References to Skype for Business Online or SkypeOnline have been replaced with Teams as far as sensible
-        Function ProcessLicense has seen many additions to LicensePackages. See Documentation there
-        Microsoft 365 Licenses have been added to all Functions dealing with Licensing
-        Functions to Test against AzureAD and SkypeOnline (Module, Connection, Object) are now elevated as exported functions
-        Added Function Test-TeamsTenantPolicy to ascertain that the Object exists
-        Added Function Test-TeamsUserLicensePackage queries whether the Object has a certain License Package assigned
-        Added Function Test-AzureADUserLicense queries whether the Object has a specific ServicePlan assigned
   20.05.03.1  First Publication
-        Bug fixing, erroneously incorporated all local modules.
   20.05.09.1  Bug fixing, minor improvements
   20.05.19.2  Adding Backup and TeamsResourceAccount functions (BETA)
-        Added Backup-TeamsEV, Restore-TeamsEV by Ken Lasko
-        Added Get-AzureAdAssignedAdminRoles
-        Added BETA-Functions New-TeamsResourceAccount, Get-TeamsResourceAccount
-        Fixed an issue with access to the new functions
-        Added TeamsResourceAccount Cmdlets: NEW, GET, SET, REMOVE - Tested
   20.05.24.2  Added Helper functions
-        Added Replace switch for Licenses (valid only for PhoneSystem and PhoneSystem_VirtualUser licenses)
-        Added Helper functions for Resource Accounts (switching between ApplicationID and ApplicationType, i.E. friendly Name)
-        Added Helper function for Licensing: Get-SkuPartNumberfromSkuID (returns SkuPartNumber or ProductName)
-        Added Helper function for Licensing: Get-SkuIDfromSkuPartNumber (returns SkuID)
-        Renamed Helper function for Licensing: New-AzureADLicenseObject (creates a new License Object, can add and remove one)
-        RESOLVED Limitation "PhoneSystem_VirtualUser cannot be selected as no GUID is known for it currently"
-        Added AzureAD Module and Connection Test in all Functions that need it.
-        Added SkypeOnline Module and Connection Test in all Functions that need it.
-        Some bug fixing and code scrubbing
   20.06.09.1  Added TeamsCallQueue Functions (BETA)
-        Added TeamsCallQueue Cmdlets: NEW, GET, SET, REMOVE - Untested
-        Added Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD incl. Aliases "con" and "Connect-Me"
-        Run "con $Username" to connect to all 3 with one authentication prompt
-        Removed Test-AzureADModule, Test-SkypeOnlineModule, Test-MicrosoftTeamsModule.
-        Replaced by Test-Module $ModuleNames
   20.06.17.1  Bugfixing
-        Added Write-ErrorRecord.
-        Bugfixing Resource Account and Call Queue Scripts
-  20.06.22.0
-        Added Find-TeamsResourceAccount, Renamed Format-StringRemoveSpecialCharacter
-        Bugfixing Resource Account and Call Queue Scripts
-        Added more suggestions from PS Script Analyzer: Renamed functions, added small elements.
-  20.06.29.1
-        Added TeamsResourceAccountAssociation Functions & Script Analyzer
-        Added TeamsResourceAccountAssociation Scripts
-        Added more suggestions from PS Script Analyzer: ShouldProcess, Preference Adherence, Force & Confirm interoperability
-  20.07.08-alpha2       Import-TeamsAudioFile
-        Exposed Import-TeamsAudioFile for public use.
-        Updated New-TeamsCallQueue and Set-TeamsCallQueue to use Import-TeamsAudioFile for Welcome Message and Music On Hold
-        Updated Set-TeamsCallQueue to allow $NULL for Parameter WelcomeMusicAudioFile
-  20.07.18-prerelease    License Update
-        Added Variable $TeamsLicenses - Fully populated with 38 Microsoft Licenses
-        Updated Get-TeamsTenantLicense - now returns a proper Object, based on Variable $TeamsLicenses
-        Updated Get-TeamsUserLicense - now returns a proper Object, based on Variable $TeamsLicenses
-        Added Set-TeamsUserLicense - now a full replacement for Add-TeamsUserLicense
-        This function now supports multiple adds and removes including purges
-        Added Disclaimer for Add-TeamsUserLicense as it is now deprecated
-        Removed Get-TeamsTenantLicenses (plural)
-  20.07.26-prerelease   Voicemail and SharedVoicemail for TeamsCallQueue
-        Updated New-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
-        Updated Set-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout
-        Updated Get-TeamsCallQueue to support Voicemail and SharedVoicemail for Overflow and Timeout (output)
-        Removed Parameter Slow from New & Set-TeamsCallQueue as splatting is working fine
-        Updated Connect-SkypeTeamsAndAAD to support connection to Exchange with the same credentials (required to check O365 Groups)
-  20.08 Live Version for AUG 2020
-        # Not perfect yet, but the monthly release. Future releases as PreRelease again
-        Miscellaneous Bugfixes and performance improvements
-        Fixes for New-TeamsResourceAccountAssociation for AutoAttendants
-        Fixes for New-TeamsCallQueue - Lookup for Users and Groups and Desired Configuration
-        Fixes for Set-TeamsCallQueue - Lookup for Users and Groups
-        Fixes for Get-TeamsCallQueue - Improvements for Output
-        Fixes for New-TeamsResourceAccountAssociation for AutoAttendants
-        Minor fixes for all Test-Commands which now also have verbose output for re-using a session
-  20.08.08-prerelease
-        Fixes for New-TeamsCallQueue, Set-TeamsCallQueue
-  20.08.14-prerelease
-        Fixes for New-TeamsCallQueue, Set-TeamsCallQueue (major improvements for Shared Voicemail and its complex requirements)
-        Fixes for Connect-SkypeTeamsAndAAD to allow for individual connection (logic error)
-        Restructured Module File (function order) and regrouped the functions for better management
-  20.08.22-prerelease
-        Bugfixing and more bugfixing. Get-TeamsCallQueue did not deliver a result. :(
-  20.09 Live Version for SEP 2020
-        NEW: Assert-AzureADConnection, Assert-MicrosoftTeamsConnection, Assert-SkypeOnlineConnection (Alias: 'pol') have been added as separate functions
-        More bugfixes. Updated parameter list for Get-TeamsCallQueue as Get-CsCallQueue provides more information (AgentsCapped, etc.)
-        New-/Set-TeamsCallQueue - Removed ValidateScript for Users as verification is done when processing Users.
-        New-/Set-TeamsCallQueue - Added enablement of Users for EnterpriseVoice for Agents (Users), OverflowAction and TimeoutAction 'Forward'
-  20.09.06-prerelease
-        IMPROVED: Adopted better Style guides to help clarify script exit scenarios and provide better output.
-          Cleaned up all BEGIN-blocks: Assert functions now called in all scripts. Preference variables for Confirm, Whatif and Verbose are now handled for all functions that need them.
-          Cleaned up all END-blocks: They are mostly empty anyway, but returning an object now happens consistently in the Process block (1 instance fixed)
-          Replaced all BREAK keywords that are not in switches or loops (43) with a terminating Write-Error that was there in the first place.
-          Replaced all RETURN keywords (15) that accumulated multiple objects into one to behave better for pipeline output (Write-Output is now displayed within the ForEach)
-          Added CMDLETBINDING, OUTPUTTYPE, BEGIN, PROCESS and END Clauses to all functions that did not have them set yet (with the exception of short Helper functions)
-          Added Verbose Output to all BEGIN, PROCESS and END clauses for easier troubleshooting
-        CHANGED: Function Connect-SkypeTeamsAndAAD and Disconnect-SkypeTeamsAndAAD were renamed to its alias (swapped places)
-          This is due to a change in the default behavior of the Command to only connect to SkypeOnline and AzureAD without any Parameters
-          MicrosoftTeams and ExchangeOnline are still available as options.
-        ADDED: Voice Configuration Scripts as Work-in-progress:
-          Get-TeamsTenantVoiceConfig - Lists Tenant Voice Configuration
-          Get-TeamsUserVoiceConfig - Lists Voice Configuration for one or more users
-          Find-TeamsUserVoiceConfig - Search function to find a List of Users matching the criteria: PhoneNumber, VoicePolicy, VoiceRoutingPolicy, etc.
-          New-TeamsUserVoiceConfig - Not implemented yet. Should apply a new Voice Configuration (provided there currently is none!)
-          Set-TeamsUserVoiceConfig - Not implemented yet. Amends an existing Voice Configuration (provided there currently is no other (Force is available))
-          Remove-TeamsUserVoiceConfig - Removes Voice Configuration for either CallPlans or DirectRouting
-          Test-TeamsUserVoiceConfig - Tests whether either CallPlan or DirectRouting config is found. Partial or Full configuration testable
-          Test-TeamsUserHasCallPlan - Added Helper function to determine whether the User has a Call Plan assigned.
-  20.09.13-prerelease
-        ADDED: Auto Attendant Scripts! Get-TeamsAutoAttendant, Remove-TeamsAutoAttendant are done
-          New-TeamsAutoAttendant is currently being sketched out. Use case is hard to define as the topic is complex.
-          Currently, developing creation of a generic default configuration set:
-          Default Call Flow (Disconnect) with default AfterHours Flow (Disconnect),
-          Multiple standard Schedules to select from (MON-FRI 9-5, etc.), Language and (simplified) TimeZone selection
-          Set-TeamsAutoAttendant is defined as an Alias for Set-CsCallQueue as there is nothing to improve or simplify.
-          Added Helper functions for Auto Attendants: New-TeamsAutoAttendantDialScope and New-TeamsAutoAttendantSchedule
-        ADDED: Aliases for multiple Scripts:
-          TeamsUserVoiceConfig (TeamsUVC), TeamsCallQueue (TeamsCQ), TeamsAutoAttendant (TeamsAA),
-          TeamsResourceAccount (TeamsRA), TeamsResourceAccountAssociation (TeamsRAassoc)
-        IMPROVED: Bug fixing for CallQueue Scripts (continuous)
-  20.09.20-prerelease
-        ADDED: Resolve-AzureAdGroupObjectFromName, New-TeamsAutoAttendant (built out the main functionality)
-          WarningAction is now added to nearly all GET commands to suppress warnings. Some exceptions apply, like re-querying single Call Queues.
-        IMPROVED: Re-used code samples are now transformed into proper Functions
-          Bug fixes. Reworked OverflowActionTarget (Forward) and TimeoutActionTarget (Forward) for New and Set-TeamsCallQueue
+  20.06.22.0  Added TeamsResourceAccount Functions (BETA)
+  20.06.29.1  Added TeamsResourceAccountAssociation Functions (BETA) & PS Script Analyzer
+  20.07.08-alpha2       Bugfixes for TeamsCallQueue and Helper Functions Import-TeamsAudioFile
+  20.07.18-prerelease   Introducing new License Scripts
+  20.07.26-prerelease   Added Voicemail and SharedVoicemail for TeamsCallQueue
+  20.08       Release Version for AUG 2020
+  20.08.08-prerelease   Bugfixes for TeamsCallQueue
+  20.08.14-prerelease   Bugfixes for TeamsCallQueue
+  20.08.22-prerelease   Bugfixes for TeamsCallQueue
+  20.09       Release Version for SEP 2020
+  20.09.06-prerelease   Added TeamsUserVoiceConfig Functions (BETA), Style Guides
+  20.09.13-prerelease   Added TeamsAutoAttendant Functions (BETA)
+  20.09.20-prerelease   Added Aliases for all Function sets. Bugfixes
+  20.09.26-prerelease   Added Spell Checker and more Style Guides. Bugfixes
+  20.10       Release Version for OCT 2020
+
 #>
 
 #region Session Connection
@@ -3309,7 +3211,7 @@ Set-Alias -Name Test-TeamsUVC -Value Test-TeamsUserVoiceConfig
 #endregion
 
 
-#region Auto Attendants - Draft
+#region Auto Attendants - Work in Progress
 function Get-TeamsAutoAttendant {
   <#
 	.SYNOPSIS
@@ -10344,7 +10246,7 @@ function Remove-TenantDialPlanNormalizationRule {
   } #end
 } #Remove-TenantDialPlanNormalizationRule
 
-function Get-AzureADUserFromUPN {
+function Get-AzureAdUserFromUPN {
   <#
 	.SYNOPSIS
 		Returns User Object in Azure AD from a provided UPN
@@ -10401,7 +10303,7 @@ function Get-AzureADUserFromUPN {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
   } #end
-} #Get-AzureADUserFromUPN
+} #Get-AzureAdUserFromUPN
 
 function Get-SkypeOnlineConferenceDialInNumbers {
   <#
@@ -10474,6 +10376,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 #endregion
 
 #region Assert Functions
+#Show-FunctionStatus is not exported, but listed here instead of below.
 function Show-FunctionStatus {
   <#
 	.SYNOPSIS
@@ -12242,7 +12145,7 @@ function Format-StringForUse {
 
 # SkuID and Partnumber are useful to look up dynamically, but would need a data source...
 # Helper functions as a static alternative :)
-function Get-SkuIDfromSkuPartNumber {
+function Get-SkuIDFromSkuPartNumber {
   <#
 	.SYNOPSIS
 		Returns SkuID from SkuPartNumber
@@ -12351,9 +12254,9 @@ function Get-SkuIDfromSkuPartNumber {
     "WIN10_VDA_E5" { $SkuID = "488ba24a-39a9-4473-8ee5-19291e71b002"; break }
   }
   return $SkuID
-} #Get-SkuIDfromSkuPartNumber
+} #Get-SkuIDFromSkuPartNumber
 
-function Get-SkuPartNumberfromSkuID {
+function Get-SkuPartNumberFromSkuID {
   <#
 	.SYNOPSIS
 		Returns FriendlyName from SkuID
@@ -12472,7 +12375,7 @@ function Get-SkuPartNumberfromSkuID {
     "SkuPartNumber" { return $SkuPartNumber }
     "ProductName" { return $ProductName }
   } #end
-} #Get-SkuPartNumberfromSkuID
+} #Get-SkuPartNumberFromSkuID
 
 function Write-ErrorRecord ($ErrorRecord) {
   <#
@@ -13464,7 +13367,7 @@ Export-ModuleMember -Variable TeamsLicenses, TeamsServicePlans
 Export-ModuleMember -Alias con, Connect-SkypeTeamsAndAAD, dis, Disconnect-SkypeTeamsAndAAD, PoL, `
   New-TeamsUVC, Set-TeamsUVC, Get-TeamsUVC, Find-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, `
   New-TeamsRA, Set-TeamsRA, Get-TeamsRA, Find-TeamsRA, Remove-TeamsRA, `
-  New-TeamsRAassoc, Get-TeamsRAassoc, Remove-TeamsRAassoc, Remove-CsOnlineApplicationInstance, `
+  New-TeamsRAAssoc, Get-TeamsRAAssoc, Remove-TeamsRAAssoc, Remove-CsOnlineApplicationInstance, `
   New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ, `
   New-TeamsAA, Set-TeamsAA, Get-TeamsAA, Remove-TeamsAA, Set-TeamsAutoAttendant, `
   New-TeamsAASchedule, New-TeamsAADialScope
@@ -13486,4 +13389,4 @@ Export-ModuleMember -Function Connect-SkypeOnline, Disconnect-SkypeOnline, Conne
   Import-TeamsAudioFile, Backup-TeamsEV, Restore-TeamsEV, Backup-TeamsTenant, `
   Remove-TenantDialPlanNormalizationRule, Test-TeamsExternalDNS, Get-SkypeOnlineConferenceDialInNumbers, `
   Resolve-AzureAdGroupObjectFromName, `
-  Get-SkuPartNumberfromSkuID, Get-SkuIDfromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
+  Get-SkuPartNumberFromSkuID, Get-SkuIDFromSkuPartNumber, Format-StringRemoveSpecialCharacter, Format-StringForUse, Write-ErrorRecord
