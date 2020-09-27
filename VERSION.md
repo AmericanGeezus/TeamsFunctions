@@ -58,11 +58,13 @@ Pre-releases are documented within the Module comment block and will be transfer
 - Replaced all `RETURN` keywords (15) that accumulated multiple objects into one to behave better for pipeline output (Write-Output is now displayed within the ForEach)
 - WarningAction is now applied to all `GET`-Commands except where explicitely desired to bleed through warnings. This should quieten down the Scripts a bit. WarningVariable is added to my repertoire.
 - Assert Functions have been added to more consistently trigger the "you have to construct additional Pylons" warning of having to connect to AzureAD or SkypeOnline first.
-- Better and more consistent display of Script maturity now added with a Helper function. Four levels available:
+- Better and more consistent display of Script maturity now added with a Helper function. Four main levels and two additional informational Levels are available:
   - **ALPHA**: Not all Function not built. Functionality may lacking (DEBUG output, with confirm)
   - **BETA**: Functions built but not tested (DEBUG output, without confirm)
   - **Pre-Live**: Functions built and tested, but not all and not as thoroughly as I would want (VERBOSE output, visible)
   - **Live**: All Systems go. (VERBOSE output, visible only when using -Verbose)
+  - *Unmanaged*: The odd Function that I have ported from Skype but not yet manage to validate against Teams (VERBOSE output, visible)
+  - *Deprecated*: Functions that are scheduled to be removed soon (VERBOSE output, visible)
 - **NOTE**: With the exception of Boolean Output Test scripts, all Functions can reach only **Pre-Live Status**. Once I am able to provide some basic Pester integration, these will be able to 'mature' more :)
 - **NOTE**: Feedback is appreciated for all scripts. Please send verbose output of the Scripts that generate errors to TeamsFunctions@outlook.com. Thanks!
 

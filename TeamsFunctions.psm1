@@ -17,17 +17,14 @@
 
   Individual Scripts incorporated into this Module are taken with the express permission of the original Author
 
-  To use the functions in this module, use the Import-Module command followed by the path to this file. For example:
-  Import-Module TeamsFunctions
-
   Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
   Always review any code and steps before applying to a production system to understand their full impact.
 
   # Versioning
   This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
-  Major v20 is the the first one published in 2020, followed by Minor version for Month and Day.
-  Subsequent Minor versions indicate additional publications on this day.
-  Revisions are planned quarterly
+  Major v20 is the the first one published in 2020, followed by Minor version for the Month.
+  Subsequent Minor versions include the Day and are released as PreReleases
+  Revisions are planned quarterly, but are currently on a monthly schedule until mature. PreReleases weekly.
 
   # Version History (abbreviated)
   1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
@@ -44,9 +41,6 @@
   20.07.18-prerelease   Introducing new License Scripts
   20.07.26-prerelease   Added Voicemail and SharedVoicemail for TeamsCallQueue
   20.08       Release Version for AUG 2020
-  20.08.08-prerelease   Bugfixes for TeamsCallQueue
-  20.08.14-prerelease   Bugfixes for TeamsCallQueue
-  20.08.22-prerelease   Bugfixes for TeamsCallQueue
   20.09       Release Version for SEP 2020
   20.09.06-prerelease   Added TeamsUserVoiceConfig Functions (BETA), Style Guides
   20.09.13-prerelease   Added TeamsAutoAttendant Functions (BETA)
@@ -125,6 +119,7 @@ function Connect-SkypeOnline {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Required as Warnings on the OriginalRegistrarPool may halt Script execution
@@ -361,6 +356,7 @@ function Connect-Me {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     $WarningPreference = "Continue"
@@ -544,6 +540,7 @@ function Disconnect-Me {
   param() #param
 
   begin {
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     $WarningPreference = "SilentlyContinue"
@@ -611,6 +608,7 @@ function Disconnect-SkypeOnline {
   param() #param
 
   begin {
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     [bool]$sessionFound = $false
@@ -784,7 +782,9 @@ function Set-TeamsUserLicense {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -1285,7 +1285,9 @@ function Add-TeamsUserLicense {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Deprecated
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -1496,7 +1498,9 @@ function Get-TeamsUserLicense {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -1687,7 +1691,9 @@ function Get-TeamsTenantLicense {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -1831,13 +1837,8 @@ function Get-TeamsTenantVoiceConfig {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-
-    # Caveat - Script in Testing
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -2023,13 +2024,8 @@ function Get-TeamsUserVoiceConfig {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-
-    # Caveat - Script in Testing
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -2307,13 +2303,8 @@ function Find-TeamsUserVoiceConfig {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-
-    # Caveat - Script in Testing
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -2538,14 +2529,11 @@ function New-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    #Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    #Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
-    Write-Warning -Message "This Script is currently IN DEVELOPMENT (ALPHA). Functions may not produce any meaningful output yet"
-    Write-Debug -Message "Handle with Care. This function is not yet implemented fully. Use with default was tested successfully!" -Debug
+    $DebugPreference = "Debug"
+    Show-FunctionStatus -Level ALPHA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -2677,14 +2665,11 @@ function Set-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    #Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    #Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
-    Write-Warning -Message "This Script is currently IN DEVELOPMENT (ALPHA). Functions may not produce any meaningful output yet"
-    Write-Debug -Message "Handle with Care. This function is not yet implemented to specifications." -Debug
+    $DebugPreference = "Debug"
+    Show-FunctionStatus -Level ALPHA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -2843,12 +2828,11 @@ function Remove-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
+    $DebugPreference = "Debug"
+    Show-FunctionStatus -Level ALPHA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -3107,12 +3091,11 @@ function Test-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
+    Show-FunctionStatus -Level BETA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -3264,10 +3247,7 @@ function Get-TeamsAutoAttendant {
   ) #param
 
   begin {
-    # Caveat - Script in Testing
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
@@ -3668,7 +3648,7 @@ function New-TeamsAutoAttendant {
   ) #param
 
   begin {
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
@@ -3718,8 +3698,6 @@ function New-TeamsAutoAttendant {
     }
 
     #region Parameter validation
-    #TODO Add required checks to Parameters that need to go together
-    #TODO Validate InputObjects against correct type to avoid errors passing down the chain!
     #region Operator & OperatorType
     if ($PSBoundParameters.ContainsKey('OperatorType') -and -not $PSBoundParameters.ContainsKey('Operator')) {
       Write-Error -Message "OperatorType requires Parameter Operator" -ErrorAction Stop
@@ -4268,12 +4246,11 @@ function Remove-TeamsAutoAttendant {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
+    Show-FunctionStatus -Level BETA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -4354,12 +4331,11 @@ function New-TeamsAutoAttendantDialScope {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
+    Show-FunctionStatus -Level BETA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -4464,7 +4440,7 @@ function New-TeamsAutoAttendantCallableEntity {
   ) #param
 
   begin {
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
@@ -4632,7 +4608,7 @@ function New-TeamsAutoAttendantPrompt {
   ) #param
 
   begin {
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
@@ -4769,7 +4745,7 @@ function New-TeamsAutoAttendantSchedule {
   ) #param
 
   begin {
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
@@ -5027,7 +5003,9 @@ function Get-TeamsCallQueue {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -5684,12 +5662,11 @@ function New-TeamsCallQueue {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
+    Show-FunctionStatus -Level BETA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -6777,12 +6754,12 @@ function Set-TeamsCallQueue {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
+    Show-FunctionStatus -Level BETA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -7615,12 +7592,8 @@ function Remove-TeamsCallQueue {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Write-Warning -Message "This Script is currently in testing. If issues are encountered, please feed verbose output back to TeamsFunctions@outlook.com"
-    Write-Verbose -Message "$($MyInvocation.Mycommand) -Verbose > C:\Temp\$($MyInvocation.Mycommand).txt"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -7719,7 +7692,9 @@ function Get-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -7867,10 +7842,12 @@ function New-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Caveat - Script in Testing
+    # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
+    Show-FunctionStatus -Level BETA
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -8133,7 +8110,12 @@ function Remove-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
+    # Caveat - Script in Development
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -8358,7 +8340,12 @@ function New-TeamsResourceAccount {
   ) #param
 
   begin {
+    # Caveat - Script in Development
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -8788,7 +8775,12 @@ function Set-TeamsResourceAccount {
   ) #param
 
   begin {
+    # Caveat - Script in Development
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -9204,7 +9196,9 @@ function Get-TeamsResourceAccount {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -9423,7 +9417,12 @@ function Find-TeamsResourceAccount {
   ) #param
 
   begin {
+    # Caveat - Script in Development
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -9631,7 +9630,9 @@ function Remove-TeamsResourceAccount {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Caveat - Access rights
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
     Write-Verbose -Message "No verification of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
@@ -9845,7 +9846,9 @@ function Import-TeamsAudioFile {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
@@ -9957,7 +9960,12 @@ function Set-TeamsUserPolicy {
   ) #param
 
   begin {
+    # Caveat - Script in Development
+    $VerbosePreference = "Continue"
+    $DebugPreference = "Continue"
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
@@ -10163,7 +10171,9 @@ function Remove-TenantDialPlanNormalizationRule {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
@@ -10272,8 +10282,10 @@ function Get-AzureAdUserFromUPN {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
-    # Asserting AzureAD Connection
+
+  # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
     # Adding Types
@@ -10329,6 +10341,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting SkypeOnline Connection
@@ -10390,9 +10403,8 @@ function Show-FunctionStatus {
   #>
 
   [CmdletBinding()]
-  [OutputType([Boolean])]
   param(
-    [Validateset("Alpha", "Beta", "PreLive", "Live")]
+    [Validateset("Alpha", "Beta", "PreLive", "Live", "Unmanaged","Deprectated")]
     $Level
   ) #param
 
@@ -10401,13 +10413,19 @@ function Show-FunctionStatus {
       Write-Debug -Message "[INFO] This Script is in development and in ALPHA status. Functions may not work as intended or are not yet built out. Please handle with care" -Debug
     }
     "Beta" {
-      Write-Debug -Message "[INFO] This Script is in development and in BETA status. Functions are built but may not be tested yet. If issues are encountered, please feed them back to 'TeamsFunctions@outlook.com'"
+      Write-Debug -Message "[INFO] This Script is in development and in BETA status. Functions are built but may not work 100%. Testing commences. If issues are encountered, please feed them back to 'TeamsFunctions@outlook.com'"
     }
     "PreLive" {
       Write-Verbose -Message "[INFO] This Script is functional, but not all elements have been subjected to thorough testing yet. If issues are encountered, please capture Verbose output and feed them back to 'TeamsFunctions@outlook.com'" -Verbose
     }
     "Live" {
       Write-Verbose -Message "[INFO] This Script is live. If issues are encountered, please feed them back to 'TeamsFunctions@outlook.com'. Thank you for using TeamsFunctions!"
+    }
+    "Unmanaged" {
+      Write-Verbose -Message "[INFO] This Script is live but not managed. It was either ported from Skype or added through a third-party and comes as-is." -Verbose
+    }
+    "Deprecated" {
+      Write-Verbose -Message "[INFO] This Script is live but deprecated." -Verbose
     }
   }
 } #Show-FunctionStatus
@@ -10683,7 +10701,9 @@ function Test-AzureADUser {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -10735,7 +10755,9 @@ function Test-AzureAdGroup {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -10801,7 +10823,9 @@ function Test-TeamsUser {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
@@ -10887,7 +10911,9 @@ function Test-TeamsUserLicense {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -10976,7 +11002,9 @@ function Test-TeamsUserHasCallPlan {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -11038,7 +11066,9 @@ function Test-TeamsTenantPolicy {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
@@ -11105,7 +11135,9 @@ function Test-TeamsExternalDNS {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
 
     # VARIABLES
     [string]$federationSRV = "_sipfederationtls._tcp.$Domain"
@@ -11269,7 +11301,9 @@ function Resolve-AzureAdGroupObjectFromName {
   )
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -11359,7 +11393,9 @@ function Backup-TeamsEV {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     $Filenames = 'Dialplans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
 
     If ((Get-PSSession | Where-Object -FilterScript {
@@ -11454,7 +11490,9 @@ function Restore-TeamsEV {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     Try {
       $ZipPath = (Resolve-Path -Path $File)
       $null = (Add-Type -AssemblyName System.IO.Compression.FileSystem)
@@ -11710,7 +11748,9 @@ function Backup-TeamsTenant {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
@@ -11865,7 +11905,9 @@ function Get-AzureAdAssignedAdminRoles {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
   } #begin
@@ -11932,7 +11974,9 @@ function New-AzureAdLicenseObject {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
 
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
       $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
@@ -12031,7 +12075,9 @@ function Format-StringRemoveSpecialCharacter {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
 
   } #begin
 
@@ -12113,6 +12159,7 @@ function Format-StringForUse {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
   } #begin
@@ -13295,6 +13342,7 @@ function Enable-TeamsUserForEnterpriseVoice {
   ) #param
 
   begin {
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting SkypeOnline Connection
