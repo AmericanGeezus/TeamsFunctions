@@ -3529,7 +3529,7 @@ function New-TeamsAutoAttendant {
 	.EXAMPLE
 		New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -Schedule $Schedule -InclusionScope $InGroups -ExclusionScope $OutGroups
     Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are
-    passed on through tto New-CsAutoAttendant and override other respecive Parmeters provided:
+    passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
     - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters
     - One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters
     - One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters
@@ -3740,7 +3740,7 @@ function New-TeamsAutoAttendant {
 
     #region BusinessHours Parameters
     if (-not $PSBoundParameters.ContainsKey('BusinessHoursCallFlowOption')) {
-      Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinssHours'-Parameters are processed!"
+      Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
       $BusinessHoursCallFlowOption = "Disconnect"
     }
     elseif ($BusinessHoursCallFlowOption -eq "TransferCallToTarget") {
@@ -3819,7 +3819,7 @@ function New-TeamsAutoAttendant {
 
     #region AfterHours Parameters
     if (-not $PSBoundParameters.ContainsKey('AfterHoursCallFlowOption')) {
-      Write-Verbose -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinssHours'-Parameters are processed!"
+      Write-Verbose -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
       $AfterHoursCallFlowOption = "Disconnect"
     }
     elseif ($AfterHoursCallFlowOption -eq "TransferCallToTarget") {
@@ -4787,7 +4787,7 @@ function New-TeamsAutoAttendantSchedule {
     }
     #endregion
 
-    #region Defining Recurrency Fixed/Weekly
+    #region Defining recurrance Fixed/Weekly
     if ($PSBoundParameters.ContainsKey('WeeklyRecurrentSchedule')) {
       Write-Verbose -Message "[PROCESS] Processing WeeklyRecurrentSchedule"
       $CsOnlineScheduleParams.WeeklyRecurrentSchedule = $true
@@ -8762,15 +8762,8 @@ function Set-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "Telephone Number to assign")]
     [Alias("Tel", "Number", "TelephoneNumber")]
-    [ValidateScript( {
-        If ($null -eq $_ -or $_ -match "^\+[0-9]{10,15}$") {
-          $True
-        }
-        else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
-          $false
-        }
-      })]
+    [AllowNull()]
+    [AllowEmptyString()]
     [string]$PhoneNumber
   ) #param
 
@@ -8853,11 +8846,7 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region PhoneNumber
-    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
-      # Loading all Microsoft Telephone Numbers
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
-    }
+    # Querying CurrentPhoneNumber
     try {
       $CurrentPhoneNumber = $Object.PhoneNumber.Replace('tel:', '')
       Write-Verbose -Message "'$Name' Phone Number assigned currently: $CurrentPhoneNumber"
@@ -8865,6 +8854,35 @@ function Set-TeamsResourceAccount {
     catch {
       $CurrentPhoneNumber = $null
       Write-Verbose -Message "'$Name' Phone Number assigned currently: NONE"
+    }
+
+    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+      #Validating Phone Number
+      if ($PhoneNumber -eq "" -or $null -eq $PhoneNumber) {
+        if ($CurrentPhoneNumber) {
+          Write-Warning -Message "PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
+        }
+        else {
+          Write-Verbose -Message "PhoneNumber is NULL or Empty, but no Number is currently assigned.No Action taken"
+        }
+        $PhoneNumber = $null
+      }
+      elseif ($_ -match "^\+[0-9]{10,15}$") {
+        Write-Verbose -Message "PhoneNumber '$PhoneNumber' is valid and will be applied"
+        # Checking number is free
+        Write-Verbose -Message "PhoneNumber - Finding Number assignments"
+        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber
+        if ($UserWithThisNumber) {
+          Write-Error -Message "'$Name' Number '$PhoneNumber' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
+        }
+
+        # Loading all Microsoft Telephone Numbers
+        $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+        $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
+      }
+      else {
+        Write-Error -Message "PhoneNumber '$PhoneNumber' - Not a valid Phone number. Please provide a number starting with a + and 10 to 15 digits long" -ErrorAction Stop
+      }
     }
     #endregion
 
@@ -9050,12 +9068,6 @@ function Set-TeamsResourceAccount {
         Write-Error -Message "A Phone Number can only be assigned to licensed objects." -Category ResourceUnavailable -RecommendedAction "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
       }
       else {
-        # Checking number is free
-        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber
-        if ($UserWithThisNumber) {
-          Write-Error -Message "'$Name' Number '$PhoneNumber' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
-        }
-
         # Removing old Number (if $null or different to current)
         if ($null -eq $PhoneNumber -or $CurrentPhoneNumber -ne $PhoneNumber) {
           Write-Verbose -Message "'$Name' ACTION: Removing Phone Number"
@@ -9077,6 +9089,10 @@ function Set-TeamsResourceAccount {
             Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
             Write-ErrorRecord $_ #This handles the error message in human readable format.
           }
+        }
+        else {
+
+
         }
         # Assigning Telephone Number
         if ($null -ne $PhoneNumber) {
@@ -9294,7 +9310,7 @@ function Get-TeamsResourceAccount {
 
         # Parsing TeamsUserLicense
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: User Licenses"
-        $ResourceAccountLicense = Get-TeamsUserLicense -Identity $UPN
+        $ResourceAccountLicense = Get-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName
 
         # Phone Number Type
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"
@@ -10410,22 +10426,25 @@ function Show-FunctionStatus {
 
   switch ($Level) {
     "Alpha" {
-      Write-Debug -Message "[INFO] This Script is in development and in ALPHA status. Functions may not work as intended or are not yet built out. Please handle with care" -Debug
+      Write-Debug -Message "[INFO] Function Status is: ALPHA. Functions may not work as intended or are not yet built out. Please handle with care" -Debug
+      Write-Verbose -Message "[INFO] When you encounter issues, please capture the Verbose output and feed them back to 'TeamsFunctions@outlook.com'" -Verbose
     }
     "Beta" {
-      Write-Debug -Message "[INFO] This Script is in development and in BETA status. Functions are built but may not work 100%. Testing commences. If issues are encountered, please feed them back to 'TeamsFunctions@outlook.com'"
+      Write-Debug -Message "[INFO] Function Status is: BETA. Functions are built but may not work 100%. Testing commences."
+      Write-Verbose -Message "[INFO] When you encounter issues, please capture the Verbose output and feed them back to 'TeamsFunctions@outlook.com'" -Verbose
     }
     "PreLive" {
-      Write-Verbose -Message "[INFO] This Script is functional, but not all elements have been subjected to thorough testing yet. If issues are encountered, please capture Verbose output and feed them back to 'TeamsFunctions@outlook.com'" -Verbose
+      Write-Verbose -Message "[INFO] Function Status is: PRELIVE, but testing has not been completed for all elements." -Verbose
+      Write-Verbose -Message "[INFO] Should you encounter issues, please capture the Verbose output and feed them back to 'TeamsFunctions@outlook.com'" -Verbose
     }
     "Live" {
-      Write-Verbose -Message "[INFO] This Script is live. If issues are encountered, please feed them back to 'TeamsFunctions@outlook.com'. Thank you for using TeamsFunctions!"
+      #Write-Verbose -Message "[INFO] Function Status is: LIVE."
     }
     "Unmanaged" {
-      Write-Verbose -Message "[INFO] This Script is live but not managed. It was either ported from Skype or added through a third-party and comes as-is." -Verbose
+      Write-Verbose -Message "[INFO] Function Status is: LIVE but the function is not managed. It was either ported from Skype or added through a third-party and comes as-is."
     }
     "Deprecated" {
-      Write-Verbose -Message "[INFO] This Script is live but deprecated." -Verbose
+      Write-Verbose -Message "[INFO] Function Status is: LIVE but the function is deprecated meaning it will be removed soon." -Verbose
     }
   }
 } #Show-FunctionStatus
@@ -11367,7 +11386,7 @@ function Resolve-AzureAdGroupObjectFromName {
 function Backup-TeamsEV {
   <#
 	.SYNOPSIS
-		A script to automatically backup a Microsoft Teams Enterprise Voice configuration.
+		A script to automatically back-up a Microsoft Teams Enterprise Voice configuration.
 
 	.DESCRIPTION
 		Automates the backup of Microsoft Teams Enterprise Voice normalization rules, dialplans, voice policies, voice routes, PSTN usages and PSTN GW translation rules for various countries.
@@ -11396,7 +11415,7 @@ function Backup-TeamsEV {
     Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
-    $Filenames = 'Dialplans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
+    $Filenames = 'DialPlans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
 
     If ((Get-PSSession | Where-Object -FilterScript {
           $_.ComputerName -like '*.online.lync.com'
