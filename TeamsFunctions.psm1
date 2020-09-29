@@ -8462,7 +8462,7 @@ function New-TeamsResourceAccount {
         $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
         Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
         if ($RemainingPSVULicenses -lt 1) {
-          Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
+          Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant." -ErrorAction Stop
         }
         else {
           try {
@@ -9295,7 +9295,13 @@ function Get-TeamsResourceAccount {
 
         # Parsing CsOnlineUser
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy"
-        $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue
+        try {
+          $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Stop
+        }
+        catch {
+          #CHECK why?
+          Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy FAILED. CsOnlineUser not found" -Verbose
+        }
 
         # Parsing TeamsUserLicense
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: User Licenses"
@@ -10415,22 +10421,22 @@ function Show-FunctionStatus {
 
   switch ($Level) {
     "Alpha" {
-      Write-Debug -Message "Function Status is [ALPHA]. It may not work as intended or even built out yet. Please handle with care" -Debug
+      Write-Debug -Message "Function is [ALPHA]. It may not work as intended or even built out yet. Please handle with care" -Debug
     }
     "Beta" {
-      Write-Debug -Message "Function Status is [BETA]. Testing and building still commences. Please report issues to 'TeamsFunctions@outlook.com'" -Debug
+      Write-Debug -Message "Function is [BETA]. Build is not yet done. Please report issues to 'TeamsFunctions@outlook.com'"
     }
     "PreLive" {
-      Write-Verbose -Message "Function Status is [PreLIVE]. Functional, but testing is not yet complete. Please report issues to 'TeamsFunctions@outlook.com'" -Verbose
+      Write-Verbose -Message "Function is [PreLIVE]. Testing is not yet complete. Please report issues to 'TeamsFunctions@outlook.com'" -Verbose
     }
     "Live" {
-      Write-Verbose -Message "Function Status is [LIVE]. Please report issues via GitHub or 'TeamsFunctions@outlook.com'"
+      Write-Verbose -Message "Function is [LIVE]. Please report issues via GitHub or 'TeamsFunctions@outlook.com'"
     }
     "Unmanaged" {
-      Write-Verbose -Message "Function Status is [LIVE] but [UNMANAGED]. It was either ported from Skype or added through a third-party and comes as-is."
+      Write-Verbose -Message "Function is [LIVE] but [UNMANAGED] and comes as-is."
     }
     "Deprecated" {
-      Write-Verbose -Message "Function Status is [LIVE] but [DEPRECATED]!" -Verbose
+      Write-Verbose -Message "Function is [LIVE] but [DEPRECATED]!" -Verbose
     }
   }
 } #Show-FunctionStatus
