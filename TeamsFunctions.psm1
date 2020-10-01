@@ -4390,7 +4390,7 @@ function New-TeamsAutoAttendantDialScope {
   } #end
 } #New-TeamsAutoAttendantDialScope
 
-#TODO Bind New-TeamsAutoAttendantCallableEntity -ReturnIdOnly into Call Queues ()
+#TODO Bind New-TeamsAutoAttendantCallableEntity -ReturnObjectIdOnly into Call Queues ()
 function New-TeamsAutoAttendantCallableEntity {
   <#
   .SYNOPSIS
@@ -4402,7 +4402,7 @@ function New-TeamsAutoAttendantCallableEntity {
     Required. Type of Callable Entity to create
   .PARAMETER Identity
     Required. Tel URI, Group Name or UserPrincipalName, depending on the Entity Type
-  .PARAMETER ReturnIdOnly
+  .PARAMETER ReturnObjectIdOnly
     Internal only! Enables this Command to be used for Call Queues.
     This will validate the Object and then only return the ObjectId
   .PARAMETER Force
@@ -4420,7 +4420,7 @@ function New-TeamsAutoAttendantCallableEntity {
     System.String
   .OUTPUTS
     System.Object - (default)
-    System.String - With Switch ReturnIdOnly
+    System.String - With Switch ReturnObjectIdOnly
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
@@ -4437,7 +4437,7 @@ function New-TeamsAutoAttendantCallableEntity {
     [string]$Identity,
 
     [Parameter(HelpMessage = "OutputType: Object or Id")]
-    [switch]$ReturnIdOnly,
+    [switch]$ReturnObjectIdOnly,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
@@ -4556,7 +4556,7 @@ function New-TeamsAutoAttendantCallableEntity {
     # Create CsAutoAttendantCallableEntity
     Write-Verbose -Message "[PROCESS] Creating Callable Entity"
     if ($Id) {
-      if ($PSBoundParameters.ContainsKey('ReturnIdOnly')) {
+      if ($PSBoundParameters.ContainsKey('ReturnObjectIdOnly')) {
         # Output
         return $Id
       }
@@ -10419,24 +10419,26 @@ function Show-FunctionStatus {
     $Level
   ) #param
 
+  $Function = (Get-PsCallStack | Select-Object -First 2).Command[1]
+
   switch ($Level) {
     "Alpha" {
-      Write-Debug -Message "Function is [ALPHA]. It may not work as intended or even built out yet. Please handle with care" -Debug
+      Write-Debug -Message "$Function has [ALPHA] Status. It may not work as intended or contain serious gaps in functionality. Please handle with care" -Debug
     }
     "Beta" {
-      Write-Debug -Message "Function is [BETA]. Build is not yet done. Please report issues to 'TeamsFunctions@outlook.com'"
+      Write-Debug -Message "$Function has [BETA] Status. Build is not completed. Please report issues to 'TeamsFunctions@outlook.com'"
     }
     "PreLive" {
-      Write-Verbose -Message "Function is [PreLIVE]. Testing is not yet complete. Please report issues to 'TeamsFunctions@outlook.com'" -Verbose
+      Write-Verbose -Message "$Function has [PreLIVE] Status. Testing is underway. Please help me by reporting issues to 'TeamsFunctions@outlook.com' or via GitHub" -Verbose
     }
     "Live" {
-      Write-Verbose -Message "Function is [LIVE]. Please report issues via GitHub or 'TeamsFunctions@outlook.com'"
+      Write-Verbose -Message "$Function is [LIVE]. Should you encounter issues, please get in touch! 'TeamsFunctions@outlook.com' or via GitHub"
     }
     "Unmanaged" {
-      Write-Verbose -Message "Function is [LIVE] but [UNMANAGED] and comes as-is."
+      Write-Verbose -Message "$Function is [LIVE] but [UNMANAGED] and comes as-is."
     }
     "Deprecated" {
-      Write-Verbose -Message "Function is [LIVE] but [DEPRECATED]!" -Verbose
+      Write-Verbose -Message "$Function is [LIVE] but [DEPRECATED]!" -Verbose
     }
   }
 } #Show-FunctionStatus
