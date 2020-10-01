@@ -45,7 +45,7 @@
   20.09.06-prerelease   Added TeamsUserVoiceConfig Functions (BETA), Style Guides
   20.09.13-prerelease   Added TeamsAutoAttendant Functions (BETA)
   20.09.20-prerelease   Added Aliases for all Function sets. Bugfixes
-  20.09.26-prerelease   Added Spell Checker and more Style Guides. Bugfixes
+  20.09.27-prerelease   Added Spell Checker and more Style Guides. Bugfixes
   20.10       Release Version for OCT 2020
 
 #>
@@ -1876,9 +1876,9 @@ function Get-TeamsTenantVoiceConfig {
     $Object = [PSCustomObject][ordered]@{
       DisplayName                            = $Tenant.DisplayName
       Domains                                = $Tenant.Domains
-      SipDomains                             = $SipDomains
+      SipDomains                             = $SipDomains.Name
       TeamsUpgradeEffectiveMode              = $Tenant.TeamsUpgradeEffectiveMode
-      TenantLicenses                         = $TenantLicenses
+      TenantLicenses                         = $TenantLicenses.FriendlyName
       InternationalCallingPlanUnitsRemaining = $CallPlanINT.Remaining
       DomesticCallingPlanUnitsRemaining      = $CallPlanDOM.Remaining
       DomesticCallingPlan120UnitsRemaining   = $CallPlanDOM120.Remaining
@@ -1893,14 +1893,17 @@ function Get-TeamsTenantVoiceConfig {
 
     #region User Information
     if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
-      Write-Verbose -Message "Querying User Information - This will take some time!" -Verbose
-      $AdUsers = (Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE -WarningAction SilentlyContinue).Count
-      $CsOnlineUsers = (Get-CsOnlineUser -WarningAction SilentlyContinue).Count
-      $CsOnlineUsersEV = (Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object EnterpriseVoiceEnabled -EQ $TRUE).Count
+      Write-Verbose -Message "DisplayUserCounters - Querying User Information - This will take some time!" -Verbose
+      Write-Verbose -Message "DisplayUserCounters - Querying AzureADUsers"
+      $AdUsers = Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE -WarningAction SilentlyContinue
+      Write-Verbose -Message "DisplayUserCounters - Querying CsOnlineUsers"
+      $CsOnlineUsers = Get-CsOnlineUser -WarningAction SilentlyContinue
+      Write-Verbose -Message "DisplayUserCounters - Counting EV Users"
+      $CsOnlineUsersEV = $CsOnlineUsers | Where-Object EnterpriseVoiceEnabled -EQ $TRUE
 
-      $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledInAzureAD -Value $AdUsers
-      $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledForTeams -Value $CsOnlineUsers
-      $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledForTeamsAndEnterpriseVoice -Value $CsOnlineUsersEV
+      $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledInAzureAD -Value $AdUsers.Count
+      $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledForTeams -Value $CsOnlineUsers.Count
+      $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledForEnterpriseVoice -Value $CsOnlineUsersEV.Count
 
     }
     #endregion
@@ -3286,12 +3289,6 @@ function Get-TeamsAutoAttendant {
           #$AAs = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
           $AAs = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object *
 
-          if ($null -ne $AAs) {
-            if ($PSBoundParameters.ContainsKey('ConciseView')) {
-              Write-Verbose -Message "ConciseView: Parameters relating to Language & Shared Voicemail are not shown." -Verbose
-            }
-          }
-
           # Initialising Arrays
           [System.Collections.ArrayList]$AIObjects = @()
 
@@ -3529,7 +3526,7 @@ function New-TeamsAutoAttendant {
 	.EXAMPLE
 		New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -Schedule $Schedule -InclusionScope $InGroups -ExclusionScope $OutGroups
     Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are
-    passed on through tto New-CsAutoAttendant and override other respecive Parmeters provided:
+    passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
     - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters
     - One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters
     - One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters
@@ -3595,7 +3592,7 @@ function New-TeamsAutoAttendant {
     [string]$BusinessHoursCallTarget,
 
     [Parameter(HelpMessage = "Business Hours Call Target - BusinessHoursCallFlowOption = Menu")]
-    [string]$BusinessHoursMenu,
+    [object]$BusinessHoursMenu,
 
     [Parameter(HelpMessage = "After Hours Greeting - Text String or Recording")]
     [string]$AfterHoursGreeting,
@@ -3612,7 +3609,7 @@ function New-TeamsAutoAttendant {
     [string]$AfterHoursCallTarget,
 
     [Parameter(HelpMessage = "After Hours Call Target - AfterHoursCallFlowOption = Menu")]
-    [string]$AfterHoursMenu,
+    [object]$AfterHoursMenu,
 
 
     #Default Parameters of New-CsCallQueue for Pass-through application
@@ -3712,10 +3709,8 @@ function New-TeamsAutoAttendant {
     #region Default Call Flow
     if ($PSBoundParameters.ContainsKey('DefaultCallFlow')) {
       Write-Verbose -Message "DefaultCallFlow - Overriding all BusinessHours-Parameters" -Verbose
-      #TODO Test Object for its type! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow
 
       if ($PSBoundParameters.ContainsKey('BusinessHoursGreeting')) {
-        #CHECK Greeting is debatable - may be able to preserve (if no other greeting was specified?) DefaultCallFlow only!
         Write-Verbose -Message "DefaultCallFlow - Removing 'BusinessHoursGreeting'"
         $PSBoundParameters.Remove('BusinessHoursGreeting')
       }
@@ -3735,12 +3730,17 @@ function New-TeamsAutoAttendant {
         $PSBoundParameters.Remove('BusinessHoursCallTarget')
       }
 
+      # Testing provided Object Type
+      #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow
+      if (($DefaultCallFlow | Get-Member | Select-Object TypeName -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow") {
+        Write-Error "DefaultCallFlow - Type is not of 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'. Please provide a Call Flow Object" -Category InvalidType -ErrorAction Stop
+      }
     }
     #endregion
 
     #region BusinessHours Parameters
     if (-not $PSBoundParameters.ContainsKey('BusinessHoursCallFlowOption')) {
-      Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinssHours'-Parameters are processed!"
+      Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
       $BusinessHoursCallFlowOption = "Disconnect"
     }
     elseif ($BusinessHoursCallFlowOption -eq "TransferCallToTarget") {
@@ -3765,7 +3765,11 @@ function New-TeamsAutoAttendant {
         Write-Error -Message "BusinessHoursCallFlowOption (Menu) - BusinessHoursMenu missing" -ErrorAction Stop
       }
       else {
-        #TODO test menu object for type!
+        # Testing provided Object Type
+        #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu
+        if (($BusinessHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu") {
+          Write-Error -Message "BusinessHoursCallFlowOption (Menu) - BusinessHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType -ErrorAction Stop
+        }
       }
 
       # Must not contain Target and TargetType
@@ -3784,9 +3788,6 @@ function New-TeamsAutoAttendant {
     #region Call Flows & Call Handling Associations
     if ($PSBoundParameters.ContainsKey('CallFlows') -or $PSBoundParameters.ContainsKey('CallHandlingAssociation')) {
       Write-Verbose -Message "CallFlows - Overriding all AfterHours-Parameters" -Verbose
-      #TODO Test Object for its type! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow (Array!)
-      #TODO Test Object for its type! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation (Array!)
-
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) {
         Write-Verbose -Message "CallFlows or CallHandlingAssociation - Removing 'AfterHoursGreeting'"
         $PSBoundParameters.Remove('AfterHoursGreeting')
@@ -3814,12 +3815,28 @@ function New-TeamsAutoAttendant {
       if ($PSBoundParameters.ContainsKey('CallHandlingAssociation') -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
         Write-Error -Message "CallHandlingAssociation requires Parameter CallFlows" -ErrorAction Stop
       }
+
+      # Testing provided Object Type
+      #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow (Array!)
+      foreach ($Flow in $CallFlows) {
+        if (($Flow | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow") {
+          Write-Error -Message "CallFlows - '$($Flow.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'" -Category InvalidType -ErrorAction Stop
+        }
+      }
+
+      # Testing provided Object Type
+      #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation (Array!)
+      foreach ($CHA in $CallHandlingAssociations) {
+        if (($CHA | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation") {
+          Write-Error -Message "CallHandlingAssociations - '$($CHA.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation'" -Category InvalidType -ErrorAction Stop
+        }
+      }
     }
     #endregion
 
     #region AfterHours Parameters
     if (-not $PSBoundParameters.ContainsKey('AfterHoursCallFlowOption')) {
-      Write-Verbose -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinssHours'-Parameters are processed!"
+      Write-Verbose -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
       $AfterHoursCallFlowOption = "Disconnect"
     }
     elseif ($AfterHoursCallFlowOption -eq "TransferCallToTarget") {
@@ -3844,7 +3861,10 @@ function New-TeamsAutoAttendant {
         Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu missing" -ErrorAction Stop
       }
       else {
-        #TODO Test Object for its type! TBA
+        #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu
+        if (($AfterHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu") {
+          Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType -ErrorAction Stop
+        }
       }
 
       # Must not contain Target and TargetType
@@ -3862,7 +3882,10 @@ function New-TeamsAutoAttendant {
     #region Schedule
     if ($PSBoundParameters.ContainsKey('Schedule')) {
       Write-Verbose -Message "Schedule - Custom Schedule overrides default Schedule (Mon-Fri 9-5)" -Verbose
-      #TODO Test Object for its type! Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Schedule
+      #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule
+      if (($AfterHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule") {
+        Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule'" -Category InvalidType -ErrorAction Stop
+      }
 
     }
     #endregion
@@ -3909,6 +3932,7 @@ function New-TeamsAutoAttendant {
       try {
         $OperatorEntity = New-TeamsAutoAttendantCallableEntity -Type $OperatorType -Identity "$Operator"
         $Parameters += @{'Operator' = $OperatorEntity.ObjectId }
+        Write-Warning -Message "EnableTranscription can currently not be activated. Please activate in Admin Center if needed."
       }
       catch [System.IO.IOException] {
         Write-Warning -Message "'$NameNormalised' Call Target '$Identity' not enumerated. Omitting Object"
@@ -3953,7 +3977,7 @@ function New-TeamsAutoAttendant {
           # Building Menu Only if Successful
           if ($BusinessHoursCallTargetIdentity) {
             $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity.Id -DtmfResponse Automatic
-            $BusinessHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionTransfer)
+            $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionTransfer)
 
             break
           }
@@ -3961,7 +3985,7 @@ function New-TeamsAutoAttendant {
             # Reverting to Disconnect
             Write-Warning -Message "'$NameNormalised' DefaultCallFlow - Business Hours Menu not created properly. Reverting to Disconnect" -Verbose
             $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
-            $BusinessHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
+            $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
           }
         }
 
@@ -3969,6 +3993,7 @@ function New-TeamsAutoAttendant {
           Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Menu" -Verbose
           if ($PSBoundParameters.ContainsKey('BusinessHoursMenu')) {
             # Menu is passed on as-is - $BusinessHoursMenu is defined and attached
+            $BusinessHoursMenuObject = $BusinessHoursMenu
           }
           else {
             # No custom / default Menu is currently created
@@ -3980,7 +4005,7 @@ function New-TeamsAutoAttendant {
           # Defaulting to Disconnect
           Write-Verbose -Message "'$NameNormalised' DefaultCallFlow not provided or 'Disconnect' - Using default (Disconnect)" -Verbose
           $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
-          $BusinessHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
+          $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
         }
       }
       #endregion
@@ -4002,7 +4027,7 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       # Adding Business Hours Call Flow
-      $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenu
+      $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenuObject
       $BusinessHoursCallFlow = New-CsAutoAttendantCallFlow @BusinessHoursCallFlowParameters
       $Parameters += @{'DefaultCallFlow' = $BusinessHoursCallFlow }
       #endregion
@@ -4019,7 +4044,7 @@ function New-TeamsAutoAttendant {
     if ($PSBoundParameters.ContainsKey('CallFlows')) {
       # Custom Option provided - Using As-Is
       Write-Verbose -Message "'$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')" -Verbose
-      #TODO Validate Array use!
+      #CHECK Validate Array use!
       $AfterHoursCallHandlingAssociationIDs = @{}
       foreach ($CF in $CallFlows) {
         $AfterHoursCallHandlingAssociationIDs.Add($CF.Id)
@@ -4053,7 +4078,7 @@ function New-TeamsAutoAttendant {
           # Building Menu Only if Successful
           if ($AfterHoursCallTargetEntity) {
             $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity.Id -DtmfResponse Automatic
-            $AfterHoursMenu = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionTransfer)
+            $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionTransfer)
 
             break
           }
@@ -4061,7 +4086,7 @@ function New-TeamsAutoAttendant {
             # Reverting to Disconnect
             Write-Warning -Message "'$NameNormalised' Call Flow - After Hours Menu not created properly. Reverting to Disconnect" -Verbose
             $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
-            $AfterHoursMenu = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
+            $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
           }
         }
 
@@ -4069,6 +4094,7 @@ function New-TeamsAutoAttendant {
           Write-Verbose -Message "'$NameNormalised' CallFlow - AfterHoursCallFlow - Menu" -Verbose
           if ($PSBoundParameters.ContainsKey('AfterHoursMenu')) {
             # Menu is passed on as-is - $AfterHoursMenu is defined and attached
+            $AfterHoursMenuObject = $AfterHoursMenu
           }
           else {
             # No custom / default Menu is currently created
@@ -4080,7 +4106,7 @@ function New-TeamsAutoAttendant {
           # Defaulting to Disconnect
           Write-Verbose -Message "'$NameNormalised' CallFlow - AfterHoursCallFlow not provided or Disconnect. Using default (Disconnect)" -Verbose
           $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
-          $AfterHoursMenu = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
+          $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
         }
       }
       #endregion
@@ -4102,7 +4128,7 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       # Adding After Hours Call Flow
-      $AfterHoursCallFlowParameters.Menu = $AfterHoursMenu
+      $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
 
@@ -4192,7 +4218,7 @@ function New-TeamsAutoAttendant {
     #region OUTPUT
     # Re-query output
     if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
-      $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -ConciseView -WarningAction SilentlyContinue
+      $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -WarningAction SilentlyContinue
       return $AAFinal
     }
     else {
@@ -4280,7 +4306,7 @@ function Remove-TeamsAutoAttendant {
         $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
         foreach ($AA in $AAToRemove) {
           Write-Verbose -Message "Removing: '$($AA.Name)'"
-          if ($PSCmdlet.ShouldProcess("'Auto Attendant: '$($AA.Identity)'", 'Remove-CsAutoAttendant')) {
+          if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
             Remove-CsAutoAttendant -Identity $($AA.Identity) -ErrorAction STOP
           }
         }
@@ -4385,7 +4411,7 @@ function New-TeamsAutoAttendantDialScope {
   } #end
 } #New-TeamsAutoAttendantDialScope
 
-#TODO Bind New-TeamsAutoAttendantCallableEntity -ReturnIdOnly into Call Queues ()
+#TODO Bind New-TeamsAutoAttendantCallableEntity -ReturnObjectIdOnly into Call Queues () OR Create new abstraction from this one and bind it into both?
 function New-TeamsAutoAttendantCallableEntity {
   <#
   .SYNOPSIS
@@ -4397,7 +4423,7 @@ function New-TeamsAutoAttendantCallableEntity {
     Required. Type of Callable Entity to create
   .PARAMETER Identity
     Required. Tel URI, Group Name or UserPrincipalName, depending on the Entity Type
-  .PARAMETER ReturnIdOnly
+  .PARAMETER ReturnObjectIdOnly
     Internal only! Enables this Command to be used for Call Queues.
     This will validate the Object and then only return the ObjectId
   .PARAMETER Force
@@ -4415,7 +4441,7 @@ function New-TeamsAutoAttendantCallableEntity {
     System.String
   .OUTPUTS
     System.Object - (default)
-    System.String - With Switch ReturnIdOnly
+    System.String - With Switch ReturnObjectIdOnly
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
@@ -4432,7 +4458,7 @@ function New-TeamsAutoAttendantCallableEntity {
     [string]$Identity,
 
     [Parameter(HelpMessage = "OutputType: Object or Id")]
-    [switch]$ReturnIdOnly,
+    [switch]$ReturnObjectIdOnly,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
@@ -4551,7 +4577,7 @@ function New-TeamsAutoAttendantCallableEntity {
     # Create CsAutoAttendantCallableEntity
     Write-Verbose -Message "[PROCESS] Creating Callable Entity"
     if ($Id) {
-      if ($PSBoundParameters.ContainsKey('ReturnIdOnly')) {
+      if ($PSBoundParameters.ContainsKey('ReturnObjectIdOnly')) {
         # Output
         return $Id
       }
@@ -4787,7 +4813,7 @@ function New-TeamsAutoAttendantSchedule {
     }
     #endregion
 
-    #region Defining Recurrency Fixed/Weekly
+    #region Defining recurrance Fixed/Weekly
     if ($PSBoundParameters.ContainsKey('WeeklyRecurrentSchedule')) {
       Write-Verbose -Message "[PROCESS] Processing WeeklyRecurrentSchedule"
       $CsOnlineScheduleParams.WeeklyRecurrentSchedule = $true
@@ -5751,7 +5777,7 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
-    #TODO: Run New-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed) = Continue
+    #CHECK: Run New-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed) = Continue
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
         # Validation - File Exists
@@ -6090,7 +6116,7 @@ function New-TeamsCallQueue {
     #endregion
 
     #region OverflowAction Parameter cleanup
-    if (-not $Parameters.ContainsKey('OverflowActionTarget') -and ($OverflowAction -ne 'DisconnectWithBusy')) {
+    if ($Parameters.ContainsKey('OverflowAction') -and (-not $Parameters.ContainsKey('OverflowActionTarget')) -and ($OverflowAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action not set as OverflowActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('OverflowAction')
     }
@@ -6213,7 +6239,7 @@ function New-TeamsCallQueue {
             return
           }
           elseif ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-            if (($null -eq $CallQueue.LanguageId) -or (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
+            if (-not $PSBoundParameters.ContainsKey('LanguageId')) {
               Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
               return
             }
@@ -6302,7 +6328,7 @@ function New-TeamsCallQueue {
     #endregion
 
     #region TimeoutAction Parameter cleanup
-    if (-not $Parameters.ContainsKey('TimeoutActionTarget') -and ($TimeoutAction -ne 'Disconnect')) {
+    if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
     }
@@ -6397,6 +6423,7 @@ function New-TeamsCallQueue {
     #region ACTION
     # Create CQ (New-CsCallQueue)
     Write-Verbose -Message "'$NameNormalised' Creating Call Queue"
+    $Parameters
     if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "New-CsCallQueue")) {
       try {
         # Create the Call Queue with all enumerated Parameters passed through splatting
@@ -6778,23 +6805,6 @@ function Set-TeamsCallQueue {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-    # Testing ExchangeOnline Connection if needed
-    if ($OverflowAction -eq "SharedVoiceMail" -or $TimeoutAction -eq "SharedVoiceMail") {
-      # Testing Exchange Online Connection
-      if (Test-ExchangeOnlineConnection) {
-        Write-Verbose -Message "ExchangeOnline: Valid Session found, reusing existing connection"
-      }
-      else {
-        if ([bool]((Get-PSSession -WarningAction SilentlyContinue).Computername -match "outlook.office365.com")) {
-          Write-Host "ExchangeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
-          $null = Get-UnifiedGroup -Resultsize 1 -WarningAction SilentlyContinue
-        }
-        else {
-          Write-Verbose -Message "ExchangeOnline: No session found. Shared Voicemail Targets will be queried against AzureAD only"
-        }
-      }
-    }
-
     # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
@@ -6872,7 +6882,7 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
-    #TODO: Run Set-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed)
+    #CHECK: Run Set-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed)
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
         # Validation - File Exists
@@ -6975,7 +6985,6 @@ function Set-TeamsCallQueue {
 
 
     #region Language
-    #CHECK Application of LanguageId!
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Parameters += @{'LanguageId' = $Language }
     }
@@ -7128,15 +7137,8 @@ function Set-TeamsCallQueue {
 
           #region Processing OverflowActionTarget for SharedVoiceMail
           try {
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Testing Exchange Connection"
-            if (Test-ExchangeOnlineConnection) {
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Exchange Object"
-              $OverflowActionTargetId = (Get-UnifiedGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ExternalDirectoryObjectId
-            }
-            else {
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
-              $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-            }
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
+            $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $OverflowActionTargetId) {
               throw
             }
@@ -7212,7 +7214,7 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region OverflowAction Parameter cleanup
-    if (-not $Parameters.ContainsKey('OverflowActionTarget') -and ($OverflowAction -ne 'DisconnectWithBusy')) {
+    if ($Parameters.ContainsKey('OverflowAction') -and (-not $Parameters.ContainsKey('OverflowActionTarget')) -and ($OverflowAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action not set as OverflowActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('OverflowAction')
     }
@@ -7350,15 +7352,8 @@ function Set-TeamsCallQueue {
 
           #region Processing TimeoutActionTarget for SharedVoiceMail
           try {
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Testing Exchange Connection"
-            if (Test-ExchangeOnlineConnection) {
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Exchange Object"
-              $TimeoutActionTargetId = (Get-UnifiedGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ExternalDirectoryObjectId
-            }
-            else {
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
-              $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-            }
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
+            $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $TimeoutActionTargetId) {
               throw
             }
@@ -7434,7 +7429,7 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region TimeoutAction Parameter cleanup
-    if (-not $Parameters.ContainsKey('TimeoutActionTarget') -and ($TimeoutAction -ne 'Disconnect')) {
+    if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
     }
@@ -7528,6 +7523,7 @@ function Set-TeamsCallQueue {
 
     #region ACTION
     # Set the Call Queue with all Parameters provided
+    Write-Verbose -Message "'$NameNormalised' Applying settings to Call Queue"
     $Parameters
     if ($PSCmdlet.ShouldProcess("$Name", "Set-CsCallQueue")) {
       $Null = (Set-CsCallQueue @Parameters)
@@ -7623,7 +7619,7 @@ function Remove-TeamsCallQueue {
         $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
         foreach ($Q in $QueueToRemove) {
           Write-Verbose -Message "Removing: '$($Q.Name)'"
-          if ($PSCmdlet.ShouldProcess("'Call Queue: '$($Q.Identity)'", 'Remove-CsCallQueue')) {
+          if ($PSCmdlet.ShouldProcess("$($Q.Identity)", 'Remove-CsCallQueue')) {
             Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP
           }
         }
@@ -7918,6 +7914,7 @@ function New-TeamsResourceAccountAssociation {
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - Querying existing associations"
           $ExistingConnection = $null
           #CHECK Query rather with Get-CsOnlineApplicationInstanceAssociation? - Needs ObjectId though! (replicated from Get-TeamsResourceAccountAssociation)
+          #TODO Test Performance of GET-TeamsResourceAccountAssociation VS Get-CsOnlineApplicationInstanceAssociation
           $ExistingConnection = Get-TeamsResourceAccountAssociation $Account.UserPrincipalName -WarningAction SilentlyContinue
           if ($null -eq $ExistingConnection.AssociatedTo) {
             Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
@@ -7938,7 +7935,7 @@ function New-TeamsResourceAccountAssociation {
               # Changing Application Type
               Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'CallQueue'" -Verbose
               $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdFromApplicationType CallQueue)
-              Start-Process Sleep 2
+              Start-Sleep -Seconds 2
               if ("CallQueue" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId -WarningAction SilentlyContinue).ApplicationId)) {
                 Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType -ErrorAction Stop
               }
@@ -7988,7 +7985,7 @@ function New-TeamsResourceAccountAssociation {
 
         # Processing Auto Attendant
         Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
-        foreach ($Account in $Accounts) {
+        :loop foreach ($Account in $Accounts) {
           # Query existing connection
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - Querying existing associations"
           $ExistingConnection = $null
@@ -8000,7 +7997,8 @@ function New-TeamsResourceAccountAssociation {
             Write-Verbose -Message "'$($Account.UserPrincipalName)' - This account is already assigned to the following entity:" -Verbose
             $ExistingConnection
             Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
-            break
+            #CHECK Whether loop exits properly when an Association can be found!
+            break loop
           }
 
           # Comparing ApplicationType
@@ -8012,7 +8010,7 @@ function New-TeamsResourceAccountAssociation {
               # Changing Application Type
               Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to 'AutoAttendant'" -Verbose
               $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdFromApplicationType AutoAttendant)
-              Start-Process Sleep 2
+              Start-Sleep -Seconds 2
               if ("AutoAttendant" -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId -WarningAction SilentlyContinue).ApplicationId)) {
                 Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed" -Category InvalidType -ErrorAction Stop
               }
@@ -8485,7 +8483,7 @@ function New-TeamsResourceAccount {
         $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
         Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
         if ($RemainingPSVULicenses -lt 1) {
-          Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
+          Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant." -ErrorAction Stop
         }
         else {
           try {
@@ -8518,11 +8516,17 @@ function New-TeamsResourceAccount {
 
       #region Waiting for License Application
       if ($PSBoundParameters.ContainsKey("License") -and $PSBoundParameters.ContainsKey("PhoneNumber")) {
+        if ($License -eq "PhoneSystemVirtualUser") {
+          $ServicePlanName = "MCOEV_VIRTUALUSER"
+        }
+        else {
+          $ServicePlanName = "MCOEV"
+        }
         $i = 0
-        $imax = 300
+        $imax = 360
         Write-Warning -Message "Applying a License may take longer than provisioned for ($($imax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
         Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
-        while (-not (Test-TeamsUserLicense -Identity $UPN -LicensePackage $License)) {
+        while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
           if ($i -gt $imax) {
             Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount" -ErrorAction Stop
           }
@@ -8762,15 +8766,8 @@ function Set-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "Telephone Number to assign")]
     [Alias("Tel", "Number", "TelephoneNumber")]
-    [ValidateScript( {
-        If ($null -eq $_ -or $_ -match "^\+[0-9]{10,15}$") {
-          $True
-        }
-        else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
-          $false
-        }
-      })]
+    [AllowNull()]
+    [AllowEmptyString()]
     [string]$PhoneNumber
   ) #param
 
@@ -8853,11 +8850,7 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region PhoneNumber
-    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
-      # Loading all Microsoft Telephone Numbers
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
-    }
+    # Querying CurrentPhoneNumber
     try {
       $CurrentPhoneNumber = $Object.PhoneNumber.Replace('tel:', '')
       Write-Verbose -Message "'$Name' Phone Number assigned currently: $CurrentPhoneNumber"
@@ -8865,6 +8858,35 @@ function Set-TeamsResourceAccount {
     catch {
       $CurrentPhoneNumber = $null
       Write-Verbose -Message "'$Name' Phone Number assigned currently: NONE"
+    }
+
+    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+      #Validating Phone Number
+      if ($PhoneNumber -eq "" -or $null -eq $PhoneNumber) {
+        if ($CurrentPhoneNumber) {
+          Write-Warning -Message "PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
+        }
+        else {
+          Write-Verbose -Message "PhoneNumber is NULL or Empty, but no Number is currently assigned.No Action taken"
+        }
+        $PhoneNumber = $null
+      }
+      elseif ($_ -match "^\+[0-9]{10,15}$") {
+        Write-Verbose -Message "PhoneNumber '$PhoneNumber' is valid and will be applied"
+        # Checking number is free
+        Write-Verbose -Message "PhoneNumber - Finding Number assignments"
+        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber
+        if ($UserWithThisNumber) {
+          Write-Error -Message "'$Name' Number '$PhoneNumber' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
+        }
+
+        # Loading all Microsoft Telephone Numbers
+        $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+        $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
+      }
+      else {
+        Write-Error -Message "PhoneNumber '$PhoneNumber' - Not a valid Phone number. Please provide a number starting with a + and 10 to 15 digits long" -ErrorAction Stop
+      }
     }
     #endregion
 
@@ -9025,11 +9047,17 @@ function Set-TeamsResourceAccount {
 
     #region Waiting for License Application
     if ($PSBoundParameters.ContainsKey("License") -and $PSBoundParameters.ContainsKey("PhoneNumber")) {
+      if ($License -eq "PhoneSystemVirtualUser") {
+        $ServicePlanName = "MCOEV_VIRTUALUSER"
+      }
+      else {
+        $ServicePlanName = "MCOEV"
+      }
       $i = 0
-      $imax = 300
+      $imax = 360
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($imax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
       Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
-      while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -LicensePackage $License)) {
+      while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
         if ($i -gt $imax) {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount"
           return
@@ -9050,12 +9078,6 @@ function Set-TeamsResourceAccount {
         Write-Error -Message "A Phone Number can only be assigned to licensed objects." -Category ResourceUnavailable -RecommendedAction "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
       }
       else {
-        # Checking number is free
-        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber
-        if ($UserWithThisNumber) {
-          Write-Error -Message "'$Name' Number '$PhoneNumber' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
-        }
-
         # Removing old Number (if $null or different to current)
         if ($null -eq $PhoneNumber -or $CurrentPhoneNumber -ne $PhoneNumber) {
           Write-Verbose -Message "'$Name' ACTION: Removing Phone Number"
@@ -9077,6 +9099,10 @@ function Set-TeamsResourceAccount {
             Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
             Write-ErrorRecord $_ #This handles the error message in human readable format.
           }
+        }
+        else {
+
+
         }
         # Assigning Telephone Number
         if ($null -ne $PhoneNumber) {
@@ -9290,11 +9316,17 @@ function Get-TeamsResourceAccount {
 
         # Parsing CsOnlineUser
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy"
-        $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue
+        try {
+          $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Stop
+        }
+        catch {
+          #CHECK why? User disabled?
+          Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy FAILED. CsOnlineUser not found" -Verbose
+        }
 
         # Parsing TeamsUserLicense
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: User Licenses"
-        $ResourceAccountLicense = Get-TeamsUserLicense -Identity $UPN
+        $ResourceAccountLicense = Get-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName
 
         # Phone Number Type
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"
@@ -10408,24 +10440,26 @@ function Show-FunctionStatus {
     $Level
   ) #param
 
+  $Function = (Get-PsCallStack | Select-Object -First 2).Command[1]
+
   switch ($Level) {
     "Alpha" {
-      Write-Debug -Message "[INFO] This Script is in development and in ALPHA status. Functions may not work as intended or are not yet built out. Please handle with care" -Debug
+      Write-Debug -Message "$Function has [ALPHA] Status. It may not work as intended or contain serious gaps in functionality. Please handle with care" -Debug
     }
     "Beta" {
-      Write-Debug -Message "[INFO] This Script is in development and in BETA status. Functions are built but may not work 100%. Testing commences. If issues are encountered, please feed them back to 'TeamsFunctions@outlook.com'"
+      Write-Debug -Message "$Function has [BETA] Status. Build is not completed. Please report issues to 'TeamsFunctions@outlook.com'"
     }
     "PreLive" {
-      Write-Verbose -Message "[INFO] This Script is functional, but not all elements have been subjected to thorough testing yet. If issues are encountered, please capture Verbose output and feed them back to 'TeamsFunctions@outlook.com'" -Verbose
+      Write-Verbose -Message "$Function has [PreLIVE] Status. Testing is underway. Please help me by reporting issues to 'TeamsFunctions@outlook.com' or via GitHub" -Verbose
     }
     "Live" {
-      Write-Verbose -Message "[INFO] This Script is live. If issues are encountered, please feed them back to 'TeamsFunctions@outlook.com'. Thank you for using TeamsFunctions!"
+      Write-Verbose -Message "$Function is [LIVE]. Should you encounter issues, please get in touch! 'TeamsFunctions@outlook.com' or via GitHub"
     }
     "Unmanaged" {
-      Write-Verbose -Message "[INFO] This Script is live but not managed. It was either ported from Skype or added through a third-party and comes as-is." -Verbose
+      Write-Verbose -Message "$Function is [LIVE] but [UNMANAGED] and comes as-is."
     }
     "Deprecated" {
-      Write-Verbose -Message "[INFO] This Script is live but deprecated." -Verbose
+      Write-Verbose -Message "$Function is [LIVE] but [DEPRECATED]!" -Verbose
     }
   }
 } #Show-FunctionStatus
@@ -11367,7 +11401,7 @@ function Resolve-AzureAdGroupObjectFromName {
 function Backup-TeamsEV {
   <#
 	.SYNOPSIS
-		A script to automatically backup a Microsoft Teams Enterprise Voice configuration.
+		A script to automatically back-up a Microsoft Teams Enterprise Voice configuration.
 
 	.DESCRIPTION
 		Automates the backup of Microsoft Teams Enterprise Voice normalization rules, dialplans, voice policies, voice routes, PSTN usages and PSTN GW translation rules for various countries.
@@ -11396,7 +11430,7 @@ function Backup-TeamsEV {
     Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
-    $Filenames = 'Dialplans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
+    $Filenames = 'DialPlans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
 
     If ((Get-PSSession | Where-Object -FilterScript {
           $_.ComputerName -like '*.online.lync.com'
