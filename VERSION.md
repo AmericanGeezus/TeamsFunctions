@@ -52,11 +52,11 @@ Pre-releases are documented within the Module comment block and will be transfer
 - Updated README.md to include all functions.
 - Spell checker has been activated (Boy, do I make mistakes. :))
 - Switched most functions (except some Test-Functions) to advanced Functions
-- Added `OUTPUTTYPE`, `PARAM`, `BEGIN`, `PROCESS` and `END` blocks now consistently added to all advanced Functions (Test-Functions which may be basic functions, still have `OUTPUTTYPE` for example)
-- Verbose output has been added to all Scripts with `BEGIN`, `PROCESS` and `END` prefixes
+- Added `OUTPUTTYPE`, `PARAM`, `BEGIN`, `PROCESS` and `END` blocks now consistently to all advanced Functions (Test-Functions which may be basic functions, still have `OUTPUTTYPE` for example)
+- Verbose output has been added to all Scripts with `BEGIN`, `PROCESS` and `END` blocks
 - Replaced all `BREAK` keywords that are not in switches or loops (43) with a terminating Write-Error that was there in the first place.
 - Replaced all `RETURN` keywords (15) that accumulated multiple objects into one to behave better for pipeline output (Write-Output is now displayed within the ForEach)
-- WarningAction is now applied to all `GET`-Commands except where explicitely desired to bleed through warnings. This should quieten down the Scripts a bit. WarningVariable is added to my repertoire.
+- WarningAction is now applied to all `GET`-Commands except where explicitly desired to bleed through warnings. This should quieten down the Scripts a bit. WarningVariable is added to my repertoire.
 - Assert Functions have been added to more consistently trigger the "you have to construct additional Pylons" warning of having to connect to AzureAD or SkypeOnline first.
 - Better and more consistent display of Script maturity now added with a Helper function. Four main levels and two additional informational Levels are available:
   - **ALPHA**: Not all Function not built. Functionality may lacking (DEBUG output, with confirm)
