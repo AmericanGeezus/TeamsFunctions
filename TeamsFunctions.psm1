@@ -741,11 +741,18 @@ Get-ChildItem -Filter *.ps1 -Path Public\Functions, Private\Functions -Recurse |
   . $_.FullName
 }
 
-# Exporting Module Members (Functions, Aliases)
-#CHECK Aliases are integrated in Functions
+# Exporting Module Members (Functions)
 Get-ChildItem -Filter *.ps1 -Path Public\Functions -Recurse | ForEach-Object {
-  Export-ModuleMember $_.BaseName
+  Export-ModuleMember -Function $_.BaseName
 }
+
+# Exporting Module Members (Aliases)
+Export-ModuleMember -Alias con, dis, pol, New-TeamsUVC, Set-TeamsUVC, Get-TeamsUVC, Find-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC
+Export-ModuleMember -Alias New-TeamsRA, Set-TeamsRA, Get-TeamsRA, Find-TeamsRA, Remove-TeamsRA,
+Export-ModuleMember -Alias New-TeamsRAassoc, Get-TeamsRAassoc, Remove-TeamsRAassoc, Remove-CsOnlineApplicationInstance
+Export-ModuleMember -Alias New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ,
+Export-ModuleMember -Alias New-TeamsAA, Set-TeamsAA, Get-TeamsAA, Remove-TeamsAA,
+Export-ModuleMember -Alias New-TeamsAAPrompt, New-TeamsAASchedule, New-TeamsAAEntity, New-TeamsAAScope
 
 # Exporting Module Members (Variables)
 Export-ModuleMember -Variable TeamsLicenses, TeamsServicePlans
