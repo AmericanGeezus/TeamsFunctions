@@ -32,3 +32,9 @@ Add Timestamp to Verbose steps when Processing multiple elements (just before Fo
 Add Argument Completer to some functions, where appropriate: [ArgumentCompleter({(Get-Eventlog -List).log})]
 
 Use dynamic parameters instead of having to verify conjoint use of multiple parameter and ensure mutual exclusivity
+
+Create Function Template
+
+Break out Functions into separate PS1 scripts
+Link them as PS1 files in the module
+Export all with Get-ChildItem | Export-ModuleMember

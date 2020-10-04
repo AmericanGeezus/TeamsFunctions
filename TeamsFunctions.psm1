@@ -1,13 +1,11 @@
 ﻿#Requires -Version 5.1
 <#
-  Fork of SkypeFunctions
-  Written by Jeff Brown
-  Jeff@JeffBrown.tech
-  @JeffWBrown
-  www.jeffbrown.tech
-  https://github.com/JeffBrownTech
+  TeamsFunctions
+  Module for Management of Teams Voice Configuration for Tenant and Users
+  User Configuration for Voice, Creation and connection of Resource Accounts,
+  Licensing of Objects for Calling Plans & Direct Routing,
+  Creation and Management of Call Queues and Auto Attendants
 
-  Adopted for Teams as TeamsFunctions
   by David Eberhardt
   david@davideberhardt.at
   @MightyOrmus
@@ -15,6 +13,8 @@
   https://github.com/DEberhardt
   https://davideberhardt.wordpress.com/
 
+  This Module is a Fork of the Module SkypeFunctions and built on the work of Jeff Brown.
+  Jeff@JeffBrown.tech / @JeffWBrown / www.jeffbrown.tech / https://github.com/JeffBrownTech
   Individual Scripts incorporated into this Module are taken with the express permission of the original Author
 
   Any and all technical advice, scripts, and documentation are provided as is with no guarantee.
@@ -28,25 +28,16 @@
 
   # Version History (abbreviated)
   1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
-  20.04.17.1  Initial Version (as TeamsFunctions) - Multiple updates for Teams
-  20.05.03.1  First Publication
-  20.05.09.1  Bug fixing, minor improvements
-  20.05.19.2  Adding Backup and TeamsResourceAccount functions (BETA)
-  20.05.24.2  Added Helper functions
-  20.06.09.1  Added TeamsCallQueue Functions (BETA)
-  20.06.17.1  Bugfixing
-  20.06.22.0  Added TeamsResourceAccount Functions (BETA)
-  20.06.29.1  Added TeamsResourceAccountAssociation Functions (BETA) & PS Script Analyzer
-  20.07.08-alpha2       Bugfixes for TeamsCallQueue and Helper Functions Import-TeamsAudioFile
-  20.07.18-prerelease   Introducing new License Scripts
-  20.07.26-prerelease   Added Voicemail and SharedVoicemail for TeamsCallQueue
-  20.08       Release Version for AUG 2020
-  20.09       Release Version for SEP 2020
-  20.09.06-prerelease   Added TeamsUserVoiceConfig Functions (BETA), Style Guides
-  20.09.13-prerelease   Added TeamsAutoAttendant Functions (BETA)
-  20.09.20-prerelease   Added Aliases for all Function sets. Bugfixes
-  20.09.27-prerelease   Added Spell Checker and more Style Guides. Bugfixes
-  20.10       Release Version for OCT 2020
+  20.04.17.1  Initial Version (as TeamsFunctions)
+  20.05.03.1  MAY 2020 Release - First Publication - Refresh for Teams
+  20.06.09.1  JUN 2020 Release - Added Session Connection & TeamsCallQueue Functions
+  20.06.29.1  JUL 2020 Release - Added TeamsResourceAccount & TeamsResourceAccountAssociation Functions
+  20.08       AUG 2020 Release - Added new License Functions, Shared Voicemail Support for TeamsCalLQueue
+  20.09       SEP 2020 Release - Bugfixes
+  20.10       OCT 2020 Release - Added TeamsUserVoiceConfig & TeamsAutoAttendant Functions
+
+  20.10.xx-prerelease  Restructured TeamsFunctions in order to prepare it for adding Pester tests.
+              Adding Folder Structure Private/Public with Subfolders Functions & Tests
 
 #>
 
@@ -10689,10 +10680,10 @@ function Test-ExchangeOnlineConnection {
 function Test-Module {
   <#
 	.SYNOPSIS
-		Tests whether the AzureAD Module is loaded
+		Tests whether a Module is loaded
 	.EXAMPLE
-		Test-AzureADModule
-		Will Return $TRUE if the Module is loaded
+		Test-Module -Module ModuleName
+		Will Return $TRUE if the Module 'ModuleName' is loaded
   #>
 
   [CmdletBinding()]
