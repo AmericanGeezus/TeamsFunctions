@@ -27,39 +27,45 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
 
   } # Context 'Module Setup'
 
-  $functions = Get-ChildItem "$here\Public", "$here\Private" -Include "*.ps1" -ExClude "*.Tests.ps1" -Recurse | Select-Object -First 1
+  $functions = Get-ChildItem "$here\Public", "$here\Private" -Include "*.ps1" -ExClude "*.Tests.ps1" -Recurse #| Select-Object -First 1
 
   foreach ($function in $functions) {
+    BeforeEach {
+        $hash = @{
+            Name = $function.BaseName
+            Path = $function.FullName
+        }
+    }
 
-    Context "$($function.BaseName) - Function" {
+    Context "$($hash.Name) - Function" {
 
       It "should exist" {
-        Should $($function.FullName) -Exist
+        Should "$($function.FullName)" -Exist
       }
 
       It "should have a valid header" {
-        Should $($function.FullName) -FileContentMatch 'Module:'
-        Should $($function.FullName) -FileContentMatch 'Function:'
-        Should $($function.FullName) -FileContentMatch 'Author:'
-        Should $($function.FullName) -FileContentMatch 'Updated:'
-        Should $($function.FullName) -FileContentMatch 'Status:'
+        Should "$($function.FullName)" -FileContentMatch 'Module:'
+        Should "$($function.FullName)" -FileContentMatch 'Function:'
+        Should "$($function.FullName)" -FileContentMatch 'Author:'
+        Should "$($function.FullName)" -FileContentMatch 'Updated:'
+        Should "$($function.FullName)" -FileContentMatch 'Status:'
       }
 
       It "should have help block" {
-        Should $($function.FullName) -FileContentMatch '<#'
-        Should $($function.FullName) -FileContentMatch '#>'
+        Should "$($function.FullName)" -FileContentMatch "<#"
+        Should "$($function.FullName)" -FileContentMatch "#>"
       }
 
       It "should have a SYNOPSIS section in the help block" {
-        Should $($function.FullName) -FileContentMatch '.SYNOPSIS'
+        Should "$($function.FullName)" -FileContentMatch '.SYNOPSIS'
       }
 
       It "should have a DESCRIPTION section in the help block" {
-        Should $($function.FullName) -FileContentMatch '.DESCRIPTION'
+        Should "$($function.FullName)" -FileContentMatch '.DESCRIPTION'
       }
 
       It "should have a EXAMPLE section in the help block" {
-        Should $($function.FullName) -FileContentMatch '.EXAMPLE'
+        Should "$($function.FullName)" -FileContentMatch '.EXAMPLE'
       }
 
       # Add more checks for !
@@ -67,20 +73,23 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
       # Evaluate use - not all Functions are advanced yet!
 
       It "should be an advanced function" {
-        Should $($function.FullName) -FileContentMatch 'function'
-        Should $($function.FullName) -FileContentMatch 'cmdletbinding'
-        Should $($function.FullName) -FileContentMatch 'param'
-        #Add: OutputType, Return
+        Should "$($function.FullName)" -FileContentMatch 'function'
+        Should "$($function.FullName)" -FileContentMatch 'cmdletbinding'
+        Should "$($function.FullName)" -FileContentMatch 'param'
+      }
+
+      It "should have an OutputType" {
+        Should "$($function.FullName)" -FileContentMatch '[OutputType(*)]'
       }
 
       It "should contain Write-Verbose blocks" {
-        Should "$($function.FullName)" -FileContentMatch 'Write-Verbose'
+        Should "$($function.FullName)" FileContentMatch 'Write-Verbose'
       }
 
+      $psFile = Get-Content -Path $function.FullName -ErrorAction Stop
+      $errors = $null
+      $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
       It "is valid PowerShell code" {
-        $psFile = Get-Content -Path "$($local:function.FullName)" #-ErrorAction Stop
-        $errors = $null
-        $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
         $errors.Count | Should -Be 0
       }
 
