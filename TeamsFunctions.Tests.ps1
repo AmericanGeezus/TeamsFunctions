@@ -20,8 +20,7 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
     }
 
     It "$module is valid PowerShell code" {
-      $psFile = Get-Content -Path "$here\$module.psm1" `
-                            -ErrorAction Stop
+      $psFile = Get-Content -Path "$here\$module.psm1" -ErrorAction Stop
       $errors = $null
       $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
       $errors.Count | Should -Be 0
@@ -30,7 +29,9 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
   } # Context 'Module Setup'
 
   #TODO Replace with Get-ChildItem from $here?
-  $functions = (<#'Connect-SkypeOnline',
+  $functions = Get-ChildItem -Directory $here\Public,$here\Private -Include "*.ps1" -ExClude "*.Tests.ps1" -Recurse
+  <# old Function list - static
+  $functions = ('Connect-SkypeOnline',
                 'Connect-SkypeOnline',
                 'Disconnect-SkypeOnline',
                 'Connect-Me',
@@ -105,21 +106,23 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
                 'ProcessLicense',
                 'GetApplicationTypeFromAppId',
                 'GetAppIdFromApplicationType',
-    #>
+
                 'Enable-TeamsUserForEnterpriseVoice'
               )
+  #>
 
   foreach ($function in $functions)
   {
-    $FunctionPath = (Get-ChildItem "$Function.ps1" -Recurse).FullName
+    $FunctionName = $function.BaseName
+    $FunctionPath = $function.FullName
 
-    Context "Test Function $function" {
+    Context "Test Function " {
 
-      It "$function.ps1 should exist" {
+      It "$FunctionName should exist" {
         $FunctionPath | Should -Exist
       }
 
-      It "$function.ps1 should have a valid header" {
+      It "$FunctionName should have a valid header" {
         $FunctionPath | Should -FileContentMatch 'Module:'
         $FunctionPath | Should -FileContentMatch 'Function:'
         $FunctionPath | Should -FileContentMatch 'Author:'
@@ -127,20 +130,20 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
         $FunctionPath | Should -FileContentMatch 'Status:'
       }
 
-      It "$function.ps1 should have help block" {
+      It "$FunctionName should have help block" {
         $FunctionPath | Should -FileContentMatch '<`#'
         $FunctionPath | Should -FileContentMatch '`#>'
       }
 
-      It "$function.ps1 should have a SYNOPSIS section in the help block" {
+      It "$FunctionName should have a SYNOPSIS section in the help block" {
         $FunctionPath | Should -FileContentMatch '.SYNOPSIS'
       }
 
-      It "$function.ps1 should have a DESCRIPTION section in the help block" {
+      It "$FunctionName should have a DESCRIPTION section in the help block" {
         $FunctionPath | Should -FileContentMatch '.DESCRIPTION'
       }
 
-      It "$function.ps1 should have a EXAMPLE section in the help block" {
+      It "$FunctionName should have a EXAMPLE section in the help block" {
         $FunctionPath | Should -FileContentMatch '.EXAMPLE'
       }
 
@@ -148,18 +151,18 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
 
       # Evaluate use - not all Functions are advanced yet!
 
-      It "$function.ps1 should be an advanced function" {
+      It "$FunctionName should be an advanced function" {
         $FunctionPath | Should -FileContentMatch 'function'
         $FunctionPath | Should -FileContentMatch 'cmdletbinding'
         $FunctionPath | Should -FileContentMatch 'param'
         #Add: OutputType, Return
       }
 
-      It "$function.ps1 should contain Write-Verbose blocks" {
+      It "$FunctionName should contain Write-Verbose blocks" {
         $FunctionPath | Should -FileContentMatch 'Write-Verbose'
       }
 
-      It "$function.ps1 is valid PowerShell code" {
+      It "$FunctionName is valid PowerShell code" {
         $psFile = Get-Content -Path $FunctionPath `
                               -ErrorAction Stop
         $errors = $null
