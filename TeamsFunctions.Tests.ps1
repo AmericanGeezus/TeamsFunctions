@@ -1,6 +1,7 @@
-﻿$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+﻿#$here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $module = 'TeamsFunctions'
+$here = Get-Location
 
 Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
 
@@ -28,77 +29,73 @@ Describe -Tags ('Unit', 'Acceptance') "$module Module Tests"  {
 
   } # Context 'Module Setup'
 
-  $functions = Get-ChildItem -Directory $here\Public,$here\Private -Include "*.ps1" -ExClude "*.Tests.ps1" -Recurse
+  $functions = (Get-ChildItem "$here\Public", "$here\Private" -Include "*.ps1" -ExClude "*.Tests.ps1" -Recurse | Select-Object -First 1).BaseName
 
-  foreach ($function in $functions)
-  {
-    $FunctionName = $function.BaseName
-    $FunctionPath = $function.FullName
+  foreach ($function in $functions) {
 
-    Context "Test Function " {
+    Context "$Name - Function" {
 
-      It "$FunctionName should exist" {
-        $FunctionPath | Should -Exist
+      It "should exist" {
+        $function | Should -Exist
       }
 
-      It "$FunctionName should have a valid header" {
-        $FunctionPath | Should -FileContentMatch 'Module:'
-        $FunctionPath | Should -FileContentMatch 'Function:'
-        $FunctionPath | Should -FileContentMatch 'Author:'
-        $FunctionPath | Should -FileContentMatch 'Updated:'
-        $FunctionPath | Should -FileContentMatch 'Status:'
+      <#
+      It "should have a valid header" {
+        $function | Should -FileContentMatch 'Module:'
+        $function | Should -FileContentMatch 'Function:'
+        $function | Should -FileContentMatch 'Author:'
+        $function | Should -FileContentMatch 'Updated:'
+        $function | Should -FileContentMatch 'Status:'
       }
 
-      It "$FunctionName should have help block" {
-        $FunctionPath | Should -FileContentMatch '<`#'
-        $FunctionPath | Should -FileContentMatch '`#>'
+      It "should have help block" {
+        $function | Should -FileContentMatch '`<`#'
+        $function | Should -FileContentMatch '` #`>'
       }
 
-      It "$FunctionName should have a SYNOPSIS section in the help block" {
-        $FunctionPath | Should -FileContentMatch '.SYNOPSIS'
+      It "should have a SYNOPSIS section in the help block" {
+        $function | Should -FileContentMatch '.SYNOPSIS'
       }
 
-      It "$FunctionName should have a DESCRIPTION section in the help block" {
-        $FunctionPath | Should -FileContentMatch '.DESCRIPTION'
+      It "should have a DESCRIPTION section in the help block" {
+        $function | Should -FileContentMatch '.DESCRIPTION'
       }
 
-      It "$FunctionName should have a EXAMPLE section in the help block" {
-        $FunctionPath | Should -FileContentMatch '.EXAMPLE'
+      It "should have a EXAMPLE section in the help block" {
+        $function | Should -FileContentMatch '.EXAMPLE'
       }
 
       # Add more checks for !
 
       # Evaluate use - not all Functions are advanced yet!
 
-      It "$FunctionName should be an advanced function" {
-        $FunctionPath | Should -FileContentMatch 'function'
-        $FunctionPath | Should -FileContentMatch 'cmdletbinding'
-        $FunctionPath | Should -FileContentMatch 'param'
+      It "should be an advanced function" {
+        $function | Should -FileContentMatch 'function'
+        $function | Should -FileContentMatch 'cmdletbinding'
+        $function | Should -FileContentMatch 'param'
         #Add: OutputType, Return
       }
 
-      It "$FunctionName should contain Write-Verbose blocks" {
-        $FunctionPath | Should -FileContentMatch 'Write-Verbose'
+      It "should contain Write-Verbose blocks" {
+        $function | Should -FileContentMatch 'Write-Verbose'
       }
 
-      It "$FunctionName is valid PowerShell code" {
-        $psFile = Get-Content -Path $FunctionPath `
-                              -ErrorAction Stop
+      It "is valid PowerShell code" {
+        $psFile = Get-Content -Path $function -ErrorAction Stop
         $errors = $null
         $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
         $errors.Count | Should -Be 0
       }
-
-
+#>
 
     } # Context "Test Function $function"
 
     <# Commenting out as there aren't any tests files for individual files yet.
     Context "$function has tests" {
-      $FunctionPathTests = (Get-ChildItem "$Function.Tests.ps1" -Recurse).FullName
+      $functionTests = (Get-ChildItem "$Function.Tests.ps1" -Recurse).FullName
 
       It "$($function).Tests.ps1 should exist" {
-        $FunctionPathTests | Should -Exist
+        $functionTests | Should -Exist
       }
     }
     #>
