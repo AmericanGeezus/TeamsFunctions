@@ -735,14 +735,15 @@ $SkuID = "488ba24a-39a9-4473-8ee5-19291e71b002"; $SkuPartNumber = "WIN10_VDA_E5"
 #endregion
 #endregion
 
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # DotSourcing PS1 Files
-Get-ChildItem -Filter *.ps1 -Path Public\Functions, Private\Functions -Recurse | ForEach-Object {
+Get-ChildItem -Filter *.ps1 -Path $here\Public\Functions, $here\Private\Functions -Recurse | ForEach-Object {
   . $_.FullName
 }
 
 # Exporting Module Members (Functions)
-Get-ChildItem -Filter *.ps1 -Path Public\Functions -Recurse | ForEach-Object {
+Get-ChildItem -Filter *.ps1 -Path $here\Public\Functions -Recurse | ForEach-Object {
   Export-ModuleMember -Function $_.BaseName
 }
 
