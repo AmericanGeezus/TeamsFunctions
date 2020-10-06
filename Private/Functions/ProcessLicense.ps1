@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   AzureAd Licensing
-# Created by: Jeff Brown
+# Author: Jeff Brown
 # Updated:    29-JUN-2020
 # Status:     Deprecated
 

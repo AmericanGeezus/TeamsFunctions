@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:		David Eberhardtt
 # Updated:  01-OCT-2020
 # Status:   ALPHA
 
