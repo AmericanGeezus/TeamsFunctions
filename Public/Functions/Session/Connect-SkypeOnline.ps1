@@ -128,6 +128,7 @@ function Connect-SkypeOnline {
             Write-Verbose -Message "Constructing parameter list to be passed on to New-CsOnlineSession"
             $Parameters = $null
             if ($PSBoundParameters.ContainsKey("UserName")) {
+              #TODO Check whether New-CsOnlineSession has a Parameter called UserName. What to do if not!
               Write-Verbose -Message "Adding: Username: $Username"
               $Parameters += @{'UserName' = $UserName }
             }
