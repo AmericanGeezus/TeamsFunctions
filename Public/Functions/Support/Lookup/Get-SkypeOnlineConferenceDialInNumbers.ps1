@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Lookup
-# Created by: Jeff Brown
+# Author: Jeff Brown
 # Updated:    03-MAY-2020
 # Status:     Unmanaged
 

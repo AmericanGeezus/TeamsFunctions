@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   AzureAd Licensing
-# Created by: David Eberhardt
+# Author: David Eberhardtt
 # Updated:    01-AUG-2020
 # Status:     Live
 

@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Lookup
-# Created by: David Eberhardt
+# Author: David Eberhardtt
 # Updated:    01-SEP-2020
 # Status:     Live
 
