@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardtt
+# Author:		David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
@@ -73,6 +73,24 @@ function Get-TeamsUserVoiceConfig {
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
+
+    # Setting Preference for Error and Warning Action if not provided
+    if (-not $PSBoundParameters.ContainsKey('ErrorAction')) {
+      $ErrorActionPreference = "Stop"
+    }
+    if (-not $PSBoundParameters.ContainsKey('WarningAction')) {
+      $WarningPreference = "Continue"
+    }
   } #begin
 
   process {
@@ -87,7 +105,7 @@ function Get-TeamsUserVoiceConfig {
         $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
+        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction $ErrorActionPreference
       }
 
       # Querying User Licenses

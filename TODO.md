@@ -38,3 +38,12 @@ Create Function Template
 Break out Functions into separate PS1 scripts
 Link them as PS1 files in the module
 Export all with Get-ChildItem | Export-ModuleMember
+
+Change all Assert Scripts Verbose output to display/run only if called directly (runspace)
+if ($MyInvocation.CommandOrigin -eq "Runspace") {
+    #Assert
+}
+
+#TODO Change Stop to $ErrorAction and query/set in Begin to adhere to value being used. Same for Warningaction
+#TODO Repeat for EVERY Script!
+Template: Get-TeamsUserVoiceConfig
