@@ -47,3 +47,18 @@ if ($MyInvocation.CommandOrigin -eq "Runspace") {
 #TODO Change Stop to $ErrorAction and query/set in Begin to adhere to value being used. Same for Warningaction
 #TODO Repeat for EVERY Script!
 Template: Get-TeamsUserVoiceConfig
+
+
+## Evaluate Export to CLIXML
+
+UCaaSMsolBackup - Module to import
+
+
+
+$i = Import-Clixml -Path "XML FILE"
+
+$i = Import-Clixml -Path E:\TMSBackups\iprad.onmicrosoft.com\20200511\2239__State.xml
+
+$commandresult = $i['Get-CsOnlineUser']
+
+$commandresult | Where-Object SipAddress -eq _____sip:p.cassin@iprad.com
