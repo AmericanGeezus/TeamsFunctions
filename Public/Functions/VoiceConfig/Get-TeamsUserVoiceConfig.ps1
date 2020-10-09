@@ -105,6 +105,7 @@ function Get-TeamsUserVoiceConfig {
         $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
+        #TODO: Check ErrorAction stops script, not only this one.
         Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction $ErrorActionPreference
       }
 
