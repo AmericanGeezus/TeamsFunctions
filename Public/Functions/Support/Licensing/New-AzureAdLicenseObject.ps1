@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   AzureAd Licensing
-# Author: David Eberhardtt
+# Author: David Eberhardt
 # Updated:    01-SEP-2020
 # Status:     PreLive
 
@@ -34,12 +34,12 @@ function New-AzureAdLicenseObject {
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [OutputType([Microsoft.Open.AzureAD.Model.AssignedLicenses])] #LicenseObject
   param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "SkuId of the license to Add")]
+    [Parameter(Mandatory = $false, Position = 0, HelpMessage = "SkuId of the license to Add")]
     [Alias('AddSkuId')]
     [string[]]$SkuId,
 
     [Parameter(Mandatory = $false, Position = 1, HelpMessage = "SkuId of the license to Remove")]
-    [switch[]]$RemoveSkuId
+    [string[]]$RemoveSkuId
   ) #param
 
   begin {
@@ -64,25 +64,34 @@ function New-AzureAdLicenseObject {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
-
-    $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-
-    foreach ($Sku in $SkuId) {
-      $AddLicenseObj.SkuId += $Sku
-    }
-
     $newLicensesObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-    if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "AddLicenses")) {
-      $newLicensesObj.AddLicenses = $AddLicenseObj
+
+    # Creating AddLicenses
+    if ($PSBoundParameters.ContainsKey('SkuId')) {
+      $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
+      foreach ($Sku in $SkuId) {
+        $AddLicenseObj.SkuId += $Sku
+      }
+
+      if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "AddLicenses")) {
+        $newLicensesObj.AddLicenses = $AddLicenseObj
+      }
+    }
+    else {
+      $newLicensesObj.AddLicenses = @()
     }
 
-
+    # Creating RemoveLicenses
     if ($PSBoundParameters.ContainsKey('RemoveSkuId')) {
+      $RemoveLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
       foreach ($Sku in $RemoveSkuId) {
-        if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "RemoveLicenses")) {
-          $newLicensesObj.RemoveLicenses += $Sku
-        }
+        $RemoveLicenseObj.SkuId += $Sku
       }
+
+      if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "RemoveLicenses")) {
+        $newLicensesObj.RemoveLicenses += $RemoveLicenseObj
+      }
+
     }
 
     return $newLicensesObj

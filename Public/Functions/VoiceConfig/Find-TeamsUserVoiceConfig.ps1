@@ -1,8 +1,10 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardtt
+# Author:		David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   PreLive
+
+#TODO Check Output. Display UPNs in separate line
 
 function Find-TeamsUserVoiceConfig {
   <#

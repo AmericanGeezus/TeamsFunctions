@@ -227,7 +227,7 @@ function Set-TeamsResourceAccount {
         }
         $PhoneNumber = $null
       }
-      elseif ($_ -match "^\+[0-9]{10,15}$") {
+      elseif ($PhoneNumber -match "^\+[0-9]{10,15}$") {
         Write-Verbose -Message "PhoneNumber '$PhoneNumber' is valid and will be applied"
         # Checking number is free
         Write-Verbose -Message "PhoneNumber - Finding Number assignments"

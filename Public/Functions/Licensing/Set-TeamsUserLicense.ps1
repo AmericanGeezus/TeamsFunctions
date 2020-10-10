@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		David Eberhardtt
+# Author:		David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
@@ -18,10 +18,10 @@ function Set-TeamsUserLicense {
       Verifies whether the Licenses selected are available on the Tenant before executing
       .PARAMETER Identity
       Required. UserPrincipalName of the Object to be manipulated
-      .PARAMETER AddLicense
+      .PARAMETER Add
       Optional. Licenses to be added (main function)
       Accepted Values are listed in $TeamsLicenses.ParameterName
-      .PARAMETER RemoveLicense
+      .PARAMETER Remove
       Optional. Licenses to be removed (alternative function)
       Accepted Values are listed in $TeamsLicenses.ParameterName
       .PARAMETER RemoveAllLicenses
@@ -31,26 +31,26 @@ function Set-TeamsUserLicense {
       If required, the script will try to apply the UsageLocation (pending right).
       If not provided, defaults to 'US'
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense MS365E5
+      Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E5
       Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense PhoneSystem
+      Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem
       Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
       This requires a main license to be present as PhoneSystem is an add-on license
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense MS365E3,PhoneSystem
-      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense @('MS365E3','PhoneSystem')
+      Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E3,PhoneSystem
+      Set-TeamsUserLicense -Identity Name@domain.com -Add @('MS365E3','PhoneSystem')
       Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense O365E5 -RemoveLicense SFBOP2
+      Set-TeamsUserLicense -Identity Name@domain.com -Add O365E5 -Remove SFBOP2
       Special Case Scenario to replace a specific license with another.
       Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -AddLicense PhoneSystem_VirtualUser -RemoveAllLicenses
+      Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAllLicenses
       Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
       Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -RemoveLicense PhoneSystem
+      Set-TeamsUserLicense -Identity Name@domain.com -Remove PhoneSystem
       Removes the Phone System License from the Object.
       .EXAMPLE
       Set-TeamsUserLicense -Identity Name@domain.com -RemoveAllLicenses
@@ -107,13 +107,13 @@ function Set-TeamsUserLicense {
           return $true
         }
         else {
-          Write-Host "Parameter 'AddLicense' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
+          Write-Host "Parameter 'Add' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
           Write-Host "$($TeamsLicenses.ParameterName)"
           return $false
         }
       })]
-    [Alias('Add', 'License', 'AddLicenses')]
-    [string[]]$AddLicense,
+    [Alias('License', 'AddLicense', 'AddLicenses')]
+    [string[]]$Add,
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateScript( {
@@ -121,17 +121,17 @@ function Set-TeamsUserLicense {
           return $true
         }
         else {
-          Write-Host "Parameter 'RemoveLicense' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
+          Write-Host "Parameter 'Remove' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
           Write-Host "$($TeamsLicenses.ParameterName)"
           return $false
         }
       })]
-    [Alias('Remove', 'RemoveLicenses')]
-    [string[]]$RemoveLicense,
+    [Alias('RemoveLicense', 'RemoveLicenses')]
+    [string[]]$Remove,
 
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory, HelpMessage = 'Switch to indicate that all Licenses should be removed')]
-    [Alias('RemoveAll')]
-    [Switch]$RemoveAllLicenses,
+    [Alias('RemoveAllLicenses')]
+    [Switch]$RemoveAll,
 
     [Parameter(HelpMessage = 'Usage Location to be set if not already applied')]
     [string]$UsageLocation = 'US'
@@ -173,25 +173,25 @@ function Set-TeamsUserLicense {
         'DomesticCallingPlan','InternationalCallingPlan'
     #>
     try {
-      if ($PSBoundParameters.ContainsKey('AddLicense') -and $PSBoundParameters.ContainsKey('RemoveLicense')) {
+      if ($PSBoundParameters.ContainsKey('Add') -and $PSBoundParameters.ContainsKey('Remove')) {
         # Check if any are listed in both!
         Write-Verbose -Message "Validating input for Add and Remove (identifying inconsistencies)" -Verbose
 
-        foreach ($Lic in $AddLicense) {
-          if ($Lic -in $RemoveLicense) {
+        foreach ($Lic in $Add) {
+          if ($Lic -in $Remove) {
             Write-Error -Message "Invalid combination. '$Lic' cannot be added AND removed" -Category LimitsExceeded -RecommendedAction "Please specify only once!" -ErrorAction Stop
           }
         }
       }
 
-      if ($PSBoundParameters.ContainsKey('AddLicense')) {
+      if ($PSBoundParameters.ContainsKey('Add')) {
         Write-Verbose -Message "Validating input for Adding Licenses (identifying inconsistencies)" -Verbose
         #region Disclaimer
         # Checking any other combinations then the verified
-        if ( -not ('Microsoft365E3' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense`
-              -or 'PhoneSystem' -in $AddLicense -or 'AudioConferencing' -in $AddLicense)) {
+        if ( -not ('Microsoft365E3' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add`
+              -or 'PhoneSystem' -in $Add -or 'AudioConferencing' -in $Add)) {
           Write-Warning -Message "License combination not verified. Errors due to incompatibilities may occur!"
           Write-Verbose -Message "Please check yourself which Licenses may not be assigned together" -Verbose
         }
@@ -200,20 +200,20 @@ function Set-TeamsUserLicense {
         #region Main Licenses
         #region Microsoft 365
         # Checking combinations for Microsoft365E5
-        if ('Microsoft365E5' -in $AddLicense) {
-          if ('Microsoft365E3' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense`
-              -or 'PhoneSystem' -in $AddLicense -or 'AudioConferencing' -in $AddLicense) {
+        if ('Microsoft365E5' -in $Add) {
+          if ('Microsoft365E3' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add`
+              -or 'PhoneSystem' -in $Add -or 'AudioConferencing' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for Microsoft365E3
-        if ('Microsoft365E3' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
+        if ('Microsoft365E3' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -221,29 +221,29 @@ function Set-TeamsUserLicense {
 
         #region Office 365
         # Checking combinations for Office365E5
-        if ('Office365E5' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense`
-              -or 'PhoneSystem' -in $AddLicense -or 'AudioConferencing' -in $AddLicense) {
+        if ('Office365E5' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Microsoft365E3' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add`
+              -or 'PhoneSystem' -in $Add -or 'AudioConferencing' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for Office365E5NoAudioConferencing
-        if ('Office365E5NoAudioConferencing' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense -or 'Office365E5' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
+        if ('Office365E5NoAudioConferencing' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Microsoft365E3' -in $Add -or 'Office365E5' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for Office365E3
-        if ('Office365E3' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Microsoft365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
+        if ('Office365E3' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Microsoft365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -251,10 +251,10 @@ function Set-TeamsUserLicense {
 
         #region Skype Online Plan2
         # Checking combinations for SkypeOnlinePlan2
-        if ('SkypeOnlinePlan2' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
+        if ('SkypeOnlinePlan2' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Office365E3' -in $Add -or 'Microsoft365E3' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -263,19 +263,19 @@ function Set-TeamsUserLicense {
 
         #region Standalone Licenses
         # Checking combinations for CommonAreaPhone
-        if ('CommonAreaPhone' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'Microsoft365E3' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
+        if ('CommonAreaPhone' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'Microsoft365E3' -in $Add -or 'PhoneSystemVirtualUser' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
 
         # Checking combinations for PhoneSystemVirtualUser
-        if ('PhoneSystemVirtualUser' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'Microsoft365E3' -in $AddLicense) {
+        if ('PhoneSystemVirtualUser' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'Microsoft365E3' -in $Add) {
             Write-Error -Message "Invalid combination of Main Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Main License!" -ErrorAction Stop
           }
         }
@@ -283,24 +283,24 @@ function Set-TeamsUserLicense {
 
         #region Add-on Licenses
         # Checking combinations for PhoneSystem
-        if ('PhoneSystem' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
+        if ('PhoneSystem' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add) {
             Write-Error -Message "Invalid combination. 'PhoneSystem' cannot be added to the Main License specified (already integrated)" -Category LimitsExceeded -RecommendedAction "Please remove 'PhoneSystem'" -ErrorAction Stop
           }
-          elseif ('Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense) {
+          elseif ('Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add) {
             Write-Verbose -Message "Combination correct. 'PhoneSystem' can be added"
           }
         }
 
         # Checking combinations for Microsoft365E3
-        if ('AudioConferencing' -in $AddLicense) {
-          if ('Microsoft365E5' -in $AddLicense -or 'Office365E5' -in $AddLicense `
-              -or 'Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense `
-              -or 'CommonAreaPhone' -in $AddLicense -or 'PhoneSystemVirtualUser' -in $AddLicense) {
+        if ('AudioConferencing' -in $Add) {
+          if ('Microsoft365E5' -in $Add -or 'Office365E5' -in $Add `
+              -or 'Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add `
+              -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add) {
             Write-Error -Message "Invalid combination. 'AudioConferencing' cannot be added to the Main License specified (already integrated)" -Category LimitsExceeded -RecommendedAction "Please remove 'AudioConferencing'" -ErrorAction Stop
           }
-          elseif ('Office365E3' -in $AddLicense -or 'SkypeOnlinePlan2' -in $AddLicense -or 'Office365E5NoAudioConferencing' -in $AddLicense) {
+          elseif ('Office365E3' -in $Add -or 'SkypeOnlinePlan2' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add) {
             Write-Verbose -Message "Combination correct. 'AudioConferencing' can be added"
           }
         }
@@ -308,19 +308,19 @@ function Set-TeamsUserLicense {
 
         #region Calling Plans
         # Checking combinations for Calling Plans
-        if ('DomesticCallingPlan' -in $AddLicense -and 'InternationalCallingPlan' -in $AddLicense) {
+        if ('DomesticCallingPlan' -in $Add -and 'InternationalCallingPlan' -in $Add) {
           Write-Error -Message "Invalid combination of Calling Plan Licenses" -Category LimitsExceeded -RecommendedAction "Please select only one Calling Plan License!" -ErrorAction Stop
         }
         #endregion
       }
 
-      if ($PSBoundParameters.ContainsKey('RemoveLicense')) {
+      if ($PSBoundParameters.ContainsKey('Remove')) {
         Write-Verbose -Message "Validating input for Removing (identifying inconsistencies)"
         # No checks needed that aren't captured by the Add and Remove check! - Leaving this here just in case.
         Write-Verbose -Message "NOTE: Currently no checks for Remove Licenses necessary"
       }
 
-      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses') -and -not $PSBoundParameters.ContainsKey('AddLicense')) {
+      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses') -and -not $PSBoundParameters.ContainsKey('Add')) {
         Write-Warning -Message "This will leave the Object without ANY License!"
         if (-not (Get-Consent)) {
           throw "No consent given. Aborting execution!"
@@ -347,13 +347,13 @@ function Set-TeamsUserLicense {
     #endregion
 
     Write-Verbose -Message "Processing Licenses:"
-    #region AddLicense
-    if ($PSBoundParameters.ContainsKey('AddLicense')) {
-      Write-Verbose -Message "Parsing array 'AddLicense'" -Verbose
+    #region Add
+    if ($PSBoundParameters.ContainsKey('Add')) {
+      Write-Verbose -Message "Parsing 'Add'" -Verbose
       try {
         # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
         [System.Collections.ArrayList]$AddSkuIds = @()
-        foreach ($AddLic in $AddLicense) {
+        foreach ($AddLic in $Add) {
           $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
           $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
           $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('FriendlyName')
@@ -384,13 +384,13 @@ function Set-TeamsUserLicense {
     }
     #endregion
 
-    #region RemoveLicense
-    if ($PSBoundParameters.ContainsKey('RemoveLicense')) {
-      Write-Verbose -Message "Parsing array 'RemoveLicense'" -Verbose
+    #region Remove
+    if ($PSBoundParameters.ContainsKey('Remove')) {
+      Write-Verbose -Message "Parsing 'Remove'" -Verbose
       try {
         # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
         [System.Collections.ArrayList]$RemoveSkuIds = @()
-        foreach ($RemoveLic in $RemoveLicense) {
+        foreach ($RemoveLic in $Remove) {
           $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
           $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
           [void]$RemoveSkuIds.Add("$RemoveSku")
@@ -474,10 +474,10 @@ function Set-TeamsUserLicense {
 
       #region Creating User specific License Object
       $NewLicenseObjParameters = $null
-      if ($PSBoundParameters.ContainsKey('AddLicense')) {
+      if ($PSBoundParameters.ContainsKey('Add')) {
         $NewLicenseObjParameters += @{'SkuId' = $AddSkuIds }
       }
-      if ($PSBoundParameters.ContainsKey('RemoveLicense')) {
+      if ($PSBoundParameters.ContainsKey('Remove')) {
         $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveSkuIds }
       }
       if ($PSBoundParameters.ContainsKey('RemoveAllLicenses')) {
