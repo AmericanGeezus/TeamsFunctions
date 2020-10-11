@@ -1,8 +1,11 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Session
-# Author: David Eberhardt
+# Author:     David Eberhardt
 # Updated:    01-OCT-2020
 # Status:     PreLive
+
+
+
 
 function Assert-SkypeOnlineConnection {
   <#
@@ -22,35 +25,48 @@ function Assert-SkypeOnlineConnection {
   [OutputType([Boolean])]
   param() #param
 
-  if (Test-SkypeOnlineConnection) {
-    try {
-      $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
-      Write-Verbose -Message "[ASSERT ] SkypeOnline: Valid session found"
-      return $true
-    }
-    catch {
-      Write-Host "[ASSERT ] ERROR: Session is available, but assertion is not within its valid time range. Please disconnect and create a new session with Connect-SkypeOnline." -ForegroundColor Red
-      Write-Host "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, MicrosoftTeams and AzureAD in one step!" -ForegroundColor DarkCyan
-      return $false
-    }
-  }
-  else {
-    if ([bool]((Get-PSSession -WarningAction SilentlyContinue).Computername -match "online.lync.com")) {
-      Write-Host "[ASSERT ] SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
+  begin {
+
+  } #begin
+
+  process {
+
+    if (Test-SkypeOnlineConnection) {
       try {
         $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
+        Write-Verbose -Message "[ASSERT ] SkypeOnline: Valid session found"
         return $true
       }
       catch {
-        Write-Host "[ASSERT ] ERROR: Reconnect unsuccessful. Please disconnect and create a new session with Connect-SkypeOnline." -ForegroundColor Red
+        Write-Host "[ASSERT ] ERROR: Session is available, but assertion is not within its valid time range. Please disconnect and create a new session with Connect-SkypeOnline." -ForegroundColor Red
         Write-Host "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, MicrosoftTeams and AzureAD in one step!" -ForegroundColor DarkCyan
         return $false
       }
     }
     else {
-      Write-Host "[ASSERT ] ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, AzureAD & MicrosoftTeams and in one step!" -ForegroundColor DarkCyan
-      return $false
+      if ([bool]((Get-PSSession -WarningAction SilentlyContinue).Computername -match "online.lync.com")) {
+        Write-Host "[ASSERT ] SkypeOnline: Session found. Reconnecting..." -ForegroundColor DarkCyan
+        try {
+          $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
+          return $true
+        }
+        catch {
+          Write-Host "[ASSERT ] ERROR: Reconnect unsuccessful. Please disconnect and create a new session with Connect-SkypeOnline." -ForegroundColor Red
+          Write-Host "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, MicrosoftTeams and AzureAD in one step!" -ForegroundColor DarkCyan
+          return $false
+        }
+      }
+      else {
+        Write-Host "[ASSERT ] ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets." -ForegroundColor Red
+        Write-Host "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, AzureAD & MicrosoftTeams and in one step!" -ForegroundColor DarkCyan
+        return $false
+      }
     }
+
+  } #process
+
+  end {
+
   } #end
+
 } #Assert-SkypeOnlineConnection

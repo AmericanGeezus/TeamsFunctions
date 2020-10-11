@@ -4,6 +4,9 @@
 # Updated:    17-APR-2020
 # Status:     Unmanaged
 
+
+
+
 function GetActionOutputObject2 {
   <#
   .SYNOPSIS
@@ -14,7 +17,10 @@ function GetActionOutputObject2 {
   Name of account being modified
   .PARAMETER Result
   Result of action being performed
-#>
+  #>
+
+  [CmdletBinding()]
+  [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Name of account being modified")]
     [string]$Name,
@@ -23,10 +29,25 @@ function GetActionOutputObject2 {
     [string]$Result
   )
 
-  $outputReturn = [PSCustomObject][ordered]@{
-    User   = $Name
-    Result = $Result
-  }
+  begin {
+    Show-FunctionStatus -Level Unmanaged
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
-  return $outputReturn
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    $outputReturn = [PSCustomObject][ordered]@{
+      User   = $Name
+      Result = $Result
+    }
+
+    return $outputReturn
+  } #process
+
+  end {
+    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+  } #end
+
 } # GetActionOutputObject2

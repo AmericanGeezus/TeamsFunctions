@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Other
-# Author: David Eberhardt
+# Author:     David Eberhardt
 # Updated:    01-JUL-2020
 # Status:     PreLive
 

@@ -4,6 +4,9 @@
 # Updated:  01-JUN-2020
 # Status:   Unmanaged
 
+
+
+
 function Backup-TeamsTenant {
   <#
 	.SYNOPSIS
@@ -12,7 +15,10 @@ function Backup-TeamsTenant {
 		Automates the backup of Microsoft Teams.
 	.PARAMETER OverrideAdminDomain
 		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
-	.NOTES
+  .EXAMPLE
+    Backup-TeamsTenant
+    Takes a backup of the entire Teams Tenant configuration and stores it as a ZIP file with the Tenant Name and Current Date in the current directory.
+  .NOTES
 		Version 1.10
 		Build: Feb 04, 2020
 
@@ -31,11 +37,10 @@ function Backup-TeamsTenant {
 	#>
 
   [CmdletBinding(ConfirmImpact = 'None')]
-  param
-  (
+  param(
     [Parameter(ValueFromPipelineByPropertyName)]
-    [string]
-    $OverrideAdminDomain
+    [string]$OverrideAdminDomain
+
   ) #param
 
   begin {

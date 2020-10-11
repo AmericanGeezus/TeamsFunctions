@@ -4,6 +4,9 @@
 # Updated:  01-JUN-2020
 # Status:   Unmanaged
 
+
+
+
 function Backup-TeamsEV {
   <#
 	.SYNOPSIS
@@ -15,6 +18,10 @@ function Backup-TeamsEV {
 	.PARAMETER OverrideAdminDomain
 		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
 
+  .EXAMPLE
+    Backup-TeamsEV
+    Takes a backup of the Teams Enterprise Voice Configuration and stores it as a ZIP file with the Tenant Name and Current Date in the current directory.
+
 	.NOTES
 		Version 1.10
 		Build: Feb 04, 2020
@@ -25,11 +32,10 @@ function Backup-TeamsEV {
 	#>
 
   [CmdletBinding(ConfirmImpact = 'None')]
-  param
-  (
+  param(
     [Parameter(ValueFromPipelineByPropertyName)]
-    [string]
-    $OverrideAdminDomain
+    [string]$OverrideAdminDomain
+
   ) #param
 
   begin {

@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   ALPHA
 
+
+
+
 function Set-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
@@ -44,7 +47,7 @@ function Set-TeamsUserVoiceConfig {
     ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
     assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
-    Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
+    Enables User for Enterprise Voice and assegns a Microsoft Number (must be found in the Tenant!)
     Optionally can also assign a Calling Plan license prior.
 	.COMPONENT
 		The component this cmdlet belongs to
@@ -110,7 +113,7 @@ function Set-TeamsUserVoiceConfig {
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
-    # Setting Preference Variables according to Upstream settings
+    # Setting Preference Variables according to Uestream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
       $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
     }
@@ -118,7 +121,7 @@ function Set-TeamsUserVoiceConfig {
       $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
     }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+      $WhatIfPreference = $PSCmdlet.Sessionetate.PSVariable.GetValue('WhatIfPreference')
     }
 
   } #begin

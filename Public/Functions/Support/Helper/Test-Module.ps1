@@ -8,7 +8,9 @@ function Test-Module {
   <#
 	.SYNOPSIS
 		Tests whether a Module is loaded
-	.EXAMPLE
+  .DESCRIPTION
+		Tests whether a specific Module is loaded
+  .EXAMPLE
 		Test-Module -Module ModuleName
 		Will Return $TRUE if the Module 'ModuleName' is loaded
   #>
@@ -21,12 +23,23 @@ function Test-Module {
     [string]$Module
   )
 
-  Write-Verbose -Message "Verifying if Module '$Module' is installed and available"
-  Import-Module -Name $Module -ErrorAction SilentlyContinue
-  if (Get-Module -Name $Module -WarningAction SilentlyContinue) {
-    return $true
-  }
-  else {
-    return $false
-  } #end
+  begin {
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "Verifying if Module '$Module' is installed and available"
+    Import-Module -Name $Module -ErrorAction SilentlyContinue
+    if (Get-Module -Name $Module -WarningAction SilentlyContinue) {
+      return $true
+    }
+    else {
+      return $false
+    }
+
+  } #process
+
+  end {
+
+	} #end
 } #Test-Module

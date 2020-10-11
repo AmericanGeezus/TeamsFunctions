@@ -1,10 +1,13 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Support
-# Author: David Eberhardt
+# Author:     David Eberhardt
 # Updated:    29-JUN-2020
 # Status:     Live
 
-function Write-ErrorRecord ($ErrorRecord) {
+
+
+
+function Write-ErrorRecord {
   <#
 	.SYNOPSIS
 		Returns the provided Error-Record as an Object
@@ -16,19 +19,41 @@ function Write-ErrorRecord ($ErrorRecord) {
   .NOTES
 		get error record (this is $_ from the parent function)
 		This function must be called with 'Write-ErrorRecord $_'
-	#>
+  #>
 
-  [Management.Automation.ErrorRecord]$e = $ErrorRecord
+  [CmdletBinding()]
+  [OutputType([PSCustomObject])]
+  param(
+    $ErrorRecord
 
-  # retrieve Info about runtime error
-  $info = $null
-  $info = [PSCustomObject]@{
-    Exception = $e.Exception.Message
-    Reason    = $e.CategoryInfo.Reason
-    Target    = $e.CategoryInfo.TargetName
-    Script    = $e.InvocationInfo.ScriptName
-    Line      = $e.InvocationInfo.ScriptLineNumber
-    Column    = $e.InvocationInfo.OffsetInLine
-  }
-  $info
+  ) #param
+
+  begin {
+    Show-FunctionStatus -Level Live
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    [Management.Automation.ErrorRecord]$e = $ErrorRecord
+
+    # retrieve Info about runtime error
+    $info = $null
+    $info = [PSCustomObject]@{
+      Exception = $e.Exception.Message
+      Reason    = $e.CategoryInfo.Reason
+      Target    = $e.CategoryInfo.TargetName
+      Script    = $e.InvocationInfo.ScriptName
+      Line      = $e.InvocationInfo.ScriptLineNumber
+      Column    = $e.InvocationInfo.OffsetInLine
+    }
+    $info
+
+  } #process
+
+  end {
+    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+  } #end
 } #Write-ErrorRecord

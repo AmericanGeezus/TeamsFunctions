@@ -4,6 +4,9 @@
 # Updated:  01-JUN-2020
 # Status:   Unmanaged
 
+
+
+
 function Restore-TeamsEV {
   <#
 	.SYNOPSIS
@@ -26,6 +29,10 @@ function Restore-TeamsEV {
 	.PARAMETER OverrideAdminDomain
 		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
 
+  .EXAMPLE
+    Restore-TeamsEV -File C:\Temp\Backup.ZIP
+    Restores the Teams Enterprise Voice Configuration from Backup.ZIP file.
+
 	.NOTES
 		Version 1.10
 		Build: Feb 04, 2020
@@ -35,18 +42,15 @@ function Restore-TeamsEV {
 		https://www.ucdialplans.com
 	#>
 
-  [CmdletBinding(ConfirmImpact = 'Medium',
-    SupportsShouldProcess)]
-  param
-  (
-    [Parameter(Mandatory, HelpMessage = 'Path to the zip file containing the backed up Teams EV config to restore',
-      ValueFromPipelineByPropertyName)]
-    [string]
-    $File,
-    [switch]
-    $KeepExisting,
-    [string]
-    $OverrideAdminDomain
+  [CmdletBinding(ConfirmImpact = 'Medium', SupportsShouldProcess)]
+  param(
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = 'Path to the zip file containing the backed up Teams EV config to restore')]
+    [string]$File,
+
+    [switch]$KeepExisting,
+
+    [string]$OverrideAdminDomain
+
   ) #param
 
   begin {

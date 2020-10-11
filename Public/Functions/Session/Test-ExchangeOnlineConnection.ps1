@@ -20,18 +20,33 @@ function Test-ExchangeOnlineConnection {
   [OutputType([Boolean])]
   param() #param
 
-  $Sessions = Get-PSSession -WarningAction SilentlyContinue
-  if ([bool]($Sessions.Computername -match "outlook.office365.com")) {
-    $PSExchangeOnlineSession = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
-    if ($PSExchangeOnlineSession.Count -ge 1) {
-      return $true
+  begin {
+    Show-FunctionStatus -Level Live
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    $Sessions = Get-PSSession -WarningAction SilentlyContinue
+    if ([bool]($Sessions.Computername -match "outlook.office365.com")) {
+      $PSExchangeOnlineSession = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+      if ($PSExchangeOnlineSession.Count -ge 1) {
+        return $true
+      }
+      else {
+        return $false
+      }
     }
     else {
       return $false
     }
-  }
-  else {
-    return $false
-  }
+
+  } #process
+
+  end {
+    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+  } #end
 
 } #Test-ExchangeOnlineConnection

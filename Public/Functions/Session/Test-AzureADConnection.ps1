@@ -2,7 +2,10 @@
 # Function: Testing
 # Author:		David Eberhardt
 # Updated:  01-AUG-2020
-# Status:   PreLive
+# Status:   Live
+
+
+
 
 function Test-AzureADConnection {
   <#
@@ -19,11 +22,27 @@ function Test-AzureADConnection {
   [OutputType([Boolean])]
   param() #param
 
-  try {
-    $null = (Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue -ErrorAction STOP)
-    return $true
-  }
-  catch {
-    return $false
+  begin {
+    Show-FunctionStatus -Level Live
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+
+    try {
+      $null = (Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue -ErrorAction STOP)
+      return $true
+    }
+    catch {
+      return $false
+    }
+
+  } #process
+
+  end {
+    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
   } #end
+
 } #Test-AzureADConnection

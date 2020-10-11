@@ -67,3 +67,14 @@ $commandresult | Where-Object SipAddress -eq _____sip:p.cassin@iprad.com
 Remove only if found on user for example / check whether it is in the tenant first...
 #CHECK solve how to remove disabled plans?
 https://www.reddit.com/r/Office365/comments/9kpmok/assign_office_365_licenses_with_powershell/
+
+## PowerShell 7
+
+v7.1-rc1 works with SkypeOnlineConnector
+Start Testing on PS7
+Integrate PS7 into VScode
+
+
+## Test Module MicrosoftTeams as baseline
+
+New-CsOnlineSession does not have -Username anymore. Test MFA with Credential instead (also interoperability with Connect-Me/AzureAD and MicrosoftTeams)

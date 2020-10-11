@@ -23,7 +23,19 @@ function Format-StringForUse {
 		If not specified, only the following characters are removed: ?()[]{}
 		Cannot be used together with -As
 	.PARAMETER Replacement
-		Optional String. Manually replaces removed characters with this string.
+    Optional String. Manually replaces removed characters with this string.
+  .EXAMPLE
+    Format-StringForUse  -InputString "<my>\Test(String)"
+    Returns "<my>\TestString". All SpecialChars defined will be removed.
+  .EXAMPLE
+    Format-StringForUse  -InputString "<my>\Test(String)" -SpecialChars "\"
+    Returns "myTest(String)". All SpecialChars defined will be removed.
+  .EXAMPLE
+    Format-StringForUse -InputString "<my>\Test(String)" -As UserPrincipalName
+    Returns "myTestString" for UserPrincipalName does not support any of the special characters
+  .EXAMPLE
+    Format-StringForUse  -InputString "<my>\Test(String)" -As DisplayName
+    Returns "myTest(String)" for DisplayName does not support some special characters
   .INPUTS
     System.String
   .OUTPUTS

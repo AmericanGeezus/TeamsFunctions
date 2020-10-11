@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Teams User Voice Configuration
-# Author: David Eberhardt
+# Author:     David Eberhardt
 # Updated:    01-OCT-2020
 # Status:     PreLive
 
