@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Support
-# Author:		David Eberhardtt
+# Author:		David Eberhardt
 # Updated:  01-JUL-2020
 # Status:   Live
 

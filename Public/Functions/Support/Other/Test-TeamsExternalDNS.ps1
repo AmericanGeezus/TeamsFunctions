@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardtt
+# Author:		David Eberhardt
 # Updated:  01-SEP-2020
 # Status:   Unmanaged
 

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Backup
-# Author:		David Eberhardtt
+# Author:		David Eberhardt
 # Updated:  01-JUN-2020
 # Status:   Unmanaged
 
@@ -21,7 +21,7 @@ function Backup-TeamsTenant {
 		https://www.ucdialplans.com
 
 		Expanded to cover more elements
-		David Eberhardtt
+		David Eberhardt
 		https://github.com/DEberhardt/
 		https://davideberhardt.wordpress.com/
 

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardtt
+# Author:		David Eberhardt
 # Updated:  01-AUG-2020
 # Status:   PreLive
 

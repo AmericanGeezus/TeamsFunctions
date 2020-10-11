@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Support, CallQueue, AutoAttendant
-# Author: David Eberhardtt
+# Author: David Eberhardt
 # Updated:    01-SEP-2020
 # Status:     PreLive
 
