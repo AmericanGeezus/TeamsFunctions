@@ -5,6 +5,13 @@
 # Status:   Live
 
 
+# CHECK Currently not working with PS7:
+<# Could not load type 'System.Security.Cryptography.SHA256Cng' from
+     | assembly 'System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'.): Could not
+     | load type 'System.Security.Cryptography.SHA256Cng' from assembly 'System.Core, Version=4.0.0.0,
+     | Culture=neutral, PublicKeyToken=b77a5c561934e089'.
+#>
+
 function Connect-SkypeOnline {
   <#
 	.SYNOPSIS
