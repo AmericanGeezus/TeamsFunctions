@@ -133,6 +133,7 @@ Describe -Tags ('Unit', 'Acceptance') "'$($Module.Name)' Module Tests" {
 }
 
 <#
+# Code from F-X Cat https://vexx32.github.io/2020/07/08/Verify-Module-Help-Pester/
 #region Discovery
 
 $ModuleName = 'TeamsFunctions'
@@ -141,8 +142,13 @@ $ModuleName = 'TeamsFunctions'
 
 BeforeAll {
   $ModuleName = 'TeamsFunctions'
-  #Import-Module $ModuleName
-  swop 1
+  try {
+    Import-Module $ModuleName
+  }
+  catch {
+    swop 1
+  }
+
 }
 
 Describe "$ModuleName Sanity Tests - Help Content" -Tags 'Module' {
@@ -150,8 +156,12 @@ Describe "$ModuleName Sanity Tests - Help Content" -Tags 'Module' {
   #region Discovery
 
   # The module will need to be imported during Discovery since we're using it to generate test cases / Context blocks
-  #Import-Module $ModuleName
-  swop 1
+  try {
+    Import-Module $ModuleName
+  }
+  catch {
+    swop 1
+  }
 
   $ShouldProcessParameters = 'WhatIf', 'Confirm'
 
