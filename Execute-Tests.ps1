@@ -47,21 +47,13 @@ process {
     $PrivateTests = Get-ChildItem "$PSScriptRoot\Private\Tests" -Include "*.Tests.ps1" -Recurse #| Select-Object -First 1
     Invoke-Pester $PrivateTests.FullName
 
-    <#     foreach ($Test in $PrivateTests) {
-      Invoke-Pester $($Test.FullPath)
-
-    } #>
-
   }
 
   if ($all -or $public) {
     # Run Functional Tests for Public functions
     Write-Verbose -Message "$($MyInvocation.MyCommand.Name) - Running Tests against PUBLIC Functions" -Verbose
     $PublicTests = Get-ChildItem "$PSScriptRoot\Public\Tests" -Include "*.Tests.ps1" -Recurse #| Select-Object -First 1
-
-    foreach ($Test in $PublicTests) {
-      Invoke-Pester $($Test.FullPath)
-    }
+    Invoke-Pester $PublicTests.FullName
 
   }
 

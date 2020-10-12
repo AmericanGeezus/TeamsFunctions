@@ -7,7 +7,7 @@
 #$FunctionPath = "$PSScriptRoot\$Scope\Functions\$($MyInvocation.MyCommand.Name -Replace '.tests.ps1', 'ps1')"
 $Function = $MyInvocation.MyCommand.Name -Replace '.tests.ps1', ''
 
-  Describe -Tags ('Unit', 'Acceptance') "Function '$Function'" {
+Describe -Tags ('Unit', 'Acceptance') "Function '$Function'" {
 
   It 'Calls with no switch parameter set' {
     { $Function } | Should -BeFalse
