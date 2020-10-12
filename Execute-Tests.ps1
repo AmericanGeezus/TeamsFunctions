@@ -1,10 +1,72 @@
+# Module:   TeamsFunctions
+# Function: Test
+# Author:		David Eberhardt
+# Updated:  11-OCT-2020
+
 # Pester
-Import-Module Pester
 
-# here
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+[CmdletBinding(DefaultParameterSetName = "full")]
+param (
+  [Parameter(ParameterSetName = "full")]
+  [switch]$full,
 
-# Run the structure tests
-Invoke-Pester "$here\TeamsFunctions.Tests.ps1"
+  [Parameter(ParameterSetName = "individual")]
+  [switch]$private,
 
-# Add individual tests here
+  [Parameter(ParameterSetName = "individual")]
+  [switch]$public
+
+)
+
+begin {
+  if (($PSBoundParameters.ContainsKey('private') -or $PSBoundParameters.ContainsKey('public')) -and -not $PSBoundParameters.ContainsKey('full')) {
+    $all = $false
+  }
+  elseif ($PSBoundParameters.ContainsKey('full')) {
+    $all = $true
+  }
+  elseif ($PSBoundParameters.Keys.Count -eq 0) {
+    $all = $true
+  }
+
+  Import-Module Pester
+
+}
+
+process {
+  if ($all) {
+    # Run the structure tests
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name) - Running Tests against MODULE (Integrity check)" -Verbose
+    Invoke-Pester "$PSScriptRoot\TeamsFunctions.Tests.ps1"
+
+  }
+
+  if ($all -or $private) {
+    # Run Functional Tests for Private functions
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name) - Running Tests against PRIVATE Functions" -Verbose
+    $PrivateTests = Get-ChildItem "$PSScriptRoot\Private\Tests" -Include "*.Tests.ps1" -Recurse #| Select-Object -First 1
+    Invoke-Pester $PrivateTests.FullName
+
+    <#     foreach ($Test in $PrivateTests) {
+      Invoke-Pester $($Test.FullPath)
+
+    } #>
+
+  }
+
+  if ($all -or $public) {
+    # Run Functional Tests for Public functions
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name) - Running Tests against PUBLIC Functions" -Verbose
+    $PublicTests = Get-ChildItem "$PSScriptRoot\Public\Tests" -Include "*.Tests.ps1" -Recurse #| Select-Object -First 1
+
+    foreach ($Test in $PublicTests) {
+      Invoke-Pester $($Test.FullPath)
+    }
+
+  }
+
+}
+
+end {
+
+}

@@ -18,7 +18,8 @@ Describe -Tags ('Unit', 'Acceptance') "'$($Module.Name)' Module Tests" {
 
   }
 
-  Context 'Module Setup' {
+  #region Module Test
+  Context 'Module' {
     It "has the root module '$PSScriptRoot\$($Module.Name).psm1'" {
       "$PSScriptRoot\$($Module.Name).psm1" | Should -Exist
     } -TestCases { Module = $module }
@@ -41,8 +42,9 @@ Describe -Tags ('Unit', 'Acceptance') "'$($Module.Name)' Module Tests" {
     }
 
   } # Context 'Module Setup'
+  #endregion
 
-
+  #region Function Testing
   $Allfunctions = Get-ChildItem "$PSScriptRoot\Public", "$PSScriptRoot\Private" -Include "*.ps1" -Exclude "*.Tests.ps1" -Recurse #| Select-Object -First 1
   $PublicFunctions = Get-ChildItem "$PSScriptRoot\Public" -Include "*.ps1" -Exclude "*.Tests.ps1" -Recurse #| Select-Object -First 1
   $PrivateFunctions = Get-ChildItem "$PSScriptRoot\Private" -Include "*.ps1" -Exclude "*.Tests.ps1" -Recurse #| Select-Object -First 1
@@ -97,7 +99,6 @@ Describe -Tags ('Unit', 'Acceptance') "'$($Module.Name)' Module Tests" {
 
     # not all will have advanced functions
     It "'$($_.BaseName)' should be an advanced function" {
-      "$($_.FullName)" | Should -FileContentMatch 'function'
       "$($_.FullName)" | Should -FileContentMatch 'cmdletbinding'
       "$($_.FullName)" | Should -FileContentMatch 'param'
     }
@@ -118,7 +119,7 @@ Describe -Tags ('Unit', 'Acceptance') "'$($Module.Name)' Module Tests" {
     # currently no special tests for private functions
 
   } # Context "Testing Module PRIVATE Functions"
-
+  #endregion
 
   <# Commenting out as there aren't any tests files for individual files yet.
   Context "Testing FUNCTION has tests" -ForEach $AllFunctions {
@@ -142,13 +143,10 @@ $ModuleName = 'TeamsFunctions'
 
 BeforeAll {
   $ModuleName = 'TeamsFunctions'
-  try {
-    Import-Module $ModuleName
-  }
-  catch {
-    swop 1
-  }
+  #Import-Module $ModuleName
+  swop 1
 
+  #Add-Type -Name Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile # Doesn't work...
 }
 
 Describe "$ModuleName Sanity Tests - Help Content" -Tags 'Module' {
@@ -156,12 +154,8 @@ Describe "$ModuleName Sanity Tests - Help Content" -Tags 'Module' {
   #region Discovery
 
   # The module will need to be imported during Discovery since we're using it to generate test cases / Context blocks
-  try {
-    Import-Module $ModuleName
-  }
-  catch {
-    swop 1
-  }
+  #Import-Module $ModuleName
+  swop 1
 
   $ShouldProcessParameters = 'WhatIf', 'Confirm'
 
