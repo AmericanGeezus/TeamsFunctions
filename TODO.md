@@ -74,7 +74,11 @@ v7.1-rc1 works with SkypeOnlineConnector
 Start Testing on PS7
 Integrate PS7 into VScode
 
-
 ## Test Module MicrosoftTeams as baseline
 
 New-CsOnlineSession does not have -Username anymore. Test MFA with Credential instead (also interoperability with Connect-Me/AzureAD and MicrosoftTeams)
+
+## Pester
+
+Change Module checks to this format:
+https://vexx32.github.io/2020/07/08/Verify-Module-Help-Pester/

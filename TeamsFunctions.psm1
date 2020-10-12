@@ -414,7 +414,7 @@ $TeamsLicensesEntry30 = [PSCustomObject][ordered]@{
 #region Add-On Licenses
 $TeamsLicensesEntry31 = [PSCustomObject][ordered]@{
   FriendlyName        = "Phone System"
-  ProductName         = "SKYPE FOR BUSINESS CLOUD PBX"
+  ProductName         = "MICROSOFT 365 PHONE SYSTEM"
   SkuPartNumber       = "MCOEV"
   SkuId               = "e43b5b99-8dfb-405f-9987-dc307f34bcbd"
   LicenseType         = "AddOnLicense"
