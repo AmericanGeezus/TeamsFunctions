@@ -32,7 +32,7 @@ function Show-FunctionStatus {
       Write-Debug -Message "$Function has [BETA] Status. Build is not completed. Please report issues to 'TeamsFunctions@outlook.com'"
     }
     "PreLive" {
-      Write-Verbose -Message "$Function has [PreLIVE] Status. Testing is underway. Please help me by reporting issues to 'TeamsFunctions@outlook.com' or via GitHub" -Verbose
+      Write-Verbose -Message "$Function has [PreLIVE] Status. Functional, but still being tested. Please report issues to 'TeamsFunctions@outlook.com' or via GitHub" -Verbose
     }
     "Live" {
       Write-Verbose -Message "$Function is [LIVE]. Should you encounter issues, please get in touch! 'TeamsFunctions@outlook.com' or via GitHub"
