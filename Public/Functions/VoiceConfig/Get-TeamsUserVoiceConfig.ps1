@@ -16,6 +16,8 @@ function Get-TeamsUserVoiceConfig {
 	.PARAMETER DiagnosticLevel
     Optional. Value from 1 to 4. Higher values will display more parameters
     See NOTES below for details.
+  .PARAMETER SkipLicenseCheck
+    Optional. Will not perform queries against User Licensing to improve performance
 	.EXAMPLE
     Get-TeamsUserVoiceConfig -Identity John@domain.com
     Shows Voice Configuration for John with a concise view of Parameters
@@ -60,7 +62,11 @@ function Get-TeamsUserVoiceConfig {
     [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
     [Alias('DiagLevel', 'Level', 'DL')]
     [ValidateRange(1, 4)]
-    [int32]$DiagnosticLevel
+    [int32]$DiagnosticLevel,
+
+    [Parameter(HelpMessage = 'Improves performance by not performing a License Check on the User')]
+    [Alias('SkipLicense', 'SkipLic')]
+    [switch]$SkipLicenseCheck
   ) #param
 
   begin {
@@ -97,28 +103,22 @@ function Get-TeamsUserVoiceConfig {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     foreach ($User in $Identity) {
-      #region Information Gathering
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
-        $AdUser = Get-AzureADUserFromUPN $User -WarningAction SilentlyContinue -ErrorAction Stop
         $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         #TODO: Check ErrorAction stops script, not only this one.
-        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction $ErrorActionPreference
+        Write-Error -Message "User '$User' not found" -Category ObjectNotFound -ErrorAction $ErrorActionPreference
       }
 
-      # Querying User Licenses
-      $CsUserLicense = Get-TeamsUserLicense $User
-      #endregion
-
-      # InterpretedVoiceConfigType
-      if ($User.VoicePolicy -eq "BusinessVoice") {
+      # Constructing InterpretedVoiceConfigType
+      if ($CsUser.VoicePolicy -eq "BusinessVoice") {
         $InterpretedVoiceConfigType = "CallingPlans"
       }
-      elseif ($User.VoicePolicy -eq "HybridVoice") {
-        if ($null -ne $User.VoiceRoutingPolicy -and $null -eq $User.OnlineVoiceRoutingPolicy) {
+      elseif ($CsUser.VoicePolicy -eq "HybridVoice") {
+        if ($null -ne $CsUser.VoiceRoutingPolicy -and $null -eq $CsUser.OnlineVoiceRoutingPolicy) {
           $InterpretedVoiceConfigType = "SkypeHybridPSTN"
         }
         else {
@@ -131,30 +131,40 @@ function Get-TeamsUserVoiceConfig {
 
 
       #region Creating Base Custom Object
+      # Adding Basic parameters
       $UserObject = $null
       $UserObject = [PSCustomObject][ordered]@{
-        UserPrincipalName          = $AdUser.UserPrincipalName
+        UserPrincipalName          = $CsUser.UserPrincipalName
         SipAddress                 = $CsUser.SipAddress
         ObjectId                   = $CsUser.ObjectId
         HostingProvider            = $CsUser.HostingProvider
         InterpretedUserType        = $CsUser.InterpretedUserType
         InterpretedVoiceConfigType = $InterpretedVoiceConfigType
         TeamsUpgradeEffectiveMode  = $CsUser.TeamsUpgradeEffectiveMode
+        VoicePolicy                = $CsUser.VoicePolicy
         UsageLocation              = $CsUser.UsageLocation
-        LicensesAssigned           = $CsUserLicense.LicensesFriendlyNames
-        CurrentCallingPlan         = $CsUserLicense.CallingPlan
-        PhoneSystem                = $CsUserLicense.PhoneSystem
-        TeamsVoiceRoute            = $CsUser.TeamsVoiceRoute
-        EnterpriseVoiceEnabled     = $CsUser.EnterpriseVoiceEnabled
-        HostedVoiceMail            = $CsUser.HostedVoiceMail
-        OnlineVoiceRoutingPolicy   = $CsUser.OnlineVoiceRoutingPolicy
-        TenantDialPlan             = $CsUser.TenantDialPlan
-        TelephoneNumber            = $CsUser.TelephoneNumber
-        PrivateLine                = $CsUser.PrivateLine
-        LineURI                    = $CsUser.LineURI
-        OnPremLineURI              = $CsUser.OnPremLineURI
-
       }
+
+      # Adding Licensing Parameters if not skipped
+      if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
+        # Querying User Licenses
+        $CsUserLicense = Get-TeamsUserLicense $User
+
+        # Adding Parameters
+        $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames
+        $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
+        $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
+      }
+
+      # Adding Provisioning Parameters
+      $UserObject | Add-Member -MemberType NoteProperty -Name EnterpriseVoiceEnabled -Value $CsUser.EnterpriseVoiceEnabled
+      $UserObject | Add-Member -MemberType NoteProperty -Name HostedVoiceMail -Value $CsUser.HostedVoiceMail
+      $UserObject | Add-Member -MemberType NoteProperty -Name OnlineVoiceRoutingPolicy -Value $CsUser.OnlineVoiceRoutingPolicy
+      $UserObject | Add-Member -MemberType NoteProperty -Name TenantDialPlan -Value $CsUser.TenantDialPlan
+      $UserObject | Add-Member -MemberType NoteProperty -Name TelephoneNumber -Value $CsUser.TelephoneNumber
+      $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
+      $UserObject | Add-Member -MemberType NoteProperty -Name LineURI -Value $CsUser.LineURI
+      $UserObject | Add-Member -MemberType NoteProperty -Name OnPremLineURI -Value $CsUser.OnPremLineURI
       #endregion
 
       #region Adding Diagnostic Parameters
@@ -164,7 +174,7 @@ function Get-TeamsUserVoiceConfig {
             # Displaying basic diagnostic parameters (Hybrid)
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremLineURIManuallySet -Value $CsUser.OnPremLineURIManuallySet
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremEnterPriseVoiceEnabled -Value $CsUser.OnPremEnterPriseVoiceEnabled
-            $UserObject | Add-Member -MemberType NoteProperty -Name VoicePolicy -Value $CsUser.VoicePolicy
+            $UserObject | Add-Member -MemberType NoteProperty -Name TeamsVoiceRoute -Value $CsUser.TeamsVoiceRoute
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallRoutingPolicy -Value $CsUser.TeamsEmergencyCallRoutingPolicy
           }
@@ -181,6 +191,14 @@ function Get-TeamsUserVoiceConfig {
           }
 
           { $PSItem -ge 3 } {
+            # Querying AD Object (if Diagnostic Level is 3 or higher)
+            try {
+              $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            }
+            catch {
+              Write-Warning -Message "User '$User' not found in AzureAD. Some data will not be available"
+            }
+
             # Displaying advanced diagnostic parameters
             $UserObject | Add-Member -MemberType NoteProperty -Name AdAccountEnabled -Value $AdUser.AccountEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountEnabled -Value $CsUser.Enabled

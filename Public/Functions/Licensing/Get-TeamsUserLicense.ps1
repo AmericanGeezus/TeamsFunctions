@@ -83,15 +83,14 @@ function Get-TeamsUserLicense {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
     foreach ($User in $Identity) {
       try {
-        Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Out-Null
+        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Select UsageLocation,DisplayName
+        $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
         throw $_
         continue
       }
 
-      $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue
-      $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId $User -WarningAction SilentlyContinue
       [string]$DisplayName = $UserObject.DisplayName
 
       # Querying Licenses
@@ -134,6 +133,7 @@ function Get-TeamsUserLicense {
       $CallingPlanInt = ("MCOPSTN2" -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom120 = ("MCOPSTN5" -in $UserServicePlans.ServicePlanName)
 
+
       if ($CallingPlanDom120) {
         $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN5"
       }
@@ -146,6 +146,7 @@ function Get-TeamsUserLicense {
       else {
         [string]$currentCallingPlan = $null
       }
+
 
       $output = [PSCustomObject][ordered]@{
         UserPrincipalName         = $User
