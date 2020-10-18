@@ -1,7 +1,7 @@
 # TeamsFunctions - Change Log
 
 I decided to break this out into its own file as it grows ever so consistently as the Module itself.
-Pre-releases are documented within the Module comment block and will be transferred here monthly in cadence with the release cycle
+Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
 ## v20.10 - October 2020 release
 
