@@ -740,13 +740,18 @@ Get-ChildItem -Filter *.ps1 -Path $PSScriptRoot\Public\Functions, $PSScriptRoot\
   . $_.FullName
 }
 
+# Adding manual Aliases (not recorded in Functions)
+Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
+Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
+
+
 # Exporting Module Members (Functions)
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
 Export-ModuleMember -Alias con, dis, pol, New-TeamsUVC, Set-TeamsUVC, Get-TeamsUVC, Find-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, `
   New-TeamsRA, Set-TeamsRA, Get-TeamsRA, Find-TeamsRA, Remove-TeamsRA, New-TeamsRAassoc, Get-TeamsRAassoc, Remove-TeamsRAassoc, Remove-CsOnlineApplicationInstance, `
-  New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ, New-TeamsAA, Set-TeamsAA, Get-TeamsAA, Remove-TeamsAA, `
+  New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ, New-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, Get-TeamsAA, Remove-TeamsAA, `
   New-TeamsAAPrompt, New-TeamsAASchedule, New-TeamsAAEntity, New-TeamsAAScope
 
 # Exporting Module Members (Variables)
