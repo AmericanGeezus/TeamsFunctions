@@ -7,10 +7,19 @@
 #$FunctionPath = "$PSScriptRoot\$Scope\Functions\$($MyInvocation.MyCommand.Name -Replace '.tests.ps1', 'ps1')"
 $Function = $MyInvocation.MyCommand.Name -Replace '.tests.ps1', ''
 
-Describe -Tags ('Unit', 'Acceptance') "Function '$Function'" {
+InModuleScope TeamsFunctions {
+  Describe -Tags ('Unit', 'Acceptance') "Function '$Function'" {
 
-  It 'Calls with no switch parameter set' {
-    { $Function } | Should -BeFalse
+    It 'Should be false' {
+      Mock Set-CsUser { return $false }
+      Enable-TeamsUserForEnterpriseVoice -Identity Test@domain.com | Should -BeFalse
 
+    }
+
+    It 'Should be true' {
+      Mock Set-CsUser { return $true }
+      Enable-TeamsUserForEnterpriseVoice -Identity Test@domain.com | Should -BeTrue
+
+    }
   }
 }

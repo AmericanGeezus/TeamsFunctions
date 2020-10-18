@@ -10,10 +10,10 @@ $Function = $MyInvocation.MyCommand.Name -Replace '.tests.ps1', ''
 Describe -Tags ('Unit', 'Acceptance') "Function '$Function'" {
 
   It 'Should have String parameters defined' {
-    Get-Command $Function | Should -HaveParameter InputString -Type string
-    Get-Command $Function | Should -HaveParameter Replacement -Type string
-    Get-Command $Function | Should -HaveParameter As -Type string
-    Get-Command $Function | Should -HaveParameter SpecialChars -Type string
+    Get-Command Format-StringForUse | Should -HaveParameter InputString -Type string
+    Get-Command Format-StringForUse | Should -HaveParameter Replacement -Type string
+    Get-Command Format-StringForUse | Should -HaveParameter As -Type string
+    Get-Command Format-StringForUse | Should -HaveParameter SpecialChars -Type string
 
   }
 
