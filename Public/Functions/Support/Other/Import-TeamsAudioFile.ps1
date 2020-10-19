@@ -34,7 +34,10 @@ function Import-TeamsAudioFile {
 	#>
 
   [CmdletBinding()]
-  [OutputType([Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile])]
+  #CHECK Output Type: https://docs.microsoft.com/en-us/powershell/module/skype/import-csonlineaudiofile?view=skype-ps
+  # What does Import-CsOnlineAudioFile return exactly? Raise issue on above if different?
+  #[OutputType([Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile])]
+  [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true)]
     [string]$File,

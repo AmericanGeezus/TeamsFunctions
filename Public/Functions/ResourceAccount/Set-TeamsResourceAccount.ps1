@@ -484,9 +484,11 @@ function Set-TeamsResourceAccount {
               }
             }
           }
+          <# CHECK Exception Name and use the one that is thrown when trying to assign a number in use already
           catch [ApplicationInstanceManagementException] {
             Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned! Number is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number "
           }
+          #>
           catch {
             Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
             Write-ErrorRecord $_ #This handles the error message in human readable format.
