@@ -413,7 +413,7 @@ function Set-TeamsResourceAccount {
         $ServicePlanName = "MCOEV"
       }
       $i = 0
-      $imax = 360
+      $imax = 600
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($imax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
       Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
       while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {

@@ -64,9 +64,12 @@ $commandresult = $i['Get-CsOnlineUser']
 $commandresult | Where-Object SipAddress -eq _____sip:p.cassin@iprad.com
 
 ## Evaluate sturdier licensing
+
 Remove only if found on user for example / check whether it is in the tenant first...
 #CHECK solve how to remove disabled plans?
 https://www.reddit.com/r/Office365/comments/9kpmok/assign_office_365_licenses_with_powershell/
+
+#CHECK Display disabled plans?
 
 ## PowerShell 7
 
