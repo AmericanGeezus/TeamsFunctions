@@ -18,12 +18,13 @@ function Show-FunctionStatus {
 
   [CmdletBinding()]
   param(
-    [Validateset("Alpha", "Beta", "PreLive", "Live", "Unmanaged", "Deprectated")]
+    [Validateset("Alpha", "Beta", "RC", "PreLive", "Live", "Unmanaged", "Deprectated")]
     $Level
   ) #param
 
   $Function = (Get-PSCallStack | Select-Object -First 2).Command[1]
 
+  #CHECK evaluate whether $NestedPromptLevel or $ExecutionContext can be used to determine that this command is only executed once.
   switch ($Level) {
     "Alpha" {
       Write-Debug -Message "$Function has [ALPHA] Status. It may not work as intended or contain serious gaps in functionality. Please handle with care" -Debug
