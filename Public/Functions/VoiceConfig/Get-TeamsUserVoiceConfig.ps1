@@ -92,11 +92,12 @@ function Get-TeamsUserVoiceConfig {
 
     # Setting Preference for Error and Warning Action if not provided
     if (-not $PSBoundParameters.ContainsKey('ErrorAction')) {
-      $ErrorActionPreference = "Stop"
+      #$ErrorActionPreference = "Stop"
     }
     if (-not $PSBoundParameters.ContainsKey('WarningAction')) {
       $WarningPreference = "Continue"
     }
+
   } #begin
 
   process {
@@ -106,11 +107,12 @@ function Get-TeamsUserVoiceConfig {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
-        $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+
       }
       catch {
-        #TODO: Check ErrorAction stops script, not only this one.
-        Write-Error -Message "User '$User' not found" -Category ObjectNotFound -ErrorAction $ErrorActionPreference
+        Write-Error -Message "$($_.Exception.Message)" -Category ObjectNotFound
+        continue
       }
 
       # Constructing InterpretedVoiceConfigType
@@ -148,7 +150,7 @@ function Get-TeamsUserVoiceConfig {
       # Adding Licensing Parameters if not skipped
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses
-        $CsUserLicense = Get-TeamsUserLicense $User
+        $CsUserLicense = Get-TeamsUserLicense -Identity "$($CsUser.UserPrincipalName)"
 
         # Adding Parameters
         $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames
@@ -159,10 +161,10 @@ function Get-TeamsUserVoiceConfig {
       # Adding Provisioning Parameters
       $UserObject | Add-Member -MemberType NoteProperty -Name EnterpriseVoiceEnabled -Value $CsUser.EnterpriseVoiceEnabled
       $UserObject | Add-Member -MemberType NoteProperty -Name HostedVoiceMail -Value $CsUser.HostedVoiceMail
+      $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
       $UserObject | Add-Member -MemberType NoteProperty -Name OnlineVoiceRoutingPolicy -Value $CsUser.OnlineVoiceRoutingPolicy
       $UserObject | Add-Member -MemberType NoteProperty -Name TenantDialPlan -Value $CsUser.TenantDialPlan
       $UserObject | Add-Member -MemberType NoteProperty -Name TelephoneNumber -Value $CsUser.TelephoneNumber
-      $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
       $UserObject | Add-Member -MemberType NoteProperty -Name LineURI -Value $CsUser.LineURI
       $UserObject | Add-Member -MemberType NoteProperty -Name OnPremLineURI -Value $CsUser.OnPremLineURI
       #endregion
@@ -174,8 +176,9 @@ function Get-TeamsUserVoiceConfig {
             # Displaying basic diagnostic parameters (Hybrid)
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremLineURIManuallySet -Value $CsUser.OnPremLineURIManuallySet
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremEnterPriseVoiceEnabled -Value $CsUser.OnPremEnterPriseVoiceEnabled
+            $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsVoiceRoute -Value $CsUser.TeamsVoiceRoute
-            $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
+            $UserObject | Add-Member -MemberType NoteProperty -Name VoiceRoutingPolicy -Value $CsUser.VoiceRoutingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallRoutingPolicy -Value $CsUser.TeamsEmergencyCallRoutingPolicy
           }
 

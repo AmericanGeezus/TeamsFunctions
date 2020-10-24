@@ -4,7 +4,8 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
-#TODO Check Output. Display UPNs in separate line
+
+
 
 function Find-TeamsUserVoiceConfig {
   <#
@@ -168,8 +169,8 @@ function Find-TeamsUserVoiceConfig {
 
     switch ($PsCmdlet.ParameterSetName) {
       "ID" {
-        Write-Verbose -Message "Finding Users with Identity '$Identity': Executing: Get-TeamsUserVoiceConfig" -Verbose
-        Get-TeamsUserVoiceConfig $Identity -DiagnosticLevel 1
+        Write-Verbose -Message "Finding Users with Identity '$Identity': Acting as an Alis to 'Get-TeamsUserVoiceConfig'" -Verbose
+        Get-TeamsUserVoiceConfig $Identity
 
         break
       } #ID
@@ -177,27 +178,26 @@ function Find-TeamsUserVoiceConfig {
       "Tel" {
         foreach ($Number in $PhoneNumber) {
           Write-Verbose -Message "Finding Users with PhoneNumber '$Number': Searching... This will take a bit of time!" -Verbose
-          #Old, slow (5mins!) option. new one is blazing fast.
-          #$Users = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object LineURI -Like "*$Number*"
+          #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
           if ($Users) {
             if ($Users.Count -gt 1) {
-              Write-Verbose -Message "Number: '$Number' - Found multiple Users matching the criteria!" -Verbose
+              Write-Warning -Message "Number: '$Number' - Found multiple Users matching the criteria! If the search string represents a partial number, this is to be expected.`nIf the search string represents a FULL number, it is assigned incorrectly. Inbound calls to this number will not work as Teams will not find a unique match"
+              Write-Verbose -Message "Investigate OnPremLineURI string. Has one of them set an Extension (';ext=') set, the other one not?" -Verbose
             }
 
-            foreach ($User in $Users) {
-              try {
-                Write-Output "Number: '$Number' - Found assigned to: $User"
-                Get-TeamsUserVoiceConfig $User -DiagnosticLevel 1 -ErrorAction SilentlyContinue
-              }
-              catch {
-                Write-Warning -Message "Number: '$Number' - Found assigned to: $User, but cannot display Voice Config! (May be disabled?)"
-              }
+            if ($Users.Count -gt 3) {
+              Write-Verbose -Message "Multiple results found - Displaying UserPrincipalNames only" -Verbose
+              $Users.UserPrincipalName
+            }
+            else {
+              Write-Verbose -Message "Limited results found - Displaying User Voice Configuration for each" -Verbose
+              Get-TeamsUserVoiceConfig $($Users.UserPrincipalName)
             }
           }
           else {
-            Write-Verbose -Message "Number: '$Number' - No Users found" -Verbose
+            Write-Verbose -Message "Number: '$Number' - No assignments found (LineURI)" -Verbose
           }
         }
 
@@ -213,6 +213,9 @@ function Find-TeamsUserVoiceConfig {
         switch ($ConfigurationType) {
           "DirectRouting" {
             Write-Verbose -Message "Returning all Users that are correctly configured for DirectRouting... This will take a bit of time!" -Verbose
+            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+              Write-Verbose -Message "Switch ValidateLicense: Only users with PhoneSystem license are displayed!" -Verbose
+            }
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq "HybridVoice" -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
@@ -231,6 +234,9 @@ function Find-TeamsUserVoiceConfig {
 
           "SkypeHybridPSTN" {
             Write-Verbose -Message "Returning all Users that are correctly configured for SkypeHybridPSTN... This will take a bit of time!" -Verbose
+            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+              Write-Verbose -Message "Switch ValidateLicense: Only users with PhoneSystem license are displayed!" -Verbose
+            }
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq "HybridVoice" -and $null -eq $U.OnlineVoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.VoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
@@ -249,6 +255,9 @@ function Find-TeamsUserVoiceConfig {
 
           "CallingPlans" {
             Write-Verbose -Message "Returning all Users that are correctly configured for CallingPlans... This will take a bit of time!" -Verbose
+            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+              Write-Verbose -Message "Switch ValidateLicense: Only users with CallPlan license are displayed!" -Verbose
+            }
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq "BusinessVoice" -or $null -ne $U.TelephoneNumber) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
