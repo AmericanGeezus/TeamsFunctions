@@ -24,7 +24,7 @@ function Set-TeamsUserLicense {
       .PARAMETER Remove
       Optional. Licenses to be removed (alternative function)
       Accepted Values are listed in $TeamsLicenses.ParameterName
-      .PARAMETER RemoveAllLicenses
+      .PARAMETER RemoveAll
       Optional Switch. Removes all licenses currently assigned (intended for replacements)
       .PARAMETER UsageLocation
       Optional String. ISO3166-Alpha2 CountryCode indicating the Country for the User. Required for Licensing
@@ -46,14 +46,14 @@ function Set-TeamsUserLicense {
       Special Case Scenario to replace a specific license with another.
       Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAllLicenses
+      Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
       Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
       Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
       .EXAMPLE
       Set-TeamsUserLicense -Identity Name@domain.com -Remove PhoneSystem
       Removes the Phone System License from the Object.
       .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -RemoveAllLicenses
+      Set-TeamsUserLicense -Identity Name@domain.com -RemoveAll
       Removes all licenses the Object is currently provisioned for!
       .NOTES
       Many license packages are available, the following Licenses are most predominant:
@@ -320,9 +320,14 @@ function Set-TeamsUserLicense {
         Write-Verbose -Message "NOTE: Currently no checks for Remove Licenses necessary"
       }
 
-      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses') -and -not $PSBoundParameters.ContainsKey('Add')) {
-        Write-Warning -Message "This will leave the Object without ANY License!"
-        if (-not (Get-Consent)) {
+      if ($PSBoundParameters.ContainsKey('RemoveAll') -and -not $PSBoundParameters.ContainsKey('Add')) {
+        Write-Warning -Message "This will leave the Object without a License!"
+        $title = 'Confirm'
+        $question = 'Are you sure you want to proceed?'
+        $choices = '&Yes', '&No'
+
+        $decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)
+        if ($decision -ne 0) {
           throw "No consent given. Aborting execution!"
         }
       }
@@ -338,7 +343,7 @@ function Set-TeamsUserLicense {
     # Querying licenses in the Tenant to compare SKUs
     try {
       Write-Verbose -Message "Querying Licenses from the Tenant" -Verbose
-      $TenantLicenses = Get-TeamsTenantLicense -ErrorAction STOP
+      $TenantLicenses = Get-TeamsTenantLicense -Detailed -ErrorAction STOP
     }
     catch {
       Write-Warning $_
@@ -346,64 +351,6 @@ function Set-TeamsUserLicense {
     }
     #endregion
 
-    Write-Verbose -Message "Processing Licenses:"
-    #region Add
-    if ($PSBoundParameters.ContainsKey('Add')) {
-      Write-Verbose -Message "Parsing 'Add'" -Verbose
-      try {
-        # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
-        [System.Collections.ArrayList]$AddSkuIds = @()
-        foreach ($AddLic in $Add) {
-          $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
-          $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
-          $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('FriendlyName')
-
-          #region Verifying license is available in the Tenant
-          if (-not ($SkuPartNumber -in $($TenantLicenses.SkuPartNumber))) {
-            Write-Error -Message "'$AddLicName' - License not found in the Tenant" -ErrorAction Stop
-          }
-          else {
-            $RemainingLics = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
-            if ($RemainingLics -lt 1) {
-              Write-Error -Message "'$AddLicName' - License found in the Tenant, but no units available" -ErrorAction Stop
-            }
-            else {
-              Write-Verbose -Message "'$AddLicName' - License found in the Tenant. Free unit available!" -Verbose
-            }
-          }
-          #endregion
-
-          [void]$AddSkuIds.Add("$AddSku")
-          Write-Verbose -Message "Preparing License Object: Adding   '$AddLicName'"
-        }
-
-      }
-      catch {
-        throw
-      }
-    }
-    #endregion
-
-    #region Remove
-    if ($PSBoundParameters.ContainsKey('Remove')) {
-      Write-Verbose -Message "Parsing 'Remove'" -Verbose
-      try {
-        # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
-        [System.Collections.ArrayList]$RemoveSkuIds = @()
-        foreach ($RemoveLic in $Remove) {
-          $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
-          $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
-          [void]$RemoveSkuIds.Add("$RemoveSku")
-          Write-Verbose -Message "Preparing License Object: Removing '$RemoveLicName'"
-        }
-      }
-      catch {
-        throw
-      }
-    }
-    #endregion
-
-    # Parsing RemoveAllLicenses is user specific and has to be done in PROCESS
   } #begin
 
   process {
@@ -416,13 +363,13 @@ function Set-TeamsUserLicense {
       }
       catch {
         Write-Error -Message "User Account not valid" -Category ObjectNotFound -RecommendedAction "Verify UserPrincipalName"
-        return
+        continue
       }
 
       # Checking Usage Location is Set
       if ($null -eq $UserObject.UsageLocation) {
         try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-AzureADUser -UsageLocation $UsageLocation")) {
+          if ($PSCmdlet.ShouldProcess("$ID", "Set-AzureADUser -UsageLocation $UsageLocation")) {
             Set-AzureADUser -ObjectId $UserObject.ObjectId -UsageLocation $UsageLocation -ErrorAction Stop
             if ($PSBoundParameters.ContainsKey('UsageLocation')) {
               Write-Verbose -Message "User '$ID' UsageLocation set to $UsageLocation" -Verbose
@@ -433,7 +380,8 @@ function Set-TeamsUserLicense {
           }
         }
         catch {
-          Write-Error -Message "Usage Location not set" -Category InvalidResult -RecommendedAction "Set Usage Location, then try assigning a License again" -ErrorAction Stop
+          Write-Error -Message "Usage Location not set" -Category InvalidResult -RecommendedAction "Set Usage Location, then try assigning a License again"
+          continue
         }
       }
       else {
@@ -441,36 +389,82 @@ function Set-TeamsUserLicense {
       }
       #endregion
 
+      #region License Query from User Object
+      $UserLicenses = Get-AzureADUserLicenseDetail -ObjectId $UserObject.ObjectId -WarningAction SilentlyContinue
 
-      #region RemoveAllLicenses (dependent on Licenses currently on User)
-      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses')) {
-        Write-Verbose -Message "Parsing switch 'RemoveAllLicenses'" -Verbose
+
+
+      #endregion
+
+      Write-Verbose -Message "Processing Licenses"
+      #region Add
+      if ($PSBoundParameters.ContainsKey('Add')) {
+        Write-Verbose -Message "Parsing 'Add'" -Verbose
         try {
-          # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
-          $AllSkus = (Get-AzureADUserLicenseDetail -ObjectId $UserObject.ObjectId -WarningAction SilentlyContinue).SkuPartNumber
+          # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
+          [System.Collections.ArrayList]$AddSkuIds = @()
+          foreach ($AddLic in $Add) {
+            $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
+            $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
+            $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('FriendlyName')
 
-          [System.Collections.ArrayList]$RemoveAllSkuIds = @()
-          foreach ($RemoveLic in $AllSkus) {
-            $RemoveSku = ($AllLicenses | Where-Object SkuPartNumber -EQ $RemoveLic).('SkuId')
-            $RemoveLicName = ($AllLicenses | Where-Object SkuPartNumber -EQ $RemoveLic).('FriendlyName')
-            [void]$RemoveAllSkuIds.Add("$RemoveSku")
-            Write-Verbose -Message "Preparing License Object: Removing '$RemoveLicName'"
+            # Verifying license is available in the Tenant
+            if (-not ($SkuPartNumber -in $($TenantLicenses.SkuPartNumber))) {
+              Write-Error -Message "Adding License '$AddLicName' - License not found in the Tenant"
+              continue
+            }
+            else {
+              $RemainingLics = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
+              if ($RemainingLics -lt 1) {
+                Write-Error -Message "Adding License '$AddLicName' - License found in the Tenant, but no units available"
+                continue
+              }
+              else {
+                Write-Verbose -Message "Adding License '$AddLicName' - License found in the Tenant. Free unit available!" -Verbose
+              }
+            }
+
+            # Verifying user has not already this license assigned
+            if ($SkuPartNumber -in $UserLicenses.SkuPartNumber) {
+              Write-Warning -Message "Adding License '$AddLicName' - License already assigned to the User, omitting!"
+            }
+            else {
+              Write-Verbose -Message "Adding License '$AddLicName' - License not assigned, adding to list"
+              [void]$AddSkuIds.Add("$AddSku")
+            }
           }
 
-          <# Alternative
-              $RemoveAllSkuIds = Get-AzureADUser -ObjectID $ID | Select-Object -ExpandProperty AssignedLicenses | Select-Object SkuID
-              [System.Collections.ArrayList]$RemoveAllSkuIds = @()
-              foreach ($Lic in $RemoveAllSkuIds) {
-              Write-Verbose -Message "Preparing License Object: Removing Sku '$Lic'"
-              }
-          #>
         }
         catch {
-          Write-Error -Message "Remove all Licenses failed" -Category InvalidOperation -RecommendedAction "Remove licenses manually or individually before trying again"
-          return
+          throw
         }
       }
       #endregion
+
+      #region Remove
+      if ($PSBoundParameters.ContainsKey('Remove')) {
+        Write-Verbose -Message "Parsing 'Remove'" -Verbose
+        try {
+          # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
+          [System.Collections.ArrayList]$RemoveSkuIds = @()
+          foreach ($RemoveLic in $Remove) {
+            $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
+            $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
+            if ($RemoveSku -in $UserLicenses.SkuId) {
+              Write-Verbose -Message "Removing License '$RemoveLicName' - License assigned, adding to list"
+              [void]$RemoveSkuIds.Add("$RemoveSku")
+            }
+            else {
+              Write-Warning -Message "Removing License '$RemoveLicName' - License not assigned to the User, omitting!"
+            }
+          }
+        }
+        catch {
+          throw
+        }
+      }
+      #endregion
+
 
       #region Creating User specific License Object
       $NewLicenseObjParameters = $null
@@ -480,20 +474,31 @@ function Set-TeamsUserLicense {
       if ($PSBoundParameters.ContainsKey('Remove')) {
         $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveSkuIds }
       }
-      if ($PSBoundParameters.ContainsKey('RemoveAllLicenses')) {
-        $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveAllSkuIds }
+      if ($PSBoundParameters.ContainsKey('RemoveAll')) {
+        $NewLicenseObjParameters += @{'RemoveSkuId' = $UserLicenses.SkuId }
       }
+
+      #<#DEBUG
+      Write-Host "NewLicenseObjParameters"
+      $NewLicenseObjParameters
+      #>
 
       $LicenseObject = New-AzureAdLicenseObject @NewLicenseObjParameters
       Write-Verbose -Message "Creating License Object: Done"
       #endregion
 
       # Executing Assignment
+
+      #<#DEBUG
+      Write-Host "NewLicenseObjParameters Output"
+      $LicenseObject
+      #>
+
       if ($PSCmdlet.ShouldProcess("$ID", "Set-AzureADUserLicense")) {
         #Assign $LicenseObject to each User
-        Write-Verbose -Message "'$ID' - Applying License"
+        Write-Verbose -Message "'$ID' - Setting Licenses"
         Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject
-        Write-Verbose -Message "'$ID' - Applying License: Done"
+        Write-Verbose -Message "'$ID' - Setting Licenses: Done"
       }
     }
   } #process

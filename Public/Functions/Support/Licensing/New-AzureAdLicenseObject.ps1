@@ -68,13 +68,11 @@ function New-AzureAdLicenseObject {
 
     # Creating AddLicenses
     if ($PSBoundParameters.ContainsKey('SkuId')) {
-      $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
       foreach ($Sku in $SkuId) {
+        $AddLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
         $AddLicenseObj.SkuId += $Sku
-      }
 
-      if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "AddLicenses")) {
-        $newLicensesObj.AddLicenses = $AddLicenseObj
+        $newLicensesObj.AddLicenses += $AddLicenseObj
       }
     }
     else {
@@ -83,14 +81,7 @@ function New-AzureAdLicenseObject {
 
     # Creating RemoveLicenses
     if ($PSBoundParameters.ContainsKey('RemoveSkuId')) {
-      $RemoveLicenseObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicense
-      foreach ($Sku in $RemoveSkuId) {
-        $RemoveLicenseObj.SkuId += $Sku
-      }
-
-      if ($PSCmdlet.ShouldProcess("New License Object: Microsoft.Open.AzureAD.Model.AssignedLicenses", "RemoveLicenses")) {
-        $newLicensesObj.RemoveLicenses += $RemoveLicenseObj
-      }
+      $newLicensesObj.RemoveLicenses = $RemoveSkuId
 
     }
 

@@ -90,14 +90,6 @@ function Get-TeamsUserVoiceConfig {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-    # Setting Preference for Error and Warning Action if not provided
-    if (-not $PSBoundParameters.ContainsKey('ErrorAction')) {
-      #$ErrorActionPreference = "Stop"
-    }
-    if (-not $PSBoundParameters.ContainsKey('WarningAction')) {
-      $WarningPreference = "Continue"
-    }
-
   } #begin
 
   process {
