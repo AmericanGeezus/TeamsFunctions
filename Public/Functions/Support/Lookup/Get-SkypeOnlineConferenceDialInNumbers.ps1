@@ -1,8 +1,11 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Lookup
-# Author: Jeff Brown
+# Author:     Jeff Brown
 # Updated:    03-MAY-2020
 # Status:     Unmanaged
+
+
+
 
 function Get-SkypeOnlineConferenceDialInNumbers {
   <#
@@ -21,6 +24,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 	.NOTES
 		This function was taken 1:1 from SkypeFunctions and remains untested for Teams
 	#>
+
   [CmdletBinding()]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Enter the domain name to gather the available conference dial-in numbers")]

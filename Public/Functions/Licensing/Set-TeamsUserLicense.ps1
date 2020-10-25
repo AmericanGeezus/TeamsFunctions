@@ -478,22 +478,11 @@ function Set-TeamsUserLicense {
         $NewLicenseObjParameters += @{'RemoveSkuId' = $UserLicenses.SkuId }
       }
 
-      #<#DEBUG
-      Write-Host "NewLicenseObjParameters"
-      $NewLicenseObjParameters
-      #>
-
       $LicenseObject = New-AzureAdLicenseObject @NewLicenseObjParameters
       Write-Verbose -Message "Creating License Object: Done"
       #endregion
 
       # Executing Assignment
-
-      #<#DEBUG
-      Write-Host "NewLicenseObjParameters Output"
-      $LicenseObject
-      #>
-
       if ($PSCmdlet.ShouldProcess("$ID", "Set-AzureADUserLicense")) {
         #Assign $LicenseObject to each User
         Write-Verbose -Message "'$ID' - Setting Licenses"

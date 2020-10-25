@@ -48,10 +48,14 @@ $ADuser = Get-AzureADUser -ObjectId $ACC
 Set-AzureADUserLicense -ObjectId $ADuser.ObjectId -AssignedLicenses $Object3
 Set-AzureADUserLicense -ObjectId $ADuser.ObjectId -AssignedLicenses $Object4
 
+
+Set-TeamsUserLicense -Identity $Acc -Add Office365E3, PhoneSystem
 Set-TeamsUserLicense -Identity $Acc -Add Office365E3
 Set-TeamsUserLicense -Identity $Acc -Add PhoneSystem
+
 Set-TeamsUserLicense -Identity $Acc -Remove Office365E3, PhoneSystem
-Set-TeamsUserLicense -Identity $Acc -Add Office365E5 -RemoveAll -Verbose -Debug
+
+Set-TeamsUserLicense -Identity $Acc -Add Office365E5 -RemoveAll -Verbose
 
 Set-TeamsUserLicense -Identity $Acc -RemoveAll -Verbose -Debug
 Get-TeamsUserLicense -Identity $acc
