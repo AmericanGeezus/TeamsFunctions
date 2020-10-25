@@ -376,8 +376,8 @@ function Set-TeamsResourceAccount {
         }
         else {
           try {
-            if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-TeamsUserLicense -AddLicenses PhoneSystemVirtualUser")) {
-              $null = (Set-TeamsUserLicense -Identity $UserPrincipalName -AddLicenses $License -ErrorAction STOP)
+            if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-TeamsUserLicense -Add PhoneSystemVirtualUser")) {
+              $null = (Set-TeamsUserLicense -Identity $UserPrincipalName -Add $License -ErrorAction STOP)
               Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
               $IsLicensed = $true
             }
@@ -390,8 +390,8 @@ function Set-TeamsResourceAccount {
       }
       else {
         try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses $License")) {
-            $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
             Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
             $IsLicensed = $true
           }

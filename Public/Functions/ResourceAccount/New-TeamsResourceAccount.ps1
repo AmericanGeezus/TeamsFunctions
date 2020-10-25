@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
-#CHECK Detection of License! 6m finding nothing. BUt Phone Number application works!
+
 
 
 function New-TeamsResourceAccount {
@@ -278,8 +278,8 @@ function New-TeamsResourceAccount {
         }
         else {
           try {
-            if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicenses PhoneSystemVirtualUser")) {
-              $null = (Set-TeamsUserLicense -Identity $UPN -AddLicenses $License -ErrorAction STOP)
+            if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add PhoneSystemVirtualUser")) {
+              $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
               Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
               $IsLicensed = $true
             }
@@ -292,8 +292,8 @@ function New-TeamsResourceAccount {
       }
       else {
         try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -AddLicense $License")) {
-            $null = (Set-TeamsUserLicense -Identity $UPN -AddLicense $License -ErrorAction STOP)
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
             Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'" -Verbose
             $IsLicensed = $true
           }

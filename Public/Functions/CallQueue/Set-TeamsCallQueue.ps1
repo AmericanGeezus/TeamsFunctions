@@ -987,6 +987,7 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
       foreach ($User in $Users) {
         #FIXME Stops if User not found - TEST? - Separate into a TRY? Break out into seaparate function!
+        # TRY / CATCH with CONTINUE should do the trick.
         if ( Test-AzureADUser $User ) {
           $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
           $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV
