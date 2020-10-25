@@ -2,6 +2,33 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
+## v20.10.25-prerelease
+
+- **NEW Functions**
+  - Get-TeamsOVP: Querying OnlineVoiceRoutingPolicies quickly (Names only, excluding Global)
+  - Get-TeamsTDP: Querying TenantDialPlans quickly (Names only, excluding Global)
+- **Fixes for VoiceConfig Scripts**
+  - `Get-TeamsUserVoiceConfig`: Slightly restructured output (added TeamsUpgradePolicy into the Main output to avoid having to use -Level 1 all the time myself). <br />Improved output and pipelining. Script does not perform a hard stop on the first incorrect UPN (by using `Continue` inside ForEach blocks to skip current item and move to the next in ForEach). This will have to be applied to all Scripts that work with lookups to improve stability
+  - `Find-TeamsUserVoiceConfig`: Better output for the `-TelephoneNumber` switch
+- **Fixes for CallQueue Scripts**
+  - `New-TeamsCallQueue`: Extended the waiting period between Applying a License and adding the Phone Number to 10 mins (600s) as it takes longer than 6 mins to come back green.
+  - `Set-TeamsCallQueue`: Same as above
+- **Fixes for ResourceAccount Scripts**
+  - `Set-TeamsResourceAccount`: Catch block for `ApplicationInstanceManagementException` removed
+- **Fixes for License Scripts**
+  - `Set-TeamsUserLicense`: Major overhaul of the function. Now working correctly for multiple licenses on Add and Remove. Updated documentation and corrected a few issues discovered due to renaming VariableNames.
+- **Fixes for Helper Functions**
+  - `Import-TeamsAudioFile`: Output type was not recognised properly with led to File Imports in AutoAttendants and CallQueues not working as intended. Temporarily fixed.
+- **Fixes for Private Functions**
+  - `Show-FunctionStatus` now also has the Level RC. Pre-Live will now log verbose messages quietly, thus significantly reducing Verbose noise. RC will display more. Order: Alpha > Beta > RC > PreLive > Live | Unmanaged, Deprecated
+  - `Get-SkuIdFromSkuPartNumber` now provides multiple Outputs for multiple inputs (used in Licensing)
+  - `Get-SkuPartNumberFromSkuId` now provides multiple Outputs for multiple inputs
+  - New-AzureAdLicenseObject now correctly provides a License Object for Add and Remove licenses. Remove requires SkuIds only. Add requires a License Object. That Object only supported singular licenses for it to work. Pipelined properly now. :)
+  -
+- **Testing**
+  - Pester testing on PowerShell 7.1.0-rc.2 - Currently hampered by `Unblock-File` not working as intended. [Issue #13869](https://github.com/PowerShell/PowerShell/issues/13869) raised
+  - Preparation to use CodeCoverage
+
 ## v20.10.18-prerelease
 
 This is a big internal shift from a Module of ONE file of 13k+ lines of code to separate PS1 files dot-sourced into the main Module.
