@@ -20,13 +20,13 @@ function GetApplicationTypeFromAppId {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    #Show-FunctionStatus -Level Live
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     switch ($CsAppId) {
       "11cd3e2e-fccb-42ad-ad00-878b93575e07" { $CsApplicationType = "CallQueue" }
@@ -38,7 +38,7 @@ function GetApplicationTypeFromAppId {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
   } #end
 
 } #GetApplicationTypeFromAppId

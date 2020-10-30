@@ -44,16 +44,11 @@ if ($MyInvocation.CommandOrigin -eq "Runspace") {
     #Assert
 }
 
-#TODO Change Stop to $ErrorAction and query/set in Begin to adhere to value being used. Same for Warningaction
-#TODO Repeat for EVERY Script!
-Template: Get-TeamsUserVoiceConfig
-
+#CHECK evaluate how to be able to adhere to $ErrorAction and $WarningActionPreference if needed (this was used in Get-TeamsUserVoiceConfig but abandonded there (no need as loop exit was found (Continue)))
 
 ## Evaluate Export to CLIXML
 
 UCaaSMsolBackup - Module to import
-
-
 
 $i = Import-Clixml -Path "XML FILE"
 

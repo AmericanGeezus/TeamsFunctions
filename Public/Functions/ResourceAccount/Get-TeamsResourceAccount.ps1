@@ -173,19 +173,20 @@ function Get-TeamsResourceAccount {
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
         $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
 
+
         # Parsing CsOnlineUser
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy"
         try {
-          $CsOnlineUser = Get-CsOnlineUser $ResourceAccount.UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Stop
+          $CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object OnlineVoiceRoutingPolicy
         }
         catch {
-          #CHECK why? User disabled?
           Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy FAILED. CsOnlineUser not found" -Verbose
         }
 
+
         # Parsing TeamsUserLicense
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: User Licenses"
-        $ResourceAccountLicense = Get-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName
+        $ResourceAccountLicense = Get-TeamsUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
 
         # Phone Number Type
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"

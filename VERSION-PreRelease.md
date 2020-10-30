@@ -2,6 +2,14 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
+## v20.10.31-prerelease? | v20.11
+
+- **Fixes**
+  - TBA
+- **Improvements**
+  - `Get-TeamsResourceAccountAssociation` and `Get-TeamsResourceAccount`: Performance improvements, code cleanup
+  - `Get-TeamsResourceAccountAssociation`: Added StatusType to Output Object
+
 ## v20.10.25-prerelease
 
 - **NEW Functions**
