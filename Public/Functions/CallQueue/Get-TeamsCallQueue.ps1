@@ -264,7 +264,7 @@ function Get-TeamsCallQueue {
             Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
             foreach ($DL in $Q.DistributionLists) {
               $DLObject = Get-AzureADGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
-              Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
+              #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
               [void]$DLObjects.Add($DLObject)
             }
             # Output: $DLObjects.DisplayName
@@ -342,7 +342,8 @@ function Get-TeamsCallQueue {
 
             # Adding Agent Information
             $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
-            $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLObjects #.DisplayName
+            $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLObjects.DisplayName
+            #$QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLObjects #.DisplayName
             $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
             $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
             $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped

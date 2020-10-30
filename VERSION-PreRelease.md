@@ -5,7 +5,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ## v20.10.31-prerelease? | v20.11
 
 - **Fixes**
-  - TBA
+  - `Get-TeamsCallQueue`: Refresh for Output. Improvement of Get-CsCallQueue means: updates required. Get-CsCallQueue now has improved display for File parameters. Changing Parameter `ConciseView` to `Detailed` instead. Default now displays a smaller object (SharedVoicemail Parameters are only shown with `Detailed` or if the Target is actually 'SharedVoicemail'). Diagnostic Parameters only with `Detailed`
+  - `Import-TeamsAudioFile`: Fixed an issue where the Output was only the word "HuntGroup".
 - **Improvements**
   - `Get-TeamsResourceAccountAssociation` and `Get-TeamsResourceAccount`: Performance improvements, code cleanup
   - `Get-TeamsResourceAccountAssociation`: Added StatusType to Output Object
