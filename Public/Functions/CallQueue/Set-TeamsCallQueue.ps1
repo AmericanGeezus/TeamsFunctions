@@ -429,7 +429,6 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
-    #CHECK: Run Set-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed)
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($WelcomeMusicAudioFile -eq "$null") {
         $Parameters += @{'WelcomeMusicAudioFileId' = "$null" }
@@ -1024,11 +1023,16 @@ function Set-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
       foreach ($User in $Users) {
-        #FIXME Stops if User not found - TEST? - Separate into a TRY? Break out into seaparate function!
-        # TRY / CATCH with CONTINUE should do the trick.
         if ( Test-AzureADUser $User ) {
-          $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
-          $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV
+          try {
+            $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
+            $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV
+          }
+          catch {
+            Write-Error -Message "User '$User' not found" -ErrorAction CONTINUE
+            Continue
+          }
+
           if ( -not $IsLicensed  ) {
             Write-Warning -Message "User '$User' found but not licensed (PhoneSystem). Omitting User"
           }
