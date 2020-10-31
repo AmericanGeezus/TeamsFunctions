@@ -20,7 +20,7 @@ function Get-TeamsCallQueue {
     If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
   .PARAMETER Detailed
     Optional Switch. Displays all Parameters of the CallQueue
-    For better visibility, parameters relating to Ids and Diagnostic Parameters are not shown.
+    This also shows parameters relating to Ids and Diagnostic Parameters.
 	.EXAMPLE
 		Get-TeamsCallQueue
 		Same result as Get-CsCallQueue
@@ -358,8 +358,8 @@ function Get-TeamsCallQueue {
               $QueueObject | Add-Member -MemberType NoteProperty -Name Description -Value $Q.Description
             }
 
-              # Adding Resource Accounts
-              $QueueObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.Userprincipalname
+            # Adding Resource Accounts
+            $QueueObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.Userprincipalname
             #endregion
 
             # Output
