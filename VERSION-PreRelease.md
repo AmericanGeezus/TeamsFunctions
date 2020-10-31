@@ -4,9 +4,15 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## v20.10.31-prerelease? | v20.11
 
-- **Fixes**
-  - `Get-TeamsCallQueue`: Refresh for Output. Improvement of Get-CsCallQueue means: updates required. Get-CsCallQueue now has improved display for File parameters. Changing Parameter `ConciseView` to `Detailed` instead. Default now displays a smaller object (SharedVoicemail Parameters are only shown with `Detailed` or if the Target is actually 'SharedVoicemail'). Diagnostic Parameters only with `Detailed`
-  - `Import-TeamsAudioFile`: Fixed an issue where the Output was only the word "HuntGroup".
+- **Updated**
+  - `Get-TeamsAutoAttendant`: Expanded on the existing output. Added Switch `Detailed` which additionally displays all nested Objects (and their nested Objects). Full AutoAttendant configuration at (nearly) one glance.
+  - `Get-TeamsCallQueue`: Reworked Output completely. Get-CsCallQueue has surfaced more parameters and displays File parameters better.
+    - After changing the design principle from *expansive-by-default* to *concise-by-default* for GET-Commands, the following change was necessary to bring it in line.
+    - Removed Parameter `ConciseView` as the default Output now displays a concise object.
+    - Added Parameter `Detailed` which will display all Parameters for the Call Queue. This includes *SharedVoiceMail*-Parameters and *Diagnostic*-Parameters.
+    - NOTE: SharedVoicemail Parameters are always shown with `Detailed`. They are, however shown if the Target is actually 'SharedVoicemail'
+- **Fixed**
+  - `Import-TeamsAudioFile`: Fixed an issue where the Output was only the word "HuntGroup". Mea culpa.
 - **Improvements**
   - `Get-TeamsResourceAccountAssociation` and `Get-TeamsResourceAccount`: Performance improvements, code cleanup
   - `Get-TeamsResourceAccountAssociation`: Added StatusType to Output Object
