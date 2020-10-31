@@ -35,9 +35,7 @@
   20.08       AUG 2020 Release - Added new License Functions, Shared Voicemail Support for TeamsCalLQueue
   20.09       SEP 2020 Release - Bugfixes
   20.10       OCT 2020 Release - Added TeamsUserVoiceConfig & TeamsAutoAttendant Functions
-
-  20.10.xx-prerelease  Restructured TeamsFunctions in order to prepare it for adding Pester tests.
-              Adding Folder Structure Private/Public with Subfolders Functions & Tests
+  20.11       NOV 2020 Release - Restructuring, Bugfixes and general overhaul. Also more Pester-Testing
 
 #>
 

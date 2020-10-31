@@ -2,7 +2,11 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v20.10.31-prerelease? | v20.11
+## v20.11.06-prerelease
+
+---------------------------------------------
+
+## v20.11
 
 - **Updated**
   - `Get-TeamsAutoAttendant`: Expanded on the existing output. Added Switch `Detailed` which additionally displays all nested Objects (and their nested Objects). Full AutoAttendant configuration at (nearly) one glance.
@@ -20,13 +24,13 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ## v20.10.25-prerelease
 
 - **NEW Functions**
-  - Get-TeamsOVP: Querying OnlineVoiceRoutingPolicies quickly (Names only, excluding Global)
-  - Get-TeamsTDP: Querying TenantDialPlans quickly (Names only, excluding Global)
+  - `Get-TeamsOVP`: Querying OnlineVoiceRoutingPolicies quickly (Names only, excluding Global)
+  - `Get-TeamsTDP`: Querying TenantDialPlans quickly (Names only, excluding Global)
 - **Fixes for VoiceConfig Scripts**
   - `Get-TeamsUserVoiceConfig`: Slightly restructured output (added TeamsUpgradePolicy into the Main output to avoid having to use -Level 1 all the time myself). <br />Improved output and pipelining. Script does not perform a hard stop on the first incorrect UPN (by using `Continue` inside ForEach blocks to skip current item and move to the next in ForEach). This will have to be applied to all Scripts that work with lookups to improve stability
   - `Find-TeamsUserVoiceConfig`: Better output for the `-TelephoneNumber` switch
 - **Fixes for CallQueue Scripts**
-  - `New-TeamsCallQueue`: Extended the waiting period between Applying a License and adding the Phone Number to 10 mins (600s) as it takes longer than 6 mins to come back green.
+  - `New-TeamsCallQueue`: Extended the waiting period between Applying a License and adding the Phone Number to 10 mins (600s) as it takes longer than 6 mins to come back ok.
   - `Set-TeamsCallQueue`: Same as above
 - **Fixes for ResourceAccount Scripts**
   - `Set-TeamsResourceAccount`: Catch block for `ApplicationInstanceManagementException` removed
