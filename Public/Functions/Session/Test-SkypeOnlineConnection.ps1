@@ -28,12 +28,12 @@ function Test-SkypeOnlineConnection {
 
   begin {
     Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     $Sessions = Get-PSSession -WarningAction SilentlyContinue
     if ([bool]($Sessions.Computername -match "online.lync.com")) {
@@ -51,7 +51,7 @@ function Test-SkypeOnlineConnection {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
   } #end
 
 } #Test-SkypeOnlineConnection

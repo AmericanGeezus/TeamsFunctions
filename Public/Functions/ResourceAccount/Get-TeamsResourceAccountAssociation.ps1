@@ -46,7 +46,7 @@ function Get-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
     # Asserting AzureAD Connection
@@ -121,8 +121,9 @@ function Get-TeamsResourceAccountAssociation {
           UserPrincipalName = $Account.UserPrincipalName
           ConfigurationType = $ApplicationType
           Status            = $AssociationStatus.Status
-          StatusCode        = $AssociationStatus.StatusCode
+          StatusType        = $AssociationStatus.Type
           StatusMessage     = $AssociationStatus.Message
+          StatusCode        = $AssociationStatus.StatusCode
           StatusTimeStamp   = $AssociationStatus.StatusTimestamp
           AssociatedTo      = $AssocObject.Name
         }

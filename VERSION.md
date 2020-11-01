@@ -3,6 +3,43 @@
 I decided to break this out into its own file as it grows ever so consistently as the Module itself.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v20.11 - November 2020 release
+
+### New Functions
+
+Two small helper functions are coming to the fold. They mainly help you type less: `Get-TeamsOVP` for finding Online Voice Routing Policies and `Get-TeamsTDP` for finding Tenant Dial Plans (except the Global ones).
+
+### Major Overhaul
+
+New Module structure means debugging gets easier and testing becomes an option. This is a big internal shift from a Module of ONE file of 13k+ lines of code to separate PS1 files dot-sourced into the main Module.
+While the one-file approach was managable with regions, it was a bit tiresome to scroll all the time...
+
+Limiting the Scope to one function per file also means that I can - finally - use the debugger in VScode. This will help me find variable states easier and not rely on the ISE Steroids and live testing that much. Speaking of testing, I am now also in a position to write tests for individual Functions.
+
+### Updated Functions & Bugfixes
+
+- `Get-TeamsCallQueue`: Reworked Output completely. Get-CsCallQueue has surfaced more parameters and displays File parameters better. After changing the design principle from *expansive-by-default* to *concise-by-default* for GET-Commands, the following change was necessary to bring it in line. Removed Parameter `ConciseView` as the default Output now displays a concise object and added Added Parameter `Detailed` instead.
+- `Get-TeamsAutoAttendant`: Expanded on the existing output. Added Switch `Detailed` which additionally displays all nested Objects (and their nested Objects)
+- `Get-TeamsUserVoiceConfig`: Slightly restructured output
+- `Find-TeamsUserVoiceConfig`: Better output for the `-TelephoneNumber` switch
+- `New-TeamsCallQueue`: Extended the waiting period between Applying a License and adding the Phone Number to 10 mins (600s) as it takes longer than 6 mins to come back ok.
+- `Set-TeamsCallQueue`: Same as above
+- `Import-TeamsAudioFile`: Fixed a few issues with this one. First, the OutputType was not liked, then my use of the Return-Command meant that the only Output was the word "HuntGroup".
+- Multiple Scripts now don't stop when they shouldn't
+- `Get-TeamsResourceAccountAssociation`: Performance improvements, code cleanup & added StatusType to Output
+- `Get-TeamsResourceAccount`: Performance improvements
+- `Show-FunctionStatus` now also has the Level RC. Pre-Live will now log verbose messages quietly, thus  significantly reducing Verbose noise. RC will display more. Order: Alpha > Beta > RC > PreLive > Live | Unmanaged, Deprecated
+
+### Other Improvements
+
+- Pester Testing
+  - Current Status: Tests Passed: 779, Failed: 0, Skipped: 0 NotRun: 0<br />These are for the most part structural Module tests to enforce design principals and lets me not forget to use CmdLetBinding and other goodies in my code. More individual tests still to come.
+  - I excluded the test to validate all files have Tests-Files, otherwise I would have 70+ Failures here...
+  - These are - mostly Module related tests, meaning verifying that I have CmdLetBinding, Begin/Process/End blocks, etc.
+  - More tests will be added once I have figured out Mocking.
+- Code Signing - The Module itself is now code-signed, this means:
+- PowerShell 7 support. Having installed v7.1.0-RC2 (which solves the issue with SkypeOnlineConnector not being able to be loaded), I will now test on both v5.1 and v7.1
+
 ## v20.10 - October 2020 release
 
 *More, we need more!*

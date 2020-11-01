@@ -434,7 +434,6 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
-    #CHECK: Run New-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed) = Continue
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
         # Validation - File Exists
@@ -1078,9 +1077,14 @@ function New-TeamsCallQueue {
 
 
     #region ACTION
+    # DEBUG Information
+    if ($PSBoundParameters.ContainsKey("Debug")) {
+      Write-Debug "Parameters to be applied:"
+      $Parameters
+    }
+
     # Create CQ (New-CsCallQueue)
     Write-Verbose -Message "'$NameNormalised' Creating Call Queue"
-    $Parameters
     if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "New-CsCallQueue")) {
       try {
         # Create the Call Queue with all enumerated Parameters passed through splatting

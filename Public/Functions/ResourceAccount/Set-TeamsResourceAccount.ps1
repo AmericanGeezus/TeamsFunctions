@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
-#CHECK Detection of License! 6m finding nothing. BUt Phone Number application works!
+
 
 
 function Set-TeamsResourceAccount {

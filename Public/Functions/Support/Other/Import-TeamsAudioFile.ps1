@@ -68,8 +68,8 @@ function Import-TeamsAudioFile {
 
     # remodelling ApplicationType to ApplicationId
     $ApplicationId = switch ($ApplicationType) {
-      'CallQueue' { Return 'HuntGroup' }
-      'AutoAttendant' { Return 'OrgAutoAttendant' }
+      'CallQueue' { 'HuntGroup' }
+      'AutoAttendant' { 'OrgAutoAttendant' }
     }
 
     try {
@@ -86,10 +86,7 @@ function Import-TeamsAudioFile {
       return $AudioFile
     }
     catch {
-      Write-Host "Error importing file - Please check file size and compression ratio. If in doubt, provide WAV "
-      # Writing Error Record in human readable format. Prepend with Custom message
-      Write-ErrorRecord $_
-      return
+      Write-Error "Importing file failed - Please check file size and compression ratio. If in doubt, provide in WAV Format" -ErrorAction Stop
     }
   } #process
 

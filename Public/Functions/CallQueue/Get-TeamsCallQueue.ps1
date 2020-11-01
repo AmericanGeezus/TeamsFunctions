@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
-#FIXME TimeoutActionTarget not enumerated (User) - Also check OverflowActionTarget for the same (breakout check?)
+
 
 
 function Get-TeamsCallQueue {
@@ -18,15 +18,20 @@ function Get-TeamsCallQueue {
 	.PARAMETER Name
 		Optional. Searches all Call Queues for this name (multiple results possible).
     If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
-  .PARAMETER ConciseView
-    Optional Switch. Displays reduced set of Parameters for better visibility
-    Parameters relating to Language & Shared Voicemail are not shown.
+  .PARAMETER Detailed
+    Optional Switch. Displays all Parameters of the CallQueue
+    This also shows parameters relating to Ids and Diagnostic Parameters.
 	.EXAMPLE
 		Get-TeamsCallQueue
 		Same result as Get-CsCallQueue
 	.EXAMPLE
 		Get-TeamsCallQueue -Name "My CallQueue"
 		Returns an Object for every Call Queue found with the String "My CallQueue"
+		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
+	.EXAMPLE
+		Get-TeamsCallQueue -Name "My CallQueue" -Detailed
+    Returns an Object for every Call Queue found with the String "My CallQueue"
+    Displays additional Parameters used for Diagnostics & Shared Voicemail.
 		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
   .INPUTS
     System.String
@@ -59,7 +64,7 @@ function Get-TeamsCallQueue {
     [AllowNull()]
     [string]$Name,
 
-    [switch]$ConciseView
+    [switch]$Detailed
   ) #param
 
   begin {
@@ -99,9 +104,17 @@ function Get-TeamsCallQueue {
         foreach ($DN in $Name) {
           Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand) - '$DN'"
           # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
-          #$Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP
-          # NOTE: Like AAs, piping to "FL *" can show more information. Here though, there is no benefit
           $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP -WarningVariable $Warnings
+
+          if ( -not $Queues) {
+            $QueueCount = 0
+          }
+          elseif ($($Queues.GetType().BaseType.Name) -eq "Object") {
+            $QueueCount = 1
+          }
+          else {
+            $QueueCount = $Queues.Count
+          }
 
           if ($null -ne $Queues) {
             if ($PSBoundParameters.ContainsKey('ConciseView')) {
@@ -116,7 +129,7 @@ function Get-TeamsCallQueue {
           [System.Collections.ArrayList]$AIObjects = @()
 
           # Reworking Objects
-          Write-Verbose -Message "[PROCESS] Finding parsable Objects for $($Queues.Count) Queues"
+          Write-Verbose -Message "[PROCESS] Finding parsable Objects for $QueueCount Queues"
           foreach ($Q in $Queues) {
             #region Finding OverflowActionTarget
             Write-Verbose -Message "'$($Q.Name)' - Parsing OverflowActionTarget"
@@ -188,7 +201,7 @@ function Get-TeamsCallQueue {
             #endregion
 
             #region Finding TimeoutActionTarget
-            Write-Verbose -Message "'$($Q.Name)' - Parsing OverflowActionTarget"
+            Write-Verbose -Message "'$($Q.Name)' - Parsing TimeoutActionTarget"
             if ($null -eq $Q.TimeoutActionTarget) {
               $TAT = $null
             }
@@ -251,6 +264,7 @@ function Get-TeamsCallQueue {
             Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
             foreach ($DL in $Q.DistributionLists) {
               $DLObject = Get-AzureADGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
+              #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
               [void]$DLObjects.Add($DLObject)
             }
             # Output: $DLObjects.DisplayName
@@ -286,78 +300,66 @@ function Get-TeamsCallQueue {
             #region Creating Output Object
             Write-Verbose -Message "'$($Q.Name)' - Constructing Output Object"
             # Building custom Object with Friendly Names
-            if ($PSBoundParameters.ContainsKey('ConciseView')) {
-              $QueueObject = [PSCustomObject][ordered]@{
-                Identity                  = $Q.Identity
-                Name                      = $Q.Name
-                UseDefaultMusicOnHold     = $Q.UseDefaultMusicOnHold
-                MusicOnHoldAudioFileName  = $Q.MusicOnHoldFileName
-                WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
-                RoutingMethod             = $Q.RoutingMethod
-                PresenceBasedRouting      = $Q.PresenceBasedRouting
-                AgentAlertTime            = $Q.AgentAlertTime
-                AllowOptOut               = $Q.AllowOptOut
-                ConferenceMode            = $Q.ConferenceMode
-                OverflowThreshold         = $Q.OverflowThreshold
-                OverflowAction            = $Q.OverflowAction
-                OverflowActionTarget      = $OAT
-                OverflowActionTargetType  = $Q.OverflowActionTarget.Type
-
-                TimeoutThreshold          = $Q.TimeoutThreshold
-                TimeoutAction             = $Q.TimeoutAction
-                TimeoutActionTarget       = $TAT
-                TimeoutActionTargetType   = $Q.TimeoutActionTarget.Type
-
-                Users                     = $UserObjects.UserPrincipalName
-                DistributionLists         = $DLObjects.DisplayName
-
-                Agents                    = $AgentObjects.UserPrincipalName
-                ApplicationInstances      = $AIObjects.Userprincipalname
-              }
+            $QueueObject = [PSCustomObject][ordered]@{
+              Identity                  = $Q.Identity
+              Name                      = $Q.Name
+              LanguageId                = $Q.LanguageId
+              UseDefaultMusicOnHold     = $Q.UseDefaultMusicOnHold
+              MusicOnHoldAudioFileName  = $Q.MusicOnHoldFileName
+              WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
+              RoutingMethod             = $Q.RoutingMethod
+              PresenceBasedRouting      = $Q.PresenceBasedRouting
+              AgentAlertTime            = $Q.AgentAlertTime
+              AllowOptOut               = $Q.AllowOptOut
+              ConferenceMode            = $Q.ConferenceMode
+              OverflowThreshold         = $Q.OverflowThreshold
+              OverflowAction            = $Q.OverflowAction
+              OverflowActionTarget      = $OAT
+              OverflowActionTargetType  = $Q.OverflowActionTarget.Type
             }
-            else {
+
+            if ($PSBoundParameters.ContainsKey('Detailed') -or $OverflowActionTargetType -eq 'SharedVoiceMail') {
+              # Displays SharedVoiceMail Parameters only if OverflowActionTargetType is set to SharedVoicemail
+              $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailAudioFilePrompt -Value $Q.OverflowSharedVoicemailAudioFilePrompt
+              $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailAudioFilePromptFileName -Value $Q.OverflowSharedVoicemailAudioFilePromptFileName
+              $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailTextToSpeechPrompt -Value $Q.OverflowSharedVoicemailTextToSpeechPrompt
+              $QueueObject | Add-Member -MemberType NoteProperty -Name EnableOverflowSharedVoicemailTranscription -Value $Q.EnableOverflowSharedVoicemailTranscription
+            }
+
+            # Adding Timeout Parameters
+            $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutThreshold -Value $Q.TimeoutThreshold
+            $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutAction -Value $Q.TimeoutAction
+            $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutActionTarget -Value $TAT
+            $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutActionTargetType -Value $Q.TimeoutActionTarget.Type
+
+            if ($PSBoundParameters.ContainsKey('Detailed') -or $TimeoutActionTargetType -eq 'SharedVoiceMail') {
+              # Displays SharedVoiceMail Parameters only if TimeoutActionTargetType is set to SharedVoicemail
+              $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailAudioFilePrompt -Value $Q.TimeoutSharedVoicemailAudioFilePrompt
+              $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailAudioFilePromptFileName -Value $Q.TimeoutSharedVoicemailAudioFilePromptFileName
+              $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailTextToSpeechPrompt -Value $Q.TimeoutSharedVoicemailTextToSpeechPrompt
+              $QueueObject | Add-Member -MemberType NoteProperty -Name EnableTimeoutSharedVoicemailTranscription -Value $Q.EnableTimeoutSharedVoicemailTranscription
+            }
+
+            # Adding Agent Information
+            $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
+            $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLObjects.DisplayName
+            #$QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLObjects #.DisplayName
+            $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
+            $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
+            $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped
+            $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
+
+            if ($PSBoundParameters.ContainsKey('Detailed')) {
               # Displays all except reserved Parameters (Microsoft Internal)
-              $QueueObject = [PSCustomObject][ordered]@{
-                Identity                                       = $Q.Identity
-                Name                                           = $Q.Name
-                UseDefaultMusicOnHold                          = $Q.UseDefaultMusicOnHold
-                MusicOnHoldAudioFileName                       = $Q.MusicOnHoldFileName
-                WelcomeMusicAudioFileName                      = $Q.WelcomeMusicFileName
-                RoutingMethod                                  = $Q.RoutingMethod
-                PresenceBasedRouting                           = $Q.PresenceBasedRouting
-                AgentAlertTime                                 = $Q.AgentAlertTime
-                AllowOptOut                                    = $Q.AllowOptOut
-                ConferenceMode                                 = $Q.ConferenceMode
-                OverflowThreshold                              = $Q.OverflowThreshold
-                OverflowAction                                 = $Q.OverflowAction
-                OverflowActionTarget                           = $OAT
-                OverflowActionTargetType                       = $Q.OverflowActionTarget.Type
-                OverflowSharedVoicemailAudioFilePrompt         = $Q.OverflowSharedVoicemailAudioFilePrompt
-                OverflowSharedVoicemailAudioFilePromptFileName = $Q.OverflowSharedVoicemailAudioFilePromptFileName
-                OverflowSharedVoicemailTextToSpeechPrompt      = $Q.OverflowSharedVoicemailTextToSpeechPrompt
-                EnableOverflowSharedVoicemailTranscription     = $Q.EnableOverflowSharedVoicemailTranscription
-                TimeoutThreshold                               = $Q.TimeoutThreshold
-                TimeoutAction                                  = $Q.TimeoutAction
-                TimeoutActionTarget                            = $TAT
-                TimeoutActionTargetType                        = $Q.TimeoutActionTarget.Type
-                TimeoutSharedVoicemailAudioFilePrompt          = $Q.TimeoutSharedVoicemailAudioFilePrompt
-                TimeoutSharedVoicemailAudioFilePromptFileName  = $Q.TimeoutSharedVoicemailAudioFilePromptFileName
-                TimeoutSharedVoicemailTextToSpeechPrompt       = $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-                EnableTimeoutSharedVoicemailTranscription      = $Q.EnableTimeoutSharedVoicemailTranscription
-                LanguageId                                     = $Q.LanguageId
-                #LineUri                                    = $Q.LineUri
-                MusicOnHoldAudioFileId                         = $Q.MusicOnHoldAudioFileId
-                WelcomeMusicAudioFileId                        = $Q.WelcomeMusicAudioFileId
-                Users                                          = $UserObjects.UserPrincipalName
-                DistributionLists                              = $DLObjects.DisplayName
-                DistributionListsLastExpanded                  = $Q.DistributionListsLastExpanded
-                AgentsInSyncWithDistributionLists              = $Q.AgentsInSyncWithDistributionLists
-                AgentsCapped                                   = $Q.AgentsCapped
-                Agents                                         = $AgentObjects.UserPrincipalName
-                ApplicationInstances                           = $AIObjects.Userprincipalname
-              }
-
+              $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
+              $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId
+              $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldFileDownloadUri -Value $Q.MusicOnHoldFileDownloadUri
+              $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicFileDownloadUri -Value $Q.WelcomeMusicFileDownloadUri
+              $QueueObject | Add-Member -MemberType NoteProperty -Name Description -Value $Q.Description
             }
+
+            # Adding Resource Accounts
+            $QueueObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.Userprincipalname
             #endregion
 
             # Output

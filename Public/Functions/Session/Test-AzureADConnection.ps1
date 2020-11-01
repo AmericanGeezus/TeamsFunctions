@@ -24,12 +24,12 @@ function Test-AzureADConnection {
 
   begin {
     Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
 
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
 
     try {
       $null = (Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue -ErrorAction STOP)
@@ -42,7 +42,7 @@ function Test-AzureADConnection {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
   } #end
 
 } #Test-AzureADConnection

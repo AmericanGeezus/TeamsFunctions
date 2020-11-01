@@ -137,6 +137,9 @@ function New-TeamsResourceAccountAssociation {
           $ExistingConnection = $null
           #CHECK Query rather with Get-CsOnlineApplicationInstanceAssociation? - Needs ObjectId though! (replicated from Get-TeamsResourceAccountAssociation)
           #TODO Test Performance of GET-TeamsResourceAccountAssociation VS Get-CsOnlineApplicationInstanceAssociation
+          <# Needs testing
+          $ExistingConnection = Get-CsOnlineApplicationInstanceAssociation (Get-AzureAdUser -ObjectId $Account.UserPrincipalName) -WarningAction SilentlyContinue
+          #>
           $ExistingConnection = Get-TeamsResourceAccountAssociation $Account.UserPrincipalName -WarningAction SilentlyContinue
           if ($null -eq $ExistingConnection.AssociatedTo) {
             Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
@@ -207,7 +210,7 @@ function New-TeamsResourceAccountAssociation {
 
         # Processing Auto Attendant
         Write-Verbose -Message "Processing assignment of all Accounts to Auto Attendant"
-        :loop foreach ($Account in $Accounts) {
+        foreach ($Account in $Accounts) {
           # Query existing connection
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - Querying existing associations"
           $ExistingConnection = $null
@@ -219,8 +222,7 @@ function New-TeamsResourceAccountAssociation {
             Write-Verbose -Message "'$($Account.UserPrincipalName)' - This account is already assigned to the following entity:" -Verbose
             $ExistingConnection
             Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
-            #CHECK Whether loop exits properly when an Association can be found!
-            break loop
+            Continue
           }
 
           # Comparing ApplicationType

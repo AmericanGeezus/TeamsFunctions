@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
+
+
+
 function Set-TeamsCallQueue {
   <#
 	.SYNOPSIS
@@ -426,9 +429,11 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
-    #CHECK: Run Set-TeamsCallQueue -WelcomeMusicAudioFile $NULL and make sure the output is OK ($NULL is allowed)
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-      if ($null -ne $WelcomeMusicAudioFile) {
+      if ($WelcomeMusicAudioFile -eq "$null") {
+        $Parameters += @{'WelcomeMusicAudioFileId' = "$null" }
+      }
+      elseif ($null -ne $WelcomeMusicAudioFile) {
         # Validation - File Exists
         try {
           $null = Test-Path $WelcomeMusicAudioFile
@@ -457,7 +462,7 @@ function Set-TeamsCallQueue {
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
         try {
           $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
-          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
+          Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)'"
           $Parameters += @{'WelcomeMusicAudioFileId' = $WMFile.Id }
         }
         catch {
@@ -558,6 +563,9 @@ function Set-TeamsCallQueue {
         if ($OverflowAction -eq "DisconnectWithBusy") {
           #but we don't need one
           Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' does not require an OverflowActionTarget. It will not be processed" -Verbose
+          # Remove OverflowActionTarget if set
+          [void]$PSBoundParameters.Remove('OverflowActionTarget')
+          #$Parameters += @{'OverflowActionTarget' = $null }
         }
         else {
           # OK
@@ -566,6 +574,12 @@ function Set-TeamsCallQueue {
       }
       elseif ($OverflowAction -ne "DisconnectWithBusy") {
         Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction' not set! Parameter OverflowActionTarget missing"
+      }
+      elseif ($OverflowAction -eq "DisconnectWithBusy") {
+        Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget will be removed." -Verbose
+        # Remove OverflowActionTarget if set
+        [void]$PSBoundParameters.Remove('OverflowActionTarget')
+        #$Parameters += @{'OverflowActionTarget' = $null }
       }
       # NEW: Adding Action only with a Target | SET: Adding Action if specified
       $Parameters += @{'OverflowAction' = $OverflowAction }
@@ -716,6 +730,13 @@ function Set-TeamsCallQueue {
         }
       }
     }
+    else {
+      # Verifying whether OverflowAction DisconnectWithBusy is used to blank the Target
+      if ($OverflowAction -eq "DisconnectWithBusy") {
+        # Remove OverflowActionTarget if set
+        [void]$PSBoundParameters.Remove('OverflowActionTarget')
+      }
+    }
     #endregion
 
     #region OverflowAction SharedVoicemail - Processing
@@ -774,6 +795,9 @@ function Set-TeamsCallQueue {
         if ($TimeoutAction -eq "Disconnect") {
           #but we don't need one
           Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' does not require an TimeoutActionTarget. It will not be processed" -Verbose
+          # Remove TimeoutActionTarget if set
+          [void]$PSBoundParameters.Remove('TimeoutActionTarget')
+          #$Parameters += @{'TimeoutActionTarget' = $null }
         }
         else {
           # OK
@@ -782,6 +806,12 @@ function Set-TeamsCallQueue {
       }
       elseif ($TimeoutAction -ne "Disconnect") {
         Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' not set! Parameter TimeoutActionTarget missing"
+      }
+      elseif ($TimeoutAction -eq "Disconnect") {
+        Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget will be removed." -Verbose
+        # Remove TimeoutActionTarget if set
+        [void]$PSBoundParameters.Remove('TimeoutActionTarget')
+        #$Parameters += @{'TimeoutActionTarget' = $null }
       }
       # NEW: Adding Action only with a Target | SET: Adding Action if specified
       $Parameters += @{'TimeoutAction' = $TimeoutAction }
@@ -931,6 +961,13 @@ function Set-TeamsCallQueue {
         }
       }
     }
+    else {
+      # Verifying whether OverflowAction DisconnectWithBusy is used to blank the Target
+      if ($TimeoutAction -eq "Disconnect") {
+        # Remove TimeoutActionTarget if set
+        [void]$PSBoundParameters.Remove('TimeoutActionTarget')
+      }
+    }
     #endregion
 
     #region TimeoutAction SharedVoicemail - Processing
@@ -973,7 +1010,7 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region TimeoutAction Parameter cleanup
-    if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'DisconnectWithBusy')) {
+    if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'Disconnect')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
     }
@@ -986,11 +1023,16 @@ function Set-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
       foreach ($User in $Users) {
-        #FIXME Stops if User not found - TEST? - Separate into a TRY? Break out into seaparate function!
-        # TRY / CATCH with CONTINUE should do the trick.
         if ( Test-AzureADUser $User ) {
-          $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
-          $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV
+          try {
+            $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
+            $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV
+          }
+          catch {
+            Write-Error -Message "User '$User' not found" -ErrorAction CONTINUE
+            Continue
+          }
+
           if ( -not $IsLicensed  ) {
             Write-Warning -Message "User '$User' found but not licensed (PhoneSystem). Omitting User"
           }
@@ -1068,9 +1110,14 @@ function Set-TeamsCallQueue {
 
 
     #region ACTION
+    # DEBUG Information
+    if ($PSBoundParameters.ContainsKey("Debug")) {
+      Write-Debug "Parameters to be applied:"
+      $Parameters
+    }
+
     # Set the Call Queue with all Parameters provided
     Write-Verbose -Message "'$NameNormalised' Applying settings to Call Queue"
-    $Parameters
     if ($PSCmdlet.ShouldProcess("$Name", "Set-CsCallQueue")) {
       $Null = (Set-CsCallQueue @Parameters)
       Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue settings applied"
