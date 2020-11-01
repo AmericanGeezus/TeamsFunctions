@@ -28,7 +28,7 @@ function Merge-AutoAttendantArtefact {
   .INPUTS
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu
-    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption (?)
+    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt
@@ -54,6 +54,7 @@ function Merge-AutoAttendantArtefact {
 
     [Parameter(Mandatory, ParameterSetName = "Menu", HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
     [Parameter(Mandatory, ParameterSetName = "CallFlow", HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
+    [AllowNull()]
     [object[]]$Prompts,
 
     [Parameter(Mandatory, ParameterSetName = "Menu", HelpMessage = "Merged Object of 'MenuOptions' to be added to Menus")]
@@ -101,27 +102,30 @@ function Merge-AutoAttendantArtefact {
       "MenuOption" {
         foreach ($O in $Object) {
           # Enumerating Call Target
-          #TODO - Is this one target Object with a type?
-          # This should be a callable entity: https://docs.microsoft.com/en-us/powershell/module/skype/New-CsAutoAttendantCallableEntity?view=skype-ps
-          # Need to extract function from New-TeamsAutoAttendant first!
-          $CallTargetEntity = switch ($O.CallTarget.Type) {
-            'User' { $(Get-AzureADUser -ObjectId $O.CallTarget.Identity).UserPrincipalName }
-            'ExternalPstn' { $O.CallTarget.Identity }
-            'ApplicationEndpoint ' { $(Get-AzureADUser -ObjectId $O.CallTarget.Identity).UserPrincipalName }
-            'SharedVoicemail' { $(Get-AzureADGroup -ObjectId $O.CallTarget.Identity).DisplayName }
-            'HuntGroup' { $O.CallTarget.Identity }
-            'OrganizationalAutoAttendant' { $O.CallTarget.Identity }
-          }
+          #TODO - Align Get-TeamsAutoAttendantCallableEntity with this one? Maybe extend by searching by type
+          if ($O.CallTarget.Identity) {
+            $CallTargetEntity = switch ($O.CallTarget.Type) {
+              'User' { $(Get-AzureADUser -ObjectId $O.CallTarget.Identity).UserPrincipalName }
+              'ExternalPstn' { $O.CallTarget.Identity }
+              'ApplicationEndpoint ' { $(Get-AzureADUser -ObjectId $O.CallTarget.Identity).UserPrincipalName }
+              'SharedVoicemail' { $(Get-AzureADGroup -ObjectId $O.CallTarget.Identity).DisplayName }
+              'HuntGroup' { $O.CallTarget.Identity }
+              'OrganizationalAutoAttendant' { $O.CallTarget.Identity }
+            }
 
-          $CallTarget = @()
-          $CallTarget = [PsCustomObject][ordered]@{
-            'Entity'   = $CallTargetEntity
-            'Identity' = $O.CallTarget.Identity
-            'Type'     = $O.CallTarget.Type
-          }
+            $CallTarget = @()
+            $CallTarget = [PsCustomObject][ordered]@{
+              'Entity'   = $CallTargetEntity
+              'Identity' = $O.CallTarget.Identity
+              'Type'     = $O.CallTarget.Type
+            }
 
-          Add-Member -Force -InputObject $CallTarget -MemberType ScriptMethod -Name ToString -Value {
-            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            Add-Member -Force -InputObject $CallTarget -MemberType ScriptMethod -Name ToString -Value {
+              [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            }
+          }
+          else {
+            $CallTarget = $null
           }
 
           # Creating Object
@@ -131,7 +135,6 @@ function Merge-AutoAttendantArtefact {
             'DtmfResponse'   = $O.DtmfResponse
             'VoiceResponses' = $O.VoiceResponses
             'CallTarget'     = $CallTarget
-            #'CallTarget'     = $O.CallTarget  #TODO Enumerate Call Target with breakout-function - Return DisplayName (as Operator above!)
             'Prompt'         = $O.Prompt
           }
 
@@ -211,6 +214,7 @@ function Merge-AutoAttendantArtefact {
             1 {
               # Schedule Type is Fixed
               $WeeklyRecurrentSchedule = $null
+              #CHECK whether multiple Fixed ones require a ForEach
               <# Alt: Broken out into individual Start/End blocks
                 $FixedSchedule = @()
                 foreach ($Range in $Schedule.FixedSchedule) {

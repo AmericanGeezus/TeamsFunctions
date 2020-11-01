@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
+
+
+
 function Get-TeamsAutoAttendant {
   <#
 	.SYNOPSIS
@@ -114,6 +117,7 @@ function Get-TeamsAutoAttendant {
             }
             else {
               # Parsing Callable Entity
+              #TODO Get-TeamsAutoAttendantCallableEntity can be used to do this, if it can search by type (needs to be extended first though)
               switch ($AA.Operator.Type) {
                 "User" {
                   try {
@@ -235,179 +239,80 @@ function Get-TeamsAutoAttendant {
               Write-Verbose -Message "'$($AA.Name)' - Constructing Output Object with Switch 'Detailed' - This may take a bit..." -Verbose
 
               #region Operator
-              $OperatorObject # Construct new Object with Add-Member and display that
               Write-Verbose -Message "Parsing Operator"
-              $AAOperator = @()
-              $AAOperator = [PsCustomObject][ordered]@{
-                'Entity'              = $Operator
-                'Type'                = $AA.Operator.Type
-                'EnableTranscription' = $AA.Operator.EnableTranscription
-                'Id'                  = $AA.Operator.Id
+              if ($AA.Operator) {
+                $AAOperator = @()
+                $AAOperator = [PsCustomObject][ordered]@{
+                  'Entity'              = $Operator
+                  'Type'                = $AA.Operator.Type
+                  'EnableTranscription' = $AA.Operator.EnableTranscription
+                  'Id'                  = $AA.Operator.Id
+                }
+                Add-Member -Force -InputObject $AAOperator -MemberType ScriptMethod -Name ToString -Value {
+                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+                }
               }
-              Add-Member -Force -InputObject $AAOperator -MemberType ScriptMethod -Name ToString -Value {
-                [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+              else {
+                $OperatorObject = $null
               }
               #endregion
 
               #region DefaultCallFlow
               Write-Verbose -Message "Parsing DefaultCallFlow"
-              #region Call Flow Menu
-              # Call Flow Menu Prompts
-              $AADefaultCallFlowMenuPrompts = @()
-              foreach ($Prompt in $AA.DefaultCallFlow.Menu.Prompts) {
-                $AADefaultCallFlowMenuPrompt = @()
-                $AADefaultCallFlowMenuPrompt = [PsCustomObject][ordered]@{
-                  'ActiveType'         = $Prompt.ActiveType
-                  'TextToSpeechPrompt' = $Prompt.TextToSpeechPrompt
-                  'AudioFilePrompt'    = $Prompt.AudioFilePrompt
-                  # More parameters are available with | FL *: HasTextToSpeechPromptData, HasAudioFilePromptData, IsAudioFileAlreadyUploaded, IsDisabled, HasDualPromptData (all BOOLEAN)
-                }
-                Add-Member -Force -InputObject $AADefaultCallFlowMenuPrompt -MemberType ScriptMethod -Name ToString -Value {
-                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                }
-                $AADefaultCallFlowMenuPrompts += Add-Member -InputObject $AADefaultCallFlowMenuPrompt -TypeName My.Menu.MenuOption -PassThru
+              # Default Call Flow Menu Prompts
+              if ($AA.DefaultCallFlow.Menu.Prompts) {
+                $AADefaultCallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.Prompts
+              }
+              else {
+                $AADefaultCallFlowMenuPrompts = $null
               }
 
-              # Call Flow Menu Options
-              $AADefaultCallFlowMenuOptions = @()
-              foreach ($Option in $AA.DefaultCallFlow.Menu.MenuOptions) {
-                $AADefaultCallFlowMenuOption = @()
-                $AADefaultCallFlowMenuOption = [PsCustomObject][ordered]@{
-                  'Action'         = $Option.Action
-                  'DtmfResponse'   = $Option.DtmfResponse
-                  'VoiceResponses' = $Option.VoiceResponses
-                  'CallTarget'     = $Option.CallTarget #TODO Enumerate Call Target with breakout-function - Return DisplayName (as Operator above!)
-                  'Prompt'         = $Option.Prompt
-                }
-                Add-Member -Force -InputObject $AADefaultCallFlowMenuOption -MemberType ScriptMethod -Name ToString -Value {
-                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                }
-                $AADefaultCallFlowMenuOptions += Add-Member -InputObject $AADefaultCallFlowMenuOption -TypeName My.Menu.MenuOption -PassThru
+              # Default Call Flow Menu Options
+              $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions
+
+              # Default Call Flow Menu
+              $AADefaultCallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $AA.DefaultCallFlow.Menu -Prompts $AADefaultCallFlowMenuPrompts -MenuOptions $AADefaultCallFlowMenuOptions
+
+              # Default Call Flow Greetings
+              if ($AA.DefaultCallFlow.Greetings) {
+                $AADefaultCallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Greetings
+              }
+              else {
+                $AADefaultCallFlowGreetings = $null
               }
 
-              # Call Flow Menu
-              $AADefaultCallFlowMenu = @()
-              $AADefaultCallFlowMenu = [PsCustomObject][ordered]@{
-                'Name'                  = $AA.DefaultCallFlow.Menu.Name
-                'Prompts'               = $AADefaultCallFlowMenuPrompts
-                'MenuOptions'           = $AADefaultCallFlowMenuOptions
-                'DialByNameEnabled'     = $AA.DefaultCallFlow.Menu.DialByNameEnabled
-                'DirectorySearchMethod' = $AA.DefaultCallFlow.Menu.DirectorySearchMethod
-              }
-              Add-Member -Force -InputObject $AADefaultCallFlowMenu -MemberType ScriptMethod -Name ToString -Value {
-                [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-              }
-
-              # Call Flow Greetings
-              $AADefaultCallFlowGreetings = @()
-              foreach ($Prompt in $AA.DefaultCallFlow.Greetings) {
-                $AADefaultCallFlowGreeting = @()
-                $AADefaultCallFlowGreeting = [PsCustomObject][ordered]@{
-                  'ActiveType'         = $Prompt.ActiveType
-                  'TextToSpeechPrompt' = $Prompt.TextToSpeechPrompt
-                  'AudioFilePrompt'    = $Prompt.AudioFilePrompt
-                  # More parameters are available with | FL *: HasTextToSpeechPromptData, HasAudioFilePromptData, IsAudioFileAlreadyUploaded, IsDisabled, HasDualPromptData (all BOOLEAN)
-                }
-                Add-Member -Force -InputObject $AADefaultCallFlowGreeting -MemberType ScriptMethod -Name ToString -Value {
-                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                }
-                $AADefaultCallFlowGreetings += Add-Member -InputObject $AADefaultCallFlowGreeting -TypeName My.Prompt -PassThru
-              }
-              #endregion
-
-              # Call Flow
-              $AADefaultCallFlow = @()
-              $AADefaultCallFlow = [PsCustomObject][ordered]@{
-                'Name'      = $AA.DefaultCallFlow.Name
-                'Id'        = $AA.DefaultCallFlow.Id
-                'Greetings' = $AADefaultCallFlowGreetings
-                'Menu'      = $AADefaultCallFlowMenu
-              }
-              Add-Member -Force -InputObject $AADefaultCallFlow -MemberType ScriptMethod -Name ToString -Value {
-                [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-              }
+              # Default Call Flow
+              $AADefaultCallFlow = Merge-AutoAttendantArtefact -Type CallFlow -Object $AA.DefaultCallFlow -Prompts $AADefaultCallFlowGreetings -Menu $AADefaultCallFlowMenu
               #endregion
 
               #region CallFlows
               Write-Verbose -Message "Parsing CallFlows"
               $AACallFlows = @()
               foreach ($Flow in $AA.CallFlows) {
-                #region Call Flow Menu
-                # Call Flow Menu Prompts
-                $AACallFlowMenuPrompts = @()
-                foreach ($Prompt in $Flow.Menu.Prompts) {
-                  $AACallFlowMenuPrompt = @()
-                  $AACallFlowMenuPrompt = [PsCustomObject][ordered]@{
-                    'ActiveType'         = $Prompt.ActiveType
-                    'TextToSpeechPrompt' = $Prompt.TextToSpeechPrompt
-                    'AudioFilePrompt'    = $Prompt.AudioFilePrompt
-                    # More parameters are available with | FL *: HasTextToSpeechPromptData, HasAudioFilePromptData, IsAudioFileAlreadyUploaded, IsDisabled, HasDualPromptData (all BOOLEAN)
-                  }
-                  Add-Member -Force -InputObject $AACallFlowMenuPrompt -MemberType ScriptMethod -Name ToString -Value {
-                    [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                  }
-                  $AACallFlowMenuPrompts += Add-Member -InputObject $AACallFlowMenuPrompt -TypeName My.Menu.MenuOption -PassThru
+                # Call Flow Prompts
+                if ($Flow.Menu.Prompts) {
+                  $AACallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.Prompts
+                }
+                else {
+                  $AACallFlowMenuPrompts = $null
                 }
 
                 # Call Flow Menu Options
-                $AACallFlowMenuOptions = @()
-                foreach ($Option in $Flow.Menu.MenuOptions) {
-                  $AACallFlowMenuOption = @()
-                  $AACallFlowMenuOption = [PsCustomObject][ordered]@{
-                    'Action'         = $Option.Action
-                    'DtmfResponse'   = $Option.DtmfResponse
-                    'VoiceResponses' = $Option.VoiceResponses
-                    'CallTarget'     = $Option.CallTarget #TODO Enumerate Call Target with breakout-function - Return DisplayName (as Operator above!)
-                    'Prompt'         = $Option.Prompt
-                  }
-                  Add-Member -Force -InputObject $AACallFlowMenuOption -MemberType ScriptMethod -Name ToString -Value {
-                    [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                  }
-                  $AACallFlowMenuOptions += Add-Member -InputObject $AACallFlowMenuOption -TypeName My.Menu.MenuOption -PassThru
-                }
+                $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions
 
                 # Call Flow Menu
-                $AACallFlowMenu = @()
-                $AACallFlowMenu = [PsCustomObject][ordered]@{
-                  'Name'                  = $Flow.Menu.Name
-                  'Prompts'               = $AACallFlowMenuPrompts
-                  'MenuOptions'           = $AACallFlowMenuOptions
-                  'DialByNameEnabled'     = $Flow.Menu.DialByNameEnabled
-                  'DirectorySearchMethod' = $Flow.Menu.DirectorySearchMethod
-                }
-                Add-Member -Force -InputObject $AACallFlowMenu -MemberType ScriptMethod -Name ToString -Value {
-                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                }
+                $AACallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $Flow.Menu -Prompts $AACallFlowMenuPrompts -MenuOptions $AACallFlowMenuOptions
 
                 # Call Flow Greetings
-                $AACallFlowGreetings = @()
-                foreach ($Prompt in $Flow.Greetings) {
-                  $AACallFlowGreeting = @()
-                  $AACallFlowGreeting = [PsCustomObject][ordered]@{
-                    'ActiveType'         = $Prompt.ActiveType
-                    'TextToSpeechPrompt' = $Prompt.TextToSpeechPrompt
-                    'AudioFilePrompt'    = $Prompt.AudioFilePrompt
-                    # More parameters are available with | FL *: HasTextToSpeechPromptData, HasAudioFilePromptData, IsAudioFileAlreadyUploaded, IsDisabled, HasDualPromptData (all BOOLEAN)
-                  }
-                  Add-Member -Force -InputObject $AACallFlowGreeting -MemberType ScriptMethod -Name ToString -Value {
-                    [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                  }
-                  $AACallFlowGreetings += Add-Member -InputObject $AACallFlowGreeting -TypeName My.Prompt -PassThru
+                if ($Flow.Greetings) {
+                  $AACallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Greetings
                 }
-                #endregion
+                else {
+                  $AACallFlowGreetings = $null
+                }
 
                 # Call Flow
-                $AACallFlow = @()
-                $AACallFlow = [PsCustomObject][ordered]@{
-                  'Name'      = $Flow.Name
-                  'Id'        = $Flow.Id
-                  'Greetings' = $AACallFlowGreetings # $Flow.Greetings | Select-Object Greetings -ExpandProperty Greetings
-                  'Menu'      = $AACallFlowMenu
-                }
-                Add-Member -Force -InputObject $AACallFlow -MemberType ScriptMethod -Name ToString -Value {
-                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                }
-                $AACallFlows += Add-Member -InputObject $AACallFlow -TypeName My.CallFlow -PassThru
+                $AACallFlows += Merge-AutoAttendantArtefact -Type CallFlow -Object $Flow -Prompts $AACallFlowGreetings -Menu $AACallFlowMenu
               }
               #endregion
 
@@ -416,60 +321,7 @@ function Get-TeamsAutoAttendant {
               $AASchedules = @()
               foreach ($Schedule in $AA.Schedules) {
                 $AASchedule = Get-CsOnlineSchedule -Id $Schedule.Id
-                switch ($AASchedule.Type) {
-                  0 {
-                    # Schedule Type is WeeklyRecurrence
-                    $AAScheduleFixed = $null
-                    $AAScheduleWeekly = @()
-                    $AAScheduleWeekly = [PsCustomObject][ordered]@{
-                      'ComplementEnabled' = $AASchedule.WeeklyRecurrentSchedule.ComplementEnabled
-                      'MondayHours'       = $AASchedule.WeeklyRecurrentSchedule.DisplayMondayHours
-                      'TuesdayHours'      = $AASchedule.WeeklyRecurrentSchedule.DisplayTuesdayHours
-                      'WednesdayHours'    = $AASchedule.WeeklyRecurrentSchedule.DisplayWednesdayHours
-                      'ThursdayHours'     = $AASchedule.WeeklyRecurrentSchedule.DisplayThursdayHours
-                      'FridayHours'       = $AASchedule.WeeklyRecurrentSchedule.DisplayFridayHours
-                      'SaturdayHours'     = $AASchedule.WeeklyRecurrentSchedule.DisplaySaturdayHours
-                      'SundayHours'       = $AASchedule.WeeklyRecurrentSchedule.DisplaySundayHours
-                    }
-                    Add-Member -Force -InputObject $AAScheduleWeekly -MemberType ScriptMethod -Name ToString -Value {
-                      [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                    }
-                  }
-
-                  1 {
-                    # Schedule Type is Fixed
-                    $AAScheduleWeekly = $null
-                    <# Alt: Broken out into individual Start/End blocks
-                    $AAScheduleFixed = @()
-                    foreach ($Range in $Schedule.FixedSchedule) {
-                      $AAScheduleFixedRange = @()
-                      $AAScheduleFixedRange = [PsCustomObject][ordered]@{
-                        'Start' = $Range.DateTimeRanges.Start
-                        'End'   = $Range.DateTimeRanges.End
-                      }
-                      Add-Member -Force -InputObject $AAScheduleFixedRange -MemberType ScriptMethod -Name ToString -Value {
-                        [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                      }
-                      $AAScheduleFixed += Add-Member -InputObject $AAScheduleFixedRange -TypeName My.CallHandlingAssociation -PassThru
-                    }
-                    #>
-                    $AAScheduleFixed = $Schedule.FixedSchedule.DisplayDateTimeRanges
-                  }
-                }
-
-                $AASchedule = @()
-                $AASchedule = [PsCustomObject][ordered]@{
-                  'Name'                    = $Schedule.Name
-                  'Type'                    = $Schedule.Type
-                  'WeeklyRecurrentSchedule' = $AAScheduleWeekly
-                  'FixedSchedule'           = $AAScheduleFixed
-                  #'FixedSchedule'           = $Schedule.FixedSchedule.DateTimeRanges
-                  'Id'                      = $Schedule.Id
-                }
-                Add-Member -Force -InputObject $AASchedule -MemberType ScriptMethod -Name ToString -Value {
-                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                }
-                $AASchedules += Add-Member -InputObject $AASchedule -TypeName My.Schedule -PassThru
+                $AASchedules += Merge-AutoAttendantArtefact -Type Schedule -Object $AASchedule
 
               }
               #endregion
@@ -478,34 +330,11 @@ function Get-TeamsAutoAttendant {
               Write-Verbose -Message "Parsing CallHandlingAssociations"
               $AACallHandlingAssociations = @()
               foreach ($item in $AA.CallHandlingAssociations) {
-                <# INFO Alternatively, this Object can be drilled down further (but would be duplicate)
-                $AACallHandlingAssociationsSchedule = @()
-                foreach ($ScheduleId in $item.ScheduleId) {
-                  $Schedule = Get-CsOnlineSchedule -Id $ScheduleId
-                  $CHASchedule = [PsCustomObject][ordered]@{
-                    'Name' = $Schedule.Name
-                    'Type' = $Schedule.Type
-                    'Id'   = $Schedule.Id
-                  }
-                  Add-Member -Force -InputObject $CHASchedule -MemberType ScriptMethod -Name ToString -Value {
-                    [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                  }
-                  $AACallHandlingAssociationsSchedule += Add-Member -InputObject $CHASchedule -TypeName My.CallHandlingAssociation -PassThru
-                }
-                #>
+                # Determine Call Flow Name
                 $AACallHandlingAssociationCallFlowName = ($AA.CallFlows | Where-Object Id -EQ $item.CallFlowId).Name
 
-                $AACallHandlingAssociation = @()
-                $AACallHandlingAssociation = [PsCustomObject][ordered]@{
-                  'Type'     = $item.Type
-                  'Enabled'  = $item.Enabled
-                  'Schedule' = $(Get-CsOnlineSchedule -Id $item.ScheduleId).Name
-                  'CallFlow' = $AACallHandlingAssociationCallFlowName
-                }
-                Add-Member -Force -InputObject $AACallHandlingAssociation -MemberType ScriptMethod -Name ToString -Value {
-                  [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                }
-                $AACallHandlingAssociations += Add-Member -InputObject $AACallHandlingAssociation -TypeName My.CallHandlingAssociation -PassThru
+                # CallHandlingAssociations
+                $AACallHandlingAssociations += Merge-AutoAttendantArtefact -Type CallHandlingAssociation -Object $item -CallFlowName $AACallHandlingAssociationCallFlowName
               }
               #endregion
 
@@ -517,8 +346,8 @@ function Get-TeamsAutoAttendant {
               $AAObject | Add-Member -MemberType NoteProperty -Name CallHandlingAssociations -Value $AACallHandlingAssociations
             }
 
-              # Adding Resource Accounts
-              $AAObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.UserPrincipalName
+            # Adding Resource Accounts
+            $AAObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.UserPrincipalName
             #endregion
 
             # Output
