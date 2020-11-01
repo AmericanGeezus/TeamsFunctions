@@ -52,7 +52,7 @@ function Get-TeamsUserLicense {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -80,7 +80,7 @@ function Get-TeamsUserLicense {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
       try {
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Select UsageLocation,DisplayName
@@ -172,6 +172,6 @@ function Get-TeamsUserLicense {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsUserLicense

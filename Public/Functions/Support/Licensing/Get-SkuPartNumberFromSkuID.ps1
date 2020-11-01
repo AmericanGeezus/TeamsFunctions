@@ -40,13 +40,13 @@ function Get-SkuPartNumberFromSkuID {
 
   begin {
     Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     [System.Collections.ArrayList]$Object = @()
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     foreach ($Id in $SkuID) {
       switch ($ID) {
@@ -152,7 +152,7 @@ function Get-SkuPartNumberFromSkuID {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 
 } #Get-SkuPartNumberFromSkuID

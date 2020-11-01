@@ -44,7 +44,7 @@ function Disconnect-Me {
 
   begin {
     Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     $WarningPreference = "SilentlyContinue"
     $ErrorActionPreference = "SilentlyContinue"
@@ -55,7 +55,7 @@ function Disconnect-Me {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
       $null = (Disconnect-SkypeOnline)
@@ -73,6 +73,6 @@ function Disconnect-Me {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Disconnect-Me

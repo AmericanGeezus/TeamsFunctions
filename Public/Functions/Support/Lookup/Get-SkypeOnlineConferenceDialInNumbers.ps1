@@ -33,7 +33,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 
   begin {
     Show-FunctionStatus -Level Unmanaged
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -41,7 +41,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
       $siteContents = Invoke-WebRequest https://webdir1a.online.lync.com/DialinOnline/Dialin.aspx?path=$Domain -ErrorAction STOP
@@ -74,6 +74,6 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-SkypeOnlineConferenceDialInNumbers

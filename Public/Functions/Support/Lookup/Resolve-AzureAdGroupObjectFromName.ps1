@@ -34,7 +34,7 @@ function Resolve-AzureAdGroupObjectFromName {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -45,7 +45,7 @@ function Resolve-AzureAdGroupObjectFromName {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
       $GroupObject = Get-AzureADGroup -SearchString "$GroupName" -WarningAction SilentlyContinue -ErrorAction STOP
@@ -86,6 +86,6 @@ function Resolve-AzureAdGroupObjectFromName {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Resolve-AzureAdGroupObjectFromName

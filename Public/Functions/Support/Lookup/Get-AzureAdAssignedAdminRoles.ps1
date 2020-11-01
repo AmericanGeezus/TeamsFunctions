@@ -34,14 +34,14 @@ function Get-AzureAdAssignedAdminRoles {
 
   begin {
     Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #Querying Admin Rights of authenticated Administator
     $AssignedRoles = @()
     $Roles = Get-AzureADDirectoryRole
@@ -58,6 +58,6 @@ function Get-AzureAdAssignedAdminRoles {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-AzureAdAssignedAdminRoles

@@ -39,7 +39,7 @@ function New-TeamsAutoAttendantDialScope {
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -61,7 +61,7 @@ function New-TeamsAutoAttendantDialScope {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
       try {
@@ -85,6 +85,6 @@ function New-TeamsAutoAttendantDialScope {
   }
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #New-TeamsAutoAttendantDialScope

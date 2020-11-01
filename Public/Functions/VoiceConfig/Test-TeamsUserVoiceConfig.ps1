@@ -73,7 +73,7 @@ function Test-TeamsUserVoiceConfig {
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -83,7 +83,7 @@ function Test-TeamsUserVoiceConfig {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
       # Querying Identity
       try {
@@ -158,6 +158,6 @@ function Test-TeamsUserVoiceConfig {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Test-TeamsUserVoiceConfig

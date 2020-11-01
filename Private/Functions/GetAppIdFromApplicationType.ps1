@@ -21,12 +21,12 @@ function GetAppIdFromApplicationType {
 
   begin {
     #Show-FunctionStatus -Level Live
-    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
   } #begin
 
   process {
-    #Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     switch ($CsApplicationType) {
       "CallQueue" { $CsAppId = "11cd3e2e-fccb-42ad-ad00-878b93575e07" }
@@ -40,7 +40,7 @@ function GetAppIdFromApplicationType {
   } #process
 
   end {
-    #Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 
 } #GetAppIdFromApplicationType

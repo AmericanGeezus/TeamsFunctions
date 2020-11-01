@@ -39,14 +39,14 @@ function Disconnect-SkypeOnline {
 
   begin {
     Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     [bool]$sessionFound = $false
 
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $PSSessions = Get-PSSession -WarningAction SilentlyContinue
 
     foreach ($session in $PSSessions) {
@@ -65,6 +65,6 @@ function Disconnect-SkypeOnline {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Disconnect-SkypeOnline

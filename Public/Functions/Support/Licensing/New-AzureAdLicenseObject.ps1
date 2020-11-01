@@ -44,7 +44,7 @@ function New-AzureAdLicenseObject {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
 
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
@@ -63,7 +63,7 @@ function New-AzureAdLicenseObject {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $newLicensesObj = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
 
     # Creating AddLicenses
@@ -89,6 +89,6 @@ function New-AzureAdLicenseObject {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #New-AzureAdLicenseObject

@@ -35,7 +35,7 @@ function Get-TeamsOVP {
 
   begin {
     Show-FunctionStatus -Level RC
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -43,7 +43,7 @@ function Get-TeamsOVP {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Switch Identity: Acting as alias to 'Get-CsOnlineVoiceRoutingPolicy'"
@@ -58,6 +58,6 @@ function Get-TeamsOVP {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsOVP

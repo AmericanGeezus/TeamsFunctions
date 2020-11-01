@@ -28,7 +28,7 @@ function Test-TeamsExternalDNS {
 
   begin {
     Show-FunctionStatus -Level Unmanaged
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
 
     # VARIABLES
@@ -40,7 +40,7 @@ function Test-TeamsExternalDNS {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     # Federation SRV Record Check
     $federationSRVResult = Resolve-DnsName -Name "_sipfederationtls._tcp.$Domain" -Type SRV -ErrorAction SilentlyContinue
@@ -158,6 +158,6 @@ function Test-TeamsExternalDNS {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Test-TeamsExternalDNS

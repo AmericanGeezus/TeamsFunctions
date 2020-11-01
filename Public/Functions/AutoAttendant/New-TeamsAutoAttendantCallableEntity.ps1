@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
+
+
+
 function New-TeamsAutoAttendantCallableEntity {
   <#
   .SYNOPSIS
@@ -27,8 +30,10 @@ function New-TeamsAutoAttendantCallableEntity {
     New-TeamsAutoAttendantDialScope -Type User -Identity John@domain.com
     Creates a callable Entity for the User John@domain.com
   .NOTES
-    This will verify the Objects eligibility.
-    Requires a valid license but can enable the Object for Enterprise Voice if needed.
+    For Users, it will verify the Objects eligibility.
+    Requires a valid license but can enable the User Object for Enterprise Voice if needed.
+    For Groups, it will verify that the Group exists in AzureAd (but not in Exchange)
+    For ExternalPstn it will construct the Tel URI
   .INPUTS
     System.String
   .OUTPUTS
@@ -50,7 +55,7 @@ function New-TeamsAutoAttendantCallableEntity {
     [Parameter(Mandatory = $true, HelpMessage = "Identity of the Call Target")]
     [string]$Identity,
 
-    [Parameter(HelpMessage = "OutputType: Object or Id")]
+    [Parameter(HelpMessage = "OutputType: Object or ObjectId")]
     [switch]$ReturnObjectIdOnly,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
@@ -63,7 +68,7 @@ function New-TeamsAutoAttendantCallableEntity {
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -85,7 +90,7 @@ function New-TeamsAutoAttendantCallableEntity {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($Type) {
       "ExternalPstn" {
         try {
@@ -188,6 +193,6 @@ function New-TeamsAutoAttendantCallableEntity {
   }
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #New-TeamsAutoAttendantCallableEntity

@@ -55,13 +55,13 @@ function Format-StringRemoveSpecialCharacter {
 
   begin {
     Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
 
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
       if ($PSBoundParameters["SpecialCharacterToKeep"]) {
         $Regex = "[^\p{L}\p{Nd}"
@@ -90,6 +90,6 @@ function Format-StringRemoveSpecialCharacter {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Format-StringRemoveSpecialCharacter

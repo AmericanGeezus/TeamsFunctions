@@ -253,6 +253,7 @@ function Get-TeamsAutoAttendant {
               Write-Verbose -Message "Parsing DefaultCallFlow"
               #region Call Flow Menu
               # Call Flow Menu Prompts
+              <# TODO Test and Remove
               $AADefaultCallFlowMenuPrompts = @()
               foreach ($Prompt in $AA.DefaultCallFlow.Menu.Prompts) {
                 $AADefaultCallFlowMenuPrompt = @()
@@ -267,8 +268,12 @@ function Get-TeamsAutoAttendant {
                 }
                 $AADefaultCallFlowMenuPrompts += Add-Member -InputObject $AADefaultCallFlowMenuPrompt -TypeName My.Menu.MenuOption -PassThru
               }
+              #>
+
+              $AACallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.Prompts
 
               # Call Flow Menu Options
+              <# TODO Test and Remove
               $AADefaultCallFlowMenuOptions = @()
               foreach ($Option in $AA.DefaultCallFlow.Menu.MenuOptions) {
                 $AADefaultCallFlowMenuOption = @()
@@ -284,8 +289,12 @@ function Get-TeamsAutoAttendant {
                 }
                 $AADefaultCallFlowMenuOptions += Add-Member -InputObject $AADefaultCallFlowMenuOption -TypeName My.Menu.MenuOption -PassThru
               }
+              #>
+
+              $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOptions -Object $AA.DefaultCallFlow.Menu.MenuOptions
 
               # Call Flow Menu
+              <# TODO Test and Remove
               $AADefaultCallFlowMenu = @()
               $AADefaultCallFlowMenu = [PsCustomObject][ordered]@{
                 'Name'                  = $AA.DefaultCallFlow.Menu.Name
@@ -297,8 +306,12 @@ function Get-TeamsAutoAttendant {
               Add-Member -Force -InputObject $AADefaultCallFlowMenu -MemberType ScriptMethod -Name ToString -Value {
                 [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
               }
+              #>
+
+              $AADefaultCallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $AA.DefaultCallFlow.Menu -Prompts $AADefaultCallFlowMenuPrompts -MenuOptions $AADefaultCallFlowMenuOptions
 
               # Call Flow Greetings
+              <# TODO Test and Remove
               $AADefaultCallFlowGreetings = @()
               foreach ($Prompt in $AA.DefaultCallFlow.Greetings) {
                 $AADefaultCallFlowGreeting = @()
@@ -313,9 +326,13 @@ function Get-TeamsAutoAttendant {
                 }
                 $AADefaultCallFlowGreetings += Add-Member -InputObject $AADefaultCallFlowGreeting -TypeName My.Prompt -PassThru
               }
+              #>
+
+              $AADefaultCallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Greetings
               #endregion
 
               # Call Flow
+              <# TODO Test and Remove
               $AADefaultCallFlow = @()
               $AADefaultCallFlow = [PsCustomObject][ordered]@{
                 'Name'      = $AA.DefaultCallFlow.Name
@@ -326,6 +343,9 @@ function Get-TeamsAutoAttendant {
               Add-Member -Force -InputObject $AADefaultCallFlow -MemberType ScriptMethod -Name ToString -Value {
                 [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
               }
+              #>
+
+              $AADefaultCallFlow = Merge-AutoAttendantArtefact -Type CallFlow -Object $Flow -Prompts $AADefaultCallFlowGreetings -Menu $AADefaultCallFlowMenu
               #endregion
 
               #region CallFlows
@@ -334,6 +354,7 @@ function Get-TeamsAutoAttendant {
               foreach ($Flow in $AA.CallFlows) {
                 #region Call Flow Menu
                 # Call Flow Menu Prompts
+                <# TODO Test and Remove
                 $AACallFlowMenuPrompts = @()
                 foreach ($Prompt in $Flow.Menu.Prompts) {
                   $AACallFlowMenuPrompt = @()
@@ -348,8 +369,12 @@ function Get-TeamsAutoAttendant {
                   }
                   $AACallFlowMenuPrompts += Add-Member -InputObject $AACallFlowMenuPrompt -TypeName My.Menu.MenuOption -PassThru
                 }
+                #>
+
+                $AACallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.Prompts
 
                 # Call Flow Menu Options
+                <# TODO Test and Remove
                 $AACallFlowMenuOptions = @()
                 foreach ($Option in $Flow.Menu.MenuOptions) {
                   $AACallFlowMenuOption = @()
@@ -365,8 +390,12 @@ function Get-TeamsAutoAttendant {
                   }
                   $AACallFlowMenuOptions += Add-Member -InputObject $AACallFlowMenuOption -TypeName My.Menu.MenuOption -PassThru
                 }
+                #>
+
+                $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOptions -Object $Flow.Menu.MenuOptions
 
                 # Call Flow Menu
+                <# TODO Test and Remove
                 $AACallFlowMenu = @()
                 $AACallFlowMenu = [PsCustomObject][ordered]@{
                   'Name'                  = $Flow.Menu.Name
@@ -378,8 +407,12 @@ function Get-TeamsAutoAttendant {
                 Add-Member -Force -InputObject $AACallFlowMenu -MemberType ScriptMethod -Name ToString -Value {
                   [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
                 }
+                #>
+
+                $AACallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $Flow.Menu -Prompts $AACallFlowMenuPrompts -MenuOptions $AACallFlowMenuOptions
 
                 # Call Flow Greetings
+                <# TODO Test and Remove
                 $AACallFlowGreetings = @()
                 foreach ($Prompt in $Flow.Greetings) {
                   $AACallFlowGreeting = @()
@@ -394,9 +427,13 @@ function Get-TeamsAutoAttendant {
                   }
                   $AACallFlowGreetings += Add-Member -InputObject $AACallFlowGreeting -TypeName My.Prompt -PassThru
                 }
+                #>
+
+                $AACallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Greetings
                 #endregion
 
                 # Call Flow
+                <# TODO Test and Remove
                 $AACallFlow = @()
                 $AACallFlow = [PsCustomObject][ordered]@{
                   'Name'      = $Flow.Name
@@ -408,6 +445,9 @@ function Get-TeamsAutoAttendant {
                   [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
                 }
                 $AACallFlows += Add-Member -InputObject $AACallFlow -TypeName My.CallFlow -PassThru
+                #>
+
+                $AACallFlows = Merge-AutoAttendantArtefact -Type CallFlow -Object $Flow -Prompts $AACallFlowGreetings -Menu $AACallFlowMenu
               }
               #endregion
 
@@ -416,6 +456,7 @@ function Get-TeamsAutoAttendant {
               $AASchedules = @()
               foreach ($Schedule in $AA.Schedules) {
                 $AASchedule = Get-CsOnlineSchedule -Id $Schedule.Id
+                <# TODO Test and Remove
                 switch ($AASchedule.Type) {
                   0 {
                     # Schedule Type is WeeklyRecurrence
@@ -453,6 +494,7 @@ function Get-TeamsAutoAttendant {
                       $AAScheduleFixed += Add-Member -InputObject $AAScheduleFixedRange -TypeName My.CallHandlingAssociation -PassThru
                     }
                     #>
+                <# Added here b/c of nested Comments
                     $AAScheduleFixed = $Schedule.FixedSchedule.DisplayDateTimeRanges
                   }
                 }
@@ -470,6 +512,9 @@ function Get-TeamsAutoAttendant {
                   [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
                 }
                 $AASchedules += Add-Member -InputObject $AASchedule -TypeName My.Schedule -PassThru
+                #>
+
+                $AASchedules = Merge-AutoAttendantArtefact -Type Schedule -Object $AASchedule
 
               }
               #endregion
@@ -495,6 +540,7 @@ function Get-TeamsAutoAttendant {
                 #>
                 $AACallHandlingAssociationCallFlowName = ($AA.CallFlows | Where-Object Id -EQ $item.CallFlowId).Name
 
+                <# TODO Test and Remove
                 $AACallHandlingAssociation = @()
                 $AACallHandlingAssociation = [PsCustomObject][ordered]@{
                   'Type'     = $item.Type
@@ -506,6 +552,8 @@ function Get-TeamsAutoAttendant {
                   [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
                 }
                 $AACallHandlingAssociations += Add-Member -InputObject $AACallHandlingAssociation -TypeName My.CallHandlingAssociation -PassThru
+                #>
+                $AACallHandlingAssociations = Merge-AutoAttendantArtefact -Type CallHandlingAssociations -Object $item -CallFlowName $AACallHandlingAssociationCallFlowName
               }
               #endregion
 
@@ -517,8 +565,8 @@ function Get-TeamsAutoAttendant {
               $AAObject | Add-Member -MemberType NoteProperty -Name CallHandlingAssociations -Value $AACallHandlingAssociations
             }
 
-              # Adding Resource Accounts
-              $AAObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.UserPrincipalName
+            # Adding Resource Accounts
+            $AAObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.UserPrincipalName
             #endregion
 
             # Output

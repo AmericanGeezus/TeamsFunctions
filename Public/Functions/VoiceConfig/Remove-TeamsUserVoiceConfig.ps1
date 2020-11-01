@@ -80,7 +80,7 @@ function Remove-TeamsUserVoiceConfig {
     $VerbosePreference = "Continue"
     $DebugPreference = "Debug"
     Show-FunctionStatus -Level ALPHA
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -107,7 +107,7 @@ function Remove-TeamsUserVoiceConfig {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       #region Information Gathering
@@ -270,6 +270,6 @@ function Remove-TeamsUserVoiceConfig {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Remove-TeamsUserVoiceConfig

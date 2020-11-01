@@ -69,7 +69,7 @@ function Test-TeamsUserLicense {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -77,7 +77,7 @@ function Test-TeamsUserLicense {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Query User
     $UserObject = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue
     $DisplayName = $UserObject.DisplayName
@@ -121,6 +121,6 @@ function Test-TeamsUserLicense {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Test-TeamsUserLicense

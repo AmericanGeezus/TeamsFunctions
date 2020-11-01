@@ -37,7 +37,7 @@ function Remove-TenantDialPlanNormalizationRule {
 
   begin {
     Show-FunctionStatus -Level Unmanaged
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -55,7 +55,7 @@ function Remove-TenantDialPlanNormalizationRule {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $dpInfo = Get-CsTenantDialPlan -Identity $DialPlan -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
     if ($null -ne $dpInfo) {
@@ -117,6 +117,6 @@ function Remove-TenantDialPlanNormalizationRule {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Remove-TenantDialPlanNormalizationRule

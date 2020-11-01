@@ -55,7 +55,7 @@ function Restore-TeamsEV {
 
   begin {
     Show-FunctionStatus -Level Unmanaged
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     Try {
       $ZipPath = (Resolve-Path -Path $File)
@@ -85,7 +85,7 @@ function Restore-TeamsEV {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $EV_Entities = 'Dialplans', 'VoiceRoutes', 'VoiceRoutingPolicies', 'PSTNUsages', 'TranslationRules', 'PSTNGateways'
 
     Write-Host -Object 'Validating backup files.'
@@ -270,7 +270,7 @@ function Restore-TeamsEV {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
     Write-Host -Object 'Finished!'
   } #end
 } #Restore-TeamsEV

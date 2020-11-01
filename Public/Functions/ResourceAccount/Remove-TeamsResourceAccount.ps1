@@ -67,7 +67,7 @@ function Remove-TeamsResourceAccount {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Caveat - Access rights
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
@@ -101,7 +101,7 @@ function Remove-TeamsResourceAccount {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region Lookup of UserPrincipalName
     try {
       #Trying to query the Resource Account
@@ -224,7 +224,7 @@ function Remove-TeamsResourceAccount {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
 } #Remove-TeamsResourceAccount

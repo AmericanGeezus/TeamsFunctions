@@ -71,7 +71,7 @@ function Get-TeamsUserVoiceConfig {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -93,7 +93,7 @@ function Get-TeamsUserVoiceConfig {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     foreach ($User in $Identity) {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
@@ -229,6 +229,6 @@ function Get-TeamsUserVoiceConfig {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsUserVoiceConfig
