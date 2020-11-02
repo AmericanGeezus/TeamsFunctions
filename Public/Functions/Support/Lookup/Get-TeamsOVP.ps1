@@ -2,7 +2,7 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  01-NOV-2020
-# Status:   RC
+# Status:   PreLive
 
 
 
@@ -34,7 +34,7 @@ function Get-TeamsOVP {
   )
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
