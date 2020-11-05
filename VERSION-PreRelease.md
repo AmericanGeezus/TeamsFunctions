@@ -4,6 +4,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## v20.11.06-prerelease
 
+- **Updated**
+  - `Get-TeamsUserVoiceConfig`: Added parameter `PhoneSystemStatus` to list of Parameters to identify VoiceConfig capabilities better (Assigned but Disabled)
+
 ---------------------------------------------
 
 ## v20.11
