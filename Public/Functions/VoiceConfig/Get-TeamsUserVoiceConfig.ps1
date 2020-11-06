@@ -151,8 +151,8 @@ function Get-TeamsUserVoiceConfig {
         # Adding Parameters
         $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
-        $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $PhoneSystemStatus
+        $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
       }
 
       # Adding Provisioning Parameters
