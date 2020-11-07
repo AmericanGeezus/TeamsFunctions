@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   ALPHA
+# Updated:  07-NOV-2020
+# Status:   BETA
 
 
 
@@ -38,15 +38,27 @@ function Set-TeamsUserVoiceConfig {
     Suppresses confirmation inputs except when $Confirm is explicitly specified
 	.PARAMETER WriteErrorLog
     If Errors are encountered, writes log to C:\Temp
+  .EXAMPLE
+		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
+    Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided
+  .EXAMPLE
+		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
+    Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
+    If Errors are encountered, they are written to C:\Temp as well as on screen
+  .EXAMPLE
+    Set-TeamsUserVoiceConfig -Identity John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
+    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided
 	.EXAMPLE
-		C:\PS>
-		Example of how to use this cmdlet
+    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
+    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
 	.EXAMPLE
-		C:\PS>
-		Another example of how to use this cmdlet
-	.EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -EvOnly
-    Another example of how to use this cmdlet
+    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -Silent
+    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
+    If Errors are encountered, they are written to C:\Temp
+  .EXAMPLE
+    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -WriteErrorLog
+    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
+    If Errors are encountered, they are written to C:\Temp as well as on screen
   .INPUTS
     System.String
   .OUTPUTS
@@ -55,7 +67,7 @@ function Set-TeamsUserVoiceConfig {
     System.Object (without Switch Silent)
 	.NOTES
     ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
-    assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan
+    assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default.
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
     Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
     Optionally can also assign a Calling Plan license prior.
