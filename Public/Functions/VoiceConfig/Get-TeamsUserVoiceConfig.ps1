@@ -146,7 +146,22 @@ function Get-TeamsUserVoiceConfig {
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses
         $CsUserLicense = Get-TeamsUserLicense -Identity "$($CsUser.UserPrincipalName)"
-        $PhoneSystemStatus = ($CsUserLicense.ServicePlans | Where-Object ServicePlanName -EQ "MCOEV").ProvisioningStatus
+        #TEST Get-TeamsUserLicense was recently expanded to include the PhoneSystemStatus. This could also be used to query this
+
+        $PhoneSystemLicense = ("MCOEV" -in $UserServicePlans.ServicePlanName)
+        $PhoneSystemVirtual = ("MCOEV_VIRTUALUSER" -in $UserServicePlans.ServicePlanName)
+
+        if ( "PhoneSystem" -in $CsUserLicense.Licenses ) {
+          $PhoneSystemStatus = ($CsUserLicense.ServicePlans | Where-Object ServicePlanName -EQ "MCOEV").ProvisioningStatus
+        }
+        elseif ( "PhoneSystemVirtualUser" -in $CsUserLicense.Licenses ) {
+          $PhoneSystemStatus = ($CsUserLicense.ServicePlans | Where-Object ServicePlanName -EQ "MCOEV_VIRTUALUSER").ProvisioningStatus
+        }
+        else {
+          $PhoneSystemStatus = "Unassigned"
+        }
+
+
 
         # Adding Parameters
         $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames

@@ -20,16 +20,24 @@ function Set-TeamsUserVoiceConfig {
     Optional (Default). Limits the Scope to enable an Object for DirectRouting
   .PARAMETER CallingPlans
     Required for CallingPlans. Limits the Scope to enable an Object for CallingPlans
-  .PARAMETER OnlineVoiceRoutingPolicy
-    Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
-  .PARAMETER TenantDialPlan
-    Optional for DirectRouting. Assigns a Tenant Dial Plan to the User
   .PARAMETER PhoneNumber
     Required. Phone Number in E.164 format to be assigned to the User.
     For DirectRouting, will populate the OnPremLineUri
     For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
+  .PARAMETER OnlineVoiceRoutingPolicy
+    Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
+  .PARAMETER TenantDialPlan
+    Optional for DirectRouting. Assigns a Tenant Dial Plan to the User
+  .PARAMETER CallingPlanLicense
+    Optional for CallingPlans. Assigns a Calling Plan License to the User.
+    Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
+	.PARAMETER Silent
+    Suppresses Output object for verification and On-Screen Errors. Useful for Bulk-Application
+    If errors are encountered, these will be logged in a file to C:\Temp
 	.PARAMETER Force
     Suppresses confirmation inputs except when $Confirm is explicitly specified
+	.PARAMETER WriteErrorLog
+    If Errors are encountered, writes log to C:\Temp
 	.EXAMPLE
 		C:\PS>
 		Example of how to use this cmdlet
@@ -42,19 +50,17 @@ function Set-TeamsUserVoiceConfig {
   .INPUTS
     System.String
   .OUTPUTS
-    System.Object
+    System.Void (with Switch Silent and without Switch WriteErrorLog)
+    System.File (with Switch WriteErrorLog)
+    System.Object (without Switch Silent)
 	.NOTES
     ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
     assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
-    Enables User for Enterprise Voice and assegns a Microsoft Number (must be found in the Tenant!)
+    Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
     Optionally can also assign a Calling Plan license prior.
-	.COMPONENT
-		The component this cmdlet belongs to
-	.ROLE
-		The role this cmdlet belongs to
 	.FUNCTIONALITY
-		The functionality that best describes this cmdlet
+		TeamsUserVoiceConfig
   .LINK
     Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
@@ -78,12 +84,11 @@ function Set-TeamsUserVoiceConfig {
     [Alias('OVP')]
     [string]$OnlineVoiceRoutingPolicy,
 
-    [Parameter(ParameterSetName = "DirectRouting", HelpMessage = "Name of the Tenant Dial Plan")]
+    [Parameter(HelpMessage = "Name of the Tenant Dial Plan")]
     [Alias('TDP')]
     [string]$TenantDialPlan,
 
-    [Parameter(ParameterSetName = "DirectRouting", Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
-    [Parameter(ParameterSetName = "CallingPlans", Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
+    [Parameter(Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
     [Alias('Number', 'LineURI')]
     [string]$PhoneNumber,
 
@@ -91,20 +96,33 @@ function Set-TeamsUserVoiceConfig {
     [switch]$CallingPlan,
 
     [Parameter(ParameterSetName = "CallingPlans", HelpMessage = "Calling Plan License to assign to the Object")]
-    [string]$CallingPlanLicense,
+    [ValidateScript( {
+        #CHECK Application of this. Replicate for other instances where $TeamsLicenses or $TeamsServicePlans are used!
+        $CallingPlanLicenseValues = ($TeamsLicenses | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $CallingPlanLicenseValues) {
+          $True
+        }
+        else {
+          Write-Host "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
+        }
+      })]
+    [string[]]$CallingPlanLicense,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force,
 
     [Parameter(HelpMessage = "Suppresses object output")]
-    [switch]$Silent
+    [switch]$Silent,
+
+    [Parameter(HelpMessage = "Writes a Log File to C:\Temp")]
+    [switch]$WriteErrorLog
   ) #param
 
   begin {
     # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Debug"
-    Show-FunctionStatus -Level ALPHA
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -113,7 +131,7 @@ function Set-TeamsUserVoiceConfig {
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
-    # Setting Preference Variables according to Uestream settings
+    # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) {
       $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
     }
@@ -121,69 +139,235 @@ function Set-TeamsUserVoiceConfig {
       $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
     }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.Sessionetate.PSVariable.GetValue('WhatIfPreference')
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
+
+    # Initialising $ErrorLog
+    [System.Collections.ArrayList]$ErrorLog = @()
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    #TODO Capture running this command against a Resource Account and stop there? Is a RA EV-enabled?
+    # Are RAs automatically EV-Enabled when querying?
+    Write-Debug -Message "This script is geared towards User Objects, not Resource Accounts. Please use Set-TeamsResourceAccount for them."
 
-    if ( Test-AzureADUser $Identity ) {
-      $UserObject = Get-CsOnlineUser $Identity -WarningAction SilentlyContinue
-      $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-      $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+    Write-Verbose -Message "[PROCESS] Processing '$Identity'"
+    #region Information Gathering and Verification
+    # Querying Identity
+    try {
+      Write-Verbose -Message "User '$Identity' - Querying User Account"
+      $CsUser = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
+      $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
-    else {
-      Write-Error -Message "User '$Identity' not found" -Category ObjectNotFound -ErrorAction Stop
-      return
+    catch {
+      Write-Error "User '$Identity' not queryied: $($_.Exception.Message)" -Category ObjectNotFound
+      $ErrorLog += $_.Exception.Message
+      return $ErrorLog
     }
 
-    if ( -not $IsLicensed  ) {
+    # Querying User Licenses
+    try {
+      Write-Verbose -Message "User '$Identity' - Querying User License"
+      $CsUserLicense = Get-TeamsUserLicense $Identity
+      #TEST Get-TeamsUserLicense was only recently expanded to include the PhoneSystemStatus. This needs testing
+      if ( $CsUserLicense.PhoneSystemStatus -ne "Success" ) {
+        throw "User '$Identity' is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
+      }
+      <# Alternative with Get-TeamsUserVoiceConfig
+      if ( -not (Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV)  ) {
+        throw
+      }
+      #>
+    }
+    catch {
+      # Unlicensed
+      Write-Verbose -Message "User is not licensed correctly"
+      $CsUserLicense
       Write-Error -Message "User '$Identity' is not licensed (PhoneSystem). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a license that contains Phone System" -ErrorAction Stop
-      return
+      $ErrorLog += $_.Exception.Message
+      return $ErrorLog
     }
 
+    # Enable if not Enabled for EnterpriseVoice
     if ( -not $IsEVenabled) {
-      Write-Verbose -Message "User '$Identity' Enterprise Voice Status: Not enabled" -Verbose
+      Write-Verbose -Message "User '$Identity' Enterprise Voice Status: Not enabled, trying to Enable user." -Verbose
       if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
         $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
       }
     }
 
-
-    switch ($PSCmdlet.ParameterSetName) {
-      "DirectRouting" {
-        Write-Verbose -Message "[PROCESS] DirectRouting"
-        Write-Warning -Message "This Function is not yet implemented, sorry!"
-        return
-
-        if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Do")) {
-          # do harm
-        }
-
-      }
-      "CallingPlans" {
-        Write-Verbose -Message "[PROCESS] CallingPlans"
-        Write-Warning -Message "This Function is not yet implemented, sorry!"
-        return
-
-        if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Do")) {
-          # do harm
-        }
-
-      }
+    if ( -not $IsEVenabled) {
+      Write-Error -Message "User '$Identity' Enterprise Voice Status: Not enabled"
+      return
     }
 
-    # OUTPUT
-    if ($Silent) {
+    # Calling Plans - Number verification
+    if ( $PSCmdlet.ParameterSetName -eq "CallingPlans" ) {
+      # Validating License assignment
+      try {
+        if ( -not $CallingPlanLicense ) {
+          Write-Verbose -Message "User '$Identity' Parameter CallingPlanLicense not specified. Testing for existing licenses"
+          if ( $null -eq $CsUserLicense.CallingPlanDomestic120 -and $null -eq $CsUserLicense.CallingPlanDomestic -and $null -eq $CsUserLicense.CallingPlanInternational ) {
+            throw "User '$Identity' is not licensed correctly. Please check License assignment. A Calling Plan License is required"
+          }
+        }
+      }
+      catch {
+        # Unlicensed
+        Write-Verbose -Message "User is not licensed correctly"
+        $CsUserLicense
+        Write-Error -Message "User '$Identity' is not licensed (CallingPlan). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a Calling Plan license" -ErrorAction Stop
+        $ErrorLog += $_.Exception.Message
+        return $ErrorLog
+      }
+
+      # Validating Number
+      Write-Verbose -Message "Querying Microsoft Phone Numbers"
+      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
+      if ( $PhoneNumberIsMSNumber ) {
+        Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
+      }
+      else {
+        if ( -not $Silent ) {
+          Write-Error -Message "Phone Number '$PhoneNumber' is not found in the Tenant. Please provide an available number" -Category NotImplemented -RecommendedAction "Please provide an available number"
+        }
+        $ErrorLog += $_.Exception.Message
+      }
+    }
+    #endregion
+
+
+    #region Apply Voice Config
+    if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Apply Voice Configuration")) {
+      #region Generic Configuration
+      # Enable HostedVoicemail
+      try {
+        Write-Verbose -Message "User '$Identity' Enabling user for Hosted Voicemail"
+        [void]$CsUser | Set-CsUser -HostedVoicemail $TRUE -ErrorAction Stop
+      }
+      catch {
+        if ( -not $Silent ) {
+          Write-Error -Message "User '$Identity' Enabling user for Hosted Voicemail failed: '$($_.Exception.Message)'"
+        }
+        $ErrorLog += $_.Exception.Message
+      }
+
+      # Apply $TenantDialPlan if provided
+      if ( $TenantDialPlan ) {
+        try {
+          Write-Verbose -Message "User '$Identity' Applying Tenant Dial Plan"
+          [void]$CsUser | Grant-CsTenantDialPlan -PolicyName $TenantDialPlan -ErrorAction Stop
+        }
+        catch {
+          if ( -not $Silent ) {
+            Write-Error -Message "User '$Identity' Applying Tenant Dial Plan failed: '$($_.Exception.Message)'"
+          }
+          $ErrorLog += $_.Exception.Message
+        }
+
+      }
+      else {
+        Write-Verbose -Message "User '$Identity' Applying Tenant Dial Plan: Not provided"
+      }
+      #endregion
+
+      #region Specific Configuration
+      switch ($PSCmdlet.ParameterSetName) {
+        "DirectRouting" {
+          Write-Verbose -Message "[PROCESS] DirectRouting"
+          # Apply $OnlineVoiceRoutingPolicy
+          try {
+            Write-Verbose -Message "User '$Identity' Applying Online Voice Routing Policy"
+            [void]$CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
+          }
+          catch {
+            if ( -not $Silent ) {
+              Write-Error -Message "User '$Identity' Applying Online Voice Routing Policy failed: '$($_.Exception.Message)'"
+            }
+            $ErrorLog += $_.Exception.Message
+          }
+
+          # Apply $PhoneNumber as OnPremLineUri
+          try {
+            Write-Verbose -Message "User '$Identity' Applying Phone Number"
+            [void]$CsUser | Set-CsUser -OnPremLineUri $PhoneNumber -ErrorAction Stop
+          }
+          catch {
+            if ( -not $Silent ) {
+              Write-Error -Message "User '$Identity' Applying Phone Number failed: '$($_.Exception.Message)'"
+            }
+            $ErrorLog += $_.Exception.Message
+          }
+        }
+
+        "CallingPlans" {
+          Write-Verbose -Message "[PROCESS] CallingPlans"
+          # Apply $CallingPlanLicense
+          try {
+            Write-Verbose -Message "User '$Identity' Applying CallingPlan License '$CallingPlanLicense'"
+            $null = Set-TeamsUserLicense -Identity $Identity -Add $CallingPlanLicense -ErrorAction Stop
+          }
+          catch {
+            if ( -not $Silent ) {
+              Write-Error -Message "User '$Identity' Applying CallingPlan License '$CallingPlanLicense' failed: '$($_.Exception.Message)'"
+            }
+            $ErrorLog += $_.Exception.Message
+          }
+
+          #CHECK Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
+          Write-Debug -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail"
+
+          # Apply $PhoneNumber as TelephoneNumber
+          try {
+            Write-Verbose -Message "User '$Identity' Applying Phone Number"
+            # Pipe should work but was not yet tested.
+            #[void]$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
+            $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $PhoneNumber -ErrorAction Stop
+          }
+          catch {
+            if ( -not $Silent ) {
+              Write-Error -Message "User '$Identity' Applying Phone Number failed: '$($_.Exception.Message)'"
+            }
+            $ErrorLog += $_.Exception.Message
+          }
+        }
+      }
+      #endregion
+
+    }
+    #endregion
+
+
+    #region Log & Output
+    # Write $ErrorLog
+    if ( $errorLog -and ($Silent -or $WriteErrorLog) ) {
+      $Path = "C:\Temp"
+      $Filename = "$($MyInvocation.MyCommand) for User $Identity - ERROR.log"
+      $LogPath = "$Path\$Filename"
+      Write-Verbose -Message "User '$Identity' - Errors encountered are written to '$Path'"
+
+      # Write log entry to $Path
+      $errorLog | Out-File -FilePath $LogPath -Append
+
+    }
+    else {
+      Write-Verbose -Message "User '$Identity' - No errors encountered! No log file written."
+    }
+
+
+    # Output
+    if ( $Silent ) {
       return
     }
     else {
       # Re-Query Object
-      $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity -DiagnosticLevel 1
+      $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity
       return $UserObjectPost
     }
+    #endregion
 
   } #process
 

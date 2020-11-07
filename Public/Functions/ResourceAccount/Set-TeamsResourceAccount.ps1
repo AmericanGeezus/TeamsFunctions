@@ -460,9 +460,9 @@ function Set-TeamsResourceAccount {
           }
         }
         else {
-
-
+          Write-Verbose -Message "'$Name' No Number assigned"
         }
+
         # Assigning Telephone Number
         if ($null -ne $PhoneNumber) {
           Write-Verbose -Message "'$Name' ACTION: Assigning Phone Number"

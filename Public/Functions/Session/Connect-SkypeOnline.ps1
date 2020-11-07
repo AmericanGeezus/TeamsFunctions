@@ -89,7 +89,7 @@ function Connect-SkypeOnline {
     #region SessionOptions
     # Generating Session Options (Timeout) based on input
     $IdleTimeoutInMS = $IdleTimeout * 3600000
-    if ($PSboundparameters.ContainsKey('IdleTimeout')) {
+    if ($PSBoundParameters.ContainsKey('IdleTimeout')) {
       $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutInMS
     }
     else {
