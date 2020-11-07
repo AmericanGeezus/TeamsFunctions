@@ -35,7 +35,7 @@ function Test-TeamsTenantPolicy {
 
   begin {
     Show-FunctionStatus -Level Unmanaged
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -55,7 +55,7 @@ function Test-TeamsTenantPolicy {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
       $Command = "Get-" + $Policy + " -Identity " + $PolicyName + " -ErrorAction Stop"
       Invoke-Expression "$Command" -ErrorAction STOP | Out-Null
@@ -76,6 +76,6 @@ function Test-TeamsTenantPolicy {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Test-TeamsTenantPolicy

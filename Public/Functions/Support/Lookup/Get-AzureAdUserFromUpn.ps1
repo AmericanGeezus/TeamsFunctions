@@ -31,7 +31,7 @@ function Get-AzureAdUserFromUpn {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -42,7 +42,7 @@ function Get-AzureAdUserFromUpn {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($UPN in $Identity) {
       try {
         # This is functional but slow in bigger environments!
@@ -61,6 +61,6 @@ function Get-AzureAdUserFromUpn {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-AzureAdUserFromUPN

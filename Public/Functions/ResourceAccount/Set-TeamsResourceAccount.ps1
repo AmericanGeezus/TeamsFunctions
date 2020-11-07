@@ -135,7 +135,7 @@ function Set-TeamsResourceAccount {
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -157,7 +157,7 @@ function Set-TeamsResourceAccount {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
     Write-Verbose -Message "Verifying input"
     #region Lookup of UserPrincipalName
@@ -460,9 +460,9 @@ function Set-TeamsResourceAccount {
           }
         }
         else {
-
-
+          Write-Verbose -Message "'$Name' No Number assigned"
         }
+
         # Assigning Telephone Number
         if ($null -ne $PhoneNumber) {
           Write-Verbose -Message "'$Name' ACTION: Assigning Phone Number"
@@ -502,7 +502,7 @@ function Set-TeamsResourceAccount {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
 } #Set-TeamsResourceAccount

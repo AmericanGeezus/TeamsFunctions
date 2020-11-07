@@ -43,7 +43,7 @@ function Remove-TeamsCallQueue {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -65,9 +65,9 @@ function Remove-TeamsCallQueue {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($DN in $Name) {
-      Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand) - '$DN'"
+      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
       try {
         Write-Verbose -Message "The listed Queues are being removed:" -Verbose
         $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
@@ -87,7 +87,7 @@ function Remove-TeamsCallQueue {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
 } #Remove-TeamsCallQueue

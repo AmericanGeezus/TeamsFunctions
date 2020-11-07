@@ -52,7 +52,7 @@ function Get-TeamsUserLicense {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -80,10 +80,10 @@ function Get-TeamsUserLicense {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
       try {
-        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Select UsageLocation,DisplayName
+        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object UsageLocation, DisplayName
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
@@ -133,6 +133,17 @@ function Get-TeamsUserLicense {
       $CallingPlanInt = ("MCOPSTN2" -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom120 = ("MCOPSTN5" -in $UserServicePlans.ServicePlanName)
 
+      #TEST Get-TeamsUserLicense was only recently expanded to include the PhoneSystemStatus. This needs testing
+      if ( $PhoneSystemLicense ) {
+        $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV").ProvisioningStatus
+      }
+      elseif ( $PhoneSystemVirtual ) {
+        $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV_VIRTUALUSER").ProvisioningStatus
+      }
+      else {
+        $PhoneSystemStatus = "Unassigned"
+      }
+
 
       if ($CallingPlanDom120) {
         $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN5"
@@ -158,6 +169,7 @@ function Get-TeamsUserLicense {
         CommoneAreaPhoneLicense   = $CommonAreaPhoneLic
         PhoneSystemVirtualUser    = $PhoneSystemVirtual
         PhoneSystem               = $PhoneSystemLicense
+        PhoneSystemStatus         = $PhoneSystemStatus
         CallingPlanDomestic120    = $CallingPlanDom120
         CallingPlanDomestic       = $CallingPlanDom
         CallingPlanInternational  = $CallingPlanInt
@@ -172,6 +184,6 @@ function Get-TeamsUserLicense {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsUserLicense

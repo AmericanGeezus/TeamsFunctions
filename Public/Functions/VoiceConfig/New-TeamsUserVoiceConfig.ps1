@@ -59,7 +59,7 @@ function New-TeamsUserVoiceConfig {
     $VerbosePreference = "Continue"
     $DebugPreference = "Debug"
     Show-FunctionStatus -Level ALPHA
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -81,7 +81,7 @@ function New-TeamsUserVoiceConfig {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $User = Get-CsOnlineUser $Identity -WarningAction SilentlyContinue
     $User
 
@@ -93,6 +93,6 @@ function New-TeamsUserVoiceConfig {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #New-TeamsUserVoiceConfig

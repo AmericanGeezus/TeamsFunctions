@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+#TODO: Add: Check for PhoneSystem being disabled!
+
+
 function Get-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
@@ -71,7 +74,7 @@ function Get-TeamsUserVoiceConfig {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -93,7 +96,7 @@ function Get-TeamsUserVoiceConfig {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     foreach ($User in $Identity) {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
@@ -143,11 +146,28 @@ function Get-TeamsUserVoiceConfig {
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses
         $CsUserLicense = Get-TeamsUserLicense -Identity "$($CsUser.UserPrincipalName)"
+        #TEST Get-TeamsUserLicense was recently expanded to include the PhoneSystemStatus. This could also be used to query this
+
+        $PhoneSystemLicense = ("MCOEV" -in $UserServicePlans.ServicePlanName)
+        $PhoneSystemVirtual = ("MCOEV_VIRTUALUSER" -in $UserServicePlans.ServicePlanName)
+
+        if ( "PhoneSystem" -in $CsUserLicense.Licenses ) {
+          $PhoneSystemStatus = ($CsUserLicense.ServicePlans | Where-Object ServicePlanName -EQ "MCOEV").ProvisioningStatus
+        }
+        elseif ( "PhoneSystemVirtualUser" -in $CsUserLicense.Licenses ) {
+          $PhoneSystemStatus = ($CsUserLicense.ServicePlans | Where-Object ServicePlanName -EQ "MCOEV_VIRTUALUSER").ProvisioningStatus
+        }
+        else {
+          $PhoneSystemStatus = "Unassigned"
+        }
+
+
 
         # Adding Parameters
         $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
+        $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $PhoneSystemStatus
       }
 
       # Adding Provisioning Parameters
@@ -229,6 +249,6 @@ function Get-TeamsUserVoiceConfig {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsUserVoiceConfig

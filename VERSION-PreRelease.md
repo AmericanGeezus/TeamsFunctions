@@ -2,7 +2,11 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v20.11.06-prerelease
+## v20.11.07-prerelease
+
+- **Updated**
+  - `Get-TeamsUserVoiceConfig`: Added parameter `PhoneSystemStatus` to list of Parameters to identify VoiceConfig capabilities better (Assigned but Disabled)
+  - `Set-TeamsUserVoiceConfig`: Script has advanced to BETA Status. All functions scripted. Testing commences
 
 ---------------------------------------------
 

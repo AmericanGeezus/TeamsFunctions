@@ -76,7 +76,7 @@ function Connect-SkypeOnline {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Required as Warnings on the OriginalRegistrarPool may halt Script execution
     $WarningPreference = "Continue"
@@ -84,12 +84,12 @@ function Connect-SkypeOnline {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     #region SessionOptions
     # Generating Session Options (Timeout) based on input
     $IdleTimeoutInMS = $IdleTimeout * 3600000
-    if ($PSboundparameters.ContainsKey('IdleTimeout')) {
+    if ($PSBoundParameters.ContainsKey('IdleTimeout')) {
       $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutInMS
     }
     else {
@@ -219,6 +219,6 @@ function Connect-SkypeOnline {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Connect-SkypeOnline

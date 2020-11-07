@@ -46,7 +46,7 @@ function Get-TeamsTenantVoiceConfig {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -57,7 +57,7 @@ function Get-TeamsTenantVoiceConfig {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region Information Gathering
     Write-Verbose -Message "Querying Tenant"
     $Tenant = Get-CsTenant -WarningAction SilentlyContinue
@@ -173,6 +173,6 @@ function Get-TeamsTenantVoiceConfig {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsTenantVoiceConfig

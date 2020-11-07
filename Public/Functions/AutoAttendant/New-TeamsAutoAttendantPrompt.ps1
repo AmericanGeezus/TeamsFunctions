@@ -44,7 +44,7 @@ function New-TeamsAutoAttendantPrompt {
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -63,7 +63,7 @@ function New-TeamsAutoAttendantPrompt {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Prompt = $null
 
     if ($String -match '.wav' -or $String -match '.wma' -or $String -match '.mp3') {
@@ -91,6 +91,6 @@ function New-TeamsAutoAttendantPrompt {
   }
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #New-TeamsAutoAttendantPrompt

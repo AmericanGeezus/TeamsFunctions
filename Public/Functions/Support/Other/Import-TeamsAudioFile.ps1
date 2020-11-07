@@ -35,8 +35,9 @@ function Import-TeamsAudioFile {
 
   [CmdletBinding()]
   #CHECK Output Type: https://docs.microsoft.com/en-us/powershell/module/skype/import-csonlineaudiofile?view=skype-ps
-  # What does Import-CsOnlineAudioFile return exactly? Raise issue on above if different?
+  # What does Import-CsOnlineAudioFile return exactly? Raise issue on above if different? Does it have to be Deserialized?
   #[OutputType([Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile])]
+  #[OutputType([Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile])]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true)]
@@ -50,7 +51,7 @@ function Import-TeamsAudioFile {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -58,7 +59,7 @@ function Import-TeamsAudioFile {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Testing File
     if (-not (Test-Path $File)) {
       Write-Error -Message "File not found!" -ErrorAction Stop
@@ -91,6 +92,6 @@ function Import-TeamsAudioFile {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Import-TeamsAudioFile

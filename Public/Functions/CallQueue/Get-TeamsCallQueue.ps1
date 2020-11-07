@@ -69,7 +69,7 @@ function Get-TeamsCallQueue {
 
   begin {
     Show-FunctionStatus -Level PreLive
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -91,7 +91,7 @@ function Get-TeamsCallQueue {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     # Capturing no input
     try {
@@ -102,7 +102,7 @@ function Get-TeamsCallQueue {
       }
       else {
         foreach ($DN in $Name) {
-          Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand) - '$DN'"
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
           # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
           $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP -WarningVariable $Warnings
 
@@ -379,7 +379,7 @@ function Get-TeamsCallQueue {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
 } #Get-TeamsCallQueue

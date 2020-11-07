@@ -2,7 +2,7 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  01-NOV-2020
-# Status:   RC
+# Status:   PreLive
 
 
 
@@ -34,8 +34,8 @@ function Get-TeamsTDP {
   )
 
   begin {
-    Show-FunctionStatus -Level RC
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.Mycommand)"
+    Show-FunctionStatus -Level PreLive
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -43,7 +43,7 @@ function Get-TeamsTDP {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Switch Identity: Acting as alias to 'Get-CsTenantDialPlan'"
@@ -59,6 +59,6 @@ function Get-TeamsTDP {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.Mycommand)"
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsTDP
