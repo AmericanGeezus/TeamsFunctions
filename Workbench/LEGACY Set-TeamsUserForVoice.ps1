@@ -1,4 +1,4 @@
-function Set-TeamsUserForVoice 
+function Set-TeamsUserForVoice
 {
   <#
       .SYNOPSIS
@@ -16,12 +16,12 @@ function Set-TeamsUserForVoice
       Default. Runs Verifications checks only. No changes are made to object provided
       .PARAMETER Assign
       Enables Enterprise Voice for the Object
-      Asigns the LineUri (based on the provided Telephone Number (-Tel)),
+      Assigns the LineUri (based on the provided Telephone Number (-Tel)),
       Grants Online Voice Routing Policy (Populated from -Region)
       Grants Tenant Dial Plan (Populated from -Country) - Optional
       .PARAMETER Amend
       Enables Enterprise Voice for the Object
-      Asigns the LineUri (based on the provided Telephone Number (-Tel)),
+      Assigns the LineUri (based on the provided Telephone Number (-Tel)),
       Grants Online Voice Routing Policy (Populated from -Region)
       Grants Tenant Dial Plan (Populated from -Country) - Optional
       .PARAMETER Remove
@@ -29,7 +29,7 @@ function Set-TeamsUserForVoice
       Removes the Online Voice Routing Policy (if populated)
       Removes the Tenant Dial Plan (if populated)
       .PARAMETER DetailedVoice
-      Optional switch to display more Voice Parameters. 
+      Optional switch to display more Voice Parameters.
       By Default only required values for TDR are shown.
       .PARAMETER IncludePolicies
       Optional switch to display User Policy assignments (long list of all Policies).
@@ -70,7 +70,7 @@ function Set-TeamsUserForVoice
       Set-TeamsObjectForVoice -Identity user@domain.com -Assign -Tel +44123123456 [-AssignTenantDialPlan]
       Executes a Check against the provided UserPrincipalName 'user@domain.com'
       Voice Configuration is applied afterwards (Configuration required for TDR)
-      In addition to Verfication as outlined in Example #1, it verifies:
+      In addition to Verification as outlined in Example #1, it verifies:
       - Verifies enumerated Tenant Dial Plan Name.
       The Naming Standard is applied in the form "DP-GB" (ISO3166-alpha 2)
       The Users UsageLocation or Country are used to query the CountryCode
@@ -78,21 +78,21 @@ function Set-TeamsUserForVoice
       The Naming Standard is applied in the form "O_VP_EMEA"
       The Users UsageLocation or Country are used to query the Region
       A static table is used to find the Region based on Country.
-      Action taken by -Assign or -Amend (swiches are interchangable):
+      Action taken by -Assign or -Amend (switches are interchangable):
       - Enables Object for Enterprise Voice, Sets the OnPremLineUri
       - Grants Online Voice Routing Policy
       - Optional Switch -AssignTenantDialPlan also Grants a Tenant Dial Plan
       - Displays Post-Change Output
       .EXAMPLE
-      Set-TeamsObjectForVoice -Identity user@domain.com -Check -DetailedVoice -FullLicenseQuery  
+      Set-TeamsObjectForVoice -Identity user@domain.com -Check -DetailedVoice -FullLicenseQuery
       Executes a Check against the provided UserPrincipalName 'user@domain.com'
-      In addition to Verfication as outlined in Example #1, it verifies:
+      In addition to Verification as outlined in Example #1, it verifies:
       - A Detailed Voice Configuration can be displayed (instead of simple set)
-      using the optional switch -DetailedVoice    
-      - All User Policies on the Teams Object can be displyed
-      using the optional switch -IncludePolicies      
+      using the optional switch -DetailedVoice
+      - All User Policies on the Teams Object can be displayed
+      using the optional switch -IncludePolicies
       - A more detailed look at assigned licenses can be displayed
-      using the optional switch -FullLicenseQuery  
+      using the optional switch -FullLicenseQuery
       This will give individual Found/Not Found reporting for every single License Package
       .NOTES
       Currently only Usable for Single-Object input but will be expanded upon to support CSV input.
@@ -116,8 +116,8 @@ function Set-TeamsUserForVoice
     [Parameter(Mandatory=$true, ParameterSetName="Assign", ValueFromPipelineByPropertyName = $true, HelpMessage = "Please provide Number in E.164 format")]
     [Parameter(Mandatory=$true, ParameterSetName="Amend", ValueFromPipelineByPropertyName = $true, HelpMessage = "Please provide Number in E.164 format")]
     [Alias("Number","TelephoneNumber")]
-    [string]$Tel,  
-    
+    [string]$Tel,
+
     [Parameter(ParameterSetName="Assign")]
     [switch]$Assign,
 
@@ -147,7 +147,7 @@ function Set-TeamsUserForVoice
     [Parameter(ParameterSetName="Check")]
     [Alias("OnlineVoiceRoutingPolicy","VoicePolicy")]
     [string]$OVP,
-    
+
     [Parameter(ParameterSetName="Assign")]
     [Parameter(ParameterSetName="Amend")]
     [Alias("AssignTDP")]
@@ -197,14 +197,14 @@ function Set-TeamsUserForVoice
   BEGIN
   {
     #region Defining Global Variables
-    # Defining $Action as it is used throughout and was a variable prior but could not be reconciled with a Parameterset without using dynparams
+    # Defining $Action as it is used throughout and was a variable prior but could not be reconciled with a Parameterset without using DynParams
     IF    ($Assign) {$Action = "Assign"}
     ELSEIF($Amend)  {$Action = "Amend"}
     ELSEIF($Remove) {$Action = "Remove"}
     ELSEIF($Check)  {$Action = "Check"}
     ELSE            {$Action = "Check"}
     #endregion
-    
+
     #region Header
     if (-not $Silent) {
       Clear-Host
@@ -239,10 +239,10 @@ function Set-TeamsUserForVoice
           Write-Warning "Log File Path '$Path' could not be found. C:\Temp\ will be used!"
           $LogPath = "C:\temp\"
           IF(-not (Test-Path ($LogPath))) {
-            New-Item -Name "temp" -Path C:\ -ItemType Directory 
+            New-Item -Name "temp" -Path C:\ -ItemType Directory
           }
           Write-Host "'$LogPath' ('$Path' could not be found!)"
-    
+
       }
 
     }
@@ -252,7 +252,7 @@ function Set-TeamsUserForVoice
     #not used currently - $DateApplicableDisplay = Get-Date -Format "dd-MMM-yyyy"
     #not used currently - $DateApplicableLog = Get-Date -Format "yyyy-MM-dd HH:mm K"
     $DateApplicableLogFile = Get-Date -Format "yyyy-MM-dd HHmmss"
-      
+
     $TaskName = "TMS " + $Action
     $LogFileName = $LogPath + $DateApplicableLogFile + " " + $TaskName + ".log"
 
@@ -294,7 +294,7 @@ function Set-TeamsUserForVoice
     Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
     #endregion
   }
-  
+
   PROCESS
   {
     try
@@ -333,7 +333,7 @@ function Set-TeamsUserForVoice
           #Output for SUCCESS
           $Level = "Success"
           #Tasks
-          
+
       }
       else {
           #Output for FAILED
@@ -352,7 +352,7 @@ function Set-TeamsUserForVoice
           $message += " - Found: $UsageLocation"
           $Level = "Success"
           #Tasks
-          $CountryCode = $AzureADUser.UsageLocation
+          $CountryCode = $AzureAdUser.UsageLocation
       }
       else {
           #Output for FAILED
@@ -367,8 +367,8 @@ function Set-TeamsUserForVoice
       if(-not $Silent) {
         Write-Host "Output: Object Record in Azure AD" -ForegroundColor Yellow
         Write-Host "Identify potential issues for TDR - Verify: Enabled (in AD), DirSync issues, Usage Location"
-        #$AzureADuser is populated directly after testing
-        $AzureADUser | Select-Object `
+        #$AzureAdUser is populated directly after testing
+        $AzureAdUser | Select-Object `
         DisplayName,UserPrincipalName,ObjectType,AccountEnabled,`
         DirSyncEnabled,LastDirSyncTime,Country,UsageLocation |`
         Format-List
@@ -378,13 +378,13 @@ function Set-TeamsUserForVoice
       #region Test '$Identity': Test: AzureAD Object has PhoneSystem License assigned
       $Message  = "'$Identity': Test: AzureAD Object has PhoneSystem License assigned"
       #Test
-      $MCOEVpresent = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-      if($MCOEVpresent) {
+      $MCOEVPresent = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+      if ($MCOEVPresent) {
           #Output for SUCCESS
           $message += " - License found: Phone System"
           $Level = "Success"
           #Tasks
-          
+
       }
       else {
           #Output for FAILED
@@ -393,12 +393,12 @@ function Set-TeamsUserForVoice
       }
       Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
       #endregion
- 
+
       #region Full License Query (Checking User against Licensing Package)
       IF($FullLicenseQuery)
       {
         #Testing all $Licenses
-        $Licenses = @("Microsoft 365 E5","Microsoft 365 E3 and PhoneSystem","Office 365 E5","Office 365 E3 and PhoneSystem","SFBO Plan 2 and Advanced Meeting and PhoneSystem","Common Area Phone License")
+        $Licenses = @("Microsoft 365 E5", "Microsoft 365 E3 and PhoneSystem", "Office 365 E5", "Office 365 E3 and PhoneSystem", "SfBO Plan 2 and Advanced Meeting and PhoneSystem", "Common Area Phone License")
         FOREACH ($L in $Licenses)
         {
           #region Test '$Identity': Test: AzureAD Object has License Package $L `tassigned
@@ -412,14 +412,14 @@ function Set-TeamsUserForVoice
             Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
             #Tasks
             #Setting variables to determine validity
-            switch ($L) 
+            switch ($L)
             {
               "Microsoft 365 E5"                      {$MS365E5 = $true}
               "Office 365 E5"                         {$O365E5  = $true}
               "Microsoft 365 E3 and PhoneSystem"      {$MS365E3 = $true}
               "Office 365 E3 and PhoneSystem"         {$O365E3  = $true}
-              "SFBO Plan 2 and Advanced Meeting and PhoneSystem" {
-                $SFBO2 = $true
+              "SfBO Plan 2 and Advanced Meeting and PhoneSystem" {
+                $SfBO2 = $true
                 $Message = "This license is valid but not officially endorsed by Microsoft"
                 $Level = "Warning"
                 Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
@@ -439,7 +439,7 @@ function Set-TeamsUserForVoice
               $Level = "Warning"
               Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
             }
-          
+
           #endregion
         }
         #Determining validity of tested license based on set variables in foreach/switch
@@ -447,8 +447,8 @@ function Set-TeamsUserForVoice
         #region Test '$Identity': Test: License package is valid/invalid
         $Message  = "'$Identity': Test: License package is "
         #Test
-        #VALID is if $MS365E5, $O365E5, $MS365E3, $O365E3, $SFBO2, $CAP
-        if($MS365E5 -or $O365E5 -or $MS365E3 -or $O365E3 -or $SFBO2 -or $CAP) {
+        #VALID is if $MS365E5, $O365E5, $MS365E3, $O365E3, $SfBO2, $CAP
+        if ($MS365E5 -or $O365E5 -or $MS365E3 -or $O365E3 -or $SfBO2 -or $CAP) {
             #Output for SUCCESS
             $Message += "VALID"
             $Level = "Success"
@@ -464,7 +464,7 @@ function Set-TeamsUserForVoice
               # Showing licenses assigned - Failsafe, just in case the enumeration goes wrong
               Write-Host "Visible output only: Displaying all Licenses currently assigned to the user:"
               Write-Host "## Start of List ##"
-              $UserLicenses = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber  
+              $UserLicenses = (Get-AzureADUserLicenseDetail -ObjectId $Identity).SkuPartNumber
               $UserLicenses
               Write-Host "### End of List ###"
           }
@@ -474,7 +474,7 @@ function Set-TeamsUserForVoice
       #endregion
       #endregion
 
-      #region Performing Tests for $Identity against Teams    
+      #region Performing Tests for $Identity against Teams
       #region Test '$Identity': Test: Teams Object EXISTS
       $Message  = "'$Identity': Test: Teams Object EXISTS"
       try {
@@ -501,7 +501,7 @@ function Set-TeamsUserForVoice
           #Output for SUCCESS
           $Level = "Success"
           #Tasks
-          
+
       }
       else {
           #Output for FAILED
@@ -545,10 +545,10 @@ function Set-TeamsUserForVoice
         $OnPremLineURI = "tel:"+$tel
 
         #Applicable Naming Standard - If Policies with this name are not found, input is requested (Silent behavior will error instead)
-        $OVPprefix = "O_VP_" # Suffix is $Region
-        $TDPprefix = "DP-" # Suffix is 2-digit Country Code $Country or later ($SkypeOnlineUser.UsageLocation)
+        $OVPPrefix = "O_VP_" # Suffix is $Region
+        $TDPPrefix = "DP-" # Suffix is 2-digit Country Code $Country or later ($SkypeOnlineUser.UsageLocation)
         #endregion
-        
+
         #region Online Voice Routing Policy
         #region Test '$Identity': Test: Enumerating Global Region
         $Message  = "'$Identity': Test: Enumerating Global Region"
@@ -586,14 +586,14 @@ function Set-TeamsUserForVoice
         }
         #endregion
 
-        # Creating Online Voice Routing Policy Name from Naming Standard 
-        $OVP = $OVPprefix+$Region
-        
+        # Creating Online Voice Routing Policy Name from Naming Standard
+        $OVP = $OVPPrefix + $Region
+
         #region Test TENANT: Test: Online Voice Routing Policy EXISTS
         $Message  = "TENANT: Test: Online Voice Routing Policy EXISTS"
         #Test
-        $OVPexists = Test-TeamsTenantPolicy -Policy "CsOnlineVoiceRoutingPolicy" -PolicyName $OVP
-        if($OVPexists) {
+        $OVPExists = Test-TeamsTenantPolicy -Policy "CsOnlineVoiceRoutingPolicy" -PolicyName $OVP
+        if ($OVPExists) {
             #Output for SUCCESS
             $Level = "Success"
             #Tasks
@@ -609,12 +609,12 @@ function Set-TeamsUserForVoice
               #Mitigation - Manual input!
               do {
                 $OVP = Read-Host "Manual entry: Online Voice Routing Policy Name: "
-                $OVPexists = Test-TeamsTenantPolicy -Policy "CsOnlineVoiceRoutingPolicy" -PolicyName $OVP
-                if($OVPexists) {
-                  Write-Host "ERROR:  Online Voice Routing Policy: $OVP not found!" -ForegroundColor Red 
+                $OVPExists = Test-TeamsTenantPolicy -Policy "CsOnlineVoiceRoutingPolicy" -PolicyName $OVP
+                if($OVPExists) {
+                  Write-Host "ERROR:  Online Voice Routing Policy: $OVP not found!" -ForegroundColor Red
                 }
               }
-              until ($OVPexists)
+              until ($OVPExists)
               $Message = "'$Identity': Online Voice Routing Policy: $OVP manually provided!"
               $Level = "Success"
             }
@@ -625,12 +625,12 @@ function Set-TeamsUserForVoice
 
         #region Tenant Dial Plan
         if($AssignTenantDialPlan) {
-          $TDP = $TDPprefix + $CountryCode
+          $TDP = $TDPPrefix + $CountryCode
           #region Test TENANT: Test: Teams Tenant Dial Plan EXISTS
           $Message  = "TENANT: Test: Teams Tenant Dial Plan EXISTS"
           #Test
-          $TDPexists = Test-TeamsTenantPolicy -Policy "TenantDialPlan" -PolicyName $TDP
-          if($TDPexists) {
+          $TDPExists = Test-TeamsTenantPolicy -Policy "TenantDialPlan" -PolicyName $TDP
+          if ($TDPExists) {
             #Output for SUCCESS
             $Level = "Success"
             #Tasks
@@ -645,13 +645,13 @@ function Set-TeamsUserForVoice
               Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
               #Mitigation - Manual input!
               do {
-                $TDP = Read-Host "Manual entry: Tenant Dial Plan Name: "          
-                $TDPexists = Test-TeamsTenantPolicy -Policy "TenantDialPlan" -PolicyName $TDP
-                if($TDPexists) {
-                  Write-Host "ERROR:  Tenant Dial Plan: $TDP not found" -ForegroundColor Red 
+                $TDP = Read-Host "Manual entry: Tenant Dial Plan Name: "
+                $TDPExists = Test-TeamsTenantPolicy -Policy "TenantDialPlan" -PolicyName $TDP
+                if ($TDPExists) {
+                  Write-Host "ERROR:  Tenant Dial Plan: $TDP not found" -ForegroundColor Red
                 }
               }
-              until ($TDPexists)
+              until ($TDPExists)
               $Message = "'$Identity': Tenant Dial Plan: $TDP manually provided!"
               $Level = "Success"
             }
@@ -701,24 +701,24 @@ function Set-TeamsUserForVoice
           Format-List
         }
         #endregion
-      } 
+      }
       #endregion
 
 
-      #region EVIDENCE: PreChange Log   
+      #region EVIDENCE: PreChange Log
       IF($WriteLog -and ($Assign -or $Amend -or $Remove)) {
         #region Preparing Evidence File
         $Step = "PreChange"
         $EvidenceLogName = "TMS " + $Action
-        [system.string]$EvidenceLogFileIs = Write-ApplicbleEvidenceLog -Step $Step -LogName $EvidenceLogName -Path $LogPath
+        [system.string]$EvidenceLogFileIs = Write-ApplicableEvidenceLog -Step $Step -LogName $EvidenceLogName -Path $LogPath
         $EvidenceLogFile = $EvidenceLogFileIs.Trim()
         #endregion
-        
+
         #region Writing Content to File
         #region AzureAD Information
-        $InfoByte = "AzureAD Object" 
+        $InfoByte = "AzureAD Object"
         "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-        
+
         $AzureADUser | Select-Object `
         DisplayName,UserPrincipalName,ObjectType,AccountEnabled,`
         DirSyncEnabled,LastDirSyncTime,Country,UsageLocation |`
@@ -730,9 +730,9 @@ function Set-TeamsUserForVoice
         #endregion
         #region Teams Voice Information
         IF(-not $DetailedVoice) {
-          $InfoByte = "Teams Object - TDR Voice Config" 
+          $InfoByte = "Teams Object - TDR Voice Config"
           "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-          
+
           $SkypeOnlineUser | Select-Object `
           UserPrincipalName,SipAddress,Enabled,TeamsUpgradeEffectiveMode,TeamsUpgradePolicy,HostedVoiceMail,EnterpriseVoiceEnabled,`
           OnPremLineUri,DialPlan,TenantDialPlan,OnlineVoiceRoutingPolicy | `
@@ -741,9 +741,9 @@ function Set-TeamsUserForVoice
           $message = "'$Identity': Evidence Log $Step - $InfoByte - written to $EvidenceLogFile"
         }
         else {
-          $InfoByte = "Teams Object - DetailedVoice" 
+          $InfoByte = "Teams Object - DetailedVoice"
           "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-          
+
           $SkypeOnlineUser | Select-Object `
           UserPrincipalName,SipAddress,Enabled,TeamsUpgradeEffectiveMode,TeamsUpgradePolicy,HostedVoiceMail,EnterpriseVoiceEnabled,OnPremEnterpriseVoiceEnabled,`
           TelephoneNumber,LineUri,OnPremLineUri,OnPremLineURIManuallySet,DialPlan,TenantDialPlan,VoicePolicy,VoiceRoutingPolicy,OnlineVoiceRoutingPolicy,TeamsVoiceRoute | `
@@ -756,9 +756,9 @@ function Set-TeamsUserForVoice
         #endregion
         #region Teams Policy Information
         IF($IncludePolicies) {
-          $InfoByte = "Teams Object - Policies" 
+          $InfoByte = "Teams Object - Policies"
           "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-          
+
           $SkypeOnlineUser | Select-Object `
           UserPrincipalName,*Policy* | `
           Out-File -FilePath "$EvidenceLogFile" -Append
@@ -789,14 +789,14 @@ function Set-TeamsUserForVoice
         else          {$ExecuteAssignAction = Get-Consent}
         if($ExecuteAssignAction) {
             #Output for SUCCESS
-            if ($Silent)    {$Message += " - GAINED SILENTLTY"}
+            if ($Silent)    {$Message += " - GAINED SILENTLY"}
             else            {$Message += " - GAINED"}
         }
         else {
             #Output for FAILED
             $Message += " - NOT GAINED"
         }
-        Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent    
+        Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
         #endregion
 
         #region Payload for Action Assign or Amend
@@ -872,7 +872,7 @@ function Set-TeamsUserForVoice
           }
           #endregion
 
-          #region Test '$Identity': $Action`: Activity: Granting Tenant Dial Plan 
+          #region Test '$Identity': $Action`: Activity: Granting Tenant Dial Plan
           # Situational - ONLY used with Switch $AssignTenantDialPlan
           IF($AssignTenantDialPlan)
           {
@@ -895,11 +895,11 @@ function Set-TeamsUserForVoice
           }
           #endregion
         }
-        Else 
+        Else
         {
           $Message = "'$Identity': Action: $Action`: No Action taken"
           $Level = "Info"
-          Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent          
+          Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
         }
         #endregion
       }
@@ -1018,11 +1018,11 @@ function Set-TeamsUserForVoice
           }
           #endregion
         }
-        else 
+        else
         {
           $Message = "'$Identity': Action: $Action`: No Consent given - Object not changed"
           $Level = "Info"
-          Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent          
+          Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
         }
         #endregion
       }
@@ -1044,7 +1044,7 @@ function Set-TeamsUserForVoice
       Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
       #endregion
 
-      
+
       #region OUTPUT: Object Record in Teams (Verification)
       if(-not $Silent -and ($Assign -or $Amend -or $Remove)) {
         #region Check: Object Record in Teams - Voice Status
@@ -1074,10 +1074,10 @@ function Set-TeamsUserForVoice
           Format-List
         }
         #endregion
-      } 
+      }
       #endregion
 
-      #region EVIDENCE: PostChange Log   
+      #region EVIDENCE: PostChange Log
       IF($WriteLog -and ($Assign -or $Amend -or $Remove)) {
         #Re-query Object
         $SkypeOnlineUser = Get-CsOnlineUser $Identity -ErrorAction SilentlyContinue
@@ -1085,15 +1085,15 @@ function Set-TeamsUserForVoice
         #region Preparing Evidence File
         $Step = "PostChange"
         $EvidenceLogName = "TMS " + $Action
-        [system.string]$EvidenceLogFileIs = Write-ApplicbleEvidenceLog -Step $Step -LogName $EvidenceLogName -Path $LogPath
+        [system.string]$EvidenceLogFileIs = Write-ApplicableEvidenceLog -Step $Step -LogName $EvidenceLogName -Path $LogPath
         $EvidenceLogFile = $EvidenceLogFileIs.Trim()
         #endregion
-        
+
         #region Writing Content to File
         #region AzureAD Information
-        $InfoByte = "AzureAD Object" 
+        $InfoByte = "AzureAD Object"
         "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-        
+
         $AzureADUser | Select-Object `
         DisplayName,UserPrincipalName,ObjectType,AccountEnabled,`
         DirSyncEnabled,LastDirSyncTime,Country,UsageLocation |`
@@ -1101,13 +1101,13 @@ function Set-TeamsUserForVoice
 
         $message = "'$Identity': Evidence Log $Step - $InfoByte - written to $EvidenceLogFile"
         $Level = "Info"
-        Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent        
+        Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
         #endregion
         #region Teams Voice Information
         IF(-not $DetailedVoice) {
-          $InfoByte = "Teams Object - TDR Voice Config" 
+          $InfoByte = "Teams Object - TDR Voice Config"
           "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-          
+
           $SkypeOnlineUser | Select-Object `
           UserPrincipalName,SipAddress,Enabled,TeamsUpgradeEffectiveMode,TeamsUpgradePolicy,HostedVoiceMail,EnterpriseVoiceEnabled,`
           OnPremLineUri,DialPlan,TenantDialPlan,OnlineVoiceRoutingPolicy | `
@@ -1116,9 +1116,9 @@ function Set-TeamsUserForVoice
           $message = "'$Identity': Evidence Log $Step - $InfoByte - written to $EvidenceLogFile"
         }
         else {
-          $InfoByte = "Teams Object - DetailedVoice" 
+          $InfoByte = "Teams Object - DetailedVoice"
           "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-          
+
           $SkypeOnlineUser | Select-Object `
           UserPrincipalName,SipAddress,Enabled,TeamsUpgradeEffectiveMode,TeamsUpgradePolicy,HostedVoiceMail,EnterpriseVoiceEnabled,OnPremEnterpriseVoiceEnabled,`
           TelephoneNumber,LineUri,OnPremLineUri,OnPremLineURIManuallySet,DialPlan,TenantDialPlan,VoicePolicy,VoiceRoutingPolicy,OnlineVoiceRoutingPolicy,TeamsVoiceRoute | `
@@ -1127,20 +1127,20 @@ function Set-TeamsUserForVoice
           $message = "'$Identity': Evidence Log $Step - $InfoByte - written to $EvidenceLogFile"
         }
         $Level = "Info"
-        Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent        
+        Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
         #endregion
         #region Teams Policy Information
         IF($IncludePolicies) {
-          $InfoByte = "Teams Object - Policies" 
+          $InfoByte = "Teams Object - Policies"
           "'$Identity' - $InfoByte" | Out-File -FilePath "$EvidenceLogFile" -Append
-          
+
           $SkypeOnlineUser | Select-Object `
           UserPrincipalName,*Policy* | `
           Out-File -FilePath "$EvidenceLogFile" -Append
 
           $message = "'$Identity': Evidence Log $Step - $InfoByte - written to $EvidenceLogFile"
           $Level = "Info"
-          Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent          
+          Write-ApplicableLog -Message $Message -Level $Level -Log $LogFileName -Visible $Silent
         }
         #endregion
         #endregion
@@ -1168,13 +1168,13 @@ function Set-TeamsUserForVoice
         Line      = $e.InvocationInfo.ScriptLineNumber
         Column    = $e.InvocationInfo.OffsetInLine
       }
-  
+
       # output Info. Post-process collected info, and log info (optional)
       $info
     }
 
     #endregion
   }
-  
+
 }
 #end

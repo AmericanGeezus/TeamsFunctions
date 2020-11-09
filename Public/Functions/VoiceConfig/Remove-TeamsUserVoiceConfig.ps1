@@ -113,95 +113,18 @@ function Remove-TeamsUserVoiceConfig {
       #region Information Gathering
       # Querying Identity
       try {
-        $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
+        Write-Verbose -Message "User '$User' - Querying User Account"
+        $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
+        Write-Error "User '$User' not queryied: $($_.Exception.Message)" -Category ObjectNotFound
+        continue
       }
 
       # Querying User Licenses
-      $CsUserLicense = Get-TeamsUserLicense $User
-      #endregion
-
-
-      #region Generic/shared Configuration
-      # Disabling EnterpriseVoice
-      Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice"
-      if ($CsUser.EnterpriseVoiceEnabled) {
-        if ($PSBoundParameters.ContainsKey('DoNotDisableEV')) {
-          Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
-        }
-        else {
-          try {
-            if ($Force -or $PSCmdlet.ShouldProcess("$User", "Disabling EnterpriseVoice")) {
-              $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
-              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: OK"
-            }
-            else {
-              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not confirmed)"
-            }
-          }
-          catch {
-            Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Failed" -Verbose
-            Write-Error -Message "Error:  $($error.Exception.Message)"
-          }
-        }
-      }
-      else {
-        Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not enabled)" -Verbose
-      }
-
-
-      # Removing Tenant DialPlan
-      Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan"
-      if ($null -ne $CsUser.TenantDialPlan) {
-        try {
-          $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
-          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: OK"
-        }
-        catch {
-          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Failed" -Verbose
-          Write-Error -Message "Error:  $($error.Exception.Message)"
-        }
-      }
-      else {
-        Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Not assigned"
-      }
-      #endregion
-
-
-      #region Direct Routing Configuration
-      if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
-        # Removing Online Voice Routing Policy
-        Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy"
-        if ($null -ne $CsUser.OnlineVoiceRoutingPolicy) {
-          try {
-            $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
-            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: OK"
-          }
-          catch {
-            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Failed" -Verbose
-            Write-Error -Message "Error:  $($error.Exception.Message)"
-          }
-        }
-        else {
-          Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Not assigned"
-        }
-        # Removing OnPremLineURI
-        Write-Verbose -Message "User '$User' - Removing: OnPremLineURI"
-        if ($null -ne $CsUser.OnPremLineURI) {
-          try {
-            $CsUser | Set-CsUser -OnPremLineURI $Null
-            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: OK"
-          }
-          catch {
-            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Failed" -Verbose
-            Write-Error -Message "Error:  $($error.Exception.Message)"
-          }
-        }
-        else {
-          Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Not assigned"
-        }
+      if ($Scope -eq "All" -or $Scope -eq "CallingPlans") {
+        Write-Verbose -Message "User '$User' - Querying User License"
+        $CsUserLicense = Get-TeamsUserLicense $User
       }
       #endregion
 
@@ -231,7 +154,7 @@ function Remove-TeamsUserVoiceConfig {
             if ($null -ne $CsUser.TelephoneNumber) {
               try {
                 $CsUser | Set-CsUser -TelephoneNumber $Null
-                Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: OK"
+                Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: OK" -Verbose
               }
               catch {
                 Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: Failed" -Verbose
@@ -239,7 +162,7 @@ function Remove-TeamsUserVoiceConfig {
               }
             }
             else {
-              Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: Not assigned"
+              Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: Not assigned" -Verbose
             }
 
             # Removing Call Plan Licenses (with Confirmation)
@@ -247,7 +170,7 @@ function Remove-TeamsUserVoiceConfig {
             try {
               if ($Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
                 Set-TeamsUserLicense -Identity $User -RemoveLicenses $RemoveLicenses
-                Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: OK"
+                Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: OK" -Verbose
               }
             }
             catch {
@@ -256,7 +179,7 @@ function Remove-TeamsUserVoiceConfig {
             }
           }
           else {
-            Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: None assigned"
+            Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: None assigned" -Verbose
           }
 
         }
@@ -266,6 +189,91 @@ function Remove-TeamsUserVoiceConfig {
       }
       #endregion
 
+
+      #region Direct Routing Configuration
+      if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
+        #region Removing OnPremLineURI
+        Write-Verbose -Message "User '$User' - Removing: OnPremLineURI"
+        if ($null -ne $CsUser.OnPremLineURI) {
+          try {
+            $CsUser | Set-CsUser -OnPremLineURI $Null
+            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: OK" -Verbose
+          }
+          catch {
+            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Failed" -Verbose
+            Write-Error -Message "Error:  $($error.Exception.Message)"
+          }
+        }
+        else {
+          Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Not assigned" -Verbose
+        }
+        #endregion
+
+        #region Removing Online Voice Routing Policy
+        Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy"
+        if ($null -ne $CsUser.OnlineVoiceRoutingPolicy) {
+          try {
+            $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
+            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: OK" -Verbose
+          }
+          catch {
+            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Failed" -Verbose
+            Write-Error -Message "Error:  $($error.Exception.Message)"
+          }
+        }
+        else {
+          Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Not assigned"
+        }
+        #endregion
+      }
+      #endregion
+
+
+      #region Generic/shared Configuration
+      #region Removing Tenant DialPlan
+      Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan"
+      if ($null -ne $CsUser.TenantDialPlan) {
+        try {
+          $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
+          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: OK" -Verbose
+        }
+        catch {
+          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Failed" -Verbose
+          Write-Error -Message "Error:  $($error.Exception.Message)"
+        }
+      }
+      else {
+        Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Not assigned" -Verbose
+      }
+      #endregion
+
+      #region Disabling EnterpriseVoice
+      Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice"
+      if ($CsUser.EnterpriseVoiceEnabled) {
+        if ($PSBoundParameters.ContainsKey('DoNotDisableEV')) {
+          Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
+        }
+        else {
+          try {
+            if ($Force -or $PSCmdlet.ShouldProcess("$User", "Disabling EnterpriseVoice")) {
+              $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
+              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: OK" -Verbose
+            }
+            else {
+              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not confirmed)" -Verbose
+            }
+          }
+          catch {
+            Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Failed" -Verbose
+            Write-Error -Message "Error:  $($error.Exception.Message)"
+          }
+        }
+      }
+      else {
+        Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not enabled)" -Verbose
+      }
+      #endregion
+      #endregion
     }
   } #process
 
