@@ -5,8 +5,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ## v20.11.07-prerelease
 
 - **Updated**
+  - `Test-TeamsUserLicense`: Now writes a warning when multiple assignments have been found. Returns $true if one of them is "Success"
+  - `Get-TeamsUserLicense`: Added parameter `PhoneSystemStatus` which will display display the values of ProvisioningStatus for all assignments as an array.
   - `Get-TeamsUserVoiceConfig`: Added parameter `PhoneSystemStatus` to list of Parameters to identify VoiceConfig capabilities better (Assigned but Disabled)
-  - `Set-TeamsUserVoiceConfig`: Script has advanced to BETA Status. All functions scripted. Testing commences
+  - `Set-TeamsUserVoiceConfig`: Script has advanced to BETA Status. All functions scripted. Testing OK for Direct Routing.
 
 ---------------------------------------------
 

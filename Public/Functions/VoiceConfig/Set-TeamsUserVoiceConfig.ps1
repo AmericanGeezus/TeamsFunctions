@@ -381,6 +381,8 @@ function Set-TeamsUserVoiceConfig {
     }
     else {
       # Re-Query Object
+      Write-Verbose -Message "Waiting 2s for Office 365 to update the User Object before re-query (Policies might not show yet)" -Verbose
+      Start-Sleep -Seconds 2
       $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity
       return $UserObjectPost
     }
