@@ -92,8 +92,11 @@ function Test-TeamsUserLicense {
           #Checks if the Provisioning Status is also "Success"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object -Property ServicePlanName -EQ -Value $ServicePlan)
           Write-Verbose -Message "ServicePlan: $ServicePlanStatus"
-          if ('Success' -eq $ServicePlanStatus.ProvisioningStatus) {
+          if ('Success' -in $ServicePlanStatus.ProvisioningStatus) {
             Write-Verbose -Message "Service Plan found and provisioned successfully."
+            if ( $ServicePlanStatus.ProvisioningStatus.Count -gt 1 ) {
+              Write-Warning -Message "Multiple assignments found for PhoneSystem. Please verify License assignment!"
+            }
             return $true
           }
           else {

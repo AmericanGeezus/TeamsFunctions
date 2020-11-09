@@ -184,22 +184,29 @@ function Set-TeamsUserVoiceConfig {
       Write-Verbose -Message "User '$Identity' - Querying User License"
       $CsUserLicense = Get-TeamsUserLicense $Identity
       #TEST Get-TeamsUserLicense was only recently expanded to include the PhoneSystemStatus. This needs testing
-      if ( $CsUserLicense.PhoneSystemStatus -ne "Success" ) {
+      if ( $CsUserLicense.PhoneSystemStatus.Count -gt 1 ) {
+        Write-Verbose -Message "License Status:" -Verbose
+        $CsUserLicense.Licenses
+        $CsUserLicense.ServicePlans
+      }
+
+      if ( "Success" -notin $CsUserLicense.PhoneSystemStatus ) {
         throw "User '$Identity' is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
       }
       <# Alternative with Get-TeamsUserVoiceConfig
-      if ( -not (Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV)  ) {
-        throw
+      if ( -not (Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV) ) {
+        throw "User '$Identity' is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
       }
       #>
     }
     catch {
       # Unlicensed
-      Write-Verbose -Message "User is not licensed correctly"
-      $CsUserLicense
-      Write-Error -Message "User '$Identity' is not licensed (PhoneSystem). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a license that contains Phone System" -ErrorAction Stop
+      Write-Warning -Message "User '$Identity' is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'. Assignment will continue, though be only partially successful. "
+      Write-Verbose -Message "License Status:" -Verbose
+      $CsUserLicense.Licenses
+      #Write-Error -Message "User '$Identity' is not licensed (PhoneSystem). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a license that contains Phone System" -ErrorAction Stop
       $ErrorLog += $_.Exception.Message
-      return $ErrorLog
+      #return $ErrorLog
     }
 
     # Enable if not Enabled for EnterpriseVoice
@@ -228,9 +235,7 @@ function Set-TeamsUserVoiceConfig {
       }
       catch {
         # Unlicensed
-        Write-Verbose -Message "User is not licensed correctly"
-        $CsUserLicense
-        Write-Error -Message "User '$Identity' is not licensed (CallingPlan). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a Calling Plan license" -ErrorAction Stop
+        Write-Error -Message "User '$Identity' is not licensed (CallingPlan). Please assign a Calling Plan license" -Category ResourceUnavailable -RecommendedAction "Please assign a Calling Plan license" -ErrorAction Stop
         $ErrorLog += $_.Exception.Message
         return $ErrorLog
       }
@@ -258,7 +263,7 @@ function Set-TeamsUserVoiceConfig {
       # Enable HostedVoicemail
       try {
         Write-Verbose -Message "User '$Identity' Enabling user for Hosted Voicemail"
-        [void]$CsUser | Set-CsUser -HostedVoicemail $TRUE -ErrorAction Stop
+        $CsUser | Set-CsUser -HostedVoicemail $TRUE -ErrorAction Stop
       }
       catch {
         if ( -not $Silent ) {
@@ -271,7 +276,7 @@ function Set-TeamsUserVoiceConfig {
       if ( $TenantDialPlan ) {
         try {
           Write-Verbose -Message "User '$Identity' Applying Tenant Dial Plan"
-          [void]$CsUser | Grant-CsTenantDialPlan -PolicyName $TenantDialPlan -ErrorAction Stop
+          $CsUser | Grant-CsTenantDialPlan -PolicyName $TenantDialPlan -ErrorAction Stop
         }
         catch {
           if ( -not $Silent ) {
@@ -293,7 +298,7 @@ function Set-TeamsUserVoiceConfig {
           # Apply $OnlineVoiceRoutingPolicy
           try {
             Write-Verbose -Message "User '$Identity' Applying Online Voice Routing Policy"
-            [void]$CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
+            $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
           }
           catch {
             if ( -not $Silent ) {
@@ -305,7 +310,7 @@ function Set-TeamsUserVoiceConfig {
           # Apply $PhoneNumber as OnPremLineUri
           try {
             Write-Verbose -Message "User '$Identity' Applying Phone Number"
-            [void]$CsUser | Set-CsUser -OnPremLineUri $PhoneNumber -ErrorAction Stop
+            $CsUser | Set-CsUser -OnPremLineUri $PhoneNumber -ErrorAction Stop
           }
           catch {
             if ( -not $Silent ) {
@@ -336,7 +341,7 @@ function Set-TeamsUserVoiceConfig {
           try {
             Write-Verbose -Message "User '$Identity' Applying Phone Number"
             # Pipe should work but was not yet tested.
-            #[void]$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
+            #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
             $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $PhoneNumber -ErrorAction Stop
           }
           catch {
