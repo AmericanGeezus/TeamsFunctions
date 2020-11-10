@@ -211,7 +211,7 @@ function Set-TeamsUserVoiceConfig {
 
     # Enable if not Enabled for EnterpriseVoice
     if ( -not $IsEVenabled) {
-      Write-Verbose -Message "User '$Identity' Enterprise Voice Status: Not enabled, trying to Enable user." -Verbose
+      #Write-Verbose -Message "User '$Identity' Enterprise Voice Status: Not enabled, trying to Enable user." -Verbose
       if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
         $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
       }
@@ -381,7 +381,7 @@ function Set-TeamsUserVoiceConfig {
     }
     else {
       # Re-Query Object
-      Write-Verbose -Message "Waiting 2s for Office 365 to update the User Object before re-query (Policies might not show yet)" -Verbose
+      Write-Verbose -Message "Waiting 2s for Office 365 to write changes to User Object (Policies might not show up yet)" -Verbose
       Start-Sleep -Seconds 2
       $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity
       return $UserObjectPost

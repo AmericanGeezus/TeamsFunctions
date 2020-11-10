@@ -15,10 +15,12 @@ function Remove-TeamsUserVoiceConfig {
 	.PARAMETER Scope
     Optional. Default is "All". Definition of Scope for removal of Voice Configuration.
     Allowed Values are: All, DirectRouting, CallPlans
-	.PARAMETER DoNotDisableEV
-    Optional. Instructs the Script to leave the parameter EnterpriseVoiceEnabled as it is
-    This is useful for migrating Users between Voice Configuration as it retains the users DialPad in Teams.
-    NOTE: The User will be Enabled, but will not have an option to use the PhoneSystem as no valid Voice Configuration is in place.
+	.PARAMETER DisableEV
+    Optional. Instructs the Script to also disable the Enterprise Voice enablement of the User
+    By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice.
+    This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad)
+    EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed
+    NOTE: If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.
 	.PARAMETER Force
 		Optional. Suppresses Confirmation for license Removal unless -Confirm is specified explicitly.
 	.EXAMPLE
@@ -67,8 +69,8 @@ function Remove-TeamsUserVoiceConfig {
     [string]$Scope = "All",
 
     [Parameter(HelpMessage = "Instructs the Script to forego the disablement for EnterpriseVoice")]
-    [Alias('DoNotDisableEnterpriseVoice')]
-    [switch]$DoNotDisableEV,
+    [Alias('DisableEnterpriseVoice')]
+    [switch]$DisableEV,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force
@@ -250,10 +252,7 @@ function Remove-TeamsUserVoiceConfig {
       #region Disabling EnterpriseVoice
       Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice"
       if ($CsUser.EnterpriseVoiceEnabled) {
-        if ($PSBoundParameters.ContainsKey('DoNotDisableEV')) {
-          Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
-        }
-        else {
+        if ($PSBoundParameters.ContainsKey('DisableEV')) {
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$User", "Disabling EnterpriseVoice")) {
               $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
@@ -267,6 +266,9 @@ function Remove-TeamsUserVoiceConfig {
             Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
+        }
+        else {
+          Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
         }
       }
       else {
