@@ -539,7 +539,7 @@ function New-TeamsAutoAttendant {
           }
 
           # Building Menu Only if Successful
-          if ($BusinessHoursCallTargetIdentity) {
+          if ($BusinessHoursCallTargetEntity) {
             $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity.Id -DtmfResponse Automatic
             $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionTransfer)
 
