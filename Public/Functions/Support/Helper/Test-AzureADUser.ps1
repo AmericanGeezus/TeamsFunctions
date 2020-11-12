@@ -4,6 +4,9 @@
 # Updated:  01-JUL-2020
 # Status:   PreLive
 
+
+
+
 function Test-AzureADUser {
   <#
 	.SYNOPSIS
@@ -40,8 +43,13 @@ function Test-AzureADUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      $null = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
-      return $true
+      $UserObject = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
+      if ( $null -ne $UserObject ) {
+        return $true
+      }
+      else {
+        return $false
+      }
     }
     catch [Microsoft.Open.AzureAD16.Client.ApiException] {
       return $False

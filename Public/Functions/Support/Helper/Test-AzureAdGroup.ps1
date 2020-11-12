@@ -43,15 +43,20 @@ function Test-AzureAdGroup {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
       $Group2 = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
-      if ($null -ne $Group2) {
+      if ( $null -ne $Group2 ) {
         return $true
       }
       else {
         try {
           $MailNickName = $Identity.Split('@')[0]
-          $null = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
-          Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
-          return $true
+          $Group3 = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
+          if ( $null -ne $Group3 ) {
+            Write-Verbose "Test-AzureAdGroup found the group with its 'MailNickName'"
+            return $true
+          }
+          else {
+            return $false
+          }
         }
         catch {
           return $false

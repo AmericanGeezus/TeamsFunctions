@@ -133,9 +133,14 @@ function Get-TeamsUserLicense {
       $CallingPlanInt = ("MCOPSTN2" -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom120 = ("MCOPSTN5" -in $UserServicePlans.ServicePlanName)
 
-      #TEST Get-TeamsUserLicense was only recently expanded to include the PhoneSystemStatus. This needs testing
+      # Phone System
       if ( $PhoneSystemLicense ) {
-        $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV").ProvisioningStatus
+        $PhoneSystemProvisioningStatus = $UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV"
+        if ( $PhoneSystemProvisioningStatus.Count -gt 1 ) {
+          # PhoneSystem assigned more than once!
+          Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
+        }
+        $PhoneSystemStatus = $PhoneSystemProvisioningStatus.ProvisioningStatus
       }
       elseif ( $PhoneSystemVirtual ) {
         $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV_VIRTUALUSER").ProvisioningStatus
@@ -144,7 +149,7 @@ function Get-TeamsUserLicense {
         $PhoneSystemStatus = "Unassigned"
       }
 
-
+      # Calling Plans
       if ($CallingPlanDom120) {
         $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN5"
       }

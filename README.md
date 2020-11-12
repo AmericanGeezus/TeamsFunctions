@@ -34,15 +34,14 @@ Functions for licensing in AzureAD. Hopefully simplifies license application a b
 
 Functions for querying Teams Voice Configuration, both for Direct Routing and Calling Plans
 
-| Function                      | Alias           | Description                                                                                                                                                  |
-| ----------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Get-TeamsTenantVoiceConfig`  |                 | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                                  |
-| `Get-TeamsUserVoiceConfig`    | Get-TeamsUVC    | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output. Switch *DiagnosticLevel* displays more parameters     |
-| `Find-TeamsUserVoiceConfig`   | Find-TeamsUVC   | Queries Voice Configuration parameters against all Users on the tenant. Good to find where a specific Number is assigned to.                                 |
-| New-TeamsUserVoiceConfig      | New-TeamsUVC    | TBA - Function not yet built! Applies a full Set of Voice Configuration (Number, OnlineVoiceRouting Policy, Tenant Dial Plan, etc.) to the provided Identity |
-| Set-TeamsUserVoiceConfig      | Set-TeamsUVC    | TBA - Function not yet built! Applies a full Set of Voice Configuration (Number, OnlineVoiceRouting Policy, Tenant Dial Plan, etc.) to the provided Identity |
-| `Remove-TeamsUserVoiceConfig` | Remove-TeamsUVC | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set            |
-| `Test-TeamsUserVoiceConfig`   | Test-TeamsUVC   | TBC - Tests an individual VoiceConfig Package against the provided Identity                                                                                  |
+| Function                      | Alias           | Description                                                                                                                                              |
+| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Get-TeamsTenantVoiceConfig`  |                 | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                              |
+| `Get-TeamsUserVoiceConfig`    | Get-TeamsUVC    | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output. Switch *DiagnosticLevel* displays more parameters |
+| `Find-TeamsUserVoiceConfig`   | Find-TeamsUVC   | Queries Voice Configuration parameters against all Users on the tenant. Good to find where a specific Number is assigned to.                             |
+| `Set-TeamsUserVoiceConfig`    | Set-TeamsUVC    | Applies a full Set of Voice Configuration (Number, OnlineVoiceRouting Policy, Tenant Dial Plan, etc.) to the provided Identity                           |
+| `Remove-TeamsUserVoiceConfig` | Remove-TeamsUVC | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set        |
+| `Test-TeamsUserVoiceConfig`   | Test-TeamsUVC   | TBC - Tests an individual VoiceConfig Package against the provided Identity                                                                              |
 
 ### Resource Accounts
 
@@ -97,6 +96,18 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 | `New-TeamsAutoAttendantPrompt`         | New-TeamsAAPrompt         | New-CsTeamsAutoAttendantPrompt         | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String) |
 | `New-TeamsAutoAttendantSchedule`       | New-TeamsAASchedule       | New-CsTeamsAutoAttendantSchedule       | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants               |
 
+### Lookup Commands
+
+The more prominent helper functions. Get-AzureAdAssignedAdminRoles is run with `Connect-Me`, but can be used on its own just as well. The others are mainly helping to cut down on typing when doing stuff quickly. Using `Get-AzureAdUser -Searchstring "$UPN"` is fine, but sometimes I just want to bash in the $UPN and get a result. Other times knowing just enough is enough. Like knowing only the names of the Tenant Dial Plan or the Online Voice Routing Policy in question is just what I need, nothing more.
+
+| Function                        | Description                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------- |
+| `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser                                   |
+| `Get-AzureAdUserFromUPN`        | Helper Function to avoid having to type the SearchString-command. Returns AzureAdUser |
+| `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                                    |
+| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)          |
+| `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...          |
+
 ### Backup and Restore
 
 Curtesy of Ken Lasko
@@ -118,8 +129,6 @@ Curtesy of Ken Lasko
 | `Format-StringForUse`                    | Formats a String and removes special characters                                                                |
 | `Get-SkuIDFromSkuPartNumber`             | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                                   |
 | `Get-SkuPartNumberFromSkuID`             | Helper function for Licensing. Returns a SkuPartNumber from a specific SkuID                                   |
-| `Get-AzureAdAssignedAdminRoles`          | Displays all Admin Roles assigned to an AzureAdUser                                                            |
-| `Get-AzureAdUserFromUPN`                 | Helper Function to avoid having to type the SearchString-command. Returns AzureAdUser                          |
 | `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain                                                     |
 | `Import-TeamsAudioFile`                  | Imports an Audio File for use within Call Queues or Auto Attendants                                            |
 | `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove                       |
@@ -146,7 +155,7 @@ These are helper functions for testing Connections and Modules. All Functions re
 | `Test-TeamsTenantPolicy`        | Tests whether any Policy is present in the Tenant (Uses Invoke-Expression)  |
 | `Test-TeamsExternalDNS`         | Tests DNS Records for Skype for Business Online and Teams                   |
 
-NOTE: Some non-Exported functions are not listed here.
+NOTE: Private functions are not exported and also not listed here.
 
 ***
 
