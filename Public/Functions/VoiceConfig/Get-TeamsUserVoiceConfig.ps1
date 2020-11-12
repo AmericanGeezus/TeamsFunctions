@@ -99,6 +99,7 @@ function Get-TeamsUserVoiceConfig {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     foreach ($User in $Identity) {
+      #region Information Gathering
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
@@ -111,20 +112,46 @@ function Get-TeamsUserVoiceConfig {
       }
 
       # Constructing InterpretedVoiceConfigType
+      Write-Verbose -Message "Testing InterpretedVoiceConfigType..."
       if ($CsUser.VoicePolicy -eq "BusinessVoice") {
+        Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
         $InterpretedVoiceConfigType = "CallingPlans"
       }
       elseif ($CsUser.VoicePolicy -eq "HybridVoice") {
+        Write-Verbose -Message "VoicePolicy found as 'HybridVoice'..."
         if ($null -ne $CsUser.VoiceRoutingPolicy -and $null -eq $CsUser.OnlineVoiceRoutingPolicy) {
+          Write-Verbose -Message "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
           $InterpretedVoiceConfigType = "SkypeHybridPSTN"
         }
         else {
+          Write-Verbose -Message "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
           $InterpretedVoiceConfigType = "DirectRouting"
         }
       }
       else {
+        Write-Verbose -Message "InterpretedVoiceConfigType is 'Unknown' (undetermined)"
         $InterpretedVoiceConfigType = "Unknown"
       }
+
+      # Testing ObjectType
+      Write-Verbose -Message "Testing ObjectType..."
+      if ( Test-AzureADGroup $CsUser.UserPrincipalName ) {
+        Write-Verbose -Message "ObjectType is 'Group'"
+        $ObjectType = "Group"
+      }
+      elseif ( Test-CsOnlineApplicationInstance $CsUser.UserPrincipalName ) {
+        Write-Verbose -Message "ObjectType is 'ApplicationInstance'"
+        $ObjectType = "ApplicationInstance"
+      }
+      elseif ( Test-AzureADUser $CsUser.UserPrincipalName ) {
+        Write-Verbose -Message "ObjectType is 'User'"
+        $ObjectType = "User"
+      }
+      else {
+        Write-Verbose -Message "ObjectType is 'Unknown'"
+        $ObjectType = "Unknown"
+      }
+      #endregion
 
 
       #region Creating Base Custom Object
@@ -135,6 +162,7 @@ function Get-TeamsUserVoiceConfig {
         SipAddress                 = $CsUser.SipAddress
         ObjectId                   = $CsUser.ObjectId
         HostingProvider            = $CsUser.HostingProvider
+        ObjectType                 = $ObjectType
         InterpretedUserType        = $CsUser.InterpretedUserType
         InterpretedVoiceConfigType = $InterpretedVoiceConfigType
         TeamsUpgradeEffectiveMode  = $CsUser.TeamsUpgradeEffectiveMode
@@ -205,8 +233,8 @@ function Get-TeamsUserVoiceConfig {
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountIsValid -Value $CsUser.IsValid
             $UserObject | Add-Member -MemberType NoteProperty -Name CsWhenCreated -Value $CsUser.WhenCreated
             $UserObject | Add-Member -MemberType NoteProperty -Name CsWhenChanged -Value $CsUser.WhenChanged
-            $UserObject | Add-Member -MemberType NoteProperty -Name ObjectType -Value $AdUser.ObjectType
-            $UserObject | Add-Member -MemberType NoteProperty -Name ObjectClass -Value $CsUser.ObjectClass
+            $UserObject | Add-Member -MemberType NoteProperty -Name AdObjectType -Value $AdUser.ObjectType
+            $UserObject | Add-Member -MemberType NoteProperty -Name AdObjectClass -Value $CsUser.ObjectClass
 
           }
           { $PSItem -ge 4 } {

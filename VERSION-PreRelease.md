@@ -5,10 +5,19 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ## v20.11.07-prerelease
 
 - **Updated**
+  - `Test-AzureAdUser`: Small update to gain more accurate results (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
+  - `Test-AzureAdGroup`: Small update to gain more accurate results (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
   - `Test-TeamsUserLicense`: Now writes a warning when multiple assignments have been found. Returns $true if one of them is "Success"
   - `Get-TeamsUserLicense`: Added parameter `PhoneSystemStatus` which will display display the values of ProvisioningStatus for all assignments as an array.
-  - `Get-TeamsUserVoiceConfig`: Added parameter `PhoneSystemStatus` to list of Parameters to identify VoiceConfig capabilities better (Assigned but Disabled)
+  - `Get-TeamsUserVoiceConfig`:
+    - Added parameter `ObjectType` (Level 0) to identify the ObjectType, shown just before the `InterpretedUserType`
+    - Added parameter `PhoneSystemStatus` (Level 0) to list of Parameters to identify VoiceConfig capabilities better (Assigned but Disabled)
+    - Parameter "ObjectType" has been renamed to `AdObjectType` to indicate where the value is from
+    - Parameter "ObjectClass" has followed suit: `AdObjectClass` for consistency.
   - `Set-TeamsUserVoiceConfig`: Script has advanced to BETA Status. All functions scripted. Testing OK for Direct Routing.
+
+- **New**
+  - `Test-CsOnlineApplicationInstance`: New Script to test whether an Object is a ResourceAccount (used in `Get-TeamsUserVoiceConfig`)
 
 ---------------------------------------------
 
