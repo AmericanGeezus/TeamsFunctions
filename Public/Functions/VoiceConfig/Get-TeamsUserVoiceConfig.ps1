@@ -135,7 +135,32 @@ function Get-TeamsUserVoiceConfig {
 
       # Testing ObjectType
       Write-Verbose -Message "Testing ObjectType..."
+      <# Alternative Approach - Untested
+      try {
+        $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName -ErrorAction Stop
+      }
+      catch {
+        $ObjectType = "Unknown"
+      }
+      #>
+
+      <# Alternative Approach: Fastest?
+      #CHECK Remove completely as it is part of the InterpretedUserType OR Keep b/c useful?
+      if ( "User" -in $CsUser.InterpretedUserType ) {
+        Write-Verbose -Message "ObjectType is 'User'"
+        $ObjectType = "User"
+      }
+      elseif ( "ApplicationInstance" -in $CsUser.InterpretedUserType ) {
+        Write-Verbose -Message "ObjectType is 'ApplicationInstance'"
+        $ObjectType = "ApplicationInstance"
+      }
+      else {
+        Write-Verbose -Message "ObjectType is 'Unknown'"
+        $ObjectType = "Unknown"
+      }
+      #>
       if ( Test-AzureADGroup $CsUser.UserPrincipalName ) {
+        #CHECK Can you Query groups this way or would that be pointless (i.E. waste of time? Measure!)
         Write-Verbose -Message "ObjectType is 'Group'"
         $ObjectType = "Group"
       }

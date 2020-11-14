@@ -19,15 +19,15 @@ function New-TeamsAutoAttendantCallableEntity {
   .PARAMETER Identity
     Required. Tel URI, Group Name or UserPrincipalName, depending on the Entity Type
   .PARAMETER ReturnObjectIdOnly
-    Internal only! Enables this Command to be used for Call Queues.
-    This will validate the Object and then only return the ObjectId
+    Using this switch will return only the ObjectId of the validated CallableEntity, but will not create the Object
+    This way the Command can be used to validate connected Objects for Call Queues.
   .PARAMETER Force
     Suppresses confirmation prompt to enable Users for Enterprise Voice, if required and $Confirm is TRUE
   .EXAMPLE
-    New-TeamsAutoAttendantDialScope -Type ExternalPstn -Identity "tel:+1555123456"
-    Creates a callable Entity for the Tel URI
+    New-TeamsAutoAttendantEntity -Type ExternalPstn -Identity "tel:+1555123456"
+    Creates a callable Entity for the provided string, normalising it into a Tel URI
   .EXAMPLE
-    New-TeamsAutoAttendantDialScope -Type User -Identity John@domain.com
+    New-TeamsAutoAttendantEntity -Type User -Identity John@domain.com
     Creates a callable Entity for the User John@domain.com
   .NOTES
     For Users, it will verify the Objects eligibility.
@@ -45,7 +45,7 @@ function New-TeamsAutoAttendantCallableEntity {
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('New-TeamsAAEntity')]
+  [Alias('New-TeamsAAEntity', 'New-TeamsCallableEntity')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Callable Entity type: ExternalPstn, User, SharedVoiceMail, ApplicationEndpoint")]
