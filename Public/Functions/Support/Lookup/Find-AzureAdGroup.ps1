@@ -7,10 +7,10 @@
 
 
 
-function Test-AzureAdGroup {
+function Find-AzureAdGroup {
   <#
 	.SYNOPSIS
-		Tests whether an Group exists in Azure AD (record found)
+		Returns an Object if an AzureAd Group has been found
 	.DESCRIPTION
 		Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
 	.PARAMETER Identity
@@ -28,9 +28,10 @@ function Test-AzureAdGroup {
 	#>
 
   [CmdletBinding()]
-  [OutputType([Boolean])]
+  [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Alias('GroupName', 'Name')]
     [string]$Identity
   ) #param
 
@@ -51,7 +52,7 @@ function Test-AzureAdGroup {
     try {
       $Group = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
       if ( $null -ne $Group ) {
-        return $true
+        return $Group
       }
       else {
         try {
@@ -59,14 +60,16 @@ function Test-AzureAdGroup {
           $Group2 = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
           if ( $null -ne $Group2 ) {
             Write-Verbose -Message "Group find by 'MailNickName'"
-            return $true
+            return $Group2
           }
           else {
-            return $false
+            Write-Verbose -Message "Group '$Identity' not found" -Verbose
+            return $null
           }
         }
         catch {
-          return $false
+          Write-Verbose -Message "Group '$Identity' not found" -Verbose
+          return $null
         }
       }
     }
@@ -74,14 +77,16 @@ function Test-AzureAdGroup {
       try {
         $Group3 = Get-AzureADGroup -ObjectId $Identity -WarningAction SilentlyContinue -ErrorAction STOP
         if ( $null -ne $Group3 ) {
-          return $true
+          return $Group3
         }
         else {
-          return $false
+          Write-Verbose -Message "Group '$Identity' not found" -Verbose
+          return $null
         }
       }
       catch {
-        return $false
+        Write-Verbose -Message "Group '$Identity' not found" -Verbose
+        return $null
       }
     }
   } #process
@@ -89,4 +94,4 @@ function Test-AzureAdGroup {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Test-AzureAdGroup
+} #Find-AzureAdGroup

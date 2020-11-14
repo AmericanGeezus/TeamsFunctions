@@ -1,10 +1,10 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Lookup
 # Author:     David Eberhardt
-# Updated:    01-SEP-2020
+# Updated:    14-NOV-2020
 # Status:     PreLive
 
-function Get-AzureAdUserFromUpn {
+function Find-AzureAdUser {
   <#
 	.SYNOPSIS
 		Returns User Object in Azure AD from a provided UPN
@@ -14,7 +14,7 @@ function Get-AzureAdUserFromUpn {
 	.PARAMETER Identity
 		Required. The sign-in address or User Principal Name of the user account to query.
 	.EXAMPLE
-		Get-AzureAdUserFromUpn John@domain.com
+		Find-AzureAdUser John@domain.com
 		Will Return the Azure AD Object for John@domain.com, otherwise returns error message from Get-AzureAdUser
   .INPUTS
     System.String
@@ -51,10 +51,12 @@ function Get-AzureAdUserFromUpn {
         Write-Output $User
       }
       catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
+        Write-Verbose -Message "User '$UPN' not found" -Verbose
+        return $null
       }
       catch {
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
+        Write-Verbose -Message "User '$UPN' not found" -Verbose
+        return $null
       }
     }
 
@@ -63,4 +65,4 @@ function Get-AzureAdUserFromUpn {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-AzureAdUserFromUPN
+} #Find-AzureAdUser

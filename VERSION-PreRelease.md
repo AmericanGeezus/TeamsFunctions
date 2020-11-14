@@ -18,6 +18,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 - **New**
   - `Test-CsOnlineApplicationInstance`: New Script to test whether an Object is a ResourceAccount (used in `Get-TeamsUserVoiceConfig`)
+  - `Find-AzureAdGroup`: A fork of Test-AzureAdGroup, returning the Group Object if found, `$null` if not.
+  - `Find-AzureAdUser`: Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers. Returns object if found, `$null` if not.
 
 ---------------------------------------------
 

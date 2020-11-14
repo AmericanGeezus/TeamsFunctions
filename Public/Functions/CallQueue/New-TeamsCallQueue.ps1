@@ -2,12 +2,15 @@
 # Function: CallQueue
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   PreLive
+
+
+
 
 function New-TeamsCallQueue {
   <#
 	.SYNOPSIS
-		New-CsCallQueue with UPNs instead of GUIDs
+		New-CsCallQueue with UPNs instead of IDs
 	.DESCRIPTION
     This function handles all options New-CsCallQueue offers.
     It can be seen as a replacement/upgrade, but it differs in a few significant respects:
@@ -190,11 +193,11 @@ function New-TeamsCallQueue {
     #region OverflowAction = SharedVoiceMail
     # if OverflowAction is SharedVoicemail one of the following two have to be provided
     [Parameter(HelpMessage = "Text-to-speech Message. This will require the LanguageId Parameter")]
-    [Alias('OATTS', 'OverflowSharedVMTTS')]
+    [Alias('OfSVmTTS')]
     [string]$OverflowSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = "Path to Audio File for the SharedVoiceMail Message")]
-    [Alias('OASharedVMFile', 'OverflowSharedVMFile')]
+    [Alias('OverflowSharedVMFile')]
     [ValidateScript( {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
@@ -213,13 +216,13 @@ function New-TeamsCallQueue {
     [string]$OverflowSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
-    [Alias('OASharedVMTranscript')]
+    [Alias('EnableOsVmTranscript')]
     [bool]$EnableOverflowSharedVoicemailTranscription,
     #endregion
 
     #Deviation from MS Default (50)
     [Parameter(HelpMessage = "Time in seconds (0-200s) before timeout action is triggered (Default: 10, Note: Microsoft default: 50)")]
-    [Alias('OAthreshold', 'OAQueueLength')]
+    [Alias('OfThreshold', 'OfQueueLength')]
     [ValidateScript( {
         If ($_ -ge 0 -and $_ -le 200) {
           $True
@@ -246,11 +249,11 @@ function New-TeamsCallQueue {
     #region TimeoutAction = SharedVoiceMail
     # if TimeoutAction is SharedVoicemail one of the following two have to be provided
     [Parameter(HelpMessage = "Text-to-speech Message. This will require the LanguageId Parameter")]
-    [Alias('TATTS', 'TimeoutSharedVMTTS')]
+    [Alias('ToSVmTTS')]
     [string]$TimeoutSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = "Path to Audio File for the SharedVoiceMail Message")]
-    [Alias('TOSharedVMFile', 'TimeoutSharedVMFile')]
+    [Alias('TimeoutSharedVMFile')]
     [ValidateScript( {
         If (Test-Path $_) {
           If ((Get-Item $_).length -le 5242880 -and ($_ -match '.mp3' -or $_ -match '.wav' -or $_ -match '.wma')) {
@@ -269,13 +272,13 @@ function New-TeamsCallQueue {
     [string]$TimeoutSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = "Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox")]
-    [Alias('TOSharedVMTranscript')]
+    [Alias('EnableToSVmTranscript')]
     [bool]$EnableTimeoutSharedVoicemailTranscription,
     #endregion
 
     #Deviation from MS Default (1200s)
     [Parameter(HelpMessage = "Time in seconds (0-2700s) before timeout action is triggered (Default: 30, Note: Microsoft default: 1200)")]
-    [Alias('TOThreshold')]
+    [Alias('ToThreshold')]
     [ValidateScript( {
         If ($_ -ge 0 -and $_ -le 2700) {
           $True
@@ -346,9 +349,7 @@ function New-TeamsCallQueue {
 
   begin {
     # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -628,9 +629,10 @@ function New-TeamsCallQueue {
                 }
                 else {
                   $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-                  if ( -not $IsEVenabled) {
+                  if ( -not $IsEVenabled ) {
                     Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
                     if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                      $IsEVenabled = $null
                       $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
                     }
                   }
@@ -661,6 +663,7 @@ function New-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+          #TODO: Rework to check against CSUserObject and License (and EV enablement, not against AdUser!)
           try {
             $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
@@ -695,6 +698,7 @@ function New-TeamsCallQueue {
 
           #region Processing OverflowActionTarget for SharedVoiceMail
           try {
+            #TODO Rework section to use Find-AzureAdGroup (create if not yet done)
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
             $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $OverflowActionTargetId) {
@@ -738,15 +742,15 @@ function New-TeamsCallQueue {
         Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for OverflowAction '$OverflowAction'" -Verbose
       }
       else {
-        $OFSVMFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
-        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OFSVMFileName'" -Verbose
+        $OfSVmFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OfSVmFileName'" -Verbose
         try {
-          $OFSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
-          Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OFSVMFile.FileName)'"
-          $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OFSVMFile.Id }
+          $OfSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OfSVmFile.FileName)'"
+          $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OfSVmFile.Id }
         }
         catch {
-          Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OFSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          Write-Error -Message "Import of OverflowSharedVoicemailAudioFile: '$OfSVmFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
           return
         }
       }
@@ -843,6 +847,7 @@ function New-TeamsCallQueue {
                   if ( -not $IsEVenabled) {
                     Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
                     if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                      $IsEVenabled = $null
                       $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
                     }
                   }
@@ -873,6 +878,7 @@ function New-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+          #TODO: Rework to check against CSUserObject and License (and EV enablement, not against AdUser!)
           try {
             $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
@@ -907,6 +913,7 @@ function New-TeamsCallQueue {
 
           #region Processing TimeoutActionTarget for SharedVoiceMail
           try {
+            #TODO Rework section to use Find-AzureAdGroup (create if not yet done)
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
             $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
             if ($null -eq $TimeoutActionTargetId) {
@@ -950,15 +957,15 @@ function New-TeamsCallQueue {
         Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Not processing Parameter as it is not valid for TimeoutAction '$TimeoutAction'" -Verbose
       }
       else {
-        $TOSVMFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
-        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$TOSVMFileName'" -Verbose
+        $ToSVmFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
+        Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$ToSVmFileName'" -Verbose
         try {
-          $TOSVMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
-          Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($TOSVMFile.FileName)'"
-          $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $TOSVMFile.Id }
+          $ToSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
+          Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($ToSVmFile.FileName)'"
+          $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $ToSVmFile.Id }
         }
         catch {
-          Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$TOSVMFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
+          Write-Error -Message "Import of TimeoutSharedVoicemailAudioFile: '$ToSVmFileName' failed." -Category InvalidData -RecommendedAction "Please check file size and compression ratio. If in doubt, provide WAV"
           return
         }
       }
@@ -1005,9 +1012,10 @@ function New-TeamsCallQueue {
           }
           else {
             $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-            if ( -not $IsEVenabled) {
+            if ( -not $IsEVenabled ) {
               Write-Verbose -Message "User '$User' found and licensed, but not enabled for EnterpriseVoice" -Verbose
               if ($Force -or $PSCmdlet.ShouldProcess("$User", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                $IsEVenabled = $null
                 $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $User -Force
               }
             }
@@ -1040,7 +1048,7 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
-        $DLObject = Resolve-AzureAdGroupObjectFromName "$DL"
+        $DLObject = Find-AzureAdGroup "$DL"
 
         if ($DLObject) {
           Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose

@@ -40,7 +40,7 @@ function Get-TeamsUserVoiceConfig {
     Parameters are additive, meaning with each DiagnosticLevel more information is displayed
 
     This script takes a select set of Parameters from AzureAD, Teams & Licensing. For a full parameterset, please run:
-    - for AzureAD:    "Get-AzureADUserFromUPN $Identity | FL"
+    - for AzureAD:    "Find-AzureAdUser $Identity | FL"
     - for Licensing:  "Get-TeamsUserLicense $Identity"
     - for Teams:      "Get-CsOnlineUser $Identity"
 	.FUNCTIONALITY

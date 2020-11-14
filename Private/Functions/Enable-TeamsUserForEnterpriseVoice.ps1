@@ -4,6 +4,9 @@
 # Updated:    01-OCT-2020
 # Status:     PreLive
 
+
+
+
 function Enable-TeamsUserForEnterpriseVoice {
   <#
 	.SYNOPSIS
@@ -46,16 +49,16 @@ function Enable-TeamsUserForEnterpriseVoice {
         if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Enabling User for EnterpriseVoice")) {
           $null = Set-CsUser $Identity -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
           $i = 0
-          $imax = 20
+          $iMax = 20
           Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
           while ( -not $(Get-CsOnlineUser $Identity -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
-            if ($i -gt $imax) {
-              Write-Error -Message "User was not enabled for Enterprise Voice in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
+            if ($i -gt $iMax) {
+              Write-Error -Message "User was not enabled for Enterprise Voice in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
               return
             }
             Write-Progress -Activity "'$Identity' Enabling for Enterprise Voice. Please wait" `
-              -PercentComplete (($i * 100) / $imax) `
-              -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+              -PercentComplete (($i * 100) / $iMax) `
+              -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
 
             Start-Sleep -Milliseconds 1000
             $i++

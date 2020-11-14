@@ -212,7 +212,7 @@ Celebrating 7500 lines of code
 
 ## v20.6.9.1 - June 2020 Release
 
-- Added `Get-AzureADUserFromUPN` to simplify looking up Users in AzureAD by providing the UserPrincipalName
+- Added `Get-AzureAdUserFromUpn` to simplify looking up Users in AzureAD by providing the UserPrincipalName (now renamed to `Find-AzureAdUser`)
 - Added Call Queue Scripts
   - `New-CsCallQueue`
   - `Get-CsCallQueue`
