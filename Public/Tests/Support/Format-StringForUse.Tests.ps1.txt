@@ -1,0 +1,36 @@
+﻿# Tests
+# Testing DisplayName
+
+# Testing UserPrincipalName
+
+
+# Testing LineURI
+Format-StringForUse -InputString "TEL: +1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "TEL:+1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "TEL: 1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "+1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "1 (555) 1234-567 ;EXT=1234" -As LineURI
+
+Format-StringForUse -InputString "tel: +1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "tel:+1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "tel: 1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "+1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "1 (555) 1234-567" -As LineURI
+Format-StringForUse -InputString "1 (555) 1234-567 ;ext=1234" -As LineURI
+
+# Testing E164
+Format-StringForUse -InputString "TEL: +1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "TEL:+1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "TEL: 1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "+1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "1 (555) 1234-567 ;EXT=1234" -As E164
+
+Format-StringForUse -InputString "tel: +1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "tel:+1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "tel: 1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "+1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "1 (555) 1234-567" -As E164
+Format-StringForUse -InputString "1 (555) 1234-567 ;ext=1234" -As E164
+

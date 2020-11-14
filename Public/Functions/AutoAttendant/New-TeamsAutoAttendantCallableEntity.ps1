@@ -93,25 +93,21 @@ function New-TeamsAutoAttendantCallableEntity {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($Type) {
       "ExternalPstn" {
+        $Id = Format-StringForUse -InputString "$Identity" -As LineURI
         try {
-          if ($Identity -match "^tel:\+\d") {
-            #Telephone URI
-            $Id = "tel:$Identity"
-          }
-          elseif ($Identity -match "^\+\d") {
-            #Telephone Number (E.164)
-            $Id = "$Identity"
+          if ($Id -match "^tel:\+\d") {
+            Write-Verbose -Message "Callable Entity - Call Target '$Id' (TelURI) used"
           }
           else {
-            Write-Error -Message "Invalid format Target for Type 'ExternalPstn'. Please provide a Tel URI or an E.164 number" -Category InvalidType -RecommendedAction "Please correct and retry" -ErrorAction Stop
+            throw
           }
-          Write-Verbose -Message "Callable Entity - Call Target '$Identity' (TelURI) used"
         }
         catch {
-          Write-Error -Message "Callable Entity - Call Target '$Identity' (TelURI) not enumerated. Omitting Object" -Category ResourceUnavailable -ErrorAction Stop
+          Write-Error -Message "Invalid format for Type 'ExternalPstn'. Please provide a Tel URI or an E.164 number" -Category InvalidType -RecommendedAction "Please correct and retry" -ErrorAction Stop
         }
       }
       "User" {
+        #TODO Switch to Find-AzureAdUser?
         if ( Test-AzureADUser $Identity ) {
           $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
           $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
@@ -156,7 +152,8 @@ function New-TeamsAutoAttendantCallableEntity {
 
       }
       "ApplicationEndpoint" {
-        if (Test-AzureADUser $Identity) {
+        #TODO Switch this to Find-TeamsResourceAccount?
+        if (Test-TeamsResourceAccount $Identity) {
           $Id = (Get-TeamsResourceAccount "$Identity" -ErrorAction STOP).ObjectId
           if ($Id) {
             Write-Verbose -Message "Callable Entity - Call Target '$Identity' (VoiceApp - ApplicationInstance - ResourceAccount) used"

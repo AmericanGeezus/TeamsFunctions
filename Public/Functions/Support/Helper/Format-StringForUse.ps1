@@ -12,7 +12,7 @@ function Format-StringForUse {
 	.SYNOPSIS
 		Formats a string by removing special characters usually not allowed.
 	.DESCRIPTION
-		Special Characters in strings usually lead to terminating erros.
+		Special Characters in strings usually lead to terminating errors.
 		This function gets around that by formating the string properly.
 		Use is limited, but can be used for UPNs and Display Names
 		Adheres to Microsoft recommendation of special Characters
@@ -39,6 +39,12 @@ function Format-StringForUse {
   .EXAMPLE
     Format-StringForUse  -InputString "<my>\Test(String)" -As DisplayName
     Returns "myTest(String)" for DisplayName does not support some special characters
+  .EXAMPLE
+    Format-StringForUse  -InputString "1 (555) 1234-567" -As E164
+    Returns "+15551234567" for LineURI does not support spaces, dashes, parenthesis characters and must start with "+"
+  .EXAMPLE
+    Format-StringForUse  -InputString "1 (555) 1234-567" -As LineURI
+    Returns "tel:+15551234567" for LineURI does not support spaces, dashes, parenthesis characters and must start with "tel:+"
   .INPUTS
     System.String
   .OUTPUTS
@@ -55,7 +61,7 @@ function Format-StringForUse {
     [string]$Replacement = "",
 
     [Parameter(ParameterSetName = "Specific")]
-    [ValidateSet("UserPrincipalName", "DisplayName")]
+    [ValidateSet("UserPrincipalName", "DisplayName", "E164", "LineURI")]
     [string]$As,
 
     [Parameter(ParameterSetName = "Manual")]
@@ -77,7 +83,25 @@ function Format-StringForUse {
             $CharactersToRemove = '\%&*+/=?{}|<>();:,[]"'
             $CharactersToRemove += "'´"
           }
-          "DisplayName" { $CharactersToRemove = '\%*+/=?{}|<>[]"' }
+          "DisplayName" {
+            $CharactersToRemove = '\%*+/=?{}|<>[]"'
+          }
+          "E164" {
+            $CharactersToRemove = '\%*/@:=-()?{}|<>[]" abcdefghijklmnopqrstuvwxyz;'
+
+            if ( $Replacement -ne "") {
+              Write-Warning -Message "Replacement is not allowed for '$As'. Ignoring input"
+              $Replacement = "" # Replacement is not allowed
+            }
+          }
+          "LineURI" {
+            $CharactersToRemove = '\%*/-()?{}|<>[]" abcdfghijkmnopqrsuvwyz'
+
+            if ( $Replacement -ne "") {
+              Write-Warning -Message "Replacement is not allowed for '$As'. Ignoring input"
+              $Replacement = "" # Replacement is not allowed
+            }
+          }
         }
       }
       "Manual" { $CharactersToRemove = $SpecialChars }
@@ -86,7 +110,38 @@ function Format-StringForUse {
 
     $rePattern = ($CharactersToRemove.ToCharArray() | ForEach-Object { [regex]::Escape($_) }) -join "|"
 
-    $InputString -replace $rePattern, $Replacement
+    if ($As -eq 'E164') {
+      # Truncating Extension if specified ";ext=" if specified
+      $InputString = $InputString.split(";")[0]
+    }
+
+    [String]$String = $InputString -replace $rePattern, $Replacement
+
+    if ($As -eq 'E164') {
+      switch -regex ($String) {
+        "^\d" { [String]$OutputString = "+" + $String; Break }
+        "^\+\d" { [String]$OutputString = $String; Break }
+      }
+      if ( -not $OutputString ) {
+        [String]$OutputString = ""
+      }
+    }
+    elseif ($As -eq 'LineURI') {
+      switch -regex ($String) {
+        "^\d" { [String]$OutputString = "tel:+" + $String; Break }
+        "^\+\d" { [String]$OutputString = "tel:" + $String; Break }
+        "^tel:\+\d" { [String]$OutputString = $String; Break }
+        "^tel:\d" { [String]$OutputString = $String -replace "tel:", "tel:+"; Break }
+      }
+      if ( -not $OutputString ) {
+        [String]$OutputString = ""
+      }
+    }
+    else {
+      [String]$OutputString = $String
+    }
+
+    return $OutputString
   } #process
 
   end {

@@ -1,13 +1,13 @@
 ﻿# Module:   TeamsFunctions
 # Function: Support
-# Author:		David Eberhardt
+# Author:	David Eberhardt
 # Updated:  01-JUL-2020
 # Status:   PreLive
 
 
 
 
-function Test-CsOnlineApplicationInstance {
+function Test-TeamsResourceAccount {
     <#
 	.SYNOPSIS
 		Tests whether an Application Instance exists in Azure AD (record found)
@@ -16,7 +16,7 @@ function Test-CsOnlineApplicationInstance {
 	.PARAMETER Identity
 		Mandatory. The sign-in address or User Principal Name of the user account to test.
 	.EXAMPLE
-		Test-CsOnlineApplicationInstance -Identity $UPN
+		Test-TeamsResourceAccount -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
   #>
@@ -51,4 +51,4 @@ function Test-CsOnlineApplicationInstance {
     end {
         Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
     } #end
-} #Test-CsOnlineApplicationInstance
+} #Test-TeamsResourceAccount

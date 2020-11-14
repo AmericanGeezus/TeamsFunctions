@@ -613,9 +613,10 @@ function New-TeamsCallQueue {
               #Telephone URI
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTarget }
             }
-            elseif ($OverflowActionTarget -match "^\+\d") {
+            elseif ($OverflowActionTarget -match "^\+\d" -and -not ($OverflowActionTarget -match '@')) {
               #Telephone Number (E.164)
-              $OverflowActionTargetNormalised = "tel:" + $OverflowActionTarget
+              #$OverflowActionTargetNormalised = "tel:" + $OverflowActionTarget
+              $OverflowActionTargetNormalised = Format-StringForUse -InputString "$OverflowActionTarget" -As LineURI
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetNormalised }
             }
             elseif ($OverflowActionTarget -match '@') {
@@ -828,9 +829,10 @@ function New-TeamsCallQueue {
               #Telephone URI
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTarget }
             }
-            elseif ($TimeoutActionTarget -match "^\+\d") {
+            elseif ($TimeoutActionTarget -match "^\+\d" -and -not ($TimeoutActionTarget -match '@')) {
               #Telephone Number (E.164)
-              $TimeoutActionTargetNormalised = "tel:" + $TimeoutActionTarget
+              #$TimeoutActionTargetNormalised = "tel:" + $TimeoutActionTarget
+              $TimeoutActionTarget = Format-StringForUse -InputString "$TimeoutActionTarget" -As LineURI
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetNormalised }
             }
             elseif ($TimeoutActionTarget -match '@') {

@@ -139,7 +139,7 @@ function Get-TeamsUserVoiceConfig {
         Write-Verbose -Message "ObjectType is 'Group'"
         $ObjectType = "Group"
       }
-      elseif ( Test-CsOnlineApplicationInstance $CsUser.UserPrincipalName ) {
+      elseif ( Test-TeamsResourceAccount $CsUser.UserPrincipalName ) {
         Write-Verbose -Message "ObjectType is 'ApplicationInstance'"
         $ObjectType = "ApplicationInstance"
       }

@@ -15,9 +15,12 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
     - Parameter "ObjectType" has been renamed to `AdObjectType` to indicate where the value is from
     - Parameter "ObjectClass" has followed suit: `AdObjectClass` for consistency.
   - `Set-TeamsUserVoiceConfig`: Script has advanced to BETA Status. All functions scripted. Testing OK for Direct Routing.
+  - `Format-StringForUse`:
+    - Added an option to normalise Strings `-As E164` - This will format any String to an E.164 Number, for example: "1 (555) 1234-567" to "+15551234567"
+    - Added an option to normalise Strings `-As LineURI` - This will format any String to a LineURI, for example: "1 (555) 1234-567 ;ext=1234" to "tel:+15551234567;ext=1234"
 
 - **New**
-  - `Test-CsOnlineApplicationInstance`: New Script to test whether an Object is a ResourceAccount (used in `Get-TeamsUserVoiceConfig`)
+  - `Test-TeamsResourceAccount`: New Script to test whether an Object is a ResourceAccount (used in `Get-TeamsUserVoiceConfig`)
   - `Find-AzureAdGroup`: A fork of Test-AzureAdGroup, returning the Group Object if found, `$null` if not.
   - `Find-AzureAdUser`: Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers. Returns object if found, `$null` if not.
 
