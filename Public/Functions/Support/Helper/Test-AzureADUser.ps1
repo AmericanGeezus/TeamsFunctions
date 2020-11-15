@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: Support
 # Author:		David Eberhardt
-# Updated:  01-JUL-2020
+# Updated:  14-NOV-2020
 # Status:   PreLive
 
 
@@ -19,6 +19,12 @@ function Test-AzureADUser {
 		Test-AzureADUser -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
+  .LINK
+    Find-AzureAdGroup
+    Find-AzureAdUser
+    Test-AzureAdGroup
+    Test-AzureAdUser
+    Test-TeamsUser
   #>
 
   [CmdletBinding()]
@@ -52,10 +58,10 @@ function Test-AzureADUser {
       }
     }
     catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-      return $False
+      return $false
     }
     catch {
-      return $False
+      return $false
     }
   } #process
 

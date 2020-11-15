@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+
+
+
 function Get-TeamsResourceAccount {
   <#
 	.SYNOPSIS
@@ -101,6 +104,9 @@ function Get-TeamsResourceAccount {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    # Loading all Microsoft Telephone Numbers
+    Write-Verbose -Message "Gathering Phone Numbers from the Tenant"
+    $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
   } #begin
 
   process {
@@ -135,11 +141,6 @@ function Get-TeamsResourceAccount {
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
       Write-Verbose -Message "PhoneNumber - Searching for PhoneNumber '$PhoneNumber'"
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$PhoneNumber*"
-
-      # Loading all Microsoft Telephone Numbers
-      Write-Verbose -Message "Gathering Phone Numbers from the Tenant"
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
     }
     else {
       Write-Verbose -Message "Querying all Resource Accounts, this may take some time..." -Verbose
@@ -191,6 +192,8 @@ function Get-TeamsResourceAccount {
         # Phone Number Type
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"
         if ($null -ne $ResourceAccount.PhoneNumber) {
+          $PhoneNumberIsMSNumber = $null
+          $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
           if ($PhoneNumberIsMSNumber) {
             $ResourceAccountPhoneNumberType = "Microsoft Number"
           }
@@ -203,21 +206,19 @@ function Get-TeamsResourceAccount {
         }
 
         # Associations
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
-        try {
-          $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
-          $AssocObject = switch ($Association.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
+        $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        if ( $Association ) {
+          Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
+          $AssociationObject = switch ($Association.ConfigurationType) {
+            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
           }
-          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -ErrorAction SilentlyContinue
-        }
-        catch {
-          $AssocObject	= $null
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
 
         # creating new PS Object (synchronous with Get and Set)
         $ResourceAccountObject = [PSCustomObject][ordered]@{
+          ObjectId                 = $ResourceAccount.ObjectId
           UserPrincipalName        = $ResourceAccount.UserPrincipalName
           DisplayName              = $ResourceAccount.DisplayName
           ApplicationType          = $ResourceAccountApplicationType
@@ -226,7 +227,7 @@ function Get-TeamsResourceAccount {
           PhoneNumberType          = $ResourceAccountPhoneNumberType
           PhoneNumber              = $ResourceAccount.PhoneNumber
           OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy
-          AssociatedTo             = $AssocObject.Name
+          AssociatedTo             = $AssociationObject.Name
           AssociatedAs             = $Association.ConfigurationType
           AssociationStatus        = $AssociationStatus.Status
         }

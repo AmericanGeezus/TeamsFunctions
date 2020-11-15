@@ -1,8 +1,11 @@
 ﻿# Module:   TeamsFunctions
 # Function: Support
 # Author:		David Eberhardt
-# Updated:  01-JUL-2020
+# Updated:  14-NOV-2020
 # Status:   PreLive
+
+
+
 
 function Test-TeamsUser {
   <#
@@ -16,6 +19,12 @@ function Test-TeamsUser {
 		Test-TeamsUser -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
+  .LINK
+    Find-AzureAdGroup
+    Find-AzureAdUser
+    Test-AzureAdGroup
+    Test-AzureAdUser
+    Test-TeamsUser
   #>
 
   [CmdletBinding()]
@@ -37,11 +46,19 @@ function Test-TeamsUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      $null = Get-CsOnlineUser -Identity $Identity -WarningAction SilentlyContinue -ErrorAction STOP
-      return $true
+      $CsOnlineUser = Get-CsOnlineUser -Identity $Identity -WarningAction SilentlyContinue -ErrorAction STOP
+      if ( $null -ne $CsOnlineUser ) {
+        return $true
+      }
+      else {
+        return $false
+      }
     }
     catch [System.Exception] {
-      return $False
+      return $false
+    }
+    catch {
+      return $false
     }
   } #process
 

@@ -2,7 +2,10 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   RC
+
+
+#TODO Extend Schedule templates - MON-FRI 9-5 & 24x7 - maybe with switch?
 
 function New-TeamsAutoAttendant {
   <#
@@ -212,7 +215,7 @@ function New-TeamsAutoAttendant {
     # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

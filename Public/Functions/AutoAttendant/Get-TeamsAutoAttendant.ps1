@@ -117,7 +117,7 @@ function Get-TeamsAutoAttendant {
             }
             else {
               # Parsing Callable Entity
-              #TODO Get-TeamsAutoAttendantCallableEntity can be used to do this, if it can search by type (needs to be extended first though)
+              #TODO Resolve-TeamsCallableEntity can be used to do this, if it can search by type (needs to be extended first though)
               switch ($AA.Operator.Type) {
                 "User" {
                   try {

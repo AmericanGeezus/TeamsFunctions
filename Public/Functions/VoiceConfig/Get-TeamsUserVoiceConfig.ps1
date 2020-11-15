@@ -40,7 +40,7 @@ function Get-TeamsUserVoiceConfig {
     Parameters are additive, meaning with each DiagnosticLevel more information is displayed
 
     This script takes a select set of Parameters from AzureAD, Teams & Licensing. For a full parameterset, please run:
-    - for AzureAD:    "Get-AzureADUserFromUPN $Identity | FL"
+    - for AzureAD:    "Find-AzureAdUser $Identity | FL"
     - for Licensing:  "Get-TeamsUserLicense $Identity"
     - for Teams:      "Get-CsOnlineUser $Identity"
 	.FUNCTIONALITY
@@ -135,22 +135,7 @@ function Get-TeamsUserVoiceConfig {
 
       # Testing ObjectType
       Write-Verbose -Message "Testing ObjectType..."
-      if ( Test-AzureADGroup $CsUser.UserPrincipalName ) {
-        Write-Verbose -Message "ObjectType is 'Group'"
-        $ObjectType = "Group"
-      }
-      elseif ( Test-CsOnlineApplicationInstance $CsUser.UserPrincipalName ) {
-        Write-Verbose -Message "ObjectType is 'ApplicationInstance'"
-        $ObjectType = "ApplicationInstance"
-      }
-      elseif ( Test-AzureADUser $CsUser.UserPrincipalName ) {
-        Write-Verbose -Message "ObjectType is 'User'"
-        $ObjectType = "User"
-      }
-      else {
-        Write-Verbose -Message "ObjectType is 'Unknown'"
-        $ObjectType = "Unknown"
-      }
+      $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
       #endregion
 
 
@@ -174,7 +159,6 @@ function Get-TeamsUserVoiceConfig {
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses
         $CsUserLicense = Get-TeamsUserLicense -Identity "$($CsUser.UserPrincipalName)"
-        #TEST Get-TeamsUserLicense was recently expanded to include the PhoneSystemStatus. This could also be used to query this
 
         # Adding Parameters
         $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames

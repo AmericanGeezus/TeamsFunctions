@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   RC
 
 
 
@@ -19,15 +19,15 @@ function New-TeamsAutoAttendantCallableEntity {
   .PARAMETER Identity
     Required. Tel URI, Group Name or UserPrincipalName, depending on the Entity Type
   .PARAMETER ReturnObjectIdOnly
-    Internal only! Enables this Command to be used for Call Queues.
-    This will validate the Object and then only return the ObjectId
+    Using this switch will return only the ObjectId of the validated CallableEntity, but will not create the Object
+    This way the Command can be used to validate connected Objects for Call Queues.
   .PARAMETER Force
     Suppresses confirmation prompt to enable Users for Enterprise Voice, if required and $Confirm is TRUE
   .EXAMPLE
-    New-TeamsAutoAttendantDialScope -Type ExternalPstn -Identity "tel:+1555123456"
-    Creates a callable Entity for the Tel URI
+    New-TeamsAutoAttendantEntity -Type ExternalPstn -Identity "tel:+1555123456"
+    Creates a callable Entity for the provided string, normalising it into a Tel URI
   .EXAMPLE
-    New-TeamsAutoAttendantDialScope -Type User -Identity John@domain.com
+    New-TeamsAutoAttendantEntity -Type User -Identity John@domain.com
     Creates a callable Entity for the User John@domain.com
   .NOTES
     For Users, it will verify the Objects eligibility.
@@ -45,7 +45,7 @@ function New-TeamsAutoAttendantCallableEntity {
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('New-TeamsAAEntity')]
+  [Alias('New-TeamsAAEntity', 'New-TeamsCallableEntity')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Callable Entity type: ExternalPstn, User, SharedVoiceMail, ApplicationEndpoint")]
@@ -64,10 +64,7 @@ function New-TeamsAutoAttendantCallableEntity {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -93,60 +90,62 @@ function New-TeamsAutoAttendantCallableEntity {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($Type) {
       "ExternalPstn" {
+        $Id = Format-StringForUse -InputString "$Identity" -As LineURI
         try {
-          if ($Identity -match "^tel:\+\d") {
-            #Telephone URI
-            $Id = "tel:$Identity"
-          }
-          elseif ($Identity -match "^\+\d") {
-            #Telephone Number (E.164)
-            $Id = "$Identity"
+          if ($Id -match "^tel:\+\d") {
+            Write-Verbose -Message "Callable Entity - Call Target '$Id' (TelURI) used"
           }
           else {
-            Write-Error -Message "Invalid format Target for Type 'ExternalPstn'. Please provide a Tel URI or an E.164 number" -Category InvalidType -RecommendedAction "Please correct and retry" -ErrorAction Stop
+            throw
           }
-          Write-Verbose -Message "Callable Entity - Call Target '$Identity' (TelURI) used"
         }
         catch {
-          Write-Error -Message "Callable Entity - Call Target '$Identity' (TelURI) not enumerated. Omitting Object" -Category ResourceUnavailable -ErrorAction Stop
+          Write-Error -Message "Invalid format for Type 'ExternalPstn'. Please provide a Tel URI or an E.164 number" -Category InvalidType -RecommendedAction "Please correct and retry" -ErrorAction Stop
         }
       }
       "User" {
+        <#TEST this!
         if ( Test-AzureADUser $Identity ) {
           $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-          $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+          #>
+        #Query is against the $Identity (UserPrincipalName), this should be returning a unique result, but could return multiple!
+        $UserObject = Find-AzureADUser $Identity
+        if ( $UserObject ) {
+          $IsEVenabled = $UserObject.EnterpriseVoiceEnabled # Safeguard with this? $UserObject[0].EnterpriseVoiceEnabled
           $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+
+          if ( -not $IsLicensed  ) {
+            Write-Error -Message "Callable Entity - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a license that contains Phone System" -ErrorAction Stop
+          }
+
+          if ( -not $IsEVenabled) {
+            Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) found and licensed, but not (yet) enabled for EnterpriseVoice" -Verbose
+            if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+              $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+            }
+          }
+
+          # Post Verification
+          if ( $IsEVenabled ) {
+            Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) used"
+            $Id = $UserObject.ObjectId
+          }
+          else {
+            Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not enumerated. Omitting Object" -Category ResourceUnavailable -ErrorAction Stop
+          }
         }
         else {
           Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not found" -Category ObjectNotFound -ErrorAction Stop
         }
 
-        if ( -not $IsLicensed  ) {
-          Write-Error -Message "Callable Entity - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a license that contains Phone System" -ErrorAction Stop
-        }
-
-        if ( -not $IsEVenabled) {
-          Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
-          if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-            $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
-          }
-        }
-
-        # Add Operator
-        if ( $IsEVenabled ) {
-          Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) used"
-          $Id = (Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-        }
-        else {
-          Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not enumerated. Omitting Object" -Category ResourceUnavailable -ErrorAction Stop
-        }
 
       }
       "SharedVoicemail" {
         $DLObject = $null
-        $DLObject = Resolve-AzureAdGroupObjectFromName "$Identity"
+        $DLObject = Find-AzureAdGroup "$Identity"
 
         if ($DLObject) {
+          #TEST against Unique Results!
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' (Group) used"
           $Id = $DLObject.ObjectId
         }
@@ -156,14 +155,10 @@ function New-TeamsAutoAttendantCallableEntity {
 
       }
       "ApplicationEndpoint" {
-        if (Test-AzureADUser $Identity) {
-          $Id = (Get-TeamsResourceAccount "$Identity" -ErrorAction STOP).ObjectId
-          if ($Id) {
-            Write-Verbose -Message "Callable Entity - Call Target '$Identity' (VoiceApp - ApplicationInstance - ResourceAccount) used"
-          }
-          else {
-            Write-Warning -Message "Callable Entity - Call Target '$Identity' (VoiceApp - ApplicationInstance - ResourceAccount) not enumerated. Omitting Object"
-          }
+        $RAobject = Find-TeamsResourceAccount "$Identity"
+        if ($RAobject) {
+          Write-Verbose -Message "Callable Entity - Call Target '$Identity' (VoiceApp - ApplicationInstance - ResourceAccount) used"
+          $Id = $RA.ObjectId
         }
         else {
           Write-Error -Message "Callable Entity - Call Target '$Identity' (VoiceApp - ApplicationInstance - ResourceAccount) not found" -Category ObjectNotFound -ErrorAction Stop

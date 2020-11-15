@@ -7,10 +7,10 @@
 
 
 
-function Test-AzureAdGroup {
+function Find-AzureAdGroup {
   <#
 	.SYNOPSIS
-		Tests whether an Group exists in Azure AD (record found)
+		Returns an Object if an AzureAd Group has been found
 	.DESCRIPTION
 		Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
 	.PARAMETER Identity
@@ -28,9 +28,10 @@ function Test-AzureAdGroup {
 	#>
 
   [CmdletBinding()]
-  [OutputType([Boolean])]
+  [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Alias('GroupName', 'Name')]
     [string]$Identity
   ) #param
 
@@ -48,45 +49,24 @@ function Test-AzureAdGroup {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    try {
-      $Group = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
-      if ( $null -ne $Group ) {
-        return $true
-      }
-      else {
-        try {
-          $MailNickName = $Identity.Split('@')[0]
-          $Group2 = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $null -ne $Group2 ) {
-            Write-Verbose -Message "Group find by 'MailNickName'"
-            return $true
-          }
-          else {
-            return $false
-          }
-        }
-        catch {
-          return $false
-        }
-      }
-    }
-    catch {
-      try {
-        $Group3 = Get-AzureADGroup -ObjectId $Identity -WarningAction SilentlyContinue -ErrorAction STOP
-        if ( $null -ne $Group3 ) {
-          return $true
-        }
-        else {
-          return $false
-        }
-      }
-      catch {
-        return $false
-      }
+
+    # Query
+    Write-Verbose -Message "Querying Groups..."
+    $AllGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    [System.Collections.ArrayList]$Groups = @()
+    $Groups += $AllGroups | Where-Object DisplayName -Like "*$Identity*"
+    $Groups += $AllGroups | Where-Object Description -Like "*$Identity*"
+    $Groups += $AllGroups | Where-Object Mail -Like "*$Identity*"
+
+    $MailNickName = $Identity.Split('@')[0]
+    $Groups += $AllGroups | Where-Object Mailnickname -Like "*$MailNickName*"
+
+    if ( $Groups ) {
+      $Groups | Get-Unique
     }
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Test-AzureAdGroup
+} #Find-AzureAdGroup

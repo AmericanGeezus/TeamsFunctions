@@ -100,13 +100,14 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 
 The more prominent helper functions. Get-AzureAdAssignedAdminRoles is run with `Connect-Me`, but can be used on its own just as well. The others are mainly helping to cut down on typing when doing stuff quickly. Using `Get-AzureAdUser -Searchstring "$UPN"` is fine, but sometimes I just want to bash in the $UPN and get a result. Other times knowing just enough is enough. Like knowing only the names of the Tenant Dial Plan or the Online Voice Routing Policy in question is just what I need, nothing more.
 
-| Function                        | Description                                                                           |
-| ------------------------------- | ------------------------------------------------------------------------------------- |
-| `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser                                   |
-| `Get-AzureAdUserFromUPN`        | Helper Function to avoid having to type the SearchString-command. Returns AzureAdUser |
-| `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                                    |
-| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)          |
-| `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...          |
+| Function                        | Description                                                                  |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser                          |
+| `Find-AzureAdUser`              | Helper Function to find AzureAd Groups. Returns Object if found              |
+| `Find-AzureAdGroup`             | Helper Function to find AzureAd Groups. Returns Object if found              |
+| `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                           |
+| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :) |
+| `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names... |
 
 ### Backup and Restore
 
@@ -132,7 +133,6 @@ Curtesy of Ken Lasko
 | `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain                                                     |
 | `Import-TeamsAudioFile`                  | Imports an Audio File for use within Call Queues or Auto Attendants                                            |
 | `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove                       |
-| `Resolve-AzureAdGroupObjectFromName`     | Helper Function to find an AzureAdGroup based on Name, MailNickName or Email-Address                           |
 | `Set-TeamsUserPolicy`                    | Assigns specific Policies to a User  (Currently only six policies available)                                   |
 | `Write-ErrorRecord`                      | Helper function for Troubleshooting and to display Errors in a more readable format but in the Output stream   |
 
