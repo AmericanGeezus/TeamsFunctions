@@ -30,7 +30,7 @@ function Find-AzureAdGroup {
   [CmdletBinding()]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
     [Alias('GroupName', 'Name')]
     [string]$Identity
   ) #param
@@ -49,45 +49,20 @@ function Find-AzureAdGroup {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    try {
-      $Group = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
-      if ( $null -ne $Group ) {
-        return $Group
-      }
-      else {
-        try {
-          $MailNickName = $Identity.Split('@')[0]
-          $Group2 = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $null -ne $Group2 ) {
-            Write-Verbose -Message "Group find by 'MailNickName'"
-            return $Group2
-          }
-          else {
-            Write-Verbose -Message "Group '$Identity' not found" -Verbose
-            return $null
-          }
-        }
-        catch {
-          Write-Verbose -Message "Group '$Identity' not found" -Verbose
-          return $null
-        }
-      }
-    }
-    catch {
-      try {
-        $Group3 = Get-AzureADGroup -ObjectId $Identity -WarningAction SilentlyContinue -ErrorAction STOP
-        if ( $null -ne $Group3 ) {
-          return $Group3
-        }
-        else {
-          Write-Verbose -Message "Group '$Identity' not found" -Verbose
-          return $null
-        }
-      }
-      catch {
-        Write-Verbose -Message "Group '$Identity' not found" -Verbose
-        return $null
-      }
+
+    # Query
+    Write-Verbose -Message "Querying Groups..."
+    $AllGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    [System.Collections.ArrayList]$Groups = @()
+    $Groups += $AllGroups | Where-Object DisplayName -Like "*$Identity*"
+    $Groups += $AllGroups | Where-Object Description -Like "*$Identity*"
+    $Groups += $AllGroups | Where-Object Mail -Like "*$Identity*"
+
+    $MailNickName = $Identity.Split('@')[0]
+    $Groups += $AllGroups | Where-Object Mailnickname -Like "*$MailNickName*"
+
+    if ( $Groups ) {
+      $Groups | Get-Unique
     }
   } #process
 

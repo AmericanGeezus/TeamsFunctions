@@ -2,7 +2,10 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   RC
+
+
+
 
 function Find-TeamsResourceAccount {
   <#
@@ -66,10 +69,7 @@ function Find-TeamsResourceAccount {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level Prelive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -93,42 +93,61 @@ function Find-TeamsResourceAccount {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $FoundResourceAccounts = $null
     $ResourceAccounts = $null
 
     #region Data gathering
     if ($PSBoundParameters.ContainsKey('AssociatedOnly')) {
-      Write-Verbose -Message "SearchQuery - Searching for ASSOCIATED Accounts containing '$SearchQuery'" -Verbose
-      $FoundResourceAccounts = Find-CsOnlineApplicationInstance -SearchQuery "$SearchQuery" -AssociatedOnly
+      Write-Verbose -Message "SearchQuery - Searching for ASSOCIATED Accounts containing '$SearchQuery'"
+      $ResourceAccounts = Find-CsOnlineApplicationInstance -SearchQuery "$SearchQuery" -AssociatedOnly
     }
     elseif ($PSBoundParameters.ContainsKey('UnAssociatedOnly')) {
-      Write-Verbose -Message "SearchQuery - Searching for UNASSOCIATED Accounts containing '$SearchQuery'" -Verbose
-      $FoundResourceAccounts = Find-CsOnlineApplicationInstance -SearchQuery "$SearchQuery" -UnAssociatedOnly
+      Write-Verbose -Message "SearchQuery - Searching for UNASSOCIATED Accounts containing '$SearchQuery'"
+      $ResourceAccounts = Find-CsOnlineApplicationInstance -SearchQuery "$SearchQuery" -UnAssociatedOnly
     }
     else {
-      Write-Verbose -Message "SearchQuery - Searching for Accounts containing '$SearchQuery'" -Verbose
-      $FoundResourceAccounts = Find-CsOnlineApplicationInstance -SearchQuery "$SearchQuery"
+      Write-Verbose -Message "SearchQuery - Searching for Accounts containing '$SearchQuery'"
+      $ResourceAccounts = Find-CsOnlineApplicationInstance -SearchQuery "$SearchQuery"
     }
 
-    if ($null -ne $FoundResourceAccounts) {
-      # Querying found Accounts against Get-CsOnlineApplicationInstance
-      Write-Verbose -Message "Found Resource Accounts. Performing lookup. Please wait..." -Verbose
-      [System.Collections.ArrayList]$ResourceAccounts = @()
-      foreach ($I in $FoundResourceAccounts) {
-        Write-Verbose -Message "Querying Account '$($I.Id)'"
-        try {
-          $RA = Get-CsOnlineApplicationInstance -Identity $I.Id -WarningAction SilentlyContinue -ErrorAction Stop
-          [void]$ResourceAccounts.Add($RA)
-        }
-        catch {
-          Write-ErrorRecord $_
-        }
-      }
+    if ( -not $ResourceAccounts ) {
+      Write-Verbose -Message "No Resource Accounts found matching this string."
+      return
     }
     else {
-      # Stop script if no data has been determined
-      Write-Verbose -Message "No Data found."
-      return
+      Write-Verbose -Message "Found Resource Accounts. Performing lookup. Please wait..."
+      foreach ($ResourceAccount in $ResourceAccounts) {
+        Write-Verbose -Message "Querying Account '$($ResourceAccount.Id)'"
+        $AdUser = Get-AzureADUser -ObjectId $ResourceAccount.Id -WarningAction SilentlyContinue -ErrorAction Stop
+
+        # creating new PS Object (synchronous with Get and Set)
+        $ResourceAccountObject = [PSCustomObject][ordered]@{
+          ObjectId          = $AdUser.ObjectId
+          UserPrincipalName = $AdUser.UserPrincipalName
+          DisplayName       = $AdUser.DisplayName
+          UsageLocation     = $AdUser.UsageLocation
+          PhoneNumber       = $AdUser.PhoneNumber
+        }
+
+        # Associations
+        if ( $PSBoundParameters.ContainsKey('AssociatedOnly')) {
+          Write-Verbose -Message "'$($AdUser.DisplayName)' Parsing: Association"
+          $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AssociationObject = switch ($Association.ConfigurationType) {
+            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+          }
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+
+          # Expanding Object
+          $ResourceAccountObject | Add-Member -MemberType NoteProperty -Name AssociatedTo -Value $AssociationObject.Name
+          $ResourceAccountObject | Add-Member -MemberType NoteProperty -Name AssociatedAs -Value $Association.ConfigurationType
+          $ResourceAccountObject | Add-Member -MemberType NoteProperty -Name AssociationStatus -Value $AssociationStatus.Status
+        }
+
+        Write-Output $ResourceAccountObject
+
+      }
+
     }
     #endregion
 
@@ -136,74 +155,7 @@ function Find-TeamsResourceAccount {
     #region OUTPUT
     # Creating new PS Object
     try {
-      Write-Verbose -Message "Parsing Resource Accounts, please wait..." -Verbose
-      foreach ($ResourceAccount in $ResourceAccounts) {
-        # readable Application type
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: ApplicationType"
-        $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
-
-        # Resource Account License
-        # License
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: License"
-        if (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV) {
-          $ResourceAccountLicense = "PhoneSystem (Add-on)"
-        }
-        elseif (Test-TeamsUserLicense -Identity $ResourceAccount.UserPrincipalName -ServicePlan MCOEV_VIRTUALUSER) {
-          $ResourceAccountLicense = "PhoneSystem_VirtualUser"
-        }
-        else {
-          $ResourceAccountLicense = $null
-        }
-
-        # Phone Number Type
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"
-        if ($null -ne $ResourceAccount.PhoneNumber) {
-          if ($PhoneNumberIsMSNumber) {
-            $ResourceAccountPhoneNumberType = "Microsoft Number"
-          }
-          else {
-            $ResourceAccountPhoneNumberType = "Direct Routing Number"
-          }
-        }
-        else {
-          $ResourceAccountPhoneNumberType = $null
-        }
-
-        # Usage Location from Object
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
-        $UsageLocation = (Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue).UsageLocation
-
-        # Associations
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
-        try {
-          $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          $AssocObject = switch ($Association.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
-          }
-          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        }
-        catch {
-          $AssocObject	= $null
-        }
-
-        # creating new PS Object (synchronous with Get and Set)
-        $ResourceAccountObject = [PSCustomObject][ordered]@{
-          UserPrincipalName = $ResourceAccount.UserPrincipalName
-          DisplayName       = $ResourceAccount.DisplayName
-          UsageLocation     = $UsageLocation
-          ApplicationType   = $ResourceAccountApplicationType
-          License           = $ResourceAccountLicense
-          PhoneNumberType   = $ResourceAccountPhoneNumberType
-          PhoneNumber       = $ResourceAccount.PhoneNumber
-          AssociatedTo      = $AssocObject.Name
-          AssociatedAs      = $Association.ConfigurationType
-          AssociationStatus = $AssociationStatus.Status
-        }
-
-        Write-Output $ResourceAccountObject
-
-      }
+      Write-Verbose -Message "Parsing Resource Accounts, please wait..."
     }
     catch {
       Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"

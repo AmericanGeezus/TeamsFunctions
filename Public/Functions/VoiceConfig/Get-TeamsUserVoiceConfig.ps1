@@ -135,47 +135,7 @@ function Get-TeamsUserVoiceConfig {
 
       # Testing ObjectType
       Write-Verbose -Message "Testing ObjectType..."
-      <# Alternative Approach - Untested
-      try {
-        $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName -ErrorAction Stop
-      }
-      catch {
-        $ObjectType = "Unknown"
-      }
-      #>
-
-      <# Alternative Approach: Fastest?
-      #CHECK Remove completely as it is part of the InterpretedUserType OR Keep b/c useful?
-      if ( "User" -in $CsUser.InterpretedUserType ) {
-        Write-Verbose -Message "ObjectType is 'User'"
-        $ObjectType = "User"
-      }
-      elseif ( "ApplicationInstance" -in $CsUser.InterpretedUserType ) {
-        Write-Verbose -Message "ObjectType is 'ApplicationInstance'"
-        $ObjectType = "ApplicationInstance"
-      }
-      else {
-        Write-Verbose -Message "ObjectType is 'Unknown'"
-        $ObjectType = "Unknown"
-      }
-      #>
-      if ( Test-AzureADGroup $CsUser.UserPrincipalName ) {
-        #CHECK Can you Query groups this way or would that be pointless (i.E. waste of time? Measure!)
-        Write-Verbose -Message "ObjectType is 'Group'"
-        $ObjectType = "Group"
-      }
-      elseif ( Test-TeamsResourceAccount $CsUser.UserPrincipalName ) {
-        Write-Verbose -Message "ObjectType is 'ApplicationInstance'"
-        $ObjectType = "ApplicationInstance"
-      }
-      elseif ( Test-AzureADUser $CsUser.UserPrincipalName ) {
-        Write-Verbose -Message "ObjectType is 'User'"
-        $ObjectType = "User"
-      }
-      else {
-        Write-Verbose -Message "ObjectType is 'Unknown'"
-        $ObjectType = "Unknown"
-      }
+      $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
       #endregion
 
 
@@ -199,7 +159,6 @@ function Get-TeamsUserVoiceConfig {
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses
         $CsUserLicense = Get-TeamsUserLicense -Identity "$($CsUser.UserPrincipalName)"
-        #TEST Get-TeamsUserLicense was recently expanded to include the PhoneSystemStatus. This could also be used to query this
 
         # Adding Parameters
         $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames

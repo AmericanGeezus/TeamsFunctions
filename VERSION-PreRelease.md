@@ -5,8 +5,11 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ## v20.11.07-prerelease
 
 - **Updated**
-  - `Test-AzureAdUser`: Small update to gain more accurate results (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
-  - `Test-AzureAdGroup`: Small update to gain more accurate results (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
+  - `Find-TeamsResourceAccount`: Performance improvements. Output Object is now separate from that of `Get`, which speeds up enumeration a lot.
+  - `Get-TeamsResourceAccount`: Performance improvements. Added Parameter ObjectId and improved lookup.
+  - `Test-TeamsResourceAccount`: Performance improvements. This one was very slow and should now perform way better.
+  - `Test-AzureAdUser`: Performance & precision update (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
+  - `Test-AzureAdGroup`: Performance & precision update (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
   - `Test-TeamsUserLicense`: Now writes a warning when multiple assignments have been found. Returns $true if one of them is "Success"
   - `Get-TeamsUserLicense`: Added parameter `PhoneSystemStatus` which will display display the values of ProvisioningStatus for all assignments as an array.
   - `Get-TeamsUserVoiceConfig`:
@@ -23,6 +26,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - `Test-TeamsResourceAccount`: New Script to test whether an Object is a ResourceAccount (used in `Get-TeamsUserVoiceConfig`)
   - `Find-AzureAdGroup`: A fork of Test-AzureAdGroup, returning the Group Object if found, `$null` if not.
   - `Find-AzureAdUser`: Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers. Returns object if found, `$null` if not.
+  - `Get-TeamsAutoAttendantCallableEntity`: Returning a Custom Object with the same parameters as a CallableEntity Object
+  - `Get-TeamsObjectType`: Helper script to determine the type of Object provided. Used in AutoAttendants, CallQueues, Get-TeamsUserVoiceConfig
+
+- **Performance Testing**
 
 ---------------------------------------------
 

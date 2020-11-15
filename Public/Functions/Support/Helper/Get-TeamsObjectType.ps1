@@ -2,9 +2,9 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   Beta
+# Status:   RC
 
-#CHECK Create separate Function Find-TeamsCallableEntity that returns an Object with Type and ObjectId (mocking CallableEntity)?
+
 
 
 function Get-TeamsObjectType {
@@ -54,10 +54,7 @@ function Get-TeamsObjectType {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level Prelive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -82,63 +79,41 @@ function Get-TeamsObjectType {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    # Type ExternalPstn
     if ($Identity -match "^tel:\+\d") {
       Write-Verbose -Message "Callable Entity - Call Target '$Identity' (TelURI) found: TelURI (ExternalPstn)"
       return "TelURI"
-    }
-
-    $RA = Find-TeamsResourceAccount "$Identity"
-    if ( $RA ) {
-      Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: ResourceAccount (ApplicationInstance), (VoiceApp)"
-      return "ResourceAccount"
-    }
-
-    $User = Find-AzureAdUser "$Identity"
-    if ( $User ) {
-      Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: User (Forward, Voicemail)"
-      return "User"
-    }
-
-    $Group = Find-AzureAdGroup "$Identity"
-    if ( $Group ) {
-      Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: Group (SharedVoicemail)"
-      return "Group"
-    }
-
-    # Catch neither
-    throw [System.IO.IOException] "Callable Entity - Call Target '$Identity' - Type not enumerated"
-
-
-    <# Alternative Approach - from Get-TeamsUserVoiceConfig - Untested- Unmeasured
-    #TEST Measure-Object against Find VS Test commands.
-    if ($Identity -match "^tel:\+\d") {
-      Write-Verbose -Message "Callable Entity - Call Target '$Identity' (TelURI) found: TelURI (ExternalPstn)"
-      return "TelURI"
-    }
-    elseif ( Test-AzureADGroup $Identity ) {
-      Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: Group (SharedVoicemail)"
-      return "Group"
-    }
-    elseif ( Test-TeamsResourceAccount $Identity ) {
-      Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: ResourceAccount (ApplicationInstance), (VoiceApp)"
-      return "ResourceAccount"
-    }
-    elseif ( Test-AzureADUser $Identity ) {
-      Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: User (Forward, Voicemail)"
-      return "User"
     }
     else {
-      Write-Verbose -Message "ObjectType is 'Unknown'"
-      # Catch neither
-      throw [System.IO.IOException] "Callable Entity - Call Target '$Identity' - Type not enumerated"
-
+      $User = Find-AzureAdUser $Identity
+      if ( $User ) {
+        # Get-CsOnlineApplicationInstance is slow, Test-TeamsResourceAccount is even slower. This is the fastest way, but not 100% fool proof
+        #$RA = Get-CsOnlineApplicationInstance "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        #if ( $RA ) {
+        if ($User[0].Department -eq "Microsoft Communication Application Instance") {
+          #if ( Test-TeamsResourceAccount $Identity ) {
+          Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: ResourceAccount (ApplicationInstance), (VoiceApp)"
+          return "ResourceAccount"
+        }
+        else {
+          Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: User (Forward, Voicemail)"
+          return "User"
+        }
+      }
+      else {
+        if ( Test-AzureADGroup $Identity ) {
+          Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: Group (SharedVoicemail)"
+          return "Group"
+        }
+        else {
+          # Catch neither
+          Write-Verbose -Message "ObjectType cannot be determined." -Verbose
+          return
+        }
+      }
     }
-    #>
-
   }
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Resolve-TeamsCallableEntity
+} #Get-TeamsObjectType

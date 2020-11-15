@@ -4,6 +4,9 @@
 # Updated:    14-NOV-2020
 # Status:     PreLive
 
+
+
+
 function Find-AzureAdUser {
   <#
 	.SYNOPSIS
@@ -21,12 +24,18 @@ function Find-AzureAdUser {
   .OUTPUTS
     Microsoft.Open.AzureAD.Model.User
 	#>
-  [CmdletBinding()]
+
+  [CmdletBinding(DefaultParameterSetName = "Id")]
   [OutputType([Microsoft.Open.AzureAD.Model.User])]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "This is the UserID (UPN)")]
     [Alias('UserPrincipalName')]
-    [string[]]$Identity
+    [string[]]$Identity,
+
+    [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", HelpMessage = "This is the UserID (UPN)")]
+    [ValidateLength(3, 255)]
+    [string]$SearchString
+
   ) #param
 
   begin {
@@ -39,26 +48,33 @@ function Find-AzureAdUser {
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
     Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($UPN in $Identity) {
-      try {
-        # This is functional but slow in bigger environments!
-        #$User = Get-AzureADUser -All:$true | Where-Object {$_.UserPrincipalName -eq $UPN} -ErrorAction STOP
-        $User = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
-        Write-Output $User
+    switch ($PsCmdlet.ParameterSetName) {
+      "Id" {
+        foreach ($Id in $Identity) {
+          try {
+            $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction STOP
+            Write-Output $User
+          }
+          catch [Microsoft.Open.AzureAD16.Client.ApiException] {
+            Write-Verbose -Message "User '$Id' not found"
+            return $null
+          }
+          catch {
+            Write-Verbose -Message "User '$Id' not found"
+            return $null
+          }
+        }
       }
-      catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-        Write-Verbose -Message "User '$UPN' not found" -Verbose
-        return $null
-      }
-      catch {
-        Write-Verbose -Message "User '$UPN' not found" -Verbose
-        return $null
+      "Search" {
+        Get-AzureADUser -All:$true -SearchString $SearchString -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       }
     }
+
 
   } #process
 
