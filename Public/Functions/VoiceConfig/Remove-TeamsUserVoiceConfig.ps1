@@ -1,8 +1,11 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   ALPHA
+# Updated:  15-NOV-2020
+# Status:   BETA
+
+
+#TODO Add Status bar detailing the progress? Max is depending on Scope (All: x+y steps, DR: x steps, CP: y steps)
 
 function Remove-TeamsUserVoiceConfig {
   <#
@@ -80,8 +83,8 @@ function Remove-TeamsUserVoiceConfig {
   begin {
     # Caveat - Script in Development
     $VerbosePreference = "Continue"
-    $DebugPreference = "Debug"
-    Show-FunctionStatus -Level ALPHA
+    $DebugPreference = "Continue"
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -106,6 +109,15 @@ function Remove-TeamsUserVoiceConfig {
       $ConfirmPreference = 'None'
     }
 
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = switch ($Scope) {
+      "All" { 8 }
+      "CallingPlans" { 4 }
+      "DirectRouting" { 4 }
+    }
+    if ( $DisableEV ) { $sMax++ }
+
   } #begin
 
   process {
@@ -116,23 +128,24 @@ function Remove-TeamsUserVoiceConfig {
       # Querying Identity
       try {
         Write-Verbose -Message "User '$User' - Querying User Account"
+        Write-Progress -Activity "Query User" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$User' not queryied: $($_.Exception.Message)" -Category ObjectNotFound
         continue
       }
-
-      # Querying User Licenses
-      if ($Scope -eq "All" -or $Scope -eq "CallingPlans") {
-        Write-Verbose -Message "User '$User' - Querying User License"
-        $CsUserLicense = Get-TeamsUserLicense $User
-      }
       #endregion
 
 
       #region Call Plan Configuration
       if ($Scope -eq "All" -or $Scope -eq "CallPlans") {
+        # Querying User Licenses
+        Write-Verbose -Message "User '$User' - Querying User License"
+        $step++
+        Write-Progress -Activity "Query User Licenses" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
+        $CsUserLicense = Get-TeamsUserLicense $User
+
         if ($null -ne $CsUserLicense.Licenses) {
           # Determine Call Plan Licenses - Building Scope
           [System.Collections.ArrayList]$RemoveLicenses = @()
@@ -150,12 +163,14 @@ function Remove-TeamsUserVoiceConfig {
           }
 
           # Action only if Call Plan licenses found
-          if ($null -ne $RemoveLicenses) {
+          if ($RemoveLicenses.Count -gt 0) {
             # Removing TelephoneNumber
             Write-Verbose -Message "User '$User' - Removing: TelephoneNumber"
+            $step++
+            Write-Progress -Activity "Removing Telephone Number" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
             if ($null -ne $CsUser.TelephoneNumber) {
               try {
-                $CsUser | Set-CsUser -TelephoneNumber $Null
+                $CsUser | Set-CsUser -TelephoneNumber $Null -ErrorAction Stop
                 Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: OK" -Verbose
               }
               catch {
@@ -169,6 +184,8 @@ function Remove-TeamsUserVoiceConfig {
 
             # Removing Call Plan Licenses (with Confirmation)
             Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses"
+            $step++
+            Write-Progress -Activity "Removing Calling Plan Licenses" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
             try {
               if ($Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
                 Set-TeamsUserLicense -Identity $User -RemoveLicenses $RemoveLicenses
@@ -196,6 +213,8 @@ function Remove-TeamsUserVoiceConfig {
       if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
         #region Removing OnPremLineURI
         Write-Verbose -Message "User '$User' - Removing: OnPremLineURI"
+        $step++
+        Write-Progress -Activity "Removing OnPremLineURI" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
         if ($null -ne $CsUser.OnPremLineURI) {
           try {
             $CsUser | Set-CsUser -OnPremLineURI $Null
@@ -213,6 +232,8 @@ function Remove-TeamsUserVoiceConfig {
 
         #region Removing Online Voice Routing Policy
         Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy"
+        $step++
+        Write-Progress -Activity "Removing Online Voice Routing Policy" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
         if ($null -ne $CsUser.OnlineVoiceRoutingPolicy) {
           try {
             $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
@@ -234,6 +255,8 @@ function Remove-TeamsUserVoiceConfig {
       #region Generic/shared Configuration
       #region Removing Tenant DialPlan
       Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan"
+      $step++
+      Write-Progress -Activity "Removing Tenant Dial Plan" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
       if ($null -ne $CsUser.TenantDialPlan) {
         try {
           $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
@@ -253,6 +276,8 @@ function Remove-TeamsUserVoiceConfig {
       Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice"
       if ($CsUser.EnterpriseVoiceEnabled) {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
+          $step++
+          Write-Progress -Activity "Disabling EnterpriseVoice" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$User", "Disabling EnterpriseVoice")) {
               $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
@@ -275,6 +300,9 @@ function Remove-TeamsUserVoiceConfig {
         Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not enabled)" -Verbose
       }
       #endregion
+
+      $step++
+      Write-Progress -Activity "Complete" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
       #endregion
     }
   } #process

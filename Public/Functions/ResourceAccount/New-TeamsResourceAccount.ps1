@@ -217,17 +217,17 @@ function New-TeamsResourceAccount {
       if ($PSCmdlet.ShouldProcess("$UPN", "New-CsOnlineApplicationInstance")) {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         $i = 0
-        $imax = 20
-        Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($imax s) to be able to parse the Object." -Verbose
+        $iMax = 20
+        Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($iMax s) to be able to parse the Object." -Verbose
         Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
         while ( -not (Test-AzureADUser $UPN)) {
-          if ($i -gt $imax) {
-            Write-Error -Message "Could not find Object in AzureAD in the last $imax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount"
+          if ($i -gt $iMax) {
+            Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount"
             return
           }
           Write-Progress -Activity "'$Name' Azure Active Directory is creating the Object. Please wait" `
-            -PercentComplete (($i * 100) / $imax) `
-            -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+            -PercentComplete (($i * 100) / $iMax) `
+            -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
 
           Start-Sleep -Milliseconds 1000
           $i++
@@ -314,16 +314,16 @@ function New-TeamsResourceAccount {
           $ServicePlanName = "MCOEV"
         }
         $i = 0
-        $imax = 600
-        Write-Warning -Message "Applying a License may take longer than provisioned for ($($imax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
+        $iMax = 600
+        Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
         Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
         while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
-          if ($i -gt $imax) {
-            Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $imax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount" -ErrorAction Stop
+          if ($i -gt $iMax) {
+            Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount" -ErrorAction Stop
           }
           Write-Progress -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
-            -PercentComplete (($i * 100) / $imax) `
-            -Status "$(([math]::Round((($i)/$imax * 100),0))) %"
+            -PercentComplete (($i * 100) / $iMax) `
+            -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
 
           Start-Sleep -Milliseconds 1000
           $i++

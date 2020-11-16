@@ -381,9 +381,18 @@ function Set-TeamsUserVoiceConfig {
     }
     else {
       # Re-Query Object
-      Write-Verbose -Message "Waiting 2s for Office 365 to write changes to User Object (Policies might not show up yet)" -Verbose
-      Start-Sleep -Seconds 2
+      Write-Verbose -Message "Waiting 3-5s for Office 365 to write changes to User Object (Policies might not show up yet)" -Verbose
+      Start-Sleep -Seconds 3
       $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity
+      if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
+        Start-Sleep -Seconds 2
+        $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity
+      }
+
+      if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
+        Write-Warning -Message "Applied Policies take some time to show up on the object. Please verify again with Get-TeamsUserVoiceConfig"
+      }
+
       return $UserObjectPost
     }
     #endregion
