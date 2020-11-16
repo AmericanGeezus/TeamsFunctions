@@ -5,7 +5,7 @@
 # Status:   BETA
 
 
-
+#TODO Add Status bar detailing the progress? Max is depending on Scope (DR: x steps, CP: y steps, Add for TDP and CallingPlanLicense)
 
 function Set-TeamsUserVoiceConfig {
   <#

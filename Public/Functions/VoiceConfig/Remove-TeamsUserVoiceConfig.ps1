@@ -5,7 +5,7 @@
 # Status:   BETA
 
 
-#TODO Add Status bar detailing the progress? Max is depending on Scope (All: x+y steps, DR: x steps, CP: y steps)
+
 
 function Remove-TeamsUserVoiceConfig {
   <#
