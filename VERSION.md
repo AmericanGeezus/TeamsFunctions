@@ -46,10 +46,9 @@ Limiting the Scope to one function per file also means that I can - finally - us
 
 ### NEW: Teams Voice Configuration Scripts
 
-- `Get-TeamsTenantVoiceConfig` - TBC
+- `Get-TeamsTenantVoiceConfig` - Displays Tenant Voice Configuration Information, like number of Gateways, Voice Policies, etc.
 - `Get-TeamsUserVoiceConfig` (Alias: `Get-TeamsUVC`) - Displays all Voice related parameters from the AD-Object, CS-Object and AD-Licensing-Object
 - `Find-TeamsUserVoiceConfig` (Alias: `Find-TeamsUVC`) - This is the long overdue port of one of my oldest Skype Scripts, the "SfB Oracle". Answering the age old question of "where is this Number assigned...?" and more.
-- `New-TeamsUserVoiceConfig` (Alias: `New-TeamsUVC`) - TBA - Not built yet. Writing on the Use Case/Design right now.
 - `Set-TeamsUserVoiceConfig` (Alias: `Set-TeamsUVC`) - TBA - Not built yet. Writing on the Use Case/Design right now.
 - `Remove-TeamsUserVoiceConfig` (Alias: `Remove-TeamsUVC`) - Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set. This is handy when moving from Calling Plans to Direct Routing or vice versa
 - `Test-TeamsUserVoiceConfig` (Alias: `Test-TeamsUVC`) - TBC - Tests an individual VoiceConfig Package against the provided Identity. (not fully functional yet, will need a bit more love, sorry)

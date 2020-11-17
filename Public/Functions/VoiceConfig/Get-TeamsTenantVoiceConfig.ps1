@@ -29,7 +29,6 @@ function Get-TeamsTenantVoiceConfig {
     Get-TeamsTenantVoiceConfig
     Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
-    New-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig

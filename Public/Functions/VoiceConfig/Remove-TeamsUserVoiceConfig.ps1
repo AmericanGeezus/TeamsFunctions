@@ -53,8 +53,8 @@ function Remove-TeamsUserVoiceConfig {
     This will leave the users in a clean and un-provisioned state and enables them to receive a new Configuration Set
   .LINK
     Get-TeamsUserVoiceConfig
+    Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
-    New-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig

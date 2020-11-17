@@ -45,8 +45,8 @@ function Test-TeamsUserVoiceConfig {
       "Remove-TeamsUserVoiceConfig -Force" can help
 	.LINK
     Get-TeamsUserVoiceConfig
+    Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
-    New-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig
