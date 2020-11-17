@@ -169,7 +169,7 @@ function Find-TeamsUserVoiceConfig {
 
     switch ($PsCmdlet.ParameterSetName) {
       "ID" {
-        Write-Verbose -Message "Finding Users with Identity '$Identity': Acting as an Alis to 'Get-TeamsUserVoiceConfig'" -Verbose
+        Write-Verbose -Message "Finding Users with Identity '$Identity': Acting as an Alias to 'Get-TeamsUserVoiceConfig'" -Verbose
         Get-TeamsUserVoiceConfig $Identity
 
         break
