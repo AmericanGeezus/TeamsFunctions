@@ -108,6 +108,7 @@ function Find-TeamsUserVoiceConfig {
     Get-TeamsTenantVoiceConfig
     Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
+    New-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig
@@ -176,10 +177,10 @@ function Find-TeamsUserVoiceConfig {
 
       "Tel" {
         foreach ($Number in $PhoneNumber) {
-          Write-Verbose -Message "Finding Users with PhoneNumber '$Number': Searching... This will take a bit of time!" -Verbose
+          Write-Verbose -Message "Finding Users with PhoneNumber '$Number': This will take a bit of time!" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
-          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
           if ($Users) {
             if ($Users.Count -gt 1) {
               Write-Warning -Message "Number: '$Number' - Found multiple Users matching the criteria! If the search string represents a partial number, this is to be expected.`nIf the search string represents a FULL number, it is assigned incorrectly. Inbound calls to this number will not work as Teams will not find a unique match"
