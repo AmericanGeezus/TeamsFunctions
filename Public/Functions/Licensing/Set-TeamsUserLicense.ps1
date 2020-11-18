@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+
+
+
 function Set-TeamsUserLicense {
   <#
       .SYNOPSIS
@@ -94,6 +97,7 @@ function Set-TeamsUserLicense {
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
+  [Alias('Set-TeamsUserLicence')]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias("UPN", "UserPrincipalName", "Username")]

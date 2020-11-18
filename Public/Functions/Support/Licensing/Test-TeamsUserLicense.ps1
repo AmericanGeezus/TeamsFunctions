@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+
+
+
 function Test-TeamsUserLicense {
   <#
 	.SYNOPSIS
@@ -44,6 +47,7 @@ function Test-TeamsUserLicense {
   #>
 
   [CmdletBinding(DefaultParameterSetName = "ServicePlan")]
+  [Alias('Test-TeamsUserLicence')]
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory = $true, Position = 0, HelpMessage = "This is the UserID (UPN)")]
