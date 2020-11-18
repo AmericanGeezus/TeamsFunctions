@@ -2,7 +2,7 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  15-NOV-2020
-# Status:   BETA
+# Status:   RC
 
 
 
@@ -81,10 +81,7 @@ function Remove-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

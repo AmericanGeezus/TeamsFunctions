@@ -2,7 +2,7 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  07-NOV-2020
-# Status:   BETA
+# Status:   RC
 
 
 #TODO Add Status bar detailing the progress? Max is depending on Scope (DR: x steps, CP: y steps, Add for TDP and CallingPlanLicense)
@@ -131,10 +131,7 @@ function Set-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Debug"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
