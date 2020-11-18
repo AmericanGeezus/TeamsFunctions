@@ -87,6 +87,7 @@ function Get-TeamsUserLicense {
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
+        #Write-Error -Message "Error ocurred for User '$User': $($_.Exception.Message)" -Category InvalidResult
         throw $_
         continue
       }
