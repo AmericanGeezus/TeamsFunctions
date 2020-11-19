@@ -5,25 +5,50 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ## v20.11.07-prerelease
 
 - **Updated**
-  - `Find-TeamsResourceAccount`: Performance improvements. Output Object is now separate from that of `Get`, which speeds up enumeration a lot.
-  - `Get-TeamsResourceAccount`: Performance improvements. Added Parameter ObjectId and improved lookup.
+  - `Find-TeamsResourceAccount`:
+    - Performance improvements.
+    - Output Object is now separate from that of `Get`, which speeds up enumeration a lot.
+  - `Get-TeamsResourceAccount`:
+    - Performance improvements.
+    - Added Parameter `ObjectId` and improved lookup.
+    - Lookup without a Name will now only list Names of ApplicationInstances.
   - `Test-TeamsResourceAccount`: Performance improvements. This one was very slow and should now perform way better.
   - `Test-AzureAdUser`: Performance & precision update (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
   - `Test-AzureAdGroup`: Performance & precision update (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
   - `Test-TeamsUserLicense`: Now writes a warning when multiple assignments have been found. Returns $true if one of them is "Success"
-  - `Get-TeamsUserLicense`: Added parameter `PhoneSystemStatus` which will display display the values of ProvisioningStatus for all assignments as an array.
+  - `Get-TeamsUserLicense`:
+    - Added parameter `PhoneSystemStatus` which will display display the values of ProvisioningStatus for all assignments as an array.
+    - No improvements for Performance needed, Command is already blazing fast.
+  - `Get-AzureAdAssignedAdminRoles`:
+    - Added Status bars to indicate progress.
+  - `Get-TeamsTenantVoiceConfig`:
+    - TBC
+    - Added Status bars to indicate progress.
   - `Get-TeamsUserVoiceConfig`:
+    - Added parameter `Identity` (Level 0) to enable piping the output to Set-CsUser and other CmdLets.
     - Added parameter `ObjectType` (Level 0) to identify the ObjectType, shown just before the `InterpretedUserType`
     - Added parameter `PhoneSystemStatus` (Level 0) to list of Parameters to identify VoiceConfig capabilities better (Assigned but Disabled)
     - Parameter "ObjectType" has been renamed to `AdObjectType` to indicate where the value is from
     - Parameter "ObjectClass" has followed suit: `AdObjectClass` for consistency.
-  - `Set-TeamsUserVoiceConfig`: Script has advanced to BETA Status. All functions scripted. Testing OK for Direct Routing.
+    - Added Status bars to indicate progress.
+  - `Set-TeamsUserVoiceConfig`:
+    - Script has advanced to RC Status. All functions scripted. Testing OK for Direct Routing.
+    - Added Status bars to indicate progress.
+  - `Remove-TeamsUserVoiceConfig`:
+    - Script has advanced to RC Status. All Functions (except Calling Plans) tested.
+    - Added Status bars to indicate progress.
+  - `Get-TeamsAutoAttendant`:
+    - Lookup without a Name will now only list Names of Auto Attendants.
+    - Added Status bars to indicate progress.
+  - `Get-TeamsCallQueue`:
+    - Lookup without a Name will now only list Names of Call Queues.
+    - Added Status bars to indicate progress.
   - `Format-StringForUse`:
     - Added an option to normalise Strings `-As E164` - This will format any String to an E.164 Number, for example: "1 (555) 1234-567" to "+15551234567"
     - Added an option to normalise Strings `-As LineURI` - This will format any String to a LineURI, for example: "1 (555) 1234-567 ;ext=1234" to "tel:+15551234567;ext=1234"
 
 - **New**
-  - `Test-TeamsResourceAccount`: New Script to test whether an Object is a ResourceAccount (used in `Get-TeamsUserVoiceConfig`)
+  - `Test-TeamsResourceAccount`: New Script to test whether an Object is a ResourceAccount.
   - `Find-AzureAdGroup`: A fork of Test-AzureAdGroup, returning the Group Object if found, `$null` if not.
   - `Find-AzureAdUser`: Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers. Returns object if found, `$null` if not.
   - `Get-TeamsAutoAttendantCallableEntity`: Returning a Custom Object with the same parameters as a CallableEntity Object

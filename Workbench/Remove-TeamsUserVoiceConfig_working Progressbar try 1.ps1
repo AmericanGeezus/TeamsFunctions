@@ -17,7 +17,7 @@ function Remove-TeamsUserVoiceConfig {
 		Required. UserPrincipalName of the User.
 	.PARAMETER Scope
     Optional. Default is "All". Definition of Scope for removal of Voice Configuration.
-    Allowed Values are: All, DirectRouting, CallingPlans
+    Allowed Values are: All, DirectRouting, CallPlans
 	.PARAMETER DisableEV
     Optional. Instructs the Script to also disable the Enterprise Voice enablement of the User
     By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice.
@@ -68,7 +68,7 @@ function Remove-TeamsUserVoiceConfig {
     [string[]]$Identity,
 
     [Parameter(HelpMessage = "Defines Scope to remove Voice Configuration")]
-    [ValidateSet('All', 'DirectRouting', 'CallingPlans')]
+    [ValidateSet('All', 'DirectRouting', 'CallPlans')]
     [string]$Scope = "All",
 
     [Parameter(HelpMessage = "Instructs the Script to forego the disablement for EnterpriseVoice")]
@@ -106,27 +106,26 @@ function Remove-TeamsUserVoiceConfig {
       $ConfirmPreference = 'None'
     }
 
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = switch ($Scope) {
+      "All" { 8 }
+      "CallingPlans" { 4 }
+      "DirectRouting" { 4 }
+    }
+    if ( $DisableEV ) { $sMax++ }
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $UserCounter = 0
     foreach ($User in $Identity) {
-      # Initialising counters for Progress bars
-      [int]$step = 0
-      [int]$sMax = switch ($Scope) {
-        "All" { 7 }
-        "CallingPlans" { 4 }
-        "DirectRouting" { 4 }
-      }
-      if ( $DisableEV ) { $sMax++ }
-
-      #region Information Gathering
-      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation "Querying User Account" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
       Write-Verbose -Message "[PROCESS] Processing '$User'"
+      #region Information Gathering
       # Querying Identity
       try {
         Write-Verbose -Message "User '$User' - Querying User Account"
+        Write-Progress -Activity "Query User" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
@@ -137,11 +136,11 @@ function Remove-TeamsUserVoiceConfig {
 
 
       #region Call Plan Configuration
-      if ($Scope -eq "All" -or $Scope -eq "CallingPlans") {
+      if ($Scope -eq "All" -or $Scope -eq "CallPlans") {
         # Querying User Licenses
-        $step++
-        Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation "Calling Plans - Querying User Licenses" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "User '$User' - Querying User License"
+        $step++
+        Write-Progress -Activity "Query User Licenses" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
         $CsUserLicense = Get-TeamsUserLicense $User
 
         if ($null -ne $CsUserLicense.Licenses) {
@@ -161,58 +160,47 @@ function Remove-TeamsUserVoiceConfig {
           }
 
           # Action only if Call Plan licenses found
-          if ($Force -or $RemoveLicenses.Count -gt 0) {
+          if ($RemoveLicenses.Count -gt 0) {
             # Removing TelephoneNumber
+            Write-Verbose -Message "User '$User' - Removing: TelephoneNumber"
             $step++
-            Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation "Calling Plans - Removing Telephone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message "User '$User' - Removing TelephoneNumber"
-            if ( $Force -or $CsUser.TelephoneNumber ) {
+            Write-Progress -Activity "Removing Telephone Number" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
+            if ($null -ne $CsUser.TelephoneNumber) {
               try {
-                Set-CsOnlineVoiceUser -Identity $User -TelephoneNumber $Null -ErrorAction Stop
-                Write-Verbose -Message "User '$User' - Removing TelephoneNumber: OK" -Verbose
+                $CsUser | Set-CsUser -TelephoneNumber $Null -ErrorAction Stop
+                Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: OK" -Verbose
               }
               catch {
-                if ( "Your tenant is Disabled for this service. You are not permitted to use this cmdlet." -in $_.Exception.Message) {
-                  Write-Verbose -Message "User '$User' - Removing TelephoneNumber: OK (Service Disabled)" -Verbose
-                }
-                else {
-                  Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Failed" -Verbose
-                  Write-Error -Message "Error:  $($_.Exception.Message)"
-                }
+                Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: Failed" -Verbose
+                Write-Error -Message "Error:  $($error.Exception.Message)"
               }
             }
             else {
-              Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Not assigned" -Verbose
+              Write-Verbose -Message "User '$User' - Removing: TelephoneNumber: Not assigned" -Verbose
             }
 
             # Removing Call Plan Licenses (with Confirmation)
+            Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses"
             $step++
-            Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation "Calling Plans - Removing Calling Plan Licenses" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message "User '$User' - Removing Call Plan Licenses"
+            Write-Progress -Activity "Removing Calling Plan Licenses" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
             try {
-              if ( $Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
-                if ( $RemoveLicenses.Count -gt 0 ) {
-                  Set-TeamsUserLicense -Identity $User -RemoveLicenses $RemoveLicenses
-                  Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: OK" -Verbose
-                }
-                else {
-                  Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned" -Verbose
-                }
+              if ($Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
+                Set-TeamsUserLicense -Identity $User -RemoveLicenses $RemoveLicenses
+                Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: OK" -Verbose
               }
             }
             catch {
-              Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: Failed" -Verbose
-              Write-Error -Message "Error:  $($_.Exception.Message)"
+              Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: Failed" -Verbose
+              Write-Error -Message "Error:  $($error.Exception.Message)"
             }
           }
           else {
-            $step++
-            Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned" -Verbose
+            Write-Verbose -Message "User '$User' - Removing: Call Plan Licenses: None assigned" -Verbose
           }
 
         }
         else {
-          Write-Error -Message "User '$User' - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
+          Write-Error -Message "User '$User' - Removing: Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
         }
       }
       #endregion
@@ -221,40 +209,40 @@ function Remove-TeamsUserVoiceConfig {
       #region Direct Routing Configuration
       if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
         #region Removing OnPremLineURI
+        Write-Verbose -Message "User '$User' - Removing: OnPremLineURI"
         $step++
-        Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation "Direct Routing - Removing OnPremLineURI" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "User '$User' - Removing OnPremLineURI"
-        if ( $Force -or $CsUser.OnPremLineURI ) {
+        Write-Progress -Activity "Removing OnPremLineURI" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
+        if ($null -ne $CsUser.OnPremLineURI) {
           try {
             $CsUser | Set-CsUser -OnPremLineURI $Null
-            Write-Verbose -Message "User '$User' - Removing OnPremLineURI: OK" -Verbose
+            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: OK" -Verbose
           }
           catch {
-            Write-Verbose -Message "User '$User' - Removing OnPremLineURI: Failed" -Verbose
+            Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
         }
         else {
-          Write-Verbose -Message "User '$User' - Removing OnPremLineURI: Not assigned" -Verbose
+          Write-Verbose -Message "User '$User' - Removing: OnPremLineURI: Not assigned" -Verbose
         }
         #endregion
 
         #region Removing Online Voice Routing Policy
+        Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy"
         $step++
-        Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation "Direct Routing - Removing Online Voice Routing Policy" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "User '$User' - Removing Online Voice Routing Policy"
-        if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy ) {
+        Write-Progress -Activity "Removing Online Voice Routing Policy" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
+        if ($null -ne $CsUser.OnlineVoiceRoutingPolicy) {
           try {
             $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
-            Write-Verbose -Message "User '$User' - Removing Online Voice Routing Policy: OK" -Verbose
+            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: OK" -Verbose
           }
           catch {
-            Write-Verbose -Message "User '$User' - Removing Online Voice Routing Policy: Failed" -Verbose
+            Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
         }
         else {
-          Write-Verbose -Message "User '$User' - Removing Online Voice Routing Policy: Not assigned"
+          Write-Verbose -Message "User '$User' - Removing: Online Voice Routing Policy: Not assigned"
         }
         #endregion
       }
@@ -263,57 +251,56 @@ function Remove-TeamsUserVoiceConfig {
 
       #region Generic/shared Configuration
       #region Removing Tenant DialPlan
+      Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan"
       $step++
-      Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation "Generic - Removing Tenant Dial Plan" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan"
-      if ( $Force -or $CsUser.TenantDialPlan ) {
+      Write-Progress -Activity "Removing Tenant Dial Plan" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
+      if ($null -ne $CsUser.TenantDialPlan) {
         try {
           $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
-          Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan: OK" -Verbose
+          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: OK" -Verbose
         }
         catch {
-          Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan: Failed" -Verbose
+          Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Failed" -Verbose
           Write-Error -Message "Error:  $($error.Exception.Message)"
         }
       }
       else {
-        Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan: Not assigned" -Verbose
+        Write-Verbose -Message "User '$User' - Removing: Tenant Dial Plan: Not assigned" -Verbose
       }
       #endregion
 
       #region Disabling EnterpriseVoice
-      if ( $Force -or $CsUser.EnterpriseVoiceEnabled ) {
+      Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice"
+      if ($CsUser.EnterpriseVoiceEnabled) {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
           $step++
-          Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation "Generic - Disabling Enterprise Voice" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "User '$User' - Disabling Enterprise Voice"
+          Write-Progress -Activity "Disabling EnterpriseVoice" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$User", "Disabling EnterpriseVoice")) {
               $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
-              Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: OK" -Verbose
+              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: OK" -Verbose
             }
             else {
-              Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Not confirmed)" -Verbose
+              Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not confirmed)" -Verbose
             }
           }
           catch {
-            Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Failed" -Verbose
+            Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
         }
         else {
-          Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
+          Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
         }
       }
       else {
-        Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Not enabled)" -Verbose
+        Write-Verbose -Message "User '$User' - Disabling: EnterpriseVoice: Skipped (Not enabled)" -Verbose
       }
       #endregion
 
-      Write-Progress -Id 1 -Status "User '$User'" -Activity $MyInvocation.MyCommand -Completed
+      $step++
+      Write-Progress -Activity "Complete" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
       #endregion
-
-      $UserCounter++
     }
   } #process
 

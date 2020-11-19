@@ -143,8 +143,9 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$PhoneNumber*"
     }
     else {
-      Write-Verbose -Message "Querying all Resource Accounts, this may take some time..." -Verbose
-      $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue
+      Write-Verbose -Message "No Parameters specified, listing UserPrincipalNames only. Please query contents by targeting them with -Identity" -Verbose
+      (Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue).UserPrincipalName
+      return
     }
 
     # Stop script if no data has been determined

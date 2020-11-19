@@ -36,6 +36,16 @@ $DisableEV = $true
 }
 if ( $DisableEV ) { $sMax++ }
 
+#Empty sample -- First one doesn't have $step++
+$step++
+Write-Progress -Id 0 -Status "" -CurrentOperation "" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+Write-Progress -Id 0 -Status "" -Activity $MyInvocation.MyCommand -Completed
+
+Write-Progress -Id 0 -Activity "" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
+Write-Progress -Id 0 -Status "" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100) -CurrentOperation "$(([math]::Round((($step)/$sMax * 100),0))) %"
+
+
+# Testing
 Write-Progress -Activity "Query User" -PercentComplete ($step / $sMax * 100) -Status "$(([math]::Round((($step)/$sMax * 100),0))) %"
 Start-Sleep -Seconds 3
 

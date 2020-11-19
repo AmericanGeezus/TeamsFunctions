@@ -93,11 +93,11 @@ function Get-TeamsAutoAttendant {
     # Capturing no input
     try {
       if (-not $PSBoundParameters.ContainsKey('Name')) {
-        Write-Verbose -Message "No parameters specified. Acting as an Alias to Get-CsAutoAttendant" -Verbose
-        Write-Verbose -Message "Warnings are suppressed for this operation. Please query with -Name to display them" -Verbose
-        Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction STOP
+        Write-Verbose -Message "Name not specified, listing call queue names only. Please query contents by targeting them with -Name" -Verbose
+        (Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction STOP).Name
       }
       else {
+        #TODO Add Progress bars!
         foreach ($DN in $Name) {
           Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
           # Finding all AAs with this Name (Should return one Object, but since it IS a filter, handling it as an array)
@@ -117,7 +117,7 @@ function Get-TeamsAutoAttendant {
             }
             else {
               # Parsing Callable Entity
-              #TODO Resolve-TeamsCallableEntity can be used to do this, if it can search by type (needs to be extended first though)
+              #TODO Get-TeamsCallableEntity can be used to do this, if it can search by type (needs to be extended first though)
               switch ($AA.Operator.Type) {
                 "User" {
                   try {
