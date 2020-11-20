@@ -86,7 +86,7 @@ function Get-TeamsObjectType {
     else {
       $User = Find-AzureAdUser $Identity
       if ( $User ) {
-        # Get-CsOnlineApplicationInstance is slow, Test-TeamsResourceAccount is even slower. This is the fastest way, but not 100% fool proof
+        #CHECK Get-CsOnlineApplicationInstance is slow, Test-TeamsResourceAccount is even slower. This is the fastest way, but not 100% fool proof
         #$RA = Get-CsOnlineApplicationInstance "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         #if ( $RA ) {
         if ($User[0].Department -eq "Microsoft Communication Application Instance") {

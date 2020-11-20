@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
-
+#TODO Add Progress bars, sMax depends on how many PsBoundParameters there are (approx!)
 
 
 function Set-TeamsUserLicense {
@@ -418,8 +418,8 @@ function Set-TeamsUserLicense {
               continue
             }
             else {
-              $RemainingLics = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
-              if ($RemainingLics -lt 1) {
+              $RemainingLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
+              if ($RemainingLicenses -lt 1) {
                 Write-Error -Message "Adding License '$AddLicName' - License found in the Tenant, but no units available"
                 continue
               }

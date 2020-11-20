@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
-
+#TODO Add Progress bars, sMax depends on how many PsBoundParameters there are
 
 
 function New-TeamsResourceAccount {
@@ -228,6 +228,7 @@ function New-TeamsResourceAccount {
           Write-Progress -Activity "'$Name' Azure Active Directory is creating the Object. Please wait" `
             -PercentComplete (($i * 100) / $iMax) `
             -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
+            #TODO Rework Status into text? Add Remaining Seconds if possible!
 
           Start-Sleep -Milliseconds 1000
           $i++
@@ -324,6 +325,7 @@ function New-TeamsResourceAccount {
           Write-Progress -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
             -PercentComplete (($i * 100) / $iMax) `
             -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
+            #TODO Rework Status into text? Add Remaining Seconds if possible!
 
           Start-Sleep -Milliseconds 1000
           $i++

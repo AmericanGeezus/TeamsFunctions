@@ -12,6 +12,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
     - Performance improvements.
     - Added Parameter `ObjectId` and improved lookup.
     - Lookup without a Name will now only list Names of ApplicationInstances.
+  - `New-TeamsResourceAccountAssociation`:
+    - Completely reworked processing. Status is still BETA as it needs to be tested from scratch!
+    - Added Status bars to indicate progress.
   - `Test-TeamsResourceAccount`: Performance improvements. This one was very slow and should now perform way better.
   - `Test-AzureAdUser`: Performance & precision update (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
   - `Test-AzureAdGroup`: Performance & precision update (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
@@ -22,7 +25,6 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - `Get-AzureAdAssignedAdminRoles`:
     - Added Status bars to indicate progress.
   - `Get-TeamsTenantVoiceConfig`:
-    - TBC
     - Added Status bars to indicate progress.
   - `Get-TeamsUserVoiceConfig`:
     - Added parameter `Identity` (Level 0) to enable piping the output to Set-CsUser and other CmdLets.
@@ -39,9 +41,18 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
     - Added Status bars to indicate progress.
   - `Get-TeamsAutoAttendant`:
     - Lookup without a Name will now only list Names of Auto Attendants.
+    - Parameter `Name` is now an array, enabling processing of multiple targets
     - Added Status bars to indicate progress.
   - `Get-TeamsCallQueue`:
     - Lookup without a Name will now only list Names of Call Queues.
+    - Parameter `Name` is now an array, enabling processing of multiple targets
+    - Added Status bars to indicate progress.
+  - `Remove-TeamsAutoAttendant`:
+    - Script has advanced to PreLive Status. All tests OK.
+    - Added Clause if no matches for the provided string could be found
+    - Added Status bars to indicate progress.
+  - `Remove-TeamsCallQueue`:
+    - Added Clause if no matches for the provided string could be found
     - Added Status bars to indicate progress.
   - `Format-StringForUse`:
     - Added an option to normalise Strings `-As E164` - This will format any String to an E.164 Number, for example: "1 (555) 1234-567" to "+15551234567"
@@ -50,9 +61,16 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - **New**
   - `Test-TeamsResourceAccount`: New Script to test whether an Object is a ResourceAccount.
   - `Find-AzureAdGroup`: A fork of Test-AzureAdGroup, returning the Group Object if found, `$null` if not.
-  - `Find-AzureAdUser`: Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers. Returns object if found, `$null` if not.
-  - `Get-TeamsAutoAttendantCallableEntity`: Returning a Custom Object with the same parameters as a CallableEntity Object
-  - `Get-TeamsObjectType`: Helper script to determine the type of Object provided. Used in AutoAttendants, CallQueues, Get-TeamsUserVoiceConfig
+  - `Find-AzureAdUser`:
+    - Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers.
+    - Returns object if found, `$null` if not.
+  - `Get-TeamsAutoAttendantCallableEntity`:
+    - Command can be used to resolve existing callable entities linked to Auto Attendants: <br />Accepts a String which can be an ObjectId
+    - Command can be used to determine type and usability for AutoAttendants or CallQueues: <br />Accepts a String which can be an Office 365 Group Name, Upn or TelUri
+    - Returning a Custom Object with the same parameters (and more) as a CallableEntity Object
+    - Adds `UsableInCqAs` to indicate which which OverflowAction or TimeoutAction this entity can be used.
+    - Adds `UsableInAaAs` to indicate which type of CallableEntity can be created with it.
+  - `Get-TeamsObjectType`: Helper script to determine the type of Object provided.
 
 - **Performance Testing**
 

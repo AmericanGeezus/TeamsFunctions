@@ -59,6 +59,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             Write-Progress -Activity "'$Identity' Enabling for Enterprise Voice. Please wait" `
               -PercentComplete (($i * 100) / $iMax) `
               -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
+              #TODO Rework Status into text? Add Remaining Seconds if possible!
 
             Start-Sleep -Milliseconds 1000
             $i++

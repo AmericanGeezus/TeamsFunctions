@@ -6,6 +6,8 @@
 
 Add features, operator, Call target, default forward to CQ (Build also wrapper to create the construct of 1 AA and 1 CQ)
 
+Continue to test Scripts
+
 ### New-TeamsAutoAttendantMenu
 
 Add Menu builder with selector for x options 1-9 (default: Forward To PSTN? with dummy number?).
@@ -14,6 +16,10 @@ Optionally add operator on 0 (separate Operator function (New-TeamsAutoAttendant
 ## Support Functions
 
 Abstract Functionality that is used more than twice into generic helper function
+
+Add two functions for Licensing to protect the Scripts from breaking if someone removes the two variables $TeamsLicenses and $TeamsServicePlans:
+Get-TeamsLicenses
+Get-TeamsServicePlans
 
 ### New-TeamsAutoAttendantCallableEntity and its functionality
 
@@ -25,19 +31,13 @@ Disable Positional Binding for CQ and AA scripts https://docs.microsoft.com/en-u
 
 Add Supports Paging for Get Commands Get-TeamsCallQueue and Get-TeamsAutoAttendant at least!
 
-Add Aliases into Functions? Just under CmdLetBinding! Do I have to export them afterwards separately still?
-
 Add Timestamp to Verbose steps when Processing multiple elements (just before ForEach)
 
 Add Argument Completer to some functions, where appropriate: [ArgumentCompleter({(Get-Eventlog -List).log})]
 
-Use dynamic parameters instead of having to verify conjoint use of multiple parameter and ensure mutual exclusivity
+Use dynamic parameters instead of having to verify conjoint use of multiple parameter and ensure mutual exclusivity?
 
 Create Function Template
-
-Break out Functions into separate PS1 scripts
-Link them as PS1 files in the module
-Export all with Get-ChildItem | Export-ModuleMember
 
 Change all Assert Scripts Verbose output to display/run only if called directly (runspace)
 if ($MyInvocation.CommandOrigin -eq "Runspace") {

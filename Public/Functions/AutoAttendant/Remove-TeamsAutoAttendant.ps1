@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   BETA
+# Updated:  01-DEC-2020
+# Status:   PreLive
 
 function Remove-TeamsAutoAttendant {
   <#
@@ -42,10 +42,7 @@ function Remove-TeamsAutoAttendant {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -69,16 +66,28 @@ function Remove-TeamsAutoAttendant {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    $DNCounter = 0
     foreach ($DN in $Name) {
+      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation "Querying CsAutoAttendant" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
+      $DNCounter++
       try {
-        Write-Verbose -Message "The listed AAs are being removed:" -Verbose
+        Write-Verbose -Message "The listed Auto Attendants are being removed:" -Verbose
         $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
-        foreach ($AA in $AAToRemove) {
-          Write-Verbose -Message "Removing: '$($AA.Name)'"
-          if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
-            Remove-CsAutoAttendant -Identity $($AA.Identity) -ErrorAction STOP
+
+        if ( $QueueToRemove ) {
+          $AACounter = 0
+          foreach ($AA in $AAToRemove) {
+            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $($AAToRemove.Count) * 100)
+            Write-Verbose -Message "Removing: '$($AA.Name)'"
+            $AACounter++
+            if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
+              Remove-CsAutoAttendant -Identity $($AA.Identity) -ErrorAction STOP
+            }
           }
+        }
+        else {
+          Write-Warning -Message "No Groups found matching '$DN'"
         }
       }
       catch {

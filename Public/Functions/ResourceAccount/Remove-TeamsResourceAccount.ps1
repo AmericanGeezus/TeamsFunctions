@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+#TODO Add Progress bars, sMax depends on how many PsBoundParameters there are
+
+
 function Remove-TeamsResourceAccount {
   <#
 	.SYNOPSIS

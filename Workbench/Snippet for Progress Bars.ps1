@@ -10,6 +10,7 @@ while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $Se
   Write-Progress -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
     -PercentComplete (($i * 100) / $iMax) `
     -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
+    #TODO Rework Status into text? Add Remaining Seconds if possible!
 
   Start-Sleep -Milliseconds 1000
   $i++
@@ -35,6 +36,16 @@ $DisableEV = $true
   "DirectRouting" { 4 }
 }
 if ( $DisableEV ) { $sMax++ }
+
+#Optimised empty sample -- First one doesn't have $step++
+Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation "" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
+
+$Operation = ""
+$step++
+Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+Write-Verbose -Message $Operation
+
+
 
 #Empty sample -- First one doesn't have $step++
 $step++

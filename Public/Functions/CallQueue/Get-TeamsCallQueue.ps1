@@ -103,7 +103,7 @@ function Get-TeamsCallQueue {
       #foreach -parallel ($DN in $Name) {
       $DNCounter = 0
       foreach ($DN in $Name) {
-        Write-Progress -Id 0 -Status "Queue '$DN'" -CurrentOperation "Querying CsCallQueue" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
+        Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation "Querying CsCallQueue" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
         $DNCounter++
         Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
         # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
@@ -126,14 +126,19 @@ function Get-TeamsCallQueue {
         [System.Collections.ArrayList]$AIObjects = @()
 
         # Reworking Objects
+        $QueueCounter = 0
         Write-Verbose -Message "[PROCESS] Finding parsable Objects for $QueueCount Queues"
         foreach ($Q in $Queues) {
           # Initialising counters for Progress bars
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
+          $QueueCounter++
           [int]$step = 0
           [int]$sMax = 6
-          Write-Progress -Id 1 -Status "Found Queue '$($Q.Name)'" -CurrentOperation "Parsing OverflowActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+
           #region Finding OverflowActionTarget
-          Write-Verbose -Message "'$($Q.Name)' - Parsing OverflowActionTarget"
+          $Operation = "Parsing OverflowActionTarget"
+          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "'$($Q.Name)' - $Operation"
           if ($null -eq $Q.OverflowActionTarget) {
             $OAT = $null
           }
@@ -203,7 +208,7 @@ function Get-TeamsCallQueue {
 
           #region Finding TimeoutActionTarget
           $step++
-          Write-Progress -Id 1 -Status "Found Queue '$($Q.Name)'" -CurrentOperation "Parsing TimeoutActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation "Parsing TimeoutActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - Parsing TimeoutActionTarget"
           if ($null -eq $Q.TimeoutActionTarget) {
             $TAT = $null
@@ -266,9 +271,10 @@ function Get-TeamsCallQueue {
           #region Endpoints
           # Distribution Lists
           #CHECK resolving DLs? Nested objects (count at least?)
+          $Operation = "Parsing DistributionLists"
           $step++
-          Write-Progress -Id 1 -Status "Found Queue '$($Q.Name)'" -CurrentOperation "Parsing DistributionLists" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - Parsing DistributionLists"
+          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($DL in $Q.DistributionLists) {
             $DLObject = Get-AzureADGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
             #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
@@ -277,9 +283,10 @@ function Get-TeamsCallQueue {
           # Output: $DLObjects.DisplayName
 
           # Users
+          $Operation = "Parsing Users"
           $step++
-          Write-Progress -Id 1 -Status "Found Queue '$($Q.Name)'" -CurrentOperation "Parsing DistributionLists" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - Parsing Users"
+          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($User in $Q.Users) {
             $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
             [void]$UserObjects.Add($UserObject)
@@ -299,9 +306,10 @@ function Get-TeamsCallQueue {
           #endregion
 
           #region Application Instance UPNs
+          $Operation = "Parsing Resource Accounts"
           $step++
-          Write-Progress -Id 1 -Status "Found Queue '$($Q.Name)'" -CurrentOperation "Parsing Resource Accounts" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - Parsing Resource Accounts"
+          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($AI in $Q.ApplicationInstances) {
             $AIObject = $null
             $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
@@ -314,9 +322,10 @@ function Get-TeamsCallQueue {
           #endregion
 
           #region Creating Output Object
+          $Operation = "Constructing Output Object"
           $step++
-          Write-Progress -Id 1 -Status "Found Queue '$($Q.Name)'" -CurrentOperation "Constructing Output Object" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - Constructing Output Object"
+          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "'$($Q.Name)' - $Operation"
           # Building custom Object with Friendly Names
           $QueueObject = [PSCustomObject][ordered]@{
             Identity                  = $Q.Identity
@@ -380,7 +389,8 @@ function Get-TeamsCallQueue {
           #endregion
 
           # Output
-          Write-Progress -Id 1 -Status "Found Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
+          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
           if ($Warnings) {
             Write-Warning -Message $Warnings
           }
