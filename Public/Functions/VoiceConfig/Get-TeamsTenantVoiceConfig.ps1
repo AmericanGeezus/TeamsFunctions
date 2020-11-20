@@ -55,7 +55,7 @@ function Get-TeamsTenantVoiceConfig {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 4
+    [int]$sMax = 3
     if ( $DisplayUserCounters ) { $sMax = $sMax + 3 }
     if ( $Detailed ) { $sMax++ }
 
@@ -69,14 +69,14 @@ function Get-TeamsTenantVoiceConfig {
     Write-Verbose -Message $Operation
     $Tenant = Get-CsTenant -WarningAction SilentlyContinue
 
-    $step++
     $Operation = "Querying SIP Domains"
+    $step++
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $SipDomains = Get-CsOnlineSipDomain -WarningAction SilentlyContinue
 
-    $step++
     $Operation = "Querying Tenant Licenses"
+    $step++
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $TenantLicenses = Get-TeamsTenantLicense
@@ -85,8 +85,8 @@ function Get-TeamsTenantVoiceConfig {
     $CallPlanDOM120 = $TenantLicenses | Where-Object { $_.SkuPartNumber -EQ "MCOPSTN5" -or $_.SkuPartNumber -EQ "MCOPSTN_5" }
     $CommunicationC = $TenantLicenses | Where-Object SkuPartNumber -EQ "MCOPSTNC"
 
-    $step++
     $Operation = "Querying Direct Routing Information"
+    $step++
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $TDP = Get-CsTenantDialPlan -WarningAction SilentlyContinue
@@ -97,8 +97,8 @@ function Get-TeamsTenantVoiceConfig {
     #endregion
 
     #region Creating Base Custom Object
-    $step++
     $Operation = "Building Base Object"
+    $step++
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $Object = [PSCustomObject][ordered]@{
@@ -123,20 +123,20 @@ function Get-TeamsTenantVoiceConfig {
     if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
       Write-Verbose -Message "DisplayUserCounters - Querying User Information - This will take some time!" -Verbose
 
-      $step++
       $Operation = "DisplayUserCounters - Querying AzureADUsers"
+      $step++
       Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $AdUsers = Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE -WarningAction SilentlyContinue
 
-      $step++
       $Operation = "DisplayUserCounters - Querying CsOnlineUsers"
+      $step++
       Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $CsOnlineUsers = Get-CsOnlineUser -WarningAction SilentlyContinue
 
-      $step++
       $Operation = "DisplayUserCounters - Counting EV Users"
+      $step++
       Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $CsOnlineUsersEV = $CsOnlineUsers | Where-Object EnterpriseVoiceEnabled -EQ $TRUE
@@ -150,8 +150,8 @@ function Get-TeamsTenantVoiceConfig {
 
     #region Detailed Information
     if ($PSBoundParameters.ContainsKey('Detailed')) {
-      $step++
       $Operation = "Detailed - Querying Microsoft Telephone Numbers Information"
+      $step++
       Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $MSNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue

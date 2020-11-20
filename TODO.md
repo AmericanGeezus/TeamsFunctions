@@ -1,5 +1,11 @@
 ﻿# ToDo List
 
+## Test Plan
+
+### Progress Bars
+
+All: ResourceAccount, Call Queue, etc.
+
 ## Auto Attendant
 
 ### New-TeamsAutoAttendant
@@ -43,8 +49,6 @@ Change all Assert Scripts Verbose output to display/run only if called directly 
 if ($MyInvocation.CommandOrigin -eq "Runspace") {
     #Assert
 }
-
-#CHECK evaluate how to be able to adhere to $ErrorAction and $WarningActionPreference if needed (this was used in Get-TeamsUserVoiceConfig but abandonded there (no need as loop exit was found (Continue)))
 
 ## Evaluate Export to CLIXML
 

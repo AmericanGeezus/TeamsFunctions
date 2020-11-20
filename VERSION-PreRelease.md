@@ -12,6 +12,12 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
     - Performance improvements.
     - Added Parameter `ObjectId` and improved lookup.
     - Lookup without a Name will now only list Names of ApplicationInstances.
+  - `New-TeamsResourceAccount`:
+    - Added Status bars to indicate progress.
+  - `Set-TeamsResourceAccount`:
+    - Added Status bars to indicate progress.
+  - `Remove-TeamsResourceAccount`:
+    - Added Status bars to indicate progress.
   - `New-TeamsResourceAccountAssociation`:
     - Completely reworked processing. Status is still BETA as it needs to be tested from scratch!
     - Added Status bars to indicate progress.

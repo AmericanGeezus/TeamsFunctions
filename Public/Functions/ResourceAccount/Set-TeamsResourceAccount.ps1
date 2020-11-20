@@ -2,9 +2,9 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   RC
 
-#TODO Add Progress bars, sMax depends on how many PsBoundParameters there are
+
 
 
 function Set-TeamsResourceAccount {
@@ -131,10 +131,7 @@ function Set-TeamsResourceAccount {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -154,6 +151,16 @@ function Set-TeamsResourceAccount {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = 5
+    if ( $DisplayName ) { $sMax = $sMax + 2 }
+    if ( $UsageLocation ) { $sMax++ }
+    if ( $ApplicationType ) { $sMax = $sMax + 2 }
+    if ( $License ) { $sMax = $sMax + 2 }
+    if ( $License -and $PhoneNumber ) { $sMax++ }
+    if ( $PhoneNumber ) { $sMax++ }
+
   } #begin
 
   process {
@@ -161,6 +168,9 @@ function Set-TeamsResourceAccount {
     #region PREPARATION
     Write-Verbose -Message "Verifying input"
     #region Lookup of UserPrincipalName
+    $Operation = "Querying Object"
+    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message $Operation
     try {
       #Trying to query the Resource Account
       $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction STOP)
@@ -175,6 +185,11 @@ function Set-TeamsResourceAccount {
 
     #region Normalising $DisplayName
     if ($PSBoundParameters.ContainsKey("DisplayName")) {
+      $Operation = "DisplayName"
+      $step++
+      Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       $DisplayNameNormalised = Format-StringForUse -InputString $DisplayName -As DisplayName
       $Name = $DisplayNameNormalised
       Write-Verbose -Message "DisplayName normalised to: '$Name'"
@@ -186,6 +201,11 @@ function Set-TeamsResourceAccount {
 
     #region ApplicationType and Associations
     if ($PSBoundParameters.ContainsKey("ApplicationType")) {
+      $Operation = "Application Type"
+      $step++
+      Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       # Translating $ApplicationType (Name) to ID used by Commands.
       $AppId = GetAppIdFromApplicationType $ApplicationType
       $CurrentAppId = $Object.ApplicationId
@@ -209,6 +229,11 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region PhoneNumber
+    $Operation = "Phone Number"
+    $step++
+    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message $Operation
+
     # Querying CurrentPhoneNumber
     try {
       $CurrentPhoneNumber = $Object.PhoneNumber.Replace('tel:', '')
@@ -250,6 +275,11 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region UsageLocation
+    $Operation = "Usage Location"
+    $step++
+    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message $Operation
+
     $CurrentUsageLocation = (Get-AzureADUser -ObjectId "$UserPrincipalName" -WarningAction SilentlyContinue).UsageLocation
     if ($PSBoundParameters.ContainsKey('UsageLocation')) {
       if ($Usagelocation -eq $CurrentUsageLocation) {
@@ -276,6 +306,11 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region Current License
+    $Operation = "License Assignment"
+    $step++
+    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message $Operation
+
     if ($PSBoundParameters.ContainsKey("License") -or $PSBoundParameters.ContainsKey("PhoneNumber")) {
       $CurrentLicense = $null
       # Determining license Status of Object
@@ -300,6 +335,11 @@ function Set-TeamsResourceAccount {
     Write-Verbose -Message "Applying Settings"
     #region DisplayName
     if ($PSBoundParameters.ContainsKey("DisplayName")) {
+      $Operation = "DisplayName"
+      $step++
+      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       try {
         if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -Displayname `"$DisplayNameNormalised`"")) {
           Write-Verbose -Message "'$CurrentDisplayName' Changing DisplayName to: $DisplayNameNormalised"
@@ -318,6 +358,11 @@ function Set-TeamsResourceAccount {
 
     #region Application Type
     if ($PSBoundParameters.ContainsKey("ApplicationType")) {
+      $Operation = "Application Type"
+      $step++
+      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       # Application Type Change?
       if ($AppId -ne $CurrentAppId) {
         try {
@@ -337,6 +382,11 @@ function Set-TeamsResourceAccount {
 
     #region UsageLocation
     if ($PSBoundParameters.ContainsKey("UsageLocation")) {
+      $Operation = "Usage Location"
+      $step++
+      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-AzureADUser -UsageLocation $UsageLocation")) {
         try {
           Set-AzureADUser -ObjectId $UserPrincipalName -UsageLocation $UsageLocation -ErrorAction STOP
@@ -358,10 +408,18 @@ function Set-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey("License")) {
       # Verifying License is available to be assigned
       # Determining available Licenses from Tenant
-      Write-Verbose -Message "'$Name' Querying Licenses..."
+      $Operation = "Querying Licenses"
+      $step++
+      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
       $TenantLicenses = Get-TeamsTenantLicense
 
       # Changing License only if required
+      $Operation = "License Assignment"
+      $step++
+      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       if ($License -eq $CurrentLicense) {
         # No action required
         Write-Verbose -Message "'$Name' License '$License' already assigned." -Verbose
@@ -406,6 +464,11 @@ function Set-TeamsResourceAccount {
 
     #region Waiting for License Application
     if ($PSBoundParameters.ContainsKey("License") -and $PSBoundParameters.ContainsKey("PhoneNumber")) {
+      $Operation = "Waiting for AzureAd to write Object"
+      $step++
+      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       if ($License -eq "PhoneSystemVirtualUser") {
         $ServicePlanName = "MCOEV_VIRTUALUSER"
       }
@@ -421,7 +484,7 @@ function Set-TeamsResourceAccount {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount"
           return
         }
-        Write-Progress -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
+        Write-Progress -Id 1 -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
           -PercentComplete (($i * 100) / $iMax) `
           -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
           #TODO Rework Status into text? Add Remaining Seconds if possible!
@@ -434,6 +497,11 @@ function Set-TeamsResourceAccount {
 
     #region PhoneNumber
     if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+      $Operation = "Phone Number"
+      $step++
+      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+
       if ($null -eq $CurrentLicense -and -not $IsLicensed) {
         Write-Error -Message "A Phone Number can only be assigned to licensed objects." -Category ResourceUnavailable -RecommendedAction "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
       }
@@ -500,6 +568,10 @@ function Set-TeamsResourceAccount {
     }
     #endregion
     #endregion
+
+    Write-Progress -Id 1 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+
   } #process
 
   end {

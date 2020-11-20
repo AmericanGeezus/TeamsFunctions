@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   BETA
+# Updated:  01-DEC-2020
+# Status:   RC
 
 
 
@@ -66,7 +66,7 @@ function New-TeamsResourceAccountAssociation {
     # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -166,7 +166,7 @@ function New-TeamsResourceAccountAssociation {
     $step++
     Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    $Counter = 0
+    $Counter = 1
     foreach ($Account in $Accounts) {
       Write-Progress -Id 1 -Status "Validating '$($Account.UserPrincipalName)'" -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
       $Counter++
@@ -203,7 +203,9 @@ function New-TeamsResourceAccountAssociation {
       Write-Progress -Id 2 -Status "Validating '$($Account.UserPrincipalName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
       Write-Verbose -Message "'$($Account.UserPrincipalName)' - $Operation"
       #TEST this. Was restructured from below. needs testing.
-      if ((Get-TeamsResourceAccount -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationType -eq $DesiredType) {
+      $ApplicationTypeMatches = ((Get-CsOnlineApplicationInstance -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationId -eq (GetAppIdFromApplicationType $DesiredType))
+
+      if ( $ApplicationTypeMatches ) {
         Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches '$DesiredType' - OK"
       }
       else {
@@ -218,7 +220,7 @@ function New-TeamsResourceAccountAssociation {
           }
           catch {
             Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match and could not be changed! Expected: '$DesiredType' - Please change manually or recreate the Account" -Category InvalidType -RecommendedAction "Please change manually or recreate the Account"
-            continue
+            [void]$Accounts.Remove($Account)
           }
 
           $Operation = "Application Type is not '$DesiredType' - Waiting for AzureAD (2s)"
@@ -232,15 +234,16 @@ function New-TeamsResourceAccountAssociation {
           Write-Progress -Id 2 -Status "Validating '$($Account.UserPrincipalName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
           Write-Verbose -Message "'$($Account.UserPrincipalName)' - $Operation"
           if ($DesiredType -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId -WarningAction SilentlyContinue).ApplicationId)) {
-            Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed to Desired Type: '$DesiredType'" -Category InvalidType -ErrorAction Stop
+            Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed to Desired Type: '$DesiredType'" -Category InvalidType
+            [void]$Accounts.Remove($Account)
           }
           else {
             Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to '$DesiredType': SUCCESS" -Verbose
           }
         }
         else {
-          Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match! Expected: '$DesiredType' - Please change manually or use -Force switch" -Category InvalidType -RecommendedAction "Please change manually or use -Force switch"
-          continue
+          Write-Warning -Message "'$($Account.UserPrincipalName)' - Application type does not match! Expected '$DesiredType' - Omitting account. Please change type manually or use -Force switch"
+          [void]$Accounts.Remove($Account)
         }
       }
       Write-Progress -Id 2 -Status "'$($Account.UserPrincipalName)' - Complete" -Activity $MyInvocation.MyCommand -Completed
@@ -251,7 +254,7 @@ function New-TeamsResourceAccountAssociation {
     if ( $Accounts ) {
       # Processing Assignment
       Write-Verbose -Message "Processing assignment of all Accounts to $DesiredType '$($EntityObject.Name)'"
-      $Counter = 0
+      $Counter = 1
       foreach ($Account in $Accounts) {
         Write-Progress -Id 1 -Status "Processing assignment of '$($Account.UserPrincipalName)'" -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
         $Counter++
@@ -308,9 +311,6 @@ function New-TeamsResourceAccountAssociation {
         Write-Output $ResourceAccountAssociationObject
       }
       Write-Progress -Id 1 -Status "'$($Account.UserPrincipalName)' - Complete" -Activity $MyInvocation.MyCommand -Completed
-    }
-    else {
-      Write-Warning -Message "No Accounts found"
     }
 
     Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed

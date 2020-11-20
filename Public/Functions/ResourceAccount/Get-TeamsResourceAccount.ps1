@@ -104,8 +104,14 @@ function Get-TeamsResourceAccount {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = 3
+
     # Loading all Microsoft Telephone Numbers
-    Write-Verbose -Message "Gathering Phone Numbers from the Tenant"
+    $Operation = "Gathering Phone Numbers from the Tenant"
+    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message $Operation
     $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
   } #begin
 
@@ -114,6 +120,10 @@ function Get-TeamsResourceAccount {
     $ResourceAccounts = $null
 
     #region Data gathering
+    $Operation = "Querying Resource Accounts"
+    $step++
+    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message $Operation
     if ($PSBoundParameters.ContainsKey('Identity')) {
       # Default Parameterset
       [System.Collections.ArrayList]$ResourceAccounts = @()
@@ -159,89 +169,110 @@ function Get-TeamsResourceAccount {
 
     #region OUTPUT
     # Creating new PS Object
-    try {
-      Write-Verbose -Message "Parsing Resource Accounts, please wait..."
-      foreach ($ResourceAccount in $ResourceAccounts) {
-        # readable Application type
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: ApplicationType"
-        if ($PSBoundParameters.ContainsKey('ApplicationType')) {
-          $ResourceAccountApplicationType = $ApplicationType
-        }
-        else {
-          $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
-        }
+    $Operation = "Parsing Information for $($ResourceAccounts.Count) Resource Accounts"
+    $step++
+    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message $Operation
+    foreach ($ResourceAccount in $ResourceAccounts) {
+      # Initialising counters for Progress bars
+      [int]$step = 0
+      [int]$sMax = 7
 
-        # Usage Location from Object
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Usage Location"
-        $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
-
-
-        # Parsing CsOnlineUser
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy"
-        try {
-          $CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object OnlineVoiceRoutingPolicy
-        }
-        catch {
-          Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy FAILED. CsOnlineUser not found" -Verbose
-        }
-
-
-        # Parsing TeamsUserLicense
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: User Licenses"
-        $ResourceAccountLicense = Get-TeamsUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
-
-        # Phone Number Type
-        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: PhoneNumber"
-        if ($null -ne $ResourceAccount.PhoneNumber) {
-          $PhoneNumberIsMSNumber = $null
-          $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
-          if ($PhoneNumberIsMSNumber) {
-            $ResourceAccountPhoneNumberType = "Microsoft Number"
-          }
-          else {
-            $ResourceAccountPhoneNumberType = "Direct Routing Number"
-          }
-        }
-        else {
-          $ResourceAccountPhoneNumberType = $null
-        }
-
-        # Associations
-        $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        if ( $Association ) {
-          Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Association"
-          $AssociationObject = switch ($Association.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
-          }
-          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        }
-
-        # creating new PS Object (synchronous with Get and Set)
-        $ResourceAccountObject = [PSCustomObject][ordered]@{
-          ObjectId                 = $ResourceAccount.ObjectId
-          UserPrincipalName        = $ResourceAccount.UserPrincipalName
-          DisplayName              = $ResourceAccount.DisplayName
-          ApplicationType          = $ResourceAccountApplicationType
-          UsageLocation            = $AzureAdUser.UsageLocation
-          License                  = $ResourceAccountLicense.LicensesFriendlyNames
-          PhoneNumberType          = $ResourceAccountPhoneNumberType
-          PhoneNumber              = $ResourceAccount.PhoneNumber
-          OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy
-          AssociatedTo             = $AssociationObject.Name
-          AssociatedAs             = $Association.ConfigurationType
-          AssociationStatus        = $AssociationStatus.Status
-        }
-
-        Write-Output $ResourceAccountObject
+      # readable Application type
+      $Operation = "Parsing ApplicationType"
+      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      if ($PSBoundParameters.ContainsKey('ApplicationType')) {
+        $ResourceAccountApplicationType = $ApplicationType
+      }
+      else {
+        $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
       }
 
+      # Usage Location from Object
+      $Operation = "Parsing Usage Location"
+      $step++
+      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
+
+
+      # Parsing CsOnlineUser
+      $Operation = "Parsing Online Voice Routing Policy"
+      $step++
+      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      try {
+        $CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object OnlineVoiceRoutingPolicy
+      }
+      catch {
+        Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy FAILED. CsOnlineUser not found" -Verbose
+      }
+
+
+      # Parsing TeamsUserLicense
+      $Operation = "Parsing License Assignments"
+      $step++
+      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      $ResourceAccountLicense = Get-TeamsUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
+
+      # Phone Number Type
+      $Operation = "Parsing PhoneNumber"
+      $step++
+      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      if ($null -ne $ResourceAccount.PhoneNumber) {
+        $PhoneNumberIsMSNumber = $null
+        $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
+        if ($PhoneNumberIsMSNumber) {
+          $ResourceAccountPhoneNumberType = "Microsoft Number"
+        }
+        else {
+          $ResourceAccountPhoneNumberType = "Direct Routing Number"
+        }
+      }
+      else {
+        $ResourceAccountPhoneNumberType = $null
+      }
+
+      # Associations
+      $Operation = "Parsing Association"
+      $step++
+      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      if ( $Association ) {
+        $AssociationObject = switch ($Association.ConfigurationType) {
+          "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+          "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+        }
+        $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      }
+
+      # creating new PS Object (synchronous with Get and Set)
+      $ResourceAccountObject = [PSCustomObject][ordered]@{
+        ObjectId                 = $ResourceAccount.ObjectId
+        UserPrincipalName        = $ResourceAccount.UserPrincipalName
+        DisplayName              = $ResourceAccount.DisplayName
+        ApplicationType          = $ResourceAccountApplicationType
+        UsageLocation            = $AzureAdUser.UsageLocation
+        License                  = $ResourceAccountLicense.LicensesFriendlyNames
+        PhoneNumberType          = $ResourceAccountPhoneNumberType
+        PhoneNumber              = $ResourceAccount.PhoneNumber
+        OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy
+        AssociatedTo             = $AssociationObject.Name
+        AssociatedAs             = $Association.ConfigurationType
+        AssociationStatus        = $AssociationStatus.Status
+      }
+
+      Write-Progress -Id 1 -Status "Processing '$($ResourceAccount.UserPrincipalName)'" -Activity $MyInvocation.MyCommand -Completed
+      Write-Output $ResourceAccountObject
     }
-    catch {
-      Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
-      Write-ErrorRecord $_ #This handles the error message in human readable format.
-    }
+
     #endregion
+    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+
   } #process
 
   end {
