@@ -36,6 +36,9 @@ function New-TeamsResourceAccountAssociation {
     Connects multiple Resource Accounts to ONE CallQueue or AutoAttendant
     The Type of the Resource Account has to corellate to the entity connected.
     Parameter Force can be used to change the type of RA to align to the entity if possible.
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
   .LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation

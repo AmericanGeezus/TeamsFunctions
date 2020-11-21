@@ -27,14 +27,13 @@ function Remove-TeamsResourceAccountAssociation {
     System.String
   .OUTPUTS
     None
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
   .LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation
 		Remove-TeamsResourceAccountAssociation
-    New-TeamsResourceAccount
-    Get-TeamsResourceAccount
-    Find-TeamsResourceAccount
-    Set-TeamsResourceAccount
     Remove-TeamsResourceAccount
   #>
 

@@ -89,25 +89,27 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 
 The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that to create objects connected to Auto Attendants have spawned a few support functions. Keeping in step with them and simplifying their use a bit is what my take on them represents.
 
-| Function                               | Alias                     | Underlying Function                    | Description                                                                                                                 |
-| -------------------------------------- | ------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `New-TeamsAutoAttendantDialScope`      | New-TeamsAADialScope      | New-CsTeamsAutoAttendantDialScope      | Creates a `DialScope` Object given Office 365 Group Names                                                                   |
-| `New-TeamsAutoAttendantCallableEntity` | New-TeamsAACallableEntity | New-CsTeamsAutoAttendantCallableEntity | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)      |
-| `New-TeamsAutoAttendantPrompt`         | New-TeamsAAPrompt         | New-CsTeamsAutoAttendantPrompt         | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String) |
-| `New-TeamsAutoAttendantSchedule`       | New-TeamsAASchedule       | New-CsTeamsAutoAttendantSchedule       | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants               |
+| Function                               | Alias                | Underlying Function                    | Description                                                                                                                                                     |
+| -------------------------------------- | -------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `New-TeamsAutoAttendantDialScope`      | New-TeamsAADialScope | New-CsTeamsAutoAttendantDialScope      | Creates a `DialScope` Object given Office 365 Group Names                                                                                                       |
+| `New-TeamsAutoAttendantPrompt`         | New-TeamsAAPrompt    | New-CsTeamsAutoAttendantPrompt         | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String)                                     |
+| `New-TeamsAutoAttendantSchedule`       | New-TeamsAASchedule  | New-CsTeamsAutoAttendantSchedule       | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants                                                   |
+| `New-TeamsAutoAttendantCallableEntity` | New-TeamsAAEntity    | New-CsTeamsAutoAttendantCallableEntity | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)                                          |
+| `Get-TeamsAutoAttendantCallableEntity` | Get-TeamsAAEntity    | N/A (new)                              | Creates a new Object emulating the output of a `Callable Entity`. Also usable for Call Queues, this validates the Object type and its usability for CQs or AAs. |
 
 ### Lookup Commands
 
 The more prominent helper functions. Get-AzureAdAssignedAdminRoles is run with `Connect-Me`, but can be used on its own just as well. The others are mainly helping to cut down on typing when doing stuff quickly. Using `Get-AzureAdUser -Searchstring "$UPN"` is fine, but sometimes I just want to bash in the $UPN and get a result. Other times knowing just enough is enough. Like knowing only the names of the Tenant Dial Plan or the Online Voice Routing Policy in question is just what I need, nothing more.
 
-| Function                        | Description                                                                  |
-| ------------------------------- | ---------------------------------------------------------------------------- |
-| `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser                          |
-| `Find-AzureAdUser`              | Helper Function to find AzureAd Groups. Returns Object if found              |
-| `Find-AzureAdGroup`             | Helper Function to find AzureAd Groups. Returns Object if found              |
-| `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                           |
-| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :) |
-| `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names... |
+| Function                        | Description                                                                                               |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser                                                       |
+| `Find-AzureAdUser`              | Helper Function to find AzureAd Users. Returns Objects if found. Simplifies Lookup and Search of Objects  |
+| `Find-AzureAdGroup`             | Helper Function to find AzureAd Groups. Returns Objects if found. Simplifies Lookup and Search of Objects |
+| `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                                                        |
+| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)                              |
+| `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...                              |
+| `Get-TeamsObjectType`           | Returns the type of any given Object to identify its use in CQs and AAs.                                  |
 
 ### Backup and Restore
 
@@ -121,39 +123,40 @@ Curtesy of Ken Lasko
 
 ### Other functions
 
-| Function                                 | Description                                                                                                    |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `Assert-AzureADConnection`               | Tests connection and visual feedback.                                                                          |
-| `Assert-MicrosoftTeamsConnection`        | Tests connection and visual feedback.                                                                          |
-| `Assert-SkypeOnlineConnection`           | Tests connection and visual feedback. **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life* |
-| `Format-StringRemoveSpecialCharacter`    | Formats a String and removes special characters (harmonising Display Names)                                    |
-| `Format-StringForUse`                    | Formats a String and removes special characters                                                                |
-| `Get-SkuIDFromSkuPartNumber`             | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                                   |
-| `Get-SkuPartNumberFromSkuID`             | Helper function for Licensing. Returns a SkuPartNumber from a specific SkuID                                   |
-| `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain                                                     |
-| `Import-TeamsAudioFile`                  | Imports an Audio File for use within Call Queues or Auto Attendants                                            |
-| `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove                       |
-| `Set-TeamsUserPolicy`                    | Assigns specific Policies to a User  (Currently only six policies available)                                   |
-| `Write-ErrorRecord`                      | Helper function for Troubleshooting and to display Errors in a more readable format but in the Output stream   |
+| Function                                 | Description                                                                                                            |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `Assert-AzureAdConnection`               | Tests connection and visual feedback.                                                                                  |
+| `Assert-MicrosoftTeamsConnection`        | Tests connection and visual feedback.                                                                                  |
+| `Assert-SkypeOnlineConnection`           | Tests connection and visual feedback. **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*         |
+| `Format-StringRemoveSpecialCharacter`    | Formats a String and removes special characters (harmonising Display Names)                                            |
+| `Format-StringForUse`                    | Formats a String and removes special characters for DisplayNames, UserPrincipalNames, LineUri or E.164 Number formats. |
+| `Get-SkuIdFromSkuPartNumber`             | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                                           |
+| `Get-SkuPartNumberFromSkuId`             | Helper function for Licensing. Returns a SkuPartNumber from a specific SkuID                                           |
+| `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain                                                             |
+| `Import-TeamsAudioFile`                  | Imports an Audio File for use within Call Queues or Auto Attendants                                                    |
+| `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove                               |
+| `Set-TeamsUserPolicy`                    | Assigns specific Policies to a User  (Currently only six policies available)                                           |
+| `Write-ErrorRecord`                      | Helper function for Troubleshooting and to display Errors in a more readable format and in the Output stream           |
 
 #### Test & Assert Functions
 
 These are helper functions for testing Connections and Modules. All Functions return boolean output.
 
-| Function                        | Description                                                                 |
-| ------------------------------- | --------------------------------------------------------------------------- |
-| `Test-AzureAdConnection`        | Verifying a Session to AzureAD exists                                       |
-| `Test-MicrosoftTeamsConnection` | Verifying a Session to MicrosoftTeams exists                                |
-| `Test-SkypeOnlineConnection`    | Verifying a Session to SkypeOnline exists                                   |
-| `Test-ExchangeOnlineConnection` | Verifying a Session to ExchangeOnline exists                                |
-| `Test-Module`                   | Verifying the specified Module is loaded                                    |
-| `Test-AzureAdUser`              | Testing whether the User exists in AzureAd                                  |
-| `Test-AzureAdGroup`             | Testing whether the Group exists in AzureAd                                 |
-| `Test-TeamsUser`                | Testing whether the User exists in SkypeOnline/Teams                        |
-| `Test-TeamsUserLicense`         | Testing whether the User has a specific Teams License (from $TeamsLicenses) |
-| `Test-TeamsHasCallPlan`         | Testing whether the User has any Call Plan License (from $TeamsLicenses)    |
-| `Test-TeamsTenantPolicy`        | Tests whether any Policy is present in the Tenant (Uses Invoke-Expression)  |
-| `Test-TeamsExternalDNS`         | Tests DNS Records for Skype for Business Online and Teams                   |
+| Function                        | Description                                                                                |
+| ------------------------------- | ------------------------------------------------------------------------------------------ |
+| `Test-AzureAdConnection`        | Verifying a Session to AzureAD exists                                                      |
+| `Test-MicrosoftTeamsConnection` | Verifying a Session to MicrosoftTeams exists                                               |
+| `Test-SkypeOnlineConnection`    | Verifying a Session to SkypeOnline exists                                                  |
+| `Test-ExchangeOnlineConnection` | Verifying a Session to ExchangeOnline exists                                               |
+| `Test-Module`                   | Verifying the specified Module is loaded                                                   |
+| `Test-AzureAdUser`              | Testing whether the User exists in AzureAd (this also returns TRUE for Resource Accounts!) |
+| `Test-AzureAdGroup`             | Testing whether the Group exists in AzureAd                                                |
+| `Test-TeamsResourceAccount`     | Testing whether a Resource Account exists in AzureAd                                       |
+| `Test-TeamsUser`                | Testing whether the User exists in SkypeOnline/Teams                                       |
+| `Test-TeamsUserLicense`         | Testing whether the User has a specific Teams License (from $TeamsLicenses)                |
+| `Test-TeamsUserHasCallPlan`     | Testing whether the User has any Call Plan License (from $TeamsLicenses)                   |
+| `Test-TeamsTenantPolicy`        | Tests whether any Policy is present in the Tenant (Uses Invoke-Expression)                 |
+| `Test-TeamsExternalDNS`         | Tests DNS Records for Skype for Business Online and Teams                                  |
 
 NOTE: Private functions are not exported and also not listed here.
 
@@ -173,23 +176,24 @@ Please see VERSION.md for a detailed breakdown of the Change log.
 ### Current issues
 
 - Figuring out Pester, Writing proper Test scenarios
-- Bugfixing for BETA Functions (`TeamsCallQueue`)
+- Continuous Improvement and Bugfixing for BETA Functions
 
 ### Update/Extension plans
 
 - Adding all Policies to `Set-TeamsUserPolicy` - currently only 6 are supported.
-- Simplifying creation and provisioning of Resource Accounts for Call Queues and Auto Attendants
 - Performance improvements, bug fixing and more testing
 - Comparing backups, changed elements for Change control... Looking at Lee Fords backup scripts :)
 
 ### Limitations
 
 - Testing
-  - Currently, no Pester tests exist for this Module. - I cannot figure them out yet.
-  - All Testing is done with my trusty ISESteroids.
+  - Currently, only limited Pester tests are available for the Module and select functions.
+  - No Pester tests exist for Functions that require a Session to AzureAd or SkypeOnline - I cannot figure them out yet.
+  - All Testing is done with VScode and my trusty ISESteroids.
 - Functions
   - `Connect-SkypeOnline` still seems to be timing out, despite `Enable-CsOnlineSessionForReconnection` being run - Recent improvements should stabilise these now, but I will still test them more thoroughly.&nbsp; <br/>**UPDATE**: v20.08 should hopefully be able to alleviate this. - Reconnection attempt is taken if connection is broken.
-  - Scripts for **Call Queue Handling** are not fully tested yet. They have improved a lot, but are still BETA - Handle with Care!
+  - `CallQueue` Scripts are nearing RC status. The functionality is tested and working but we might yet find bugs for them.
+  - `AutoAttendant` Scripts not fully tested yet. They have improved a lot, but are still BETA - Handle with Care!
   - I try to build my scripts so that they are very talkative, if you get stuck, `-Verbose` should be able to help
 
 *Enjoy,*

@@ -49,6 +49,9 @@ function Get-TeamsResourceAccount {
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Returns one or more Resource Accounts
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
 	.LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation

@@ -50,16 +50,16 @@ function Enable-TeamsUserForEnterpriseVoice {
           $null = Set-CsUser $Identity -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
           $i = 0
           $iMax = 20
-          Write-Verbose -Message "Waiting for Get-CsOnlineUser to return a Result..."
+          $Status = "Applying License"
+          $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result"
+          Write-Verbose -Message "$Status - $Operation"
           while ( -not $(Get-CsOnlineUser $Identity -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
             if ($i -gt $iMax) {
               Write-Error -Message "User was not enabled for Enterprise Voice in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
               return
             }
-            Write-Progress -Activity "'$Identity' Enabling for Enterprise Voice. Please wait" `
-              -PercentComplete (($i * 100) / $iMax) `
-              -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
-              #TODO Rework Status into text? Add Remaining Seconds if possible!
+            Write-Progress -Id 0 -Activity "Azure Active Directory is applying License. Please wait" `
+              -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
             Start-Sleep -Milliseconds 1000
             $i++

@@ -20,16 +20,12 @@ function Remove-TeamsCallQueue {
   .OUTPUTS
     System.Object
 	.LINK
-		New-TeamsCallQueue
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
+		New-TeamsCallQueue
     Remove-TeamsCallQueue
-    New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
-    Set-TeamsAutoAttendant
     Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccount
 		Remove-TeamsResourceAccountAssociation
 	#>
 
@@ -92,7 +88,6 @@ function Remove-TeamsCallQueue {
       }
       catch {
         Write-Error -Message "Removal of Call Queue '$DN' failed" -Category OperationStopped
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }

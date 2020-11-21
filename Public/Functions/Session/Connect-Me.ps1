@@ -1,8 +1,11 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
+# Updated:  01-DEC-2020
 # Status:   Live
+
+
+
 
 function Connect-Me {
   <#
@@ -70,7 +73,7 @@ function Connect-Me {
     [string]$UserName,
 
     [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to SkypeOnline. Prompts for new credentials.')]
-    [Alias('SFBO')]
+    [Alias('SfBO')]
     [switch]$SkypeOnline,
 
     [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to Azure AD. Reuses credentials if authenticated already.')]
@@ -178,7 +181,6 @@ function Connect-Me {
       }
       catch {
         Write-Host "Could not establish Connection to AzureAD, please verify Module and run Connect-AzureAD manually" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     #endregion
@@ -200,7 +202,6 @@ function Connect-Me {
       }
       catch {
         Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     #endregion
@@ -221,7 +222,6 @@ function Connect-Me {
       }
       catch {
         Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
       }
     }
     #endregion

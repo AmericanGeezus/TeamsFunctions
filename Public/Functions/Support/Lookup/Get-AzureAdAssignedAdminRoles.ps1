@@ -49,13 +49,13 @@ function Get-AzureAdAssignedAdminRoles {
     $Roles = Get-AzureADDirectoryRole
     FOREACH ($R in $Roles) {
       Write-Progress -Id 0 -Status "Querying Members for Roles" -CurrentOperation "Role: '$($R.DisplayName)'" -Activity $MyInvocation.MyCommand -PercentComplete ($RoleCounter / $($Roles.Count) * 100)
+      $RoleCounter++
+
       $Members = (Get-AzureADDirectoryRoleMember -ObjectId $R.ObjectId).UserprincipalName
       IF ($Identity -in $Members) {
         #Building list of Roles assigned to $Identity
         $AssignedRoles += $R
       }
-
-      $RoleCounter++
     }
 
     #Output

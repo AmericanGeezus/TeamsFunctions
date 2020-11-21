@@ -4,7 +4,7 @@
 # Updated:    01-NOV-2020
 # Status:     PreLive
 
-
+#CHECK Create Class?
 
 
 function Get-TeamsAutoAttendantCallableEntity {
@@ -36,10 +36,10 @@ function Get-TeamsAutoAttendantCallableEntity {
     Get-TeamsObjectType
     Get-TeamsCallQueue
     Get-TeamsAutoAttendant
-
 	#>
 
   [CmdletBinding()]
+  [Alias('Get-TeamsAAEntity')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, Position = 0, HelpMessage = 'Identity of the Callable Entity')]

@@ -40,17 +40,13 @@ function Get-TeamsAutoAttendant {
 	.FUNCTIONALITY
 		Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
 	.LINK
-		New-TeamsCallQueue
 		Get-TeamsCallQueue
-    Set-TeamsCallQueue
-    Remove-TeamsCallQueue
     New-TeamsAutoAttendant
     Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
     Remove-TeamsAutoAttendant
+    Get-TeamsResourceAccount
     Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding()]

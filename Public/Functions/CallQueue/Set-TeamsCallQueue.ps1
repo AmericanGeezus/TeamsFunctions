@@ -128,13 +128,7 @@ function Set-TeamsCallQueue {
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
-    New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
-    Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

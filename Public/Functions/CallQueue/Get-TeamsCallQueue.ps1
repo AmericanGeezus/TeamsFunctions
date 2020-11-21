@@ -47,13 +47,9 @@ function Get-TeamsCallQueue {
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
-    New-TeamsAutoAttendant
     Get-TeamsAutoAttendant
-    Set-TeamsAutoAttendant
-    Remove-TeamsAutoAttendant
+    Get-TeamsResourceAccount
     Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding()]

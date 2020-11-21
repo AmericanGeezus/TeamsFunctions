@@ -29,6 +29,9 @@ function Get-TeamsResourceAccountAssociation {
 		Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
 		Without any Parameters, can be used to enumerate all Resource Accounts
     This may take a while to calculate, depending on # of Accounts in the Tenant
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
   .LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation

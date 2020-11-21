@@ -44,9 +44,9 @@ function Test-TeamsUserVoiceConfig {
       This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.
       "Remove-TeamsUserVoiceConfig -Force" can help
 	.LINK
-    Get-TeamsUserVoiceConfig
-    Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
+    Get-TeamsTenantVoiceConfig
+    Get-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig

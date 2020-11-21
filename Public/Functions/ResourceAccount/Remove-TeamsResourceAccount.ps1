@@ -36,6 +36,9 @@ function Remove-TeamsResourceAccount {
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Removes a resource Account in AzureAD for use in Teams
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
 	.LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation
@@ -150,7 +153,6 @@ function Remove-TeamsResourceAccount {
             }
             catch {
               Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
-              Write-ErrorRecord $_ #This handles the error message in human readable format.
               return
             }
           }
@@ -184,7 +186,6 @@ function Remove-TeamsResourceAccount {
       }
       catch {
         Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
       #endregion
@@ -212,7 +213,6 @@ function Remove-TeamsResourceAccount {
       }
       catch {
         Write-Error -Message "Removal of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
 
@@ -231,7 +231,6 @@ function Remove-TeamsResourceAccount {
         }
         catch {
           Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-          Write-ErrorRecord $_ #This handles the error message in human readable format.
         }
       }
       else {

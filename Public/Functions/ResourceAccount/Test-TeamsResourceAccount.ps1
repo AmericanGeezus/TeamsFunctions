@@ -26,7 +26,15 @@ function Test-TeamsResourceAccount {
 		Test-TeamsResourceAccount -Identity $UPN -Quick
 		Will Return $TRUE only if an AzureAdObject with the $UPN is found with the Department "Microsoft Communication Application Instance" set)
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
-  #>
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
+	.LINK
+		Get-TeamsResourceAccount
+		Find-TeamsResourceAccount
+		Find-AzureAdUser
+		Test-AzureAdUser
+	#>
 
 	[CmdletBinding()]
 	[OutputType([Boolean])]

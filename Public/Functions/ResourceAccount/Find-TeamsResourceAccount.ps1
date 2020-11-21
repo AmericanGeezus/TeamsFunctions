@@ -38,6 +38,9 @@ function Find-TeamsResourceAccount {
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Returns one or more Resource Accounts
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
 	.LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation
@@ -159,7 +162,6 @@ function Find-TeamsResourceAccount {
     }
     catch {
       Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
-      Write-ErrorRecord $_ #This handles the error message in human readable format.
     }
     #endregion
   } #process

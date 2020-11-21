@@ -165,12 +165,12 @@ function Connect-SkypeOnline {
             }
             catch {
               Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
-              Write-ErrorRecord $_
+              Write-Debug $_
             }
           }
           catch {
             Write-Error -Message "Session creation failed" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
-            Write-ErrorRecord $_
+            Write-Debug $_
           }
 
           # Separated session creation from Import for better troubleshooting
@@ -181,7 +181,7 @@ function Connect-SkypeOnline {
             }
             catch {
               Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
-              Write-ErrorRecord $_
+              Write-Debug $_
             }
 
             #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
@@ -196,7 +196,8 @@ function Connect-SkypeOnline {
                   Write-Verbose -Message "Enable-CsOnlineSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
                 }
                 catch {
-                  Write-ErrorRecord $_
+                  Write-Verbose -Message "Enable-CsOnlineSessionForReconnection was run, but failed." -Verbose
+                  Write-Debug $_
                 }
               }
               else {

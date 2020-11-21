@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
+
+
+
 function New-TeamsAutoAttendantSchedule {
   <#
   .SYNOPSIS
@@ -52,6 +55,12 @@ function New-TeamsAutoAttendantSchedule {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
+  .LINK
+    New-TeamsAutoAttendant
+    New-TeamsAutoAttendantCallableEntity
+    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantPrompt
+    New-TeamsAutoAttendantSchedule
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low', DefaultParameterSetName = 'WeeklyBusinessHours')]

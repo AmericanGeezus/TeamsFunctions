@@ -10,7 +10,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
     - Output Object is now separate from that of `Get`, which speeds up enumeration a lot.
   - `Get-TeamsResourceAccount`:
     - Performance improvements.
-    - Added Parameter `ObjectId` and improved lookup.
+    - Added Status bars to indicate progress.
+    - Added Parameter `ObjectId` to output Object and improved lookup.
     - Lookup without a Name will now only list Names of ApplicationInstances.
   - `New-TeamsResourceAccount`:
     - Added Status bars to indicate progress.
@@ -19,7 +20,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - `Remove-TeamsResourceAccount`:
     - Added Status bars to indicate progress.
   - `New-TeamsResourceAccountAssociation`:
-    - Completely reworked processing. Status is still BETA as it needs to be tested from scratch!
+    - Completely reworked processing. Status has advanced to RC, continuing to be tested
     - Added Status bars to indicate progress.
   - `Test-TeamsResourceAccount`: Performance improvements. This one was very slow and should now perform way better.
   - `Test-AzureAdUser`: Performance & precision update (Was reporting `$true` if no error received, but the command could come back empty handed as well!).
@@ -65,11 +66,18 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
     - Added an option to normalise Strings `-As LineURI` - This will format any String to a LineURI, for example: "1 (555) 1234-567 ;ext=1234" to "tel:+15551234567;ext=1234"
 
 - **New**
-  - `Test-TeamsResourceAccount`: New Script to test whether an Object is a ResourceAccount.
-  - `Find-AzureAdGroup`: A fork of Test-AzureAdGroup, returning the Group Object if found, `$null` if not.
+  - `Test-TeamsResourceAccount`:
+    - New Script to test whether an Object is a ResourceAccount and it has two modes, Quick and Thorough (default):
+    - The default option is looking up (FINDing) the CsOnlineApplicationInstance and return $TRUE if found. Somehow this takes longer than expected so:
+    - With the Parameter `Quick`, it will look up the AzureAd Object and return $TRUE if the Department is "Microsoft Communication Application Instance" (this is fast and, if not moved pretty accurrate).
+  - `Find-AzureAdGroup`:
+    - A fork of Test-AzureAdGroup, but works quite differently
+    - All Groups are parsed, then filtered if the String is found in DisplayName, Description, ObjectId or Mail. Unique Objects are then filtered and returned.
+    - Returns all Group Objects found, or `$null` if not.
   - `Find-AzureAdUser`:
     - Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers.
-    - Returns object if found, `$null` if not.
+    - It has been extended to cover not only lookup by UPN, but also Searchstring, making it into one command that can more reliably find User Objects.
+    - Returns all User Objects found, or `$null` if not.
   - `Get-TeamsAutoAttendantCallableEntity`:
     - Command can be used to resolve existing callable entities linked to Auto Attendants: <br />Accepts a String which can be an ObjectId
     - Command can be used to determine type and usability for AutoAttendants or CallQueues: <br />Accepts a String which can be an Office 365 Group Name, Upn or TelUri
@@ -77,8 +85,6 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
     - Adds `UsableInCqAs` to indicate which which OverflowAction or TimeoutAction this entity can be used.
     - Adds `UsableInAaAs` to indicate which type of CallableEntity can be created with it.
   - `Get-TeamsObjectType`: Helper script to determine the type of Object provided.
-
-- **Performance Testing**
 
 ---------------------------------------------
 

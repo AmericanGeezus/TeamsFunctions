@@ -75,9 +75,9 @@ function Set-TeamsUserVoiceConfig {
 	.FUNCTIONALITY
 		TeamsUserVoiceConfig
   .LINK
-    Get-TeamsUserVoiceConfig
-    Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
+    Get-TeamsTenantVoiceConfig
+    Get-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig

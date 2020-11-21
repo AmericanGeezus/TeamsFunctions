@@ -4,6 +4,9 @@
 # Updated:  01-DEC-2020
 # Status:   PreLive
 
+
+
+
 function Remove-TeamsAutoAttendant {
   <#
 	.SYNOPSIS
@@ -20,16 +23,12 @@ function Remove-TeamsAutoAttendant {
   .OUTPUTS
     System.Object
 	.LINK
-		New-TeamsCallQueue
-		Get-TeamsCallQueue
-    Set-TeamsCallQueue
-    Remove-TeamsCallQueue
-    New-TeamsAutoAttendant
     Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
+    New-TeamsAutoAttendant
     Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
+    Remove-TeamsCallQueue
+		Remove-TeamsResourceAccount
 		Remove-TeamsResourceAccountAssociation
 	#>
 
@@ -92,7 +91,6 @@ function Remove-TeamsAutoAttendant {
       }
       catch {
         Write-Error -Message "Removal of Auto Attendant '$DN' failed" -Category OperationStopped
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }

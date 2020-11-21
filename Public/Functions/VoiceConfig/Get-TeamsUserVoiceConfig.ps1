@@ -46,9 +46,9 @@ function Get-TeamsUserVoiceConfig {
 	.FUNCTIONALITY
 		The functionality that best describes this cmdlet
   .LINK
+    Find-TeamsUserVoiceConfig
     Get-TeamsTenantVoiceConfig
     Get-TeamsUserVoiceConfig
-    Find-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig

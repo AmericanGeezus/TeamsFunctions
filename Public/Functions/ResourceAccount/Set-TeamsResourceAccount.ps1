@@ -71,6 +71,9 @@ function Set-TeamsResourceAccount {
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Changes a resource Account in AzureAD for use in Teams
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
 	.LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation
@@ -351,7 +354,7 @@ function Set-TeamsResourceAccount {
       catch {
         Write-Verbose -Message "FAILED - Error encountered changing DisplayName"
         Write-Error -Message "Problem encountered with changing DisplayName" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
+        Write-Debug $_
       }
     }
     #endregion
@@ -374,7 +377,7 @@ function Set-TeamsResourceAccount {
         }
         catch {
           Write-Error -Message "Problem encountered changing Application Type" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
-          Write-ErrorRecord $_ #This handles the error message in human readable format.
+          Write-Debug $_
         }
       }
     }
@@ -442,7 +445,7 @@ function Set-TeamsResourceAccount {
           }
           catch {
             Write-Error -Message "'$Name' License assignment failed for '$License'"
-            Write-ErrorRecord $_ #This handles the error message in human readable format.
+            Write-Debug $_
           }
         }
       }
@@ -456,7 +459,7 @@ function Set-TeamsResourceAccount {
         }
         catch {
           Write-Error -Message "'$Name' License assignment failed for '$License'"
-          Write-ErrorRecord $_ #This handles the error message in human readable format.
+          Write-Debug $_
         }
       }
     }
@@ -478,16 +481,17 @@ function Set-TeamsResourceAccount {
       $i = 0
       $iMax = 600
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
-      Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
+
+      $Status = "Applying License"
+      $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result"
+      Write-Verbose -Message "$Status - $Operation"
       while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
         if ($i -gt $iMax) {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount"
           return
         }
-        Write-Progress -Id 1 -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
-          -PercentComplete (($i * 100) / $iMax) `
-          -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
-          #TODO Rework Status into text? Add Remaining Seconds if possible!
+        Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" `
+          -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
         Start-Sleep -Milliseconds 1000
         $i++
@@ -525,7 +529,7 @@ function Set-TeamsResourceAccount {
           }
           catch {
             Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-            Write-ErrorRecord $_ #This handles the error message in human readable format.
+            Write-Debug $_
           }
         }
         else {
@@ -560,7 +564,7 @@ function Set-TeamsResourceAccount {
           #>
           catch {
             Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
-            Write-ErrorRecord $_ #This handles the error message in human readable format.
+            Write-Debug $_
           }
 
         }

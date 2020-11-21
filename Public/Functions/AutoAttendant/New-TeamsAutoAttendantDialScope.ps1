@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
+
+
+
 function New-TeamsAutoAttendantDialScope {
   <#
   .SYNOPSIS
@@ -24,6 +27,13 @@ function New-TeamsAutoAttendantDialScope {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
+	.LINK
+    New-TeamsAutoAttendant
+    Set-TeamsAutoAttendant
+    New-TeamsAutoAttendantCallableEntity
+    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantPrompt
+    New-TeamsAutoAttendantSchedule
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]

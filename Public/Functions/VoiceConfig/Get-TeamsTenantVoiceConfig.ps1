@@ -26,9 +26,9 @@ function Get-TeamsTenantVoiceConfig {
 	.NOTES
 		General notes
   .LINK
+    Find-TeamsUserVoiceConfig
     Get-TeamsTenantVoiceConfig
     Get-TeamsUserVoiceConfig
-    Find-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig

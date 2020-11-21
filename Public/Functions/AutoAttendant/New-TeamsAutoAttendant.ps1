@@ -64,7 +64,6 @@ function New-TeamsAutoAttendant {
     Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
   .PARAMETER AfterHoursMenu
     Optional. Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget
-
   .PARAMETER Silent
 		Optional. Does not display output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
@@ -109,16 +108,16 @@ function New-TeamsAutoAttendant {
 		Creates a Auto Attendant with custom settings and friendly names as input
 	.LINK
 		New-TeamsCallQueue
-		Get-TeamsCallQueue
-    Set-TeamsCallQueue
-    Remove-TeamsCallQueue
     New-TeamsAutoAttendant
     Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
     Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccount
     New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
+    New-TeamsAutoAttendantCallableEntity
+    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantPrompt
+    New-TeamsAutoAttendantSchedule
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -772,7 +771,6 @@ function New-TeamsAutoAttendant {
       }
       catch {
         Write-Error -Message "Error creating the Auto Attendant" -Category InvalidOperation -Exception "errorr Creating Auto Attendant"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }

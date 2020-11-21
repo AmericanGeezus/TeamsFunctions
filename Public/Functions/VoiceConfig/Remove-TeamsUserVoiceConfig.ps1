@@ -52,9 +52,9 @@ function Remove-TeamsUserVoiceConfig {
     Removes a Users Voice Configuration (through Microsoft Call Plans or Direct Routing)
     This will leave the users in a clean and un-provisioned state and enables them to receive a new Configuration Set
   .LINK
-    Get-TeamsUserVoiceConfig
-    Get-TeamsUserVoiceConfig
     Find-TeamsUserVoiceConfig
+    Get-TeamsTenantVoiceConfig
+    Get-TeamsUserVoiceConfig
     Set-TeamsUserVoiceConfig
     Remove-TeamsUserVoiceConfig
     Test-TeamsUserVoiceConfig

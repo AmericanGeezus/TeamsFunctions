@@ -1,10 +1,10 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
+# Updated:  01-DEC-2020
 # Status:   RC
 
-#TODO Add Progress bars, sMax depends on how many PsBoundParameters there are
+
 
 
 function New-TeamsResourceAccount {
@@ -62,6 +62,9 @@ function New-TeamsResourceAccount {
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Creates a resource Account in AzureAD for use in Teams
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
 	.LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation
@@ -154,7 +157,7 @@ function New-TeamsResourceAccount {
     [int]$sMax = 10
     if ( $License ) { $sMax = $sMax + 2 }
     if ( $License -and $PhoneNumber ) { $sMax++ }
-    if ( $PhoneNumber ) { $sMax = $sMax + 3 }
+    if ( $PhoneNumber ) { $sMax = $sMax + 2 }
 
   } #begin
 
@@ -245,15 +248,16 @@ function New-TeamsResourceAccount {
         $i = 0
         $iMax = 20
         Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($iMax s) to be able to parse the Object." -Verbose
-        Write-Verbose -Message "Waiting for Get-AzureAdUser to return a Result..."
+        $Status = "Querying User"
+        $Operation = "Waiting for Get-AzureAdUser to return a Result"
+        Write-Verbose -Message "$Status - $Operation"
         while ( -not (Test-AzureADUser $UPN)) {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount"
             return
           }
-          Write-Progress -Id 1 -Activity "'$Name' Azure Active Directory is creating the Object. Please wait" `
-            -PercentComplete (($i * 100) / $iMax) `
-            -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
+          Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" `
+            -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
           Start-Sleep -Milliseconds 1000
           $i++
@@ -322,7 +326,6 @@ function New-TeamsResourceAccount {
           }
           catch {
             Write-Error -Message "'$Name' License assignment failed for '$License'"
-            Write-ErrorRecord $_ #This handles the error message in human readable format.
           }
         }
       }
@@ -336,7 +339,6 @@ function New-TeamsResourceAccount {
         }
         catch {
           Write-Error -Message "'$Name' License assignment failed for '$License'"
-          Write-ErrorRecord $_ #This handles the error message in human readable format.
         }
       }
     }
@@ -357,15 +359,16 @@ function New-TeamsResourceAccount {
       $i = 0
       $iMax = 600
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
-      Write-Verbose -Message "Waiting for Get-AzureAdUserLicenseDetail to return a Result..."
+
+      $Status = "Applying License"
+      $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result"
+      Write-Verbose -Message "$Status - $Operation"
       while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
         if ($i -gt $iMax) {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount" -ErrorAction Stop
         }
-        Write-Progress -Id 1 -Activity "'$Name' Azure Active Directory is applying License. Please wait" `
-          -PercentComplete (($i * 100) / $iMax) `
-          -Status "$(([math]::Round((($i)/$iMax * 100),0))) %"
-          #TODO Rework Status into text? Add Remaining Seconds if possible!
+        Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" `
+          -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
         Start-Sleep -Milliseconds 1000
         $i++
@@ -490,7 +493,6 @@ function New-TeamsResourceAccount {
     }
     catch {
       Write-Warning -Message "Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance"
-      Write-ErrorRecord $_ #This handles the error message in human readable format.
     }
     #endregion
 

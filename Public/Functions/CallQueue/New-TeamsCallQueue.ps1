@@ -146,12 +146,8 @@ function New-TeamsCallQueue {
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
     New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
-    Set-TeamsAutoAttendant
-    Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccount
     New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -1103,7 +1099,6 @@ function New-TeamsCallQueue {
       }
       catch {
         Write-Error -Message "Error creating the Call Queue" -Category InvalidOperation -Exception "errorr Creating Call Queue"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }

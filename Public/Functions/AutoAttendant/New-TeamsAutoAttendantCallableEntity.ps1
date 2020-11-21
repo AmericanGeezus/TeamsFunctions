@@ -42,10 +42,17 @@ function New-TeamsAutoAttendantCallableEntity {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+	.LINK
+    New-TeamsAutoAttendant
+    Set-TeamsAutoAttendant
+    New-TeamsAutoAttendantCallableEntity
+    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantPrompt
+    New-TeamsAutoAttendantSchedule
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('New-TeamsAAEntity', 'New-TeamsCallableEntity')]
+  [Alias('New-TeamsAAEntity')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Callable Entity type: ExternalPstn, User, SharedVoiceMail, ApplicationEndpoint")]
