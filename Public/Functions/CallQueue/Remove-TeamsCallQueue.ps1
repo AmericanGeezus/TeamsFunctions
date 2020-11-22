@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
+# Updated:  01-DEC-2020
 # Status:   PreLive
 
 function Remove-TeamsCallQueue {
@@ -20,16 +20,12 @@ function Remove-TeamsCallQueue {
   .OUTPUTS
     System.Object
 	.LINK
-		New-TeamsCallQueue
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
+		New-TeamsCallQueue
     Remove-TeamsCallQueue
-    New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
-    Set-TeamsAutoAttendant
     Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
+		Remove-TeamsResourceAccount
 		Remove-TeamsResourceAccountAssociation
 	#>
 
@@ -66,21 +62,33 @@ function Remove-TeamsCallQueue {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    $DNCounter = 0
     foreach ($DN in $Name) {
+      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation "Querying CsCallQueue" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
+      $DNCounter++
       try {
         Write-Verbose -Message "The listed Queues are being removed:" -Verbose
         $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
-        foreach ($Q in $QueueToRemove) {
-          Write-Verbose -Message "Removing: '$($Q.Name)'"
-          if ($PSCmdlet.ShouldProcess("$($Q.Identity)", 'Remove-CsCallQueue')) {
-            Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP
+
+        if ( $QueueToRemove ) {
+          $QueueCounter = 0
+          foreach ($Q in $QueueToRemove) {
+            Write-Progress -Id 1 -Status "Removing Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $($QueueToRemove.Count) * 100)
+            Write-Verbose -Message "Removing: '$($Q.Name)'"
+            $QueueCounter++
+            if ($PSCmdlet.ShouldProcess("$($Q.Identity)", 'Remove-CsCallQueue')) {
+              Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP
+              #CHECK Add PassThru? displaying - Needs redirecting as Remove-CsCallQueue writes Output!
+            }
           }
+        }
+        else {
+          Write-Warning -Message "No Groups found matching '$DN'"
         }
       }
       catch {
         Write-Error -Message "Removal of Call Queue '$DN' failed" -Category OperationStopped
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
         return
       }
     }

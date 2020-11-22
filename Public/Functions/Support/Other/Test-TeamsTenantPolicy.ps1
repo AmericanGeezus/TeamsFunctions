@@ -4,6 +4,9 @@
 # Updated:  01-AUG-2020
 # Status:   Unmanaged
 
+
+
+
 function Test-TeamsTenantPolicy {
   <#
 	.SYNOPSIS
@@ -67,6 +70,7 @@ function Test-TeamsTenantPolicy {
       }
       else {
         Write-ErrorRecord $_ #This handles the error message in human readable format.
+        Return $False
       }
     }
     finally {

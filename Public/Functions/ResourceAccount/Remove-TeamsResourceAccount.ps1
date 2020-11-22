@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+
+
+
 function Remove-TeamsResourceAccount {
   <#
 	.SYNOPSIS
@@ -33,6 +36,9 @@ function Remove-TeamsResourceAccount {
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Removes a resource Account in AzureAD for use in Teams
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
 	.LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation
@@ -59,7 +65,7 @@ function Remove-TeamsResourceAccount {
         }
       })]
     [Alias("Identity", "ObjectId")]
-    [string]$UserPrincipalName,
+    [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
     [switch]$Force
@@ -102,125 +108,143 @@ function Remove-TeamsResourceAccount {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    #region Lookup of UserPrincipalName
-    try {
-      #Trying to query the Resource Account
-      Write-Verbose -Message "Processing: $UserPrincipalName"
-      $Object = (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction STOP)
-      $DisplayName = $Object.DisplayName
-    }
-    catch {
-      # Catching anything
-      Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Resource Account"
-      return
-    }
-    #endregion
+    foreach ($UPN in $UserPrincipalName) {
+      # Initialising counters for Progress bars
+      [int]$step = 0
+      [int]$sMax = 5
 
-    #region Associations
-    # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
-    Write-Verbose -Message "Processing: '$DisplayName' Associations to Call Queues or Auto Attendants"
-    $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Ignore
-    if ($Associations.count -eq 0) {
-      # Object has no associations
-      Write-Verbose -Message "'$DisplayName' Object does not have any associations"
-      $Associations = $null
-    }
-    else {
-      Write-Verbose -Message "'$DisplayName' associations found"
-      if ($PSBoundParameters.ContainsKey("Force")) {
-        # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
-        # with: Remove-CsOnlineApplicationInstanceAssociation
-        if ($PSCmdlet.ShouldProcess("Resource Account Associations ($($Associations.Count))", 'Remove-CsOnlineApplicationInstanceAssociation')) {
-          try {
-            Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
-            $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations -ErrorAction STOP)
-            Write-Verbose -Message "SUCCESS: Associations removed"
+      #region Lookup of UserPrincipalName
+      Write-Progress -Id 0 -Status "Processing '$UPN'" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "Processing: $UPN"
+      try {
+        #Trying to query the Resource Account
+        $Object = (Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP)
+        $DisplayName = $Object.DisplayName
+      }
+      catch {
+        # Catching anything
+        Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Resource Account"
+        continue
+      }
+      #endregion
+
+      #region Associations
+      # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
+      $Operation = "'$DisplayName' - Associations to Call Queues or Auto Attendants"
+      $step++
+      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Ignore
+      if ($Associations.count -eq 0) {
+        # Object has no associations
+        Write-Verbose -Message "'$DisplayName' Object does not have any associations"
+        $Associations = $null
+      }
+      else {
+        Write-Verbose -Message "'$DisplayName' associations found"
+        if ($PSBoundParameters.ContainsKey("Force")) {
+          # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
+          # with: Remove-CsOnlineApplicationInstanceAssociation
+          if ($PSCmdlet.ShouldProcess("Resource Account Associations ($($Associations.Count))", 'Remove-CsOnlineApplicationInstanceAssociation')) {
+            try {
+              Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
+              $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations -ErrorAction STOP)
+              Write-Verbose -Message "SUCCESS: Associations removed"
+            }
+            catch {
+              Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
+              return
+            }
           }
-          catch {
-            Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
-            Write-ErrorRecord $_ #This handles the error message in human readable format.
-            return
-          }
+        }
+        else {
+          Write-Error -Message "Associations detected. Please remove first or use -Force" -Category ResourceExists
+          Write-Output $Associations
+        }
+      }
+      #endregion
+
+      #region PhoneNumber
+      # Removing Phone Number Assignments
+      $Operation = "'$DisplayName' - Phone Number Assignments"
+      $step++
+      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      try {
+        if ($null -ne ($Object.TelephoneNumber)) {
+          # Remove from VoiceApplicationInstance
+          Write-Verbose -Message "'$Name' Removing Microsoft Number"
+          $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UPN -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+          Write-Verbose -Message "SUCCESS"
+        }
+        if ($null -ne ($Object.OnPremLineURI)) {
+          # Remove from ApplicationInstance
+          Write-Verbose -Message "'$Name' Removing Direct Routing Number"
+          $null = (Set-CsOnlineApplicationInstance -Identity $UPN -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+          Write-Verbose -Message "SUCCESS"
+        }
+      }
+      catch {
+        Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
+        return
+      }
+      #endregion
+
+      #region Licensing
+      # Reading User Licenses
+      $Operation = "'$DisplayName' - License Assignments"
+      $step++
+      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      try {
+        $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UPN -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
+
+        if ($null -eq $UserLicenseSkuIDs) {
+          Write-Verbose -Message "'$DisplayName' No licenses assigned. OK"
+        }
+        else {
+          $Licenses = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
+          # This should work:
+          Write-Verbose -Message "'$DisplayName' Removing Removing licenses"
+          $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
+          Set-AzureADUserLicense -ObjectId $Object.ObjectId -AssignedLicenses $Licenses -ErrorAction STOP
+          Write-Verbose -Message "SUCCESS"
+        }
+      }
+      catch {
+        Write-Error -Message "Removal of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
+        return
+      }
+
+      #endregion
+
+      #region Account Removal
+      # Removing AzureAD User
+      $Operation = "'$DisplayName' - Removing AzureAD Object (AzureAdUser)"
+      $step++
+      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      if ($PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
+        try {
+          $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)
+          Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
+        }
+        catch {
+          Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
         }
       }
       else {
-        Write-Error -Message "Associations detected. Please remove first or use -Force" -Category ResourceExists
-        Write-Output $Associations
+        Write-Verbose -Message "SKIPPED - Object removed not confirmed Azure Active Directory"
       }
+
+
+
+      #endregion
+      Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+
+      #CHECK Add PassThru? ($UPN only?)
+
     }
-    #endregion
-
-    #region PhoneNumber
-    # Removing Phone Number Assignments
-    Write-Verbose -Message "Processing: '$DisplayName' Phone Number Assignments"
-    try {
-      if ($null -ne ($Object.TelephoneNumber)) {
-        # Remove from VoiceApplicationInstance
-        Write-Verbose -Message "'$Name' Removing Microsoft Number"
-        $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-        Write-Verbose -Message "SUCCESS"
-      }
-      if ($null -ne ($Object.OnPremLineURI)) {
-        # Remove from ApplicationInstance
-        Write-Verbose -Message "'$Name' Removing Direct Routing Number"
-        $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-        Write-Verbose -Message "SUCCESS"
-      }
-    }
-    catch {
-      Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-      Write-ErrorRecord $_ #This handles the error message in human readable format.
-      return
-    }
-    #endregion
-
-    #region Licensing
-    # Reading User Licenses
-    Write-Verbose -Message "Processing: '$DisplayName' Phone Number Assignments"
-    try {
-      $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UserPrincipalName -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
-
-      if ($null -eq $UserLicenseSkuIDs) {
-        Write-Verbose -Message "'$DisplayName' No licenses assigned. OK"
-      }
-      else {
-        $Licenses = New-Object -TypeName Microsoft.Open.AzureAD.Model.AssignedLicenses
-        # This should work:
-        Write-Verbose -Message "'$DisplayName' Removing Removing licenses"
-        $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
-        Set-AzureADUserLicense -ObjectId $Object.ObjectId -AssignedLicenses $Licenses -ErrorAction STOP
-        Write-Verbose -Message "SUCCESS"
-      }
-    }
-    catch {
-      Write-Error -Message "Removal of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
-      Write-ErrorRecord $_ #This handles the error message in human readable format.
-      return
-    }
-
-    #endregion
-
-    #region Account Removal
-    # Removing AzureAD User
-    Write-Verbose -Message "Processing: '$DisplayName' Removing AzureAD User Object"
-    if ($PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
-      try {
-        $null = (Remove-AzureADUser -ObjectId $UserPrincipalName -ErrorAction STOP)
-        Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
-      }
-      catch {
-        Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
-      }
-    }
-    else {
-      Write-Verbose -Message "SKIPPED - Object removed not confirmed Azure Active Directory"
-    }
-
-
-
-    #endregion
-
   } #process
 
   end {

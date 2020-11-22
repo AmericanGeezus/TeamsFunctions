@@ -56,6 +56,7 @@ function Find-AzureAdGroup {
     [System.Collections.ArrayList]$Groups = @()
     $Groups += $AllGroups | Where-Object DisplayName -Like "*$Identity*"
     $Groups += $AllGroups | Where-Object Description -Like "*$Identity*"
+    $Groups += $AllGroups | Where-Object ObjectId -Like "*$Identity*"
     $Groups += $AllGroups | Where-Object Mail -Like "*$Identity*"
 
     $MailNickName = $Identity.Split('@')[0]

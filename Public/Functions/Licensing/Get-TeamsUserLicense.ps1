@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+
+
+
 function Get-TeamsUserLicense {
   <#
 	.SYNOPSIS
@@ -39,6 +42,7 @@ function Get-TeamsUserLicense {
   #>
 
   [CmdletBinding()]
+  [Alias('Get-TeamsUserLicence')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true,
@@ -87,6 +91,7 @@ function Get-TeamsUserLicense {
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
+        #Write-Error -Message "Error ocurred for User '$User': $($_.Exception.Message)" -Category InvalidResult
         throw $_
         continue
       }
@@ -128,7 +133,7 @@ function Get-TeamsUserLicense {
       $AudioConfLicense = ("MCOMEETADV" -in $UserServicePlans.ServicePlanName)
       $PhoneSystemVirtual = ("MCOEV_VIRTUALUSER" -in $UserServicePlans.ServicePlanName)
       $CommonAreaPhoneLic = ("MCOCAP" -in $UserServicePlans.ServicePlanName)
-      $CommunicationCreds = ("MCOPSTNC" -in $UserServicePlans.ServicePlanName)
+      $CommunicationCredits = ("MCOPSTNC" -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom = ("MCOPSTN1" -in $UserServicePlans.ServicePlanName)
       $CallingPlanInt = ("MCOPSTN2" -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom120 = ("MCOPSTN5" -in $UserServicePlans.ServicePlanName)
@@ -178,7 +183,7 @@ function Get-TeamsUserLicense {
         CallingPlanDomestic120    = $CallingPlanDom120
         CallingPlanDomestic       = $CallingPlanDom
         CallingPlanInternational  = $CallingPlanInt
-        CommunicationsCredits     = $CommunicationCreds
+        CommunicationsCredits     = $CommunicationCredits
         CallingPlan               = $currentCallingPlan
         Licenses                  = $UserLicensesSorted
         ServicePlans              = $UserServicePlansSorted

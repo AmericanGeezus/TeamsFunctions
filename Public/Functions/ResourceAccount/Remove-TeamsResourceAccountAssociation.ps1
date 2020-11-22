@@ -2,7 +2,10 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   RC
+
+
+
 
 function Remove-TeamsResourceAccountAssociation {
   <#
@@ -24,14 +27,13 @@ function Remove-TeamsResourceAccountAssociation {
     System.String
   .OUTPUTS
     None
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
   .LINK
     Get-TeamsResourceAccountAssociation
     New-TeamsResourceAccountAssociation
 		Remove-TeamsResourceAccountAssociation
-    New-TeamsResourceAccount
-    Get-TeamsResourceAccount
-    Find-TeamsResourceAccount
-    Set-TeamsResourceAccount
     Remove-TeamsResourceAccount
   #>
 
@@ -48,10 +50,7 @@ function Remove-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -84,8 +83,7 @@ function Remove-TeamsResourceAccountAssociation {
     [System.Collections.ArrayList]$Accounts = @()
     foreach ($UPN in $UserPrincipalName) {
       try {
-        $RAObject = Get-AzureADUser -ObjectId $UPN -WarningAction SilentlyContinue -ErrorAction Stop
-        $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
+        $AppInstance = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Stop
         [void]$Accounts.Add($AppInstance)
         Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
       }
@@ -96,10 +94,10 @@ function Remove-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
-    if ($null -ne $Accounts) {
+    if ( $Accounts ) {
       foreach ($Account in $Accounts) {
         $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        if ($null -ne $Association) {
+        if ( $Association ) {
           # Finding associated entity
           $AssocObject = switch ($Association.ConfigurationType) {
             'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue }
@@ -126,6 +124,7 @@ function Remove-TeamsResourceAccountAssociation {
         }
 
         # Output
+        #CHECK Add PassThru?
         $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
           UserPrincipalName  = $Account.UserPrincipalName
           ConfigurationType  = $OperationStatus.Results.ConfigurationType

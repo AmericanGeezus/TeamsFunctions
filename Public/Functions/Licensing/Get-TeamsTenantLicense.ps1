@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+
+
+
 function Get-TeamsTenantLicense {
   <#
 	.SYNOPSIS
@@ -49,6 +52,7 @@ function Get-TeamsTenantLicense {
   #>
 
   [CmdletBinding()]
+  [Alias('Get-TeamsTenantLicence')]
   [OutputType([Object[]])]
   param(
     [Parameter(Mandatory = $false, HelpMessage = "Displays all Parameters")]

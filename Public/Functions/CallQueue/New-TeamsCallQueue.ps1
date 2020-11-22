@@ -146,12 +146,8 @@ function New-TeamsCallQueue {
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
     New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
-    Set-TeamsAutoAttendant
-    Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
+    New-TeamsResourceAccount
     New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -340,9 +336,6 @@ function New-TeamsCallQueue {
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
     [string]$LanguageId,
 
-    [Parameter(HelpMessage = "No output is written to the screen, but Object returned for processing")]
-    [switch]$Silent,
-
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
   ) #param
@@ -368,6 +361,15 @@ function New-TeamsCallQueue {
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
+
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = 10
+
+    $Status = "Verifying input"
+    $Operation = "Validating Parameters"
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
 
     # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
@@ -397,10 +399,16 @@ function New-TeamsCallQueue {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
+    $Status = "Preparing Parameters"
     # preparing Splatting Object
     $Parameters = $null
 
     #region Required Parameters: Name
+    $Operation = "Name"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     # Normalising $Name
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
     Write-Verbose -Message "'$Name' DisplayName normalised to: '$NameNormalised'"
@@ -408,6 +416,11 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Music On Hold
+    $Operation = "Music On Hold"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile') -and $PSBoundParameters.ContainsKey('UseDefaultMusicOnHold')) {
       Write-Warning -Message "'$NameNormalised' MusicOnHoldAudioFile and UseDefaultMusicOnHold are mutually exclusive. UseDefaultMusicOnHold is ignored!"
       $UseDefaultMusicOnHold = $false
@@ -435,6 +448,11 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
+    $Operation = "Welcome Message"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
         # Validation - File Exists
@@ -481,6 +499,13 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   NONE"
     }
     #endregion
+
+    #region Routing metrics, Thresholds and Language
+    # One Progress operation for all Parameters
+    $Operation = "Routing metrics, Thresholds and Language"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
 
     #region ValueSet Parameters
     # RoutingMethod
@@ -566,9 +591,15 @@ function New-TeamsCallQueue {
     # Checking for Text-to-speech prompts without providing LanguageId
     # This is already done in the BEGIN block
     #endregion
+    #endregion
 
 
     #region Overflow
+    $Operation = "Overflow"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     #region Overflow Action
     if ($PSBoundParameters.ContainsKey('OverflowAction')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' Parsing requirements"
@@ -785,6 +816,11 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Timeout
+    $Operation = "Timeout"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     #region TimeoutAction
     if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' Parsing requirements"
@@ -1002,6 +1038,11 @@ function New-TeamsCallQueue {
 
 
     #region Users - Parsing and verifying Users
+    $Operation = "Parsing Users"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' - Parsing Users"
@@ -1045,6 +1086,11 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Groups - Parsing Distribution Lists and their Users
+    $Operation = "Parsing Distribution Lists"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     [System.Collections.ArrayList]$DLIdList = @()
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
@@ -1075,13 +1121,8 @@ function New-TeamsCallQueue {
 
 
     #region Common parameters
-    if ($PSBoundParameters.ContainsKey('Silent')) {
-      $Parameters += @{'WarningAction' = 'SilentlyContinue' }
-    }
-    else {
-      $Parameters += @{'WarningAction' = 'Continue' }
-    }
-    $Parameters += @{'ErrorAction' = 'STOP' }
+    $Parameters += @{'WarningAction' = 'Continue' }
+    $Parameters += @{'ErrorAction' = 'Stop' }
     #endregion
     #endregion
 
@@ -1090,20 +1131,23 @@ function New-TeamsCallQueue {
     # DEBUG Information
     if ($PSBoundParameters.ContainsKey("Debug")) {
       Write-Debug "Parameters to be applied:"
-      $Parameters
+      Write-Output $Parameters
     }
 
     # Create CQ (New-CsCallQueue)
-    Write-Verbose -Message "'$NameNormalised' Creating Call Queue"
+    $Status = "Creating Object"
+    $Operation = "Creating Call Queue: '$NameNormalised'"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "New-CsCallQueue")) {
       try {
         # Create the Call Queue with all enumerated Parameters passed through splatting
-        $Null = (New-CsCallQueue @Parameters)
+        $null = (New-CsCallQueue @Parameters)
         Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue created with all Parameters"
       }
       catch {
-        Write-Error -Message "Error creating the Call Queue" -Category InvalidOperation -Exception "errorr Creating Call Queue"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
+        Write-Error -Message "Error creating the Call Queue: $($_.Exception.Message)" -Category InvalidOperation
         return
       }
     }
@@ -1114,14 +1158,15 @@ function New-TeamsCallQueue {
 
 
     #region OUTPUT
-    # Re-query output
-    if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
-      $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
-      return $CallQueueFinal
-    }
-    else {
-      return
-    }
+    $Status = "Creating Object"
+    $Operation = "Querying Object"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
+    $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
+    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+    Write-Output $CallQueueFinal
     #endregion
 
   } #process

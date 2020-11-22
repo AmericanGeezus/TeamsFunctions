@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
+
+
+
 function Set-TeamsUserLicense {
   <#
       .SYNOPSIS
@@ -94,6 +97,7 @@ function Set-TeamsUserLicense {
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
+  [Alias('Set-TeamsUserLicence')]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias("UPN", "UserPrincipalName", "Username")]
@@ -414,8 +418,8 @@ function Set-TeamsUserLicense {
               continue
             }
             else {
-              $RemainingLics = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
-              if ($RemainingLics -lt 1) {
+              $RemainingLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
+              if ($RemainingLicenses -lt 1) {
                 Write-Error -Message "Adding License '$AddLicName' - License found in the Tenant, but no units available"
                 continue
               }
@@ -489,6 +493,8 @@ function Set-TeamsUserLicense {
         Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject
         Write-Verbose -Message "'$ID' - Setting Licenses: Done"
       }
+
+      #CHECK add PassThru? Get-TeamsUserLicense
     }
   } #process
 

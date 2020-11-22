@@ -1,10 +1,18 @@
 ﻿# ToDo List
 
+## Test Plan
+
+### Progress Bars
+
+All: ResourceAccount, Call Queue, etc.
+
 ## Auto Attendant
 
 ### New-TeamsAutoAttendant
 
 Add features, operator, Call target, default forward to CQ (Build also wrapper to create the construct of 1 AA and 1 CQ)
+
+Continue to test Scripts
 
 ### New-TeamsAutoAttendantMenu
 
@@ -15,36 +23,34 @@ Optionally add operator on 0 (separate Operator function (New-TeamsAutoAttendant
 
 Abstract Functionality that is used more than twice into generic helper function
 
+Add two functions for Licensing to protect the Scripts from breaking if someone removes the two variables $TeamsLicenses and $TeamsServicePlans:
+Get-TeamsLicenses
+Get-TeamsServicePlans
+
 ### New-TeamsAutoAttendantCallableEntity and its functionality
 
 Evaluate whether functionality of New-TeamsAutoAttendantCallableEntity would be better off in a helper function (and used in CQ or the CE-Function) rather than adding the switch to the CE-Function!
 
 ## Code Improvements
 
+Evaluate adding PassThru to all Set and Remove parameters, outputting the Object (instead of Silent or other things)
+
 Disable Positional Binding for CQ and AA scripts https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_cmdletbindingattribute?view=powershell-5.1
 
 Add Supports Paging for Get Commands Get-TeamsCallQueue and Get-TeamsAutoAttendant at least!
-
-Add Aliases into Functions? Just under CmdLetBinding! Do I have to export them afterwards separately still?
 
 Add Timestamp to Verbose steps when Processing multiple elements (just before ForEach)
 
 Add Argument Completer to some functions, where appropriate: [ArgumentCompleter({(Get-Eventlog -List).log})]
 
-Use dynamic parameters instead of having to verify conjoint use of multiple parameter and ensure mutual exclusivity
+Use dynamic parameters instead of having to verify conjoint use of multiple parameter and ensure mutual exclusivity?
 
 Create Function Template
-
-Break out Functions into separate PS1 scripts
-Link them as PS1 files in the module
-Export all with Get-ChildItem | Export-ModuleMember
 
 Change all Assert Scripts Verbose output to display/run only if called directly (runspace)
 if ($MyInvocation.CommandOrigin -eq "Runspace") {
     #Assert
 }
-
-#CHECK evaluate how to be able to adhere to $ErrorAction and $WarningActionPreference if needed (this was used in Get-TeamsUserVoiceConfig but abandonded there (no need as loop exit was found (Continue)))
 
 ## Evaluate Export to CLIXML
 

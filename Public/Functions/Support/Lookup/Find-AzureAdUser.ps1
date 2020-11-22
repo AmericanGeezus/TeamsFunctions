@@ -10,31 +10,42 @@
 function Find-AzureAdUser {
   <#
 	.SYNOPSIS
-		Returns User Object in Azure AD from a provided UPN
+		Returns User Objects from Azure AD based on a search string or UserPrincipalName
 	.DESCRIPTION
-    Enables UPN lookup for AzureAD users
-    This simplifies the query without having to rely on -ObjectId or -SearchString parameters in Get-AzureAdUser
+    Simplifies lookups with Get-AzureAdUser by using and combining -SearchString and -ObjectId Parameters.
+    CmdLet can find uses by either query, if nothing is found with the Searchstring, another search is done via the ObjectId
+    This simplifies the query without having to rely multiple queries with Get-AzureAdUser
+	.PARAMETER SearchString
+		Required for ParameterSet Search: A 3-255 digit string to be found on any Object.
 	.PARAMETER Identity
-		Required. The sign-in address or User Principal Name of the user account to query.
+		Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.
 	.EXAMPLE
-		Find-AzureAdUser John@domain.com
-		Will Return the Azure AD Object for John@domain.com, otherwise returns error message from Get-AzureAdUser
+		Find-AzureAdUser [-Search] "John"
+    Will search for the string "John" and return all Azure AD Objects found
+    If nothing has been found, will try to search for by identity
+	.EXAMPLE
+		Find-AzureAdUser [-Search] "John@domain.com"
+		Will search for the string "John@domain.com" and return all Azure AD Objects found
+    If nothing has been found, will try to search for by identity
+	.EXAMPLE
+		Find-AzureAdUser -Identity John@domain.com,Mary@domain.com
+		Will search for the string "John@domain.com" and return all Azure AD Objects found
   .INPUTS
     System.String
   .OUTPUTS
     Microsoft.Open.AzureAD.Model.User
 	#>
 
-  [CmdletBinding(DefaultParameterSetName = "Id")]
+  [CmdletBinding(DefaultParameterSetName = "Search")]
   [OutputType([Microsoft.Open.AzureAD.Model.User])]
   param(
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "This is the UserID (UPN)")]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
-
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", HelpMessage = "Search string")]
     [ValidateLength(3, 255)]
-    [string]$SearchString
+    [string]$SearchString,
+
+    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "This is the UserID (UPN)")]
+    [Alias('UserPrincipalName', 'Id')]
+    [string[]]$Identity
 
   ) #param
 
@@ -54,6 +65,16 @@ function Find-AzureAdUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($PsCmdlet.ParameterSetName) {
+      "Search" {
+        $User = Get-AzureADUser -All:$true -SearchString $SearchString -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        if ( $User ) {
+          return $User
+        }
+        else {
+          Find-AzureAdUser -Identity $SearchString
+        }
+      }
+
       "Id" {
         foreach ($Id in $Identity) {
           try {
@@ -70,11 +91,7 @@ function Find-AzureAdUser {
           }
         }
       }
-      "Search" {
-        Get-AzureADUser -All:$true -SearchString $SearchString -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-      }
     }
-
 
   } #process
 

@@ -29,7 +29,7 @@ function Show-FunctionStatus {
       Write-Debug -Message "$Function has [ALPHA] Status. It may not work as intended or contain serious gaps in functionality. Please handle with care" -Debug
     }
     "Beta" {
-      Write-Debug -Message "$Function has [BETA] Status. Build is not completed. Please report issues to 'TeamsFunctions@outlook.com'"
+      Write-Debug -Message "$Function has [BETA] Status. Build is not completed. Please report issues to 'TeamsFunctions@outlook.com'" -Debug
     }
     "RC" {
       Write-Verbose -Message "$Function has [RC] Status. Functional, but still being tested. Please report issues to 'TeamsFunctions@outlook.com' or via GitHub" -Verbose

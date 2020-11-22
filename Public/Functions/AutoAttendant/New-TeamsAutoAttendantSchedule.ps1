@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
+
+
+
 function New-TeamsAutoAttendantSchedule {
   <#
   .SYNOPSIS
@@ -24,7 +27,7 @@ function New-TeamsAutoAttendantSchedule {
   .PARAMETER BusinessDays
     Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule
   .PARAMETER BusinessHours
-    Predefined business hours. These will be combined with BusinessDays, forms the WeeklyRecurrentSchedule
+    Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule
   .PARAMETER DateTimeRanges
     Object or Objects defined with New-CsOnlineTimeRange
     Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed
@@ -52,6 +55,12 @@ function New-TeamsAutoAttendantSchedule {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
+  .LINK
+    New-TeamsAutoAttendant
+    New-TeamsAutoAttendantCallableEntity
+    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantPrompt
+    New-TeamsAutoAttendantSchedule
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low', DefaultParameterSetName = 'WeeklyBusinessHours')]
@@ -74,7 +83,7 @@ function New-TeamsAutoAttendantSchedule {
     [string]$BusinessDays,
 
     [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours')]
-    [ValidateSet('9to6', '9to5', '9to4', '8to6', '8to5', '8to4', '7to6', '7to5', '7to4', '6to6', '10to6', '0830to1700', '0830to1730', '0800to1730', '0830to1800', '0900to1730', '0930to1730', '0930to1800', '8to12and13to17', '8to12and13to18', '9to12and13to17', '9to12and13to18', '9to13and14to18', '8to12and14to18')]
+    [ValidateSet('9to6', '9to5', '9to4', '8to6', '8to5', '8to4', '7to6', '7to5', '7to4', '6to6', '10to6', '0830to1700', '0830to1730', '0800to1730', '0830to1800', '0900to1730', '0930to1730', '0930to1800', '8to12and13to17', '8to12and13to18', '9to12and13to17', '9to12and13to18', '9to13and14to18', '8to12and14to18', 'AllDay')]
     [string]$BusinessHours,
 
     [Parameter(Mandatory, ParameterSetName = 'WeeklyTimeRange')]
@@ -150,6 +159,7 @@ function New-TeamsAutoAttendantSchedule {
       Write-Verbose -Message "[PROCESS] Processing BusinessHours '$BusinessHours'"
       switch ($BusinessHours) {
         # Defining time of Day ($TimeFrame)
+        'AllDay' { $TimeFrame = New-CsOnlineTimeRange -Start 00:00 -End 23:59 }
         '9to6' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 18:00 }
         '9to5' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
         '9to4' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 16:00 }

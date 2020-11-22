@@ -20,9 +20,6 @@ function Set-TeamsCallQueue {
 		Required. Friendly Name of the Call Queue. Used to Identify the Object
 	.PARAMETER DisplayName
 		Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
-	.PARAMETER Silent
-		Optional. Suppresses output. Use for Bulk provisioning only.
-		Will return the Output object, but not display any output on Screen.
 	.PARAMETER AgentAlertTime
 		Optional. Time in Seconds to alert each agent. Works depending on Routing method
 		NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
@@ -128,13 +125,7 @@ function Set-TeamsCallQueue {
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
-    New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
-    Remove-TeamsAutoAttendant
-    Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -146,9 +137,6 @@ function Set-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Changes the Name to this DisplayName")]
     [string]$DisplayName,
-
-    [Parameter(HelpMessage = "No output is written to the screen, but Object returned for processing")]
-    [switch]$Silent,
 
     [Parameter(HelpMessage = "Time an agent is alerted in seconds (15-180s)")]
     [ValidateScript( {
@@ -323,6 +311,10 @@ function Set-TeamsCallQueue {
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
     [string]$LanguageId,
 
+
+    [Parameter(HelpMessage = "By default, no output is generated, PassThru will display the Object changed")]
+    [switch]$PassThru,
+
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
   ) #param
@@ -331,7 +323,6 @@ function Set-TeamsCallQueue {
     # Caveat - Script in Development
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -350,6 +341,19 @@ function Set-TeamsCallQueue {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = 7
+    if ( $DisplayName ) { $sMax++ }
+    if ( $MusicOnHoldAudioFile ) { $sMax++ }
+    if ( $WelcomeMusicAudioFile ) { $sMax++ }
+    if ( $PassThru ) { $sMax++ }
+
+    $Status = "Verifying input"
+    $Operation = "Validating Parameters"
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
@@ -367,10 +371,16 @@ function Set-TeamsCallQueue {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
+    $Status = "Preparing Parameters"
     # preparing Splatting Object
     $Parameters = $null
 
     #region Query Unique Element
+    $Operation = "Query Object"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     # Initial Query to determine unique result (single object)
     $CallQueue = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue
     if ($null -eq $CallQueue) {
@@ -388,6 +398,11 @@ function Set-TeamsCallQueue {
 
 
     #region DisplayName
+    $Operation = "DisplayName"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     # Normalising $DisplayName
     if ($PSBoundParameters.ContainsKey('DisplayName')) {
       $NameNormalised = Format-StringForUse -InputString "$DisplayName" -As DisplayName
@@ -405,6 +420,11 @@ function Set-TeamsCallQueue {
       $UseDefaultMusicOnHold = $false
     }
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
+      $Operation = "Music On Hold"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
       $MOHFileName = Split-Path $MusicOnHoldAudioFile -Leaf
       Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Parsing: '$MOHFileName'" -Verbose
       try {
@@ -428,6 +448,11 @@ function Set-TeamsCallQueue {
 
     #region Welcome Message
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
+      $Operation = "Welcome Message"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
       if ($WelcomeMusicAudioFile -eq "$null") {
         $Parameters += @{'WelcomeMusicAudioFileId' = "$null" }
       }
@@ -477,6 +502,13 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   EXISTING SETTING"
     }
     #endregion
+
+    #region Routing metrics, Thresholds and Language
+    # One Progress operation for all Parameters
+    $Operation = "Routing metrics, Thresholds and Language"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
 
     #region ValueSet Parameters
     # RoutingMethod
@@ -550,9 +582,15 @@ function Set-TeamsCallQueue {
       return
     }
     #endregion
+    #endregion
 
 
     #region Overflow
+    $Operation = "Overflow"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     #region OverflowAction
     if ($PSBoundParameters.ContainsKey('OverflowAction')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' Parsing requirements"
@@ -788,6 +826,11 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Timeout
+    $Operation = "Timeout"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     #region TimeoutAction
     if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' Parsing requirements"
@@ -1023,6 +1066,11 @@ function Set-TeamsCallQueue {
 
 
     #region Users - Parsing and verifying Users
+    $Operation = "Parsing Users"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
@@ -1072,6 +1120,11 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region Groups - Parsing Distribution Lists and their Users
+    $Operation = "Parsing Distribution Lists"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     [System.Collections.ArrayList]$DLIdList = @()
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
@@ -1102,13 +1155,8 @@ function Set-TeamsCallQueue {
 
 
     #region Common parameters
-    if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
-      $Parameters += @{'WarningAction' = 'SilentlyContinue' }
-    }
-    else {
-      $Parameters += @{'WarningAction' = 'Continue' }
-    }
-    $Parameters += @{'ErrorAction' = 'STOP' }
+    $Parameters += @{'WarningAction' = 'SilentlyContinue' }
+    $Parameters += @{'ErrorAction' = 'Stop' }
     #endregion
     #endregion
 
@@ -1117,13 +1165,17 @@ function Set-TeamsCallQueue {
     # DEBUG Information
     if ($PSBoundParameters.ContainsKey("Debug")) {
       Write-Debug "Parameters to be applied:"
-      $Parameters
+      Write-Output $Parameters
     }
 
     # Set the Call Queue with all Parameters provided
-    Write-Verbose -Message "'$NameNormalised' Applying settings to Call Queue"
+    $Status = "Applying settings"
+    $Operation = "Changing Call Queue: '$NameNormalised'"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     if ($PSCmdlet.ShouldProcess("$Name", "Set-CsCallQueue")) {
-      $Null = (Set-CsCallQueue @Parameters)
+      $null = (Set-CsCallQueue @Parameters)
       Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue settings applied"
     }
     #endregion
@@ -1131,12 +1183,17 @@ function Set-TeamsCallQueue {
 
     #region OUTPUT
     # Re-query output
-    if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
+    if ( $PassThru ) {
+      $Status = "Applying settings"
+      $Operation = "Querying Call Queue: '$NameNormalised'"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
       $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
-      return $CallQueueFinal
-    }
-    else {
-      return
+
+      Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+      Write-Output $CallQueueFinal
     }
     #endregion
 

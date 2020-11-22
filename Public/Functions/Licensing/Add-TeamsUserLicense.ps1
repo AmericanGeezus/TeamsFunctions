@@ -4,6 +4,9 @@
 # Updated:  01-AUG-2020
 # Status:   Deprecated
 
+
+
+
 function Add-TeamsUserLicense {
   <#
 	.SYNOPSIS
@@ -90,6 +93,7 @@ function Add-TeamsUserLicense {
     Test-TeamsUserLicense
   #>
   [CmdletBinding(DefaultParameterSetName = 'General')]
+  [Alias('Add-TeamsUserLicence')]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias("UPN", "UserPrincipalName", "Username")]

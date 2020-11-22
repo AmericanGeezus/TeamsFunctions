@@ -42,10 +42,17 @@ function New-TeamsAutoAttendantCallableEntity {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+	.LINK
+    New-TeamsAutoAttendant
+    Set-TeamsAutoAttendant
+    New-TeamsAutoAttendantCallableEntity
+    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantPrompt
+    New-TeamsAutoAttendantSchedule
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('New-TeamsAAEntity', 'New-TeamsCallableEntity')]
+  [Alias('New-TeamsAAEntity')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Callable Entity type: ExternalPstn, User, SharedVoiceMail, ApplicationEndpoint")]
@@ -56,7 +63,7 @@ function New-TeamsAutoAttendantCallableEntity {
     [string]$Identity,
 
     [Parameter(HelpMessage = "OutputType: Object or ObjectId")]
-    [switch]$ReturnObjectIdOnly,
+    [switch]$ReturnObjectIdOnly, #Invert and change to PassThru?
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
@@ -104,10 +111,7 @@ function New-TeamsAutoAttendantCallableEntity {
         }
       }
       "User" {
-        <#TEST this!
-        if ( Test-AzureADUser $Identity ) {
-          $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-          #>
+        #CHECK Validate ARRAY use!
         #Query is against the $Identity (UserPrincipalName), this should be returning a unique result, but could return multiple!
         $UserObject = Find-AzureADUser $Identity
         if ( $UserObject ) {
@@ -145,7 +149,7 @@ function New-TeamsAutoAttendantCallableEntity {
         $DLObject = Find-AzureAdGroup "$Identity"
 
         if ($DLObject) {
-          #TEST against Unique Results!
+          #CHECK Validate ARRAY use!
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' (Group) used"
           $Id = $DLObject.ObjectId
         }

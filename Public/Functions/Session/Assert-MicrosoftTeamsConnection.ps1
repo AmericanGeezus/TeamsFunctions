@@ -30,12 +30,11 @@ function Assert-MicrosoftTeamsConnection {
   process {
 
     if (Test-MicrosoftTeamsConnection) {
-      Write-Verbose -Message "[ASSERT ] Microsoft Teams: Valid session found"
+      Write-Verbose -Message "[ASSERT ] MicrosoftTeams: Connected"
       return $true
     }
     else {
-      Write-Host "[ASSERT ] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, AzureAD & MicrosoftTeams in one step!" -ForegroundColor DarkCyan
+      Write-Host "[ASSERT ] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
       return $false
     }
 
