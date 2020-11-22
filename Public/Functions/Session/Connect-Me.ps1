@@ -93,7 +93,7 @@ function Connect-Me {
     [string]$OverrideAdminDomain,
 
     [Parameter(Mandatory = $false, HelpMessage = 'Suppresses Session Information output')]
-    [switch]$Silent
+    [switch]$NoFeedback
 
   ) #param
 
@@ -103,6 +103,10 @@ function Connect-Me {
 
     $WarningPreference = "Continue"
 
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = 0
+
     # Preparing variables
     if ($PSBoundParameters.ContainsKey('SkypeOnline') -or $PSBoundParameters.ContainsKey('AzureAD') -or $PSBoundParameters.ContainsKey('MicrosoftTeams') -or $PSBoundParameters.ContainsKey('ExchangeOnline')) {
       # No parameter provided. Assuming connection to both Skype and AzureAD!
@@ -111,17 +115,32 @@ function Connect-Me {
     else {
       Write-Host "INFO:    No Parameters for individual Services provided. Connecting to SkypeOnline and AzureAD (default)" -ForegroundColor Cyan
       $ConnectDefault = $true
+      $sMax++
     }
 
     if ($PSBoundParameters.ContainsKey('SkypeOnline')) {
       $ConnectToSkype = $true
+      $sMax++
     }
     if ($PSBoundParameters.ContainsKey('AzureAD')) {
       $ConnectToAAD = $true
+      $sMax++
+    }
+    if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+      $sMax++
+    }
+    if ($PSBoundParameters.ContainsKey('ExchangeOnline')) {
+      $sMax++
+    }
+    if ( -not $NoFeedback ) {
+      $sMax = $sMax + 2
     }
 
     # Cleaning up existing sessions
-    Write-Verbose -Message "Disconnecting from all existing sessions for SkypeOnline, AzureAD and MicrosoftTeams" -Verbose
+    $Status = "Preparation"
+    $Operation = "Cleaning up existing Sessions"
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation" -Verbose
     $null = (Disconnect-Me -ErrorAction SilentlyContinue)
 
   } #begin
@@ -132,7 +151,11 @@ function Connect-Me {
     #region Connections
     #region SkypeOnline
     if ($ConnectDefault -or $ConnectToSkype) {
-      Write-Verbose -Message "Establishing connection to SkypeOnline" -Verbose
+      $Status = "Establishing Connection"
+      $step++
+      $Operation = "SkypeOnline"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status to $Operation" -Verbose
       try {
         if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
           $null = (Connect-SkypeOnline -UserName $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
@@ -147,7 +170,13 @@ function Connect-Me {
       }
 
       Start-Sleep 1
-      if ((Test-SkypeOnlineConnection) -and -not $Silent) {
+      if ((Test-SkypeOnlineConnection) -and -not $NoFeedback) {
+        $Status = "Providing Feedback"
+        $step++
+        $Operation = "Displaying Tenant Information"
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+
         $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
         $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
         $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
@@ -171,11 +200,15 @@ function Connect-Me {
 
     #region AzureAD
     if ($ConnectDefault -or $ConnectToAAD) {
+      $Status = "Establishing Connection"
+      $step++
+      $Operation = "AzureAd"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status to $Operation" -Verbose
       try {
-        Write-Verbose -Message "Establishing connection to AzureAD" -Verbose
         $null = (Connect-AzureAD -AccountId $Username)
         Start-Sleep 1
-        if ((Test-AzureADConnection) -and -not $Silent) {
+        if ((Test-AzureADConnection) -and -not $NoFeedback) {
           Get-AzureADCurrentSessionInfo
         }
       }
@@ -188,12 +221,16 @@ function Connect-Me {
 
     #region MicrosoftTeams
     if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+      $Status = "Establishing Connection"
+      $step++
+      $Operation = "MicrosoftTeams"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status to $Operation" -Verbose
       try {
         if ( !(Test-Module MicrosoftTeams)) {
           Import-Module MicrosoftTeams -Force -ErrorAction SilentlyContinue
         }
-        Write-Verbose -Message "Establishing connection to MicrosoftTeams" -Verbose
-        if ((Test-MicrosoftTeamsConnection) -and -not $Silent) {
+        if ((Test-MicrosoftTeamsConnection) -and -not $NoFeedback) {
           Connect-MicrosoftTeams -AccountId $Username
         }
         else {
@@ -208,12 +245,16 @@ function Connect-Me {
 
     #region ExchangeOnline
     if ($PSBoundParameters.ContainsKey('ExchangeOnline')) {
+      $Status = "Establishing Connection"
+      $step++
+      $Operation = "ExchangeOnline"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status to $Operation" -Verbose
       try {
         if ( !(Test-Module ExchangeOnlineManagement)) {
           Import-Module ExchangeOnlineManagement -Force -ErrorAction SilentlyContinue
         }
-        Write-Verbose -Message "Establishing connection to ExchangeOnlineManagement" -Verbose
-        if ((Test-ExchangeOnlineConnection) -and -not $Silent) {
+        if ((Test-ExchangeOnlineConnection) -and -not $NoFeedback) {
           Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false
         }
         else {
@@ -229,12 +270,20 @@ function Connect-Me {
 
 
     #region Display Admin Roles
-    if ((Test-AzureADConnection) -and -not $Silent) {
+    if ((Test-AzureADConnection) -and -not $NoFeedback) {
+      $Status = "Providing Feedback"
+      $step++
+      $Operation = "Displaying assigned Admin Roles"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       Write-Host "Displaying assigned Admin Roles for Account: " -ForegroundColor Magenta -NoNewline
       Write-Host "$Username"
       Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account | Select-Object DisplayName, Description | Format-Table -AutoSize
     }
     #endregion
+
+    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+
   } #process
 
   end {

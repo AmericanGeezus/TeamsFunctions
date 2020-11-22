@@ -134,7 +134,7 @@ function Get-TeamsAutoAttendant {
           Write-Progress -Id 2 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($AA.Name)' - $Operation"
           if ($null -eq $AA.Operator) {
-            $OperatorObject = $null
+            $AAOperator = $null
           }
           else {
             # Parsing Callable Entity
@@ -211,7 +211,7 @@ function Get-TeamsAutoAttendant {
               }
             }
             else {
-              $OperatorObject = $null
+              $AAOperator = $null
             }
             #endregion
 

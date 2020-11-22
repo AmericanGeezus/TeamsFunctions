@@ -101,13 +101,12 @@ function Set-TeamsUserPolicy {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($ID in $Identity) {
       #User Validation
-      #CHECK output options and harmonize!
       # NOTE: Validating users in a try/catch block does not catch the error properly and does not allow for custom outputting of an error message
       if ($null -ne (Get-CsOnlineUser -Identity $ID -WarningAction SilentlyContinue -ErrorAction SilentlyContinue)) {
         #region Teams Upgrade Policy
         if ($PSBoundParameters.ContainsKey("TeamsUpgradePolicy")) {
           # Verify if $TeamsUpgradePolicy is a valid policy to assign
-          if ($tenantTeamsUpgradePolicies -icontains "Tag:$TeamsUpgradePolicy") {
+          if ($tenantTeamsUpgradePolicies -iContains "Tag:$TeamsUpgradePolicy") {
             try {
               # Attempt to assign policy
               if ($PSCmdlet.ShouldProcess("$ID", "Grant-TeamsUpgradePolicy -PolicyName $TeamsUpgradePolicy")) {

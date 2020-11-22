@@ -33,6 +33,8 @@ Evaluate whether functionality of New-TeamsAutoAttendantCallableEntity would be 
 
 ## Code Improvements
 
+Evaluate adding PassThru to all Set and Remove parameters, outputting the Object (instead of Silent or other things)
+
 Disable Positional Binding for CQ and AA scripts https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_cmdletbindingattribute?view=powershell-5.1
 
 Add Supports Paging for Get Commands Get-TeamsCallQueue and Get-TeamsAutoAttendant at least!

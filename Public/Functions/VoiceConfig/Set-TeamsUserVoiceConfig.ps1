@@ -31,9 +31,6 @@ function Set-TeamsUserVoiceConfig {
   .PARAMETER CallingPlanLicense
     Optional for CallingPlans. Assigns a Calling Plan License to the User.
     Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
-	.PARAMETER Silent
-    Suppresses Output object for verification and On-Screen Errors. Useful for Bulk-Application
-    If errors are encountered, these will be logged in a file to C:\Temp
 	.PARAMETER Force
     By default, this script only applies changed elements. Force overwrites configuration regardless of current status.
     Additionally Suppresses confirmation inputs except when $Confirm is explicitly specified
@@ -52,20 +49,15 @@ function Set-TeamsUserVoiceConfig {
 	.EXAMPLE
     Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
     Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
-	.EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -Silent
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
-    If Errors are encountered, they are written to C:\Temp
   .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -WriteErrorLog
+    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
     Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
-    If Errors are encountered, they are written to C:\Temp as well as on screen
   .INPUTS
     System.String
   .OUTPUTS
-    System.Void (with Switch Silent and without Switch WriteErrorLog)
+    System.Void (without Switch PassThru)
+    System.Object (with Switch PassThru)
     System.File (with Switch WriteErrorLog)
-    System.Object (without Switch Silent)
 	.NOTES
     ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
     assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default.
@@ -133,8 +125,8 @@ function Set-TeamsUserVoiceConfig {
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force,
 
-    [Parameter(HelpMessage = "Suppresses object output")]
-    [switch]$Silent,
+    [Parameter(HelpMessage = "No output is written by default, Switch PassThru will return changed object")]
+    [switch]$PassThru,
 
     [Parameter(HelpMessage = "Writes a Log File to C:\Temp")]
     [switch]$WriteErrorLog
@@ -168,10 +160,11 @@ function Set-TeamsUserVoiceConfig {
     [int]$step = 0
     [int]$sMax = switch ($PsCmdlet.ParameterSetName) {
       "DirectRouting" { 8 }
-      "CallingPlans" { if ($CallingPlanLicense) { 10 } else { 9 } }
+      "CallingPlans" { if ( -not $CallingPlanLicense ) { 10 } else { 9 } }
     }
-    if ($TenantDialPlan) { $sMax++ }
-    if ($WriteErrorLog) { $sMax++ }
+    if ( $TenantDialPlan ) { $sMax++ }
+    if ( $WriteErrorLog ) { $sMax++ }
+    if ( $PassThru ) { $sMax++ }
   } #begin
 
   process {
@@ -275,9 +268,7 @@ function Set-TeamsUserVoiceConfig {
       }
       else {
         $ErrorLogMessage = "Phone Number '$PhoneNumber' is not found in the Tenant. Please provide an available number"
-        if ( -not $Silent ) {
-          Write-Error -Message $ErrorLogMessage
-        }
+        Write-Error -Message $ErrorLogMessage
         $ErrorLog += $ErrorLogMessage
       }
     }
@@ -298,9 +289,7 @@ function Set-TeamsUserVoiceConfig {
         }
         catch {
           $ErrorLogMessage = "Enabling user for Hosted Voicemail: Failed: '$($_.Exception.Message)'"
-          if ( -not $Silent ) {
-            Write-Error -Message $ErrorLogMessage
-          }
+          Write-Error -Message $ErrorLogMessage
           $ErrorLog += $ErrorLogMessage
         }
       }
@@ -320,9 +309,7 @@ function Set-TeamsUserVoiceConfig {
           }
           catch {
             $ErrorLogMessage = "Applying Tenant Dial Plan: Failed: '$($_.Exception.Message)'"
-            if ( -not $Silent ) {
-              Write-Error -Message $ErrorLogMessage
-            }
+            Write-Error -Message $ErrorLogMessage
             $ErrorLog += $ErrorLogMessage
           }
         }
@@ -350,9 +337,7 @@ function Set-TeamsUserVoiceConfig {
             }
             catch {
               $ErrorLogMessage = "Applying Online Voice Routing Policy: Failed: '$($_.Exception.Message)'"
-              if ( -not $Silent ) {
-                Write-Error -Message $ErrorLogMessage
-              }
+              Write-Error -Message $ErrorLogMessage
               $ErrorLog += $ErrorLogMessage
             }
           }
@@ -372,9 +357,7 @@ function Set-TeamsUserVoiceConfig {
             }
             catch {
               $ErrorLogMessage = "Applying Phone Number: Failed: '$($_.Exception.Message)'"
-              if ( -not $Silent ) {
-                Write-Error -Message $ErrorLogMessage
-              }
+              Write-Error -Message $ErrorLogMessage
               $ErrorLog += $ErrorLogMessage
             }
           }
@@ -395,9 +378,7 @@ function Set-TeamsUserVoiceConfig {
             }
             catch {
               $ErrorLogMessage = "Applying CallingPlan License '$CallingPlanLicense' failed: '$($_.Exception.Message)'"
-              if ( -not $Silent ) {
-                Write-Error -Message $ErrorLogMessage
-              }
+              Write-Error -Message $ErrorLogMessage
               $ErrorLog += $ErrorLogMessage
             }
 
@@ -417,9 +398,7 @@ function Set-TeamsUserVoiceConfig {
             }
             catch {
               $ErrorLogMessage = "Applying Phone Number failed: '$($_.Exception.Message)'"
-              if ( -not $Silent ) {
-                Write-Error -Message $ErrorLogMessage
-              }
+              Write-Error -Message $ErrorLogMessage
               $ErrorLog += $ErrorLogMessage
             }
           }
@@ -436,7 +415,7 @@ function Set-TeamsUserVoiceConfig {
 
     #region Log & Output
     # Write $ErrorLog
-    if ( $errorLog -and ($Silent -or $WriteErrorLog) ) {
+    if ( $WriteErrorLog ) {
       $Path = "C:\Temp"
       $Filename = "$($MyInvocation.MyCommand) - $Identity - ERROR.log"
       $LogPath = "$Path\$Filename"
@@ -455,10 +434,7 @@ function Set-TeamsUserVoiceConfig {
 
 
     # Output
-    if ( $Silent ) {
-      return
-    }
-    else {
+    if ( $PassThru ) {
       # Re-Query Object
       $step++
       Write-Progress -Id 0 -Status "Output" -CurrentOperation "Waiting for Office 365 to write the Object" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -473,9 +449,13 @@ function Set-TeamsUserVoiceConfig {
       if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
         Write-Warning -Message "Applied Policies take some time to show up on the object. Please verify again with Get-TeamsUserVoiceConfig"
       }
-      Write-Progress -Id 0 -Status "Provisioning" -Activity $MyInvocation.MyCommand -Completed
 
+      Write-Progress -Id 0 -Status "Provisioning" -Activity $MyInvocation.MyCommand -Completed
       return $UserObjectPost
+    }
+    else {
+      Write-Progress -Id 0 -Status "Provisioning" -Activity $MyInvocation.MyCommand -Completed
+      return
     }
     #endregion
 

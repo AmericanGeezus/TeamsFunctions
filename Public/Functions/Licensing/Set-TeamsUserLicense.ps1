@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
-#TODO Add Progress bars, sMax depends on how many PsBoundParameters there are (approx!)
+
 
 
 function Set-TeamsUserLicense {
@@ -493,6 +493,8 @@ function Set-TeamsUserLicense {
         Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject
         Write-Verbose -Message "'$ID' - Setting Licenses: Done"
       }
+
+      #CHECK add PassThru? Get-TeamsUserLicense
     }
   } #process
 

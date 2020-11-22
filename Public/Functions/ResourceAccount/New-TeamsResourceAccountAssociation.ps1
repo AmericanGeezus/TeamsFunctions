@@ -205,7 +205,6 @@ function New-TeamsResourceAccountAssociation {
       $step2++
       Write-Progress -Id 2 -Status "Validating '$($Account.UserPrincipalName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
       Write-Verbose -Message "'$($Account.UserPrincipalName)' - $Operation"
-      #TEST this. Was restructured from below. needs testing.
       $ApplicationTypeMatches = ((Get-CsOnlineApplicationInstance -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationId -eq (GetAppIdFromApplicationType $DesiredType))
 
       if ( $ApplicationTypeMatches ) {

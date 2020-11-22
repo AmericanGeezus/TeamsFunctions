@@ -29,13 +29,13 @@ function Assert-AzureADConnection {
 
   process {
     if (Test-AzureADConnection) {
-      $TenantDomain = $((Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue).TenantDomain)
-      Write-Verbose -Message "[ASSERT ] AzureAD(v2): Valid session found - Tenant: $TenantDomain"
+      #$TenantDomain = $((Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue).TenantDomain)
+      #Write-Verbose -Message "[ASSERT ] AzureAD(v2): Valid session found - Tenant: $TenantDomain"
+      Write-Verbose -Message "[ASSERT ] AzureAD(v2): Connected"
       return $true
     }
     else {
-      Write-Host "[ASSERT ] ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets." -ForegroundColor Red
-      Write-Host "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to SkypeOnline, AzureAD & MicrosoftTeams in one step!" -ForegroundColor DarkCyan
+      Write-Host "[ASSERT ] ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
       return $false
     }
   } #process

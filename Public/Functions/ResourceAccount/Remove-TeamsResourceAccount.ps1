@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
-#TODO Add Progress bars, sMax depends on how many PsBoundParameters there are
+
 
 
 function Remove-TeamsResourceAccount {
@@ -241,6 +241,8 @@ function Remove-TeamsResourceAccount {
 
       #endregion
       Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+
+      #CHECK Add PassThru? ($UPN only?)
 
     }
   } #process

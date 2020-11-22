@@ -124,6 +124,7 @@ function Remove-TeamsResourceAccountAssociation {
         }
 
         # Output
+        #CHECK Add PassThru?
         $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
           UserPrincipalName  = $Account.UserPrincipalName
           ConfigurationType  = $OperationStatus.Results.ConfigurationType

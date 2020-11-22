@@ -1,11 +1,11 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   RC
+# Updated:  01-DEC-2020
+# Status:   BETA
 
 
-#TODO Extend Schedule templates - MON-FRI 9-5 & 24x7 - maybe with switch?
+
 
 function New-TeamsAutoAttendant {
   <#
@@ -64,6 +64,23 @@ function New-TeamsAutoAttendant {
     Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
   .PARAMETER AfterHoursMenu
     Optional. Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget
+  .PARAMETER DefaultSchedule
+    Optional. Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7
+    Cannot be used at the same time as Schedule
+  .PARAMETER EnableVoiceResponse
+    Optional Switch to be passed to New-CsAutoAttendant
+  .PARAMETER DefaultCallFlow
+    Optional. Call Flow Object to pass to New-CsAutoAttendant (used as the Default Call Flow)
+  .PARAMETER CallFlows
+    Optional. Call Flow Object to pass to New-CsAutoAttendant
+  .PARAMETER CallHandlingAssociations
+    Optional. Call Handling Associations Object to pass to New-CsAutoAttendant
+  .PARAMETER Schedule
+    Optional. Schedule Object to pass to New-CsAutoAttendant
+  .PARAMETER InclusionScope
+    Optional. DialScope Object to pass to New-CsAutoAttendant
+  .PARAMETER ExclusionScope
+    Optional. Pass-Through Parameter for New-CsAutoAttendant
   .PARAMETER Silent
 		Optional. Does not display output. Use for Bulk provisioning only.
 		Will return the Output object, but not display any output on Screen.
@@ -76,9 +93,9 @@ function New-TeamsAutoAttendant {
     TimeZone is UTC, Language is en-US and Schedule is Mon-Fri 9to5.
     Business hours and After Hours action is Disconnect
 	.EXAMPLE
-		New-TeamsAutoAttendant -Name "My Auto Attendant" -TimeZone UTC-05:00 -LanguageId pt-BR -EnableVoiceResponse
+		New-TeamsAutoAttendant -Name "My Auto Attendant" -TimeZone UTC-05:00 -LanguageId pt-BR -DefaultSchedule MonToFri8to12and13to18 -EnableVoiceResponse
     Creates a new Auto Attendant "My Auto Attendant" and sets the TimeZone to UTC-5 and the language to Portuguese (Brazil)
-    The default Schedule of Mon-Fri 9to5 will be applied. Also enables VoiceResponses
+    The Schedule of Mon-Fri 8to12 and 13to18 will be applied. Also enables VoiceResponses
 	.EXAMPLE
 		New-TeamsAutoAttendant -Name "My Auto Attendant" -Operator "tel:+1555123456" -OperatorType ExternalPstn -Schedule $ScheduleId
     Creates a new Auto Attendant "My Auto Attendant" with default TimeZone and Language, but defines an Operator as a Callable Entity (Forward to Pstn)
@@ -177,8 +194,12 @@ function New-TeamsAutoAttendant {
     [Parameter(HelpMessage = "After Hours Call Target - AfterHoursCallFlowOption = Menu")]
     [object]$AfterHoursMenu,
 
+    [Parameter(HelpMessage = "Default Schedule to apply")]
+    [ValidateSet("Open24x7", "MonToFri9to5", "MonToFri8to12and13to18")]
+    [string]$DefaultSchedule,
 
-    #Default Parameters of New-CsCallQueue for Pass-through application
+
+    #Default Parameters of New-CsAutoAttendant for Pass-through application
     [Parameter(HelpMessage = "Voice Responses")]
     [switch]$EnableVoiceResponse,
 
@@ -200,11 +221,6 @@ function New-TeamsAutoAttendant {
     [Parameter(HelpMessage = "Groups defining the Exclusion Scope")]
     [object]$ExclusionScope,
 
-
-    # Additional Switches
-    [Parameter(HelpMessage = "No output is written to the screen, but Object returned for processing")]
-    [switch]$Silent,
-
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
 
@@ -214,7 +230,7 @@ function New-TeamsAutoAttendant {
     # Caveat - Script in Development
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Beta
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -234,27 +250,35 @@ function New-TeamsAutoAttendant {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-    # Language has to be normalised as the Id is case sensitive
-    if ($PSBoundParameters.ContainsKey('LanguageId')) {
-      $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
-      Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
-      $VoiceResponsesSupported = (Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported
+    # Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = 8
+    if ( -not $Schedule ) { $sMax++ }
+    if ( -not $DefaultCallFlow ) {
+      $sMax++
+      if ( $BusinessHoursGreeting ) { $sMax++ }
     }
-    else {
-      $Language = $LanguageId
-      <# Language has been granted a default value
-      # Checking for Parameters which would require LanguageId
-      Write-Error "Parameter LanguageId is required and missing." -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
-      return
-      #>
+    if ( -not $CallFlows ) {
+      $sMax++
+      if ( $AfterHoursGreeting ) { $sMax++ }
     }
 
-    # TimeZoneId
+    $Status = "Verifying input"
+    $Operation = "Validating Parameters"
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
+    # Language has to be normalised as the Id is case sensitive. Default value: en-US
+    $Language = $($LanguageId.Split("-")[0]).ToLower() + "-" + $($LanguageId.Split("-")[1]).ToUpper()
+    Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
+    $VoiceResponsesSupported = (Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported
+
+    # TimeZoneId - Generated from $TimeZone. Default value: UTC
+    Write-Verbose -Message "TimeZone - Parsing TimeZone '$TimeZone'"
     if ($TimeZone -eq "UTC") {
       $TimeZoneId = $TimeZone
     }
     else {
-      Write-Verbose -Message "TimeZone - Parsing TimeZone '$TimeZone'"
       $TimeZoneId = (Get-CsAutoAttendantSupportedTimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
       Write-Verbose -Message "TimeZone - Found! Using: '$TimeZoneId'"
       Write-Verbose -Message "TimeZone - This is an approximate match, please validate in Admin Center and select a more precise match if needed!" -Verbose
@@ -263,11 +287,13 @@ function New-TeamsAutoAttendant {
     #region Parameter validation
     #region Operator & OperatorType
     if ($PSBoundParameters.ContainsKey('OperatorType') -and -not $PSBoundParameters.ContainsKey('Operator')) {
-      Write-Error -Message "OperatorType requires Parameter Operator" -ErrorAction Stop
+      Write-Error -Message "OperatorType requires Parameter Operator"
+      return
     }
 
     if ($PSBoundParameters.ContainsKey('Operator') -and -not $PSBoundParameters.ContainsKey('OperatorType')) {
-      Write-Error -Message "Operator requires Parameter OperatorType" -ErrorAction Stop
+      Write-Error -Message "Operator requires Parameter OperatorType"
+      return
     }
     #endregion
 
@@ -299,24 +325,26 @@ function New-TeamsAutoAttendant {
       # Testing provided Object Type
       #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow
       if (($DefaultCallFlow | Get-Member | Select-Object TypeName -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow") {
-        Write-Error "DefaultCallFlow - Type is not of 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'. Please provide a Call Flow Object" -Category InvalidType -ErrorAction Stop
+        Write-Error "DefaultCallFlow - Type is not of 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'. Please provide a Call Flow Object" -Category InvalidType
+        return
       }
     }
     #endregion
 
     #region BusinessHours Parameters
     if (-not $PSBoundParameters.ContainsKey('BusinessHoursCallFlowOption')) {
-      Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
+      Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!" -Verbose
       $BusinessHoursCallFlowOption = "Disconnect"
     }
     elseif ($BusinessHoursCallFlowOption -eq "TransferCallToTarget") {
       # Must contain Target and TargetType
       if (-not $PSBoundParameters.ContainsKey('BusinessHoursCallTarget')) {
-        Write-Error -Message "BusinessHoursCallFlowOption (TransferCallToTarget) - Parameter 'BusinessHoursCallTarget' missing" -ErrorAction Stop
+        Write-Error -Message "BusinessHoursCallFlowOption (TransferCallToTarget) - Parameter 'BusinessHoursCallTarget' missing"
+        return
       }
       if (-not $PSBoundParameters.ContainsKey('BusinessHoursCallTargetType')) {
-        Write-Error -Message "BusinessHoursCallFlowOption (TransferCallToTarget) - Parameter 'BusinessHoursCallTargetType' missing" -ErrorAction Stop
-        Write-Verbose -Message "BusinessHoursMenu - Removing 'BusinessHoursCallTargetType'"
+        Write-Error -Message "BusinessHoursCallFlowOption (TransferCallToTarget) - Parameter 'BusinessHoursCallTargetType' missing"
+        return
       }
 
       # Must not contain a Menu
@@ -334,16 +362,19 @@ function New-TeamsAutoAttendant {
         # Testing provided Object Type
         #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu
         if (($BusinessHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu") {
-          Write-Error -Message "BusinessHoursCallFlowOption (Menu) - BusinessHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType -ErrorAction Stop
+          Write-Error -Message "BusinessHoursCallFlowOption (Menu) - BusinessHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType
+          return
         }
       }
 
       # Must not contain Target and TargetType
       if ($PSBoundParameters.ContainsKey('BusinessHoursCallTarget')) {
         Write-Warning -Message "BusinessHoursCallFlowOption (Menu) - Parameter 'BusinessHoursCallTarget' cannot be used and will be omitted!"
+        $PSBoundParameters.Remove('BusinessHoursCallTarget')
       }
       if ($PSBoundParameters.ContainsKey('BusinessHoursCallTargetType')) {
         Write-Warning -Message "BusinessHoursCallFlowOption (Menu) - Parameter 'BusinessHoursCallTargetType' cannot be used and will be omitted!"
+        $PSBoundParameters.Remove('BusinessHoursCallTargetType')
       }
 
     }
@@ -375,18 +406,21 @@ function New-TeamsAutoAttendant {
       }
 
       if ($PSBoundParameters.ContainsKey('CallFlows') -and -not $PSBoundParameters.ContainsKey('CallHandlingAssociation')) {
-        Write-Error -Message "CallFlows requires Parameter CallHandlingAssociation" -ErrorAction Stop
+        Write-Error -Message "CallFlows - Parameter requires CallHandlingAssociation to be specified"
+        return
       }
 
       if ($PSBoundParameters.ContainsKey('CallHandlingAssociation') -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
-        Write-Error -Message "CallHandlingAssociation requires Parameter CallFlows" -ErrorAction Stop
+        Write-Error -Message "CallHandlingAssociation - Parameter requires CallFlows to be specified"
+        return
       }
 
       # Testing provided Object Type
       #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow (Array!)
       foreach ($Flow in $CallFlows) {
         if (($Flow | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow") {
-          Write-Error -Message "CallFlows - '$($Flow.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'" -Category InvalidType -ErrorAction Stop
+          Write-Error -Message "CallFlows - '$($Flow.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'" -Category InvalidType
+          return
         }
       }
 
@@ -394,7 +428,8 @@ function New-TeamsAutoAttendant {
       #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation (Array!)
       foreach ($CHA in $CallHandlingAssociations) {
         if (($CHA | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation") {
-          Write-Error -Message "CallHandlingAssociations - '$($CHA.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation'" -Category InvalidType -ErrorAction Stop
+          Write-Error -Message "CallHandlingAssociations - '$($CHA.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation'" -Category InvalidType
+          return
         }
       }
     }
@@ -402,17 +437,18 @@ function New-TeamsAutoAttendant {
 
     #region AfterHours Parameters
     if (-not $PSBoundParameters.ContainsKey('AfterHoursCallFlowOption')) {
-      Write-Verbose -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
+      Write-Warning -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
       $AfterHoursCallFlowOption = "Disconnect"
     }
     elseif ($AfterHoursCallFlowOption -eq "TransferCallToTarget") {
       # Must contain Target and TargetType
       if (-not $PSBoundParameters.ContainsKey('AfterHoursCallTarget')) {
-        Write-Error -Message "AfterHoursCallFlowOption (TransferCallToTarget) - Parameter 'AfterHoursCallTarget' missing" -ErrorAction Stop
+        Write-Error -Message "AfterHoursCallFlowOption (TransferCallToTarget) - Parameter 'AfterHoursCallTarget' missing"
+        return
       }
       if (-not $PSBoundParameters.ContainsKey('AfterHoursCallTargetType')) {
-        Write-Error -Message "AfterHoursCallFlowOption (TransferCallToTarget) - Parameter 'AfterHoursCallTargetType' missing" -ErrorAction Stop
-        Write-Verbose -Message "AfterHoursMenu - Removing 'AfterHoursCallTargetType'"
+        Write-Error -Message "AfterHoursCallFlowOption (TransferCallToTarget) - Parameter 'AfterHoursCallTargetType' missing"
+        return
       }
 
       # Must not contain a Menu
@@ -424,21 +460,25 @@ function New-TeamsAutoAttendant {
     elseif ($AfterHoursCallFlowOption -eq "Menu") {
       # Must contain a Menu
       if (-not $PSBoundParameters.ContainsKey('AfterHoursMenu')) {
-        Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu missing" -ErrorAction Stop
+        Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu missing"
+        return
       }
       else {
         #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu
         if (($AfterHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu") {
-          Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType -ErrorAction Stop
+          Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType
+          return
         }
       }
 
       # Must not contain Target and TargetType
       if ($PSBoundParameters.ContainsKey('AfterHoursCallTarget')) {
         Write-Warning -Message "AfterHoursCallFlowOption (Menu) - Parameter 'AfterHoursCallTarget' cannot be used and will be omitted!"
+        $PSBoundParameters.Remove('AfterHoursCallTarget')
       }
       if ($PSBoundParameters.ContainsKey('AfterHoursCallTargetType')) {
         Write-Warning -Message "AfterHoursCallFlowOption (Menu) - Parameter 'AfterHoursCallTargetType' cannot be used and will be omitted!"
+        $PSBoundParameters.Remove('AfterHoursCallTargetType')
       }
 
     }
@@ -447,12 +487,41 @@ function New-TeamsAutoAttendant {
 
     #region Schedule
     if ($PSBoundParameters.ContainsKey('Schedule')) {
-      Write-Verbose -Message "Schedule - Custom Schedule overrides default Schedule (Mon-Fri 9-5)" -Verbose
-      #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule
-      if (($AfterHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule") {
-        Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule'" -Category InvalidType -ErrorAction Stop
+      if ($PSBoundParameters.ContainsKey('DefaultSchedule')) {
+        Write-Verbose -Message "Schedule - Custom Schedule Object overrides Default Schedule: '$DefaultSchedule'" -Verbose
+        $PSBoundParameters.Remove('DefaultSchedule')
       }
 
+      #CHECK application! Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule
+      if (($Schedule | Get-Member | Select-Object -First 1).TypeName -ne "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule") {
+        Write-Error -Message "Schedule - Custom Schedule Object - Schedule not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule'" -Category InvalidType
+        return
+      }
+
+    }
+    else {
+      if ( -not $PSBoundParameters.ContainsKey('DefaultSchedule')) {
+        $DefaultSchedule = "MonToFri9to5"
+      }
+
+      # Creating Schedule
+      $Operation = "Creating Schedule"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      Write-Verbose -Message "Schedule - Default Schedule used: '$DefaultSchedule'" -Verbose
+
+      $Schedule = switch ($DefaultSchedule) {
+        'Open24x7' {
+          New-TeamsAutoAttendantSchedule -Name "Business Hours Schedule" -WeeklyRecurrentSchedule -BusinessDays MonToSun -BusinessHours AllDay -Complement
+        }
+        'MonToFri9to5' {
+          New-TeamsAutoAttendantSchedule -Name "Business Hours Schedule" -WeeklyRecurrentSchedule -BusinessDays MonToFri -BusinessHours 9to5 -Complement
+        }
+        'MonToFri8to12and13to18' {
+          New-TeamsAutoAttendantSchedule -Name "Business Hours Schedule" -WeeklyRecurrentSchedule -BusinessDays MonToFri -BusinessHours 8to12and13to18 -Complement
+        }
+      }
     }
     #endregion
 
@@ -464,10 +533,16 @@ function New-TeamsAutoAttendant {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
+    $Status = "Preparing Parameters"
     # preparing Splatting Object
     $Parameters = $null
 
     #region Required Parameters
+    $Operation = "Name, TimeZone & Language"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     # Normalising $Name
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
     Write-Verbose -Message "'$Name' DisplayName normalised to: '$NameNormalised'"
@@ -476,9 +551,8 @@ function New-TeamsAutoAttendant {
     # Adding required parameters
     $Parameters += @{'LanguageId' = $Language }
     $Parameters += @{'TimeZoneId' = $TimeZoneId }
-    #endregion
 
-    #region EnableVoiceResponse
+    # EnableVoiceResponse
     if ($PSBoundParameters.ContainsKey('EnableVoiceResponse')) {
       # Checking whether Voice Responses are available for the provided Language
       if ($VoiceResponsesSupported) {
@@ -487,12 +561,17 @@ function New-TeamsAutoAttendant {
         $Parameters += @{'EnableVoiceResponse' = $true }
       }
       else {
-        Write-Verbose -Message "'$NameNormalised' EnableVoiceResponse - Voice Responses are not supported for Language '$Language' and cannot be activated (Switch 'EnableVoiceResponse' will be omitted)"
+        Write-Warning -Message "'$NameNormalised' EnableVoiceResponse - Voice Responses are not supported for Language '$Language' and cannot be activated (Switch 'EnableVoiceResponse' will be omitted)"
       }
     }
     #endregion
 
     #region Operator
+    $Operation = "Operator"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     #TODO Insert EnableTranscription (For SharedVoiceMail only) - Replicate for other SharedVoicemail options?
     if ($PSBoundParameters.ContainsKey('Operator')) {
       try {
@@ -512,6 +591,11 @@ function New-TeamsAutoAttendant {
 
 
     #region Business Hours Call Flow
+    $Operation = "Business Hours Call Flow - Default Call Flow & Call Flow Option"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     if ($PSBoundParameters.ContainsKey('DefaultCallFlow')) {
       # Using As-Is
       Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Custom Object provided." -Verbose
@@ -549,7 +633,7 @@ function New-TeamsAutoAttendant {
           }
           else {
             # Reverting to Disconnect
-            Write-Warning -Message "'$NameNormalised' DefaultCallFlow - Business Hours Menu not created properly. Reverting to Disconnect" -Verbose
+            Write-Warning -Message "'$NameNormalised' DefaultCallFlow - Business Hours Menu not created properly. Reverting to Disconnect"
             $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
             $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
           }
@@ -579,6 +663,11 @@ function New-TeamsAutoAttendant {
       #region BusinessHoursGreeting
       #Adding optional BusinessHoursGreeting
       if ($PSBoundParameters.ContainsKey('BusinessHoursGreeting')) {
+        $Operation = "Business Hours Call Flow - Greeting"
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+
         try {
           $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $BusinessHoursGreeting
           if ($BusinessHoursGreetingObject) {
@@ -592,6 +681,11 @@ function New-TeamsAutoAttendant {
       #endregion
 
       #region Building Call Flow
+      $Operation = "Business Hours Call Flow - Building Call Flow"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
       # Adding Business Hours Call Flow
       $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenuObject
       $BusinessHoursCallFlow = New-CsAutoAttendantCallFlow @BusinessHoursCallFlowParameters
@@ -607,13 +701,18 @@ function New-TeamsAutoAttendant {
     $AfterHoursCallHandlingAssociationParams.Type = "AfterHours"
 
     # Processing CallFlow
+    $Operation = "After Hours Call Flow - Call Flows & Call Flow Option"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     if ($PSBoundParameters.ContainsKey('CallFlows')) {
       # Custom Option provided - Using As-Is
       Write-Verbose -Message "'$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')" -Verbose
       #CHECK Validate Array use!
       $AfterHoursCallHandlingAssociationIDs = @{}
       foreach ($CF in $CallFlows) {
-        $AfterHoursCallHandlingAssociationIDs.Add($CF.Id)
+        [void]$AfterHoursCallHandlingAssociationIDs.Add($CF.Id)
       }
       $Parameters += @{'CallFlows' = $CallFlows }
       $AfterHoursCallHandlingAssociationParams.CallFlowId = $AfterHoursCallHandlingAssociationIDs
@@ -622,7 +721,7 @@ function New-TeamsAutoAttendant {
       # Option Selected
       Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'AfterHoursCallFlowOption'..." -Verbose
       $AfterHoursCallFlowParameters = @{}
-      $AfterHoursCallFlowParameters.Name = "$Name After Hours Call Flow"
+      $AfterHoursCallFlowParameters.Name = "$NameNormalised After Hours Call Flow"
 
       #region Processing AfterHoursCallFlowOption
       switch ($AfterHoursCallFlowOption) {
@@ -650,7 +749,7 @@ function New-TeamsAutoAttendant {
           }
           else {
             # Reverting to Disconnect
-            Write-Warning -Message "'$NameNormalised' Call Flow - After Hours Menu not created properly. Reverting to Disconnect" -Verbose
+            Write-Warning -Message "'$NameNormalised' Call Flow - After Hours Menu not created properly. Reverting to Disconnect"
             $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
             $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
           }
@@ -680,6 +779,11 @@ function New-TeamsAutoAttendant {
       #region AfterHoursGreeting
       # Adding AfterHoursGreeting
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) {
+        $Operation = "After Hours Call Flow - Greeting"
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+
         try {
           $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $AfterHoursGreeting
           if ($AfterHoursGreetingObject) {
@@ -693,6 +797,11 @@ function New-TeamsAutoAttendant {
       #endregion
 
       #region Building Call Flow
+      $Operation = "After Hours Call Flow - Building Call Flow"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
       # Adding After Hours Call Flow
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
@@ -706,18 +815,13 @@ function New-TeamsAutoAttendant {
     #endregion
 
     #region After Hours Schedule & Call Handling Association
-    if ($PSBoundParameters.ContainsKey('Schedule')) {
-      # Custom Schedule provided - Using As-Is
-      Write-Verbose -Message "'$NameNormalised' Schedule - Custom Object provided. Over-riding other options" -Verbose
-      $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
-    }
-    else {
-      # Defaulting to Mon-Fri 9-17
-      Write-Verbose -Message "'$NameNormalised' Schedule - No Custom Object - Using (Mon-Fri 09:00-17:00)" -Verbose
-      $afterHoursSchedule = New-TeamsAutoAttendantSchedule -Name "Business Hours Schedule" -WeeklyRecurrentSchedule -BusinessDays MonToFri -BusinessHours 9to5 -Complement
-      $AfterHoursCallHandlingAssociationParams.ScheduleId = $afterHoursSchedule.Id
-    }
+    $Operation = "Schedule & Call Handling Association"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
 
+    Write-Verbose -Message "'$NameNormalised' Schedule - Applying Schedule" -Verbose
+    $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
     $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
     $Parameters += @{'CallHandlingAssociation' = @($AfterHoursCallHandlingAssociation) }
     #endregion
@@ -725,6 +829,11 @@ function New-TeamsAutoAttendant {
 
 
     #region Inclusion and Exclusion Scope
+    $Operation = "Dial Scopes - Inclusion and Exclusion Scope"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     # Inclusion Scope
     if ($PSBoundParameters.ContainsKey('InclusionScope')) {
       Write-Verbose -Message "'$NameNormalised' InclusionScope provided. Using as-is"
@@ -749,28 +858,28 @@ function New-TeamsAutoAttendant {
     #endregion
 
     #region Common parameters
-    if ($PSBoundParameters.ContainsKey('Silent')) {
-      $Parameters += @{'WarningAction' = 'SilentlyContinue' }
-    }
-    else {
-      $Parameters += @{'WarningAction' = 'Continue' }
-    }
-    $Parameters += @{'ErrorAction' = 'STOP' }
+    $Parameters += @{'WarningAction' = 'Continue' }
+    $Parameters += @{'ErrorAction' = 'Stop' }
     #endregion
     #endregion
 
 
     #region ACTION
     # Create AA (New-CsAutoAttendant)
-    Write-Verbose -Message "'$NameNormalised' Creating Auto Attendant"
+    $Status = "Creating Object"
+    $Operation = "Creating Auto Attendant: '$NameNormalised'"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
     if ($PSCmdlet.ShouldProcess("$NameNormalised", "New-CsAutoAttendant")) {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
-        $Null = (New-CsAutoAttendant @Parameters)
+        $null = (New-CsAutoAttendant @Parameters)
         Write-Verbose -Message "SUCCESS: '$NameNormalised' Auto Attendant created with all Parameters"
       }
       catch {
-        Write-Error -Message "Error creating the Auto Attendant" -Category InvalidOperation -Exception "errorr Creating Auto Attendant"
+        Write-Error -Message "Error creating the Auto Attendant: $($_.Exception.Message)" -Category InvalidResult
         return
       }
     }
@@ -781,14 +890,15 @@ function New-TeamsAutoAttendant {
 
 
     #region OUTPUT
-    # Re-query output
-    if (-not ($PSBoundParameters.ContainsKey('Silent'))) {
-      $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -WarningAction SilentlyContinue
-      return $AAFinal
-    }
-    else {
-      return
-    }
+    $Status = "Creating Object"
+    $Operation = "Querying Object"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
+    $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -WarningAction SilentlyContinue
+    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+    Write-Output $AAFinal
     #endregion
 
   } #process
