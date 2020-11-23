@@ -58,6 +58,7 @@ function Test-TeamsUserLicense {
 
     [Parameter(Mandatory = $true, ParameterSetName = "LicensePackage", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateScript( {
+        #FIXME
         if ($_ -in $TeamsLicenses.ParameterName) {
           return $true
         }
@@ -77,6 +78,8 @@ function Test-TeamsUserLicense {
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
+
+    $TeamsLicenses = Get-TeamsLicense
 
   } #begin
 

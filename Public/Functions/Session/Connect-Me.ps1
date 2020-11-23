@@ -115,7 +115,7 @@ function Connect-Me {
     else {
       Write-Host "INFO:    No Parameters for individual Services provided. Connecting to SkypeOnline and AzureAD (default)" -ForegroundColor Cyan
       $ConnectDefault = $true
-      $sMax++
+      $sMax = $sMax + 2
     }
 
     if ($PSBoundParameters.ContainsKey('SkypeOnline')) {

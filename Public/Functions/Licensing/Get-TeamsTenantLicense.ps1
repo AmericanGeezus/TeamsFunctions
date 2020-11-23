@@ -41,6 +41,10 @@ function Get-TeamsTenantLicense {
 		Displays a concise view of all licenses found on the tenant.
   .NOTES
     Requires a connection to Azure Active Directory
+  .COMPONENT
+    Teams Migration and Enablement. License Assignment
+  .ROLE
+    Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses on the Tenant depending on input
   .LINK
@@ -63,12 +67,13 @@ function Get-TeamsTenantLicense {
 
     [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
     [ValidateScript( {
-        if ($_ -in $TeamsLicenses.ParameterName) {
+        #FIXME
+        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'LicensePackage' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
-          Write-Host "$($TeamsLicenses.ParameterName)"
+          Write-Host "Parameter 'LicensePackage' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
           return $false
         }
       })]

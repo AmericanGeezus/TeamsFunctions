@@ -6,14 +6,12 @@
 
 SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services. Creating a Session to them is not implemented very nicely. The following is trying to make this simpler and provide an easier way to connect:
 
-| Function                 | Alias                                  | Description                                                                                                                                  |
-| ------------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Connect-SkypeOnline`    |                                        | Creates a Session to SkypeOnline (v7 also extends Timeout Limit!)                                                                            |
-| `Connect-Me`             | con, <br/>Connect-SkypeTeamsAndAAD*    | Creates a Session to SkypeOnline and AzureAD in one go. Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt! |
-| `Disconnect-SkypeOnline` |                                        | Disconnects from a Session to SkypeOnline. This prevents timeouts and hanging sessions                                                       |
-| `Disconnect-Me`          | dis, <br/>Disconnect-SkypeTeamsAndAAD* | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD                                                                     |
-
-NOTE: Aliases (*) switched places and old (long) one will be removed with v20.11
+| Function                 | Alias | Description                                                                                                                                  |
+| ------------------------ | ----- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Connect-SkypeOnline`    |       | Creates a Session to SkypeOnline (v7 also extends Timeout Limit!)                                                                            |
+| `Connect-Me`             | con   | Creates a Session to SkypeOnline and AzureAD in one go. Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt! |
+| `Disconnect-SkypeOnline` |       | Disconnects from a Session to SkypeOnline. This prevents timeouts and hanging sessions                                                       |
+| `Disconnect-Me`          | dis   | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD                                                                     |
 
 ### Licensing Functions
 
@@ -27,8 +25,8 @@ Functions for licensing in AzureAD. Hopefully simplifies license application a b
 | `Add-TeamsUserLicense` **[deprecated]** | Adds one or more Licenses specified per Switch to the provided Identity                                                                        |
 | `Set-TeamsUserLicense`                  | Adds or removes one or more Licenses against the provided Identity. Also can remove all Licenses. Replaces Add-TeamsUserLicense                |
 | `New-AzureAdLicenseObject`              | Creates a License Object for application. Generic helper function.                                                                             |
-| `$TeamsLicenses`                        | 39 Relevant Licenses for Teams. Exported variable to standardise and harmonise Licensing queries. Used by all `TeamsUserLicense` CmdLets       |
-| `$TeamsServicePlans`                    | 13 Relevant Service Plans for Teams. Exported variable to standardise and harmonise Licensing queries. Used by some `TeamsUserLicense` CmdLets |
+| `Get-TeamsLicense`                      | 39 Relevant Licenses for Teams. Exported variable to standardise and harmonise Licensing queries. Used by all `TeamsUserLicense` CmdLets       |
+| `Get-TeamsLicenseServicePlan`           | 13 Relevant Service Plans for Teams. Exported variable to standardise and harmonise Licensing queries. Used by some `TeamsUserLicense` CmdLets |
 
 ### Voice Configuration Functions
 

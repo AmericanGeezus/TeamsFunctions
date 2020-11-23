@@ -106,6 +106,7 @@ function New-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "License to be assigned")]
     [ValidateScript( {
+        #FIXME
         if ($_ -in $TeamsLicenses.ParameterName) {
           return $true
         }
