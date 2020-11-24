@@ -31,14 +31,20 @@ function Get-TeamsUserLicense {
     The input file must have a single column heading of "Identity" with properly formatted UPNs.
 	.NOTES
 		Requires a connection to Azure Active Directory
+  .COMPONENT
+    Teams Migration and Enablement. License Assignment
+  .ROLE
+    Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses assigned to a specific User depending on input
   .LINK
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
     Get-TeamsTenantLicense
+    Get-TeamsUserLicense
     Set-TeamsUserLicense
     Test-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
-
   #>
 
   [CmdletBinding()]
@@ -77,9 +83,11 @@ function Get-TeamsUserLicense {
 
     # Loading License Array
     $AllLicenses = $null
-    $AllLicenses = $TeamsLicenses
+    #$AllLicenses = $TeamsLicenses
+    $AllLicenses = Get-TeamsLicense
     $AllServicePlans = $null
-    $AllServicePlans = $TeamsServicePlans
+    #$AllServicePlans = $TeamsServicePlans
+    $AllServicePlans = Get-TeamsLicenseServicePlan
 
   } #begin
 

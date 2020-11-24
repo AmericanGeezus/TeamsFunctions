@@ -43,6 +43,8 @@ function Test-TeamsUserHasCallPlan {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
+    $TeamsLicenses = Get-TeamsLicense
+
   } #begin
 
   process {
