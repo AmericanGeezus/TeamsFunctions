@@ -95,7 +95,7 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
     [ValidateScript( {
-        If ($_ -match "^\+[0-9]{10,15}$") {
+        If ($_ -match "^(tel:)?\+?[0-9]{10,15}$") {
           $True
         }
         else {
