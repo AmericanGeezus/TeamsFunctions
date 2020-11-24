@@ -95,7 +95,7 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
     [ValidateScript( {
-        If ($_ -match "^\+[0-9]{10,15}$") {
+        If ($_ -match "^(tel:)?\+?[0-9]{10,15}$") {
           $True
         }
         else {
@@ -111,8 +111,9 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = "CallingPlans", HelpMessage = "Calling Plan License to assign to the Object")]
     [ValidateScript( {
+        #FIXME
         #CHECK Application of this. Replicate for other instances where $TeamsLicenses or $TeamsServicePlans are used!
-        $CallingPlanLicenseValues = ($TeamsLicenses | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $CallingPlanLicenseValues = (Get-TeamsLicense | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $CallingPlanLicenseValues) {
           $True
         }

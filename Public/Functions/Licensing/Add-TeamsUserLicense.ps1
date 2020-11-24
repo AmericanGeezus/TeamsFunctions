@@ -83,15 +83,22 @@ function Add-TeamsUserLicense {
 		# This is for exclusive use for Resource Accounts (swap between PhoneSystem or PhoneSystemVirtualUser)
 		# MS Best practice: https://docs.microsoft.com/en-us/microsoftteams/manage-resource-accounts#change-an-existing-resource-account-to-use-a-virtual-user-license
 		# Aliases had to be removed as they were confusing, sorry
+  .COMPONENT
+    Teams Migration and Enablement. License Assignment
+  .ROLE
+    Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses depending on input
   .LINK
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
     Test-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
   #>
+
   [CmdletBinding(DefaultParameterSetName = 'General')]
   [Alias('Add-TeamsUserLicence')]
   param(

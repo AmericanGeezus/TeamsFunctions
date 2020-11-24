@@ -9,91 +9,94 @@
 
 function Set-TeamsUserLicense {
   <#
-      .SYNOPSIS
-      Changes the License of an AzureAD Object
-      .DESCRIPTION
-      Adds, removes or purges teams related Licenses from an AzureAD Object
-      Supports all Licenses listed in $TeamsLicenses, currently: 38 Licenses
-      Uses friendly Names for Parameter Values, supports Arrays.
-      Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
-      This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
-      Will verify major Licenses and their exclusivity, but not all.
-      Verifies whether the Licenses selected are available on the Tenant before executing
-      .PARAMETER Identity
-      Required. UserPrincipalName of the Object to be manipulated
-      .PARAMETER Add
-      Optional. Licenses to be added (main function)
-      Accepted Values are listed in $TeamsLicenses.ParameterName
-      .PARAMETER Remove
-      Optional. Licenses to be removed (alternative function)
-      Accepted Values are listed in $TeamsLicenses.ParameterName
-      .PARAMETER RemoveAll
-      Optional Switch. Removes all licenses currently assigned (intended for replacements)
-      .PARAMETER UsageLocation
-      Optional String. ISO3166-Alpha2 CountryCode indicating the Country for the User. Required for Licensing
-      If required, the script will try to apply the UsageLocation (pending right).
-      If not provided, defaults to 'US'
-      .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E5
-      Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
-      .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem
-      Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
-      This requires a main license to be present as PhoneSystem is an add-on license
-      .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E3,PhoneSystem
-      Set-TeamsUserLicense -Identity Name@domain.com -Add @('MS365E3','PhoneSystem')
-      Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
-      .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -Add O365E5 -Remove SFBOP2
-      Special Case Scenario to replace a specific license with another.
-      Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
-      .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
-      Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
-      Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
-      .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -Remove PhoneSystem
-      Removes the Phone System License from the Object.
-      .EXAMPLE
-      Set-TeamsUserLicense -Identity Name@domain.com -RemoveAll
-      Removes all licenses the Object is currently provisioned for!
-      .NOTES
-      Many license packages are available, the following Licenses are most predominant:
-      # Main License Packages
-      - Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)
-      - Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-      - Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)
-      - Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
-      - Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-      - Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+  .SYNOPSIS
+    Changes the License of an AzureAD Object
+  .DESCRIPTION
+    Adds, removes or purges teams related Licenses from an AzureAD Object
+    Supports all Licenses listed in $TeamsLicenses, currently: 38 Licenses
+    Uses friendly Names for Parameter Values, supports Arrays.
+    Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
+    This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
+    Will verify major Licenses and their exclusivity, but not all.
+    Verifies whether the Licenses selected are available on the Tenant before executing
+  .PARAMETER Identity
+    Required. UserPrincipalName of the Object to be manipulated
+  .PARAMETER Add
+    Optional. Licenses to be added (main function)
+    Accepted Values are listed in $TeamsLicenses.ParameterName
+  .PARAMETER Remove
+    Optional. Licenses to be removed (alternative function)
+    Accepted Values are listed in $TeamsLicenses.ParameterName
+  .PARAMETER RemoveAll
+    Optional Switch. Removes all licenses currently assigned (intended for replacements)
+  .PARAMETER UsageLocation
+    Optional String. ISO3166-Alpha2 CountryCode indicating the Country for the User. Required for Licensing
+    If required, the script will try to apply the UsageLocation (pending right).
+    If not provided, defaults to 'US'
+  .EXAMPLE
+    Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E5
+    Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
+  .EXAMPLE
+    Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem
+    Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
+    This requires a main license to be present as PhoneSystem is an add-on license
+  .EXAMPLE
+    Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E3,PhoneSystem
+    Set-TeamsUserLicense -Identity Name@domain.com -Add @('MS365E3','PhoneSystem')
+    Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
+  .EXAMPLE
+    Set-TeamsUserLicense -Identity Name@domain.com -Add O365E5 -Remove SFBOP2
+    Special Case Scenario to replace a specific license with another.
+    Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
+  .EXAMPLE
+    Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
+    Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
+    Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
+  .EXAMPLE
+    Set-TeamsUserLicense -Identity Name@domain.com -Remove PhoneSystem
+    Removes the Phone System License from the Object.
+  .EXAMPLE
+    Set-TeamsUserLicense -Identity Name@domain.com -RemoveAll
+    Removes all licenses the Object is currently provisioned for!
+  .NOTES
+    Many license packages are available, the following Licenses are most predominant:
+    # Main License Packages
+    - Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)
+    - Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+    - Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)
+    - Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
+    - Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+    - Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on!
 
-      # Add-On Licenses (Require Main License Package from above)
-      - Audio Conferencing License - AudioConferencing (MCOMEETADV)
-      - Phone System - PhoneSystem (MCOEV)
+    # Add-On Licenses (Require Main License Package from above)
+    - Audio Conferencing License - AudioConferencing (MCOMEETADV)
+    - Phone System - PhoneSystem (MCOEV)
 
-      # Standalone Licenses (Special)
-      - Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
-      - Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
+    # Standalone Licenses (Special)
+    - Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
+    - Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
 
-      # Microsoft Calling Plan Licenses
-      - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
-      - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
+    # Microsoft Calling Plan Licenses
+    - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
+    - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
 
-      # Data in $TeamsLicenses as per Microsoft Docs Article: Published Service Plan IDs for Licensing
-      https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
+    # Data in $TeamsLicenses as per Microsoft Docs Article: Published Service Plan IDs for Licensing
+    https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 
-      .COMPONENT
-      Teams Migration and Enablement. License Assignment
-      .ROLE
-      Licensing
-      .FUNCTIONALITY
-      This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
-      .LINK
-      Get-TeamsTenantLicense
-      Get-TeamsUserLicense
-      Add-TeamsUserLicense (deprecated)
-      Test-TeamsUserLicense
+  .COMPONENT
+    Teams Migration and Enablement. License Assignment
+  .ROLE
+    Licensing
+  .FUNCTIONALITY
+    This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
+  .LINK
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
+    Get-TeamsTenantLicense
+    Get-TeamsUserLicense
+    Set-TeamsUserLicense
+    Test-TeamsUserLicense
+    Add-TeamsUserLicense (deprecated)
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
@@ -162,7 +165,8 @@ function Set-TeamsUserLicense {
 
     #Loading License Array
     $AllLicenses = $null
-    $AllLicenses = $TeamsLicenses
+    #$AllLicenses = $TeamsLicenses
+    $AllLicenses = Get-TeamsLicense
 
     #region Input verification
     # All Main licenses are mutually exclusive
