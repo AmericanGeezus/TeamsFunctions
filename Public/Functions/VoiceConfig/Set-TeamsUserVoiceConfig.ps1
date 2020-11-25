@@ -111,9 +111,8 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = "CallingPlans", HelpMessage = "Calling Plan License to assign to the Object")]
     [ValidateScript( {
-        #FIXME
         #CHECK Application of this. Replicate for other instances where $TeamsLicenses or $TeamsServicePlans are used!
-        $CallingPlanLicenseValues = (Get-TeamsLicense | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $CallingPlanLicenseValues = ($TeamsLicenses | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $CallingPlanLicenseValues) {
           $True
         }
@@ -190,7 +189,7 @@ function Set-TeamsUserVoiceConfig {
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
     catch {
-      Write-Error "User '$Identity' not queryied: $($_.Exception.Message)" -Category ObjectNotFound
+      Write-Error "User '$Identity' not found: $($_.Exception.Message)" -Category ObjectNotFound
       $ErrorLog += $_.Exception.Message
       return $ErrorLog
     }
@@ -286,7 +285,7 @@ function Set-TeamsUserVoiceConfig {
       if ( $Force -or -not $CsUser.HostedVoicemail) {
         try {
           $CsUser | Set-CsUser -HostedVoicemail $TRUE -ErrorAction Stop
-          Write-Verbose -Message "Enabling user for Hosted Voicemail: OK - '$TenantDialPlan'" -Verbose
+          Write-Verbose -Message "Enabling user for Hosted Voicemail: OK" -Verbose
         }
         catch {
           $ErrorLogMessage = "Enabling user for Hosted Voicemail: Failed: '$($_.Exception.Message)'"

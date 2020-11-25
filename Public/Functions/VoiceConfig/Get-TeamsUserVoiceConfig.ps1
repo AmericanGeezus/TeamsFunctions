@@ -115,7 +115,7 @@ function Get-TeamsUserVoiceConfig {
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error -Message "User '$User' not queryied: $($_.Exception.Message)" -Category ObjectNotFound
+        Write-Error -Message "User '$User' not found: $($_.Exception.Message)" -Category ObjectNotFound
         continue
       }
 

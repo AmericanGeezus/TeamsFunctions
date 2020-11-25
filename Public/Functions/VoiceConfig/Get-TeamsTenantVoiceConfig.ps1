@@ -55,7 +55,7 @@ function Get-TeamsTenantVoiceConfig {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 3
+    [int]$sMax = 4
     if ( $DisplayUserCounters ) { $sMax = $sMax + 3 }
     if ( $Detailed ) { $sMax++ }
 
