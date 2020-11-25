@@ -100,17 +100,14 @@ function Get-TeamsLicenseServicePlan {
     [void]$ServicePlans.Add([TeamsServicePlan]::new("International Calling Plan", "International Calling Plan", "MCOPSTN2", "5a10155d-f5c1-411a-a8ec-e99aae125390", $true))
     [void]$ServicePlans.Add([TeamsServicePlan]::new("Domestic Calling Plan", "Domestic Calling Plan (3000 min US / 1200 min EU plans)", "MCOPSTN1", "4ed3ff63-69d7-4fb7-b984-5aec7f605ca8", $true))
     [void]$ServicePlans.Add([TeamsServicePlan]::new("Domestic Calling Plan (120 min calling plan)", "Domestic Calling Plan (120 min calling plan)", "MCOPSTN5", "54a152dc-90de-4996-93d2-bc47e670fc06", $true))
-    #Incomplete!
-    #CHECK SkuId from TRI/ULV: MCOPSTN6
+    [void]$ServicePlans.Add([TeamsServicePlan]::new("Communications Credits", "Communications Credits", "MCOPSTNC", "505e180f-f7e0-4b65-91d4-00d670bbd18c", $true))
+    # No public ServicePlanId found
     #[void]$ServicePlans.Add([TeamsServicePlan]::new("Domestic Calling Plan (240 min calling plan)", "Domestic Calling Plan (240 min calling plan)", "MCOPSTN6", "", $false))
-    #CHECK SkuId from FCC: CommCreds
-    #[void]$ServicePlans.Add([TeamsServicePlan]::new("Communications Credits", "Communications Credits", "MCOPSTNC", "", $true))
 
     #Template
     #[void]$ServicePlans.Add([TeamsServicePlan]::new("", "", "", "", $true))
 
     Write-Output $ServicePlans
-    #TODO Compare Output with $TeamsServicePlans
 
   } #process
 
