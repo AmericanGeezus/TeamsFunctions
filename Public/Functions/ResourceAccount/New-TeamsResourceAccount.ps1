@@ -165,11 +165,11 @@ function New-TeamsResourceAccount {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
-    Write-Verbose -Message "Verifying input"
+    $Status = "Verifying input"
     #region Normalising $UserPrincipalname
     $Operation = "Normalising UserPrincipalName"
-    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     $UPN = Format-StringForUse -InputString $UserPrincipalName -As UserPrincipalName
     Write-Verbose -Message "UserPrincipalName normalised to: '$UPN'"
     #endregion
@@ -177,8 +177,8 @@ function New-TeamsResourceAccount {
     #region Normalising $DisplayName
     $Operation = "Normalising DisplayName"
     $step++
-    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     if ($PSBoundParameters.ContainsKey("DisplayName")) {
       $Name = Format-StringForUse -InputString $DisplayName -As DisplayName
     }
@@ -191,8 +191,8 @@ function New-TeamsResourceAccount {
     #region ApplicationType
     $Operation = "Parsing ApplicationType"
     $step++
-    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     # Translating $ApplicationType (Name) to ID used by Commands.
     $AppId = GetAppIdFromApplicationType $ApplicationType
     Write-Verbose -Message "'$Name' ApplicationType parsed"
@@ -202,8 +202,8 @@ function New-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
       $Operation = "Parsing PhoneNumbers from the Tenant"
       $step++
-      Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       # Loading all Microsoft Telephone Numbers
       $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
       $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
@@ -214,8 +214,8 @@ function New-TeamsResourceAccount {
     #region UsageLocation
     $Operation = "Parsing UsageLocation"
     $step++
-    Write-Progress -Id 0 -Status "Verifying input" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     if ($PSBoundParameters.ContainsKey('UsageLocation')) {
       Write-Verbose -Message "'$Name' UsageLocation parsed: Using '$UsageLocation'"
     }
@@ -236,11 +236,12 @@ function New-TeamsResourceAccount {
 
 
     #region ACTION
+    $Status = "Creating Object"
     #region Creating Account
     $Operation = "Creating Resource Account"
     $step++
-    Write-Progress -Id 0 -Status "Creating Object" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     try {
       #Trying to create the Resource Account
       Write-Verbose -Message "'$Name' Creating Resource Account with New-CsOnlineApplicationInstance..."
@@ -276,11 +277,12 @@ function New-TeamsResourceAccount {
     }
     #endregion
 
+    $Status = "Applying Settings"
     #region UsageLocation
     $Operation = "Setting Usage Location"
     $step++
-    Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     try {
       if ($PSCmdlet.ShouldProcess("$UPN", "Set-AzureADUser -UsageLocation $UsageLocation")) {
         Set-AzureADUser -ObjectId $UPN -UsageLocation $UsageLocation -ErrorAction STOP
@@ -302,15 +304,15 @@ function New-TeamsResourceAccount {
       # Determining available Licenses from Tenant
       $Operation = "Querying Tenant Licenses"
       $step++
-      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       $TenantLicenses = Get-TeamsTenantLicense
 
       # Verifying License is available
       $Operation = "Verifying License is available"
       $step++
-      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       if ($License -eq "PhoneSystemVirtualUser") {
         $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
         Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
@@ -349,8 +351,8 @@ function New-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey("License") -and $PSBoundParameters.ContainsKey("PhoneNumber")) {
       $Operation = "Waiting for AzureAd to write Object"
       $step++
-      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       if ($License -eq "PhoneSystemVirtualUser") {
         $ServicePlanName = "MCOEV_VIRTUALUSER"
       }
@@ -381,8 +383,8 @@ function New-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
       $Operation = "Applying Phone Number"
       $step++
-      Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
 
       # Assigning Telephone Number
       Write-Verbose -Message "'$Name' Processing Phone Number"
@@ -422,8 +424,8 @@ function New-TeamsResourceAccount {
     #  Wating for AAD to write the PhoneNumber so that it may be queried correctly
     $Operation = "Waiting for AzureAd to write Object (2s)"
     $step++
-    Write-Progress -Id 0 -Status "Applying Settings" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     Start-Sleep -Seconds 2
     #endregion
     #endregion
@@ -432,16 +434,17 @@ function New-TeamsResourceAccount {
     #Creating new PS Object
     try {
       # Data
+      $Status = "Validation"
       $Operation = "Querying Object"
       $step++
-      Write-Progress -Id 0 -Status "Validation" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       $ResourceAccount = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP
 
       $Operation = "Querying Object License"
       $step++
-      Write-Progress -Id 0 -Status "Validation" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       $ResourceAccountLicense = Get-TeamsUserLicense -Identity $UPN
 
       # readable Application type
@@ -486,9 +489,7 @@ function New-TeamsResourceAccount {
         Write-Warning -Message "Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount to verify"
       }
 
-      Write-Progress -Id 1 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
       Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
-
       Write-Output $ResourceAccountObject
 
     }
