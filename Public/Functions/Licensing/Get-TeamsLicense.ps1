@@ -23,13 +23,15 @@ function Get-TeamsLicense {
   .FUNCTIONALITY
 		Returns a list of Licenses
   .LINK
-    Get-TeamsLicense
-    Get-TeamsLicenseServicePlan
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense
     Test-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
+    Get-AzureAdLicense
+    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding()]
@@ -40,40 +42,6 @@ function Get-TeamsLicense {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-
-    class TeamsLicense {
-      [ValidateNotNullOrEmpty()]
-      [string]$FriendlyName
-      [string]$ProductName
-      [ValidateNotNullOrEmpty()]
-      [string]$SkuPartNumber
-      [ValidatePattern("^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$")]
-      [string]$SkuId
-      [string]$LicenseType
-      [string]$ParameterName
-      [bool]$IncludesTeams
-      [bool]$IncludesPhoneSystem
-
-      TeamsLicense(
-        [string]$FriendlyName,
-        [string]$ProductName,
-        [string]$SkuPartNumber,
-        [string]$SkuId,
-        [string]$LicenseType,
-        [string]$ParameterName,
-        [bool]$IncludesTeams,
-        [bool]$IncludesPhoneSystem
-      ) {
-        $this.FriendlyName = $FriendlyName
-        $this.ProductName = $ProductName
-        $this.SkuPartNumber = $SkuPartNumber
-        $this.SkuId = $SkuId
-        $this.LicenseType = $LicenseType
-        $this.ParameterName = $ParameterName
-        $this.IncludesTeams = $IncludesTeams
-        $this.IncludesPhoneSystem = $IncludesPhoneSystem
-      }
-    }
 
   } #begin
 

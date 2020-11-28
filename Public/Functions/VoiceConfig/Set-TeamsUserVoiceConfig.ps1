@@ -111,8 +111,7 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = "CallingPlans", HelpMessage = "Calling Plan License to assign to the Object")]
     [ValidateScript( {
-        #CHECK Application of this. Replicate for other instances where $TeamsLicenses or $TeamsServicePlans are used!
-        $CallingPlanLicenseValues = ($TeamsLicenses | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $CallingPlanLicenseValues = (Get-TeamsLicense | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $CallingPlanLicenseValues) {
           $True
         }

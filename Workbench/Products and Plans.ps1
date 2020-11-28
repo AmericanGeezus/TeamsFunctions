@@ -80,6 +80,3 @@ $rows | % {
 }
  
 Write-Host "`nYou can use `$products and `$plans now...." -ForegroundColor Cyan
-
-$ServicePlans = Get-TeamsLicenseServicePlan
-Compare-Object $TeamsServicePlans $ServicePlans

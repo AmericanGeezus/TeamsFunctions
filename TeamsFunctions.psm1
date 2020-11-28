@@ -40,6 +40,60 @@
 
 #>
 
+# Classes
+class TFTeamsServicePlan {
+  [string]$ProductName
+  [string]$ServicePlanName
+  [ValidatePattern("^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$")]
+  [string]$ServicePlanId
+  [bool]$RelevantForTeams
+
+  TFTeamsServicePlan(
+    [string]$ProductName,
+    [string]$ServicePlanName,
+    [string]$ServicePlanId,
+    [bool]$RelevantForTeams
+  ) {
+    $this.ProductName = $ProductName
+    $this.ServicePlanName = $ServicePlanName
+    $this.ServicePlanId = $ServicePlanId
+    $this.RelevantForTeams = $RelevantForTeams
+  }
+}
+
+
+class TFTeamsLicense {
+  [string]$ProductName
+  [string]$SkuPartNumber
+  [string]$LicenseType
+  [string]$ParameterName
+  [bool]$IncludesTeams
+  [bool]$IncludesPhoneSystem
+  [ValidatePattern("^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$")]
+  [string]$SkuId
+  [object]$ServicePlans
+
+  TFTeamsLicense(
+    [string]$ProductName,
+    [string]$SkuPartNumber,
+    [string]$LicenseType,
+    [string]$ParameterName,
+    [bool]$IncludesTeams,
+    [bool]$IncludesPhoneSystem,
+    [string]$SkuId,
+    [object]$ServicePlans
+  ) {
+    $this.ProductName = $ProductName
+    $this.SkuPartNumber = $SkuPartNumber
+    $this.LicenseType = $LicenseType
+    $this.ParameterName = $ParameterName
+    $this.IncludesTeams = $IncludesTeams
+    $this.IncludesPhoneSystem = $IncludesPhoneSystem
+    $this.SkuId = $SkuId
+    $this.ServicePlans = $ServicePlans
+  }
+}
+
 #region Licensing Table
 # $PSCustomObject created to simplifying any licensing related lookup
 
@@ -418,7 +472,7 @@ $TeamsLicensesEntry31 = [PSCustomObject][ordered]@{
   SkuId               = "e43b5b99-8dfb-405f-9987-dc307f34bcbd"
   LicenseType         = "AddOnLicense"
   ParameterName       = "PhoneSystem"
-  IncludesTeams       = $TRUE
+  IncludesTeams       = $FALSE
   IncludesPhoneSystem = $TRUE
 }
 [void]$TeamsLicenses.Add($TeamsLicensesEntry31)

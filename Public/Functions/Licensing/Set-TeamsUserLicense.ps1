@@ -13,7 +13,7 @@ function Set-TeamsUserLicense {
     Changes the License of an AzureAD Object
   .DESCRIPTION
     Adds, removes or purges teams related Licenses from an AzureAD Object
-    Supports all Licenses listed in $TeamsLicenses, currently: 38 Licenses
+    Supports all Licenses listed in Get-TeamsLicense
     Uses friendly Names for Parameter Values, supports Arrays.
     Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
     This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
@@ -23,10 +23,10 @@ function Set-TeamsUserLicense {
     Required. UserPrincipalName of the Object to be manipulated
   .PARAMETER Add
     Optional. Licenses to be added (main function)
-    Accepted Values are listed in $TeamsLicenses.ParameterName
+    Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
   .PARAMETER Remove
     Optional. Licenses to be removed (alternative function)
-    Accepted Values are listed in $TeamsLicenses.ParameterName
+    Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
   .PARAMETER RemoveAll
     Optional Switch. Removes all licenses currently assigned (intended for replacements)
   .PARAMETER UsageLocation
@@ -80,7 +80,7 @@ function Set-TeamsUserLicense {
     - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
     - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
 
-    # Data in $TeamsLicenses as per Microsoft Docs Article: Published Service Plan IDs for Licensing
+    # Data in Get-TeamsLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
     https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 
   .COMPONENT
@@ -90,17 +90,19 @@ function Set-TeamsUserLicense {
   .FUNCTIONALITY
     This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
   .LINK
-    Get-TeamsLicense
-    Get-TeamsLicenseServicePlan
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense
     Test-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
+    Get-AzureAdLicense
+    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
-  [Alias('Set-TeamsUserLicence')]
+  [OutputType([Void])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias("UPN", "UserPrincipalName", "Username")]
@@ -110,12 +112,12 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'Remove', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [Parameter(ParameterSetName = 'RemoveAll', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
     [ValidateScript( {
-        if ($_ -in $TeamsLicenses.ParameterName) {
+        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'Add' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
-          Write-Host "$($TeamsLicenses.ParameterName)"
+          Write-Host "Parameter 'Add' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -124,12 +126,12 @@ function Set-TeamsUserLicense {
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateScript( {
-        if ($_ -in $TeamsLicenses.ParameterName) {
+        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'Remove' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
-          Write-Host "$($TeamsLicenses.ParameterName)"
+          Write-Host "Parameter 'Remove' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -165,7 +167,6 @@ function Set-TeamsUserLicense {
 
     #Loading License Array
     $AllLicenses = $null
-    #$AllLicenses = $TeamsLicenses
     $AllLicenses = Get-TeamsLicense
 
     #region Input verification

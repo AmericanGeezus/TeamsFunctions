@@ -151,8 +151,8 @@ These are helper functions for testing Connections and Modules. All Functions re
 | `Test-AzureAdGroup`             | Testing whether the Group exists in AzureAd                                                |
 | `Test-TeamsResourceAccount`     | Testing whether a Resource Account exists in AzureAd                                       |
 | `Test-TeamsUser`                | Testing whether the User exists in SkypeOnline/Teams                                       |
-| `Test-TeamsUserLicense`         | Testing whether the User has a specific Teams License (from $TeamsLicenses)                |
-| `Test-TeamsUserHasCallPlan`     | Testing whether the User has any Call Plan License (from $TeamsLicenses)                   |
+| `Test-TeamsUserLicense`         | Testing whether the User has a specific Teams License (from `Get-TeamsLicense`)                |
+| `Test-TeamsUserHasCallPlan`     | Testing whether the User has any Call Plan License (from `Get-TeamsLicense`)                   |
 | `Test-TeamsTenantPolicy`        | Tests whether any Policy is present in the Tenant (Uses Invoke-Expression)                 |
 | `Test-TeamsExternalDNS`         | Tests DNS Records for Skype for Business Online and Teams                                  |
 

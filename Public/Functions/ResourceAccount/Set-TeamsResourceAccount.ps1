@@ -115,12 +115,12 @@ function Set-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "License to be assigned")]
     [ValidateScript( {
-        if ($_ -in $TeamsLicenses.ParameterName) {
+        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'License' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
-          Write-Host "$($TeamsLicenses.ParameterName)"
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
           return $false
         }
       })]

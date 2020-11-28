@@ -2,14 +2,14 @@
 # Function: Licensing
 # Author:		Philipp, Scripting.up-in-the.cloud
 # Updated:  01-DEC-2020
-# Status:   PreLive
+# Status:   RC
 
 
 
 
-function Get-AzureAdLicensingData {
+function Get-AzureAdLicenseServicePlan {
   <#
-	.SYNOPSIS
+  .SYNOPSIS
     License information for AzureAD Service Plans related to Teams
   .DESCRIPTION
     Returns an Object containing all Teams related License Service Plans
@@ -27,28 +27,32 @@ function Get-AzureAdLicensingData {
   .ROLE
     Licensing
   .FUNCTIONALITY
-		Returns a list of License Service Plans
+    Returns a list of License Service Plans
   .LINK
-    Get-TeamsLicense
-    Get-TeamsLicenseServicePlan
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense
     Test-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
+    Get-AzureAdLicense
+    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding()]
   [OutputType([Object[]])]
   param(
+    [Parameter()]
+    [switch]$FilterRelevantForTeams
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
-    [System.Collections.ArrayList]$products = @()
-    [System.Collections.ArrayList]$plans = @()
+    [System.Collections.ArrayList]$Plans = @()
+    [System.Collections.ArrayList]$PlansNotAdded = @()
 
     $planServicePlanNames = @{}
 
@@ -78,18 +82,8 @@ function Get-AzureAdLicensingData {
         $_.Groups[1].Value
       }
 
-      $srcProductName = $cells[0]
-      $srcStringId = $cells[1]
-      $srcGUID = $cells[2]
       $srcServicePlan = $cells[3]
       $srcServicePlanName = $cells[4]
-
-      #build an object for the product
-      $product = New-Object -TypeName PsObject
-      $product | Add-Member -MemberType NoteProperty -Name Name -Value $srcProductName
-      $product | Add-Member -MemberType NoteProperty -Name SkuPartNumber -Value $srcStringId
-      $product | Add-Member -MemberType NoteProperty -Name SkuId -Value $srcGUID
-      $product | Add-Member -MemberType NoteProperty -Name ServicePlans -Value @()
 
       if (($srcServicePlan.Trim() -ne '') -and ($srcServicePlanName.Trim() -ne '')) {
 
@@ -114,29 +108,60 @@ function Get-AzureAdLicensingData {
             $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(")"))
           }
 
-          #build an object for the service plan
-          $plan = New-Object -TypeName PsObject
-          $plan | Add-Member -MemberType NoteProperty -Name ProductName -Value $planProductName
-          $plan | Add-Member -MemberType NoteProperty -Name ServicePlanName -Value $planServicePlanNames[$planServicePlanId]
-          $plan | Add-Member -MemberType NoteProperty -Name ServicePlanId -Value $planServicePlanId
-
-          if ($plans.ServicePlanId -notcontains $planServicePlanId) {
-            $plans += $plan
+          # Add RelevantForTeams
+          if ( $planServicePlanNames[$planServicePlanId] ) {
+            if ( $planServicePlanNames[$planServicePlanId].Contains('TEAMS') -or $planServicePlanNames[$planServicePlanId].Contains('MCO') ) {
+              $Relevant = $true
+            }
+            else {
+              $Relevant = $false
+            }
+          }
+          else {
+            $Relevant = $false
           }
 
-          $product.ServicePlans += $plan
+          # reworking ProductName into TitleCase
+          $TextInfo = (Get-Culture).TextInfo
+          $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
+          $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep "()+ -"
+
+          # Building Object
+          if ($Plans.ServicePlanId -notcontains $planServicePlanId) {
+            try {
+              [void]$Plans.Add([TFTeamsServicePlan]::new($planProductName, "$($planServicePlanNames[$planServicePlanId])", "$planServicePlanId", $Relevant))
+            }
+            catch {
+              Write-Verbose "[TFTeamsServicePlan] Couldn't add entry for $planProductName"
+              if ( $planProductName -ne "Powerapps For Office 365 K1") {
+                $PlansNotAdded += $planProductName
+              }
+
+            }
+          }
         }
       }
-
-      $products += $product
     }
 
-    return $Products
+    # Manually Adding to List of $Plans
+    [void]$Plans.Add([TFTeamsServicePlan]::new("Communications Credits", "MCOPSTNC", "505e180f-f7e0-4b65-91d4-00d670bbd18c", $true))
+    [void]$Plans.Add([TFTeamsServicePlan]::new("Phone System - Virtual User", "MCOEV_VIRTUALUSER", "f47330e9-c134-43b3-9993-e7f004506889", $true))
 
+    # Output
+    if ( $PlansNotAdded.Count -gt 0 ) {
+      Write-Warning -Message "The following Products could not be added: $PlansNotAdded"
+    }
+
+    $PlansSorted = $Plans | Sort-Object ProductName
+    if ($FilterRelevantForTeams) {
+      $PlansSorted = $PlansSorted | Where-Object RelevantForTeams -EQ $TRUE
+    }
+
+    return $PlansSorted
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
-} #Get-AzureAdLicensingData
+} #Get-AzureAdLicenseServicePlan

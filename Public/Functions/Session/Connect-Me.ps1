@@ -136,6 +136,8 @@ function Connect-Me {
       $sMax = $sMax + 2
     }
 
+    [System.Collections.ArrayList]$ConnectedTo = @()
+
     # Cleaning up existing sessions
     $Status = "Preparation"
     $Operation = "Cleaning up existing Sessions"
@@ -170,30 +172,34 @@ function Connect-Me {
       }
 
       Start-Sleep 1
-      if ((Test-SkypeOnlineConnection) -and -not $NoFeedback) {
-        $Status = "Providing Feedback"
-        $step++
-        $Operation = "Displaying Tenant Information"
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
+      if (Test-SkypeOnlineConnection) {
+        $ConnectedTo += "SkypeOnline"
 
-        $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
-        $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
-        $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
-        $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
+        if ( -not $NoFeedback) {
+          $Status = "Providing Feedback"
+          $step++
+          $Operation = "Displaying Tenant Information"
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
 
-        $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
-          Account                   = $UserName
-          Environment               = 'SfBPowerShellSession'
-          Tenant                    = $TenantInformation.DisplayName
-          TenantId                  = $TenantInformation.TenantId
-          TenantDomain              = $TenantDomain
-          ComputerName              = $PSSkypeOnlineSession.ComputerName
-          IdleTimeoutInHours        = $Timeout
-          TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
+          $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
+          $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
+          $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
+          $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
+
+          $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
+            Account                   = $UserName
+            Environment               = 'SfBPowerShellSession'
+            Tenant                    = $TenantInformation.DisplayName
+            TenantId                  = $TenantInformation.TenantId
+            TenantDomain              = $TenantDomain
+            ComputerName              = $PSSkypeOnlineSession.ComputerName
+            IdleTimeoutInHours        = $Timeout
+            TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
+          }
+
+          $PSSkypeOnlineSessionInfo
         }
-
-        $PSSkypeOnlineSessionInfo
       }
     }
     #endregion
@@ -206,10 +212,16 @@ function Connect-Me {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status to $Operation" -Verbose
       try {
-        $null = (Connect-AzureAD -AccountId $Username)
-        Start-Sleep 1
-        if ((Test-AzureADConnection) -and -not $NoFeedback) {
-          Get-AzureADCurrentSessionInfo
+        if ( -not (Test-AzureADConnection)) {
+          $ConnectedTo += "AzureAd"
+          $null = (Connect-AzureAD -AccountId $Username)
+          if ( -not $NoFeedback ) {
+            Start-Sleep -Seconds 1
+            Get-AzureADCurrentSessionInfo
+          }
+        }
+        else {
+          Write-Verbose "Already Connected to AzureAd, if reconnect is desired, please disconnect this seesion first!" -Verbose
         }
       }
       catch {
@@ -227,19 +239,28 @@ function Connect-Me {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status to $Operation" -Verbose
       try {
-        if ( !(Test-Module MicrosoftTeams)) {
+        if ( -not (Test-Module MicrosoftTeams)) {
           Import-Module MicrosoftTeams -Force -ErrorAction SilentlyContinue
         }
-        if ((Test-MicrosoftTeamsConnection) -and -not $NoFeedback) {
-          Connect-MicrosoftTeams -AccountId $Username
+        if ( -not (Test-MicrosoftTeamsConnection)) {
+          if ( -not $NoFeedback ) {
+            Connect-MicrosoftTeams -AccountId $Username
+          }
+          else {
+            $null = (Connect-MicrosoftTeams -AccountId $Username)
+          }
         }
         else {
-          $null = (Connect-MicrosoftTeams -AccountId $Username)
+          Write-Verbose "Already Connected to MicrosoftTeams, if reconnect is desired, please disconnect this seesion first!" -Verbose
         }
       }
       catch {
         Write-Host "Could not establish Connection to MicrosoftTeams, please verify Module and run Connect-MicrosoftTeams manually" -ForegroundColor Red
       }
+    }
+
+    if (Test-MicrosoftTeamsConnection) {
+      $ConnectedTo += "Microsoft Teams"
     }
     #endregion
 
@@ -251,26 +272,35 @@ function Connect-Me {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status to $Operation" -Verbose
       try {
-        if ( !(Test-Module ExchangeOnlineManagement)) {
+        if ( -not (Test-Module ExchangeOnlineManagement)) {
           Import-Module ExchangeOnlineManagement -Force -ErrorAction SilentlyContinue
         }
-        if ((Test-ExchangeOnlineConnection) -and -not $NoFeedback) {
-          Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false
+        if ( -not (Test-ExchangeOnlineConnection)) {
+          if ( -not $NoFeedback) {
+            Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false
+          }
+          else {
+            $null = (Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false)
+          }
         }
         else {
-          $null = (Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress:$true -ShowBanner:$false)
+          Write-Verbose "Already Connected to ExchangeOnlineManagement, if reconnect is desired, please disconnect this seesion first!" -Verbose
         }
       }
       catch {
         Write-Host "Could not establish Connection to ExchangeOnlineManagement, please verify Module and run Connect-ExchangeOnline manually" -ForegroundColor Red
       }
     }
+
+    if (Test-ExchangeOnlineConnection) {
+      $ConnectedTo += "Exchange"
+    }
     #endregion
     #endregion
 
 
     #region Display Admin Roles
-    if ((Test-AzureADConnection) -and -not $NoFeedback) {
+    if ( ("AzureAd" -in $ConnectedTo) -and -not $NoFeedback ) {
       $Status = "Providing Feedback"
       $step++
       $Operation = "Displaying assigned Admin Roles"
@@ -283,6 +313,10 @@ function Connect-Me {
     #endregion
 
     Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+
+    #Output
+    Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Connected to: " -ForegroundColor Green -NoNewline
+    $ConnectedTo
 
   } #process
 

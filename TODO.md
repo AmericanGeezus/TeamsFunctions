@@ -19,13 +19,21 @@ Continue to test Scripts
 Add Menu builder with selector for x options 1-9 (default: Forward To PSTN? with dummy number?).
 Optionally add operator on 0 (separate Operator function (New-TeamsAutoAttendantOperator?) or hooking into New-TeamsAutoAttendant)
 
+## Licensing
+
+Figure out a way to enable individual ServicePlans (PhoneSystem) for a User which has a E5 License assigned.
+Enable-AzureAdLicenseServicePlan PhoneSystem
+Alias: Enable-ServicePlan PhoneSystem
+
+## Call Queue
+
+New Function: Find-TeamsCallQueueAgent $UPN
+Parse all Call Queues and their agent for the ObjectId of this User.
+Return Call Queue Names
+Also search all Overflow and Timeout Objects of the same call queues (if Type is User)
+Return as what they are set?
+
 ## Support Functions
-
-Abstract Functionality that is used more than twice into generic helper function
-
-Add two functions for Licensing to protect the Scripts from breaking if someone removes the two variables $TeamsLicenses and $TeamsServicePlans:
-Get-TeamsLicenses
-Get-TeamsServicePlans
 
 ### New-TeamsAutoAttendantCallableEntity and its functionality
 

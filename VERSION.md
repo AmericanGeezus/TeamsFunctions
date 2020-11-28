@@ -28,10 +28,16 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
   - Adds `UsableInCqAs` to indicate which which OverflowAction or TimeoutAction this entity can be used.
   - Adds `UsableInAaAs` to indicate which type of CallableEntity can be created with it.
 - `Get-TeamsObjectType`: Helper script to determine the type of Object provided.
+- `Get-TeamsLicense` - A Replacement for the variable $TeamsLicenses which outputs the same information, but protected by accidental deletion of the Variable
+- `Get-TeamsLicenseServicePlan` - A Replacement for the variable $TeamsServicePlans which outputs the same information, but protected by accidental deletion of the Variable
+- `Get-AzureAdLicense` - EXPERIMENTAL - A Script to read from Microsoft Docs, reading the published Content. Eventually a replacement for the two above, but not yet :) - Returns Object containing all Microsoft 365 License Products. Can be `-FilterRelevantForTeams`
+- `Get-AzureAdLicenseServicePlan` - EXPERIMENTAL - Same as above, just displaying all ServicePlans instead of License Products. Can also be `-FilterRelevantForTeams`
 
 ### Updated Functions & Bugfixes
 
 - `Assert-` Functions have now more simplified output, displaying only one Message in all but one case
+- `Connect-Me`: Minor Code improvements and corrections. Added Output information at the end, containing Date, Timestamp, Connected Services
+- `Get-AzureAdAssignedAdminRoles`: Added a Warning in case no Admin Roles are found. Displaying Verbose output to inform about Script limitation (no query against Group Assignments yet)
 - `Find-TeamsResourceAccount`: Output Object is now separate from that of `Get`, which speeds up enumeration a lot.
 - `Get-TeamsResourceAccount`:
   - Added Parameter `ObjectId` to output Object and improved lookup.
@@ -59,6 +65,15 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
 - `Format-StringForUse`:
   - Added an option to normalise Strings `-As E164` - This will format any String to an E.164 Number, for example: "1 (555) 1234-567" to "+15551234567"
   - Added an option to normalise Strings `-As LineURI` - This will format any String to a LineURI, for example: "1 (555) 1234-567 ;ext=1234" to "tel:+15551234567;ext=1234"
+
+### Other Improvements
+
+- Pester Testing
+  - Current Status: Tests Passed: 864, Failed: 0, Skipped: 0 NotRun: 0
+  - Still mostly structural checks, but I was able to formulate some tests for scripts (3) as well
+  - More individual tests still to come.
+  - Tests working with PowerShell v7.20-preview.1 resolving an issue with Security/not recognising Unblocked Files
+- PowerShell 7 - More tests to come
 
 ## v20.11 - November 2020 release
 
@@ -204,7 +219,7 @@ July was "quiet" because I only published pre-releases with bugfixes (mostly). H
 ### NEW: Teams Licensing Application
 
 - `Set-TeamsUserLicense` - Replacement function for Add-TeamsUserLicense (which now is deprecated). Add or Remove Licenses with an array. Accepted values are found in the accompanying variable `$TeamsLicenses.ParameterName`
-- Added Variables containing all relevant information for `$TeamsLicenses`(38!) and `$TeamsServicePlans`(13). They are threaded into the TeamsUserLicense CmdLets as well as Get-TeamsTenantLicense. Translating a friendly Name (Property `ParameterName`, `FriendlyName`& `ProductName`) to the `SkuPartNumber`or `SkuID`is what I am trying to bridge (who wants to remember a 36 digit GUID for each Product?)
+- Added Variables containing all relevant information for 38 Products and 13 ServicePlans! They are threaded into the TeamsUserLicense CmdLets as well as Get-TeamsTenantLicense. Translating a friendly Name (Property `ParameterName`, `FriendlyName`& `ProductName`) to the `SkuPartNumber`or `SkuID`is what I am trying to bridge (who wants to remember a 36 digit GUID for each Product?)
 - Accompanying this, changes to `Get-TeamsUserLicense` have been made to report a uniform feedback of Licenses (based on the same variable)
   - `Get-TeamsTenantLicense` (replaces Get-TeamsTenantLicense**s**) has been completely reworked. A
 

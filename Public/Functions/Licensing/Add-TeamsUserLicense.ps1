@@ -100,7 +100,7 @@ function Add-TeamsUserLicense {
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'General')]
-  [Alias('Add-TeamsUserLicence')]
+  [OutputType([Void])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias("UPN", "UserPrincipalName", "Username")]

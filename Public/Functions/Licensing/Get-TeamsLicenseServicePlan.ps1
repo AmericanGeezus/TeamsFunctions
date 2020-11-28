@@ -23,13 +23,15 @@ function Get-TeamsLicenseServicePlan {
   .FUNCTIONALITY
 		Returns a list of License Service Plans
   .LINK
-    Get-TeamsLicense
-    Get-TeamsLicenseServicePlan
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense
     Test-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
+    Get-AzureAdLicense
+    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding()]
