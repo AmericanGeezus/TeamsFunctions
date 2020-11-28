@@ -17,16 +17,18 @@ SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services. Cre
 
 Functions for licensing in AzureAD. Hopefully simplifies license application a bit
 
-| Function                                | Description                                                                                                                                    |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Get-TeamsTenantLicense`                | Queries licenses present on the Tenant. Switches are available for better at-a-glance visibility                                               |
-| `Get-TeamsUserLicense`                  | Queries licenses assigned to a User and displays visual output                                                                                 |
-| `Test-TeamsUserLicense`                 | Tests an individual Service Plan or a License Package against the provided Identity                                                            |
-| `Add-TeamsUserLicense` **[deprecated]** | Adds one or more Licenses specified per Switch to the provided Identity                                                                        |
-| `Set-TeamsUserLicense`                  | Adds or removes one or more Licenses against the provided Identity. Also can remove all Licenses. Replaces Add-TeamsUserLicense                |
-| `New-AzureAdLicenseObject`              | Creates a License Object for application. Generic helper function.                                                                             |
-| `Get-TeamsLicense`                      | 39 Relevant Licenses for Teams. Exported variable to standardise and harmonise Licensing queries. Used by all `TeamsUserLicense` CmdLets       |
-| `Get-TeamsLicenseServicePlan`           | 13 Relevant Service Plans for Teams. Exported variable to standardise and harmonise Licensing queries. Used by some `TeamsUserLicense` CmdLets |
+| Function                                | Description                                                                                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Get-TeamsTenantLicense`                | Queries licenses present on the Tenant. Switches are available for better at-a-glance visibility                                                                                                  |
+| `Get-TeamsUserLicense`                  | Queries licenses assigned to a User and displays visual output                                                                                                                                    |
+| `Test-TeamsUserLicense`                 | Tests an individual Service Plan or a License Package against the provided Identity                                                                                                               |
+| `Add-TeamsUserLicense` **[deprecated]** | Adds one or more Licenses specified per Switch to the provided Identity                                                                                                                           |
+| `Set-TeamsUserLicense`                  | Adds or removes one or more Licenses against the provided Identity. Also can remove all Licenses. Replaces Add-TeamsUserLicense                                                                   |
+| `New-AzureAdLicenseObject`              | Creates a License Object for application. Generic helper function.                                                                                                                                |
+| `Get-TeamsLicense`                      | 39 Relevant Licenses for Teams. Exported variable to standardise and harmonise Licensing queries. Used by all `TeamsUserLicense` CmdLets                                                          |
+| `Get-TeamsLicenseServicePlan`           | 13 Relevant Service Plans for Teams. Exported variable to standardise and harmonise Licensing queries. Used by some `TeamsUserLicense` CmdLets                                                    |
+| `Get-AzureAdLicense`                    | A Script to query all published Licenses and their Service Plans from [Microsoft Docs](https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference) |
+| `Get-AzureAdLicenseServicePlan`         | Same as above, but displaying Service Plans only. Both Scripts offer a switch to filter for Teams related Licenses/ServicePlans                                                                   |
 
 ### Voice Configuration Functions
 
@@ -43,7 +45,7 @@ Functions for querying Teams Voice Configuration, both for Direct Routing and Ca
 
 ### Resource Accounts
 
-As Microsoft has selected a GUID as the Identity the `CsOnlineApplicationInstance` scripts are a bit cumbersome. IDs are also used for the Application Type. These Scripts are wrapping around them and bind to the *UserPrincipalName* instead of the *ObjectId*/Identity.
+Though you can now also provide a UserPrincipalName for `CsOnlineApplicationInstance` scripts, they are, I think, not telling you enough. IDs are used for the Application Type. These Scripts are wrapping around them, bind to the *UserPrincipalName* and offer more required information for properly managing Resource Accounts for Call Queues and Auto Attendants.
 
 | Function                      | Alias                                                   | Underlying Function              | Description                                                                                                 |
 | ----------------------------- | ------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -63,7 +65,7 @@ As Microsoft has selected a GUID as the Identity the `CsOnlineApplicationInstanc
 
 ### Call Queues
 
-Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bit cumbersome. The Searchstring parameter is available, and utilised as a basic input method for `TeamsCallQueue` CmdLets. They query by *DisplayName*, which comes with a drawback for the `Set`-command: It requires a unique result. Also uses Filenames instead of IDs when adding Audio Files. <br/>Hope these make managing Call Queues easier.
+Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bit cumbersome. The Searchstring parameter is available, and utilised as a basic input method for `TeamsCallQueue` CmdLets. They query by *DisplayName*, which comes with a drawback for the `Set`-command: It requires a unique result. Also uses Filenames instead of IDs when adding Audio Files. Microsoft is continuing to improve these scripts, so I hope these can stand the test of time and make managing Call Queues easier.
 
 | Function                | Alias          | Underlying Function | Description                                                        |
 | ----------------------- | -------------- | ------------------- | ------------------------------------------------------------------ |
@@ -74,14 +76,14 @@ Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bi
 
 ### Auto Attendants
 
-The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that the `CsAutoAttendant` CmdLets are a bit cumbersome. Multiple CmdLets have to be used in conjunction in order to create an Auto Attendant. No defaults are available. The `TeamsAutoAttendant` CmdLets try to address that. From the basic NEW-Command that - without providing *any* Parameters (except the name of course) can create an Auto Attendant entity. This simplifies things a bit and tries to get you 80% there without lifting much of a finger. Amending it afterwards in the Admin Center is my current mantra.
+The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that the `CsAutoAttendant` CmdLets are feeling to be all over the place. Multiple CmdLets have to be used in conjunction in order to create an Auto Attendant. No defaults are available. The `TeamsAutoAttendant` CmdLets try to address that. From the basic NEW-Command that - without providing *any* Parameters (except the name of course) can create an Auto Attendant entity. This simplifies things a bit and tries to get you 80% there without lifting much of a finger. Amending it afterwards in the Admin Center is my current mantra.
 
-| Function                    | Alias          | Underlying Function         | Description                                                                                  |
-| --------------------------- | -------------- | --------------------------- | -------------------------------------------------------------------------------------------- |
-| `New-TeamsAutoAttendant`    | New-TeamsAA    | New-CsTeamsAutoAttendant    | Creates an Auto Attendant with defaults (Disconnect, Standard Business Hours schedule, etc.) |
-| `Get-TeamsAutoAttendant`    | Get-TeamsAA    | Get-CsTeamsAutoAttendant    | Queries an Auto Attendant                                                                    |
-| Set-TeamsAutoAttendant      | Set-TeamsAA    | Set-CsTeamsAutoAttendant    | Changes an Auto Attendant with friendly inputs (Not Built yet. Need to design first!)        |
-| `Remove-TeamsAutoAttendant` | Remove-TeamsAA | Remove-CsTeamsAutoAttendant | Removes an Auto Attendant from the Tenant                                                    |
+| Function                    | Alias                                     | Underlying Function         | Description                                                                                                                                                                                          |
+| --------------------------- | ----------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `New-TeamsAutoAttendant`    | New-TeamsAA                               | New-CsTeamsAutoAttendant    | Creates an Auto Attendant with defaults (Disconnect, Standard Business Hours schedule, etc.)                                                                                                         |
+| `Get-TeamsAutoAttendant`    | Get-TeamsAA                               | Get-CsTeamsAutoAttendant    | Queries an Auto Attendant                                                                                                                                                                            |
+|                             | Set-TeamsAutoAttendant,<br /> Set-TeamsAA | Set-CsTeamsAutoAttendant    | Changes an Auto Attendant with friendly inputs (Not Built yet. Need to design first!). This is currently just an alias to apply a AutoAttendant Object once loaded with GET and changed accordingly. |
+| `Remove-TeamsAutoAttendant` | Remove-TeamsAA                            | Remove-CsTeamsAutoAttendant | Removes an Auto Attendant from the Tenant                                                                                                                                                            |
 
 #### Auto Attendant Support Functions
 
@@ -99,33 +101,30 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 
 The more prominent helper functions. Get-AzureAdAssignedAdminRoles is run with `Connect-Me`, but can be used on its own just as well. The others are mainly helping to cut down on typing when doing stuff quickly. Using `Get-AzureAdUser -Searchstring "$UPN"` is fine, but sometimes I just want to bash in the $UPN and get a result. Other times knowing just enough is enough. Like knowing only the names of the Tenant Dial Plan or the Online Voice Routing Policy in question is just what I need, nothing more.
 
-| Function                        | Description                                                                                               |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser                                                       |
-| `Find-AzureAdUser`              | Helper Function to find AzureAd Users. Returns Objects if found. Simplifies Lookup and Search of Objects  |
-| `Find-AzureAdGroup`             | Helper Function to find AzureAd Groups. Returns Objects if found. Simplifies Lookup and Search of Objects |
-| `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                                                        |
-| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)                              |
-| `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...                              |
-| `Get-TeamsObjectType`           | Returns the type of any given Object to identify its use in CQs and AAs.                                  |
+| Function                        | Description                                                                                                                                 |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Find-AzureAdGroup`             | Helper Function to find AzureAd Groups. Returns Objects if found. Simplifies Lookup and Search of Objects                                   |
+| `Find-AzureAdUser`              | Helper Function to find AzureAd Users. Returns Objects if found. Simplifies Lookup and Search of Objects                                    |
+| `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser (NOTE: Does currently not display anything if Privileged Access Groups are used, sorry) |
+| `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                                                                                          |
+| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)                                                                |
+| `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...                                                                |
+| `Get-TeamsObjectType`           | Returns the type of any given Object to identify its use in CQs and AAs.                                                                    |
 
 ### Backup and Restore
 
 Curtesy of Ken Lasko
 
-| Function             | Description                                                                                   |
-| -------------------- | --------------------------------------------------------------------------------------------- |
-| `Backup-TeamsEV`     | Takes a backup of all EnterpriseVoice related features in Teams.                              |
-| `Restore-TeamsEV`    | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care! |
-| `Backup-TeamsTenant` | An adaptation of the above, backing up the whole tenant in the process.                       |
+| Function             | Description                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `Backup-TeamsEV`     | Takes a backup of all EnterpriseVoice related features in Teams.                                              |
+| `Restore-TeamsEV`    | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!                 |
+| `Backup-TeamsTenant` | An adaptation of the above, backing up the whole tenant in the process. (Output of all Get-Commands is saved) |
 
 ### Other functions
 
 | Function                                 | Description                                                                                                            |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `Assert-AzureAdConnection`               | Tests connection and visual feedback.                                                                                  |
-| `Assert-MicrosoftTeamsConnection`        | Tests connection and visual feedback.                                                                                  |
-| `Assert-SkypeOnlineConnection`           | Tests connection and visual feedback. **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*         |
 | `Format-StringRemoveSpecialCharacter`    | Formats a String and removes special characters (harmonising Display Names)                                            |
 | `Format-StringForUse`                    | Formats a String and removes special characters for DisplayNames, UserPrincipalNames, LineUri or E.164 Number formats. |
 | `Get-SkuIdFromSkuPartNumber`             | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                                           |
@@ -142,6 +141,9 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 | Function                        | Description                                                                                |
 | ------------------------------- | ------------------------------------------------------------------------------------------ |
+| `Assert-AzureAdConnection`               | Tests connection and visual feedback.                                                                                  |
+| `Assert-MicrosoftTeamsConnection`        | Tests connection and visual feedback.                                                                                  |
+| `Assert-SkypeOnlineConnection`           | Tests connection and visual feedback. **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*         |
 | `Test-AzureAdConnection`        | Verifying a Session to AzureAD exists                                                      |
 | `Test-MicrosoftTeamsConnection` | Verifying a Session to MicrosoftTeams exists                                               |
 | `Test-SkypeOnlineConnection`    | Verifying a Session to SkypeOnline exists                                                  |
@@ -151,8 +153,8 @@ These are helper functions for testing Connections and Modules. All Functions re
 | `Test-AzureAdGroup`             | Testing whether the Group exists in AzureAd                                                |
 | `Test-TeamsResourceAccount`     | Testing whether a Resource Account exists in AzureAd                                       |
 | `Test-TeamsUser`                | Testing whether the User exists in SkypeOnline/Teams                                       |
-| `Test-TeamsUserLicense`         | Testing whether the User has a specific Teams License (from `Get-TeamsLicense`)                |
-| `Test-TeamsUserHasCallPlan`     | Testing whether the User has any Call Plan License (from `Get-TeamsLicense`)                   |
+| `Test-TeamsUserLicense`         | Testing whether the User has a specific Teams License (from `Get-TeamsLicense`)            |
+| `Test-TeamsUserHasCallPlan`     | Testing whether the User has any Call Plan License (from `Get-TeamsLicense`)               |
 | `Test-TeamsTenantPolicy`        | Tests whether any Policy is present in the Tenant (Uses Invoke-Expression)                 |
 | `Test-TeamsExternalDNS`         | Tests DNS Records for Skype for Business Online and Teams                                  |
 
@@ -164,8 +166,8 @@ NOTE: Private functions are not exported and also not listed here.
 
 Please see VERSION.md for a detailed breakdown of the Change log.
 
-- Changes for Pre-Releases are 'hidden' in the Module documentation for now
-- Changes for Releases have wandered into VERSION.md
+- Changes for Pre-Releases are saved in VERSION-PreRelease.md
+- Changes for Releases are saved in VERSION.md
 
 ***
 
@@ -174,25 +176,22 @@ Please see VERSION.md for a detailed breakdown of the Change log.
 ### Current issues
 
 - Figuring out Pester, Writing proper Test scenarios
-- Continuous Improvement and Bugfixing for BETA Functions
+- Continuous Improvement and Bugfixing for BETA and RC Functions
 
 ### Update/Extension plans
 
 - Adding all Policies to `Set-TeamsUserPolicy` - currently only 6 are supported.
 - Performance improvements, bug fixing and more testing
+- Adding Functional improvements to lookup
+  - Finding specific Call Queues that have a specific Agent assigned as a User or as an Overflow/Timeout target (maybe even cascading through linked Groups... depending)
+  - Auto Attendant extensions (TBA)
+  - Licensing. Embedding of new Functions and replacement of current Variables. (v21.01)
+  - etc.
 - Comparing backups, changed elements for Change control... Looking at Lee Fords backup scripts :)
 
 ### Limitations
 
-- Testing
-  - Currently, only limited Pester tests are available for the Module and select functions.
-  - No Pester tests exist for Functions that require a Session to AzureAd or SkypeOnline - I cannot figure them out yet.
-  - All Testing is done with VScode and my trusty ISESteroids.
-- Functions
-  - `Connect-SkypeOnline` still seems to be timing out, despite `Enable-CsOnlineSessionForReconnection` being run - Recent improvements should stabilise these now, but I will still test them more thoroughly.&nbsp; <br/>**UPDATE**: v20.08 should hopefully be able to alleviate this. - Reconnection attempt is taken if connection is broken.
-  - `CallQueue` Scripts are nearing RC status. The functionality is tested and working but we might yet find bugs for them.
-  - `AutoAttendant` Scripts not fully tested yet. They have improved a lot, but are still BETA - Handle with Care!
-  - I try to build my scripts so that they are very talkative, if you get stuck, `-Verbose` should be able to help
+- Testing: Currently, only limited Pester tests are available for the Module and select functions.<br />No Pester tests exist for Functions that require a Session to AzureAd or SkypeOnline - I cannot figure them out yet. All Testing is done with VScode and my trusty ISESteroids.
 
 *Enjoy,*
 

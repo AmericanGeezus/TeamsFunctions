@@ -5,6 +5,24 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ## v20.12 - December 2020 release
 
+### Component Status
+
+- Function Status: 66 Public CmdLets, 8 private CmdLets, 15 Live
+- Development Status: 34 PreLive, 12 RC Functions; 5 in Beta, 0 in Alpha
+- Pester Test Status: Tests Passed: 864, Failed: 0, Skipped: 0 NotRun: 0
+- `TeamsUserVoiceConfig` Scripts have advanced to RC Status (some are already PreLive)
+- `TeamsResourceAccount` Scripts are still in RC Status - Multiple code improvements have been applied. See below.
+- `TeamsCallQueue` Scripts are still in RC Status.
+- `TeamsAutoAttendant` Scripts remain in BETA Status as improvements are still ongoing.
+
+### Focus for this month
+
+- *Faster*: Performance Improvements for multiple `Get` and `Test` commands
+- *Making 'Progress'*: Added Status bars and Verbose output to indicate progress for most longer running scripts (if you get div/0 errors, I can't count^^)
+- *Better Lookup and feedback*: To ind the appropriate objects have improved in performance as well as received a clause for if no matches are found for the provided string
+- *PassThru*: Previously `-Silent` was used to suppress output. This has now reversed with `-PassThru` for some (3) SET Commands and removed for 2 NEW commands. Going forward, the  `PassThru` Switch is added to SET and REMOVE Commands respectively.
+- *Licensing*: New Scripts have been added to put the Licensing offer this Module is making on new, highly oiled rails: By parsing the [AzureAd License Document file on Microsoft Docs](https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference) .
+
 ### New Functions
 
 Some Helper functions for Call Queues and Auto Attendants, to find the type of Object: `Get-TeamsObjectType` and `Get-TeamsAutoAttendantCallableEntity`. In the Resource Account family I have added `Test-TeamsResourceAccount`. To simplify Objects in AzureAd, `Find-AzureAdGroup` and `Find-AzureAdUser` (renamed and revamped Get-AzureAdUserFromUpn)
@@ -68,9 +86,8 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
 
 ### Other Improvements
 
-- Pester Testing
-  - Current Status: Tests Passed: 864, Failed: 0, Skipped: 0 NotRun: 0
-  - Still mostly structural checks, but I was able to formulate some tests for scripts (3) as well
+- Component Status: 15 Live, 32 PreLive, 11 RC Functions; 5 in Beta, 0 in Alpha
+- Pester Testing are still mostly structural checks, but I was able to formulate some tests for scripts (3) as well
   - More individual tests still to come.
   - Tests working with PowerShell v7.20-preview.1 resolving an issue with Security/not recognising Unblocked Files
 - PowerShell 7 - More tests to come
