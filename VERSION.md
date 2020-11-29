@@ -5,9 +5,28 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ## v20.12 - December 2020 release
 
+### Component Status
+
+- Function Status: 66 Public CmdLets, 8 private CmdLets, 15 Live
+- Development Status: 35 PreLive, 14 RC Functions; 2 in Beta, 0 in Alpha
+- Pester Test Status: Tests Passed: 864, Failed: 0, Skipped: 0 NotRun: 0
+- `TeamsUserVoiceConfig` Scripts have advanced to RC Status (some are already PreLive)
+- `TeamsResourceAccount` Scripts are still in RC Status - Multiple code improvements have been applied. See below.
+- `TeamsCallQueue` Scripts are still in RC Status.
+- `TeamsAutoAttendant` Scripts remain in BETA Status as improvements are still ongoing.
+- `TeamsCallableEntity` Scripts have been added (GET and FIND)
+
+### Focus for this month
+
+- *Faster*: Performance Improvements for multiple `Get` and `Test` commands
+- *Making 'Progress'*: Added Status bars and Verbose output to indicate progress for most longer running scripts (if you get div/0 errors, I can't count^^)
+- *Better Lookup and feedback*: To ind the appropriate objects have improved in performance as well as received a clause for if no matches are found for the provided string
+- *PassThru*: Previously `-Silent` was used to suppress output. This has now reversed with `-PassThru` for some (3) SET Commands and removed for 2 NEW commands. Going forward, the  `PassThru` Switch is added to SET and REMOVE Commands respectively.
+- *Licensing*: New Scripts have been added to put the Licensing offer this Module is making on new, highly oiled rails: By parsing the [AzureAd License Document file on Microsoft Docs](https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference) .
+
 ### New Functions
 
-Some Helper functions for Call Queues and Auto Attendants, to find the type of Object: `Get-TeamsObjectType` and `Get-TeamsAutoAttendantCallableEntity`. In the Resource Account family I have added `Test-TeamsResourceAccount`. To simplify Objects in AzureAd, `Find-AzureAdGroup` and `Find-AzureAdUser` (renamed and revamped Get-AzureAdUserFromUpn)
+Some Helper functions for Call Queues and Auto Attendants, to find the type of Object: `Get-TeamsObjectType`, `Get-TeamsCallableEntity` and `Find-TeamsCallableEntity`. In the Resource Account family I have added `Test-TeamsResourceAccount`. To simplify Objects in AzureAd, `Find-AzureAdGroup` and `Find-AzureAdUser` (this was Get-AzureAdUserFromUpn, now renamed and revamped)
 
 - `Test-TeamsResourceAccount`:
   - New Script to test whether an Object is a ResourceAccount and it has two modes, Quick and Thorough (default):
@@ -21,17 +40,28 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
   - Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers.
   - It has been extended to cover not only lookup by UPN, but also Searchstring, making it into one command that can more reliably find User Objects.
   - Returns all User Objects found, or `$null` if not.
-- `Get-TeamsAutoAttendantCallableEntity`:
-  - Command can be used to resolve existing callable entities linked to Auto Attendants: <br />Accepts a String which can be an ObjectId
+- `Find-TeamsCallableEntity`
+  - Returns all Call Queue or Auto Attendant Names where the provided Entity is used/connected to.
+  - Parameter `Scope` can be used to limit searches to Call Queues or Auto Attendants
+  - For Call Queues, this can be as an Agent (User, or inherited via Group), as a Group, OverflowTarget or TimeoutTarget
+  - For Auto Attendants, this can be as an Operator, Routing Target or Menu Option
+- `Get-TeamsCallableEntity`:
   - Command can be used to determine type and usability for AutoAttendants or CallQueues: <br />Accepts a String which can be an Office 365 Group Name, Upn or TelUri
   - Returning a Custom Object with the same parameters (and more) as a CallableEntity Object
   - Adds `UsableInCqAs` to indicate which which OverflowAction or TimeoutAction this entity can be used.
   - Adds `UsableInAaAs` to indicate which type of CallableEntity can be created with it.
 - `Get-TeamsObjectType`: Helper script to determine the type of Object provided.
+- `Get-TeamsLicense` - A Replacement for the variable $TeamsLicenses which outputs the same information, but protected by accidental deletion of the Variable
+- `Get-TeamsLicenseServicePlan` - A Replacement for the variable $TeamsServicePlans which outputs the same information, but protected by accidental deletion of the Variable
+- `Get-AzureAdLicense` - EXPERIMENTAL - A Script to read from Microsoft Docs, reading the published Content. Eventually a replacement for the two above, but not yet :) - Returns Object containing all Microsoft 365 License Products. Can be `-FilterRelevantForTeams`. Not yet linked into any other functions.
+- `Get-AzureAdLicenseServicePlan` - EXPERIMENTAL - Same as above, just displaying all ServicePlans instead of License Products. Can also be `-FilterRelevantForTeams`. Not yet linked into any other functions.
+- `Enable-TeamsUserForEnterpriseVoice` (Alias: `Enable-Ev`) - I needed a shortcut.
 
 ### Updated Functions & Bugfixes
 
 - `Assert-` Functions have now more simplified output, displaying only one Message in all but one case
+- `Connect-Me`: Minor Code improvements and corrections. Added Output information at the end, containing Date, Timestamp, Connected Services
+- `Get-AzureAdAssignedAdminRoles`: Added a Warning in case no Admin Roles are found. Displaying Verbose output to inform about Script limitation (no query against Group Assignments yet)
 - `Find-TeamsResourceAccount`: Output Object is now separate from that of `Get`, which speeds up enumeration a lot.
 - `Get-TeamsResourceAccount`:
   - Added Parameter `ObjectId` to output Object and improved lookup.
@@ -59,6 +89,14 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
 - `Format-StringForUse`:
   - Added an option to normalise Strings `-As E164` - This will format any String to an E.164 Number, for example: "1 (555) 1234-567" to "+15551234567"
   - Added an option to normalise Strings `-As LineURI` - This will format any String to a LineURI, for example: "1 (555) 1234-567 ;ext=1234" to "tel:+15551234567;ext=1234"
+
+### Other Improvements
+
+- Component Status: 15 Live, 32 PreLive, 11 RC Functions; 5 in Beta, 0 in Alpha
+- Pester Testing are still mostly structural checks, but I was able to formulate some tests for scripts (3) as well
+  - More individual tests still to come.
+  - Tests working with PowerShell v7.20-preview.1 resolving an issue with Security/not recognising Unblocked Files
+- PowerShell 7 - More tests to come
 
 ## v20.11 - November 2020 release
 
@@ -204,7 +242,7 @@ July was "quiet" because I only published pre-releases with bugfixes (mostly). H
 ### NEW: Teams Licensing Application
 
 - `Set-TeamsUserLicense` - Replacement function for Add-TeamsUserLicense (which now is deprecated). Add or Remove Licenses with an array. Accepted values are found in the accompanying variable `$TeamsLicenses.ParameterName`
-- Added Variables containing all relevant information for `$TeamsLicenses`(38!) and `$TeamsServicePlans`(13). They are threaded into the TeamsUserLicense CmdLets as well as Get-TeamsTenantLicense. Translating a friendly Name (Property `ParameterName`, `FriendlyName`& `ProductName`) to the `SkuPartNumber`or `SkuID`is what I am trying to bridge (who wants to remember a 36 digit GUID for each Product?)
+- Added Variables containing all relevant information for 38 Products and 13 ServicePlans! They are threaded into the TeamsUserLicense CmdLets as well as Get-TeamsTenantLicense. Translating a friendly Name (Property `ParameterName`, `FriendlyName`& `ProductName`) to the `SkuPartNumber`or `SkuID`is what I am trying to bridge (who wants to remember a 36 digit GUID for each Product?)
 - Accompanying this, changes to `Get-TeamsUserLicense` have been made to report a uniform feedback of Licenses (based on the same variable)
   - `Get-TeamsTenantLicense` (replaces Get-TeamsTenantLicense**s**) has been completely reworked. A
 

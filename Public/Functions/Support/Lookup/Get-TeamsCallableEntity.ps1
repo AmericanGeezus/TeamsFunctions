@@ -7,7 +7,7 @@
 #CHECK Create Class?
 
 
-function Get-TeamsAutoAttendantCallableEntity {
+function Get-TeamsCallableEntity {
   <#
 	.SYNOPSIS
 		Returns a callable Entity Object from an Identity/ObjectId or string
@@ -18,13 +18,24 @@ function Get-TeamsAutoAttendantCallableEntity {
   .PARAMETER Identity
     The ObjectId of the CallableEntity linked
   .EXAMPLE
-    Get-TeamsAutoAttendantCallableEntity -Identity "My Group Name"
-    Queries the provided ObjectId against AzureAdUser, AzureAdGroup and CsOnlineApplicationInstance.
-    Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+    Get-TeamsCallableEntity -Identity "My Group Name"
+    Queries whether "My Group Name" can be found as an AzureAdUser, AzureAdGroup or CsOnlineApplicationInstance.
   .EXAMPLE
-    Get-TeamsAutoAttendantCallableEntity -Identity 000000-000000-0000000
-    Queries the provided ObjectId against AzureAdUser, AzureAdGroup and CsOnlineApplicationInstance.
+    Get-TeamsCallableEntity -Identity "John@domain.com","MyResourceAccount@domain.com"
+    Queries whether John or MyResourceAccount can be found as an AzureAdUser, AzureAdGroup or CsOnlineApplicationInstance.
+  .EXAMPLE
+    Get-TeamsCallableEntity -Identity 00000000-0000-0000-0000-000000000000
+    Queries whether the provided ObjectId can be found as an AzureAdUser, AzureAdGroup or CsOnlineApplicationInstance.
+  .EXAMPLE
+    Get-TeamsCallableEntity -Identity "tel:+15551234567"
+    No Queries performed, as the Tel URI is passed on as-is.
     Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+  .NOTES
+    Queries the provided String against AzureAdUser, AzureAdGroup and CsOnlineApplicationInstance.
+    Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+
+    This script does not support the Types for legacy Hunt Group or Organisational Auto Attendant
+    If nothing can be found for the String, an Object is returned with the Entity being $null
   .INPUTS
     System.String
   .OUTPUTS
@@ -33,16 +44,18 @@ function Get-TeamsAutoAttendantCallableEntity {
     TeamsAutoAttendant
     TeamsCallQueue
   .LINK
+    Find-TeamsCallableEntity
+    Get-TeamsCallableEntity
+    New-TeamsAutoAttendantCallableEntity
     Get-TeamsObjectType
     Get-TeamsCallQueue
     Get-TeamsAutoAttendant
 	#>
 
   [CmdletBinding()]
-  [Alias('Get-TeamsAAEntity')]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, Position = 0, HelpMessage = 'Identity of the Callable Entity')]
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = 'Identity of the Callable Entity')]
     [Alias('ObjectId')]
     [string[]]$Identity
 
@@ -161,4 +174,4 @@ function Get-TeamsAutoAttendantCallableEntity {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 
-} # Get-TeamsAutoAttendantCallableEntity
+} # Get-TeamsCallableEntity

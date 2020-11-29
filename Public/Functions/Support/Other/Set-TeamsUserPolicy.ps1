@@ -68,9 +68,6 @@ function Set-TeamsUserPolicy {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
     Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 

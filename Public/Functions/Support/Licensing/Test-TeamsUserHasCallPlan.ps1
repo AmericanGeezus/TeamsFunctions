@@ -43,7 +43,7 @@ function Test-TeamsUserHasCallPlan {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    $TeamsLicenses = Get-TeamsLicense
+    $AllLicenses = Get-TeamsLicense
 
   } #begin
 
@@ -54,10 +54,10 @@ function Test-TeamsUserHasCallPlan {
     $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
     $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
 
-    $DOM120b = (($TeamsLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120b).SkuPartNumber -in $UserLicenseSKU)
-    $DOM120 = (($TeamsLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120).SkuPartNumber -in $UserLicenseSKU)
-    $DOM = (($TeamsLicenses | Where-Object ParameterName -EQ DomesticCallingPlan).SkuPartNumber -in $UserLicenseSKU)
-    $INT = (($TeamsLicenses | Where-Object ParameterName -EQ InternationalCallingPlan).SkuPartNumber -in $UserLicenseSKU)
+    $DOM120b = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120b).SkuPartNumber -in $UserLicenseSKU)
+    $DOM120 = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120).SkuPartNumber -in $UserLicenseSKU)
+    $DOM = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan).SkuPartNumber -in $UserLicenseSKU)
+    $INT = (($AllLicenses | Where-Object ParameterName -EQ InternationalCallingPlan).SkuPartNumber -in $UserLicenseSKU)
 
     if ($INT -or - $DOM -or $DOM120 -or $DOM120b) {
       return $true

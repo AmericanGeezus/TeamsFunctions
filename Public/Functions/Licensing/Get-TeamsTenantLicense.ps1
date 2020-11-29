@@ -18,7 +18,7 @@ function Get-TeamsTenantLicense {
     format with descriptive names, SkuPartNumber, active, consumed, remaining, and expiring licenses.
   .PARAMETER License
     Optional. Limits the Output to one license.
-    Accepted Values are listed in $TeamsLicenses.ParameterName
+    Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
   .PARAMETER Detailed
     Displays all Parameters.
     By default, only Parameters relevant to determine License availability are shown.
@@ -53,6 +53,10 @@ function Get-TeamsTenantLicense {
     Set-TeamsUserLicense
     Test-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
+    Get-AzureAdLicense
+    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding()]
@@ -67,13 +71,12 @@ function Get-TeamsTenantLicense {
 
     [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
     [ValidateScript( {
-        #FIXME
         $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'LicensePackage' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -101,7 +104,7 @@ function Get-TeamsTenantLicense {
 
     #Loading License Array
     $AllLicenses = $null
-    $AllLicenses = $TeamsLicenses
+    $AllLicenses = Get-TeamsLicense
 
     $AllLicenses | Add-Member -NotePropertyName Available -NotePropertyValue 0 -Force
     $AllLicenses | Add-Member -NotePropertyName Consumed -NotePropertyValue 0 -Force
@@ -111,7 +114,7 @@ function Get-TeamsTenantLicense {
 
     try {
       if ($PSBoundParameters.ContainsKey('License')) {
-        $SkuPartNumber = ($TeamsLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
+        $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
         $tenantSKUs = Get-AzureADSubscribedSku | Where-Object SkuPartNumber -EQ $SkuPartNumber -ErrorAction STOP
       }
       else {

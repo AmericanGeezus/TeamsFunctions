@@ -134,7 +134,7 @@ function Remove-TeamsUserVoiceConfig {
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error "User '$User' not queryied: $($_.Exception.Message)" -Category ObjectNotFound
+        Write-Error "User '$User' not found: $($_.Exception.Message)" -Category ObjectNotFound
         continue
       }
       #endregion
@@ -219,7 +219,13 @@ function Remove-TeamsUserVoiceConfig {
 
         }
         else {
-          Write-Error -Message "User '$User' - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
+          if ( $CsUser.TelephoneNumber ) {
+            Write-Error -Message "User '$User' - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
+          }
+          else {
+            Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Not assigned" -Verbose
+            Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned" -Verbose
+          }
         }
       }
       #endregion

@@ -91,8 +91,8 @@ function Get-TeamsCallQueue {
 
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name')) {
-      Write-Verbose -Message "Name not specified, listing call queue names only. Please query contents by targeting them with -Name" -Verbose
-      (Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction STOP).Name
+      Write-Verbose -Message "Listing names only. To query individual items, please provide Name" -Verbose
+      (Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Name
     }
     else {
       #CHECK Explore Workflows with Parallel parsing:
@@ -115,25 +115,29 @@ function Get-TeamsCallQueue {
           $QueueCount = $Queues.Count
         }
 
-        # Initialising Arrays
-        [System.Collections.ArrayList]$UserObjects = @()
-        [System.Collections.ArrayList]$DLObjects = @()
-        #[System.Collections.ArrayList]$AgentObjects = @()
-        [System.Collections.ArrayList]$AIObjects = @()
-
         # Reworking Objects
         $QueueCounter = 0
         Write-Verbose -Message "[PROCESS] Finding parsable Objects for $QueueCount Queues"
         foreach ($Q in $Queues) {
           # Initialising counters for Progress bars
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
+          Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
           $QueueCounter++
           [int]$step = 0
           [int]$sMax = 6
 
+          # Initialising Arrays
+          [System.Collections.ArrayList]$UserObjects = @()
+          [System.Collections.ArrayList]$DLObjects = @()
+          [System.Collections.ArrayList]$AIObjects = @()
+
+          if ( $Detailed ) {
+            [System.Collections.ArrayList]$AgentObjects = @()
+            $sMax++
+          }
+
           #region Finding OverflowActionTarget
           $Operation = "Parsing OverflowActionTarget"
-          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - $Operation"
           if ($null -eq $Q.OverflowActionTarget) {
             $OAT = $null
@@ -204,7 +208,7 @@ function Get-TeamsCallQueue {
 
           #region Finding TimeoutActionTarget
           $step++
-          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation "Parsing TimeoutActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation "Parsing TimeoutActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - Parsing TimeoutActionTarget"
           if ($null -eq $Q.TimeoutActionTarget) {
             $TAT = $null
@@ -269,7 +273,7 @@ function Get-TeamsCallQueue {
           #CHECK resolving DLs? Nested objects (count at least?)
           $Operation = "Parsing DistributionLists"
           $step++
-          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($DL in $Q.DistributionLists) {
             $DLObject = Get-AzureADGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
@@ -281,7 +285,7 @@ function Get-TeamsCallQueue {
           # Users
           $Operation = "Parsing Users"
           $step++
-          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($User in $Q.Users) {
             $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
@@ -289,22 +293,25 @@ function Get-TeamsCallQueue {
           }
           # Output: $UserObjects.UserPrincipalName
 
-          <# Removed due to duplicity
-          # parsing users twice is not great.
-          # Agents
-          Write-Verbose -Message "'$($Q.Name)' - Parsing Agents"
-          foreach ($Agent in $Q.Agents) {
-            $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-            [void]$AgentObjects.Add($AgentObject)
+          if ( $Detailed ) {
+            # Parsing Agents only when the detailed Switch is used
+            $Operation = "Parsing Agents"
+            $step++
+            Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+            Write-Verbose -Message "'$($Q.Name)' - $Operation"
+
+            foreach ($Agent in $Q.Agents) {
+              $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+              [void]$AgentObjects.Add($AgentObject)
+            }
+            # Output: $AgentObjects.UserPrincipalName
           }
-          # Output: $AgentObjects.UserPrincipalName
-          #>
           #endregion
 
           #region Application Instance UPNs
           $Operation = "Parsing Resource Accounts"
           $step++
-          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($AI in $Q.ApplicationInstances) {
             $AIObject = $null
@@ -320,7 +327,7 @@ function Get-TeamsCallQueue {
           #region Creating Output Object
           $Operation = "Constructing Output Object"
           $step++
-          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - $Operation"
           # Building custom Object with Friendly Names
           $QueueObject = [PSCustomObject][ordered]@{
@@ -369,9 +376,10 @@ function Get-TeamsCallQueue {
           $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
           $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
           $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped
-          #$QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
 
           if ($PSBoundParameters.ContainsKey('Detailed')) {
+            # Displays Agents
+            $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
             # Displays all except reserved Parameters (Microsoft Internal)
             $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
             $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId
@@ -385,8 +393,8 @@ function Get-TeamsCallQueue {
           #endregion
 
           # Output
-          Write-Progress -Id 2 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
           Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
+          Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
           if ($Warnings) {
             Write-Warning -Message $Warnings
           }

@@ -38,17 +38,18 @@ function Get-TeamsUserLicense {
   .FUNCTIONALITY
 		Returns a list of Licenses assigned to a specific User depending on input
   .LINK
-    Get-TeamsLicense
-    Get-TeamsLicenseServicePlan
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense
     Test-TeamsUserLicense
     Add-TeamsUserLicense (deprecated)
+    Get-TeamsLicense
+    Get-TeamsLicenseServicePlan
+    Get-AzureAdLicense
+    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding()]
-  [Alias('Get-TeamsUserLicence')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true,
@@ -83,10 +84,8 @@ function Get-TeamsUserLicense {
 
     # Loading License Array
     $AllLicenses = $null
-    #$AllLicenses = $TeamsLicenses
     $AllLicenses = Get-TeamsLicense
     $AllServicePlans = $null
-    #$AllServicePlans = $TeamsServicePlans
     $AllServicePlans = Get-TeamsLicenseServicePlan
 
   } #begin

@@ -100,7 +100,7 @@ function Add-TeamsUserLicense {
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'General')]
-  [Alias('Add-TeamsUserLicence')]
+  [OutputType([Void])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
     [Alias("UPN", "UserPrincipalName", "Username")]
@@ -132,10 +132,10 @@ function Add-TeamsUserLicense {
     [Parameter(Mandatory = $true, ParameterSetName = 'PhoneSystem')]
     [switch]$AddPhoneSystem,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'PhoneSystemVirtualUser', HelpMessage = "This is an exclusive licence!")]
+    [Parameter(Mandatory = $true, ParameterSetName = 'PhoneSystemVirtualUser', HelpMessage = "This is an exclusive license!")]
     [switch]$AddPhoneSystemVirtualUser,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'CommonAreaPhone', HelpMessage = "This is an exclusive licence!")]
+    [Parameter(Mandatory = $true, ParameterSetName = 'CommonAreaPhone', HelpMessage = "This is an exclusive license!")]
     [Alias("AddCAP")]
     [switch]$AddCommonAreaPhone,
 

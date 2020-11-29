@@ -12,7 +12,7 @@ function Test-TeamsUserLicense {
 	.SYNOPSIS
 		Tests a License or License Package assignment against an AzureAD-Object
 	.DESCRIPTION
-		Teams requires a specific License combination (LicensePackage) for a User.
+		Teams requires a specific License combination (License) for a User.
 		Teams Direct Routing requires a specific License (ServicePlan), namely 'Phone System'
 		to enable a User for Enterprise Voice
 		This Script can be used to ascertain either.
@@ -23,8 +23,8 @@ function Test-TeamsUserLicense {
 		Only ServicePlanNames pertaining to Teams are tested.
 		Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success"
 		NOTE: ServicePlans can be part of a license, for Example MCOEV (PhoneSystem) is part of an E5 license.
-		For Testing against a full License Package, please use Parameter LicensePackage
-	.PARAMETER LicensePackage
+		For Testing against a full License Package, please use Parameter License
+	.PARAMETER License
 		Defined and descriptive Name of the License Combination to test.
 		This will test whether one more more individual Service Plans are present on the Identity
 	.EXAMPLE
@@ -32,13 +32,13 @@ function Test-TeamsUserLicense {
 		Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!
 		This can be a part of a License.
 	.EXAMPLE
-		Test-TeamsUserLicense -Identity User@domain.com -LicensePackage Microsoft365E5
+		Test-TeamsUserLicense -Identity User@domain.com -License Microsoft365E5
 		Will Return $TRUE only if the license Package is assigned.
-		Specific Names have been assigned to these LicensePackages
+		Specific Names have been assigned to these Licenses
 	.NOTES
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
   .FUNCTIONALITY
-    Returns a boolean value for LicensePackage or Serviceplan for a specific user.
+    Returns a boolean value for License or Serviceplan for a specific user.
   .LINK
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
@@ -56,19 +56,18 @@ function Test-TeamsUserLicense {
     [Parameter(Mandatory = $true, ParameterSetName = "ServicePlan", HelpMessage = "AzureAd Service Plan")]
     [string]$ServicePlan,
 
-    [Parameter(Mandatory = $true, ParameterSetName = "LicensePackage", HelpMessage = "Teams License Package: E5,E3,S2")]
+    [Parameter(Mandatory = $true, ParameterSetName = "License", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateScript( {
-        #FIXME
-        if ($_ -in $TeamsLicenses.ParameterName) {
+        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'LicensePackage' - Invalid license string. Please specify a ParameterName from `$TeamsLicenses:" -ForegroundColor Red
-          Write-Host "$($TeamsLicenses.ParameterName)"
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
           return $false
         }
       })]
-    [string]$LicensePackage
+    [string]$License
 
   ) #param
 
@@ -79,7 +78,7 @@ function Test-TeamsUserLicense {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    $TeamsLicenses = Get-TeamsLicense
+    $AllLicenses = Get-TeamsLicense
 
   } #begin
 
@@ -90,7 +89,7 @@ function Test-TeamsUserLicense {
     $DisplayName = $UserObject.DisplayName
     $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
 
-    # ParameterSetName ServicePlan VS LicensePackage
+    # ParameterSetName ServicePlan VS License
     switch ($PsCmdlet.ParameterSetName) {
       "ServicePlan" {
         Write-Verbose -Message "'$DisplayName' Testing against '$ServicePlan'"
@@ -116,10 +115,10 @@ function Test-TeamsUserLicense {
           return $false
         }
       }
-      "LicensePackage" {
-        Write-Verbose -Message "'$DisplayName' Testing against '$LicensePackage'"
+      "License" {
+        Write-Verbose -Message "'$DisplayName' Testing against '$License'"
         $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
-        $Sku = ($TeamsLicenses | Where-Object ParameterName -EQ $LicensePackage).SkuPartNumber
+        $Sku = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
         if ($Sku -in $UserLicenseSKU) {
           return $true
         }

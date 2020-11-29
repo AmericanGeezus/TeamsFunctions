@@ -1,7 +1,7 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Teams Auto Attendant
 # Author:     David Eberhardt
-# Updated:    01-NOV-2020
+# Updated:    01-DEC-2020
 # Status:     PreLive
 
 
@@ -102,21 +102,13 @@ function Merge-AutoAttendantArtefact {
       "MenuOption" {
         foreach ($O in $Object) {
           # Enumerating Call Target
-          #TODO - Align Get-TeamsAutoAttendantCallableEntity with this one? Maybe extend by searching by type
-          if ($O.CallTarget.Identity) {
-            $CallTargetEntity = switch ($O.CallTarget.Type) {
-              'User' { $(Get-AzureADUser -ObjectId $O.CallTarget.Identity).UserPrincipalName }
-              'ExternalPstn' { $O.CallTarget.Identity }
-              'ApplicationEndpoint ' { $(Get-AzureADUser -ObjectId $O.CallTarget.Identity).UserPrincipalName }
-              'SharedVoicemail' { $(Get-AzureADGroup -ObjectId $O.CallTarget.Identity).DisplayName }
-              'HuntGroup' { $O.CallTarget.Identity }
-              'OrganizationalAutoAttendant' { $O.CallTarget.Identity }
-            }
+          if ($O.CallTarget.Id) {
+            $CallTargetEntity = Get-TeamsCallableEntity $O.CallTarget.Id
 
             $CallTarget = @()
             $CallTarget = [PsCustomObject][ordered]@{
-              'Entity'   = $CallTargetEntity
-              'Identity' = $O.CallTarget.Identity
+              'Entity'   = $CallTargetEntity.Entity
+              'Identity' = $O.CallTarget.Id
               'Type'     = $O.CallTarget.Type
             }
 

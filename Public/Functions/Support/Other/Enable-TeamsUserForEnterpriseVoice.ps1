@@ -1,7 +1,7 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Teams User Voice Configuration
 # Author:     David Eberhardt
-# Updated:    01-OCT-2020
+# Updated:    01-DEC-2020
 # Status:     PreLive
 
 
@@ -13,14 +13,23 @@ function Enable-TeamsUserForEnterpriseVoice {
     Enables a User for Enterprise Voice
   .DESCRIPTION
 		Enables a User for Enterprise Voice and verifies its status
+  .PARAMETER Identity
+		UserPrincipalName of the User to be enabled.
+  .PARAMETER Force
+		Suppresses confirmation prompt unless -Confirm is used explicitly
+  .EXAMPLE
+    Enable-TeamsUserForEnterpriseVoice John@domain.com
+    Enables John for Enterprise Voice
   .NOTES
 		Simple helper function to enable and verify a User is enabled for Enterprise Voice
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [Alias('Enable-Ev')]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory, Position = 0)]
+    [Alias('UserPrincipalName')]
     [string]$Identity,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
@@ -50,23 +59,22 @@ function Enable-TeamsUserForEnterpriseVoice {
           $null = Set-CsUser $Identity -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
           $i = 0
           $iMax = 20
-          $Status = "Applying License"
-          $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result"
+          $Status = "Enable User For Enterprise Voice"
+          $Operation = "Waiting for Get-CsOnlineUser to return a Result"
           Write-Verbose -Message "$Status - $Operation"
           while ( -not $(Get-CsOnlineUser $Identity -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
             if ($i -gt $iMax) {
               Write-Error -Message "User was not enabled for Enterprise Voice in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
               return
             }
-            Write-Progress -Id 0 -Activity "Azure Active Directory is applying License. Please wait" `
+            Write-Progress -Id 0 -Activity "Azure Active Directory is writing to the User Object. Please wait" `
               -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
             Start-Sleep -Milliseconds 1000
             $i++
           }
 
-          # re-query status after a little padding (so that the next command can query a correct status)
-          Start-Sleep -Milliseconds 3000
+          # re-query
           $EVenabled = $(Get-CsOnlineUser $Identity).EnterpriseVoiceEnabled
           Write-Verbose -Message "User '$Identity' Enterprise Voice Status: $EVenabled"
           if ($EVenabled) {

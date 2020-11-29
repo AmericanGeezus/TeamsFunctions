@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   RC
 
 
 
@@ -45,10 +45,7 @@ function New-TeamsAutoAttendantDialScope {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

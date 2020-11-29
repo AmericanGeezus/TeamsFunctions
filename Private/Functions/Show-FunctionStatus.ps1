@@ -26,19 +26,23 @@ function Show-FunctionStatus {
 
   switch ($Level) {
     "Alpha" {
-      Write-Debug -Message "$Function has [ALPHA] Status. It may not work as intended or contain serious gaps in functionality. Please handle with care" -Debug
+      $DebugPreference = "Inquire"
+      $VerbosePreference = "Continue"
+      Write-Debug -Message "$Function has [ALPHA] Status: It may not work as intended or contain serious gaps in functionality. Please handle with care" -Debug
     }
     "Beta" {
-      Write-Debug -Message "$Function has [BETA] Status. Build is not completed. Please report issues to 'TeamsFunctions@outlook.com'" -Debug
+      $DebugPreference = "Continue"
+      $VerbosePreference = "Continue"
+      Write-Debug -Message "$Function has [BETA] Status: Build is not completed, functionality missing or parts untested. Please report issues via GitHub"
     }
     "RC" {
-      Write-Verbose -Message "$Function has [RC] Status. Functional, but still being tested. Please report issues to 'TeamsFunctions@outlook.com' or via GitHub" -Verbose
+      Write-Verbose -Message "$Function has [RC] Status: Functional, but still being tested. Please report issues via GitHub" -Verbose
     }
     "PreLive" {
-      Write-Verbose -Message "$Function has [PreLIVE] Status. Functional, but still being tested. Please report issues to 'TeamsFunctions@outlook.com' or via GitHub"
+      Write-Verbose -Message "$Function has [PreLIVE] Status. Should you encounter issues, please get in touch via GitHub or 'TeamsFunctions@outlook.com'"
     }
     "Live" {
-      Write-Verbose -Message "$Function is [LIVE]. Should you encounter issues, please get in touch! 'TeamsFunctions@outlook.com' or via GitHub"
+      Write-Verbose -Message "$Function is [LIVE]. Should you encounter issues, please get in touch via GitHub or 'TeamsFunctions@outlook.com'"
     }
     "Unmanaged" {
       Write-Verbose -Message "$Function is [LIVE] but [UNMANAGED] and comes as-is."
