@@ -48,54 +48,54 @@ Functions for querying Teams Voice Configuration, both for Direct Routing and Ca
 
 Though you can now also provide a UserPrincipalName for `CsOnlineApplicationInstance` scripts, they are, I think, not telling you enough. IDs are used for the Application Type. These Scripts are wrapping around them, bind to the *UserPrincipalName* and offer more required information for properly managing Resource Accounts for Call Queues and Auto Attendants.
 
-| Function                      | Alias                                                   | Underlying Function              | Description                                                                                                 |
-| ----------------------------- | ------------------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `New-TeamsResourceAccount`    | New-TeamsRA                                             | New-CsOnlineApplicationInstance  | Creates a Resource Account in Teams                                                                         |
-| `Find-TeamsResourceAccount`   | Find-TeamsRA                                            | Find-CsOnlineApplicationInstance | Finds Resource Accounts based on provided SearchString                                                      |
-| `Get-TeamsResourceAccount`    | Get-TeamsRA                                             | Get-CsOnlineApplicationInstance  | Queries Resource Accounts based on input: SearchString, Identity (UserPrincipalName), PhoneNumber, Type     |
-| `Set-TeamsResourceAccount`    | Set-TeamsRA                                             | Set-CsOnlineApplicationInstance  | Changes settings for a Resource Accounts, applying UsageLocation, Licenses and Phone Numbers, swapping Type |
-| `Remove-TeamsResourceAccount` | Remove-TeamsRA, <br/>Remove-CsOnlineApplicationInstance | Remove-AzureAdUser               | Removes a Resource Account and optionally (with -Force) also the Associations this account has.             |
+| Function (Underlying)                                              | Alias                                                   | Description                                                                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `New-TeamsResourceAccount`<br/>(New-CsOnlineApplicationInstance)   | New-TeamsRA                                             | Creates a Resource Account in Teams                                                                         |
+| `Find-TeamsResourceAccount`<br/>(Find-CsOnlineApplicationInstance) | Find-TeamsRA                                            | Finds Resource Accounts based on provided SearchString                                                      |
+| `Get-TeamsResourceAccount`<br/>(Get-CsOnlineApplicationInstance)   | Get-TeamsRA                                             | Queries Resource Accounts based on input: SearchString, Identity (UserPrincipalName), PhoneNumber, Type     |
+| `Set-TeamsResourceAccount`<br/>(Set-CsOnlineApplicationInstance)   | Set-TeamsRA                                             | Changes settings for a Resource Accounts, applying UsageLocation, Licenses and Phone Numbers, swapping Type |
+| `Remove-TeamsResourceAccount`<br/>(Remove-AzureAdUser)             | Remove-TeamsRA, <br/>Remove-CsOnlineApplicationInstance | Removes a Resource Account and optionally (with -Force) also the Associations this account has.             |
 
 ### Resource Account Association
 
-| Function                                 | Alias               | Underlying Function                           | Description                                                                                          |
-| ---------------------------------------- | ------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `New-TeamsResourceAccountAssociation`    | New-TeamsRAAssoc    | New-CsOnlineApplicationInstanceAssociation    | Links one or more Resource Accounts to a Call Queue or an Auto Attendant                             |
-| `Get-TeamsResourceAccountAssociation`    | Get-TeamsRAAssoc    | Get-CsOnlineApplicationInstanceAssociation    | Queries links for one or more Resource Accounts to Call Queues or Auto Attendants. Also shows Status |
-| `Remove-TeamsResourceAccountAssociation` | Remove-TeamsRAAssoc | Remove-CsOnlineApplicationInstanceAssociation | Removes a link for one or more Resource Accounts                                                     |
+| Function (Underlying)                                                                        | Alias               | Description                                                                                          |
+| -------------------------------------------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------- |
+| `New-TeamsResourceAccountAssociation`<br/>(New-CsOnlineApplicationInstanceAssociation)       | New-TeamsRAAssoc    | Links one or more Resource Accounts to a Call Queue or an Auto Attendant                             |
+| `Get-TeamsResourceAccountAssociation`<br/>(Get-CsOnlineApplicationInstanceAssociation)       | Get-TeamsRAAssoc    | Queries links for one or more Resource Accounts to Call Queues or Auto Attendants. Also shows Status |
+| `Remove-TeamsResourceAccountAssociation`<br/>(Remove-CsOnlineApplicationInstanceAssociation) | Remove-TeamsRAAssoc | Removes a link for one or more Resource Accounts                                                     |
 
 ### Call Queues
 
 Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bit cumbersome. The Searchstring parameter is available, and utilised as a basic input method for `TeamsCallQueue` CmdLets. They query by *DisplayName*, which comes with a drawback for the `Set`-command: It requires a unique result. Also uses Filenames instead of IDs when adding Audio Files. Microsoft is continuing to improve these scripts, so I hope these can stand the test of time and make managing Call Queues easier.
 
-| Function                | Alias          | Underlying Function | Description                                                        |
-| ----------------------- | -------------- | ------------------- | ------------------------------------------------------------------ |
-| `New-TeamsCallQueue`    | New-TeamsCQ    | New-CsCallQueue     | Creates a Call Queue with friendly inputs (File Names, UPNs, etc.) |
-| `Get-TeamsCallQueue`    | Get-TeamsCQ    | Get-CsCallQueue     | Queries a Call Queue with friendly inputs (UPN) and output         |
-| `Set-TeamsCallQueue`    | Set-TeamsCQ    | Set-CsCallQueue     | Changes a Call Queue with friendly inputs (File Names, UPNs, etc.) |
-| `Remove-TeamsCallQueue` | Remove-TeamsCQ | Remove-CsCallQueue  | Removes a Call Queue from the Tenant                               |
+| Function                                         | Alias          | Description                                                        |
+| ------------------------------------------------ | -------------- | ------------------------------------------------------------------ |
+| `New-TeamsCallQueue`<br/>(New-CsCallQueue)       | New-TeamsCQ    | Creates a Call Queue with friendly inputs (File Names, UPNs, etc.) |
+| `Get-TeamsCallQueue`<br/>(Get-CsCallQueue)       | Get-TeamsCQ    | Queries a Call Queue with friendly inputs (UPN) and output         |
+| `Set-TeamsCallQueue`<br/>(Set-CsCallQueue)       | Set-TeamsCQ    | Changes a Call Queue with friendly inputs (File Names, UPNs, etc.) |
+| `Remove-TeamsCallQueue`<br/>(Remove-CsCallQueue) | Remove-TeamsCQ | Removes a Call Queue from the Tenant                               |
 
 ### Auto Attendants
 
 The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that the `CsAutoAttendant` CmdLets are feeling to be all over the place. Multiple CmdLets have to be used in conjunction in order to create an Auto Attendant. No defaults are available. The `TeamsAutoAttendant` CmdLets try to address that. From the basic NEW-Command that - without providing *any* Parameters (except the name of course) can create an Auto Attendant entity. This simplifies things a bit and tries to get you 80% there without lifting much of a finger. Amending it afterwards in the Admin Center is my current mantra.
 
-| Function                    | Alias                                     | Underlying Function         | Description                                                                                                                                                                                          |
-| --------------------------- | ----------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `New-TeamsAutoAttendant`    | New-TeamsAA                               | New-CsTeamsAutoAttendant    | Creates an Auto Attendant with defaults (Disconnect, Standard Business Hours schedule, etc.)                                                                                                         |
-| `Get-TeamsAutoAttendant`    | Get-TeamsAA                               | Get-CsTeamsAutoAttendant    | Queries an Auto Attendant                                                                                                                                                                            |
-|                             | Set-TeamsAutoAttendant,<br /> Set-TeamsAA | Set-CsTeamsAutoAttendant    | Changes an Auto Attendant with friendly inputs (Not Built yet. Need to design first!). This is currently just an alias to apply a AutoAttendant Object once loaded with GET and changed accordingly. |
-| `Remove-TeamsAutoAttendant` | Remove-TeamsAA                            | Remove-CsTeamsAutoAttendant | Removes an Auto Attendant from the Tenant                                                                                                                                                            |
+| Function                                                 | Alias                                    | Description                                                                                                                                                                                          |
+| -------------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `New-TeamsAutoAttendant`<br/>(New-CsAutoAttendant)       | New-TeamsAA                              | Creates an Auto Attendant with defaults (Disconnect, Standard Business Hours schedule, etc.)                                                                                                         |
+| `Get-TeamsAutoAttendant`<br/>(Get-CsAutoAttendant)       | Get-TeamsAA                              | Queries an Auto Attendant                                                                                                                                                                            |
+| NONE<br/>(Set-CsAutoAttendant)                           | Set-TeamsAA,<br />Set-TeamsAutoAttendant | Changes an Auto Attendant with friendly inputs (Not Built yet. Need to design first!). This is currently just an alias to apply a AutoAttendant Object once loaded with GET and changed accordingly. |
+| `Remove-TeamsAutoAttendant`<br/>(Remove-CsAutoAttendant) | Remove-TeamsAA                           | Removes an Auto Attendant from the Tenant                                                                                                                                                            |
 
 #### Auto Attendant Support Functions
 
 The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that to create objects connected to Auto Attendants have spawned a few support functions. Keeping in step with them and simplifying their use a bit is what my take on them represents.
 
-| Function                               | Alias                | Underlying Function                    | Description                                                                                                                 |
-| -------------------------------------- | -------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `New-TeamsAutoAttendantDialScope`      | New-TeamsAADialScope | New-CsTeamsAutoAttendantDialScope      | Creates a `DialScope` Object given Office 365 Group Names                                                                   |
-| `New-TeamsAutoAttendantPrompt`         | New-TeamsAAPrompt    | New-CsTeamsAutoAttendantPrompt         | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String) |
-| `New-TeamsAutoAttendantSchedule`       | New-TeamsAASchedule  | New-CsTeamsAutoAttendantSchedule       | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants               |
-| `New-TeamsAutoAttendantCallableEntity` | New-TeamsAAEntity    | New-CsTeamsAutoAttendantCallableEntity | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)      |
+| Function (Underlying)                                                           | Alias                | Description                                                                                                                 |
+| ------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `New-TeamsAutoAttendantDialScope`<br />(New-CsAutoAttendantDialScope)           | New-TeamsAADialScope | Creates a `DialScope` Object given Office 365 Group Names                                                                   |
+| `New-TeamsAutoAttendantPrompt`<br />(New-CsAutoAttendantPrompt)                 | New-TeamsAAPrompt    | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String) |
+| `New-TeamsAutoAttendantSchedule`<br />(New-CsAutoAttendantSchedule)             | New-TeamsAASchedule  | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants               |
+| `New-TeamsAutoAttendantCallableEntity`<br />(New-CsAutoAttendantCallableEntity) | New-TeamsAAEntity    | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)      |
 
 ### Lookup Commands
 
@@ -166,10 +166,8 @@ NOTE: Private functions are not exported and also not listed here.
 
 ## Change Log
 
-Please see VERSION.md for a detailed breakdown of the Change log.
-
+- Please see VERSION.md for a detailed breakdown of the Change log.
 - Changes for Pre-Releases are saved in VERSION-PreRelease.md
-- Changes for Releases are saved in VERSION.md
 
 ***
 
@@ -185,8 +183,6 @@ Please see VERSION.md for a detailed breakdown of the Change log.
 - Adding all Policies to `Set-TeamsUserPolicy` - currently only 6 are supported.
 - Performance improvements, bug fixing and more testing
 - Adding Functional improvements to lookup
-  - Finding specific Call Queues that have a specific Agent assigned as a User or as an Overflow/Timeout target (maybe even cascading through linked Groups... depending)
-  - Auto Attendant extensions (TBA)
   - Licensing. Embedding of new Functions and replacement of current Variables. (v21.01)
   - etc.
 - Comparing backups, changed elements for Change control... Looking at Lee Fords backup scripts :)
