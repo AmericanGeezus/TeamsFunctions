@@ -250,12 +250,12 @@ function Get-AzureAdLicense {
 
     # Adding Microsoft 365 Phone System – Virtual User
     [System.Collections.ArrayList]$ServicePlanPSVU = @()
-    $ServicePlanPSVU.Add([TFTeamsServicePlan]::new("Phone System - Virtual User", "MCOEV_VIRTUALUSER", "f47330e9-c134-43b3-9993-e7f004506889", $true))
+    [void]$ServicePlanPSVU.Add([TFTeamsServicePlan]::new("Phone System - Virtual User", "MCOEV_VIRTUALUSER", "f47330e9-c134-43b3-9993-e7f004506889", $true))
     [void]$Products.Add([TFTeamsLicense]::new( "Microsoft 365 Phone System – Virtual User", "PHONESYSTEM_VIRTUALUSER", "Standalone", "PhoneSystemVirtualUser", $false, $true, "440eaaa8-b3e0-484b-a8be-62870b9ba70a", $ServicePlanPSVU))
 
     # Adding Communication Credits
     [System.Collections.ArrayList]$ServicePlanCC = @()
-    $ServicePlanCC.Add([TFTeamsServicePlan]::new("Communications Credits", "MCOPSTNC", "505e180f-f7e0-4b65-91d4-00d670bbd18c", $true))
+    [void]$ServicePlanCC.Add([TFTeamsServicePlan]::new("Communications Credits", "MCOPSTNC", "505e180f-f7e0-4b65-91d4-00d670bbd18c", $true))
     [void]$Products.Add([TFTeamsLicense]::new( "Communications Credits", "MCOPSTNC", "CallingPlan", "CommunicationsCredits", $false, $false, "47794cd0-f0e5-45c5-9033-2eb6b5fc84e0", $ServicePlanCC))
 
 

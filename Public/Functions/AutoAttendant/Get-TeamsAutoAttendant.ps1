@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   BETA
+# Updated:  01-DEC-2020
+# Status:   RC
 
 
 
@@ -61,7 +61,7 @@ function Get-TeamsAutoAttendant {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

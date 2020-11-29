@@ -40,11 +40,11 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
   - Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers.
   - It has been extended to cover not only lookup by UPN, but also Searchstring, making it into one command that can more reliably find User Objects.
   - Returns all User Objects found, or `$null` if not.
-- `Find-TeamsCallableEntity` (ALPHA)
+- `Find-TeamsCallableEntity`
   - Returns all Call Queue or Auto Attendant Names where the provided Entity is used/connected to.
-  - Parameter `Scope` can be used to limit searches to Call Queues or Auto Attendants (until fully developed, this is hard-coded to 'CallQueue')
+  - Parameter `Scope` can be used to limit searches to Call Queues or Auto Attendants
   - For Call Queues, this can be as an Agent (User, or inherited via Group), as a Group, OverflowTarget or TimeoutTarget
-  - For Auto Attendants, this can be as an Operator, Routing Target or Menu Option (currently not built, but will see extension until it reaches RC status)
+  - For Auto Attendants, this can be as an Operator, Routing Target or Menu Option
 - `Get-TeamsCallableEntity`:
   - Command can be used to determine type and usability for AutoAttendants or CallQueues: <br />Accepts a String which can be an Office 365 Group Name, Upn or TelUri
   - Returning a Custom Object with the same parameters (and more) as a CallableEntity Object
@@ -55,6 +55,7 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
 - `Get-TeamsLicenseServicePlan` - A Replacement for the variable $TeamsServicePlans which outputs the same information, but protected by accidental deletion of the Variable
 - `Get-AzureAdLicense` - EXPERIMENTAL - A Script to read from Microsoft Docs, reading the published Content. Eventually a replacement for the two above, but not yet :) - Returns Object containing all Microsoft 365 License Products. Can be `-FilterRelevantForTeams`
 - `Get-AzureAdLicenseServicePlan` - EXPERIMENTAL - Same as above, just displaying all ServicePlans instead of License Products. Can also be `-FilterRelevantForTeams`
+- `Enable-TeamsUserForEnterpriseVoice` (Alias: `Enable-Ev`) - I needed a shortcut.
 
 ### Updated Functions & Bugfixes
 
