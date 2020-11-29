@@ -316,7 +316,7 @@ function Connect-Me {
 
     #Output
     Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Connected to: " -ForegroundColor Green -NoNewline
-    $ConnectedTo
+    Write-Host "$ConnectedTo"
 
   } #process
 

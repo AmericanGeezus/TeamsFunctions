@@ -102,7 +102,7 @@ function Merge-AutoAttendantArtefact {
       "MenuOption" {
         foreach ($O in $Object) {
           # Enumerating Call Target
-          #TODO - Align Get-TeamsAutoAttendantCallableEntity with this one? Maybe extend by searching by type
+          #TODO - Align Get-TeamsCallableEntity with this one? Maybe extend by searching by type
           if ($O.CallTarget.Identity) {
             $CallTargetEntity = switch ($O.CallTarget.Type) {
               'User' { $(Get-AzureADUser -ObjectId $O.CallTarget.Identity).UserPrincipalName }

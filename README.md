@@ -89,13 +89,12 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 
 The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that to create objects connected to Auto Attendants have spawned a few support functions. Keeping in step with them and simplifying their use a bit is what my take on them represents.
 
-| Function                               | Alias                | Underlying Function                    | Description                                                                                                                                                     |
-| -------------------------------------- | -------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `New-TeamsAutoAttendantDialScope`      | New-TeamsAADialScope | New-CsTeamsAutoAttendantDialScope      | Creates a `DialScope` Object given Office 365 Group Names                                                                                                       |
-| `New-TeamsAutoAttendantPrompt`         | New-TeamsAAPrompt    | New-CsTeamsAutoAttendantPrompt         | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String)                                     |
-| `New-TeamsAutoAttendantSchedule`       | New-TeamsAASchedule  | New-CsTeamsAutoAttendantSchedule       | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants                                                   |
-| `New-TeamsAutoAttendantCallableEntity` | New-TeamsAAEntity    | New-CsTeamsAutoAttendantCallableEntity | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)                                          |
-| `Get-TeamsAutoAttendantCallableEntity` | Get-TeamsAAEntity    | N/A (new)                              | Creates a new Object emulating the output of a `Callable Entity`. Also usable for Call Queues, this validates the Object type and its usability for CQs or AAs. |
+| Function                               | Alias                | Underlying Function                    | Description                                                                                                                 |
+| -------------------------------------- | -------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `New-TeamsAutoAttendantDialScope`      | New-TeamsAADialScope | New-CsTeamsAutoAttendantDialScope      | Creates a `DialScope` Object given Office 365 Group Names                                                                   |
+| `New-TeamsAutoAttendantPrompt`         | New-TeamsAAPrompt    | New-CsTeamsAutoAttendantPrompt         | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String) |
+| `New-TeamsAutoAttendantSchedule`       | New-TeamsAASchedule  | New-CsTeamsAutoAttendantSchedule       | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants               |
+| `New-TeamsAutoAttendantCallableEntity` | New-TeamsAAEntity    | New-CsTeamsAutoAttendantCallableEntity | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)      |
 
 ### Lookup Commands
 
@@ -110,6 +109,8 @@ The more prominent helper functions. Get-AzureAdAssignedAdminRoles is run with `
 | `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)                                                                |
 | `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...                                                                |
 | `Get-TeamsObjectType`           | Returns the type of any given Object to identify its use in CQs and AAs.                                                                    |
+| `Get-TeamsCallableEntity`       | Creates a new Object emulating the output of a `Callable Entity`, validating the Object type and its usability for CQs or AAs.              |
+| `Find-TeamsCallableEntity`      | Searches all Call Queues and/or all Auto Attendants for a connected/targeted `Callable Entity` (TelURI, User, Group, Resource Account).     |
 
 ### Backup and Restore
 
@@ -139,24 +140,24 @@ Curtesy of Ken Lasko
 
 These are helper functions for testing Connections and Modules. All Functions return boolean output.
 
-| Function                        | Description                                                                                |
-| ------------------------------- | ------------------------------------------------------------------------------------------ |
-| `Assert-AzureAdConnection`               | Tests connection and visual feedback.                                                                                  |
-| `Assert-MicrosoftTeamsConnection`        | Tests connection and visual feedback.                                                                                  |
-| `Assert-SkypeOnlineConnection`           | Tests connection and visual feedback. **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*         |
-| `Test-AzureAdConnection`        | Verifying a Session to AzureAD exists                                                      |
-| `Test-MicrosoftTeamsConnection` | Verifying a Session to MicrosoftTeams exists                                               |
-| `Test-SkypeOnlineConnection`    | Verifying a Session to SkypeOnline exists                                                  |
-| `Test-ExchangeOnlineConnection` | Verifying a Session to ExchangeOnline exists                                               |
-| `Test-Module`                   | Verifying the specified Module is loaded                                                   |
-| `Test-AzureAdUser`              | Testing whether the User exists in AzureAd (this also returns TRUE for Resource Accounts!) |
-| `Test-AzureAdGroup`             | Testing whether the Group exists in AzureAd                                                |
-| `Test-TeamsResourceAccount`     | Testing whether a Resource Account exists in AzureAd                                       |
-| `Test-TeamsUser`                | Testing whether the User exists in SkypeOnline/Teams                                       |
-| `Test-TeamsUserLicense`         | Testing whether the User has a specific Teams License (from `Get-TeamsLicense`)            |
-| `Test-TeamsUserHasCallPlan`     | Testing whether the User has any Call Plan License (from `Get-TeamsLicense`)               |
-| `Test-TeamsTenantPolicy`        | Tests whether any Policy is present in the Tenant (Uses Invoke-Expression)                 |
-| `Test-TeamsExternalDNS`         | Tests DNS Records for Skype for Business Online and Teams                                  |
+| Function                          | Description                                                                                                    |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `Assert-AzureAdConnection`        | Tests connection and visual feedback.                                                                          |
+| `Assert-MicrosoftTeamsConnection` | Tests connection and visual feedback.                                                                          |
+| `Assert-SkypeOnlineConnection`    | Tests connection and visual feedback. **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life* |
+| `Test-AzureAdConnection`          | Verifying a Session to AzureAD exists                                                                          |
+| `Test-MicrosoftTeamsConnection`   | Verifying a Session to MicrosoftTeams exists                                                                   |
+| `Test-SkypeOnlineConnection`      | Verifying a Session to SkypeOnline exists                                                                      |
+| `Test-ExchangeOnlineConnection`   | Verifying a Session to ExchangeOnline exists                                                                   |
+| `Test-Module`                     | Verifying the specified Module is loaded                                                                       |
+| `Test-AzureAdUser`                | Testing whether the User exists in AzureAd (this also returns TRUE for Resource Accounts!)                     |
+| `Test-AzureAdGroup`               | Testing whether the Group exists in AzureAd                                                                    |
+| `Test-TeamsResourceAccount`       | Testing whether a Resource Account exists in AzureAd                                                           |
+| `Test-TeamsUser`                  | Testing whether the User exists in SkypeOnline/Teams                                                           |
+| `Test-TeamsUserLicense`           | Testing whether the User has a specific Teams License (from `Get-TeamsLicense`)                                |
+| `Test-TeamsUserHasCallPlan`       | Testing whether the User has any Call Plan License (from `Get-TeamsLicense`)                                   |
+| `Test-TeamsTenantPolicy`          | Tests whether any Policy is present in the Tenant (Uses Invoke-Expression)                                     |
+| `Test-TeamsExternalDNS`           | Tests DNS Records for Skype for Business Online and Teams                                                      |
 
 NOTE: Private functions are not exported and also not listed here.
 

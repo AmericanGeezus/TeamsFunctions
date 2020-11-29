@@ -14,6 +14,7 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 - `TeamsResourceAccount` Scripts are still in RC Status - Multiple code improvements have been applied. See below.
 - `TeamsCallQueue` Scripts are still in RC Status.
 - `TeamsAutoAttendant` Scripts remain in BETA Status as improvements are still ongoing.
+- `TeamsCallableEntity` Scripts have been added (GET and FIND)
 
 ### Focus for this month
 
@@ -25,7 +26,7 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ### New Functions
 
-Some Helper functions for Call Queues and Auto Attendants, to find the type of Object: `Get-TeamsObjectType` and `Get-TeamsAutoAttendantCallableEntity`. In the Resource Account family I have added `Test-TeamsResourceAccount`. To simplify Objects in AzureAd, `Find-AzureAdGroup` and `Find-AzureAdUser` (renamed and revamped Get-AzureAdUserFromUpn)
+Some Helper functions for Call Queues and Auto Attendants, to find the type of Object: `Get-TeamsObjectType`, `Get-TeamsCallableEntity` and `Find-TeamsCallableEntity`. In the Resource Account family I have added `Test-TeamsResourceAccount`. To simplify Objects in AzureAd, `Find-AzureAdGroup` and `Find-AzureAdUser` (this was Get-AzureAdUserFromUpn, now renamed and revamped)
 
 - `Test-TeamsResourceAccount`:
   - New Script to test whether an Object is a ResourceAccount and it has two modes, Quick and Thorough (default):
@@ -39,8 +40,12 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
   - Formerly known as "Get-AzureAdUserFromUPN", this command now simplifies searches against AdUsers.
   - It has been extended to cover not only lookup by UPN, but also Searchstring, making it into one command that can more reliably find User Objects.
   - Returns all User Objects found, or `$null` if not.
-- `Get-TeamsAutoAttendantCallableEntity`:
-  - Command can be used to resolve existing callable entities linked to Auto Attendants: <br />Accepts a String which can be an ObjectId
+- `Find-TeamsCallableEntity` (ALPHA)
+  - Returns all Call Queue or Auto Attendant Names where the provided Entity is used/connected to.
+  - Parameter `Scope` can be used to limit searches to Call Queues or Auto Attendants (until fully developed, this is hard-coded to 'CallQueue')
+  - For Call Queues, this can be as an Agent (User, or inherited via Group), as a Group, OverflowTarget or TimeoutTarget
+  - For Auto Attendants, this can be as an Operator, Routing Target or Menu Option (currently not built, but will see extension until it reaches RC status)
+- `Get-TeamsCallableEntity`:
   - Command can be used to determine type and usability for AutoAttendants or CallQueues: <br />Accepts a String which can be an Office 365 Group Name, Upn or TelUri
   - Returning a Custom Object with the same parameters (and more) as a CallableEntity Object
   - Adds `UsableInCqAs` to indicate which which OverflowAction or TimeoutAction this entity can be used.

@@ -92,7 +92,7 @@ function Get-TeamsCallQueue {
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name')) {
       Write-Verbose -Message "Listing names only. To query individual items, please provide Name" -Verbose
-      (Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction STOP).Name
+      (Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Name
     }
     else {
       #CHECK Explore Workflows with Parallel parsing:
@@ -115,12 +115,6 @@ function Get-TeamsCallQueue {
           $QueueCount = $Queues.Count
         }
 
-        # Initialising Arrays
-        [System.Collections.ArrayList]$UserObjects = @()
-        [System.Collections.ArrayList]$DLObjects = @()
-        #[System.Collections.ArrayList]$AgentObjects = @()
-        [System.Collections.ArrayList]$AIObjects = @()
-
         # Reworking Objects
         $QueueCounter = 0
         Write-Verbose -Message "[PROCESS] Finding parsable Objects for $QueueCount Queues"
@@ -130,6 +124,16 @@ function Get-TeamsCallQueue {
           $QueueCounter++
           [int]$step = 0
           [int]$sMax = 6
+
+          # Initialising Arrays
+          [System.Collections.ArrayList]$UserObjects = @()
+          [System.Collections.ArrayList]$DLObjects = @()
+          [System.Collections.ArrayList]$AIObjects = @()
+
+          if ( $Detailed ) {
+            [System.Collections.ArrayList]$AgentObjects = @()
+            $sMax++
+          }
 
           #region Finding OverflowActionTarget
           $Operation = "Parsing OverflowActionTarget"
@@ -289,16 +293,19 @@ function Get-TeamsCallQueue {
           }
           # Output: $UserObjects.UserPrincipalName
 
-          <# Removed due to duplicity
-          # parsing users twice is not great.
-          # Agents
-          Write-Verbose -Message "'$($Q.Name)' - Parsing Agents"
-          foreach ($Agent in $Q.Agents) {
-            $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-            [void]$AgentObjects.Add($AgentObject)
+          if ( $Detailed ) {
+            # Parsing Agents only when the detailed Switch is used
+            $Operation = "Parsing Agents"
+            $step++
+            Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+            Write-Verbose -Message "'$($Q.Name)' - $Operation"
+
+            foreach ($Agent in $Q.Agents) {
+              $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+              [void]$AgentObjects.Add($AgentObject)
+            }
+            # Output: $AgentObjects.UserPrincipalName
           }
-          # Output: $AgentObjects.UserPrincipalName
-          #>
           #endregion
 
           #region Application Instance UPNs
@@ -369,9 +376,10 @@ function Get-TeamsCallQueue {
           $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
           $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
           $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped
-          #$QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
 
           if ($PSBoundParameters.ContainsKey('Detailed')) {
+            # Displays Agents
+            $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
             # Displays all except reserved Parameters (Microsoft Internal)
             $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
             $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId

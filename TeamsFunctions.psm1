@@ -94,6 +94,25 @@ class TFTeamsLicense {
   }
 }
 
+class TFCallableEntityConnection {
+  [string]$LinkedAs
+  [string]$ObjectType
+  [string]$ObjectName
+  [string]$ObjectId
+
+  TFCallableEntityConnection(
+    [string]$LinkedAs,
+    [string]$ObjectType,
+    [string]$ObjectName,
+    [string]$ObjectId
+  ) {
+    $this.LinkedAs = $LinkedAs
+    $this.ObjectType = $ObjectType
+    $this.ObjectName = $ObjectName
+    $this.ObjectId = $ObjectId
+  }
+}
+
 #region Licensing Table
 # $PSCustomObject created to simplifying any licensing related lookup
 
