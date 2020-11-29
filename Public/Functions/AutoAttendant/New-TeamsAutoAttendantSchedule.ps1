@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   BETA
+# Updated:  01-DEC-2020
+# Status:   RC
 
 
 
@@ -96,10 +96,7 @@ function New-TeamsAutoAttendantSchedule {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

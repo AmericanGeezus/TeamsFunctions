@@ -66,9 +66,6 @@ function New-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 

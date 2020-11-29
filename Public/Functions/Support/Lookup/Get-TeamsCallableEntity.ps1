@@ -55,7 +55,7 @@ function Get-TeamsCallableEntity {
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, Position = 0, HelpMessage = 'Identity of the Callable Entity')]
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = 'Identity of the Callable Entity')]
     [Alias('ObjectId')]
     [string[]]$Identity
 

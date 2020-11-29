@@ -227,9 +227,6 @@ function New-TeamsAutoAttendant {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
     Show-FunctionStatus -Level Beta
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 

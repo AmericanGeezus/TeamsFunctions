@@ -8,7 +8,7 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 ### Component Status
 
 - Function Status: 66 Public CmdLets, 8 private CmdLets, 15 Live
-- Development Status: 34 PreLive, 12 RC Functions; 5 in Beta, 0 in Alpha
+- Development Status: 35 PreLive, 14 RC Functions; 2 in Beta, 0 in Alpha
 - Pester Test Status: Tests Passed: 864, Failed: 0, Skipped: 0 NotRun: 0
 - `TeamsUserVoiceConfig` Scripts have advanced to RC Status (some are already PreLive)
 - `TeamsResourceAccount` Scripts are still in RC Status - Multiple code improvements have been applied. See below.

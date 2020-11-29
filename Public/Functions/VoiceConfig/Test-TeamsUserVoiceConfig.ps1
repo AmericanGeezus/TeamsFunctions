@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   BETA
 
+
+
+
 function Test-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
@@ -69,9 +72,6 @@ function Test-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    # Caveat - Script in Development
-    $VerbosePreference = "Continue"
-    $DebugPreference = "Continue"
     Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 

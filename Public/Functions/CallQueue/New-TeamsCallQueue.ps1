@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   PreLive
+# Updated:  01-DEC-2020
+# Status:   RC
 
 
 
@@ -341,7 +341,6 @@ function New-TeamsCallQueue {
   ) #param
 
   begin {
-    # Caveat - Script in Development
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 

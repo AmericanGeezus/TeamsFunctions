@@ -320,7 +320,6 @@ function Set-TeamsCallQueue {
   ) #param
 
   begin {
-    # Caveat - Script in Development
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
