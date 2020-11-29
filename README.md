@@ -34,14 +34,15 @@ Functions for licensing in AzureAD. Hopefully simplifies license application a b
 
 Functions for querying Teams Voice Configuration, both for Direct Routing and Calling Plans
 
-| Function                      | Alias           | Description                                                                                                                                              |
-| ----------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Get-TeamsTenantVoiceConfig`  |                 | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                              |
-| `Get-TeamsUserVoiceConfig`    | Get-TeamsUVC    | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output. Switch *DiagnosticLevel* displays more parameters |
-| `Find-TeamsUserVoiceConfig`   | Find-TeamsUVC   | Queries Voice Configuration parameters against all Users on the tenant. Good to find where a specific Number is assigned to.                             |
-| `Set-TeamsUserVoiceConfig`    | Set-TeamsUVC    | Applies a full Set of Voice Configuration (Number, OnlineVoiceRouting Policy, Tenant Dial Plan, etc.) to the provided Identity                           |
-| `Remove-TeamsUserVoiceConfig` | Remove-TeamsUVC | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set        |
-| `Test-TeamsUserVoiceConfig`   | Test-TeamsUVC   | TBC - Tests an individual VoiceConfig Package against the provided Identity                                                                              |
+| Function                             | Alias           | Description                                                                                                                                              |
+| ------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Get-TeamsTenantVoiceConfig`         |                 | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                              |
+| `Get-TeamsUserVoiceConfig`           | Get-TeamsUVC    | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output. Switch *DiagnosticLevel* displays more parameters |
+| `Find-TeamsUserVoiceConfig`          | Find-TeamsUVC   | Queries Voice Configuration parameters against all Users on the tenant. Good to find where a specific Number is assigned to.                             |
+| `Set-TeamsUserVoiceConfig`           | Set-TeamsUVC    | Applies a full Set of Voice Configuration (Number, OnlineVoiceRouting Policy, Tenant Dial Plan, etc.) to the provided Identity                           |
+| `Remove-TeamsUserVoiceConfig`        | Remove-TeamsUVC | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set        |
+| `Test-TeamsUserVoiceConfig`          | Test-TeamsUVC   | Tests an individual VoiceConfig Package against the provided Identity                                                                                    |
+| `Enable-TeamsUserForEnterpriseVoice` | Enable-Ev       | Enables a User for Enterprise Voice - I needed a Shortcut                                                                                                |
 
 ### Resource Accounts
 
