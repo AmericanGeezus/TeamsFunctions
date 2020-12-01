@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   RC
 
-
+#TODO Add validation for Extensions
 
 
 function Set-TeamsUserVoiceConfig {
