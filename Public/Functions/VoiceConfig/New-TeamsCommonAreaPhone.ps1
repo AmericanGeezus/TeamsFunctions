@@ -2,12 +2,12 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   RC
+# Status:   ALPHA
 
-#TODO Add validation for Extensions
+#TODO Build
 
 
-function Set-TeamsUserVoiceConfig {
+function New-TeamsCommonAreaPhone {
   <#
 	.SYNOPSIS
 		Enables a User to consume Voice services in Teams (Pstn breakout)
@@ -75,8 +75,8 @@ function Set-TeamsUserVoiceConfig {
     Test-TeamsUserVoiceConfig
 	#>
 
-  [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = "DirectRouting", ConfirmImpact = 'Medium')]
-  [Alias('Set-TeamsUVC')]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [Alias('New-TeamsCAP')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, Position = 0, HelpMessage = "UserPrincipalName of the User")]
@@ -93,9 +93,9 @@ function Set-TeamsUserVoiceConfig {
     [Alias('TDP')]
     [string]$TenantDialPlan,
 
-    [Parameter(Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
+    [Parameter(Mandatory, HelpMessage = "Number to assign to the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?[0-9]{10,15}$") {
+        If ($_ -match "^(tel:)?\+?[0-9]{3,4}-?[0-9]{3}-?[0-9]{3}[0-9]{1,5}((;ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
@@ -132,7 +132,7 @@ function Set-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level ALPHA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -167,7 +167,28 @@ function Set-TeamsUserVoiceConfig {
   } #begin
 
   process {
+    return "This function is not yet built, sorry!"
+
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+
+
+    <# Design
+    Wrap for New-AzureAdUser with defaults
+    Analog to New-TeamsResourceAccount, but with CAP License and optional Phone Number to be applied in one go.
+    1 DisplayName - String to be normalised
+    2
+
+
+New-AzureAdUser -UserPrincipalName $UserPrincipalName001 -MailNickName $MailNickName001 -DisplayName "$DisplayName001" -UsageLocation US -AccountEnabled $false -PasswordProfile $PasswordProfile;
+# Wait 10-20s
+Set-TeamsUserLicense -Identity $UserPrincipalName001 -Add CommonAreaPhone;
+# Wait 5-10mins
+Set-TeamsUserVoiceConfig -DirectRouting -Identity $UserPrincipalName001 -PhoneNumber "tel:+12038163105;ext=3105" -OVP "OVP-AMER-GSIP" -TDP "DP-US-DDI" -PassThru
+
+
+    #>
+
     Write-Verbose -Message "[PROCESS] Processing '$Identity'"
     #region Information Gathering and Verification
     # Excluding Resource Accounts
@@ -463,4 +484,4 @@ function Set-TeamsUserVoiceConfig {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Set-TeamsUserVoiceConfig
+} #New-TeamsCommonAreaPhone

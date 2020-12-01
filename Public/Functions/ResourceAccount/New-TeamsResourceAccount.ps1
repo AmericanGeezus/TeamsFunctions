@@ -119,7 +119,7 @@ function New-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "Telephone Number to assign")]
     [ValidateScript( {
-        If ($_ -match "^\+[0-9]{10,15}$") {
+        If ($_ -match "^(tel:)?\+?[0-9]{3,4}-?[0-9]{3,4}-?[0-9]{4,5}[0-9]{3,4}((;ext=[0-9]{3,8}))?$") {
           $True
         }
         else {

@@ -81,7 +81,15 @@ function Get-TeamsResourceAccount {
     [string]$ApplicationType,
 
     [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName = $true, HelpMessage = "Telephone Number of the Object")]
-    [ValidateLength(3, 16)]
+    [ValidateScript( {
+        If ($_ -match "^(tel:)?\+?[0-9]{3,4}-?[0-9]{3,4}-?[0-9]{4,5}[0-9]{3,4}((;ext=[0-9]{3,8}))?$") {
+          $True
+        }
+        else {
+          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
+          $false
+        }
+      })]
     [Alias("Tel", "Number", "TelephoneNumber")]
     [string]$PhoneNumber
   ) #param
@@ -115,7 +123,7 @@ function Get-TeamsResourceAccount {
     $Operation = "Gathering Phone Numbers from the Tenant"
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+    $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
   } #begin
 
   process {
@@ -226,9 +234,9 @@ function Get-TeamsResourceAccount {
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
-        $PhoneNumberIsMSNumber = $null
-        $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
-        if ($PhoneNumberIsMSNumber) {
+        $MSNumber = $null
+        $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+        if ($MSNumber -in $MSTelephoneNumbers) {
           $ResourceAccountPhoneNumberType = "Microsoft Number"
         }
         else {
