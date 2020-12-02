@@ -146,7 +146,7 @@ function Get-TeamsCallQueue {
             switch ($Q.OverflowActionTarget.Type) {
               "ApplicationEndpoint" {
                 try {
-                  $OATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                  $OATobject = Get-CsOnlineApplicationInstance "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                   $OAT = $OATobject.UserPrincipalName
                 }
                 catch {
@@ -217,7 +217,7 @@ function Get-TeamsCallQueue {
             switch ($Q.TimeoutActionTarget.Type) {
               "ApplicationEndpoint" {
                 try {
-                  $TATobject = Get-CsOnlineApplicationInstance -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
+                  $TATobject = Get-CsOnlineApplicationInstance "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
                   $TAT = $TATObject.UserPrincipalName
                 }
                 catch {
