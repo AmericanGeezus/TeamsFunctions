@@ -345,7 +345,7 @@ function Set-TeamsUserVoiceConfig {
           }
 
           # Apply $PhoneNumber as OnPremLineUri
-          $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI #CHECK LineURI or E164
+          $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI
           $step++
           Write-Progress -Id 0 -Status "Provisioning for Direct Routing" -CurrentOperation "Applying Phone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "Applying Phone Number as '$Number'"
