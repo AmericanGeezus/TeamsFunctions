@@ -263,12 +263,16 @@ function Set-TeamsResourceAccount {
         $PhoneNumber = $null
       }
       elseif ($PhoneNumber -match "^(tel:)?\+?[0-9]{6,15}((;ext=[0-9]{3,8}))?$") {
-        Write-Verbose -Message "PhoneNumber '$PhoneNumber' is in a usable format and will be applied"
+        if ( $PhoneNumber -match "ext" ) {
+          Write-Warning -Message "PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
+        }
+        $E164Number = Format-StringForUse $PhoneNumber -As E164
+        Write-Verbose -Message "PhoneNumber '$E164Number' is in a usable format and will be applied"
         # Checking number is free
         Write-Verbose -Message "PhoneNumber - Finding Number assignments"
-        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber
+        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
         if ($UserWithThisNumber) {
-          Write-Error -Message "'$Name' Number '$PhoneNumber' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
+          Write-Error -Message "'$Name' Number '$E164Number' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
         }
       }
       else {
@@ -547,18 +551,16 @@ function Set-TeamsResourceAccount {
             $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
             if ($MSNumber -in $MSTelephoneNumbers) {
               # Set in VoiceApplicationInstance
-              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
+              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
                 Write-Verbose -Message "'$Name' Number '$Number' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans" -Verbose
                 $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $E164Number -ErrorAction STOP)
               }
             }
             else {
               # Set in ApplicationInstance
-              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $PhoneNumber")) {
-                #CHECK application of this, can Tel: be assigned or does ithave to be E164
-                $LineURI = Format-StringForUse $PhoneNumber -As LineURI
-                Write-Verbose -Message "'$Name' Number '$LineURI' not found in Tenant, assuming provisioning for: Direct Routing" -Verbose
-                $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $LineURI -ErrorAction STOP)
+              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
+                Write-Verbose -Message "'$Name' Number '$E164Number' not found in Tenant, assuming provisioning for: Direct Routing" -Verbose
+                $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $E164Number -ErrorAction STOP)
               }
             }
           }

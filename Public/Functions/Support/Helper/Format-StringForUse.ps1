@@ -54,7 +54,7 @@ function Format-StringForUse {
   [CmdletBinding(DefaultParameterSetName = "Manual")]
   [OutputType([String])]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, HelpMessage = "String to reformat")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "String to reformat")]
     [string]$InputString,
 
     [Parameter(HelpMessage = "Replacement character or string for each removed character")]

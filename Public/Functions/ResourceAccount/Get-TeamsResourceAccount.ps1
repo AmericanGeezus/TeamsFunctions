@@ -235,7 +235,7 @@ function Get-TeamsResourceAccount {
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
-        $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+        $MSNumber = Format-StringRemoveSpecialCharacter -String $ResourceAccount.PhoneNumber | Format-StringForUse -SpecialChars "tel"
         if ($MSNumber -in $MSTelephoneNumbers) {
           $ResourceAccountPhoneNumberType = "Microsoft Number"
         }
