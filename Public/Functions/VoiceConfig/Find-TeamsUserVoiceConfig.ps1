@@ -209,7 +209,7 @@ function Find-TeamsUserVoiceConfig {
 
       "Ext" {
         foreach ($Ext in $Extension) {
-          Write-Verbose -Message "Finding Users with PhoneNumber '$Ext': This will take a bit of time!" -Verbose
+          Write-Verbose -Message "Finding Users with Extension '$Ext': This will take a bit of time!" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f ";ext=$Ext"
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName

@@ -4,6 +4,9 @@
 # Updated:  03-MAY-2020
 # Status:   Live
 
+
+
+
 function Format-StringRemoveSpecialCharacter {
   <#
 	.SYNOPSIS
@@ -43,7 +46,7 @@ function Format-StringRemoveSpecialCharacter {
   [OutputType([String])]
   param
   (
-    [Parameter(ValueFromPipeline)]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "String to reformat")]
     [ValidateNotNullOrEmpty()]
     [Alias('Text')]
     [System.String[]]$String,

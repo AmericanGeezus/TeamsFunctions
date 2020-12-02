@@ -82,11 +82,11 @@ function Get-TeamsResourceAccount {
 
     [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName = $true, HelpMessage = "Telephone Number of the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?[0-9]{3,4}-?[0-9]{3,4}-?[0-9]{4,5}[0-9]{3,4}((;ext=[0-9]{3,8}))?$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?$") {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
+          Write-Host "Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted. Extensions will be stripped" -ForegroundColor Red
           $false
         }
       })]
@@ -160,8 +160,10 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property ApplicationId -EQ -Value $AppId
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      Write-Verbose -Message "PhoneNumber - Searching for PhoneNumber '$PhoneNumber'"
-      $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$PhoneNumber*"
+      #normalise as E164 and strip everything
+      $SearchString = Format-StringRemoveSpecialCharacter $P | Format-StringForUse -SpecialChars "tel"
+      Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
+      $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
     }
     else {
       Write-Verbose -Message "Listing UserPrincipalName only. To query individual items, please provide Identity" -Verbose

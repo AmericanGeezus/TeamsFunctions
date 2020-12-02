@@ -95,11 +95,11 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?[0-9]{10,15}$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
+          Write-Host "Not a valid phone number. E.164 format expected, min 8 digits, but multiple formats accepted. Extensions will be stripped" -ForegroundColor Red
           $false
         }
       })]
