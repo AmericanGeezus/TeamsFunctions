@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 #TODO Add Function to query Hosted Migration Override URL:
-https://uclikeaboss.wordpress.com/2020/02/16/get-sfb-hosted-migration-override-url-programmatically/
+#https://uclikeaboss.wordpress.com/2020/02/16/get-sfb-hosted-migration-override-url-programmatically/
 
 function Get-TeamsTenant {
   <#
