@@ -159,8 +159,8 @@ function New-TeamsAutoAttendantCallableEntity {
 
       }
       "ApplicationEndpoint" {
-        $RAobject = Find-TeamsResourceAccount "$Identity"
-        if ($RAobject) {
+        $RAObject = Find-TeamsResourceAccount "$Identity"
+        if ($RAObject) {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' (VoiceApp - ApplicationInstance - ResourceAccount) used"
           $Id = $RA.ObjectId
         }
