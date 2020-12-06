@@ -4,7 +4,16 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## v20.12.xx pre-release
 
-TBC
+### New
+
+- `Get-TeamsOPU`: Get-CsOnlinePstnUsage is too clunky. It doesn't have a filter/search function. This one does.
+- `Get-TeamsOVR`: Get-CsOnlineVoiceRoute, expanding the Name property
+- `Get-TeamsMGW`: Get-CsOnlinePstnGateway, expanding the Idenity property
+
+### Updated
+
+- `Get-TeamsOVP`: Updated to more consistently display Names instead of individual records (with more than 2)
+- `Get-TeamsTDP`: Updated to more consistently display Names instead of individual records (with more than 2)
 
 ---------------------------------------------
 
