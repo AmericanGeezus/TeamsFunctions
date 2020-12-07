@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
+#CHECK Activation of Roles via PIM / reconnect Skype if it failed before?
 
 
 function Connect-Me {

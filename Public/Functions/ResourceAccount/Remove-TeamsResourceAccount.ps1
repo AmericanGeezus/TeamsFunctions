@@ -18,6 +18,8 @@ function Remove-TeamsResourceAccount {
 	.PARAMETER Force
 		Optional. Will also sever all associations this account has in order to remove it
 		If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
+	.PARAMETER PassThru
+		Optional. Displays UserPrincipalName of removed objects.
 	.EXAMPLE
 		Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
 		Removes a ResourceAccount
@@ -68,7 +70,10 @@ function Remove-TeamsResourceAccount {
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
-    [switch]$Force
+    [switch]$Force,
+
+    [Parameter(Mandatory = $false)]
+    [switch]$PassThru
   ) #param
 
   begin {
@@ -242,8 +247,10 @@ function Remove-TeamsResourceAccount {
       #endregion
       Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
 
-      #CHECK Add PassThru? ($UPN only?)
-
+      # Output
+      if ($PassThru) {
+        Write-Output "AzureAdUser '$UserPrincipalName' removed"
+      }
     }
   } #process
 

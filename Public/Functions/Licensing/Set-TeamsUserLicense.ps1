@@ -33,6 +33,8 @@ function Set-TeamsUserLicense {
     Optional String. ISO3166-Alpha2 CountryCode indicating the Country for the User. Required for Licensing
     If required, the script will try to apply the UsageLocation (pending right).
     If not provided, defaults to 'US'
+	.PARAMETER PassThru
+		Optional. Displays User License Object after action.
   .EXAMPLE
     Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E5
     Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
@@ -143,7 +145,10 @@ function Set-TeamsUserLicense {
     [Switch]$RemoveAll,
 
     [Parameter(HelpMessage = 'Usage Location to be set if not already applied')]
-    [string]$UsageLocation = 'US'
+    [string]$UsageLocation = 'US',
+
+    [Parameter(Mandatory = $false)]
+    [switch]$PassThru
 
   ) #param
 
@@ -499,7 +504,11 @@ function Set-TeamsUserLicense {
         Write-Verbose -Message "'$ID' - Setting Licenses: Done"
       }
 
-      #CHECK add PassThru? Get-TeamsUserLicense
+      # Output
+      if ($PassThru) {
+        Get-TeamsUserLicense $Identity
+      }
+
     }
   } #process
 

@@ -15,6 +15,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Get-TeamsOVP`: Updated to more consistently display Names instead of individual records (with more than 2)
 - `Get-TeamsTDP`: Updated to more consistently display Names instead of individual records (with more than 2)
 - `Get-TeamsTenant` now displays the HostedMigrationOverrideUrl needed to move users
+- `Remove-TeamsResourceAccount`: Added Parameter PassThru to display UPNs of removed Accounts
+- `Remove-TeamsResourceAccountAssociation`: Added Parameter PassThru to display an Objects detailing the Status of the Account and its associations post change
+- `Set-TeamsUserLicense`: Added Parameter PassThru to display the User License Object post change
+- 
 
 ---------------------------------------------
 

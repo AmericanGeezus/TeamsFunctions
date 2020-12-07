@@ -17,6 +17,8 @@ function Remove-TeamsResourceAccountAssociation {
 		Required. UPN(s) of the Resource Account(s) to be removed from a Call Queue or AutoAttendant
 	.PARAMETER Force
 		Optional. Suppresses Confirmation dialog if -Confirm is not provided
+	.PARAMETER PassThru
+		Optional. Displays Object after removal.
 	.EXAMPLE
 		Remove-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
 		Removes the Association of the Account 'ResourceAccount@domain.com' from the identified Call Queue or Auto Attendant
@@ -46,7 +48,10 @@ function Remove-TeamsResourceAccountAssociation {
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
-    [switch]$Force
+    [switch]$Force,
+
+    [Parameter(Mandatory = $false)]
+    [switch]$PassThru
   ) #param
 
   begin {
@@ -124,18 +129,19 @@ function Remove-TeamsResourceAccountAssociation {
         }
 
         # Output
-        #CHECK Add PassThru?
-        $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
-          UserPrincipalName  = $Account.UserPrincipalName
-          ConfigurationType  = $OperationStatus.Results.ConfigurationType
-          Result             = $OperationStatus.Results.Result
-          StatusCode         = $OperationStatus.Results.StatusCode
-          StatusMessage      = $OperationStatus.Results.Message
-          AssociatedTo       = $null
-          AssociationRemoved = $AssocObject.Name
+        if ($PassThru) {
+          $ResourceAccountAssociationObject = [PSCustomObject][ordered]@{
+            UserPrincipalName  = $Account.UserPrincipalName
+            ConfigurationType  = $OperationStatus.Results.ConfigurationType
+            Result             = $OperationStatus.Results.Result
+            StatusCode         = $OperationStatus.Results.StatusCode
+            StatusMessage      = $OperationStatus.Results.Message
+            AssociatedTo       = $null
+            AssociationRemoved = $AssocObject.Name
 
+          }
+          Write-Output $ResourceAccountAssociationObject
         }
-        Write-Output $ResourceAccountAssociationObject
       }
     }
     else {

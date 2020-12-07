@@ -4,7 +4,7 @@
 # Updated:    01-NOV-2020
 # Status:     PreLive
 
-#CHECK Create Class?
+#CHECK Create Class? overkill, but uniformity!
 
 
 function Get-TeamsCallableEntity {
