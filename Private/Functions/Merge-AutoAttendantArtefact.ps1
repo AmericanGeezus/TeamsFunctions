@@ -206,21 +206,6 @@ function Merge-AutoAttendantArtefact {
             1 {
               # Schedule Type is Fixed
               $WeeklyRecurrentSchedule = $null
-              #CHECK whether multiple Fixed ones require a ForEach
-              <# Alt: Broken out into individual Start/End blocks
-                $FixedSchedule = @()
-                foreach ($Range in $Schedule.FixedSchedule) {
-                  $FixedScheduleRange = @()
-                  $FixedScheduleRange = [PsCustomObject][ordered]@{
-                    'Start' = $Range.DateTimeRanges.Start
-                    'End'   = $Range.DateTimeRanges.End
-                  }
-                  Add-Member -Force -InputObject $FixedScheduleRange -MemberType ScriptMethod -Name ToString -Value {
-                    [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-                  }
-                  $FixedSchedule += Add-Member -InputObject $FixedScheduleRange -TypeName My.CallHandlingAssociation -PassThru
-                }
-              #>
               $FixedSchedule = $Schedule.FixedSchedule.DisplayDateTimeRanges
             }
           }

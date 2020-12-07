@@ -127,7 +127,7 @@ function Get-TeamsCallQueue {
 
           # Initialising Arrays
           [System.Collections.ArrayList]$UserObjects = @()
-          [System.Collections.ArrayList]$DLObjects = @()
+          [System.Collections.ArrayList]$DLNames = @()
           [System.Collections.ArrayList]$AIObjects = @()
 
           if ( $Detailed ) {
@@ -270,17 +270,17 @@ function Get-TeamsCallQueue {
 
           #region Endpoints
           # Distribution Lists
-          #CHECK resolving DLs? Nested objects (count at least?)
           $Operation = "Parsing DistributionLists"
           $step++
           Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($DL in $Q.DistributionLists) {
-            $DLObject = Get-AzureADGroup -ObjectId $DL -WarningAction SilentlyContinue | Select-Object DisplayName, Description, SecurityEnabled, MailEnabled, MailNickName, Mail
+            $DLSearch = Get-AzureADGroup -SearchString "$DL" -WarningAction SilentlyContinue | Select-Object DisplayName
+            $DLObject = $DLSearch | Where-Object DisplayName -EQ "$DL"
             #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
-            [void]$DLObjects.Add($DLObject)
+            [void]$DLNames.Add($DLObject.DisplayName)
           }
-          # Output: $DLObjects.DisplayName
+          # Output: $DLNames
 
           # Users
           $Operation = "Parsing Users"
@@ -372,7 +372,7 @@ function Get-TeamsCallQueue {
 
           # Adding Agent Information
           $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
-          $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLObjects.DisplayName
+          $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
           $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
           $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
           $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped

@@ -138,7 +138,6 @@ function Get-TeamsAutoAttendant {
           }
           else {
             # Parsing Callable Entity
-            #TODO Get-TeamsCallableEntity can be used to do this, if it can search by type (needs to be extended first though)
             try {
               $CallableEntity = Get-TeamsCallableEntity "$($AA.Operator.Id)"
               $Operator = $CallableEntity.Entity

@@ -18,7 +18,14 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Remove-TeamsResourceAccount`: Added Parameter PassThru to display UPNs of removed Accounts
 - `Remove-TeamsResourceAccountAssociation`: Added Parameter PassThru to display an Objects detailing the Status of the Account and its associations post change
 - `Set-TeamsUserLicense`: Added Parameter PassThru to display the User License Object post change
-- 
+- `New-TeamsResourceAccountAssociation`: Performance update: Now faster lookup of Objects (x10)
+- `Get-TeamsCallQueue`: Small performance and accuracy improvement when parsing DLs
+- `New-TeamsCallQueue`: Small improvement for enumeration of Voicemail Target (now treted the same as a User) and SharedVoicemail Target (now faster lookup)
+- `Set-TeamsCallQueue`: Small improvement for enumeration of Voicemail Target (now treted the same as a User) and SharedVoicemail Target (now faster lookup)
+- `New-TeamsAutoAttendant`:
+  - Simplified requirements for Operator. Parameter OperatorType now obsolete as the Target is parsed with Get-TeamsCallableEntity
+  - TODO: Identified a major design flaw in trying to build on top of New-CsAutoAttendant. Function flagged for complete overhaul!
+  - Removed Parameter Schedule as it can only be with a CallHandlingAssociation
 
 ---------------------------------------------
 

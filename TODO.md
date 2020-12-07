@@ -14,6 +14,8 @@ Add features, operator, Call target, default forward to CQ (Build also wrapper t
 
 Continue to test Scripts
 
+TODO Rework completely!
+
 ### New-TeamsAutoAttendantMenu
 
 Add Menu builder with selector for x options 1-9 (default: Forward To PSTN? with dummy number?).
