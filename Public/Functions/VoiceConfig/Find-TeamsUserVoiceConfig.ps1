@@ -1,10 +1,10 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
+# Updated:  01-DEC-2020
 # Status:   PreLive
 
-#TODO Add -Extension to find ";ext=$Extension" in all LineURI fields
+
 
 
 function Find-TeamsUserVoiceConfig {
@@ -172,15 +172,29 @@ function Find-TeamsUserVoiceConfig {
 
     switch ($PsCmdlet.ParameterSetName) {
       "ID" {
-        Write-Verbose -Message "Finding Users with Identity '$Identity': Acting as an Alias to 'Get-TeamsUserVoiceConfig'" -Verbose
-        Get-TeamsUserVoiceConfig $Identity
-
+        Write-Verbose -Message "Finding Users with SipAddress '$Identity' (partial or full)" -Verbose
+        #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
+        $Filter = 'SipAddress -like "*{0}*"' -f $Number
+        $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
+        if ($Users) {
+          if ($Users.Count -gt 3) {
+            Write-Verbose -Message "Multiple results found - Displaying limited output only" -Verbose
+            $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+          }
+          else {
+            Write-Verbose -Message "Limited results found - Displaying User Voice Configuration for each" -Verbose
+            Get-TeamsUserVoiceConfig $($Users.UserPrincipalName)
+          }
+        }
+        else {
+          Write-Verbose -Message "User: '$Identity' - No records found (SipAddress)" -Verbose
+        }
         break
       } #ID
 
       "Tel" {
         foreach ($Number in $PhoneNumber) {
-          Write-Verbose -Message "Finding Users with PhoneNumber '$Number': This will take a bit of time!" -Verbose
+          Write-Verbose -Message "Finding Users with PhoneNumber '$Number' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
@@ -209,9 +223,9 @@ function Find-TeamsUserVoiceConfig {
 
       "Ext" {
         foreach ($Ext in $Extension) {
-          Write-Verbose -Message "Finding Users with Extension '$Ext': This will take a bit of time!" -Verbose
+          Write-Verbose -Message "Finding Users with Extension '$Ext' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-          $Filter = 'LineURI -like "*{0}*"' -f ";ext=$Ext"
+          $Filter = 'LineURI -like "*{0}*"' -f ";ext=*$Ext"
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
           if ($Users) {
             if ($Users.Count -gt 1) {
