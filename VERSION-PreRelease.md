@@ -2,18 +2,19 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v20.12.xx pre-release
+## v20.12.07 pre-release
 
 ### New
 
 - `Get-TeamsOPU`: Get-CsOnlinePstnUsage is too clunky. It doesn't have a filter/search function. This one does.
 - `Get-TeamsOVR`: Get-CsOnlineVoiceRoute, expanding the Name property
-- `Get-TeamsMGW`: Get-CsOnlinePstnGateway, expanding the Idenity property
+- `Get-TeamsMGW`: Get-CsOnlinePstnGateway, expanding the Identity property
 
 ### Updated
 
 - `Get-TeamsOVP`: Updated to more consistently display Names instead of individual records (with more than 2)
 - `Get-TeamsTDP`: Updated to more consistently display Names instead of individual records (with more than 2)
+- `Get-TeamsTenant` now displays the HostedMigrationOverrideUrl needed to move users
 
 ---------------------------------------------
 

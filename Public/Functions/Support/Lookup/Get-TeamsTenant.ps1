@@ -4,8 +4,8 @@
 # Updated:  11-NOV-2020
 # Status:   PreLive
 
-#TODO Add Function to query Hosted Migration Override URL:
-#https://uclikeaboss.wordpress.com/2020/02/16/get-sfb-hosted-migration-override-url-programmatically/
+
+
 
 function Get-TeamsTenant {
   <#
@@ -36,6 +36,19 @@ function Get-TeamsTenant {
     Write-Verbose -Message "This is abbreviated output of Get-CsTenant. For full information, please run Get-CsTenant" -Verbose
 
     $T = Get-CsTenant -WarningAction SilentlyContinue # This should trigger a reconnect as well.
+
+    #Determining OverrideURL
+    $TenantId = $T | Select-Object -ExpandProperty identity
+
+    if ($TenantId -match ".*DC\=lync(.*)001\,DC=local") {
+      $Id = $TenantId.Substring($TenantId.IndexOf("lync") + 4, 2)
+      $OverrideURL = "https://admin$Id.online.lync.com/HostedMigration/hostedmigrationService.svc"
+    }
+    else {
+      Write-Warning -Message "Override Admin URL could not be determined, please Read from Identity manually (2 digits after 'DC\=lync')"
+      $OverrideURL = $null
+    }
+
     $TenantObject = [PSCustomObject][ordered]@{
       TenantId                         = $T.TenantId
       DisplayName                      = $T.DisplayName
@@ -55,6 +68,7 @@ function Get-TeamsTenant {
       WhenCreated                      = $T.WhenCreated
       WhenChanged                      = $T.WhenChanged
       TenantPoolExtension              = $T.TenantPoolExtension
+      HostedMigrationOverrideURL       = $OverrideURL
 
     }
 
