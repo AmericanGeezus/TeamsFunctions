@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   RC
 
-
+#TODO Add validation for Extensions / check if Extension is already assigned with Find-TeamsUVC + .Split(';ext=')[1]
 
 
 function Set-TeamsUserVoiceConfig {
@@ -95,11 +95,11 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?[0-9]{10,15}$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
+          Write-Host "Not a valid phone number. E.164 format expected, min 8 digits, but multiple formats accepted. Extensions will be stripped" -ForegroundColor Red
           $false
         }
       })]
@@ -260,9 +260,9 @@ function Set-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Microsoft Phone Numbers from Tenant" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying Microsoft Phone Numbers from Tenant"
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
-      if ( $PhoneNumberIsMSNumber ) {
+      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
+      $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+      if ($MSNumber -in $MSTelephoneNumbers) {
         Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
       }
       else {

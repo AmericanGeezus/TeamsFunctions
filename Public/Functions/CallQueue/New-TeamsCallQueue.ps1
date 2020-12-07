@@ -363,7 +363,7 @@ function New-TeamsCallQueue {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 10
+    [int]$sMax = 11
 
     $Status = "Verifying input"
     $Operation = "Validating Parameters"
@@ -694,13 +694,35 @@ function New-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
-          #TODO: Rework to check against CSUserObject and License (and EV enablement, not against AdUser!)
-          try {
-            $OverflowActionTargetId = (Get-AzureADUser -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+          $Identity = $OverflowActionTarget
+          if ( Test-AzureADUser $Identity ) {
+            $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+            $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+            if ( -not $IsLicensed  ) {
+              Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
+            }
+            else {
+              $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+              if ( -not $IsEVenabled ) {
+                Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
+                if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                  $IsEVenabled = $null
+                  $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                }
+              }
+
+              # Add Target
+              if ( $IsEVenabled ) {
+                Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) used" -Verbose
+                $Parameters += @{'OverflowActionTarget' = $UserObject.ObjectId }
+              }
+              else {
+                Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+              }
+            }
           }
-          catch {
-            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+          else {
+            Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) not found. Omitting User"
           }
         }
         "SharedVoiceMail" {
@@ -729,37 +751,37 @@ function New-TeamsCallQueue {
 
           #region Processing OverflowActionTarget for SharedVoiceMail
           try {
-            #TODO Rework section to use Find-AzureAdGroup (create if not yet done)
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object"
-            $OverflowActionTargetId = (Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-            if ($null -eq $OverflowActionTargetId) {
-              throw
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
+            $FoundGroups = $null
+            $FoundGroups = Get-AzureADGroup -SearchString "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
+            if (-not $FoundGroups ) {
+              try {
+                $FoundGroups = Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
+              }
+              catch {
+                $FoundGroups = Get-AzureADGroup -Mail -eq "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
+              }
+            }
+
+            if ( $FoundGroups.Count -gt 1 ) {
+              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$OverflowActionTarget"
+            }
+
+            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
+              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
             }
             else {
+              $OverflowActionTargetId = $FoundGroups.ObjectId
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
             }
           }
+          catch [System.Reflection.AmbiguousMatchException] {
+            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
+            return
+          }
           catch {
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying AzureAD Object: Mailnickname"
-            try {
-              if ($OverflowActionTarget.Contains("@")) {
-                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-              }
-              else {
-                $OverflowActionTargetId = (Get-AzureADGroup -SearchString $($OverflowActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-              }
-              if ($null -eq $OverflowActionTargetId) {
-                throw
-              }
-              else {
-                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
-                $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
-              }
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
-            }
+            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
           }
           #endregion
         }
@@ -915,13 +937,35 @@ function New-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
-          #TODO: Rework to check against CSUserObject and License (and EV enablement, not against AdUser!)
-          try {
-            $TimeoutActionTargetId = (Get-AzureADUser -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-            $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+          $Identity = $TimeoutActionTarget
+          if ( Test-AzureADUser $Identity ) {
+            $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+            $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+            if ( -not $IsLicensed  ) {
+              Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
+            }
+            else {
+              $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+              if ( -not $IsEVenabled ) {
+                Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
+                if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                  $IsEVenabled = $null
+                  $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                }
+              }
+
+              # Add Target
+              if ( $IsEVenabled ) {
+                Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) used" -Verbose
+                $Parameters += @{'TimeoutActionTarget' = $UserObject.ObjectId }
+              }
+              else {
+                Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+              }
+            }
           }
-          catch {
-            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+          else {
+            Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) not found. Omitting User"
           }
         }
         "SharedVoiceMail" {
@@ -950,37 +994,37 @@ function New-TeamsCallQueue {
 
           #region Processing TimeoutActionTarget for SharedVoiceMail
           try {
-            #TODO Rework section to use Find-AzureAdGroup (create if not yet done)
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object"
-            $TimeoutActionTargetId = (Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-            if ($null -eq $TimeoutActionTargetId) {
-              throw
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
+            $FoundGroups = $null
+            $FoundGroups = Get-AzureADGroup -SearchString "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
+            if (-not $FoundGroups ) {
+              try {
+                $FoundGroups = Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
+              }
+              catch {
+                $FoundGroups = Get-AzureADGroup -Mail -eq "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
+              }
+            }
+
+            if ( $FoundGroups.Count -gt 1 ) {
+              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$TimeoutActionTarget"
+            }
+
+            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
+              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
             }
             else {
+              $TimeoutActionTargetId = $FoundGroups.ObjectId
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
             }
           }
+          catch [System.Reflection.AmbiguousMatchException] {
+            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
+            return
+          }
           catch {
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying AzureAD Object: Mailnickname"
-            try {
-              if ($TimeoutActionTarget.Contains("@")) {
-                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Split("@")[0]) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-              }
-              else {
-                $TimeoutActionTargetId = (Get-AzureADGroup -SearchString $($TimeoutActionTarget.Replace(" ", "")) -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-              }
-              if ($null -eq $TimeoutActionTargetId) {
-                throw
-              }
-              else {
-                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
-                $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
-              }
-            }
-            catch {
-              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
-            }
+            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
           }
           #endregion
         }

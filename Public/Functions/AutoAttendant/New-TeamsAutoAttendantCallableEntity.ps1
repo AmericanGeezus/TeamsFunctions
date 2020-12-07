@@ -111,31 +111,36 @@ function New-TeamsAutoAttendantCallableEntity {
         }
       }
       "User" {
-        #CHECK Validate ARRAY use!
-        #Query is against the $Identity (UserPrincipalName), this should be returning a unique result, but could return multiple!
         $UserObject = Find-AzureADUser $Identity
         if ( $UserObject ) {
-          $IsEVenabled = $UserObject.EnterpriseVoiceEnabled # Safeguard with this? $UserObject[0].EnterpriseVoiceEnabled
-          $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-
-          if ( -not $IsLicensed  ) {
-            Write-Error -Message "Callable Entity - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a license that contains Phone System" -ErrorAction Stop
-          }
-
-          if ( -not $IsEVenabled) {
-            Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) found and licensed, but not (yet) enabled for EnterpriseVoice" -Verbose
-            if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-              $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
-            }
-          }
-
-          # Post Verification
-          if ( $IsEVenabled ) {
-            Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) used"
-            $Id = $UserObject.ObjectId
+          if ( $UserObject.Count -gt 1 ) {
+            #Query is against the $Identity (UserPrincipalName), this should be returning a unique result, but could return multiple!
+            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($userObject.UserPrincipalName)" -Category QuotaExceeded -ErrorAction Stop
           }
           else {
-            Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not enumerated. Omitting Object" -Category ResourceUnavailable -ErrorAction Stop
+            $IsEVenabled = $UserObject.EnterpriseVoiceEnabled # Safeguard with this? $UserObject[0].EnterpriseVoiceEnabled
+            $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+
+            if ( -not $IsLicensed  ) {
+              Write-Error -Message "Callable Entity - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Please assign a license" -Category ResourceUnavailable -RecommendedAction "Please assign a license that contains Phone System" -ErrorAction Stop
+            }
+
+            if ( -not $IsEVenabled) {
+              Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) found and licensed, but not (yet) enabled for EnterpriseVoice" -Verbose
+              if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+              }
+            }
+
+            # Post Verification
+            if ( $IsEVenabled ) {
+              Write-Verbose -Message "Callable Entity - Call Target '$Identity' (User) used"
+              $Id = $UserObject.ObjectId
+            }
+            else {
+              Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not enumerated. Omitting Object" -Category ResourceUnavailable -ErrorAction Stop
+
+            }
           }
         }
         else {
@@ -147,11 +152,15 @@ function New-TeamsAutoAttendantCallableEntity {
       "SharedVoicemail" {
         $DLObject = $null
         $DLObject = Find-AzureAdGroup "$Identity"
-
         if ($DLObject) {
-          #CHECK Validate ARRAY use!
-          Write-Verbose -Message "Callable Entity - Call Target '$Identity' (Group) used"
-          $Id = $DLObject.ObjectId
+          if ( $DLObject.Count -gt 1 ) {
+            #Query is against the $Identity (Name), this should be returning a unique result, but could return multiple!
+            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($DLObject.DisplayName)" -Category QuotaExceeded -ErrorAction Stop
+          }
+          else {
+            Write-Verbose -Message "Callable Entity - Call Target '$Identity' (Group) used"
+            $Id = $DLObject.ObjectId
+          }
         }
         else {
           Write-Error -Message "Callable Entity - Call Target '$Identity' (Group) not found" -Category ObjectNotFound -ErrorAction Stop
@@ -159,8 +168,8 @@ function New-TeamsAutoAttendantCallableEntity {
 
       }
       "ApplicationEndpoint" {
-        $RAobject = Find-TeamsResourceAccount "$Identity"
-        if ($RAobject) {
+        $RAObject = Find-TeamsResourceAccount "$Identity"
+        if ($RAObject) {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' (VoiceApp - ApplicationInstance - ResourceAccount) used"
           $Id = $RA.ObjectId
         }

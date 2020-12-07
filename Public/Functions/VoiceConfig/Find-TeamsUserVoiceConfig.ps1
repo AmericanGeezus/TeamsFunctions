@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
+# Updated:  01-DEC-2020
 # Status:   PreLive
 
 
@@ -124,6 +124,10 @@ function Find-TeamsUserVoiceConfig {
     [Alias('Number', 'TelephoneNumber', 'Tel', 'LineURI', 'OnPremLineURI')]
     [string[]]$PhoneNumber,
 
+    [Parameter(ParameterSetName = "Ext", HelpMessage = 'String to be found in any of the PhoneNumber fields as an Extension')]
+    [Alias('Ext')]
+    [string[]]$Extension,
+
     [Parameter(ParameterSetName = "CT", HelpMessage = 'Filters based on Configuration Type')]
     [ValidateSet('CallingPlans', 'SkypeHybridPSTN', 'DirectRouting')]
     [String]$ConfigurationType,
@@ -168,15 +172,29 @@ function Find-TeamsUserVoiceConfig {
 
     switch ($PsCmdlet.ParameterSetName) {
       "ID" {
-        Write-Verbose -Message "Finding Users with Identity '$Identity': Acting as an Alias to 'Get-TeamsUserVoiceConfig'" -Verbose
-        Get-TeamsUserVoiceConfig $Identity
-
+        Write-Verbose -Message "Finding Users with SipAddress '$Identity' (partial or full)" -Verbose
+        #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
+        $Filter = 'SipAddress -like "*{0}*"' -f $Number
+        $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
+        if ($Users) {
+          if ($Users.Count -gt 3) {
+            Write-Verbose -Message "Multiple results found - Displaying limited output only" -Verbose
+            $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+          }
+          else {
+            Write-Verbose -Message "Limited results found - Displaying User Voice Configuration for each" -Verbose
+            Get-TeamsUserVoiceConfig $($Users.UserPrincipalName)
+          }
+        }
+        else {
+          Write-Verbose -Message "User: '$Identity' - No records found (SipAddress)" -Verbose
+        }
         break
       } #ID
 
       "Tel" {
         foreach ($Number in $PhoneNumber) {
-          Write-Verbose -Message "Finding Users with PhoneNumber '$Number': This will take a bit of time!" -Verbose
+          Write-Verbose -Message "Finding Users with PhoneNumber '$Number' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
@@ -187,8 +205,8 @@ function Find-TeamsUserVoiceConfig {
             }
 
             if ($Users.Count -gt 3) {
-              Write-Verbose -Message "Multiple results found - Displaying UserPrincipalNames only" -Verbose
-              $Users.UserPrincipalName
+              Write-Verbose -Message "Multiple results found - Displaying limited output only" -Verbose
+              $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
             }
             else {
               Write-Verbose -Message "Limited results found - Displaying User Voice Configuration for each" -Verbose
@@ -202,6 +220,35 @@ function Find-TeamsUserVoiceConfig {
 
         break
       } #Tel
+
+      "Ext" {
+        foreach ($Ext in $Extension) {
+          Write-Verbose -Message "Finding Users with Extension '$Ext' (partial or full)" -Verbose
+          #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
+          $Filter = 'LineURI -like "*{0}*"' -f ";ext=*$Ext"
+          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
+          if ($Users) {
+            if ($Users.Count -gt 1) {
+              Write-Warning -Message "Extension: '$Ext' - Found multiple Users matching the criteria! If the search string represents a partial Extension, this is to be expected.`nIf the search string represents a FULL extension, it is assigned incorrectly. Inbound calls to this extension may fail depending on normalisation as Teams will not find a unique match"
+              Write-Verbose -Message "Investigate OnPremLineURI string. Verify unique Extension is applied." -Verbose
+            }
+
+            if ($Users.Count -gt 3) {
+              Write-Verbose -Message "Multiple results found - Displaying limited output only" -Verbose
+              $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+            }
+            else {
+              Write-Verbose -Message "Limited results found - Displaying User Voice Configuration for each" -Verbose
+              Get-TeamsUserVoiceConfig $($Users.UserPrincipalName)
+            }
+          }
+          else {
+            Write-Verbose -Message "Number: '$Number' - No assignments found (LineURI)" -Verbose
+          }
+        }
+
+        break
+      } #Ext
 
       "CT" {
         Write-Verbose -Message "Finding all Users enabled for Teams: Searching... This will take quite some time!" -Verbose

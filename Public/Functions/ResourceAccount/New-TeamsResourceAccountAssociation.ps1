@@ -184,21 +184,14 @@ function New-TeamsResourceAccountAssociation {
       $Operation = "Querying existing associations"
       Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
       Write-Verbose -Message "$Status - $Operation"
-      #CHECK Query rather with Get-CsOnlineApplicationInstanceAssociation? - Needs ObjectId though! (replicated from Get-TeamsResourceAccountAssociation)
-      #TODO Test Performance of GET-TeamsResourceAccountAssociation VS Get-CsOnlineApplicationInstanceAssociation
-      <# Needs testing
-      $ExistingConnection = Get-CsOnlineApplicationInstanceAssociation (Get-AzureAdUser -ObjectId $Account.UserPrincipalName) -WarningAction SilentlyContinue
-      #>
       $ExistingConnection = $null
-      $ExistingConnection = Get-TeamsResourceAccountAssociation $Account.UserPrincipalName -WarningAction SilentlyContinue
-      if ($null -eq $ExistingConnection.AssociatedTo) {
+      $ExistingConnection = Get-CsOnlineApplicationInstanceAssociation -Identity $Account.ObjectId -WarningAction SilentlyContinue
+
+      if ($null -eq $ExistingConnection.ConfigurationId) {
         Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
       }
       else {
-        Write-Verbose -Message "'$($Account.UserPrincipalName)' - This account is already assigned to the following entity:" -Verbose
-        $ExistingConnection
-        Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned to $($ExistingConnection.ConfigurationType) '$($ExistingConnection.AssociatedTo)'"
-        #TEST this
+        Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned as '$($ExistingConnection.ConfigurationType)'"
         [void]$Accounts.Remove($Account)
       }
 

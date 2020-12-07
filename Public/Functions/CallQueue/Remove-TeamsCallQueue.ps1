@@ -4,6 +4,9 @@
 # Updated:  01-DEC-2020
 # Status:   PreLive
 
+
+
+
 function Remove-TeamsCallQueue {
   <#
 	.SYNOPSIS
@@ -79,7 +82,6 @@ function Remove-TeamsCallQueue {
             $QueueCounter++
             if ($PSCmdlet.ShouldProcess("$($Q.Identity)", 'Remove-CsCallQueue')) {
               Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP
-              #CHECK Add PassThru? displaying - Needs redirecting as Remove-CsCallQueue writes Output!
             }
           }
         }

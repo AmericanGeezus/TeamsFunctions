@@ -29,7 +29,7 @@ function Get-TeamsOVP {
 
   [CmdletBinding()]
   param (
-    [Parameter(HelpMessage = "Name of the Tenant Dial Plan")]
+    [Parameter(Position = 0, HelpMessage = "Name of the Voice Routing Policy")]
     [string]$Identity
   )
 
@@ -46,15 +46,21 @@ function Get-TeamsOVP {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
-      Write-Verbose -Message "Switch Identity: Acting as alias to 'Get-CsOnlineVoiceRoutingPolicy'"
-      Get-CsOnlineVoiceRoutingPolicy $Identity
-
+      Write-Verbose -Message "Finding Online Voice Routing Policy with Identity '$Identity'"
+      $Policies = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
+      $Filtered = $Policies | Where-Object Identity -Like "*$Identity*"
+      if ( $Filtered.Count -gt 2) {
+        $Filtered.Identity
+      }
+      else {
+        $Filtered
+      }
     }
     else {
-      Write-Verbose -Message "Finding Names for all Online Voice Routing Policies"
+      Write-Verbose -Message "Finding Online Voice Routing Policy Names"
       Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
-
     }
+
   } #process
 
   end {

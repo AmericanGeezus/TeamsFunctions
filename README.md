@@ -107,8 +107,11 @@ The more prominent helper functions. Get-AzureAdAssignedAdminRoles is run with `
 | `Find-AzureAdUser`              | Helper Function to find AzureAd Users. Returns Objects if found. Simplifies Lookup and Search of Objects                                    |
 | `Get-AzureAdAssignedAdminRoles` | Displays all Admin Roles assigned to an AzureAdUser (NOTE: Does currently not display anything if Privileged Access Groups are used, sorry) |
 | `Get-TeamsTenant`               | Get-CsTenant gives too much output? This can help.                                                                                          |
-| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)                                                                |
 | `Get-TeamsTDP`                  | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...                                                                |
+| `Get-TeamsOVP`                  | Get-CsOnlineVoiceRoutingPolicy is too long to type. Here is a shorter one :)                                                                |
+| `Get-TeamsOPU`                  | Get-CsOnlinePstnUsage is too clunky. Here is a shorter one, with a search function!                                                         |
+| `Get-TeamsOVR`                  | Get-CsOnlineVoiceRoute                                                                                                                      |
+| `Get-TeamsMGW`                  | Get-CsOnlinePstnGateway                                                                                                                     |
 | `Get-TeamsObjectType`           | Returns the type of any given Object to identify its use in CQs and AAs.                                                                    |
 | `Get-TeamsCallableEntity`       | Creates a new Object emulating the output of a `Callable Entity`, validating the Object type and its usability for CQs or AAs.              |
 | `Find-TeamsCallableEntity`      | Searches all Call Queues and/or all Auto Attendants for a connected/targeted `Callable Entity` (TelURI, User, Group, Resource Account).     |

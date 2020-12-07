@@ -29,7 +29,7 @@ function Get-TeamsTDP {
 
   [CmdletBinding()]
   param (
-    [Parameter(HelpMessage = "Name of the Tenant Dial Plan")]
+    [Parameter(Position = 0, HelpMessage = "Name of the Tenant Dial Plan")]
     [string]$Identity
   )
 
@@ -46,14 +46,19 @@ function Get-TeamsTDP {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
-      Write-Verbose -Message "Switch Identity: Acting as alias to 'Get-CsTenantDialPlan'"
-      Get-CsTenantDialPlan $Identity
-
+      Write-Verbose -Message "Finding Tenant Dial Plans with Identity '$Identity'"
+      $Plans = Get-CsTenantDialPlan -WarningAction SilentlyContinue
+      $Filtered = $Plans | Where-Object Identity -Like "*$Identity*"
+      if ( $Filtered.Count -gt 2) {
+        $Filtered.Identity
+      }
+      else {
+        $Filtered
+      }
     }
     else {
-      Write-Verbose -Message "Finding Names for all Tenant Dial Plans"
+      Write-Verbose -Message "Finding Tenant Dial Plan Names"
       Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
-
     }
 
   } #process

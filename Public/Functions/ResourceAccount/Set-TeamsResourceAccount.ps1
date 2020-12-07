@@ -262,18 +262,18 @@ function Set-TeamsResourceAccount {
         }
         $PhoneNumber = $null
       }
-      elseif ($PhoneNumber -match "^\+[0-9]{10,15}$") {
-        Write-Verbose -Message "PhoneNumber '$PhoneNumber' is valid and will be applied"
+      elseif ($PhoneNumber -match "^(tel:)?\+?[0-9]{6,15}((;ext=[0-9]{3,8}))?$") {
+        if ( $PhoneNumber -match "ext" ) {
+          Write-Warning -Message "PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
+        }
+        $E164Number = Format-StringForUse $PhoneNumber -As E164
+        Write-Verbose -Message "PhoneNumber '$E164Number' is in a usable format and will be applied"
         # Checking number is free
         Write-Verbose -Message "PhoneNumber - Finding Number assignments"
-        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber
+        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
         if ($UserWithThisNumber) {
-          Write-Error -Message "'$Name' Number '$PhoneNumber' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
+          Write-Error -Message "'$Name' Number '$E164Number' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
         }
-
-        # Loading all Microsoft Telephone Numbers
-        $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-        $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
       }
       else {
         Write-Error -Message "PhoneNumber '$PhoneNumber' - Not a valid Phone number. Please provide a number starting with a + and 10 to 15 digits long" -ErrorAction Stop
@@ -546,18 +546,21 @@ function Set-TeamsResourceAccount {
           # Assigning new Number
           # Processing paths for Telephone Numbers depending on Type
           try {
-            if ($PhoneNumberIsMSNumber) {
+            # Loading all Microsoft Telephone Numbers
+            $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
+            $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+            if ($MSNumber -in $MSTelephoneNumbers) {
               # Set in VoiceApplicationInstance
-              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
-                Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans" -Verbose
-                $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $PhoneNumber -ErrorAction STOP)
+              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
+                Write-Verbose -Message "'$Name' Number '$Number' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans" -Verbose
+                $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $E164Number -ErrorAction STOP)
               }
             }
             else {
               # Set in ApplicationInstance
-              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $PhoneNumber")) {
-                Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for: Direct Routing" -Verbose
-                $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $PhoneNumber -ErrorAction STOP)
+              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
+                Write-Verbose -Message "'$Name' Number '$E164Number' not found in Tenant, assuming provisioning for: Direct Routing" -Verbose
+                $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $E164Number -ErrorAction STOP)
               }
             }
           }
