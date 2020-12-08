@@ -14,7 +14,7 @@ Add features, operator, Call target, default forward to CQ (Build also wrapper t
 
 Continue to test Scripts
 
-TODO Rework completely!
+CHECK Cleanup Arkadinplatform AA & CQs
 
 ### New-TeamsAutoAttendantMenu
 

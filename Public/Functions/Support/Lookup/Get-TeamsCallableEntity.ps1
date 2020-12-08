@@ -93,7 +93,8 @@ function Get-TeamsCallableEntity {
         $CallableEntity = [PsCustomObject][ordered]@{
           'Entity'       = $Id
           'Identity'     = $Id
-          'Type'         = "TelURI"
+          'ObjectType'   = "TelURI"
+          'Type'         = "ExternalPstn"
           'UsableInAaAs' = "ExternalPstn"
           'UsableInCqAs' = "Forward"
         }
@@ -114,7 +115,8 @@ function Get-TeamsCallableEntity {
               $CallableEntity = [PsCustomObject][ordered]@{
                 'Entity'       = $CallTarget.UserPrincipalName
                 'Identity'     = $CallTarget.ObjectId
-                'Type'         = "ApplicationInstance"
+                'ObjectType'   = "ApplicationInstance"
+                'Type'         = "ApplicationEndpoint"
                 'UsableInAaAs' = "ApplicationEndpoint"
                 'UsableInCqAs' = "Forward"
               }
@@ -123,6 +125,7 @@ function Get-TeamsCallableEntity {
               $CallableEntity = [PsCustomObject][ordered]@{
                 'Entity'       = $CallTarget.UserPrincipalName
                 'Identity'     = $CallTarget.ObjectId
+                'ObjectType'   = "User"
                 'Type'         = "User"
                 'UsableInAaAs' = "User"
                 'UsableInCqAs' = @( "Forward", "Voicemail" )
@@ -142,7 +145,8 @@ function Get-TeamsCallableEntity {
               $CallableEntity = [PsCustomObject][ordered]@{
                 'Entity'       = $CallTarget.DisplayName
                 'Identity'     = $CallTarget.ObjectId
-                'Type'         = "Group"
+                'ObjectType'   = "Group"
+                'Type'         = "SharedVoicemail"
                 'UsableInAaAs' = "SharedVoicemail"
                 'UsableInCqAs' = "SharedVoicemail"
               }
@@ -157,9 +161,10 @@ function Get-TeamsCallableEntity {
             $CallableEntity = [PsCustomObject][ordered]@{
               'Entity'       = $null
               'Identity'     = $Id
-              'Type'         = "Unknown"
-              'UsableInAaAs' = ""
-              'UsableInCqAs' = ""
+              'ObjectType'   = "Unknown"
+              'Type'         = $null
+              'UsableInAaAs' = $null
+              'UsableInCqAs' = $null
             }
           }
         }

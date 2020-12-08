@@ -2,6 +2,21 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
+## v20.12.13 pre-realease
+
+### Updated
+
+- `Get-TeamsCallableEntity`: Added Parameter ObjectType to not interfere with Parameter Type (used in other scripts)
+- `New-TeamsAutoAttendantCallableEntity`: Added Parameter EnableTranscription
+- `New-TeamsAutoAttendant`: **Major Overhaul**
+  - Added Parameter EnableTranscription to allow for Transcription with all CallTargets (SharedVoicemail)
+  - Removed Parameter Silent as it wasn't implemeneted and should not be used anyway.
+  - Removed all TargetType parameters as the CallTarget is now found with Get-TeamsCallableEntity.
+  - Parameter Schedule now properly overrides Parameter AfterHoursSchedule (renamed from DefaultSchedule)<br />NOTE: This may have to change to work with one Parameter to allow for a HolidaySchedule
+  - Parameter Validation is now improved
+  - Separated requirements for DefaultCallflow. Using this parameter now overrides BusinessHours Parameters properly.
+  - Separated requirements for CallFlows and CallHandlingAssociations. Using these parameters now overrides AfterHours Parameters properly.
+
 ## v20.12.07 pre-release
 
 ### New

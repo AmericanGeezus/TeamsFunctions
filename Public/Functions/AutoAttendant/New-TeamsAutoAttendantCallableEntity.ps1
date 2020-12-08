@@ -15,9 +15,12 @@ function New-TeamsAutoAttendantCallableEntity {
     Wrapper for New-CsAutoAttendantCallableEntity with verification
     Requires a licensed User or ApplicationEndpoint an Office 365 Group or Tel URI
   .PARAMETER Type
-    Required. Type of Callable Entity to create
+    Required. Type of Callable Entity to create.
+    Expected User, ExternalPstn, SharedVoicemail, ApplicationEndPoint
   .PARAMETER Identity
     Required. Tel URI, Group Name or UserPrincipalName, depending on the Entity Type
+  .PARAMETER EnableTranscription
+    Optional. Enables Transcription. Available only for Groups (Type SharedVoicemail)
   .PARAMETER ReturnObjectIdOnly
     Using this switch will return only the ObjectId of the validated CallableEntity, but will not create the Object
     This way the Command can be used to validate connected Objects for Call Queues.
@@ -62,8 +65,11 @@ function New-TeamsAutoAttendantCallableEntity {
     [Parameter(Mandatory = $true, HelpMessage = "Identity of the Call Target")]
     [string]$Identity,
 
+    [Parameter(HelpMessage = "Enables Transcription (for Shared Voicemail only)")]
+    [switch]$EnableTranscription,
+
     [Parameter(HelpMessage = "OutputType: Object or ObjectId")]
-    [switch]$ReturnObjectIdOnly, #Invert and change to PassThru?
+    [switch]$ReturnObjectIdOnly,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
     [switch]$Force
@@ -189,7 +195,13 @@ function New-TeamsAutoAttendantCallableEntity {
       }
       else {
         if ($PSCmdlet.ShouldProcess("$Identity", "New-CsAutoAttendantCallableEntity")) {
-          $Entity = New-CsAutoAttendantCallableEntity -Type $Type -Identity $Id
+          if ($Type -eq "SharedVoicemail" -and $EnableTranscription ) {
+            $Entity = New-CsAutoAttendantCallableEntity -Type $Type -Identity $Id -EnableTranscription
+          }
+          else {
+            $Entity = New-CsAutoAttendantCallableEntity -Type $Type -Identity $Id
+          }
+
           # Output
           return $Entity
         }
