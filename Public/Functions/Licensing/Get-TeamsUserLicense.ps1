@@ -151,8 +151,13 @@ function Get-TeamsUserLicense {
         if ( $PhoneSystemProvisioningStatus.Count -gt 1 ) {
           # PhoneSystem assigned more than once!
           Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
+          $PhoneSystemStatus = ($PhoneSystemProvisioningStatus | Select-Object -ExpandProperty ProvisioningStatus) -join ", "
+
         }
-        $PhoneSystemStatus = $PhoneSystemProvisioningStatus.ProvisioningStatus
+        else {
+          $PhoneSystemStatus = $PhoneSystemProvisioningStatus.ProvisioningStatus
+        }
+
       }
       elseif ( $PhoneSystemVirtual ) {
         $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV_VIRTUALUSER").ProvisioningStatus
