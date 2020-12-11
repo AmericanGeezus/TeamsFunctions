@@ -9,146 +9,146 @@
 
 function New-TeamsCallQueue {
   <#
-	.SYNOPSIS
-		New-CsCallQueue with UPNs instead of IDs
-	.DESCRIPTION
+  .SYNOPSIS
+    New-CsCallQueue with UPNs instead of IDs
+  .DESCRIPTION
     This function handles all options New-CsCallQueue offers.
     It can be seen as a replacement/upgrade, but it differs in a few significant respects:
     UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
     File Import is handled by this Script
-		Small changes to defaults (see Parameter UseMicrosoftDefaults for details)
-		Partial implementation is possible, output will show differences.
-	.PARAMETER Name
-		Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
-		Used as the DisplayName - Visible in Teams
-	.PARAMETER UseMicrosoftDefaults
-		This script uses different default values for some parameters than New-CsCallQueue
-		Using this switch will instruct the Script to adhere to Microsoft defaults.
-		ChangedPARAMETER:      This Script   Microsoft    Reason:
-		- OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
-		- TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
-		- UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
-		NOTE: This only affects parameters which are NOT specified when running the script.
-	.PARAMETER AgentAlertTime
-		Optional. Time in Seconds to alert each agent. Works depending on Routing method
-		NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
-	.PARAMETER AllowOptOut
-		Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
-	.PARAMETER UseDefaultMusicOnHold
-		Optional Switch. Indicates whether the default Music On Hold should be used.
-	.PARAMETER WelcomeMusicAudioFile
-		Optional. Path to Audio File to be used as a Welcome message
-		Accepted Formats: MP3, WAV or WMA format, max 5MB
-	.PARAMETER MusicOnHoldAudioFile
-		Optional. Path to Audio File to be used as Music On Hold.
-		Required if UseDefaultMusicOnHold is not specified/set to TRUE
-		Accepted Formats: MP3, WAV or WMA format, max 5MB
-	.PARAMETER OverflowAction
-		Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail, SharedVoiceMail
-		Action to be taken if the Queue size limit (OverflowThreshold) is reached
-		Forward requires specification of OverflowActionTarget
-	.PARAMETER OverflowActionTarget
-		Situational. Required only if OverflowAction is not DisconnectWithBusy
-		UserPrincipalName of the Target
-	.PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
+    Small changes to defaults (see Parameter UseMicrosoftDefaults for details)
+    Partial implementation is possible, output will show differences.
+  .PARAMETER Name
+    Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
+    Used as the DisplayName - Visible in Teams
+  .PARAMETER UseMicrosoftDefaults
+    This script uses different default values for some parameters than New-CsCallQueue
+    Using this switch will instruct the Script to adhere to Microsoft defaults.
+    ChangedPARAMETER:      This Script   Microsoft    Reason:
+    - OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
+    - TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
+    - UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
+    NOTE: This only affects parameters which are NOT specified when running the script.
+  .PARAMETER AgentAlertTime
+    Optional. Time in Seconds to alert each agent. Works depending on Routing method
+    NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
+  .PARAMETER AllowOptOut
+    Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
+  .PARAMETER UseDefaultMusicOnHold
+    Optional Switch. Indicates whether the default Music On Hold should be used.
+  .PARAMETER WelcomeMusicAudioFile
+    Optional. Path to Audio File to be used as a Welcome message
+    Accepted Formats: MP3, WAV or WMA format, max 5MB
+  .PARAMETER MusicOnHoldAudioFile
+    Optional. Path to Audio File to be used as Music On Hold.
+    Required if UseDefaultMusicOnHold is not specified/set to TRUE
+    Accepted Formats: MP3, WAV or WMA format, max 5MB
+  .PARAMETER OverflowAction
+    Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail, SharedVoiceMail
+    Action to be taken if the Queue size limit (OverflowThreshold) is reached
+    Forward requires specification of OverflowActionTarget
+  .PARAMETER OverflowActionTarget
+    Situational. Required only if OverflowAction is not DisconnectWithBusy
+    UserPrincipalName of the Target
+  .PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
     Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailAudioFile is $null
-	.PARAMETER OverflowSharedVoicemailAudioFile
+  .PARAMETER OverflowSharedVoicemailAudioFile
     Situational. Path to the Audio File for a Shared Voicemail greeting
     Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null
   .PARAMETER EnableOverflowSharedVoicemailTranscription
     Situational. Boolean Switch. Requires specification of LanguageId
     Enables a transcription of the Voicemail message to be sent to the Group mailbox
   .PARAMETER OverflowThreshold
-		Optional. Default:  30s,   Microsoft Default:   50s (See Parameter UseMicrosoftDefaults)
-		Time in Seconds for the OverflowAction to trigger
-	.PARAMETER TimeoutAction
-		Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
-		Action to be taken if the TimeoutThreshold is reached
-		Forward requires specification of TimeoutActionTarget
-	.PARAMETER TimeoutActionTarget
-		Situational. Required only if TimeoutAction is not Disconnect
-		UserPrincipalName of the Target
-	.PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
+    Optional. Default:  30s,   Microsoft Default:   50s (See Parameter UseMicrosoftDefaults)
+    Time in Seconds for the OverflowAction to trigger
+  .PARAMETER TimeoutAction
+    Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
+    Action to be taken if the TimeoutThreshold is reached
+    Forward requires specification of TimeoutActionTarget
+  .PARAMETER TimeoutActionTarget
+    Situational. Required only if TimeoutAction is not Disconnect
+    UserPrincipalName of the Target
+  .PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
     Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailAudioFile is $null
-	.PARAMETER TimeoutSharedVoicemailAudioFile
+  .PARAMETER TimeoutSharedVoicemailAudioFile
     Situational. Path to the Audio File for a Shared Voicemail greeting
     Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null
   .PARAMETER EnableTimeoutSharedVoicemailTranscription
     Situational. Boolean Switch. Requires specification of LanguageId
     Enables a transcription of the Voicemail message to be sent to the Group mailbox
   .PARAMETER TimeoutThreshold
-		Optional. Default:  30s,   Microsoft Default:  1200s (See Parameter UseMicrosoftDefaults)
-		Time in Seconds for the TimeoutAction to trigger
-	.PARAMETER RoutingMethod
-		Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin,LongestIdle
-		Describes how the Call Queue is hunting for an Agent.
-		Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
-		Attendant behaves like Parallel if PresenceBasedRouting is used.
-	.PARAMETER PresenceBasedRouting
-		Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status).
-	.PARAMETER ConferenceMode
-		Optional. Default: TRUE,   Microsoft Default: FALSE
-		Will establish a conference instead of a direct call and should help with connection time.
-		Documentation vague.
-	.PARAMETER DistributionLists
-		Optional. Display Names of DistributionLists or Groups to be used as Agents.
-		Will be parsed after Users if they are specified as well.
-	.PARAMETER Users
-		Optional. UPNs of Users.
+    Optional. Default:  30s,   Microsoft Default:  1200s (See Parameter UseMicrosoftDefaults)
+    Time in Seconds for the TimeoutAction to trigger
+  .PARAMETER RoutingMethod
+    Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin,LongestIdle
+    Describes how the Call Queue is hunting for an Agent.
+    Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
+    Attendant behaves like Parallel if PresenceBasedRouting is used.
+  .PARAMETER PresenceBasedRouting
+    Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status).
+  .PARAMETER ConferenceMode
+    Optional. Default: TRUE,   Microsoft Default: FALSE
+    Will establish a conference instead of a direct call and should help with connection time.
+    Documentation vague.
+  .PARAMETER DistributionLists
+    Optional. Display Names of DistributionLists or Groups to be used as Agents.
+    Will be parsed after Users if they are specified as well.
+  .PARAMETER Users
+    Optional. UPNs of Users.
     Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
     Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
   .PARAMETER LanguageId
     Optional Language Identifier indicating the language that is used to play shared voicemail prompts.
     This parameter becomes a required parameter If either OverflowAction or TimeoutAction is set to SharedVoicemail.
-	.PARAMETER Silent
-		Optional. Does not display output. Use for Bulk provisioning only.
-		Will return the Output object, but not display any output on Screen.
+  .PARAMETER Silent
+    Optional. Does not display output. Use for Bulk provisioning only.
+    Will return the Output object, but not display any output on Screen.
   .PARAMETER Force
     Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified
     Currently no other impact
-	.EXAMPLE
-		New-TeamsCallQueue -Name "My Queue"
-		Creates a new Call Queue "My Queue" with the Default Music On Hold
-		All other values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
-	.EXAMPLE
-		New-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefaults
-		Creates a new Call Queue "My Queue" with the Default Music On Hold
-		All values not specified default to Microsoft defaults for New-CsCallQueue (See Parameter UseMicrosoftDefaults)
-	.EXAMPLE
-		New-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
-		Creates a new Call Queue "My Queue" and sets it to overflow with more than 5 Callers waiting and a timeout window of 90s
-		All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
-	.EXAMPLE
-		New-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
-		Creates a new Call Queue "My Queue" with custom Audio Files
-		All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
-	.EXAMPLE
-		New-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
-		Creates a new Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
-		All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults
-	.EXAMPLE
-		New-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
-		Creates a new Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
-		All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+  .EXAMPLE
+    New-TeamsCallQueue -Name "My Queue"
+    Creates a new Call Queue "My Queue" with the Default Music On Hold
+    All other values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+  .EXAMPLE
+    New-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefaults
+    Creates a new Call Queue "My Queue" with the Default Music On Hold
+    All values not specified default to Microsoft defaults for New-CsCallQueue (See Parameter UseMicrosoftDefaults)
+  .EXAMPLE
+    New-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
+    Creates a new Call Queue "My Queue" and sets it to overflow with more than 5 Callers waiting and a timeout window of 90s
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+  .EXAMPLE
+    New-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
+    Creates a new Call Queue "My Queue" with custom Audio Files
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
+  .EXAMPLE
+    New-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
+    Creates a new Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults
+  .EXAMPLE
+    New-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
+    Creates a new Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
+    All values not specified default to optimised defaults (See Parameter UseMicrosoftDefaults)
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		Currently in Testing
-	.FUNCTIONALITY
-		Creates a Call Queue with custom settings and friendly names as input
-	.LINK
-		New-TeamsCallQueue
-		Get-TeamsCallQueue
+  .NOTES
+    Currently in Testing
+  .FUNCTIONALITY
+    Creates a Call Queue with custom settings and friendly names as input
+  .LINK
+    New-TeamsCallQueue
+    Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
     New-TeamsAutoAttendant
     New-TeamsResourceAccount
     New-TeamsResourceAccountAssociation
-	#>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('New-TeamsCQ')]
@@ -750,38 +750,21 @@ function New-TeamsCallQueue {
           #endregion
 
           #region Processing OverflowActionTarget for SharedVoiceMail
+          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
+          $CallTarget = $null
           try {
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
-            $FoundGroups = $null
-            $FoundGroups = Get-AzureADGroup -SearchString "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-            if (-not $FoundGroups ) {
-              try {
-                $FoundGroups = Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-              catch {
-                $FoundGroups = Get-AzureADGroup -Mail -eq "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-            }
-
-            if ( $FoundGroups.Count -gt 1 ) {
-              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$OverflowActionTarget"
-            }
-
-            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
-              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
-            }
-            else {
-              $OverflowActionTargetId = $FoundGroups.ObjectId
+            $CallTarget = Get-UniqueAzureAdGroup $OverflowActionTarget -ErrorAction Stop
+            if ( $CallTarget ) {
+              $OverflowActionTargetId = $CallTarget.ObjectId
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
             }
-          }
-          catch [System.Reflection.AmbiguousMatchException] {
-            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
-            return
+            else {
+              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($CallTarget.DisplayName -join ", ")" -Category QuotaExceeded
           }
           #endregion
         }
@@ -993,38 +976,21 @@ function New-TeamsCallQueue {
           #endregion
 
           #region Processing TimeoutActionTarget for SharedVoiceMail
+          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
+          $CallTarget = $null
           try {
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
-            $FoundGroups = $null
-            $FoundGroups = Get-AzureADGroup -SearchString "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-            if (-not $FoundGroups ) {
-              try {
-                $FoundGroups = Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-              catch {
-                $FoundGroups = Get-AzureADGroup -Mail -eq "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-            }
-
-            if ( $FoundGroups.Count -gt 1 ) {
-              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$TimeoutActionTarget"
-            }
-
-            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
-              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
-            }
-            else {
-              $TimeoutActionTargetId = $FoundGroups.ObjectId
+            $CallTarget = Get-UniqueAzureAdGroup $TimeoutActionTarget -ErrorAction Stop
+            if ( $CallTarget ) {
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+              $TimeoutActionTargetId = $CallTarget.ObjectId
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
             }
-          }
-          catch [System.Reflection.AmbiguousMatchException] {
-            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
-            return
+            else {
+              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($CallTarget.DisplayName -join ", ")" -Category QuotaExceeded
           }
           #endregion
         }
@@ -1139,26 +1105,30 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
-        $DLObject = Find-AzureAdGroup "$DL"
+        try {
+          $DLObject = Get-UniqueAzureAdGroup "$DL" -ErrorAction Stop
+          if ($DLObject) {
+            Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+            # Test whether Users in DL are enabled for EV and/or licensed?
 
-        if ($DLObject) {
-          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
-          # Test whether Users in DL are enabled for EV and/or licensed?
-
-          # Add to List
-          [void]$DLIdList.Add($DLObject.ObjectId)
+            # Add to List
+            [void]$DLIdList.Add($DLObject.ObjectId)
+          }
+          else {
+            Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+          }
         }
-        else {
-          Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+        catch {
+          Write-Error -Message "Callable Entity - Call Target not unique! Found: $($DLObject.DisplayName -join ", ")" -Category QuotaExceeded
         }
       }
-    }
-    # NEW: Processing always / SET: Processing only when specified
-    Write-Verbose -Message "'$NameNormalised' Groups: Adding $($DLIdList.Count) Groups to the Queue" -Verbose
-    if ($DLIdList.Count -gt 0) {
-      $Parameters += @{'DistributionLists' = @($DLIdList) }
-      Write-Verbose -Message "NOTE: Group members are parsed by the subsystem" -Verbose
-      Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members" -Verbose
+      # NEW: Processing always / SET: Processing only when specified
+      Write-Verbose -Message "'$NameNormalised' Groups: Adding $($DLIdList.Count) Groups to the Queue" -Verbose
+      if ($DLIdList.Count -gt 0) {
+        $Parameters += @{'DistributionLists' = @($DLIdList) }
+        Write-Verbose -Message "NOTE: Group members are parsed by the subsystem" -Verbose
+        Write-Verbose -Message "Currently no verification steps are taken against Licensing or EV-Enablement of Members" -Verbose
+      }
     }
     #endregion
 

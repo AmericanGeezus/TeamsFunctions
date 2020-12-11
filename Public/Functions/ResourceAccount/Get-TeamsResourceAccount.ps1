@@ -254,13 +254,17 @@ function Get-TeamsResourceAccount {
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AzureAdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       if ( $Association ) {
         $AssociationObject = switch ($Association.ConfigurationType) {
           "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
           "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
         }
         $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      }
+      else {
+        $AssociationObject = $null
+        $AssociationStatus = $null
       }
 
       # creating new PS Object (synchronous with Get and Set)

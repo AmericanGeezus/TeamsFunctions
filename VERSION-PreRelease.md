@@ -4,8 +4,13 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## v20.12.13 pre-realease
 
+### New
+
+- New Helper functions behind the scenes to find Unique AzureAd Groups and Creating Callable Entities
+
 ### Updated
 
+- Multiple functions: Lookup improvements to gain unique Objects
 - `Get-TeamsUserLicense`: Better display for PhoneSystemStatus (String instead of Object)
 - `Get-TeamsUserVoiceConfig`: Better display for PhoneSystemStatus (String instead of Object) - Using Get-TeamsUserLicense in the background
 - `Set-TeamsUserVoiceConfig`:

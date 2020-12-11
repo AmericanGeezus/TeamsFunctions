@@ -90,6 +90,8 @@ function Get-TeamsCallableEntity {
     foreach ($Id in $Identity) {
       Write-Verbose -Message "Processing '$Id'"
       if ($Id -match "^tel:\+\d") {
+        Write-Verbose "Target is a Tel URI"
+
         $CallableEntity = [PsCustomObject][ordered]@{
           'Entity'       = $Id
           'Identity'     = $Id
@@ -100,14 +102,18 @@ function Get-TeamsCallableEntity {
         }
       }
       else {
+        Write-Verbose "Target is not a Tel URI"
         try {
           # FIRST: Trying an AzureAdUser for User or ApplicationEndPoint
           $CallTarget = Get-AzureADUser -ObjectId $Id -WarningAction SilentlyContinue
+          Write-Verbose "Target is a User or Application Endpoint"
           if ( $CallTarget ) {
             try {
               $ApplicationInstance = Get-CsOnlineApplicationInstance -Identity $CallTarget.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
+              Write-Verbose "Target is an Application Endpoint"
             }
             catch {
+              Write-Verbose "Target is a User"
               $ApplicationInstance = $null
             }
 
@@ -133,6 +139,7 @@ function Get-TeamsCallableEntity {
             }
           }
           else {
+            Write-Verbose "Target is not a User or Application Endpoint"
             throw
           }
         }
@@ -140,20 +147,48 @@ function Get-TeamsCallableEntity {
           # Not a User, not an ApplicationEndPoint
           try {
             # SECOND: Trying a AzureAdGroup for SharedVoicemail
-            $CallTarget = Find-AzureADGroup "$Id"
-            if ( $CallTarget ) {
-              $CallableEntity = [PsCustomObject][ordered]@{
-                'Entity'       = $CallTarget.DisplayName
-                'Identity'     = $CallTarget.ObjectId
-                'ObjectType'   = "Group"
-                'Type'         = "SharedVoicemail"
-                'UsableInAaAs' = "SharedVoicemail"
-                'UsableInCqAs' = "SharedVoicemail"
+            $CallTarget = $null
+            $CallTarget = Get-AzureADGroup -SearchString "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            if (-not $CallTarget ) {
+              try {
+                $CallTarget = Get-AzureADGroup -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
+              }
+              catch {
+                $CallTarget = Get-AzureADGroup | Where-Object Mail -eq "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
               }
             }
             else {
-              throw
+              Write-Verbose "Target is a Group"
             }
+
+            # dealing with potential duplicates
+            if ( $CallTarget.Count -gt 1 ) {
+              Write-Verbose "Target is a Group, but multiple Groups found"
+              $CallTarget = $CallTarget | Where-Object DisplayName -EQ "$Id"
+            }
+            if ( $CallTarget.Count -gt 1 ) {
+              Write-Verbose "Target is a Group, but not unique!"
+              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
+            }
+            else {
+              # Unique result found
+              if ( $CallTarget ) {
+                $CallableEntity = [PsCustomObject][ordered]@{
+                  'Entity'       = $CallTarget.DisplayName
+                  'Identity'     = $CallTarget.ObjectId
+                  'ObjectType'   = "Group"
+                  'Type'         = "SharedVoicemail"
+                  'UsableInAaAs' = "SharedVoicemail"
+                  'UsableInCqAs' = "SharedVoicemail"
+                }
+              }
+              else {
+                throw
+              }
+            }
+          }
+          catch [System.Reflection.AmbiguousMatchException] {
+            Write-Error -Message "No Unique Target found for '$Id'" -Exception System.Reflection.AmbiguousMatchException -ErrorAction Stop
           }
           catch {
             Write-Warning -Message "The Object is not supported as a Callable Entity for AutoAttendants or CallQueues"

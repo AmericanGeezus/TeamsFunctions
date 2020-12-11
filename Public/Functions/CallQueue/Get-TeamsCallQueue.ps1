@@ -275,10 +275,12 @@ function Get-TeamsCallQueue {
           Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($Q.Name)' - $Operation"
           foreach ($DL in $Q.DistributionLists) {
-            $DLSearch = Get-AzureADGroup -SearchString "$DL" -WarningAction SilentlyContinue | Select-Object DisplayName
-            $DLObject = $DLSearch | Where-Object DisplayName -EQ "$DL"
-            #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
-            [void]$DLNames.Add($DLObject.DisplayName)
+            #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            $DLObject = Get-AzureAdGroup -ObjectId "$DL" -WarningAction SilentlyContinue
+            if ($DLObject) {
+              #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
+              [void]$DLNames.Add($DLObject.DisplayName)
+            }
           }
           # Output: $DLNames
 

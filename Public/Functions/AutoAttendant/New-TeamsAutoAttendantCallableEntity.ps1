@@ -153,23 +153,23 @@ function New-TeamsAutoAttendantCallableEntity {
           Write-Error -Message "Callable Entity - Call Target '$Identity' (User) not found" -Category ObjectNotFound -ErrorAction Stop
         }
 
-
       }
       "SharedVoicemail" {
         $DLObject = $null
-        $DLObject = Find-AzureAdGroup "$Identity"
-        if ($DLObject) {
-          if ( $DLObject.Count -gt 1 ) {
-            #Query is against the $Identity (Name), this should be returning a unique result, but could return multiple!
-            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($DLObject.DisplayName)" -Category QuotaExceeded -ErrorAction Stop
-          }
-          else {
+        try {
+          $DLObject = Get-UniqueAzureAdGroup "$Identity" -ErrorAction Stop
+          if ($DLObject) {
             Write-Verbose -Message "Callable Entity - Call Target '$Identity' (Group) used"
             $Id = $DLObject.ObjectId
           }
+          else {
+            Write-Error -Message "Callable Entity - Call Target '$Identity' (Group) not found" -Category ObjectNotFound
+            return
+          }
         }
-        else {
-          Write-Error -Message "Callable Entity - Call Target '$Identity' (Group) not found" -Category ObjectNotFound -ErrorAction Stop
+        catch {
+          Write-Error -Message "Callable Entity - Call Target not unique! Found: $($DLObject.DisplayName -join ", ")" -Category QuotaExceeded
+          return
         }
 
       }

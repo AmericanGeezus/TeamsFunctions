@@ -460,39 +460,7 @@ function New-TeamsAutoAttendant {
     #endregion
     #endregion
 
-    #region functions
     #CHECK If application of EnableTranscription leads to an error (with New-TeamsAACE) then it could be used with a TRY/CATCH to try to use it.
-
-    function CreateCallableEntity ($CallableEntity) {
-      # Creating Callable Entity with or without Transcription
-      try {
-        $CEObject = Get-TeamsCallableEntity $CallableEntity
-        #TODO Test Parameter EnableTranscription - Try with Catch and retry? Activate for all type where needed?
-        if ($CEObject.Type -eq "SharedVoicemail" -and $EnableTranscription) {
-          $CEEntity = New-TeamsAutoAttendantCallableEntity -Type $CEObject.Type -Identity "$CallableEntity" -EnableTranscription
-        }
-        else {
-          if ($EnableTranscription) {
-            Write-Verbose -Message "EnableTranscription - Transcription can only be activated for SharedVoicemail." -Verbose
-          }
-          $CEEntity = New-TeamsAutoAttendantCallableEntity -Type $CEObject.Type -Identity "$CallableEntity"
-        }
-
-        $CallTargetEntity = New-TeamsAutoAttendantCallableEntity -Type $CEObject.Type -Identity "$CEEntity"
-        return $CallTargetEntity
-      }
-      catch [System.IO.IOException] {
-        Write-Warning -Message "'$NameNormalised' Call Target '$CallableEntity' not enumerated. Omitting Object"
-        return $null
-      }
-      catch {
-        Write-Warning -Message "'$NameNormalised' Call Target '$CallableEntity' not enumerated. Omitting Object"
-        Write-Host "$($_.Exception.Message)" -ForegroundColor Red
-        return $null
-      }
-    }
-
-    #endregion
   } #begin
 
   process {
@@ -512,6 +480,12 @@ function New-TeamsAutoAttendant {
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
     Write-Verbose -Message "'$Name' DisplayName normalised to: '$NameNormalised'"
     $Parameters += @{'Name' = $NameNormalised }
+
+    # Preparing Call Flow String (to adhere to 64 Character limit)
+    $CallFlowNamePrefix = -join "$NameNormalised"[0..40]
+    if ($NameNormalised.length -gt 40) {
+      Write-Verbose "Auto Attendant Name is too long and cannot be used for Call Flow Name(s) as-is. Name will be shortened"
+    }
 
     # Adding required parameters
     $Parameters += @{'LanguageId' = $Language }
@@ -538,7 +512,7 @@ function New-TeamsAutoAttendant {
     Write-Verbose -Message "$Status - $Operation"
 
     if ($PSBoundParameters.ContainsKey('Operator')) {
-      $OperatorEntity = CreateCallableEntity $Operator
+      $OperatorEntity = Create-TeamsCallableEntity $Operator
       if ($OperatorEntity) {
         $Parameters += @{'Operator' = $OperatorEntity }
       }
@@ -561,7 +535,7 @@ function New-TeamsAutoAttendant {
     else {
       Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - No Custom Object - Processing 'BusinessHoursCallFlowOption'..." -Verbose
       $BusinessHoursCallFlowParameters = @{}
-      $BusinessHoursCallFlowParameters.Name = "$NameNormalised - Business Hours Call Flow"
+      $BusinessHoursCallFlowParameters.Name = "$NameNormalised - Business Hours CF"
 
       #region Processing BusinessHoursCallFlowOption
       switch ($BusinessHoursCallFlowOption) {
@@ -569,7 +543,7 @@ function New-TeamsAutoAttendant {
           Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Transferring to Target" -Verbose
 
           # Process BusinessHoursCallTarget
-          $BusinessHoursCallTargetEntity = CreateCallableEntity $BusinessHoursCallTarget
+          $BusinessHoursCallTargetEntity = Create-TeamsCallableEntity $BusinessHoursCallTarget
 
           # Building Menu Only if Successful
           if ($BusinessHoursCallTargetEntity) {
@@ -662,7 +636,7 @@ function New-TeamsAutoAttendant {
       # Option Selected
       Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'AfterHoursCallFlowOption'..." -Verbose
       $AfterHoursCallFlowParameters = @{}
-      $AfterHoursCallFlowParameters.Name = "$NameNormalised After Hours Call Flow"
+      $AfterHoursCallFlowParameters.Name = "$CallFlowNamePrefix - After Hours CF"
 
       #region Processing AfterHoursCallFlowOption
       switch ($AfterHoursCallFlowOption) {
@@ -670,7 +644,7 @@ function New-TeamsAutoAttendant {
           Write-Verbose -Message "'$NameNormalised' Call Flow - Transferring to Target" -Verbose
 
           # Process AfterHoursCallTarget
-          $AfterHoursCallTargetEntity = CreateCallableEntity $AfterHoursCallTarget
+          $AfterHoursCallTargetEntity = Create-TeamsCallableEntity $AfterHoursCallTarget
 
           # Building Menu Only if Successful
           if ($AfterHoursCallTargetEntity) {
@@ -752,8 +726,8 @@ function New-TeamsAutoAttendant {
 
       Write-Verbose -Message "'$NameNormalised' Schedule - Applying Schedule" -Verbose
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
-      Write-Debug "The Creation of the CsAutoAttendantCallHandlingAssociation will fail if multiple CallFlows are specified. This is due to a logic error. Sorry. Working to fix this!" -Debug
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
+      #TODO when HolidaySet is added, a second CHA will need to be added here! +=?
       $Parameters += @{'CallHandlingAssociation' = @($AfterHoursCallHandlingAssociation) }
       #endregion
     }
@@ -808,7 +782,10 @@ function New-TeamsAutoAttendant {
     if ($PSCmdlet.ShouldProcess("$NameNormalised", "New-CsAutoAttendant")) {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
-        Write-Debug $Parameters -Debug
+        if ($Debug) {
+          Write-Debug "Parameters to be applied:" -Debug
+          Write-Output $Parameters
+        }
         $null = (New-CsAutoAttendant @Parameters)
         Write-Verbose -Message "SUCCESS: '$NameNormalised' Auto Attendant created with all Parameters"
       }

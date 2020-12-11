@@ -71,6 +71,7 @@ function New-TeamsAutoAttendantDialScope {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
+      #TODO - Apply new SCript (check all that query AzureAdGroup)
       try {
         $Object = Get-AzureADGroup $Group -WarningAction SilentlyContinue -ErrorAction Stop
         $GroupIds += $Object.ObjectId

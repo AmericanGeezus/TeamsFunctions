@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-
+#CHECK Status display...
 
 function New-TeamsResourceAccountAssociation {
   <#
@@ -107,15 +107,21 @@ function New-TeamsResourceAccountAssociation {
         $Entity = $CallQueue
         # Querying Call Queue by Name - need Unique Result
         Write-Verbose -Message "Querying Call Queue '$CallQueue'"
-        $EntityObject = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
+        $EntitySearch = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
       }
       'AutoAttendant' {
         $DesiredType = "AutoAttendant"
         $Entity = $AutoAttendant
         # Querying Auto Attendant by Name - need Unique Result
         Write-Verbose -Message "Querying Auto Attendant '$AutoAttendant'"
-        $EntityObject = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
+        $EntitySearch = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
       }
+    }
+    if ($EntitySearch.Count -gt 1) {
+      $EntityObject = $EntitySearch | Where-Object Name -eq "$Entity"
+    }
+    else {
+      $EntityObject = $EntitySearch
     }
 
     # Validating Unique result received
@@ -128,6 +134,8 @@ function New-TeamsResourceAccountAssociation {
       return
     }
     elseif ($EntityObject.GetType().BaseType.Name -eq "Array") {
+      $EntityObject = $EntityObject | Where-Object DisplayName -eq
+
       Write-Verbose -Message "'$Entity' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons, a unique Name to process." -Verbose
       Write-Verbose -Message "Here are all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!" -Verbose
       $EntityObject | Select-Object Identity, Name | Format-Table
@@ -185,7 +193,7 @@ function New-TeamsResourceAccountAssociation {
       Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
       Write-Verbose -Message "$Status - $Operation"
       $ExistingConnection = $null
-      $ExistingConnection = Get-CsOnlineApplicationInstanceAssociation -Identity $Account.ObjectId -WarningAction SilentlyContinue
+      $ExistingConnection = Get-CsOnlineApplicationInstanceAssociation -Identity $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
       if ($null -eq $ExistingConnection.ConfigurationId) {
         Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"

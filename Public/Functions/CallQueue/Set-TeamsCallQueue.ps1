@@ -754,38 +754,21 @@ function Set-TeamsCallQueue {
           #endregion
 
           #region Processing OverflowActionTarget for SharedVoiceMail
+          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
+          $CallTarget = $null
           try {
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
-            $FoundGroups = $null
-            $FoundGroups = Get-AzureADGroup -SearchString "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-            if (-not $FoundGroups ) {
-              try {
-                $FoundGroups = Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-              catch {
-                $FoundGroups = Get-AzureADGroup -Mail -eq "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-            }
-
-            if ( $FoundGroups.Count -gt 1 ) {
-              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$OverflowActionTarget"
-            }
-
-            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
-              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
-            }
-            else {
-              $OverflowActionTargetId = $FoundGroups.ObjectId
+            $CallTarget = Get-UniqueAzureAdGroup $OverflowActionTarget -ErrorAction Stop
+            if ( $CallTarget ) {
+              $OverflowActionTargetId = $CallTarget.ObjectId
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
             }
-          }
-          catch [System.Reflection.AmbiguousMatchException] {
-            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
-            return
+            else {
+              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($CallTarget.DisplayName -join ", ")" -Category QuotaExceeded
           }
           #endregion
         }
@@ -1015,38 +998,21 @@ function Set-TeamsCallQueue {
           #endregion
 
           #region Processing TimeoutActionTarget for SharedVoiceMail
+          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
+          $CallTarget = $null
           try {
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
-            $FoundGroups = $null
-            $FoundGroups = Get-AzureADGroup -SearchString "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-            if (-not $FoundGroups ) {
-              try {
-                $FoundGroups = Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-              catch {
-                $FoundGroups = Get-AzureADGroup -Mail -eq "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-            }
-
-            if ( $FoundGroups.Count -gt 1 ) {
-              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$TimeoutActionTarget"
-            }
-
-            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
-              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
-            }
-            else {
-              $TimeoutActionTargetId = $FoundGroups.ObjectId
+            $CallTarget = Get-UniqueAzureAdGroup $TimeoutActionTarget -ErrorAction Stop
+            if ( $CallTarget ) {
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+              $TimeoutActionTargetId = $CallTarget.ObjectId
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
             }
-          }
-          catch [System.Reflection.AmbiguousMatchException] {
-            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
-            return
+            else {
+              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            }
           }
           catch {
-            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($CallTarget.DisplayName -join ", ")" -Category QuotaExceeded
           }
           #endregion
         }
@@ -1174,17 +1140,21 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
-        $DLObject = Find-AzureAdGroup "$DL"
+        try {
+          $DLObject = Get-UniqueAzureAdGroup "$DL" -ErrorAction Stop
+          if ($DLObject) {
+            Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+            # Test whether Users in DL are enabled for EV and/or licensed?
 
-        if ($DLObject) {
-          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
-          # Test whether Users in DL are enabled for EV and/or licensed?
-
-          # Add to List
-          [void]$DLIdList.Add($DLObject.ObjectId)
+            # Add to List
+            [void]$DLIdList.Add($DLObject.ObjectId)
+          }
+          else {
+            Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+          }
         }
-        else {
-          Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+        catch {
+          Write-Error -Message "Callable Entity - Call Target not unique! Found: $($DLObject.DisplayName -join ", ")" -Category QuotaExceeded
         }
       }
       # NEW: Processing always / SET: Processing only when specified

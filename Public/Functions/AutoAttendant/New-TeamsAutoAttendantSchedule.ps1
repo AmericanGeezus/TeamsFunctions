@@ -156,7 +156,7 @@ function New-TeamsAutoAttendantSchedule {
       Write-Verbose -Message "[PROCESS] Processing BusinessHours '$BusinessHours'"
       switch ($BusinessHours) {
         # Defining time of Day ($TimeFrame)
-        'AllDay' { $TimeFrame = New-CsOnlineTimeRange -Start 00:00 -End 23:59 }
+        'AllDay' { $TimeFrame = New-CsOnlineTimeRange -Start 00:00 -End 1.00:00 }
         '9to6' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 18:00 }
         '9to5' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
         '9to4' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 16:00 }
