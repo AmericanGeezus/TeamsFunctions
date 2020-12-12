@@ -53,7 +53,7 @@ function New-TeamsCallableEntity {
     Find-TeamsCallableEntity
     New-TeamsCallableEntity
     New-TeamsAutoAttendantDialScope
-    New-TeamsAutoAttendantRoute
+    New-TeamsAutoAttendantMenu
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
   #>

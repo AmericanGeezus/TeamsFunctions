@@ -16,7 +16,7 @@ Continue to test Scripts
 
 CHECK Cleanup Arkadinplatform AA & CQs
 
-### New-TeamsAutoAttendantRoute
+### New-TeamsAutoAttendantMenu
 
 Add Menu builder with selector for x options 1-9 (default: Forward To PSTN? with dummy number?).
 Optionally add operator on 0 (separate Operator function (New-TeamsAutoAttendantOperator?) or hooking into New-TeamsAutoAttendant)

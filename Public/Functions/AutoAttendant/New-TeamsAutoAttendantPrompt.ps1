@@ -37,10 +37,12 @@ function New-TeamsAutoAttendantPrompt {
     Get-TeamsCallableEntity
     Find-TeamsCallableEntity
     New-TeamsCallableEntity
-    New-TeamsAutoAttendantDialScope
-    New-TeamsAutoAttendantRoute
+    New-TeamsAutoAttendantCallFlow
+    New-TeamsAutoAttendantMenu
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
+    New-TeamsAutoAttendantDialScope
+
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]

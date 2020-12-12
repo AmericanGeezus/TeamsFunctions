@@ -7,14 +7,14 @@
 
 
 
-function New-TeamsAutoAttendantRoute {
+function New-TeamsAutoAttendantCallFlow {
   <#
   .SYNOPSIS
-    Creates a Menu to be used in Auto Attendants
+    Creates a Call Flow Object to be used in Auto Attendants
   .DESCRIPTION
-    Creates a Routing target or Menu with Prompt and/or MenuOptions to be used in Auto Attendants
-    Wrapper for New-CsAutoAttendantMenu with friendly names
-    Combines New-CsAutoAttendantMenu, New-CsAutoAttendantPrompt and New-CsAutoAttendantMenuOptions
+    Creates a Call Flow with optional Prompt and Menu to be used in Auto Attendants
+    Wrapper for New-CsAutoAttendantCallFlow with friendly names
+    Combines New-CsAutoAttendantMenu, New-CsAutoAttendantPrompt
   .PARAMETER Name
     Required. Name of the Menu?
   .PARAMETER Prompt
@@ -27,7 +27,7 @@ function New-TeamsAutoAttendantRoute {
     New-TeamsAutoAttendantDialScope -GroupName "My Group","My other Group"
     Creates a Dial Scope including "My Group" and "My other Group"
   .NOTES
-    Limitations: DialByName 
+    Limitations: DialByName
   .INPUTS
     System.String
   .OUTPUTS
@@ -38,13 +38,16 @@ function New-TeamsAutoAttendantRoute {
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
     New-TeamsCallableEntity
-    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantCallFlow
+    New-TeamsAutoAttendantMenu
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
+    New-TeamsAutoAttendantDialScope
+
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
-  [Alias('New-TeamsAAScope')]
+  [Alias('New-TeamsAAFlow')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Name of the Auto Attendant")]
@@ -52,7 +55,7 @@ function New-TeamsAutoAttendantRoute {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Alpha
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -72,34 +75,26 @@ function New-TeamsAutoAttendantRoute {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    $CsAutoAttendantCallFlow = $null
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($Group in $GroupName) {
-      Write-Verbose -Message "[PROCESS] Processing '$Group'"
-      #TODO - Apply new SCript (check all that query AzureAdGroup)
-      try {
-        $Object = Get-AzureADGroup $Group -WarningAction SilentlyContinue -ErrorAction Stop
-        $GroupIds += $Object.ObjectId
-      }
-      catch {
-        Write-Error -Message "Group not found" -Category ObjectNotFound -ErrorAction Stop
-      }
 
-    }
 
-    # Create dial Scope
+
+
+    # Create Call Flow
     Write-Verbose -Message "[PROCESS] Creating Dial Scope"
-    if ($PSCmdlet.ShouldProcess("$groupIds", "New-CsAutoAttendantDialScope")) {
-      $dialScope = New-CsAutoAttendantDialScope -GroupScope -GroupIds $groupIds
+    if ($PSCmdlet.ShouldProcess("$($CsAutoAttendantCallFlow.Name)", "New-CsAutoAttendantCallFlow")) {
+      $CallFlow = New-CsAutoAttendantCallFlow @CsAutoAttendantCallFlow
     }
 
     # Output
-    return $dialScope
+    return $CallFlow
   }
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #New-TeamsAutoAttendantDialScope
+} #New-TeamsAutoAttendantCallFlow

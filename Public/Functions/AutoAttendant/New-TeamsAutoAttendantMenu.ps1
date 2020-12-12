@@ -1,26 +1,38 @@
-﻿# Module:   TeamsFunctions
+# Module:   TeamsFunctions
 # Function: AutoAttendant
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   RC
+# Updated:  12-DEC-2020
+# Status:   ALPHA
 
 
 
 
-function New-TeamsAutoAttendantDialScope {
+function New-TeamsAutoAttendantMenu {
   <#
   .SYNOPSIS
-    Creates a Dial Scope to be used in Auto Attendants
+    Creates a Menu Object to be used in Auto Attendants
   .DESCRIPTION
-    Wrapper for New-CsAutoAttendantDialScope with friendly names
-  .PARAMETER GroupName
-    Required. Name of one or more Office 365 groups to create a Dial Scope for
+    Creates a Menu Object with Prompt and/or MenuOptions to be used in Auto Attendants
+    Wrapper for New-CsAutoAttendantMenu with friendly names
+  .PARAMETER Name
+    Optional. Name of the Menu if desired. Otherwise generated automatically.
+  .PARAMETER MenuOptions
+    Required for Action "Menu" only. Hashtable of Routing Targets.
+    DTMF tones are assigned in order with 0 being TransferToOperator
   .EXAMPLE
-    New-TeamsAutoAttendantDialScope -GroupName "My Group"
-    Creates a Dial Scope for "My Group"
+    New-TeamsAutoAttendantMenu
+    Creates Menu based on decisions. MenuOptions provided as a Hashtable of Routing Targets.
+    Note: This does not support Voicemail Dial Scope for "My Group"
   .EXAMPLE
-    New-TeamsAutoAttendantDialScope -GroupName "My Group","My other Group"
+    New-TeamsAutoAttendantMenu -GroupName "My Group","My other Group"
     Creates a Dial Scope including "My Group" and "My other Group"
+  .NOTES
+    Limitations: MenuOptions are integrated and type is parsed with Get-TeamsCallableEntity
+    This provides the following limitations:
+    1) Operator can only be specified as a redirection target, not as a MenuOption
+    2) Provided UPNs that are found to be AzureAdUsers are limited to be used as
+    "Person in the Organisation". If "Voicemail" is required, please change this in the Admin Center afterwards
+
   .INPUTS
     System.String
   .OUTPUTS
@@ -30,19 +42,16 @@ function New-TeamsAutoAttendantDialScope {
 	.LINK
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
-    Get-TeamsCallableEntity
-    Find-TeamsCallableEntity
     New-TeamsCallableEntity
     New-TeamsAutoAttendantCallFlow
     New-TeamsAutoAttendantMenu
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
     New-TeamsAutoAttendantDialScope
-
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
-  [Alias('New-TeamsAAScope')]
+  [Alias('New-TeamsAAFlow')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Name of the Auto Attendant")]
@@ -50,7 +59,7 @@ function New-TeamsAutoAttendantDialScope {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Alpha
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -70,35 +79,27 @@ function New-TeamsAutoAttendantDialScope {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    $CsAutoAttendantMenu = $null
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($Group in $GroupName) {
-      Write-Verbose -Message "[PROCESS] Processing '$Group'"
-      $Object = $null
-      $Object = Find-AzureADGroup "$Group" -Exact
-      if ($Object) {
 
-        $GroupIds += $Object.ObjectId
-      }
-      else {
-        Write-Warning -Message "Group not found: '$Group' - Skipping"
-      }
 
-    }
 
-    # Create dial Scope
+
+
+    # Create Call Flow
     Write-Verbose -Message "[PROCESS] Creating Dial Scope"
-    if ($PSCmdlet.ShouldProcess("$groupIds", "New-CsAutoAttendantDialScope")) {
-      $dialScope = New-CsAutoAttendantDialScope -GroupScope -GroupIds $groupIds
+    if ($PSCmdlet.ShouldProcess("$($Menu.Name)", "New-CsAutoAttendantMenu")) {
+      $Menu = New-CsAutoAttendantMenu @CsAutoAttendantMenu
     }
 
     # Output
-    return $dialScope
+    return $Menu
   }
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #New-TeamsAutoAttendantDialScope
+} #New-TeamsAutoAttendantMenu

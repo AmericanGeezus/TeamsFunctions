@@ -137,10 +137,11 @@ function New-TeamsAutoAttendant {
     Get-TeamsCallableEntity
     Find-TeamsCallableEntity
     New-TeamsCallableEntity
-    New-TeamsAutoAttendantDialScope
-    New-TeamsAutoAttendantRoute
+    New-TeamsAutoAttendantCallFlow
+    New-TeamsAutoAttendantMenu
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
+    New-TeamsAutoAttendantDialScope
     Remove-TeamsAutoAttendant
     New-TeamsResourceAccount
     New-TeamsResourceAccountAssociation
