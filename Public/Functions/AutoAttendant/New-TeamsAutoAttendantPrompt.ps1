@@ -34,8 +34,11 @@ function New-TeamsAutoAttendantPrompt {
 	.LINK
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
-    New-TeamsAutoAttendantCallableEntity
+    Get-TeamsCallableEntity
+    Find-TeamsCallableEntity
+    New-TeamsCallableEntity
     New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantRoute
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
   #>

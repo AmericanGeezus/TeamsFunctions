@@ -55,10 +55,14 @@ function New-TeamsAutoAttendantSchedule {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
-  .LINK
+	.LINK
     New-TeamsAutoAttendant
-    New-TeamsAutoAttendantCallableEntity
+    Set-TeamsAutoAttendant
+    Get-TeamsCallableEntity
+    Find-TeamsCallableEntity
+    New-TeamsCallableEntity
     New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantRoute
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
   #>

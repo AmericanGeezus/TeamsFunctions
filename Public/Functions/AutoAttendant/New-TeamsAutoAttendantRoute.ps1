@@ -1,26 +1,33 @@
-﻿# Module:   TeamsFunctions
+# Module:   TeamsFunctions
 # Function: AutoAttendant
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   RC
+# Updated:  12-DEC-2020
+# Status:   ALPHA
 
 
 
 
-function New-TeamsAutoAttendantDialScope {
+function New-TeamsAutoAttendantRoute {
   <#
   .SYNOPSIS
-    Creates a Dial Scope to be used in Auto Attendants
+    Creates a Menu to be used in Auto Attendants
   .DESCRIPTION
-    Wrapper for New-CsAutoAttendantDialScope with friendly names
-  .PARAMETER GroupName
-    Required. Name of one or more Office 365 groups to create a Dial Scope for
+    Creates a Routing target or Menu with Prompt and/or MenuOptions to be used in Auto Attendants
+    Wrapper for New-CsAutoAttendantMenu with friendly names
+    Combines New-CsAutoAttendantMenu, New-CsAutoAttendantPrompt and New-CsAutoAttendantMenuOptions
+  .PARAMETER Name
+    Required. Name of the Menu?
+  .PARAMETER Prompt
+    Optional. String or Filename of a greeting message to be played before action is taken
+  .PARAMETER
   .EXAMPLE
     New-TeamsAutoAttendantDialScope -GroupName "My Group"
     Creates a Dial Scope for "My Group"
   .EXAMPLE
     New-TeamsAutoAttendantDialScope -GroupName "My Group","My other Group"
     Creates a Dial Scope including "My Group" and "My other Group"
+  .NOTES
+    Limitations: DialByName 
   .INPUTS
     System.String
   .OUTPUTS
@@ -30,11 +37,8 @@ function New-TeamsAutoAttendantDialScope {
 	.LINK
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
-    Get-TeamsCallableEntity
-    Find-TeamsCallableEntity
     New-TeamsCallableEntity
     New-TeamsAutoAttendantDialScope
-    New-TeamsAutoAttendantRoute
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
   #>
@@ -74,14 +78,13 @@ function New-TeamsAutoAttendantDialScope {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
-      $Object = $null
-      $Object = Find-AzureADGroup "$Group" -Exact
-      if ($Object) {
-
+      #TODO - Apply new SCript (check all that query AzureAdGroup)
+      try {
+        $Object = Get-AzureADGroup $Group -WarningAction SilentlyContinue -ErrorAction Stop
         $GroupIds += $Object.ObjectId
       }
-      else {
-        Write-Warning -Message "Group not found: '$Group' - Skipping"
+      catch {
+        Write-Error -Message "Group not found" -Category ObjectNotFound -ErrorAction Stop
       }
 
     }

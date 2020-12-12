@@ -752,19 +752,14 @@ function New-TeamsCallQueue {
           #region Processing OverflowActionTarget for SharedVoiceMail
           Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
           $CallTarget = $null
-          try {
-            $CallTarget = Get-UniqueAzureAdGroup $OverflowActionTarget -ErrorAction Stop
-            if ( $CallTarget ) {
-              $OverflowActionTargetId = $CallTarget.ObjectId
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
-              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
-            }
+          $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
+          if ( $CallTarget ) {
+            $OverflowActionTargetId = $CallTarget.ObjectId
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
           }
-          catch {
-            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($CallTarget.DisplayName -join ", ")" -Category QuotaExceeded
+          else {
+            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
           }
           #endregion
         }
@@ -978,19 +973,14 @@ function New-TeamsCallQueue {
           #region Processing TimeoutActionTarget for SharedVoiceMail
           Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
           $CallTarget = $null
-          try {
-            $CallTarget = Get-UniqueAzureAdGroup $TimeoutActionTarget -ErrorAction Stop
-            if ( $CallTarget ) {
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
-              $TimeoutActionTargetId = $CallTarget.ObjectId
-              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
-            }
+          $CallTarget = Find-AzureAdGroup $TimeoutActionTarget -Exact
+          if ( $CallTarget ) {
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+            $TimeoutActionTargetId = $CallTarget.ObjectId
+            $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
-          catch {
-            Write-Error -Message "Callable Entity - Call Target not unique! Found: $($CallTarget.DisplayName -join ", ")" -Category QuotaExceeded
+          else {
+            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
           }
           #endregion
         }
@@ -1105,21 +1095,16 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
-        try {
-          $DLObject = Get-UniqueAzureAdGroup "$DL" -ErrorAction Stop
-          if ($DLObject) {
-            Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
-            # Test whether Users in DL are enabled for EV and/or licensed?
+        $DLObject = Find-AzureAdGroup "$DL" -Exact
+        if ($DLObject) {
+          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+          # Test whether Users in DL are enabled for EV and/or licensed?
 
-            # Add to List
-            [void]$DLIdList.Add($DLObject.ObjectId)
-          }
-          else {
-            Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
-          }
+          # Add to List
+          [void]$DLIdList.Add($DLObject.ObjectId)
         }
-        catch {
-          Write-Error -Message "Callable Entity - Call Target not unique! Found: $($DLObject.DisplayName -join ", ")" -Category QuotaExceeded
+        else {
+          Write-Warning -Message "Group '$DL' not found or not unique in AzureAd, omitting Group!"
         }
       }
       # NEW: Processing always / SET: Processing only when specified

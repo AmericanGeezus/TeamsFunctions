@@ -16,9 +16,9 @@ function Test-AzureAdGroup {
 	.PARAMETER Identity
 		Mandatory. The Name or User Principal Name (MailNickName) of the Group to test.
 	.EXAMPLE
-		Test-AzureAdGroup -Identity $UPN
-		Will Return $TRUE only if the object $UPN is found.
-    Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
+		Test-AzureAdGroup -Identity "My Group"
+		Will Return $TRUE only if the object "My Group" is found.
+    Will Return $FALSE in any other case
   .LINK
     Find-AzureAdGroup
     Find-AzureAdUser
@@ -48,6 +48,33 @@ function Test-AzureAdGroup {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+    $CallTarget = $null
+    $CallTarget = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    $CallTarget = $CallTarget | Where-Object Displayname -EQ "$Id"
+    if (-not $CallTarget ) {
+      try {
+        $CallTarget = Get-AzureADGroup -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
+      }
+      catch {
+        try {
+          $MailNickName = $Identity.Split('@')[0]
+          $CallTarget = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
+        }
+        catch {
+          $CallTarget = Get-AzureADGroup | Where-Object Mail -EQ "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        }
+      }
+    }
+
+    if ($CallTarget) {
+      return $true
+    }
+    else {
+      return $false
+    }
+
+    <# Code to be replaced #TODO Requires testing
     try {
       $Group = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
       if ( $null -ne $Group ) {
@@ -84,6 +111,7 @@ function Test-AzureAdGroup {
         return $false
       }
     }
+    #>
   } #process
 
   end {

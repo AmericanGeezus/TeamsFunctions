@@ -121,6 +121,7 @@ function Format-StringForUse {
       switch -regex ($String) {
         "^\d" { [String]$OutputString = "+" + $String; Break }
         "^\+\d" { [String]$OutputString = $String; Break }
+        default { [String]$OutputString = "+" + $String.replace('+', ''); Break }
       }
       if ( -not $OutputString ) {
         [String]$OutputString = ""

@@ -133,15 +133,17 @@ function New-TeamsAutoAttendant {
 	.LINK
 		New-TeamsCallQueue
     New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
+    Get-TeamsCallableEntity
+    Find-TeamsCallableEntity
+    New-TeamsCallableEntity
+    New-TeamsAutoAttendantDialScope
+    New-TeamsAutoAttendantRoute
+    New-TeamsAutoAttendantPrompt
+    New-TeamsAutoAttendantSchedule
     Remove-TeamsAutoAttendant
     New-TeamsResourceAccount
     New-TeamsResourceAccountAssociation
-    New-TeamsAutoAttendantCallableEntity
-    New-TeamsAutoAttendantDialScope
-    New-TeamsAutoAttendantPrompt
-    New-TeamsAutoAttendantSchedule
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -512,9 +514,14 @@ function New-TeamsAutoAttendant {
     Write-Verbose -Message "$Status - $Operation"
 
     if ($PSBoundParameters.ContainsKey('Operator')) {
-      $OperatorEntity = Create-TeamsCallableEntity $Operator
-      if ($OperatorEntity) {
-        $Parameters += @{'Operator' = $OperatorEntity }
+      try {
+        $OperatorEntity = New-TeamsCallableEntity -Identity $Operator
+        if ($OperatorEntity) {
+          $Parameters += @{'Operator' = $OperatorEntity }
+        }
+      }
+      catch {
+        Write-Warning -Message "Operator - Error creating Call Target - skipped"
       }
     }
     #endregion
@@ -543,18 +550,24 @@ function New-TeamsAutoAttendant {
           Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Transferring to Target" -Verbose
 
           # Process BusinessHoursCallTarget
-          $BusinessHoursCallTargetEntity = Create-TeamsCallableEntity $BusinessHoursCallTarget
+          try {
 
-          # Building Menu Only if Successful
-          if ($BusinessHoursCallTargetEntity) {
-            $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity.Id -DtmfResponse Automatic
-            $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionTransfer)
+            # Building Menu Only if Successful
+            if ($BusinessHoursCallTargetEntity) {
+              $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity.Id -DtmfResponse Automatic
+              $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionTransfer)
 
-            break
+              break
+            }
+            else {
+              # Reverting to Disconnect
+              Write-Warning -Message "'$NameNormalised' DefaultCallFlow - Business Hours Menu not created properly. Reverting to Disconnect"
+              $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
+              $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
+            }
           }
-          else {
-            # Reverting to Disconnect
-            Write-Warning -Message "'$NameNormalised' DefaultCallFlow - Business Hours Menu not created properly. Reverting to Disconnect"
+          catch {
+            Write-Warning -Message "BusinessHoursCallTarget - Error creating Call Target - Defaulting to disconnect"
             $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
             $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($BusinessHoursMenuOptionDefault)
           }
@@ -644,20 +657,27 @@ function New-TeamsAutoAttendant {
           Write-Verbose -Message "'$NameNormalised' Call Flow - Transferring to Target" -Verbose
 
           # Process AfterHoursCallTarget
-          $AfterHoursCallTargetEntity = Create-TeamsCallableEntity $AfterHoursCallTarget
+          try {
+            $AfterHoursCallTargetEntity = New-TeamsCallableEntity $AfterHoursCallTarget -ErrorAction Stop
 
-          # Building Menu Only if Successful
-          if ($AfterHoursCallTargetEntity) {
-            $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity.Id -DtmfResponse Automatic
-            $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionTransfer)
+            # Building Menu Only if Successful
+            if ($AfterHoursCallTargetEntity) {
+              $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity.Id -DtmfResponse Automatic
+              $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionTransfer)
 
-            break
+              break
+            }
+            else {
+              # Reverting to Disconnect
+              Write-Warning -Message "'$NameNormalised' Call Flow - After Hours Menu not created properly. Reverting to Disconnect"
+              $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
+              $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
+            }
           }
-          else {
-            # Reverting to Disconnect
-            Write-Warning -Message "'$NameNormalised' Call Flow - After Hours Menu not created properly. Reverting to Disconnect"
+          catch {
+            Write-Warning -Message "AfterHoursCallTarget - Error creating Call Target - Defaulting to disconnect"
             $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
-            $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "After Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
+            $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name "Business Hours Menu" -MenuOptions @($AfterHoursMenuOptionDefault)
           }
         }
 

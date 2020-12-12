@@ -17,7 +17,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Refined verification of PhoneSystemStatus. As the queried Object from Get-TeamsUserLicense changes, so needs the processing
   - Refined application of PhoneNumber. Now allowing an empty string and $null (removing the Number) - A warning is displayed as the Object is then not in the correct state to make outbound calls, but as it is a SET command, it shall allow for empty states.
 - `Get-TeamsCallableEntity`: Added Parameter ObjectType to not interfere with Parameter Type (used in other scripts)
-- `New-TeamsAutoAttendantCallableEntity`: Added Parameter EnableTranscription
+- `New-TeamsCallableEntity`: Added Parameter EnableTranscription
 - `New-TeamsAutoAttendant`: **Major Overhaul**
   - Added Parameter EnableTranscription to allow for Transcription with all CallTargets (SharedVoicemail)
   - Removed Parameter Silent as it wasn't implemeneted and should not be used anyway.

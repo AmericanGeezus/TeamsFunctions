@@ -16,7 +16,7 @@ Continue to test Scripts
 
 CHECK Cleanup Arkadinplatform AA & CQs
 
-### New-TeamsAutoAttendantMenu
+### New-TeamsAutoAttendantRoute
 
 Add Menu builder with selector for x options 1-9 (default: Forward To PSTN? with dummy number?).
 Optionally add operator on 0 (separate Operator function (New-TeamsAutoAttendantOperator?) or hooking into New-TeamsAutoAttendant)
@@ -37,9 +37,9 @@ Return as what they are set?
 
 ## Support Functions
 
-### New-TeamsAutoAttendantCallableEntity and its functionality
+### New-TeamsCallableEntity and its functionality
 
-Evaluate whether functionality of New-TeamsAutoAttendantCallableEntity would be better off in a helper function (and used in CQ or the CE-Function) rather than adding the switch to the CE-Function!
+Evaluate whether functionality of New-TeamsCallableEntity would be better off in a helper function (and used in CQ or the CE-Function) rather than adding the switch to the CE-Function!
 
 ## Code Improvements
 

@@ -40,7 +40,7 @@ function Find-TeamsCallableEntity {
 	.LINK
     Find-TeamsCallableEntity
     Get-TeamsCallableEntity
-    New-TeamsAutoAttendantCallableEntity
+    New-TeamsCallableEntity
     Get-TeamsObjectType
     Get-TeamsCallQueue
     Get-TeamsAutoAttendant
@@ -116,7 +116,7 @@ function Find-TeamsCallableEntity {
 
     $IdCounter = 0
     foreach ( $Id in $Identity) {
-      $Entity = $null
+      $CallTarget = $null
       [System.Collections.ArrayList]$Output = @()
 
       $Operation = "Processing '$Id'"
@@ -137,19 +137,24 @@ function Find-TeamsCallableEntity {
       $Operation = "Teams Callable Entity"
       Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $Entity = Get-TeamsCallableEntity -Identity $Id
-      if ( -not $Entity.Entity ) {
-        Write-Verbose -Message "Callable Entity '$Id' not found - Please validate UserPrincipalName" -Verbose
+      try {
+        $CallTarget = Get-TeamsCallableEntity -Identity $Id
+        if ( -not $CallTarget ) {
+          Write-Error -Message "Callable Entity '$Id' not found - Please validate input"
+          continue
+        }
+        else {
+          Write-Debug -Message "Callable Entity '$Id' found:"
+          Write-Debug $CallTarget
+        }
+      }
+      catch {
+        Write-Error -Message "Callable Entity '$Id' found, but no unique result determined. Cannot continue."
         continue
       }
-      else {
-        Write-Debug -Message "Callable Entity '$Id' found:"
-        Write-Debug $Entity
-      }
-
 
       #region Search Results
-      $Status = "$($Entity.Type) '$($Entity.Entity)'"
+      $Status = "$($CallTarget.Type) '$($CallTarget.Entity)'"
       #region Call Queues
       if ( $Scope -in ("All", "CallQueue") ) {
         # 1 Searching for Agent or User
@@ -159,12 +164,12 @@ function Find-TeamsCallableEntity {
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($CQ in $CQs) {
-          if ( $Entity.Identity -in $CQ.Agents.ObjectId ) {
-            if ( $Entity.Identity -in $CQ.Users ) {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "User", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+          if ( $CallTarget.Identity -in $CQ.Agents.ObjectId ) {
+            if ( $CallTarget.Identity -in $CQ.Users ) {
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "User", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
             }
             else {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "Agent", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "Agent", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
             }
           }
         }
@@ -176,8 +181,8 @@ function Find-TeamsCallableEntity {
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($CQ in $CQs) {
-          if ( $Entity.Identity -in $CQ.DistributionLists ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "Group", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+          if ( $CallTarget.Identity -in $CQ.DistributionLists ) {
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "Group", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
           }
         }
 
@@ -188,8 +193,8 @@ function Find-TeamsCallableEntity {
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($CQ in $CQs) {
-          if ( $Entity.Identity -in $CQ.OverflowActionTarget ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "OverflowActionTarget", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+          if ( $CallTarget.Identity -in $CQ.OverflowActionTarget ) {
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "OverflowActionTarget", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
           }
         }
 
@@ -200,8 +205,8 @@ function Find-TeamsCallableEntity {
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($CQ in $CQs) {
-          if ( $Entity.Identity -in $CQ.TimeoutActionTarget ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "TimeoutActionTarget", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+          if ( $CallTarget.Identity -in $CQ.TimeoutActionTarget ) {
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "TimeoutActionTarget", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
           }
         }
 
@@ -217,8 +222,8 @@ function Find-TeamsCallableEntity {
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($AA in $AAs) {
-          if ( $Entity.Identity -in $AA.Operator.Id ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "Operator", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
+          if ( $CallTarget.Identity -in $AA.Operator.Id ) {
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "Operator", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
           }
         }
 
@@ -230,8 +235,8 @@ function Find-TeamsCallableEntity {
 
         foreach ($AA in $AAs) {
           foreach ($Target in $AA.DefaultCallFlow.Menu.MenuOptions.CallTarget) {
-            if ( $Entity.Identity -in $Target.Id ) {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "DefaultCallFlow", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
+            if ( $CallTarget.Identity -in $Target.Id ) {
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "DefaultCallFlow", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
             }
           }
         }
@@ -244,8 +249,8 @@ function Find-TeamsCallableEntity {
 
         foreach ($AA in $AAs) {
           foreach ($Target in $AA.CallFlows.Menu.MenuOptions.CallTarget) {
-            if ( $Entity.Identity -in $Target.Id ) {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($Entity.Entity)", "CallFlows", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
+            if ( $CallTarget.Identity -in $Target.Id ) {
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "CallFlows", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
             }
           }
         }

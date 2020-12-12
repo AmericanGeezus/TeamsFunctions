@@ -4,7 +4,7 @@
 # Updated:    01-NOV-2020
 # Status:     PreLive
 
-#CHECK Create Class? overkill, but uniformity!
+
 
 
 function Get-TeamsCallableEntity {
@@ -27,6 +27,10 @@ function Get-TeamsCallableEntity {
     Get-TeamsCallableEntity -Identity 00000000-0000-0000-0000-000000000000
     Queries whether the provided ObjectId can be found as an AzureAdUser, AzureAdGroup or CsOnlineApplicationInstance.
   .EXAMPLE
+    Get-TeamsCallableEntity -Identity "1 (555) 1234-567"
+    No Queries performed, number is normalised into a LineURI then passed on as the Tel URI.
+    Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+  .EXAMPLE
     Get-TeamsCallableEntity -Identity "tel:+15551234567"
     No Queries performed, as the Tel URI is passed on as-is.
     Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
@@ -46,7 +50,7 @@ function Get-TeamsCallableEntity {
   .LINK
     Find-TeamsCallableEntity
     Get-TeamsCallableEntity
-    New-TeamsAutoAttendantCallableEntity
+    New-TeamsCallableEntity
     Get-TeamsObjectType
     Get-TeamsCallQueue
     Get-TeamsAutoAttendant
@@ -92,6 +96,7 @@ function Get-TeamsCallableEntity {
       if ($Id -match "^tel:\+\d") {
         Write-Verbose "Target is a Tel URI"
 
+        <#
         $CallableEntity = [PsCustomObject][ordered]@{
           'Entity'       = $Id
           'Identity'     = $Id
@@ -100,6 +105,9 @@ function Get-TeamsCallableEntity {
           'UsableInAaAs' = "ExternalPstn"
           'UsableInCqAs' = "Forward"
         }
+        #>
+        $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", "TelURI", "ExternalPstn")
+
       }
       else {
         Write-Verbose "Target is not a Tel URI"
@@ -118,6 +126,7 @@ function Get-TeamsCallableEntity {
             }
 
             if ($ApplicationInstance) {
+              <#
               $CallableEntity = [PsCustomObject][ordered]@{
                 'Entity'       = $CallTarget.UserPrincipalName
                 'Identity'     = $CallTarget.ObjectId
@@ -125,9 +134,11 @@ function Get-TeamsCallableEntity {
                 'Type'         = "ApplicationEndpoint"
                 'UsableInAaAs' = "ApplicationEndpoint"
                 'UsableInCqAs' = "Forward"
-              }
+                #>
+              $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", "ApplicationEndpoint", "ApplicationEndpoint")
             }
             else {
+              <#
               $CallableEntity = [PsCustomObject][ordered]@{
                 'Entity'       = $CallTarget.UserPrincipalName
                 'Identity'     = $CallTarget.ObjectId
@@ -136,6 +147,9 @@ function Get-TeamsCallableEntity {
                 'UsableInAaAs' = "User"
                 'UsableInCqAs' = @( "Forward", "Voicemail" )
               }
+              #>
+              $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", "User", "User")
+
             }
           }
           else {
@@ -149,12 +163,13 @@ function Get-TeamsCallableEntity {
             # SECOND: Trying a AzureAdGroup for SharedVoicemail
             $CallTarget = $null
             $CallTarget = Get-AzureADGroup -SearchString "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            $Groups = $Groups | Where-Object Displayname -EQ "$Id"
             if (-not $CallTarget ) {
               try {
                 $CallTarget = Get-AzureADGroup -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
               }
               catch {
-                $CallTarget = Get-AzureADGroup | Where-Object Mail -eq "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+                $CallTarget = Get-AzureADGroup | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
               }
             }
             else {
@@ -173,7 +188,8 @@ function Get-TeamsCallableEntity {
             else {
               # Unique result found
               if ( $CallTarget ) {
-                $CallableEntity = [PsCustomObject][ordered]@{
+                <#
+                 $CallableEntity = [PsCustomObject][ordered]@{
                   'Entity'       = $CallTarget.DisplayName
                   'Identity'     = $CallTarget.ObjectId
                   'ObjectType'   = "Group"
@@ -181,6 +197,9 @@ function Get-TeamsCallableEntity {
                   'UsableInAaAs' = "SharedVoicemail"
                   'UsableInCqAs' = "SharedVoicemail"
                 }
+                #>
+                $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.DisplayName)", "$($CallTarget.ObjectId)", "Group", "SharedVoicemail")
+
               }
               else {
                 throw
@@ -193,6 +212,7 @@ function Get-TeamsCallableEntity {
           catch {
             Write-Warning -Message "The Object is not supported as a Callable Entity for AutoAttendants or CallQueues"
             # Defaulting to Unknown
+            <#
             $CallableEntity = [PsCustomObject][ordered]@{
               'Entity'       = $null
               'Identity'     = $Id
@@ -201,6 +221,9 @@ function Get-TeamsCallableEntity {
               'UsableInAaAs' = $null
               'UsableInCqAs' = $null
             }
+            #>
+            $CallableEntity = [TFCallableEntity]::new( $null, "$Id", "Unknown", $null )
+
           }
         }
       }

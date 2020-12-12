@@ -95,7 +95,7 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 | `New-TeamsAutoAttendantDialScope`<br />(New-CsAutoAttendantDialScope)           | New-TeamsAADialScope | Creates a `DialScope` Object given Office 365 Group Names                                                                   |
 | `New-TeamsAutoAttendantPrompt`<br />(New-CsAutoAttendantPrompt)                 | New-TeamsAAPrompt    | Changes a `Prompt Object` based on String input alone (decides whether the string is a file name or a Text-to-Voice String) |
 | `New-TeamsAutoAttendantSchedule`<br />(New-CsAutoAttendantSchedule)             | New-TeamsAASchedule  | Changes a `Schedule Object` based on selection (many options available). THIS is missing from Auto Attendants               |
-| `New-TeamsAutoAttendantCallableEntity`<br />(New-CsAutoAttendantCallableEntity) | New-TeamsAAEntity    | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)      |
+| `New-TeamsCallableEntity`<br />(New-CsAutoAttendantCallableEntity) | New-TeamsAAEntity    | Creates a `Callable Entity` Object given a Type and CallTarget (also doubles as a verification Script for Call Queues)      |
 
 ### Lookup Commands
 
