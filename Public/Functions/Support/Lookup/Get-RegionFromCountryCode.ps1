@@ -44,6 +44,7 @@ function Get-RegionFromCountryCode {
   begin {
     $Region = $null
     $CountryName = $null
+    Write-Verbose -Message "Returning $Output"
   }
 
   process {
