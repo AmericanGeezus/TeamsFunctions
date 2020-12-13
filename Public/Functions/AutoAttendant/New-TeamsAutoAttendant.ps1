@@ -139,6 +139,7 @@ function New-TeamsAutoAttendant {
     New-TeamsCallableEntity
     New-TeamsAutoAttendantCallFlow
     New-TeamsAutoAttendantMenu
+    New-TeamsAutoAttendantMenuOption
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
     New-TeamsAutoAttendantDialScope
@@ -804,7 +805,7 @@ function New-TeamsAutoAttendant {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
         if ($Debug) {
-          Write-Debug "Parameters to be applied:" -Debug
+          Write-Debug "Parameters to be applied:"
           Write-Output $Parameters
         }
         $null = (New-CsAutoAttendant @Parameters)

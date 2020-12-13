@@ -7,6 +7,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### New
 
 - New Helper functions behind the scenes to find Unique AzureAd Groups and Creating Callable Entities
+- Completing the Set for AutoAttendants:
+  - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow)
+  - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu)
+  - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption)
 
 ### Updated
 
@@ -26,6 +30,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Parameter Validation is now improved
   - Separated requirements for DefaultCallflow. Using this parameter now overrides BusinessHours Parameters properly.
   - Separated requirements for CallFlows and CallHandlingAssociations. Using these parameters now overrides AfterHours Parameters properly.
+  - Updated Support Functions:
+    - `New-TeamsAutoAttendantDialScope`: Improved lookup for Groups
+    - `New-TeamsAutoAttendantDialSchedule`: TimeFrame 'AllDay' now is open for 24 hours, not 23 hours and 45 minutes.
 
 ## v20.12.07 pre-release
 

@@ -35,10 +35,10 @@ function New-TeamsAutoAttendantDialScope {
     New-TeamsCallableEntity
     New-TeamsAutoAttendantCallFlow
     New-TeamsAutoAttendantMenu
+    New-TeamsAutoAttendantMenuOption
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
     New-TeamsAutoAttendantDialScope
-
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]

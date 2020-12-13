@@ -46,11 +46,6 @@ function Get-TeamsAutoAttendant {
     Get-TeamsCallableEntity
     Find-TeamsCallableEntity
     New-TeamsCallableEntity
-    New-TeamsAutoAttendantCallFlow
-    New-TeamsAutoAttendantMenu
-    New-TeamsAutoAttendantPrompt
-    New-TeamsAutoAttendantSchedule
-    New-TeamsAutoAttendantDialScope
     Get-TeamsResourceAccount
     Get-TeamsResourceAccountAssociation
     Remove-TeamsAutoAttendant

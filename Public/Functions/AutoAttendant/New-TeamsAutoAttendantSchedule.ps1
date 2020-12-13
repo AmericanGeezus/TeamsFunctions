@@ -63,6 +63,7 @@ function New-TeamsAutoAttendantSchedule {
     New-TeamsCallableEntity
     New-TeamsAutoAttendantCallFlow
     New-TeamsAutoAttendantMenu
+    New-TeamsAutoAttendantMenuOption
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
     New-TeamsAutoAttendantDialScope
