@@ -153,7 +153,7 @@ Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot
 Export-ModuleMember -Alias con, dis, pol, Set-TeamsUVC, Get-TeamsUVC, Find-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Enable-Ev, `
   New-TeamsRA, Set-TeamsRA, Get-TeamsRA, Find-TeamsRA, Remove-TeamsRA, New-TeamsRAassoc, Get-TeamsRAassoc, Remove-TeamsRAassoc, Remove-CsOnlineApplicationInstance, `
   New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ, New-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, Get-TeamsAA, Remove-TeamsAA, `
-  New-TeamsAAPrompt, New-TeamsAASchedule, New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAAScope, New-TeamsCAP
+  New-TeamsAAPrompt, New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAASchedule, New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAAScope, New-TeamsCAP
 
 
 # SIG # Begin signature block

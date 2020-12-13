@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  12-DEC-2020
-# Status:   ALPHA
+# Status:   RC
 
 
 
@@ -86,6 +86,7 @@ function New-TeamsAutoAttendantMenuOption {
     [Alias('Operator')]
     [switch]$TransferToOperator,
 
+    [Parameter(ParameterSetName = "Operator", HelpMessage = "Alternative voice Response")]
     [Parameter(ParameterSetName = "CallTarget", HelpMessage = "Alternative voice Response")]
     [Alias('VoiceResponses', 'Say')]
     [ValidateScript( { if ($_ -match '^[^\W_]+$') { $true } else { Write-Error -Message "Voice Response must be one word without spaces or symbols." } })]
@@ -97,7 +98,7 @@ function New-TeamsAutoAttendantMenuOption {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Alpha
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -135,7 +136,7 @@ function New-TeamsAutoAttendantMenuOption {
         if ($Press) {
           $DtmfResponse = "Tone" + $Press
           if ($OrSay) {
-            $Parameters += @{'VoiceResponses' = $OrSay }
+            Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
           }
         }
         else {
@@ -183,9 +184,8 @@ function New-TeamsAutoAttendantMenuOption {
 
 
     # Create Menu Option
-    if ($Debug) {
-      Write-Debug "Parameters to be applied:"
-      Write-Output $Parameters
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     Write-Verbose -Message "[PROCESS] Creating Menu Option"

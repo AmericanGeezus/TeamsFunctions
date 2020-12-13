@@ -1164,7 +1164,7 @@ function Set-TeamsCallQueue {
     # DEBUG Information
     if ($PSBoundParameters.ContainsKey("Debug")) {
       Write-Debug "Parameters to be applied:"
-      Write-Output $Parameters
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Set the Call Queue with all Parameters provided

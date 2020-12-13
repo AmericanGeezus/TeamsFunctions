@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  12-DEC-2020
-# Status:   ALPHA
+# Status:   RC
 
 
 
@@ -18,7 +18,7 @@ function New-TeamsAutoAttendantMenu {
   .PARAMETER Name
     Optional. Name of the Menu if desired. Otherwise generated automatically.
   .PARAMETER Action
-    Required. MenuOptions, Disconnect, TransferToOperator, TransferToCallTarget.
+    Required. MenuOptions, Disconnect, TransferToCallTarget.
     Determines the type of Menu to be created.
   .PARAMETER Prompts
     Required for Action "MenuOptions" only. A Prompts Object, String or Full path to AudioFile.
@@ -80,13 +80,14 @@ function New-TeamsAutoAttendantMenu {
   .EXAMPLE
     New-TeamsAutoAttendantMenu -Action TransferToCallTarget -CallTarget "John@domain.com"
     Creates a default Menu, transferring the Call to the Call target.
+    Expected UserPrincipalName (User, ApplicationEndpoint), Group Name (Shared Voicemail), Tel Uri (ExternalPstn)
   .NOTES
-    Limitations: CallTargetsInOrder are Menu Options integrated and type is parsed with Get-TeamsCallableEntity
+    Limitations: CallTargetsInOrder are Menu Options integrated and their type is parsed with Get-TeamsCallableEntity
     This provides the following limitations:
     1) Operator can only be specified as a redirection target on "Press 0" with Switch AddOperatorOnZero, not as an option in CallTargetsInOrder.
     2) Provided UPNs that are found to be AzureAdUsers are limited to be used as "Person in the Organisation"
-    If forwarding to the Users "Voicemail" is required, please change this in the Admin Center afterwards.
-    To overcome either limitation, please defined MenuOptions yourself and use with MenuOptions Parameter.
+    If forwarding to the Users Voicemail is required, please change this in the Admin Center afterwards.
+    To overcome either limitation, please define MenuOptions yourself and use with the MenuOptions Parameter.
 
     To define Menu Options manually, please see:
     https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps
@@ -122,7 +123,7 @@ function New-TeamsAutoAttendantMenu {
     [string]$Name,
 
     [Parameter(Mandatory, HelpMessage = "Action determines Type of Menu to be built")]
-    [ValidateSet('Menu', 'Disconnect', 'TransferToOperator', 'TransferToCallTarget')]
+    [ValidateSet('TransferToMenu', 'Disconnect', 'TransferToCallTarget')]
     [string]$Action,
 
     [Parameter(Mandatory, ParameterSetName = "MenuOptions", HelpMessage = "Prompt object, Text-To-Voice String or Full path to AudioFile")]
@@ -154,7 +155,7 @@ function New-TeamsAutoAttendantMenu {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Alpha
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -174,9 +175,9 @@ function New-TeamsAutoAttendantMenu {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-
     # Preparing Splatting Object
     $Parameters = $null
+
   } #begin
 
   process {
@@ -184,23 +185,23 @@ function New-TeamsAutoAttendantMenu {
 
     #region Routing - Menu Options
     switch ($Action) {
-      "MenuOption" {
+      "TransferToMenu" {
         #region Prompt
         $PromptsType = ($Prompts | Get-Member | Select-Object TypeName -First 1).TypeName
         switch ($PromptsType) {
           "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt" {
-            Write-Verbose -Message "Call Flow - Promptsprovided is a Prompt Object"
-            $Parameters += @{'Prompts' = @($Prompts) }
+            Write-Verbose -Message "Call Flow - Prompts provided is a Prompt Object"
+            $Parameters += @{'Prompts' = $Prompts }
 
           }
           "System.String" {
             Write-Verbose -Message "Call Flow - Greeting provided as a String"
             # Process Greeting
             try {
-              $PromptsObject = New-TeamsAutoAttendantPrompt -String $Prompts
+              $PromptsObject = New-TeamsAutoAttendantPrompt -String "$Prompts"
               if ($PromptsObject) {
                 Write-Verbose -Message "Prompts - Adding 1 Prompts created (Greeting)"
-                $Parameters += @{'Prompts' = @($Prompts) }
+                $Parameters += @{'Prompts' = $PromptsObject }
               }
             }
             catch {
@@ -219,48 +220,54 @@ function New-TeamsAutoAttendantMenu {
         switch ($PSCmdlet.ParameterSetName) {
           "MenuOptions" {
             # Determine Type
-            $MenuOptionType = ($MenuOptions | Select-Object -First 1 | Get-Member | Select-Object TypeName -First 1).TypeName
-            if ($MenuOptionType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption") {
-              Write-Verbose -Message "Menu Option - Provided Object is a Menu Object. Adding Menu Option"
+            <# This doesn't work - Type is Selected.System.Management.Automation.PSCustomObject
+            foreach ($MenuOption in $MenuOptions) {
+              $MenuOptionType = $null
+              $MenuOptionType = ($MenuOption | Get-Member | Select-Object TypeName -First 1).TypeName
+              if ($MenuOptionType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption") {
+                Write-Verbose -Message "Menu Option - Provided Object is a Menu Object. Adding Menu Option"
+              }
+              else {
+                Write-Error -Message "Menu Option - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenuOption or New-CsAutoAttendantMenuOption" -ErrorAction Stop
+              }
             }
-            else {
-              Write-Error -Message "Menu Option - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenuOption or New-CsAutoAttendantMenuOption" -ErrorAction Stop
-            }
-
+             #>
           }
 
           "MenuOptions2" {
             # Process Ordered
             Write-Verbose -Message "MenuOptions - Creating Menu Options for Call Targets as provided (CallTargetsInOrder)"
             $Option = 1
-            $MaxOptions = if ($AddOperatorOnZero) { 9 } else { 10 }
+            $MaxOptions = 10
+            #$MaxOptions = if ($AddOperatorOnZero) { 9 } else { 10 }
             if ($CallTargetsInOrder.Count -gt 10) {
               Write-Warning -Message "MenuOptions - Max 10 options are supported as Call Targets. Additional Objects are ignored (CallTargetsInOrder)"
             }
 
             [System.Collections.ArrayList]$CreatedMenuOptions = @()
-            foreach ($CallTarget in $CallTargetsInOrder) {
-              while ($Option -le $CallTargetsInOrder.Count -and $Option -le $MaxOptions) {
-                if ($null -ne $CallTarget -or $CallTarget -ne "") {
+            foreach ($Target in $CallTargetsInOrder) {
+              if ($Option -le $CallTargetsInOrder.Count -and $Option -le $MaxOptions) {
+                if ( $Target ) {
                   $MenuOptionToAdd = $null
                   try {
                     if ( $Option -ne 10 ) {
-                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press $Option -CallTarget $CallTarget
+                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press $Option -CallTarget $Target
                     }
                     else {
-                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press 0 -CallTarget $CallTarget
+                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press 0 -CallTarget $Target
                     }
+
                     if ($MenuOptionToAdd) {
-                      Write-Verbose -Message "'Press $Option' to '$CallTarget' - OK"
+                      Write-Verbose -Message "Menu Option 'Press $Option' to '$Target' - OK" -Verbose
                       [void]$CreatedMenuOptions.Add($MenuOptionToAdd)
                     }
                   }
                   catch {
-                    Write-Warning -Message "'Press $Option' to '$CallTarget' - Creation unsuccessful! Omitting Call Target"
+                    Write-Warning -Message "Menu Option 'Press $Option' to '$Target' - Creation unsuccessful! Omitting Call Target"
                   }
                 }
                 else {
-                  Write-Verbose -Message "'Press $Option' not provided, empty or NULL - omitted"
+                  Write-Verbose -Message "Menu Option 'Press $Option' not provided, empty or NULL - omitted" -Verbose
                 }
 
                 $Option++
@@ -279,11 +286,12 @@ function New-TeamsAutoAttendantMenu {
                   [void]$CreatedMenuOptions.Add($MenuOptionToAdd)
                 }
               }
-              else {
-                Write-Verbose -Message "MenuOptions - AddOperatorOnZero is not parsed as 10 Options were provided (CallTargetsInOrder)"
-              }
+            }
+            else {
+              Write-Verbose -Message "MenuOptions - AddOperatorOnZero is not parsed as 10 Options were provided (CallTargetsInOrder)"
             }
 
+            $MenuOptions = $CreatedMenuOptions
           }
         }
         #endregion
@@ -294,14 +302,9 @@ function New-TeamsAutoAttendantMenu {
         $MenuOptions = New-TeamsAutoAttendantMenuOption -DisconnectCall
       }
 
-      "TransferToOperator" {
-        $MenuOptions = New-TeamsAutoAttendantMenuOption -TransferToOperator
-      }
-
       "TransferToCallTarget" {
         # Change this to do MenuOptions
-        $CallTargetEntity = New-TeamsAutoAttendantCallableEntity $CallTarget
-        $MenuOptions = New-TeamsAutoAttendantMenuOption -TransferCallToTarget -CallTarget $CallTargetEntity
+        $MenuOptions = New-TeamsAutoAttendantMenuOption -CallTarget $CallTarget
       }
     }
 
@@ -328,18 +331,14 @@ function New-TeamsAutoAttendantMenu {
 
 
     # Create Menu
-    if ($Debug) {
-      Write-Debug "Parameters to be applied:"
-      Write-Output $Parameters
-    }
-
     Write-Verbose -Message "[PROCESS] Creating Menu"
-    if ($PSCmdlet.ShouldProcess("$($Menu.Name)", "New-CsAutoAttendantMenu")) {
-      $Menu = New-CsAutoAttendantMenu @Parameters
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-    # Output
-    return $Menu
+    if ($PSCmdlet.ShouldProcess("$($Menu.Name)", "New-CsAutoAttendantMenu")) {
+      New-CsAutoAttendantMenu @Parameters
+    }
   }
 
   end {

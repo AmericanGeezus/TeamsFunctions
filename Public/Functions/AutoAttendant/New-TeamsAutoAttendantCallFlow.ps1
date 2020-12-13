@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  12-DEC-2020
-# Status:   ALPHA
+# Status:   RC
 
 
 
@@ -25,10 +25,6 @@ function New-TeamsAutoAttendantCallFlow {
     Optional. Menu Object to be used.
   .PARAMETER Disconnect
     Optional. Creates a default Menu, disconnecting the Call.
-  .PARAMETER TransferToOperator
-    Optional. Creates a default Menu, redirecting to the Operator
-    NOTE: The AutoAttendant which will receive a Menu with this option, must have an Operator defined.
-    Errors may occur if no operator is present.
   .PARAMETER TransferToCallTarget
     Optional. String. Creates a default Menu, redirecting to the specified Call Target
     UserPrincipalName (User, ApplicationEndpoint), Group Name (Shared Voicemail), Tel Uri (ExternalPstn)
@@ -39,9 +35,6 @@ function New-TeamsAutoAttendantCallFlow {
   .EXAMPLE
     New-TeamsAutoAttendantCallFlow -Menu $MenuObject -Greeting "Welcome to Contoso"
     Creates Call Flow with the Menu Object provided and creates the Greeting with the provided String (Text-to-voice)
-  .EXAMPLE
-    New-TeamsAutoAttendantCallFlow -TransferToOperator -Greeting "C:\Temp\Greeting.wav"
-    Creates a Menu Object to transfer the Call to the Operator and creates the Greeting with the provided String (File)
   .EXAMPLE
     New-TeamsAutoAttendantCallFlow -TransferToCallTarget "John@domain.com"
     Creates a Menu Object to transfer the Call to a call Target and no Greeting
@@ -87,15 +80,12 @@ function New-TeamsAutoAttendantCallFlow {
     [Parameter(ParameterSetName = "Disconnect", HelpMessage = "Creates a menu, using Disconnect")]
     [switch]$Disconnect,
 
-    [Parameter(ParameterSetName = "TransferToOperator", HelpMessage = "Creates a menu, redirecting to Operator")]
-    [switch]$TransferToOperator,
-
     [Parameter(ParameterSetName = "TransferToCallTarget", HelpMessage = "Creates a menu, redirecting to the Call Target")]
     [string]$TransferToCallTarget
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Alpha
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -139,7 +129,7 @@ function New-TeamsAutoAttendantCallFlow {
             $GreetingObject = New-TeamsAutoAttendantPrompt -String $Greeting
             if ($GreetingObject) {
               Write-Verbose -Message "Prompts - Adding 1 Prompts created (Greeting)"
-              $Parameters += @{'Greetings' = @($GreetingObject) }
+              $Parameters += @{'Greetings' = $GreetingObject }
             }
           }
           catch {
@@ -159,12 +149,19 @@ function New-TeamsAutoAttendantCallFlow {
     # Processing Options
     switch ($PSCmdlet.ParameterSetName) {
       "Menu" {
-        $MenuType = ($Greeting | Get-Member | Select-Object TypeName -First 1).TypeName
-        if ($MenuType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu") {
-          Write-Verbose -Message "Menu - Provided Object is a Menu Object. Adding Menu"
+        if ($Menu) {
+          #<#
+          $MenuType = ($Menu | Get-Member | Select-Object TypeName -First 1).TypeName
+          if ($MenuType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu") {
+            Write-Verbose -Message "Menu - Provided Object is a Menu Object. Adding Menu"
+          }
+          else {
+            Write-Error -Message "Menu - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenu or New-CsAutoAttendantMenu" -ErrorAction Stop
+          }
+          #>
         }
         else {
-          Write-Error -Message "Menu - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenu or New-CsAutoAttendantMenu" -ErrorAction Stop
+          Write-Error -Message "Menu - Provided Object is NULL" -ErrorAction Stop
         }
       }
 
@@ -172,16 +169,12 @@ function New-TeamsAutoAttendantCallFlow {
         $Menu = New-TeamsAutoAttendantMenu -Action Disconnect
       }
 
-      "TransferToOperator" {
-        $Menu = New-TeamsAutoAttendantMenu -Action TransferToOperator
-      }
-
       "TransferToCallTarget" {
         $Menu = New-TeamsAutoAttendantMenu -Action TransferToCallTarget -CallTarget $TransferToCallTarget
       }
     }
 
-    $Parameters += @{'Menu' = @($Menu) }
+    $Parameters += @{'Menu' = $Menu }
     #endregion
 
 
@@ -195,18 +188,14 @@ function New-TeamsAutoAttendantCallFlow {
 
 
     # Create Call Flow
-    if ($Debug) {
-      Write-Debug "Parameters to be applied:"
-      Write-Output $Parameters
-    }
-
     Write-Verbose -Message "[PROCESS] Creating Call Flow"
-    if ($PSCmdlet.ShouldProcess("$($Parameters.Name)", "New-CsAutoAttendantCallFlow")) {
-      $CallFlow = New-CsAutoAttendantCallFlow @Parameters
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-    # Output
-    return $CallFlow
+    if ($PSCmdlet.ShouldProcess("$($Parameters.Name)", "New-CsAutoAttendantCallFlow")) {
+      New-CsAutoAttendantCallFlow @Parameters
+    }
   }
 
   end {

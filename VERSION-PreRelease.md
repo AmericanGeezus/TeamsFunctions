@@ -8,9 +8,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 - New Helper functions behind the scenes to find Unique AzureAd Groups and Creating Callable Entities
 - Completing the Set for AutoAttendants:
-  - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow)
-  - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu)
-  - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption)
+  - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow): Call Flow Object with default options
+  - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
+  - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
 
 ### Updated
 

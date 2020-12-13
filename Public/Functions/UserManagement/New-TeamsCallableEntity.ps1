@@ -62,7 +62,7 @@ function New-TeamsCallableEntity {
   [Alias('New-TeamsAutoAttendantCallableEntity', 'New-TeamsAAEntity')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, HelpMessage = "Identity of the Call Target")]
+    [Parameter(Mandatory, Position = 0, HelpMessage = "Identity of the Call Target")]
     [string]$Identity,
 
     [Parameter(HelpMessage = "Enables Transcription (for Shared Voicemail only)")]
@@ -139,6 +139,9 @@ function New-TeamsCallableEntity {
     }
     else {
       if ($CEObject.ObjectType -eq "Unknown") {
+        Write-Error -Message "Object could not be determined and Cannot be used!" -ErrorAction Stop
+        <# Code commented out as Choice is not a valid option when calling with another command
+        #TODO Evaluate whether a handling parameter (silent?) can be introduced to error here instead of Giving a choice
         # Correcting Type if lookup fails
         $Title = "Type cannot be determined"
         $Prompt = "If the Object exists, please provide Type"
@@ -151,6 +154,7 @@ function New-TeamsCallableEntity {
         if ($Type -eq "Exit") {
           return
         }
+        #>
       }
       else {
         # Determining Type
@@ -179,13 +183,13 @@ function New-TeamsCallableEntity {
 
     # Create CsAutoAttendantCallableEntity
     Write-Verbose -Message "[PROCESS] Creating Callable Entity"
-    If ($Debug) {
-      Write-Verbose -Message "Parameters to Creating Callable Entity"
-      Write-Output $CsAutoAttendantCallableEntity
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
+
     if ($PSCmdlet.ShouldProcess("$Identity", "New-CsAutoAttendantCallableEntity")) {
-      New-CsAutoAttendantCallableEntity @CsAutoAttendantCallableEntity
+      New-CsAutoAttendantCallableEntity @Parameters
     }
   }
 

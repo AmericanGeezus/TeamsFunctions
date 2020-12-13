@@ -47,6 +47,7 @@ function New-TeamsAutoAttendantDialScope {
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Name of the Auto Attendant")]
     [string[]]$GroupName
+
   ) #param
 
   begin {
@@ -90,12 +91,13 @@ function New-TeamsAutoAttendantDialScope {
 
     # Create dial Scope
     Write-Verbose -Message "[PROCESS] Creating Dial Scope"
-    if ($PSCmdlet.ShouldProcess("$groupIds", "New-CsAutoAttendantDialScope")) {
-      $dialScope = New-CsAutoAttendantDialScope -GroupScope -GroupIds $groupIds
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      Write-Debug "$groupIds"
     }
 
-    # Output
-    return $dialScope
+    if ($PSCmdlet.ShouldProcess("$groupIds", "New-CsAutoAttendantDialScope")) {
+      New-CsAutoAttendantDialScope -GroupScope -GroupIds $groupIds
+    }
   }
 
   end {

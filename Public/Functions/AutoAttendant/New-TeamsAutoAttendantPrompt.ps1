@@ -72,6 +72,9 @@ function New-TeamsAutoAttendantPrompt {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
+    # Preparing Splatting Object
+    $Parameters = $null
+
   } #begin
 
   process {
@@ -86,8 +89,14 @@ function New-TeamsAutoAttendantPrompt {
       else {
         Write-Verbose -Message "[PROCESS] Creating Auto Attendant Prompt - AudioFile"
         if ($PSCmdlet.ShouldProcess("$Prompt", "New-CsAutoAttendantPrompt")) {
-          $audioFile = Import-TeamsAudioFile -ApplicationType AutoAttendant -File $String
-          $Prompt = New-CsAutoAttendantPrompt -ActiveType AudioFile -AudioFilePrompt $audioFile
+          try {
+            $audioFile = Import-TeamsAudioFile -ApplicationType AutoAttendant -File $String
+            $Parameters += @{'ActiveType' = "AudioFile" }
+            $Parameters += @{'AudioFilePrompt' = "$audioFile" }
+          }
+          catch {
+            Write-Error -Message "Importing Audio File failed: $($_.Exception.Message)" -ErrorAction Stop
+          }
         }
       }
     }
@@ -95,11 +104,20 @@ function New-TeamsAutoAttendantPrompt {
       #Assume it is Text-to-speech
       Write-Verbose -Message "[PROCESS] Creating Auto Attendant Prompt - Text-to-Speech"
       if ($PSCmdlet.ShouldProcess("$Prompt", "New-CsAutoAttendantPrompt")) {
-        $Prompt = New-CsAutoAttendantPrompt -ActiveType TextToSpeech -TextToSpeechPrompt "$String"
+        $Parameters += @{'ActiveType' = "TextToSpeech" }
+        $Parameters += @{'TextToSpeechPrompt' = "$String" }
       }
     }
 
-    return $Prompt
+    # Creating Prompt
+    Write-Verbose -Message "[PROCESS] Creating Prompt"
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    }
+
+    if ($PSCmdlet.ShouldProcess("$Name", "New-CsAutoAttendantPrompt")) {
+      New-CsAutoAttendantPrompt @Parameters
+    }
   }
 
   end {

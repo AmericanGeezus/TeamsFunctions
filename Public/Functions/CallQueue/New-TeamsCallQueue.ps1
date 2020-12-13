@@ -1128,8 +1128,7 @@ function New-TeamsCallQueue {
     #region ACTION
     # DEBUG Information
     if ($PSBoundParameters.ContainsKey("Debug")) {
-      Write-Debug "Parameters to be applied:"
-      Write-Output $Parameters
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Create CQ (New-CsCallQueue)

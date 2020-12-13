@@ -129,26 +129,26 @@ function New-TeamsAutoAttendantSchedule {
 
     #region Prep
     # Initialising Splatting Object
-    $CsOnlineScheduleParams = @{}
+    $Parameters = @{}
 
     # Adding generic parameters
-    $CsOnlineScheduleParams.Name = $Name
-    #$CsOnlineScheduleParams.ErrorAction' = $Stop }
+    $Parameters.Name = $Name
+    #$Parameters.ErrorAction' = $Stop }
 
     if ($Complement) {
       Write-Verbose -Message "[PROCESS] Processing Complement"
-      $CsOnlineScheduleParams.Complement = $true
+      $Parameters.Complement = $true
     }
     #endregion
 
     #region Defining recurrance Fixed/Weekly
     if ($PSBoundParameters.ContainsKey('WeeklyRecurrentSchedule')) {
       Write-Verbose -Message "[PROCESS] Processing WeeklyRecurrentSchedule"
-      $CsOnlineScheduleParams.WeeklyRecurrentSchedule = $true
+      $Parameters.WeeklyRecurrentSchedule = $true
     }
     elseif ($PSBoundParameters.ContainsKey('Fixed')) {
       Write-Verbose -Message "[PROCESS] Processing Fixed"
-      $CsOnlineScheduleParams.Fixed = $true
+      $Parameters.Fixed = $true
     }
     #endregion
 
@@ -222,62 +222,57 @@ function New-TeamsAutoAttendantSchedule {
       Write-Verbose -Message "[PROCESS] Processing BusinessDays '$BusinessDays"
       switch ($BusinessDays) {
         'MonToFri' {
-          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
+          $Parameters.MondayHours = @($TimeFrame)
+          $Parameters.TuesdayHours = @($TimeFrame)
+          $Parameters.WednesdayHours = @($TimeFrame)
+          $Parameters.ThursdayHours = @($TimeFrame)
+          $Parameters.FridayHours = @($TimeFrame)
         }
         'MonToSat' {
-          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
+          $Parameters.MondayHours = @($TimeFrame)
+          $Parameters.TuesdayHours = @($TimeFrame)
+          $Parameters.WednesdayHours = @($TimeFrame)
+          $Parameters.ThursdayHours = @($TimeFrame)
+          $Parameters.FridayHours = @($TimeFrame)
+          $Parameters.SaturdayHours = @($TimeFrame)
         }
         'MonToSun' {
-          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.SaturdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
+          $Parameters.MondayHours = @($TimeFrame)
+          $Parameters.TuesdayHours = @($TimeFrame)
+          $Parameters.WednesdayHours = @($TimeFrame)
+          $Parameters.ThursdayHours = @($TimeFrame)
+          $Parameters.FridayHours = @($TimeFrame)
+          $Parameters.SaturdayHours = @($TimeFrame)
+          $Parameters.SundayHours = @($TimeFrame)
         }
         'SunToThu' {
-          $CsOnlineScheduleParams.SundayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
+          $Parameters.SundayHours = @($TimeFrame)
+          $Parameters.MondayHours = @($TimeFrame)
+          $Parameters.TuesdayHours = @($TimeFrame)
+          $Parameters.WednesdayHours = @($TimeFrame)
+          $Parameters.ThursdayHours = @($TimeFrame)
         }
         default {
-          $CsOnlineScheduleParams.MondayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.TuesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.WednesdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.ThursdayHours = @($TimeFrame)
-          $CsOnlineScheduleParams.FridayHours = @($TimeFrame)
+          $Parameters.MondayHours = @($TimeFrame)
+          $Parameters.TuesdayHours = @($TimeFrame)
+          $Parameters.WednesdayHours = @($TimeFrame)
+          $Parameters.ThursdayHours = @($TimeFrame)
+          $Parameters.FridayHours = @($TimeFrame)
         }
       }
     }
     #endregion
 
 
-    #region Creating Schedule
+    # Creating Schedule
     Write-Verbose -Message "[PROCESS] Creating Schedule"
-    try {
-      if ($PSCmdlet.ShouldProcess("$Name", "New-CsOnlineSchedule")) {
-        $ScheduleObject = New-CsOnlineSchedule @CsOnlineScheduleParams
-      }
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    }
 
-      # Output
-      return $ScheduleObject
+    if ($PSCmdlet.ShouldProcess("$Name", "New-CsOnlineSchedule")) {
+      New-CsOnlineSchedule @Parameters
     }
-    catch {
-      throw $($_.Exception.Message)
-    }
-    #endregion
 
   } #process
 

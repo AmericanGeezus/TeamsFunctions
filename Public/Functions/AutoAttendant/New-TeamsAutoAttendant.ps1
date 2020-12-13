@@ -794,6 +794,11 @@ function New-TeamsAutoAttendant {
 
 
     #region ACTION
+    Write-Verbose -Message "[PROCESS] Creating Auto Attendant"
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    }
+
     # Create AA (New-CsAutoAttendant)
     $Status = "Creating Object"
     $Operation = "Creating Auto Attendant: '$NameNormalised'"
@@ -804,10 +809,6 @@ function New-TeamsAutoAttendant {
     if ($PSCmdlet.ShouldProcess("$NameNormalised", "New-CsAutoAttendant")) {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
-        if ($Debug) {
-          Write-Debug "Parameters to be applied:"
-          Write-Output $Parameters
-        }
         $null = (New-CsAutoAttendant @Parameters)
         Write-Verbose -Message "SUCCESS: '$NameNormalised' Auto Attendant created with all Parameters"
       }

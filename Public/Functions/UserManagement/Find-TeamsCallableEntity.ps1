@@ -145,7 +145,7 @@ function Find-TeamsCallableEntity {
         }
         else {
           Write-Debug -Message "Callable Entity '$Id' found:"
-          Write-Debug $CallTarget
+          Write-Debug "$CallTarget"
         }
       }
       catch {
@@ -261,15 +261,14 @@ function Find-TeamsCallableEntity {
       #endregion
 
       # Output
+      Write-Progress -Id 0 -Completed -Activity $MyInvocation.MyCommand
       if ( $Output ) {
         Write-Output $Output #| Select-Object LinkedAs, ObjectType, ObjectName
       }
       else {
         Write-Verbose -Message "No Call Queues or Auto Attendants found for Identity '$Id'" -Verbose
-        #Write-Output $null
       }
     }
-    Write-Progress -Id 0 -Completed -Activity $MyInvocation.MyCommand
 
   } #process
 
