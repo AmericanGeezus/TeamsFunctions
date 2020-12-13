@@ -14,7 +14,7 @@ Add features, operator, Call target, default forward to CQ (Build also wrapper t
 
 Continue to test Scripts
 
-TODO Rework completely!
+CHECK Cleanup Arkadinplatform AA & CQs
 
 ### New-TeamsAutoAttendantMenu
 
@@ -37,9 +37,9 @@ Return as what they are set?
 
 ## Support Functions
 
-### New-TeamsAutoAttendantCallableEntity and its functionality
+### New-TeamsCallableEntity and its functionality
 
-Evaluate whether functionality of New-TeamsAutoAttendantCallableEntity would be better off in a helper function (and used in CQ or the CE-Function) rather than adding the switch to the CE-Function!
+Evaluate whether functionality of New-TeamsCallableEntity would be better off in a helper function (and used in CQ or the CE-Function) rather than adding the switch to the CE-Function!
 
 ## Code Improvements
 

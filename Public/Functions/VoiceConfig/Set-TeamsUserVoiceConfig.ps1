@@ -94,15 +94,8 @@ function Set-TeamsUserVoiceConfig {
     [string]$TenantDialPlan,
 
     [Parameter(Mandatory, HelpMessage = "E.164 Number to assign to the Object")]
-    [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
-          $True
-        }
-        else {
-          Write-Host "Not a valid phone number. E.164 format expected, min 8 digits, but multiple formats accepted. Extensions will be stripped" -ForegroundColor Red
-          $false
-        }
-      })]
+    [AllowNull()]
+    [AllowEmptyString()]
     [Alias('Number', 'LineURI')]
     [string]$PhoneNumber,
 
@@ -185,6 +178,7 @@ function Set-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying User Account" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying User Account"
       $CsUser = Get-TeamsUserVoiceConfig "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
+      $UserLic = Get-TeamsUserLicense "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
     catch {
@@ -198,14 +192,14 @@ function Set-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying User License" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying User License"
-      if ( $CsUser.PhoneSystemStatus.Count -gt 1 ) {
-        Write-Verbose -Message "License Status:" -Verbose
-        $CsUser.Licenses
-        $CsUser.ServicePlans
+      if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
+        throw "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
       }
 
-      if ( "Success" -notin $CsUser.PhoneSystemStatus ) {
-        throw "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
+      if ( $CsUser.PhoneSystemStatus.Contains(',')) {
+        Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
+        Write-Verbose -Message "All licenses assigned to the User:" -Verbose
+        Write-Output $UserLic.Licenses
       }
 
     }
@@ -213,7 +207,7 @@ function Set-TeamsUserVoiceConfig {
       # Unlicensed
       Write-Warning -Message "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'. Assignment will continue, though be only partially successful. "
       Write-Verbose -Message "License Status:" -Verbose
-      $CsUser.Licenses
+      $UserLic.Licenses
       $ErrorLog += $_.Exception.Message
       return
     }
@@ -344,24 +338,38 @@ function Set-TeamsUserVoiceConfig {
             Write-Verbose -Message "Applying Online Voice Routing Policy: Already assigned" -Verbose
           }
 
-          # Apply $PhoneNumber as OnPremLineUri
-          $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI
+          # Apply or Remove $PhoneNumber as OnPremLineUri
           $step++
           Write-Progress -Id 0 -Status "Provisioning for Direct Routing" -CurrentOperation "Applying Phone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "Applying Phone Number as '$Number'"
-          if ( $Force -or $CsUser.OnPremLineURI -ne $Number) {
-            try {
-              $CsUser | Set-CsUser -OnPremLineUri $Number -ErrorAction Stop
-              Write-Verbose -Message "Applying Phone Number: OK - '$Number'" -Verbose
+          Write-Verbose -Message "Applying Phone Number"
+          if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
+            If ($PhoneNumber -notmatch "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+              Write-Error -Message "PhoneNumber is not in an acceptable format. Multiple formats are expected, but preferred is E.164, with a minimum of 8 digits. Extensions will be stripped" -Category InvalidFormat
+              return
             }
-            catch {
-              $ErrorLogMessage = "Applying Phone Number: Failed: '$($_.Exception.Message)'"
-              Write-Error -Message $ErrorLogMessage
-              $ErrorLog += $ErrorLogMessage
+            else {
+              $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI
+
+              if ( $Force -or $CsUser.OnPremLineURI -ne $Number) {
+                try {
+                  $CsUser | Set-CsUser -OnPremLineUri $Number -ErrorAction Stop
+                  Write-Verbose -Message "Applying Phone Number: OK - '$Number'" -Verbose
+                }
+                catch {
+                  $ErrorLogMessage = "Applying Phone Number: Failed: '$($_.Exception.Message)'"
+                  Write-Error -Message $ErrorLogMessage
+                  $ErrorLog += $ErrorLogMessage
+                }
+              }
+              else {
+                Write-Verbose -Message "Applying Phone Number: Already assigned" -Verbose
+              }
             }
           }
           else {
-            Write-Verbose -Message "Applying Phone Number: Already assigned" -Verbose
+            Write-Warning -Message "PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
+            $CsUser | Set-CsUser -OnPremLineUri $null
+            Write-Verbose -Message "Removing Phone Number: OK" -Verbose
           }
         }
 
@@ -385,24 +393,39 @@ function Set-TeamsUserVoiceConfig {
             Write-Verbose -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again." -Verbose
           }
 
-          # Apply $PhoneNumber as TelephoneNumber
+          # Apply or Remove $PhoneNumber as TelephoneNumber
           $step++
           Write-Progress -Id 0 -Status "Provisioning for Calling Plans" -CurrentOperation "Applying Phone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "Applying Phone Number"
-          if ( $Force -or $CsUser.TelephoneNumber -ne $PhoneNumber) {
-            try {
-              # Pipe should work but was not yet tested.
-              #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
-              $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $PhoneNumber -ErrorAction Stop
+          if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
+            If ($PhoneNumber -notmatch "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+              Write-Error -Message "PhoneNumber is not in an acceptable format. Multiple formats are expected, but preferred is E.164, with a minimum of 8 digits. Extensions will be stripped" -Category InvalidFormat
+              return
             }
-            catch {
-              $ErrorLogMessage = "Applying Phone Number failed: '$($_.Exception.Message)'"
-              Write-Error -Message $ErrorLogMessage
-              $ErrorLog += $ErrorLogMessage
+            else {
+              $Number = Format-StringForUse -InputString $PhoneNumber -As E164
+
+              if ( $Force -or $CsUser.TelephoneNumber -ne $Number) {
+                try {
+                  # Pipe should work but was not yet tested.
+                  #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
+                  $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $PhoneNumber -ErrorAction Stop
+                }
+                catch {
+                  $ErrorLogMessage = "Applying Phone Number failed: '$($_.Exception.Message)'"
+                  Write-Error -Message $ErrorLogMessage
+                  $ErrorLog += $ErrorLogMessage
+                }
+              }
+              else {
+                Write-Verbose -Message "Applying Phone Number: Already assigned" -Verbose
+              }
             }
           }
           else {
-            Write-Verbose -Message "Applying Phone Number: Already assigned" -Verbose
+            Write-Warning -Message "PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
+            $CsUser | Set-CsUser -OnPremLineUri $null
+            Write-Verbose -Message "Removing Phone Number: OK" -Verbose
           }
         }
       }

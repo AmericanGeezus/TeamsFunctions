@@ -754,39 +754,17 @@ function Set-TeamsCallQueue {
           #endregion
 
           #region Processing OverflowActionTarget for SharedVoiceMail
-          try {
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
-            $FoundGroups = $null
-            $FoundGroups = Get-AzureADGroup -SearchString "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-            if (-not $FoundGroups ) {
-              try {
-                $FoundGroups = Get-AzureADGroup -ObjectId "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-              catch {
-                $FoundGroups = Get-AzureADGroup -Mail -eq "$OverflowActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-            }
-
-            if ( $FoundGroups.Count -gt 1 ) {
-              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$OverflowActionTarget"
-            }
-
-            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
-              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
-            }
-            else {
-              $OverflowActionTargetId = $FoundGroups.ObjectId
+          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
+          $CallTarget = $null
+            $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
+            if ( $CallTarget ) {
+              $OverflowActionTargetId = $CallTarget.ObjectId
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
             }
-          }
-          catch [System.Reflection.AmbiguousMatchException] {
-            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
-            return
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
-          }
+            else {
+              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            }
           #endregion
         }
       }
@@ -1015,37 +993,15 @@ function Set-TeamsCallQueue {
           #endregion
 
           #region Processing TimeoutActionTarget for SharedVoiceMail
-          try {
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
-            $FoundGroups = $null
-            $FoundGroups = Get-AzureADGroup -SearchString "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-            if (-not $FoundGroups ) {
-              try {
-                $FoundGroups = Get-AzureADGroup -ObjectId "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-              catch {
-                $FoundGroups = Get-AzureADGroup -Mail -eq "$TimeoutActionTarget" -WarningAction SilentlyContinue -ErrorAction STOP
-              }
-            }
-
-            if ( $FoundGroups.Count -gt 1 ) {
-              $FoundGroups = $FoundGroups | Where-Object DisplayName -EQ "$TimeoutActionTarget"
-            }
-
-            if (-not $FoundGroups -or $FoundGroups.Count -gt 1 ) {
-              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
-            }
-            else {
-              $TimeoutActionTargetId = $FoundGroups.ObjectId
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
-              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
-            }
+          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
+          $CallTarget = $null
+          $CallTarget = Find-AzureAdGroup $TimeoutActionTarget -Exact
+          if ( $CallTarget ) {
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+            $TimeoutActionTargetId = $CallTarget.ObjectId
+            $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
           }
-          catch [System.Reflection.AmbiguousMatchException] {
-            Write-Error -Message "No Unique Target found for '$OverflowActionTarget'"
-            return
-          }
-          catch {
+          else {
             Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
           }
           #endregion
@@ -1174,8 +1130,7 @@ function Set-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
-        $DLObject = Find-AzureAdGroup "$DL"
-
+        $DLObject = Find-AzureAdGroup "$DL" -Exact
         if ($DLObject) {
           Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
           # Test whether Users in DL are enabled for EV and/or licensed?
@@ -1209,7 +1164,7 @@ function Set-TeamsCallQueue {
     # DEBUG Information
     if ($PSBoundParameters.ContainsKey("Debug")) {
       Write-Debug "Parameters to be applied:"
-      Write-Output $Parameters
+      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Set the Call Queue with all Parameters provided

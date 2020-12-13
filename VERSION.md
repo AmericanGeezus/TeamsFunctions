@@ -48,8 +48,6 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
 - `Get-TeamsCallableEntity`:
   - Command can be used to determine type and usability for AutoAttendants or CallQueues: <br />Accepts a String which can be an Office 365 Group Name, Upn or TelUri
   - Returning a Custom Object with the same parameters (and more) as a CallableEntity Object
-  - Adds `UsableInCqAs` to indicate which which OverflowAction or TimeoutAction this entity can be used.
-  - Adds `UsableInAaAs` to indicate which type of CallableEntity can be created with it.
 - `Get-TeamsObjectType`: Helper script to determine the type of Object provided.
 - `Get-TeamsLicense` - A Replacement for the variable $TeamsLicenses which outputs the same information, but protected by accidental deletion of the Variable
 - `Get-TeamsLicenseServicePlan` - A Replacement for the variable $TeamsServicePlans which outputs the same information, but protected by accidental deletion of the Variable
@@ -156,7 +154,7 @@ Limiting the Scope to one function per file also means that I can - finally - us
 - `Remove-TeamsAutoAttendant` (Alias: `Remove-TeamsAA`) - A wrap for Remove-CsAutoAttendant
 - **Support CmdLets**
   - `New-TeamsAutoAttendantDialScope`: Creates a Dial Scope Object to be fed into Auto Attendants. Input: Office 365 Group Names
-  - `New-TeamsAutoAttendantCallableEntity`: Creates a Callable Entity Object to be fed into Auto Attendants. Input: CallTargetType & CallTarget.
+  - `New-TeamsCallableEntity`: Creates a Callable Entity Object to be fed into Auto Attendants. Input: CallTargetType & CallTarget.
   - `New-TeamsAutoAttendantPrompt`: Creates a Prompt Object to be fed into Auto Attendants. Input: String. CmdLet decides whether it is a Text-to-Voice string or an AudioFile :)
   - `New-TeamsAutoAttendantSchedule`: Creates a Schedule Object to be fed into Auto Attendants. Input: Business Days, Business Hours. Many examples available to chose from. This should cover 95% of all Schedules
 

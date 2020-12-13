@@ -42,11 +42,13 @@ function Get-TeamsAutoAttendant {
 	.LINK
 		Get-TeamsCallQueue
     New-TeamsAutoAttendant
-    Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
-    Remove-TeamsAutoAttendant
+    Get-TeamsCallableEntity
+    Find-TeamsCallableEntity
+    New-TeamsCallableEntity
     Get-TeamsResourceAccount
     Get-TeamsResourceAccountAssociation
+    Remove-TeamsAutoAttendant
   #>
 
   [CmdletBinding()]

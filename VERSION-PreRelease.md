@@ -2,6 +2,38 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
+## v20.12.13 pre-realease
+
+### New
+
+- New Helper functions behind the scenes to find Unique AzureAd Groups and Creating Callable Entities
+- Completing the Set for AutoAttendants:
+  - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow): Call Flow Object with default options
+  - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
+  - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
+
+### Updated
+
+- Multiple functions: Lookup improvements to gain unique Objects
+- `Get-TeamsUserLicense`: Better display for PhoneSystemStatus (String instead of Object)
+- `Get-TeamsUserVoiceConfig`: Better display for PhoneSystemStatus (String instead of Object) - Using Get-TeamsUserLicense in the background
+- `Set-TeamsUserVoiceConfig`:
+  - Refined verification of PhoneSystemStatus. As the queried Object from Get-TeamsUserLicense changes, so needs the processing
+  - Refined application of PhoneNumber. Now allowing an empty string and $null (removing the Number) - A warning is displayed as the Object is then not in the correct state to make outbound calls, but as it is a SET command, it shall allow for empty states.
+- `Get-TeamsCallableEntity`: Added Parameter ObjectType to not interfere with Parameter Type (used in other scripts)
+- `New-TeamsCallableEntity`: Added Parameter EnableTranscription
+- `New-TeamsAutoAttendant`: **Major Overhaul**
+  - Added Parameter EnableTranscription to allow for Transcription with all CallTargets (SharedVoicemail)
+  - Removed Parameter Silent as it wasn't implemeneted and should not be used anyway.
+  - Removed all TargetType parameters as the CallTarget is now found with Get-TeamsCallableEntity.
+  - Parameter Schedule now properly overrides Parameter AfterHoursSchedule (renamed from DefaultSchedule)<br \>NOTE: This may have to change to work with one Parameter to allow for a HolidaySchedule
+  - Parameter Validation is now improved
+  - Separated requirements for DefaultCallflow. Using this parameter now overrides BusinessHours Parameters properly.
+  - Separated requirements for CallFlows and CallHandlingAssociations. Using these parameters now overrides AfterHours Parameters properly.
+  - Updated Support Functions:
+    - `New-TeamsAutoAttendantDialScope`: Improved lookup for Groups
+    - `New-TeamsAutoAttendantDialSchedule`: TimeFrame 'AllDay' now is open for 24 hours, not 23 hours and 45 minutes.
+
 ## v20.12.07 pre-release
 
 ### New

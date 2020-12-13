@@ -83,11 +83,11 @@ function Find-AzureAdUser {
           }
           catch [Microsoft.Open.AzureAD16.Client.ApiException] {
             Write-Verbose -Message "User '$Id' not found"
-            return $null
+            continue
           }
           catch {
             Write-Verbose -Message "User '$Id' not found"
-            return $null
+            continue
           }
         }
       }

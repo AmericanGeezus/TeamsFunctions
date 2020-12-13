@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-
+#TODO Validate how it stacks up against Get-TeamsCallableEntity - Scrap?
 
 function Get-TeamsObjectType {
   <#

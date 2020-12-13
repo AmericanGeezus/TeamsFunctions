@@ -30,10 +30,15 @@ function New-TeamsAutoAttendantDialScope {
 	.LINK
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
-    New-TeamsAutoAttendantCallableEntity
-    New-TeamsAutoAttendantDialScope
+    Get-TeamsCallableEntity
+    Find-TeamsCallableEntity
+    New-TeamsCallableEntity
+    New-TeamsAutoAttendantCallFlow
+    New-TeamsAutoAttendantMenu
+    New-TeamsAutoAttendantMenuOption
     New-TeamsAutoAttendantPrompt
     New-TeamsAutoAttendantSchedule
+    New-TeamsAutoAttendantDialScope
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
@@ -42,6 +47,7 @@ function New-TeamsAutoAttendantDialScope {
   param(
     [Parameter(Mandatory = $true, HelpMessage = "Name of the Auto Attendant")]
     [string[]]$GroupName
+
   ) #param
 
   begin {
@@ -71,24 +77,27 @@ function New-TeamsAutoAttendantDialScope {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
-      try {
-        $Object = Get-AzureADGroup $Group -WarningAction SilentlyContinue -ErrorAction Stop
+      $Object = $null
+      $Object = Find-AzureADGroup "$Group" -Exact
+      if ($Object) {
+
         $GroupIds += $Object.ObjectId
       }
-      catch {
-        Write-Error -Message "Group not found" -Category ObjectNotFound -ErrorAction Stop
+      else {
+        Write-Warning -Message "Group not found: '$Group' - Skipping"
       }
 
     }
 
     # Create dial Scope
     Write-Verbose -Message "[PROCESS] Creating Dial Scope"
-    if ($PSCmdlet.ShouldProcess("$groupIds", "New-CsAutoAttendantDialScope")) {
-      $dialScope = New-CsAutoAttendantDialScope -GroupScope -GroupIds $groupIds
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      Write-Debug "$groupIds"
     }
 
-    # Output
-    return $dialScope
+    if ($PSCmdlet.ShouldProcess("$groupIds", "New-CsAutoAttendantDialScope")) {
+      New-CsAutoAttendantDialScope -GroupScope -GroupIds $groupIds
+    }
   }
 
   end {
