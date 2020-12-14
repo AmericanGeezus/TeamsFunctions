@@ -30,7 +30,7 @@ function Test-AzureADUser {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity
   ) #param
 

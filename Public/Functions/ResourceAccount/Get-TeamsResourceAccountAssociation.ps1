@@ -46,7 +46,7 @@ function Get-TeamsResourceAccountAssociation {
   [Alias('Get-TeamsRAAssoc')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
+    [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to manipulate.")]
     [Alias('UserPrincipalName')]
     [string[]]$Identity
   ) #param

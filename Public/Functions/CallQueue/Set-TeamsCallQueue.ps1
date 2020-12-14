@@ -132,7 +132,7 @@ function Set-TeamsCallQueue {
   [Alias('Set-TeamsCQ')]
   [OutputType([System.Void], [System.Object])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "UserPrincipalName of the Call Queue")]
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the Call Queue")]
     [string]$Name,
 
     [Parameter(HelpMessage = "Changes the Name to this DisplayName")]
@@ -369,6 +369,10 @@ function Set-TeamsCallQueue {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+    # re-Initialising counters for Progress bars (for Pipeline processing)
+    [int]$step = 0
+
     #region PREPARATION
     $Status = "Preparing Parameters"
     # preparing Splatting Object
@@ -756,15 +760,15 @@ function Set-TeamsCallQueue {
           #region Processing OverflowActionTarget for SharedVoiceMail
           Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
           $CallTarget = $null
-            $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
-            if ( $CallTarget ) {
-              $OverflowActionTargetId = $CallTarget.ObjectId
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
-              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
-            }
+          $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
+          if ( $CallTarget ) {
+            $OverflowActionTargetId = $CallTarget.ObjectId
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+          }
+          else {
+            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+          }
           #endregion
         }
       }

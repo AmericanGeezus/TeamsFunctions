@@ -56,7 +56,7 @@ function Remove-TeamsResourceAccount {
   [Alias('Remove-TeamsRA')]
   [OutputType([System.Void])]
   param (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to create.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to create.")]
     [ValidateScript( {
         If ($_ -match '@') {
           $True

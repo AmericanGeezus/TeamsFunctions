@@ -31,7 +31,7 @@ function Remove-TenantDialPlanNormalizationRule {
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the name of the dial plan to modify the normalization rules.")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the name of the dial plan to modify the normalization rules.")]
     [string]$DialPlan
   ) #param
 

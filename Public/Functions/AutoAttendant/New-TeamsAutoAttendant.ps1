@@ -152,7 +152,7 @@ function New-TeamsAutoAttendant {
   [Alias('New-TeamsAA')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline, HelpMessage = "Name of the Auto Attendant")]
+    [Parameter(Mandatory, ValueFromPipeline, HelpMessage = "Name of the Auto Attendant")]
     [string]$Name,
 
     [Parameter(HelpMessage = "TimeZone Identifier")]
@@ -469,6 +469,9 @@ function New-TeamsAutoAttendant {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    # re-Initialising counters for Progress bars
+    [int]$step = 0
+
     #region PREPARATION
     $Status = "Preparing Parameters"
     # preparing Splatting Object

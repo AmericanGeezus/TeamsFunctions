@@ -43,7 +43,7 @@ function Find-AzureAdUser {
     [ValidateLength(3, 255)]
     [string]$SearchString,
 
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "This is the UserID (UPN)")]
     [Alias('UserPrincipalName', 'Id')]
     [string[]]$Identity
 

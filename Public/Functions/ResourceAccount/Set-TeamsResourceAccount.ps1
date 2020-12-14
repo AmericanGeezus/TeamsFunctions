@@ -89,7 +89,7 @@ function Set-TeamsResourceAccount {
   [Alias('Set-TeamsRA')]
   [OutputType([System.Void])]
   param (
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to change")]
     [ValidateScript( {
         If ($_ -match '@') {
           $True

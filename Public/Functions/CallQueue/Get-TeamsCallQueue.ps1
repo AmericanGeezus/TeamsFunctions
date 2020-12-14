@@ -56,7 +56,7 @@ function Get-TeamsCallQueue {
   [Alias('Get-TeamsCQ')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = 'Partial or full Name of the Call Queue to search')]
+    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Partial or full Name of the Call Queue to search')]
     [AllowNull()]
     [string[]]$Name,
 
@@ -113,6 +113,13 @@ function Get-TeamsCallQueue {
         }
         else {
           $QueueCount = $Queues.Count
+        }
+
+        # Listing names only if more than 3 have been found
+        if ( $QueueCount -gt 5 ) {
+          Write-Verbose -Message "Too many results found, listing names only. To query individual items, please narrow down with Name" -Verbose
+          $Queues | Select-Object Name
+          continue
         }
 
         # Reworking Objects

@@ -55,7 +55,7 @@ function Get-TeamsAutoAttendant {
   [Alias('Get-TeamsAA')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = 'Partial or full Name of the Auto Attendant to search')]
+    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Partial or full Name of the Auto Attendant to search')]
     [AllowNull()]
     [string[]]$Name,
 
@@ -117,8 +117,12 @@ function Get-TeamsAutoAttendant {
           $AACount = $AAs.Count
         }
 
-        # Initialising Arrays
-        [System.Collections.ArrayList]$AIObjects = @()
+        # Listing names only if more than 3 have been found
+        if ( $AACount -gt 5 ) {
+          Write-Verbose -Message "Too many results found, listing names only. To query individual items, please narrow down with Name" -Verbose
+          $AAs | Select-Object Name
+          continue
+        }
 
         # Reworking Objects
         $AACounter = 0
@@ -130,6 +134,9 @@ function Get-TeamsAutoAttendant {
           [int]$step = 0
           [int]$sMax = 4
           if ( $Detailed ) { $sMax = $sMax + 5 }
+
+          # Initialising Arrays
+          [System.Collections.ArrayList]$AIObjects = @()
 
           #region Finding Operator
           $Operation = "Parsing Operator"
@@ -174,6 +181,7 @@ function Get-TeamsAutoAttendant {
           $step++
           Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "'$($AA.Name)' - $Operation"
+          $AAObject = $null
           $AAObject = [PsCustomObject][ordered]@{
             Identity                        = $AA.Identity
             Name                            = $AA.Name

@@ -36,7 +36,7 @@ function Remove-TeamsCallQueue {
   [Alias('Remove-TeamsCQ')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, HelpMessage = "Name of the Call Queue")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = "Name of the Call Queue")]
     [string[]]$Name
   ) #param
 

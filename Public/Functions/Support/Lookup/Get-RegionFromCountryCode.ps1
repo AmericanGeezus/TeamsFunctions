@@ -36,7 +36,7 @@ function Get-RegionFromCountryCode {
     [ValidatePattern("^[A-Z][A-Z]$")]
     [string]$CountryCode,
 
-    [Parameter(Mandatory = $false, HelpMessage = "Country or Region")]
+    [Parameter(HelpMessage = "Country or Region")]
     [ValidateSet("Region", "Country")]
     [String]$Output = "Region"
   )
