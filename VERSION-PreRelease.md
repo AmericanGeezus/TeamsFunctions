@@ -11,6 +11,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow): Call Flow Object with default options
   - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
   - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
+- `Assert-TeamsCallableEntity`: New script to ensure a Callable Entity Object (User) can be used for Overflow and Timout Target as well as for Users in Call Queues and Auto Attendants.
 
 ### Updated
 
