@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   RC
 
-
+#TODO implement Assert-TeamsCallableEntity for OAT, TAT, Users
 
 
 function New-TeamsCallQueue {
@@ -638,6 +638,7 @@ function New-TeamsCallQueue {
         }
         "Forward" {
           # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           try {
             if ($OverflowActionTarget -match "^tel:\+\d") {
               #Telephone URI
@@ -694,6 +695,7 @@ function New-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           $Identity = $OverflowActionTarget
           if ( Test-AzureADUser $Identity ) {
             $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
@@ -859,6 +861,7 @@ function New-TeamsCallQueue {
         }
         "Forward" {
           # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           try {
             if ($TimeoutActionTarget -match "^tel:\+\d") {
               #Telephone URI
@@ -915,6 +918,7 @@ function New-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           $Identity = $TimeoutActionTarget
           if ( Test-AzureADUser $Identity ) {
             $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
@@ -1046,6 +1050,7 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' - Parsing Users"
       foreach ($User in $Users) {
+        #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
         if ( Test-AzureADUser $User ) {
           $UserObject = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue
           $IsLicensed = Test-TeamsUserLicense -Identity $User -ServicePlan MCOEV

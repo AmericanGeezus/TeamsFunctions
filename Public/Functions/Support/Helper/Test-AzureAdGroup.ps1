@@ -30,7 +30,7 @@ function Test-AzureAdGroup {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
     [string]$Identity
   ) #param
 

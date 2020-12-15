@@ -52,13 +52,13 @@ function New-TeamsResourceAccountAssociation {
   [Alias('New-TeamsRAAssoc')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to change")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to change")]
     [string[]]$UserPrincipalName,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'CallQueue', Position = 1, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the CallQueue")]
+    [Parameter(Mandatory, ParameterSetName = 'CallQueue', ValueFromPipelineByPropertyName, HelpMessage = "Name of the CallQueue")]
     [string]$CallQueue,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'AutoAttendant', Position = 1, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the AutoAttendant")]
+    [Parameter(Mandatory, ParameterSetName = 'AutoAttendant', ValueFromPipelineByPropertyName, HelpMessage = "Name of the AutoAttendant")]
     [string]$AutoAttendant,
 
     [Parameter(Mandatory = $false)]
@@ -176,7 +176,10 @@ function New-TeamsResourceAccountAssociation {
     Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $Counter = 1
-    foreach ($Account in $Accounts) {
+    #CHECK $Accounts.Remove will break foreach! - Need to change Processing to different variable or add only successful accounts to new Variable!
+    # This should fix the issue. The Collection $Accounts is modified throughout and it won't impact the Foreach Loop. Needs testing!
+    $AccountsFound = $Accounts
+    foreach ($Account in $AccountsFound) {
       $Status = "Processing"
       $Operation = "'$($Account.UserPrincipalName)'"
       Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)

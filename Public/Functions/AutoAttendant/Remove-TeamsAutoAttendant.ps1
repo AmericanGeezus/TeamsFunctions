@@ -36,7 +36,7 @@ function Remove-TeamsAutoAttendant {
   [Alias('Remove-TeamsAA')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Name of the Auto Attendant")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Auto Attendant")]
     [string]$Name
   ) #param
 

@@ -67,11 +67,11 @@ function Get-TeamsResourceAccount {
   [Alias('Get-TeamsRA')]
   [OutputType([System.Object])]
   param (
-    [Parameter(ParameterSetName = "Identity", Position = 0, ValueFromPipelineByPropertyName = $true, HelpMessage = "User Principal Name of the Object.")]
+    [Parameter(ParameterSetName = "Identity", Position = 0, ValueFromPipelineByPropertyName, HelpMessage = "User Principal Name of the Object.")]
     [Alias("UPN", "UserPrincipalName")]
     [string[]]$Identity,
 
-    [Parameter(ParameterSetName = "DisplayName", Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Searches for AzureAD Object with this Name")]
+    [Parameter(ParameterSetName = "DisplayName", Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
     [ValidateLength(3, 255)]
     [string]$DisplayName,
 
@@ -80,7 +80,7 @@ function Get-TeamsResourceAccount {
     [Alias("Type")]
     [string]$ApplicationType,
 
-    [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName = $true, HelpMessage = "Telephone Number of the Object")]
+    [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName, HelpMessage = "Telephone Number of the Object")]
     [ValidateScript( {
         If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?$") {
           $True

@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
-
+#TODO implement Assert-TeamsCallableEntity for OAT, TAT, Users
 
 
 function Set-TeamsCallQueue {
@@ -132,7 +132,7 @@ function Set-TeamsCallQueue {
   [Alias('Set-TeamsCQ')]
   [OutputType([System.Void], [System.Object])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "UserPrincipalName of the Call Queue")]
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the Call Queue")]
     [string]$Name,
 
     [Parameter(HelpMessage = "Changes the Name to this DisplayName")]
@@ -369,6 +369,10 @@ function Set-TeamsCallQueue {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+    # re-Initialising counters for Progress bars (for Pipeline processing)
+    [int]$step = 0
+
     #region PREPARATION
     $Status = "Preparing Parameters"
     # preparing Splatting Object
@@ -638,6 +642,7 @@ function Set-TeamsCallQueue {
         }
         "Forward" {
           # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           try {
             if ($OverflowActionTarget -match "^tel:\+\d") {
               #Telephone URI
@@ -694,6 +699,7 @@ function Set-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           $Identity = $OverflowActionTarget
           if ( Test-AzureADUser $Identity ) {
             $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
@@ -756,15 +762,15 @@ function Set-TeamsCallQueue {
           #region Processing OverflowActionTarget for SharedVoiceMail
           Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
           $CallTarget = $null
-            $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
-            if ( $CallTarget ) {
-              $OverflowActionTargetId = $CallTarget.ObjectId
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
-              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
-            }
+          $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
+          if ( $CallTarget ) {
+            $OverflowActionTargetId = $CallTarget.ObjectId
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+          }
+          else {
+            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+          }
           #endregion
         }
       }
@@ -879,6 +885,7 @@ function Set-TeamsCallQueue {
         }
         "Forward" {
           # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           try {
             if ($TimeoutActionTarget -match "^tel:\+\d") {
               #Telephone URI
@@ -934,6 +941,7 @@ function Set-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           $Identity = $TimeoutActionTarget
           if ( Test-AzureADUser $Identity ) {
             $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
@@ -1074,6 +1082,7 @@ function Set-TeamsCallQueue {
     [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
+      #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
       foreach ($User in $Users) {
         if ( Test-AzureADUser $User ) {
           try {

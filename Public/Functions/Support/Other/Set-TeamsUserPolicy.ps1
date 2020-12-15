@@ -47,23 +47,23 @@ function Set-TeamsUserPolicy {
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the identity for the user to configure")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity for the user to configure")]
     [Alias("UPN", "UserPrincipalName", "Username")]
     [string]$Identity,
 
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter(ValueFromPipelineByPropertyName)]
     [string]$TeamsUpgradePolicy,
 
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter(ValueFromPipelineByPropertyName)]
     [string]$ClientPolicy,
 
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter(ValueFromPipelineByPropertyName)]
     [string]$ConferencingPolicy,
 
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter(ValueFromPipelineByPropertyName)]
     [string]$ExternalAccessPolicy,
 
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter(ValueFromPipelineByPropertyName)]
     [string]$MobilityPolicy
   ) #param
 

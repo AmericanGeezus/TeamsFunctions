@@ -52,7 +52,7 @@ function Find-AzureAdGroup {
   [CmdletBinding(DefaultParameterSetName = "Search")]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
     [Alias('GroupName', 'Name')]
     [string]$Identity,
 

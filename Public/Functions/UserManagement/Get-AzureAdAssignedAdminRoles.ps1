@@ -27,7 +27,7 @@ function Get-AzureAdAssignedAdminRoles {
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "Enter the identity of the User to Query")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity of the User to Query")]
     [Alias("UPN", "UserPrincipalName", "Username")]
     [string]$Identity
   ) #param

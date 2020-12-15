@@ -43,7 +43,7 @@ function Remove-TeamsResourceAccountAssociation {
   [Alias('Remove-TeamsRAAssoc', 'Remove-CsOnlineApplicationInstance')]
   [OutputType([System.Void])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, HelpMessage = "UPN of the Object to manipulate.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to manipulate.")]
     [Alias('Identity')]
     [string[]]$UserPrincipalName,
 

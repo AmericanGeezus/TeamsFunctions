@@ -83,11 +83,23 @@ function Import-TeamsAudioFile {
       }
 
       # Importing file
-      $AudioFile = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName $FileName -Content $content -ErrorAction STOP
+      $parameters = $null
+      $Parameters += @{ 'ApplicationId' = $ApplicationId }
+      $Parameters += @{ 'FileName' = "$FileName"  }
+      $Parameters += @{ 'Content' = $Content  }
+      $Parameters += @{ 'ErrorAction' = 'STOP'  }
+
+      if ($PSBoundParameters.ContainsKey('Debug')) {
+        "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+      $AudioFile = Import-CsOnlineAudioFile @Parameters
+
+      #$AudioFile = Import-CsOnlineAudioFile -ApplicationId $ApplicationId -FileName "$FileName" -Content $content -ErrorAction STOP
       return $AudioFile
     }
     catch {
-      Write-Error "Importing file failed - Please check file size and compression ratio. If in doubt, provide in WAV Format" -ErrorAction Stop
+      Write-Error "Importing file failed - Please check file size and compression ratio. If in doubt, provide in WAV Format: $($_.Exception.Message)" -ErrorAction Stop
+      ($_ | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
   } #process
 

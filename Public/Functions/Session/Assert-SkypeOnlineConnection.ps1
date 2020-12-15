@@ -26,6 +26,7 @@ function Assert-SkypeOnlineConnection {
   param() #param
 
   begin {
+    $Stack = Get-PSCallStack
 
   } #begin
 
@@ -34,7 +35,9 @@ function Assert-SkypeOnlineConnection {
     if (Test-SkypeOnlineConnection) {
       try {
         $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
-        Write-Verbose -Message "[ASSERT ] SkypeOnline: Connected (and session is valid)"
+        if ($stack.length -lt 3) {
+          Write-Verbose -Message "[ASSERT ] SkypeOnline: Connected (and session is valid)"
+        }
         return $true
       }
       catch {

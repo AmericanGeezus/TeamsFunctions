@@ -152,7 +152,7 @@ function New-TeamsAutoAttendant {
   [Alias('New-TeamsAA')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, ValueFromPipeline, HelpMessage = "Name of the Auto Attendant")]
+    [Parameter(Mandatory, ValueFromPipeline, HelpMessage = "Name of the Auto Attendant")]
     [string]$Name,
 
     [Parameter(HelpMessage = "TimeZone Identifier")]
@@ -464,11 +464,13 @@ function New-TeamsAutoAttendant {
     #endregion
     #endregion
 
-    #CHECK If application of EnableTranscription leads to an error (with New-TeamsAACE) then it could be used with a TRY/CATCH to try to use it.
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    # re-Initialising counters for Progress bars
+    [int]$step = 0
+
     #region PREPARATION
     $Status = "Preparing Parameters"
     # preparing Splatting Object

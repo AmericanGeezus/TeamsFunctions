@@ -80,7 +80,7 @@ function New-TeamsResourceAccount {
   [Alias('New-TeamsRA')]
   [OutputType([System.Object])]
   param (
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true, Position = 0, HelpMessage = "UPN of the Object to create.")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = "UPN of the Object to create.")]
     [ValidateScript( {
         If ($_ -match '@') {
           $True

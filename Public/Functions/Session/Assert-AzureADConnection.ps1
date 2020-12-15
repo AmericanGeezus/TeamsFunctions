@@ -24,6 +24,7 @@ function Assert-AzureADConnection {
   param() #param
 
   begin {
+      $Stack = Get-PSCallStack
 
   } #begin
 
@@ -31,7 +32,9 @@ function Assert-AzureADConnection {
     if (Test-AzureADConnection) {
       #$TenantDomain = $((Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue).TenantDomain)
       #Write-Verbose -Message "[ASSERT ] AzureAD(v2): Valid session found - Tenant: $TenantDomain"
-      Write-Verbose -Message "[ASSERT ] AzureAD(v2): Connected"
+      if ($stack.length -lt 3) {
+        Write-Verbose -Message "[ASSERT ] AzureAD(v2): Connected"
+      }
       return $true
     }
     else {

@@ -24,13 +24,16 @@ function Assert-MicrosoftTeamsConnection {
   param() #param
 
   begin {
+    $Stack = Get-PSCallStack
 
   } #begin
 
   process {
 
     if (Test-MicrosoftTeamsConnection) {
-      Write-Verbose -Message "[ASSERT ] MicrosoftTeams: Connected"
+      if ($stack.length -lt 3) {
+        Write-Verbose -Message "[ASSERT ] MicrosoftTeams: Connected"
+      }
       return $true
     }
     else {

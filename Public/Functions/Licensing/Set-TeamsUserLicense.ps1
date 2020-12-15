@@ -106,13 +106,13 @@ function Set-TeamsUserLicense {
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
   [OutputType([Void])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [Alias("UPN", "UserPrincipalName", "Username")]
     [string[]]$Identity,
 
-    [Parameter(ParameterSetName = 'Add', Mandatory = $true, HelpMessage = 'License(s) to be added to this Object')]
-    [Parameter(ParameterSetName = 'Remove', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
-    [Parameter(ParameterSetName = 'RemoveAll', Mandatory = $false, HelpMessage = 'License(s) to be added to this Object')]
+    [Parameter(ParameterSetName = 'Add', Mandatory, HelpMessage = 'License(s) to be added to this Object')]
+    [Parameter(ParameterSetName = 'Remove', HelpMessage = 'License(s) to be added to this Object')]
+    [Parameter(ParameterSetName = 'RemoveAll', HelpMessage = 'License(s) to be added to this Object')]
     [ValidateScript( {
         $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
