@@ -4,7 +4,7 @@
 # Updated:    01-DEC-2020
 # Status:     PreLive
 
-
+#TODO Add Stack - Write direct output when called directly, otherwise verbose
 
 
 function Enable-TeamsUserForEnterpriseVoice {
@@ -46,6 +46,8 @@ function Enable-TeamsUserForEnterpriseVoice {
   } #begin
 
   process {
+    #TODO Check whether Get-TeamsUserVoiceConfig can be used here (performance!) or Get-TeamsUserLicense to
+    #TODO Error on not-licensed!
     $UserObject = Get-CsOnlineUser $Identity -WarningAction SilentlyContinue
     $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
     if ($IsEVenabled) {
