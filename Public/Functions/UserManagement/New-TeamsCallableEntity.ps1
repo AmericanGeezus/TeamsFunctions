@@ -187,7 +187,6 @@ function New-TeamsCallableEntity {
       "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-
     if ($PSCmdlet.ShouldProcess("$Identity", "New-CsAutoAttendantCallableEntity")) {
       New-CsAutoAttendantCallableEntity @Parameters
     }

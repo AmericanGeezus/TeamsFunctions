@@ -15,7 +15,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- Multiple functions: Lookup improvements to gain unique Objects
+- Multiple functions: Lookup improvements to gain unique Objects, ValueFromPipeline, correcting pipeline processing. Better debug output before applying settings. 
+- `Format-StringForUse`: Added more normalisation and verification for UserPrincipalname: ".@" is now properly caught and the dot removed.
+- `Import-TeamsAudioFile`: File path can now have spaces, yay :)
 - `Get-TeamsUserLicense`: Better display for PhoneSystemStatus (String instead of Object)
 - `Get-TeamsUserVoiceConfig`: Better display for PhoneSystemStatus (String instead of Object) - Using Get-TeamsUserLicense in the background
 - `Set-TeamsUserVoiceConfig`:
@@ -23,6 +25,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Refined application of PhoneNumber. Now allowing an empty string and $null (removing the Number) - A warning is displayed as the Object is then not in the correct state to make outbound calls, but as it is a SET command, it shall allow for empty states.
 - `Get-TeamsCallableEntity`: Added Parameter ObjectType to not interfere with Parameter Type (used in other scripts)
 - `New-TeamsCallableEntity`: Added Parameter EnableTranscription
+- `New-TeamsResourceAccountAssociation`: Fixed an issue removing a Resource Account from a stack of Accounts if it was already assigned.
+- `Get-TeamsCallQueue`: Detailed results now are only displayed for the first 5 results. Beyond that, only Names are displayed. Pipe is unaffected.
+- `Get-TeamsAutoAttendant`: Detailed results now are only displayed for the first 3 results. Beyond that, only Names are displayed. Pipe is unaffected.
 - `New-TeamsAutoAttendant`: **Major Overhaul**
   - Added Parameter EnableTranscription to allow for Transcription with all CallTargets (SharedVoicemail)
   - Removed Parameter Silent as it wasn't implemeneted and should not be used anyway.

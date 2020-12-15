@@ -278,6 +278,7 @@ function New-TeamsResourceAccountAssociation {
         $Operation = "Assigning to $DesiredType '$($EntityObject.Name)'"
         Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step3 / $sMax3 * 100)
         Write-Verbose -Message "$Status - $Operation"
+        #CHECK Rework to Splatting? Output debug?
         if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", "New-CsOnlineApplicationInstanceAssociation")) {
           $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType $DesiredType -ConfigurationId $EntityObject.Identity
         }
