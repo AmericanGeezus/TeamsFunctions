@@ -464,7 +464,6 @@ function New-TeamsAutoAttendant {
     #endregion
     #endregion
 
-    #CHECK If application of EnableTranscription leads to an error (with New-TeamsAACE) then it could be used with a TRY/CATCH to try to use it.
   } #begin
 
   process {

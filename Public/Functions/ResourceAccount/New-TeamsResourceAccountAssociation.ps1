@@ -176,7 +176,7 @@ function New-TeamsResourceAccountAssociation {
     Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $Counter = 1
-    #FIXME $Accounts.Remove will break foreach! - Need to change Processing to different variable or add only successful accounts to new Variable!
+    #CHECK $Accounts.Remove will break foreach! - Need to change Processing to different variable or add only successful accounts to new Variable!
     # This should fix the issue. The Collection $Accounts is modified throughout and it won't impact the Foreach Loop. Needs testing!
     $AccountsFound = $Accounts
     foreach ($Account in $AccountsFound) {

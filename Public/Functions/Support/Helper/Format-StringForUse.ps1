@@ -117,7 +117,17 @@ function Format-StringForUse {
 
     [String]$String = $InputString -replace $rePattern, $Replacement
 
-    if ($As -eq 'E164') {
+    if ($As -eq 'UserPrincipalName') {
+      # Validate User Side of a UPN does not end in a '.'
+      [String]$OutputString = $String.replace('.@', '@');
+      if ( $($String.split('@')[0]).length -gt 64 ) {
+        Write-Error -Message "UserPrincipalName - Prefix (User) must not exceed 64 characters" -Category LimitsExceeded -ErrorAction Stop
+      }
+      if ( $($String.split('@')[1]).length -gt 48 ) {
+        Write-Error -Message "UserPrincipalName - Suffix (Domain) must not exceed 48 characters" -Category LimitsExceeded -ErrorAction Stop
+      }
+    }
+    elseif ($As -eq 'E164') {
       switch -regex ($String) {
         "^\d" { [String]$OutputString = "+" + $String; Break }
         "^\+\d" { [String]$OutputString = $String; Break }
