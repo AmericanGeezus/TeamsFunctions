@@ -642,6 +642,7 @@ function Set-TeamsCallQueue {
         }
         "Forward" {
           # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           try {
             if ($OverflowActionTarget -match "^tel:\+\d") {
               #Telephone URI
@@ -698,6 +699,7 @@ function Set-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           $Identity = $OverflowActionTarget
           if ( Test-AzureADUser $Identity ) {
             $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
@@ -883,6 +885,7 @@ function Set-TeamsCallQueue {
         }
         "Forward" {
           # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           try {
             if ($TimeoutActionTarget -match "^tel:\+\d") {
               #Telephone URI
@@ -938,6 +941,7 @@ function Set-TeamsCallQueue {
         }
         "VoiceMail" {
           # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
           $Identity = $TimeoutActionTarget
           if ( Test-AzureADUser $Identity ) {
             $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
@@ -1078,6 +1082,7 @@ function Set-TeamsCallQueue {
     [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Users"
+      #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
       foreach ($User in $Users) {
         if ( Test-AzureADUser $User ) {
           try {
