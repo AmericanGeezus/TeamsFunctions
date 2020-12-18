@@ -303,12 +303,15 @@ function Connect-Me {
     if ( ("AzureAd" -in $ConnectedTo) -and -not $NoFeedback ) {
       $Status = "Providing Feedback"
       $step++
-      $Operation = "Displaying assigned Admin Roles"
+      $Operation = "Querying assigned Admin Roles"
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      Write-Host "Displaying assigned Admin Roles for Account: " -ForegroundColor Magenta -NoNewline
-      Write-Host "$Username"
-      Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account | Select-Object DisplayName, Description | Format-Table -AutoSize
+      #Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account | Select-Object DisplayName, Description | Format-Table -AutoSize
+      $Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName
+      Write-Host "Assigned Admin Roles for '$Username'" -ForegroundColor Magenta
+      Write-Host ""
+      Write-Host "$($Roles -join ', ')"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     }
     #endregion
 
@@ -316,7 +319,7 @@ function Connect-Me {
 
     #Output
     Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Connected to: " -ForegroundColor Green -NoNewline
-    Write-Host "$ConnectedTo"
+    Write-Host "$($ConnectedTo -join ', ')"
 
   } #process
 

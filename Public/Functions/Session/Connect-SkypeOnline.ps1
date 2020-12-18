@@ -27,7 +27,7 @@ function Connect-SkypeOnline {
 		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
 	.PARAMETER IdleTimeout
 		Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
-		Note, by default, creating a session with New-CsSkypeOnlineSession results in a Timeout of 15mins!
+		Note, by default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
 	.EXAMPLE
 		Connect-SkypeOnline
     Example 1 will prompt for the username and password of an administrator with permissions to connect to Skype for Business Online.
