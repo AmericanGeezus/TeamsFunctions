@@ -1,3 +1,12 @@
+# Module:   TeamsFunctions
+# Function: Lookup
+# Author:	  David Eberhardt
+# Updated:  19-DEC-2020
+# Status:   PreLive
+
+
+
+
 function Get-NewestModule {
   <#
   .SYNOPSIS

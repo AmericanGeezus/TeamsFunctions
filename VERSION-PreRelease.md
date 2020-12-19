@@ -22,9 +22,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Reworked Completely to support Module MicrosoftTeams or SkypeOnlineConnector
   - Support for SkypeOnlineConnector in v6 or lower has been dropped
   - Preferred connection method is with MicrosoftTeams (v1.1.6 or higher)
-- `Assert-SkypeOnlineConnection`: Updated to allow verification against new ComputerName: api.interfaces.records.teams.microsoft.com
+- `Assert-SkypeOnlineConnection`: Performance improvement and integrated reconnection when used with the MicrosoftTeams Module
 - `Test-SkypeOnlineConnection`: Updated to allow verification against new ComputerName: api.interfaces.records.teams.microsoft.com
 - Multiple functions: Lookup improvements to gain unique Objects, ValueFromPipeline, correcting pipeline processing. Better debug output before applying settings.
+- `Disconnect-SkypeOnline`: Updated for compatibility with MicrosoftTeams
 - `Format-StringForUse`: Added more normalisation and verification for UserPrincipalname: ".@" is now properly caught and the dot removed.
 - `Import-TeamsAudioFile`: File path can now have spaces, yay :)
 - `Get-TeamsUserLicense`: Better display for PhoneSystemStatus (String instead of Object)
