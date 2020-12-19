@@ -15,7 +15,16 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- Multiple functions: Lookup improvements to gain unique Objects, ValueFromPipeline, correcting pipeline processing. Better debug output before applying settings. 
+- `Connect-Me`:
+  - TBD: Reworked to integrate PIM activation with -ActivateAdminRoles (-PIM)
+  - Updated query of Admin Roles
+- `Connect-SkypeOnline`:
+  - Reworked Completely to support Module MicrosoftTeams or SkypeOnlineConnector
+  - Support for SkypeOnlineConnector in v6 or lower has been dropped
+  - Preferred connection method is with MicrosoftTeams (v1.1.6 or higher)
+- `Assert-SkypeOnlineConnection`: Updated to allow verification against new ComputerName: api.interfaces.records.teams.microsoft.com
+- `Test-SkypeOnlineConnection`: Updated to allow verification against new ComputerName: api.interfaces.records.teams.microsoft.com
+- Multiple functions: Lookup improvements to gain unique Objects, ValueFromPipeline, correcting pipeline processing. Better debug output before applying settings.
 - `Format-StringForUse`: Added more normalisation and verification for UserPrincipalname: ".@" is now properly caught and the dot removed.
 - `Import-TeamsAudioFile`: File path can now have spaces, yay :)
 - `Get-TeamsUserLicense`: Better display for PhoneSystemStatus (String instead of Object)

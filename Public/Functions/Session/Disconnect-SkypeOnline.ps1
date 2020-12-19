@@ -50,13 +50,13 @@ function Disconnect-SkypeOnline {
     $PSSessions = Get-PSSession -WarningAction SilentlyContinue
 
     foreach ($session in $PSSessions) {
-      if ($session.ComputerName -like "*.online.lync.com") {
+      if ($session.ComputerName -like "*.online.lync.com" -or $session.ComputerName -eq "api.interfaces.records.teams.microsoft.com") {
         $sessionFound = $true
         Remove-PSSession $session
       }
     }
 
-    if ($sessionFound -eq $false) {
+    if ( $sessionFound ) {
       Get-Module | Where-Object { $_.Description -like "*.online.lync.com*" } | Remove-Module
     }
     else {

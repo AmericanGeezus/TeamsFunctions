@@ -113,7 +113,7 @@ function Connect-Me {
       $ConnectDefault = $false
     }
     else {
-      Write-Host "INFO:    No Parameters for individual Services provided. Connecting to SkypeOnline and AzureAD (default)" -ForegroundColor Cyan
+      Write-Host "No Parameters for individual Services provided. Connecting to SkypeOnline and AzureAD (default)" -ForegroundColor Cyan
       $ConnectDefault = $true
       $sMax = $sMax + 2
     }
@@ -140,16 +140,46 @@ function Connect-Me {
 
     # Cleaning up existing sessions
     $Status = "Preparation"
-    $Operation = "Cleaning up existing Sessions"
+    $Operation = "Loading Modules; Cleaning up existing Sessions"
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation" -Verbose
     $null = (Disconnect-Me -ErrorAction SilentlyContinue)
+
+    #Loading Modules
+    $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
+
+    if ( $TeamsModule.Version -ge "1.1.6" ) {
+      # Connect-SkypeOnline will also connect to Microsoft Teams
+      if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+        [void]$PSBoundParameters.Keys.Remove('MicrosoftTeams')
+        $sMax--
+      }
+    }
+
+    # Privileged Identity Management
+    if ( $ActivateAdminRole ) {
+      # Determining options
+      $Command = "Get-AzureADMSPrivilegedRoleAssignment"
+      try {
+        $PIMavailable = Get-Command -Name $Command -ErrorAction Stop
+      }
+      catch {
+        Write-Warning -Message "Command '$Command' not available. Privileged Identity Management functions cannot be executed"
+      }
+    }
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    # Activating Admin Roles
+    if ( $ActivateAdminRole -and $PIMavailable ) {
+
+    }
+    else {
+
+    }
     #region Connections
     #region SkypeOnline
     if ($ConnectDefault -or $ConnectToSkype) {
@@ -167,8 +197,29 @@ function Connect-Me {
         }
       }
       catch {
-        Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain, Admin Role Activation (PIM) and Session Exhaustion (2 max!)" -ForegroundColor Red
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
+        if ( -not $_.Exception.Message.Contains("does not have permission to manage this tenant") ) {
+          Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!)" -ForegroundColor Red
+          Write-ErrorRecord $_ #This handles the error message in human readable format.
+        }
+        else {
+          Write-Host "User does not have permission to manage this tenant. Do you need to activate your Admin Roles in Privileged Identity Management" -ForegroundColor Cyan
+          #TODO Call Role Activation command, then call Connection again
+
+          <#
+          try {
+            if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+              $null = (Connect-SkypeOnline -UserName $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+            }
+            else {
+              $null = (Connect-SkypeOnline -UserName $Username -ErrorAction STOP)
+            }
+          }
+          catch {
+            Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!)" -ForegroundColor Red
+            Write-ErrorRecord $_ #This handles the error message in human readable format.
+          }
+          #>
+        }
       }
 
       Start-Sleep 1
@@ -182,14 +233,18 @@ function Connect-Me {
           Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "$Status - $Operation"
 
-          $PSSkypeOnlineSession = Get-PSSession | Where-Object { $_.ComputerName -like "*.online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
+          $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like "*.online.lync.com" -or $_.Computername -eq "api.interfaces.records.teams.microsoft.com") -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
           $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
           $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
           $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
+          $Environment = $PSSkypeOnlineSession.Name.split('_')[0]
+          if (-not $Environment) {
+            $Environment = 'SfBPowerShellSession'
+          }
 
           $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
             Account                   = $UserName
-            Environment               = 'SfBPowerShellSession'
+            Environment               = $Environment
             Tenant                    = $TenantInformation.DisplayName
             TenantId                  = $TenantInformation.TenantId
             TenantDomain              = $TenantDomain
@@ -217,7 +272,7 @@ function Connect-Me {
           $null = (Connect-AzureAD -AccountId $Username)
           if ( -not $NoFeedback ) {
             Start-Sleep -Seconds 1
-            Get-AzureADCurrentSessionInfo
+            Get-AzureADCurrentSessionInfo | Format-List
           }
         }
         else {
