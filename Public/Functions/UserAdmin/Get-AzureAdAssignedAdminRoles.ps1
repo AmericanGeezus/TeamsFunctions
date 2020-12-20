@@ -25,7 +25,16 @@ function Get-AzureAdAssignedAdminRoles {
     Returns an Object containing all Admin Roles assigned to a User.
     This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
     The Output can be used as baseline for other functions (-contains "Teams Service Admin")
-	#>
+  .COMPONENT
+    UserAdmin
+  .ROLE
+    Activating Admin Roles
+  .FUNCTIONALITY
+    Enables eligible Privileged Identity roles for Administration of Teams
+  .LINK
+    Enable-AzureAdAdminRole
+    Get-AzureAdAssignedAdminRoles
+  #>
 
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
@@ -33,6 +42,7 @@ function Get-AzureAdAssignedAdminRoles {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity of the User to Query")]
     [Alias("UPN", "UserPrincipalName", "Username")]
     [string]$Identity
+
   ) #param
 
   begin {

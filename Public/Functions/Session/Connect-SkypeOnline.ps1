@@ -78,6 +78,9 @@ function Connect-SkypeOnline {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
+    #Activate 01-FEB 2021
+    #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
+
     # Required as Warnings on the OriginalRegistrarPool may halt Script execution
     $WarningPreference = "Continue"
 

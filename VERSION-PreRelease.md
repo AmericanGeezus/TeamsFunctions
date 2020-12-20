@@ -12,6 +12,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
   - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
 - `Assert-TeamsCallableEntity`: New script to ensure a Callable Entity Object (User) can be used for Overflow and Timout Target as well as for Users in Call Queues and Auto Attendants.
+- `Enable-AzureAdAdminRole.ps1`:
+  - New script to Enable Assigned Admin roles. Requires Module AzureAdPreview.
+  - Script in BETA still, though works with direct assignments already. Needs testing.
+  - ToDo: Privileged Admin Groups need to be added/supported as well
 
 ### Updated
 
