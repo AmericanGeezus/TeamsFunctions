@@ -204,8 +204,13 @@ function Connect-Me {
         else {
           Write-Host "User does not have permission to manage this tenant. Do you need to activate your Admin Roles in Privileged Identity Management" -ForegroundColor Cyan
           #TODO Call Role Activation command, then call Connection again
-
           <#
+          $ActivateRoles = $true
+          Rework this to do the following: Activate Skype is a function
+          Call Function, if errors, connect AzureAd, then Activate Roles with
+          $EnabledRoles = Enable-AzureAdAdminRole -Identity $Username -PassThru
+          Then Call Function again!
+
           try {
             if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
               $null = (Connect-SkypeOnline -UserName $Username -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
@@ -287,6 +292,7 @@ function Connect-Me {
 
 
     #region MicrosoftTeams
+    #TODO Rework/Remove: Not required if connection to Skype is established with New-CsOnlineSession with MicrosoftTeams.
     if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
       $Status = "Establishing Connection"
       $step++
