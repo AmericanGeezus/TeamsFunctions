@@ -5,8 +5,8 @@
 # Status:     Beta
 
 
-
-
+#TODO: Currently EnableAll is on by default - needs filtering to specific Ids (6 Teams ones)
+#TODO: Privileged Admin Groups buildout
 function Enable-AzureAdAdminRole {
   <#
   .SYNOPSIS
