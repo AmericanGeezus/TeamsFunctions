@@ -658,9 +658,11 @@ function Set-TeamsCallQueue {
               #Assume it is a User
               $Identity = $OverflowActionTarget
               if ( Test-AzureADUser $Identity ) {
+                $RAObject = $null
                 $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+                $RAObject = Get-CsOnlineApplicationInstance "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
                 $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-                if ( -not $IsLicensed  ) {
+                if ( -not $IsLicensed -and -not $RAObject ) {
                   Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                 }
                 else {
@@ -901,9 +903,11 @@ function Set-TeamsCallQueue {
               #Assume it is a User
               $Identity = $TimeoutActionTarget
               if ( Test-AzureADUser $Identity ) {
+                $RAObject = $null
                 $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+                $RAObject = Get-CsOnlineApplicationInstance "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
                 $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-                if ( -not $IsLicensed  ) {
+                if ( -not $IsLicensed -and -not $RAObject ) {
                   Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                 }
                 else {

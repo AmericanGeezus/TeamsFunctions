@@ -2,16 +2,27 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v20.12.13 pre-realease
+## v20.12.27 pre-release
 
 ### New
 
-- New Helper functions behind the scenes to find Unique AzureAd Groups and Creating Callable Entities
-- Completing the Set for AutoAttendants:
-  - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow): Call Flow Object with default options
-  - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
-  - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
-- `Assert-TeamsCallableEntity`: New script to ensure a Callable Entity Object (User) can be used for Overflow and Timout Target as well as for Users in Call Queues and Auto Attendants.
+
+### Updated
+
+- `Set-TeamsCallQueue`:
+  - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
+  - TBD: This needs to be reworked for Set and New to query the callable entity and improve checks
+  - Needs rework: OAT: Forward (Tel, User, VoiceApp) / Voicemail (User Only) / SharedVoicemail (Groups only)
+  - Needs rework: TAT: Forward (Tel, User, VoiceApp) / Voicemail (User Only) / SharedVoicemail (Groups only)
+  - Needs rework: Users: User only
+  - Needs rework: Groups Groups only
+  - Needs rework: Same for NEW
+  - Needs rework: Type can be removed then.
+
+## v20.12.20 pre-release
+
+### New
+
 - `Enable-AzureAdAdminRole.ps1`:
   - New script to Enable Assigned Admin roles. Requires Module AzureAdPreview.
   - Script in BETA still, though works with direct assignments already. Needs testing.
@@ -32,6 +43,22 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Disconnect-SkypeOnline`: Updated for compatibility with MicrosoftTeams
 - `Format-StringForUse`: Added more normalisation and verification for UserPrincipalname: ".@" is now properly caught and the dot removed.
 - `Import-TeamsAudioFile`: File path can now have spaces, yay :)
+- `Get-TeamsCallQueue`: Detailed results now are only displayed for the first 5 results. Beyond that, only Names are displayed. Pipe is unaffected.
+- `Get-TeamsAutoAttendant`: Detailed results now are only displayed for the first 3 results. Beyond that, only Names are displayed. Pipe is unaffected.
+
+## v20.12.13 pre-realease
+
+### New
+
+- New Helper functions behind the scenes to find Unique AzureAd Groups and Creating Callable Entities
+- Completing the Set for AutoAttendants:
+  - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow): Call Flow Object with default options
+  - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
+  - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
+- `Assert-TeamsCallableEntity`: New script to ensure a Callable Entity Object (User) can be used for Overflow and Timout Target as well as for Users in Call Queues and Auto Attendants.
+
+### Updated
+
 - `Get-TeamsUserLicense`: Better display for PhoneSystemStatus (String instead of Object)
 - `Get-TeamsUserVoiceConfig`: Better display for PhoneSystemStatus (String instead of Object) - Using Get-TeamsUserLicense in the background
 - `Set-TeamsUserVoiceConfig`:
@@ -40,8 +67,6 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Get-TeamsCallableEntity`: Added Parameter ObjectType to not interfere with Parameter Type (used in other scripts)
 - `New-TeamsCallableEntity`: Added Parameter EnableTranscription
 - `New-TeamsResourceAccountAssociation`: Fixed an issue removing a Resource Account from a stack of Accounts if it was already assigned.
-- `Get-TeamsCallQueue`: Detailed results now are only displayed for the first 5 results. Beyond that, only Names are displayed. Pipe is unaffected.
-- `Get-TeamsAutoAttendant`: Detailed results now are only displayed for the first 3 results. Beyond that, only Names are displayed. Pipe is unaffected.
 - `New-TeamsAutoAttendant`: **Major Overhaul**
   - Added Parameter EnableTranscription to allow for Transcription with all CallTargets (SharedVoicemail)
   - Removed Parameter Silent as it wasn't implemeneted and should not be used anyway.

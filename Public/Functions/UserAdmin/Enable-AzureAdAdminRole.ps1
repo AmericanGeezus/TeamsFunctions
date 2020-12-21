@@ -75,7 +75,7 @@ function Enable-AzureAdAdminRole {
   [OutputType([Void])]
 
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity of the Admin Account")]
+    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity of the Admin Account")]
     [Alias("UPN", "UserPrincipalName", "Username")]
     [string]$Identity,
 
@@ -110,7 +110,15 @@ function Enable-AzureAdAdminRole {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    #Requires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
+    # Importing Module
+    #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
+    try {
+      Import-Module AzureAdPreview -Force -ErrorAction Stop
+    }
+    catch {
+      Write-Error -Message "Module AzureAdPreview not present or failed to import. Please make sure the Module is installed"
+      return
+    }
 
     # preparing Splatting Object
     $Parameters = $null
@@ -157,6 +165,12 @@ function Enable-AzureAdAdminRole {
     Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
     $Parameters += @{'Schedule' = $schedule }
     #endregion
+
+    # Identity is not mandatory, using connected Session
+    if ( -not $PSBoundParameters.ContainsKey('Identity') ) {
+      $Identity = (Get-AzureADCurrentSessionInfo).Account.Id
+      Write-Verbose -Message "No Identity Provided, using user currently connected to AzureAd: '$Identity'"
+    }
 
   } #begin
 
