@@ -5,23 +5,18 @@
 # Status:   Live
 
 
-
+#TODO Change UserName to AccountId!
 
 function Connect-SkypeOnline {
   <#
 	.SYNOPSIS
-		Creates a remote PowerShell session to Skype for Business Online and Teams
+		Creates a remote PowerShell session to Teams (SkypeOnline)
 	.DESCRIPTION
-		Connecting to a remote PowerShell session to Skype for Business Online requires several components
-		and steps. This function consolidates those activities by
-		- verifying the SkypeOnlineConnector is installed and imported
-    - prompting for Username and password (once) to establish the session
-    - prompting for MFA if required (once)
-    - prompting for OverrideAdminDomain if connection fails to establish and retries connection attempt
-		- extending the session time-out limit beyond 60mins (SkypeOnlineConnector v7 or higher only!)
+    The Connect-SkypeOnline cmdlet connects an authenticated account to use for Microsoft Teams (SkypeOnline) cmdlet requests.
+    Establishing a remote PowerShell session to Microsoft Teams (SkypeOnline)
     A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect
     To execute commands against Teams, one of the Teams Admin roles is required.
-	.PARAMETER Username
+	.PARAMETER AccountId
 		Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.
 	.PARAMETER OverrideAdminDomain
 		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
@@ -30,24 +25,35 @@ function Connect-SkypeOnline {
 		Note, by default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
 	.EXAMPLE
 		Connect-SkypeOnline
-    Example 1 will prompt for the Username and password of an administrator with permissions to connect to Skype for Business Online.
+    Prompt for the Username and password of an administrator with permissions to connect to Microsoft Teams (SkypeOnline).
     Additional prompts for Multi Factor Authentication are displayed as required
 	.EXAMPLE
-		Connect-SkypeOnline -Username admin@contoso.com
-		Example 2 will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Skype for Business Online.
-    Additional prompts for Multi Factor Authentication are displayed as required
+		Connect-SkypeOnline -AccountId admin@contoso.com
+    If supported, will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account
+    to connect out to Microsoft Teams (SkypeOnline). Additional prompts for Multi Factor Authentication are displayed as required.
 	.NOTES
-		Requires that the Skype Online Connector PowerShell module be installed.
-		If the PowerShell Module SkypeOnlineConnector is v7 or higher, the Session TimeOut of 60min can be circumvented.
-		Enable-CsOnlineSessionForReconnection is run.
+    Requires that the Module Microoft Teams (v1.1.6) or Skype Online Connector PowerShell module (v7.0.0.0 or higher) to be installed.
+    If the SkypeOnlineConnector is used, the Username can be passed to along and the Session can be reconnected (Enable-CsOnlineSessionForReconnection is run).
+    The following Tasks are preformed by this cmdlet:
+		- Verifying Module MicrosoftTeams or SkypeOnlineConnector are installed and imported
+    - Prompting for Username and password to establish the session
+    - Prompting for MFA if required
+    - Prompting for OverrideAdminDomain if connection fails to establish and retries connection attempt
+		- Extending the session time-out limit beyond 60mins (SkypeOnlineConnector only!)
+
 		Download v7 here: https://www.microsoft.com/download/details.aspx?id=39366
 		The SkypeOnline Session allows you to administer SkypeOnline and Teams respectively.
-		To manage Teams, Channels, etc. within Microsoft Teams, use Connect-MicrosoftTeams
+    Note: A separate connection to MicrosoftTeams must be established when using SkypeOnlineConnector.
+
+    To manage Teams, Channels, etc. within Microsoft Teams, use Connect-MicrosoftTeams
 		Connect-MicrosoftTeams requires a Teams Admin role and is part of the PowerShell Module MicrosoftTeams
     https://www.powershellgallery.com/packages/MicrosoftTeams
+
     Please note, that the session timeout is broken and does currently not work as intended
     To help reconnect sessions, Assert-SkypeOnlineConnection can be used (Alias: pol) which runs Get-CsTenant to trigger the reconnect
-    This will require additional authentication.
+    This will require re-authentication and its success is dependent on the Tenant settings.
+    To reconnect fully, please re-run Connect-SkypeOnline to recreate the session cleanly.
+    Please note that hanging sessions can cause lockout (session exhaustion)
   .LINK
     Connect-Me
     Connect-SkypeOnline
@@ -62,10 +68,11 @@ function Connect-SkypeOnline {
 
   [CmdletBinding()]
   param(
-    [Parameter()]
-    [string]$Username,
+    [Parameter(Helpmessage = "Sign-in address of a 'Skype for Business Legacy Administrator' (Lync Administrator)")]
+    [Alias('Username')]
+    [string]$AccountId,
 
-    [Parameter()]
+    [Parameter(Helpmessage = "Required only if the Administrators domain is not set up to allow sign-in")]
     [AllowNull()]
     [string]$OverrideAdminDomain,
 
@@ -78,6 +85,7 @@ function Connect-SkypeOnline {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
+    #TODO: Rework output to be in line with Connect-MicrosoftTeams, Connect-AzureAd, Connect-ExchangeOnlineManagement!
     #Activate 01-FEB 2021
     #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
@@ -175,17 +183,17 @@ function Connect-SkypeOnline {
     #region preparing $Parameters
     # UserName
     if ($CsOnlineUsername) {
-      if ( $Username) {
-        Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Using '$Username'" -Verbose
+      if ( $AccountId) {
+        Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Using '$AccountId'" -Verbose
       }
       else {
         Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Please provide Username" -Verbose
-        $Username = Read-Host "Enter the sign-in address of a Skype for Business Admin"
+        $AccountId = Read-Host "Enter the sign-in address of a Skype for Business Admin"
       }
-      $Parameters += @{ 'Username' = $Username }
+      $Parameters += @{ 'Username' = $AccountId }
     }
     else {
-      if ($Username) {
+      if ($AccountId) {
         Write-Verbose -Message "Module SkypeOnlineConnector does not support 'Username'. To be able to support MFA, it will not be passed as a Credential. Please select Account manually" -Verbose
       }
     }
@@ -196,8 +204,8 @@ function Connect-SkypeOnline {
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
 
     }
-    elseif ( $Username ) {
-      $OverrideAdminDomain = $Username.Split('@')[1]
+    elseif ( $AccountId ) {
+      $OverrideAdminDomain = $AccountId.Split('@')[1]
       Write-Verbose -Message "OverrideAdminDomain taken from Username. Used: $OverrideAdminDomain"
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
     }
@@ -264,7 +272,7 @@ function Connect-SkypeOnline {
     if ($moduleVersion.Major -le "6") {
       # Version 6 and lower do not support MFA authentication for Skype Module PowerShell; also allows use of older PSCredential objects
       try {
-        $SkypeOnlineSession = New-CsOnlineSession -Credential (Get-Credential $Username -Message "Enter the sign-in address and password of a Global or Skype for Business Admin") -ErrorAction STOP
+        $SkypeOnlineSession = New-CsOnlineSession -Credential (Get-Credential $AccountId -Message "Enter the sign-in address and password of a Global or Skype for Business Admin") -ErrorAction STOP
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
       }
       catch {
@@ -288,16 +296,16 @@ function Connect-SkypeOnline {
         $Parameters = $null
         if ($PSBoundParameters.ContainsKey("Username")) {
           #TODO Check whether New-CsOnlineSession has a Parameter called Username. What to do if not!
-          Write-Verbose -Message "Adding: Username: $Username"
-          $Parameters += @{'Username' = $Username }
+          Write-Verbose -Message "Adding: Username: $AccountId"
+          $Parameters += @{'Username' = $AccountId }
         }
         if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
           Write-Verbose -Message "OverrideAdminDomain: Provided: $OverrideAdminDomain"
           $Parameters += @{'OverrideAdminDomain' = $OverrideAdminDomain }
         }
         else {
-          $UsernameDomain = $Username.Split('@')[1]
-          $Parameters += @{'OverrideAdminDomain' = $UsernameDomain }
+          $AccountIdDomain = $AccountId.Split('@')[1]
+          $Parameters += @{'OverrideAdminDomain' = $AccountIdDomain }
 
         }
         Write-Verbose -Message "Adding: SessionOption with IdleTimeout $IdleTimeout (hrs)"
@@ -363,6 +371,29 @@ function Connect-SkypeOnline {
         #endregion
       }
       #>
+
+
+    $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like "*.online.lync.com" -or $_.Computername -eq "api.interfaces.records.teams.microsoft.com") -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
+    $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
+    $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
+    $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
+    $Environment = $PSSkypeOnlineSession.Name.split('_')[0]
+    if (-not $Environment) {
+      $Environment = 'SfBPowerShellSession'
+    }
+
+    $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
+      Account                   = $AccountId
+      Environment               = $Environment
+      Tenant                    = $TenantInformation.DisplayName
+      TenantId                  = $TenantInformation.TenantId
+      TenantDomain              = $TenantDomain
+      ComputerName              = $PSSkypeOnlineSession.ComputerName
+      IdleTimeoutInHours        = $Timeout
+      TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
+    }
+
+    return $PSSkypeOnlineSessionInfo
 
   } #process
 
