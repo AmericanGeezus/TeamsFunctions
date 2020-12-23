@@ -266,6 +266,7 @@ function New-TeamsResourceAccount {
         $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue
         if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name)", ($ParamResourceAccountCreatedeters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
       }
       else {

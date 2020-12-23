@@ -191,7 +191,6 @@ function Connect-SkypeOnline {
     }
 
     # OverrideAdminDomain
-    #CHECK This works with SkypeOnlineConnector, but untested on MicrosoftTeams; It may not be required there
     if ( $OverrideAdminDomain) {
       Write-Verbose -Message "OverrideAdminDomain provided. Used: $OverrideAdminDomain"
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
@@ -208,6 +207,10 @@ function Connect-SkypeOnline {
     #endregion
 
     # Creating Session
+    if ($PSBoundParameters.ContainsKey("Debug")) {
+      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    }
+
     try {
       Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
       $SkypeOnlineSession = New-CsOnlineSession @Parameters

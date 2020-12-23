@@ -185,7 +185,7 @@ function New-TeamsAutoAttendantMenuOption {
     # Create Menu Option
     Write-Verbose -Message "[PROCESS] Creating Menu Option"
     if ($PSBoundParameters.ContainsKey('Debug')) {
-      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     if ($PSCmdlet.ShouldProcess("New MenuOption", "New-CsAutoAttendantMenuOption")) {

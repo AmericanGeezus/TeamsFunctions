@@ -10,27 +10,28 @@
 function Connect-Me {
   <#
 	.SYNOPSIS
-		Connect to SkypeOnline and AzureActiveDirectory and optionally also to Teams and Exchange
+		Connect to AzureAd, Teams and SkypeOnline and optionally also to Exchange
 	.DESCRIPTION
 		One function to connect them all.
-		This function solves the requirement for individual authentication prompts for
-		SkypeOnline and AzureAD (and optionally also to MicrosoftTeams and ExchangeOnline) when multiple connections are required.
-		For SkypeOnline, the Skype for Business Legacy Administrator Roles is required
+    This function solves the requirement for individual authentication prompts for
+    AzureAD and MicrosoftTeams, SkypeOnline (and optionally also to ExchangeOnline) when multiple connections are required.
 		For AzureAD, no particular role is needed as GET-commands are available without a role.
 		For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin)
+		For SkypeOnline, the Skype for Business Legacy Administrator Roles is required
 		Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
 		Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
     By default SkypeOnline and AzureAD are selected (without parameters).
     Combine as desired, if Parameters are specified, only connections to these services are established.
-    Available: SkypeOnline, AzureAD, MicrosoftTeams and ExchangeOnline
+    Available: AzureAD, MicrosoftTeams, SkypeOnline and ExchangeOnline
+    Without parameters, connections are established to AzureAd and SkypeOnline/MicrosoftTeams
 	.PARAMETER UserName
 		Required. UserPrincipalName or LoginName of the Office365 Administrator
-	.PARAMETER SkypeOnline
-		Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator
 	.PARAMETER AzureAD
 		Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)
 	.PARAMETER MicrosoftTeams
 		Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator
+	.PARAMETER SkypeOnline
+		Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator
 	.PARAMETER ExchangeOnline
 		Optional. Connects to Exchange Online Management. Requires Exchange Admin Role
 	.PARAMETER OverrideAdminDomain
@@ -72,10 +73,6 @@ function Connect-Me {
     [Parameter(Mandatory = $true, Position = 0, HelpMessage = 'UserPrincipalName, Administrative Account')]
     [string]$UserName,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to SkypeOnline. Prompts for new credentials.')]
-    [Alias('SfBO')]
-    [switch]$SkypeOnline,
-
     [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to Azure AD. Reuses credentials if authenticated already.')]
     [Alias('AAD')]
     [switch]$AzureAD,
@@ -83,6 +80,10 @@ function Connect-Me {
     [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to MicrosoftTeams. Reuses credentials if authenticated already.')]
     [Alias('Teams')]
     [switch]$MicrosoftTeams,
+
+    [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to SkypeOnline. Prompts for new credentials.')]
+    [Alias('SfBO')]
+    [switch]$SkypeOnline,
 
     [Parameter(Mandatory = $false, HelpMessage = 'Establishes a connection to Exchange Online. Reuses credentials if authenticated already.')]
     [Alias('Exchange')]

@@ -798,7 +798,7 @@ function New-TeamsAutoAttendant {
     #region ACTION
     Write-Verbose -Message "[PROCESS] Creating Auto Attendant"
     if ($PSBoundParameters.ContainsKey('Debug')) {
-      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Create AA (New-CsAutoAttendant)

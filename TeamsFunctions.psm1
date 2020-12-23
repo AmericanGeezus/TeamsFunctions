@@ -1,5 +1,4 @@
-﻿#Requires -Version 5.1
-<#
+﻿<#
   TeamsFunctions
   Module for Management of Teams Voice Configuration for Tenant and Users
   User Configuration for Voice, Creation and connection of Resource Accounts,
@@ -37,8 +36,19 @@
   20.10       OCT 2020 Release - Added TeamsUserVoiceConfig & TeamsAutoAttendant Functions
   20.11       NOV 2020 Release - Restructuring, Bugfixes and general overhaul. Also more Pester-Testing
   20.12       DEC 2020 Release - Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes
-
+  21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
 #>
+
+#Requires -Version 5.1
+
+#Activate when released
+# AzureAdPreview 2.0.2.129
+#R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
+#R#equires -Modules @{ ModuleName="AzureAd"; ModuleVersion="2.0.2.130" }
+
+#Activate 01-FEB 2021
+#R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
+
 
 #region Classes
 class TFTeamsServicePlan {

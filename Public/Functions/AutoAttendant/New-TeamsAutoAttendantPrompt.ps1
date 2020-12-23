@@ -112,7 +112,7 @@ function New-TeamsAutoAttendantPrompt {
     # Creating Prompt
     Write-Verbose -Message "[PROCESS] Creating Prompt"
     if ($PSBoundParameters.ContainsKey('Debug')) {
-      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     if ($PSCmdlet.ShouldProcess("$Name", "New-CsAutoAttendantPrompt")) {
