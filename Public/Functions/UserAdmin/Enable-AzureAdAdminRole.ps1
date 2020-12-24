@@ -208,27 +208,35 @@ function Enable-AzureAdAdminRole {
 
       # Query current Admin Roles
 
+      <# Commented out for Admin Groups are not yet available via PowerShell
       $TenantRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId #-Filter "subjectId eq '$SubjectId'"
+      $MyEligibleGroups = $TenantRoles | Where-Object MemberType -EQ "Group"
       $MyRoles = $TenantRoles | Where-Object SubjectId -EQ $SubjectId
+      #>
+      $MyRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
+
 
       $MyActiveRoles = $MyRoles | Where-Object AssignmentState -EQ "Active"
       $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ "Eligible"
-      $MyEligibleGroups = $TenantRoles | Where-Object MemberType -EQ "Group"
       Write-Verbose -Message "User '$Id' has currently $($MyActiveRoles.Count) of $($MyEligibleRoles.Count) activated"
 
       [System.Collections.ArrayList]$RolesAndGroups = @()
+      <# Commented out for Admin Groups are not yet available via PowerShell
       if ($MyEligibleGroups.Count -eq 0) {
         Write-Verbose -Message "User '$Id' - No Privileged Access Groups are available that can be activated."
-        if ($MyEligibleRoles.Count -eq 0) {
-          if ($MyActiveRoles.Count -eq 0) {
-            Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
-          }
-          else {
-            Write-Verbose -Message "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -Verbose
-          }
-
-          Continue
+      #>
+      if ($MyEligibleRoles.Count -eq 0) {
+        if ($MyActiveRoles.Count -eq 0) {
+          Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
         }
+        else {
+          Write-Verbose -Message "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -Verbose
+        }
+
+        Continue
+      }
+
+      <# Commented out for Admin Groups are not yet available via PowerShell
       }
       else {
         # Adding Groups
@@ -236,6 +244,7 @@ function Enable-AzureAdAdminRole {
           [void]$RolesAndGroups.Add($Role)
         }
       }
+    #>
       if ($MyEligibleRoles.Count -gt 0) {
         # Adding Roles
         foreach ($Role in $MyEligibleRoles) {

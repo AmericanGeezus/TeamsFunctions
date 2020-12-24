@@ -468,7 +468,7 @@ function Connect-Me {
 
         try {
           $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-          Write-Host "Enable-AzureAdAdminRole - $($ActivatedRoles.Count) Roles activated." -ForegroundColor Cyan
+          Write-Verbose "Enable-AzureAdAdminRole - $($ActivatedRoles.Count) Roles activated." -Verbose
         }
         catch {
           Write-Verbose -Message "Enable-AzureAdAdminRole: Tenant is not enabled for PIM" -Verbose
