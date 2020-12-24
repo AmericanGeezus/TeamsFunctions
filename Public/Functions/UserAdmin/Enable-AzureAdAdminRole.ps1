@@ -71,7 +71,7 @@ function Enable-AzureAdAdminRole {
     Get-AzureAdAssignedAdminRoles
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess)]
   [OutputType([Void])]
 
   param(
@@ -88,9 +88,6 @@ function Enable-AzureAdAdminRole {
     [Parameter(HelpMessage = "Ticket Number for use to provide to the request")]
     [int]$TicketNr,
 
-    [Parameter(HelpMessage = "Enables all eligible roles")]
-    [switch]$EnableAll,
-
     [Parameter(HelpMessage = "Azure ProviderId to be used")]
     [ValidateSet('aadRoles', 'azureResources')]
     [string]$ProviderId = 'aadRoles',
@@ -99,7 +96,10 @@ function Enable-AzureAdAdminRole {
     [switch]$Extend,
 
     [Parameter(HelpMessage = "Displays output of activated roles to verify")]
-    [switch]$PassThru
+    [switch]$PassThru,
+
+    [Parameter(HelpMessage = "Overrides confirmation dialog and enables all eligible roles")]
+    [switch]$Force
 
   ) #param
 
@@ -137,7 +137,7 @@ function Enable-AzureAdAdminRole {
     $Parameters += @{'Reason' = $Reason }
 
     # ProviderId is hardcoded (or overridden by providing a value)
-    Write-Verbose -Message "Using Azure Provider Id"
+    Write-Verbose -Message "Using Azure Provider Id: $ProviderId"
     $Parameters += @{'ProviderId' = $ProviderId }
 
     # ResourceId - is the Tenant Id
@@ -150,7 +150,17 @@ function Enable-AzureAdAdminRole {
 
     # Importing all Roles
     Write-Verbose -Message "Querying Azure Privileged Role Definitions"
-    $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId
+    try {
+      $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId -ErrorAction Stop
+    }
+    catch {
+      if ("The tenant needs an AAD Premium 2 license" -in $_.Exception.Message) {
+        Write-Error -Message "Cannot query role definitions. AzureAd Premium License Required" -ErrorAction Stop
+      }
+      else {
+        Write-Error -Message "Cannot query role definitions. Exception: $($_.Exception.Message)" -ErrorAction Stop
+      }
+    }
 
     # Defining Schedule
     Write-Verbose -Message "Creating Schedule based on Duration: $Duration hours"
@@ -197,99 +207,107 @@ function Enable-AzureAdAdminRole {
       }
 
       # Query current Admin Roles
-      $MyRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
+
+      $TenantRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId #-Filter "subjectId eq '$SubjectId'"
+      $MyRoles = $TenantRoles | Where-Object SubjectId -EQ $SubjectId
+
       $MyActiveRoles = $MyRoles | Where-Object AssignmentState -EQ "Active"
       $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ "Eligible"
+      $MyEligibleGroups = $TenantRoles | Where-Object MemberType -EQ "Group"
       Write-Verbose -Message "User '$Id' has currently $($MyActiveRoles.Count) of $($MyEligibleRoles.Count) activated"
 
-      if ($MyEligibleRoles.Count -eq 0) {
-        Write-Warning -Message "User '$Id' - Currently no eligible Roles available!"
-        Write-Verbose -Message "Privileged Access Groups may be available that can be activated." -Verbose
-        #TODO: Query Admin Groups - Add them to $MyActiveRoles - same format
+      [System.Collections.ArrayList]$RolesAndGroups = @()
+      if ($MyEligibleGroups.Count -eq 0) {
+        Write-Verbose -Message "User '$Id' - No Privileged Access Groups are available that can be activated."
+        if ($MyEligibleRoles.Count -eq 0) {
+          if ($MyActiveRoles.Count -eq 0) {
+            Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
+          }
+          else {
+            Write-Verbose -Message "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -Verbose
+          }
 
-        Write-Verbose -Message "This has not yet been implemented. Sorry. Script will stop here." -Verbose
-        Continue
+          Continue
+        }
+      }
+      else {
+        # Adding Groups
+        foreach ($Role in $MyEligibleGroups) {
+          [void]$RolesAndGroups.Add($Role)
+        }
+      }
+      if ($MyEligibleRoles.Count -gt 0) {
+        # Adding Roles
+        foreach ($Role in $MyEligibleRoles) {
+          [void]$RolesAndGroups.Add($Role)
+        }
       }
 
       # Activating Role
       [System.Collections.ArrayList]$ActivatedRoles = @()
 
-      foreach ($R in $MyEligibleRoles) {
+      foreach ($R in $RolesAndGroups) {
         # Querying Role Display Name
         $RoleName = $AllRoles | Where-Object { $_.Id -eq $R.RoleDefinitionId } | Select-Object -ExpandProperty DisplayName
 
-        # Preparing Output object
-        $ActivatedRole = @()
-        $ActivatedRole = [PsCustomObject][ordered]@{
-          'User'        = $Id
-          'Rolename'    = $RoleName
-          'Type'        = $null
-          'ActiveUntil' = $null
-        }
+        # Confirm every role if not Force
+        if ($PSCmdlet.ShouldProcess("$RoleName")) {
+          if (-not ($Force -or $PSCmdlet.ShouldContinue("Eligible Role '$RoleName' found - Activate Role?", 'Enable-AzureAdAdminRole'))) {
+            continue # user replied no
+          }
+          else {
 
-        # Adding Role Definition Id
-        if ($Parameters.RoleDefinitionId) {
-          $Parameters.RoleDefinitionId = $R.RoleDefinitionId
-        }
-        else {
-          $Parameters += @{'RoleDefinitionId' = $R.RoleDefinitionId }
-        }
+            # Preparing Output object
+            $ActivatedRole = @()
+            $ActivatedRole = [PsCustomObject][ordered]@{
+              'User'        = $Id
+              'Rolename'    = $RoleName
+              'Type'        = $null
+              'ActiveUntil' = $null
+            }
 
-        # Determining Activation Type (UserAdd VS UserRenew)
-        <#
+            # Adding Role Definition Id
+            if ($Parameters.RoleDefinitionId) {
+              $Parameters.RoleDefinitionId = $R.RoleDefinitionId
+            }
+            else {
+              $Parameters += @{'RoleDefinitionId' = $R.RoleDefinitionId }
+            }
+
+            # Determining Activation Type (UserAdd VS UserRenew)
+            <#
         The request type. Required.
         The value can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
         #CHECK which value is suitable to a) enable  b) extend  c) deactivate the respective role!
         Currently, UserAdd and UserExtend are used - If renew works, the duration may be able to be scrapped (hardcoded) alltogether
         Role will be activated every hour for another 4 hour period.
         #>
-        # Deactivated as UserAdd will automatically create a new assignment - Extend will leave a Pending request!
-        if ( $PSBoundParameters.ContainsKey('Extend') -and $R.RoleDefinitionId -in $MyActiveRoles.RoleDefinitionId ) {
-          Write-Verbose -Message "User '$Id' - '$RoleName' is already active and will be extended"
-          $ActivatedRole.Type = 'UserExtend'
-          if ($Parameters.Type) {
-            $Parameters.Type = 'UserExtend'
-          }
-          else {
-            $Parameters += @{'Type' = 'UserExtend' }
-          }
-        }
-        else {
-          Write-Verbose -Message "User '$Id' - '$RoleName' is currently not active and will be activated"
-          $ActivatedRole.Type = 'UserAdd'
-          if ($Parameters.Type) {
-            $Parameters.Type = 'UserAdd'
-          }
-          else {
-            $Parameters += @{'Type' = 'UserAdd' }
-          }
-        }
+            # Deactivated as UserAdd will automatically create a new assignment - Extend will leave a Pending request!
+            if ( $PSBoundParameters.ContainsKey('Extend') -and $R.RoleDefinitionId -in $MyActiveRoles.RoleDefinitionId ) {
+              Write-Verbose -Message "User '$Id' - '$RoleName' is already active and will be extended"
+              $ActivatedRole.Type = 'UserExtend'
+              if ($Parameters.Type) {
+                $Parameters.Type = 'UserExtend'
+              }
+              else {
+                $Parameters += @{'Type' = 'UserExtend' }
+              }
+            }
+            else {
+              Write-Verbose -Message "User '$Id' - '$RoleName' is currently not active and will be activated"
+              $ActivatedRole.Type = 'UserAdd'
+              if ($Parameters.Type) {
+                $Parameters.Type = 'UserAdd'
+              }
+              else {
+                $Parameters += @{'Type' = 'UserAdd' }
+              }
+            }
 
-        #Activating the Role
-        if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
-
-        #TODO Add ShouldProcess and Confirm decision here!
-        try {
-          Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
-          $ActivatedRole.ActiveUntil = $schedule.endDateTime
-          $null = Open-AzureADMSPrivilegedRoleAssignmentRequest @Parameters
-          [void]$ActivatedRoles.Add($ActivatedRole)
-        }
-        catch {
-          if ($_.Exception.Message.Contains("ExpirationRule")) {
-            if ($Duration -eq 4) { $Duration = 2 } else { $Duration = 4 }
-            Write-Warning -Message "Specified Duration not allowed, re-trying with $Duration hours"
-            $end = $Date.AddHours($Duration).ToUniversalTime()
-
-            <# $schedule = New-Object Microsoft.Open.MSGraph.Model.AzureADMSPrivilegedSchedule
-            $schedule.Type = "Once"
-            $schedule.StartDateTime = $start.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-             #>
-            $schedule.endDateTime = $end.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-            Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
-            $Parameters.Schedule = $schedule
+            #Activating the Role
+            if ($PSBoundParameters.ContainsKey('Debug')) {
+              "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            }
 
             try {
               Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
@@ -299,24 +317,44 @@ function Enable-AzureAdAdminRole {
             }
             catch {
               if ($_.Exception.Message.Contains("ExpirationRule")) {
-                Write-Error -Message "Specified Duration is not allowed, please try again with a lower number." -Category InvalidData
+                # Amending Schedule
+                if ($Duration -eq 4) { $Duration = 2 } else { $Duration = 4 }
+                Write-Warning -Message "Specified Duration not allowed, re-trying with $Duration hours"
+                $end = $Date.AddHours($Duration).ToUniversalTime()
+
+                $schedule.endDateTime = $end.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+                Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
+                $Parameters.Schedule = $schedule
+
+                try {
+                  Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
+                  $ActivatedRole.ActiveUntil = $schedule.endDateTime
+                  $null = Open-AzureADMSPrivilegedRoleAssignmentRequest @Parameters
+                  [void]$ActivatedRoles.Add($ActivatedRole)
+                }
+                catch {
+                  if ($_.Exception.Message.Contains("ExpirationRule")) {
+                    Write-Error -Message "Specified Duration is not allowed, please try again with a lower number." -Category InvalidData
+                  }
+                  else {
+                    Write-Error -Message $_.Exception.Message
+                  }
+                }
               }
               else {
                 Write-Error -Message $_.Exception.Message
               }
+
             }
           }
-          else {
-            Write-Error -Message $_.Exception.Message
-          }
-
         }
       }
+
     }
 
     # Re-Query and output (for all Users!)
     if ( $PassThru ) {
-      $ActivatedRoles | Format-Table -AutoSize
+      return $ActivatedRoles
     }
 
   } #process

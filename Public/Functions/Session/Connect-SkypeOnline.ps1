@@ -157,17 +157,14 @@ function Connect-SkypeOnline {
       Write-Verbose -Message "Command '$Command' not available. Session cannot reconnect. Please disconnect session cleanly before trying to reconnect!"
     }
 
-    # Generating Session Options (Timeout) based on input
-    $IdleTimeoutInMS = $IdleTimeout * 3600000
-    if ($PSBoundParameters.ContainsKey('IdleTimeout')) {
-      $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutInMS
-    }
-    else {
-      $SessionOption = New-PSSessionOption -IdleTimeout 14400000
-    }
-    $Parameters += @{ 'SessionOption' = $SessionOption }
+    # Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
+    $IdleTimeoutMS = (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
+    $OperationTimeout = $IdleTimeoutMS - (New-TimeSpan -Minutes 15).TotalMilliseconds
+    $CancelTimeout = (New-TimeSpan -Seconds 30).TotalMilliseconds
+    $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutMS -CancelTimeout $CancelTimeout -OperationTimeout $OperationTimeout
     Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
 
+    $Parameters += @{ 'SessionOption' = $SessionOption }
     #endregion
 
     # Existing Session
@@ -187,8 +184,14 @@ function Connect-SkypeOnline {
         Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Using '$AccountId'" -Verbose
       }
       else {
-        Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Please provide Username" -Verbose
-        $AccountId = Read-Host "Enter the sign-in address of a Skype for Business Admin"
+        if (Test-AzureADConnection) {
+          $AccountId = (Get-AzureADCurrentSessionInfo).Account
+          Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Using '$AccountId' (connected to AzureAd)" -Verbose
+        }
+        else {
+          Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Please provide Username" -Verbose
+          $AccountId = Read-Host "Enter the sign-in address of a Skype for Business Admin"
+        }
       }
       $Parameters += @{ 'Username' = $AccountId }
     }
@@ -263,123 +266,15 @@ function Connect-SkypeOnline {
         Write-Verbose -Message "Session import failed - Error for troubleshooting: $($_.Exception.Message)" -Verbose
       }
 
-    }
-
-    <##############
-    # Testing existing Module and Connection
-    $moduleVersion = (Get-Module -Name SkypeOnlineConnector -WarningAction SilentlyContinue).Version
-    Write-Verbose -Message "Module SkypeOnlineConnector installed in Version: $moduleVersion"
-    if ($moduleVersion.Major -le "6") {
-      # Version 6 and lower do not support MFA authentication for Skype Module PowerShell; also allows use of older PSCredential objects
-      try {
-        $SkypeOnlineSession = New-CsOnlineSession -Credential (Get-Credential $AccountId -Message "Enter the sign-in address and password of a Global or Skype for Business Admin") -ErrorAction STOP
-        Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
-      }
-      catch {
-        $errorMessage = $_
-        if ($errorMessage -like "*Making sure that you have used the correct user name and password*") {
-          Write-Warning -Message "Logon failed. Please try again and make sure that you have used the correct user name and password."
-        }
-        elseif ($errorMessage -like "*Please create a new credential object*") {
-          Write-Warning -Message "Logon failed. This may be due to multi-factor being enabled for the user account and not using the latest Skype for Business Online PowerShell module."
-        }
-        else {
-          Write-Warning -Message $_
-        }
-      }
-    }
-    else {
-      # This should be all newer version than 6; does not support PSCredential objects but supports MFA
-      try {
-        # Constructing Parameters to be passed to New-CsOnlineSession
-        Write-Verbose -Message "Constructing parameter list to be passed on to New-CsOnlineSession"
-        $Parameters = $null
-        if ($PSBoundParameters.ContainsKey("Username")) {
-          #TODO Check whether New-CsOnlineSession has a Parameter called Username. What to do if not!
-          Write-Verbose -Message "Adding: Username: $AccountId"
-          $Parameters += @{'Username' = $AccountId }
-        }
-        if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-          Write-Verbose -Message "OverrideAdminDomain: Provided: $OverrideAdminDomain"
-          $Parameters += @{'OverrideAdminDomain' = $OverrideAdminDomain }
-        }
-        else {
-          $AccountIdDomain = $AccountId.Split('@')[1]
-          $Parameters += @{'OverrideAdminDomain' = $AccountIdDomain }
-
-        }
-        Write-Verbose -Message "Adding: SessionOption with IdleTimeout $IdleTimeout (hrs)"
-        $Parameters += @{'SessionOption' = $SessionOption }
-        Write-Verbose -Message "Adding: Common Parameters"
-        $Parameters += @{'ErrorAction' = 'STOP' }
-        $Parameters += @{'WarningAction' = 'Continue' }
-
-        # Creating Session
-        Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
-        $SkypeOnlineSession = New-CsOnlineSession @Parameters
-      }
-      catch [System.Net.WebException] {
-        try {
-          Write-Warning -Message "Session could not be created. Maybe missing OverrideAdminDomain to connect?"
-          $Domain = Read-Host "Please enter an OverrideAdminDomain for this Tenant"
-          # $Parameters +=@{'OverrideAdminDomain' = $Domain} # This works only if no OverrideAdminDomain is yet in the $Parameters Array. Current config means it will be there!
-          $Parameters.OverrideAdminDomain = $Domain
-          # Creating Session (again)
-          Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
-          $SkypeOnlineSession = New-CsOnlineSession @Parameters
-        }
-        catch {
-          Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
-        }
-      }
-      catch {
-        Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
+      $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like "*.online.lync.com" -or $_.Computername -eq "api.interfaces.records.teams.microsoft.com") -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
+      $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
+      $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
+      $Timeout = New-TimeSpan -Hours $($PSSkypeOnlineSession.IdleTimeout / 3600000)
+      $Environment = $PSSkypeOnlineSession.Name.split('_')[0]
+      if (-not $Environment) {
+        $Environment = 'SfBPowerShellSession'
       }
 
-      # Separated session creation from Import for better troubleshooting
-      if ($Null -ne $SkypeOnlineSession) {
-        try {
-          Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
-          $null = Enable-CsOnlineSessionForReconnection
-        }
-        catch {
-          Write-Verbose -Message "Session import failed - Error for troubleshooting" -Verbose
-          Write-Debug $_
-        }
-
-        #region For v7 and higher: run Enable-CsOnlineSessionForReconnection
-        if (Test-SkypeOnlineConnection) {
-          $moduleVersion = (Get-Module -Name SkypeOnlineConnector -WarningAction SilentlyContinue).Version
-          Write-Verbose -Message "SkypeOnlineConnector Module is installed in Version $ModuleVersion" -Verbose
-          Write-Verbose -Message "Your Session will time out after $IdleTimeout hours" -Verbose
-          if ($moduleVersion.Major -ge "7") {
-            # v7 and higher can run Session Limit Extension
-            try {
-              Enable-CsOnlineSessionForReconnection -WarningAction SilentlyContinue -ErrorAction STOP
-              Write-Verbose -Message "Enable-CsOnlineSessionForReconnection was run; The session should reconnect, allowing it to be re-used without having to launch a new instance to reconnect." -Verbose
-            }
-            catch {
-              Write-Verbose -Message "Enable-CsOnlineSessionForReconnection was run, but failed." -Verbose
-              Write-Debug $_
-            }
-          }
-          else {
-            Write-Verbose -Message "Enable-CsOnlineSessionForReconnection is unavailable; To prevent having to re-authenticate, Update this module to v7 or higher" -Verbose
-            Write-Verbose -Message "You can download the Module here: https://www.microsoft.com/download/details.aspx?id=39366" -Verbose
-          }
-        }
-        #endregion
-      }
-      #>
-
-
-    $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like "*.online.lync.com" -or $_.Computername -eq "api.interfaces.records.teams.microsoft.com") -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
-    $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
-    $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
-    $Timeout = $PSSkypeOnlineSession.IdleTimeout / 3600000
-    $Environment = $PSSkypeOnlineSession.Name.split('_')[0]
-    if (-not $Environment) {
-      $Environment = 'SfBPowerShellSession'
     }
 
     $PSSkypeOnlineSessionInfo = [PSCustomObject][ordered]@{
@@ -389,7 +284,7 @@ function Connect-SkypeOnline {
       TenantId                  = $TenantInformation.TenantId
       TenantDomain              = $TenantDomain
       ComputerName              = $PSSkypeOnlineSession.ComputerName
-      IdleTimeoutInHours        = $Timeout
+      IdleTimeout               = $Timeout
       TeamsUpgradeEffectiveMode = $TenantInformation.TeamsUpgradeEffectiveMode
     }
 

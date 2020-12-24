@@ -125,12 +125,25 @@ function Connect-Me {
 
       begin {
         try {
-          if ( -not (Test-Module $Service)) {
-            Import-Module $Service -Force -ErrorAction Stop
+          if ( $Service -eq "SkypeOnline") {
+            if ( Test-Module MicrosoftTeams ) {
+              Import-Module MicrosoftTeams -Force -ErrorAction Stop
+            }
+            elseif (Test-Module SkypeOnlineConverter) {
+              Import-Module SkypeOnlineConverter -Force -ErrorAction Stop
+            }
+          }
+          elseif ( -not (Test-Module $Service)) {
+            if ($Service -eq "AzureAd" -and (Test-Module AzureAdPreview)) {
+              Import-Module AzureAdPreview -Force -ErrorAction Stop
+            }
+            else {
+              Import-Module $Service -Force -ErrorAction Stop
+            }
           }
         }
         catch {
-          Write-Error -Message "$Service - Error importing Module: $($_.Exception.Message)" -ErrorAction Stop
+          throw "$Service - Error importing Module: $($_.Exception.Message)"
         }
 
 
@@ -293,6 +306,7 @@ function Connect-Me {
     try {
       $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
       $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
+      if ( $CsOnlineUsername ) { $sMax++ }
     }
     catch {
       Write-Error -Message "Command '$Command' not available. Please validate Modules MicrosoftTeams or SkypeOnlineConnector" -Category ObjectNotFound -ErrorAction Stop
@@ -303,6 +317,7 @@ function Connect-Me {
     $Command = "Get-AzureADMSPrivilegedRoleAssignment"
     try {
       $PIMavailable = Get-Command -Name $Command -ErrorAction Stop
+      if ( $PIMavailable ) { $sMax++ }
     }
     catch {
       Write-Warning -Message "Command '$Command' not available. Privileged Identity Management functions cannot be executed"
@@ -329,7 +344,7 @@ function Connect-Me {
         $step++
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status to $Operation" -Verbose
+        Write-Verbose -Message "$Status - $Operation" -Verbose
 
         try {
           if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
@@ -345,26 +360,8 @@ function Connect-Me {
           }
           else {
             if ($PIMavailable) {
-              Write-Host "User does not have permission to manage this tenant. Please activate your Admin Roles in Privileged Identity Management. Trying to activate" -ForegroundColor Red
-              Write-Verbose -Message "Module AzureAdPreview installed. Enabling eligible Admin Roles" -Verbose
-              $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru #-EnableAll (default should only enable the Teams ones? switch?)
-              if ($ActivatedRoles) {
-                try {
-                  if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-                    $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
-                  }
-                  else {
-                    $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
-                  }
-                }
-                catch {
-                  Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!). Exception: $($_.Exception.Message)" -ForegroundColor Red
-                }
-              }
-              else {
-                Write-Host "Could not enable Admin Roles and therefore not establish Connection to SkypeOnline, please enable them manually and try again. Exception: $($_.Exception.Message)" -ForegroundColor Red
-              }
-
+              Write-Host "User does not have permission to manage this tenant. Please activate your Admin Roles in Privileged Identity Management. Trying to activate after connecting to AzureAd" -ForegroundColor Cyan
+              $RetrySkypeConnection = $true
             }
             else {
               Write-Error -Message "User does not have permission to manage this tenant. Module AzureAdPreview is not installed. Please activate your Admin Roles in Privileged Identity Management"
@@ -380,7 +377,7 @@ function Connect-Me {
         $step++
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status to $Operation" -Verbose
+        Write-Verbose -Message "$Status - $Operation" -Verbose
 
         $AzureAdFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
 
@@ -394,10 +391,56 @@ function Connect-Me {
         $step++
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status to $Operation" -Verbose
+        Write-Verbose -Message "$Status - $Operation" -Verbose
 
         $AzureAdFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
 
+      }
+      #endregion
+
+      #region Activating Admin Roles & Re-trying connection to SkypeOnline
+      if ( $PIMavailable ) {
+        $step++
+        $Operation = "Enabling eligible Admin Roles"
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation" -Verbose
+
+        try {
+          $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+        }
+        catch {
+          Write-Verbose -Message "Enable-AzureAdAdminRole: Tenant is not enabled for PIM" -Verbose
+          $PIMavailable = $false
+        }
+
+        if ($ActivatedRoles) {
+          Write-Host "Enable-AzureAdAdminRole - $($ActivatedRoles.Count) Roles activated. Retrying connection to SkypeOnline now." -ForegroundColor Cyan
+          if ($RetrySkypeConnection) {
+            $Service = "SkypeOnline"
+            $step++
+            $Operation = "SkypeOnline - Retrying Connection"
+            Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+            Write-Verbose -Message "$Status - $Operation" -Verbose
+
+            try {
+              if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+                $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+              }
+              else {
+                $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+              }
+            }
+            catch {
+              Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!). Exception: $($_.Exception.Message)" -ForegroundColor Red
+            }
+          }
+        }
+        else {
+          Write-Host "Could not enable Admin Roles and therefore not establish Connection to SkypeOnline, please enable them manually and try again. Exception: $($_.Exception.Message)" -ForegroundColor Red
+        }
+      }
+      else {
+        Write-Verbose -Message "Module AzureAdPreview not installed. Privileged Identity Management functions not available"
       }
       #endregion
 
@@ -410,7 +453,7 @@ function Connect-Me {
         $step++
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status to $Operation" -Verbose
+        Write-Verbose -Message "$Status - $Operation" -Verbose
 
         $AzureAdFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
       }
@@ -418,8 +461,19 @@ function Connect-Me {
 
       #region Activating Admin Roles
       if ( $PIMavailable ) {
-        Write-Verbose -Message "Module AzureAdPreview installed. Enabling eligible Admin Roles" -Verbose
-        $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru #-EnableAll (default should only enable the Teams ones? switch?)
+        $step++
+        $Operation = "Enabling eligible Admin Roles"
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation" -Verbose
+
+        try {
+          $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+          Write-Host "Enable-AzureAdAdminRole - $($ActivatedRoles.Count) Roles activated." -ForegroundColor Cyan
+        }
+        catch {
+          Write-Verbose -Message "Enable-AzureAdAdminRole: Tenant is not enabled for PIM" -Verbose
+          $PIMavailable = $false
+        }
       }
       else {
         Write-Verbose -Message "Module AzureAdPreview not installed. Privileged Identity Management functions not available"
@@ -432,9 +486,9 @@ function Connect-Me {
         $step++
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status to $Operation" -Verbose
+        Write-Verbose -Message "$Status - $Operation" -Verbose
 
-        $AzureAdFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+        $null = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
       }
       #endregion
 
@@ -444,7 +498,7 @@ function Connect-Me {
         $step++
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status to $Operation" -Verbose
+        Write-Verbose -Message "$Status - $Operation" -Verbose
 
         try {
           if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
@@ -455,7 +509,7 @@ function Connect-Me {
           else {
             #This should work without the Username even!
             #$SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
-            $SkypeOnlineFeedback = (Connect-MeToTheO365Service  -Service $Service -ErrorAction STOP)
+            $SkypeOnlineFeedback = (Connect-MeToTheO365Service -Service $Service -ErrorAction STOP)
           }
         }
         catch {
@@ -464,6 +518,7 @@ function Connect-Me {
           }
           else {
             Write-Host "User does not have permission to manage this tenant. Please activate your Admin Roles in Privileged Identity Management" -ForegroundColor Red
+            Write-Verbose "With a connection to AzureAd and the AzureAdPreview Module, Enable-AzureAdAdminRole can help. Otherwise please use the Azure Ad Admin Center" -Verbose
           }
         }
       }
@@ -477,7 +532,7 @@ function Connect-Me {
       $step++
       $Operation = $Service
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status to $Operation" -Verbose
+      Write-Verbose -Message "$Status - $Operation" -Verbose
 
       $ExchangeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
     }
@@ -495,56 +550,44 @@ function Connect-Me {
 
       # Preparing Output Object
       $SessionInfo = [PSCustomObject][ordered]@{
-        Account     = $AccountId
-        Tenant      = ""
-        TenantId    = ""
-        ConnectedTo = @{}
-        AdminRoles  = $ActivatedRoles
-        Environment = ""
+        Account      = $AccountId
+        AdminRoles   = $ActivatedRoles.RoleName -join ', '
+        Tenant       = ""
+        TenantDomain = ""
+        ConnectedTo  = [System.Collections.ArrayList]@()
+        TenantId         = ""
+        AzureEnvironment = ""
+        SkypeEnvironment = ""
       }
 
       #AzureAd SessionInfo
       if ( Test-AzureADConnection ) {
         $SessionInfo.ConnectedTo += "AzureAd"
-        if ( -not $AzureAdFeedback ) {
-          Write-Debug "Running Get-AzureADCurrentSessionInfo"
-          $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-        }
-        else {
-          Write-Debug "AzureAdFeedback was provided through Command!"
-        }
-        #What to add?
-        if ($PSBoundParameters.ContainsKey("Debug")) {
-          "Function: $($MyInvocation.MyCommand.Name): AzureADFeedback:", ($AzureADFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
-        $SessionInfo.Tenant = $AzureAdFeedback.Tenant
+        $AzureAdFeedback = Get-AzureADCurrentSessionInfo
+
+        $SessionInfo.Tenant = $AccountId.split('@')[1]
+        $SessionInfo.TenantDomain = $AzureAdFeedback.TenantDomain
         $SessionInfo.TenantId = $AzureAdFeedback.TenantId
-        #$SessionInfo | Add-Member -MemberType TBA -Name Operator -Value $AzureADFeedback.TBA
+        $SessionInfo.AzureEnvironment = $AzureAdFeedback.Environment
       }
 
       #MicrosoftTeams SessionInfo
       if ( Test-MicrosoftTeamsConnection ) {
         $SessionInfo.ConnectedTo += "MicrosoftTeams"
-        #What to add?
-        if ($PSBoundParameters.ContainsKey("Debug")) {
-          "Function: $($MyInvocation.MyCommand.Name): MicrosoftTeamsFeedback:", ($MicrosoftTeamsFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
-        #$SessionInfo | Add-Member -MemberType TBA -Name Operator -Value $MicrosoftTeamsFeedback.TBA
       }
 
       #SkypeOnline SessionInfo
       if ( Test-SkypeOnlineConnection ) {
         $SessionInfo.ConnectedTo += "SkypeOnline"
-        #What to add?
-        if ($PSBoundParameters.ContainsKey("Debug")) {
-          "Function: $($MyInvocation.MyCommand.Name): SkypeOnlineFeedback:", ($SkypeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
 
+        if ( -not $SessionInfo.TenantDomain ) {
+          $SessionInfo.TenantDomain = $SkypeOnlineFeedback.TenantDomain
+        }
         $SessionInfo.Tenant = $SkypeOnlineFeedback.Tenant
         $SessionInfo.TenantId = $SkypeOnlineFeedback.TenantId
-        $SessionInfo | Add-Member -MemberType Environment -Name Operator -Value $SkypeOnlineFeedback.Environment
-        $SessionInfo | Add-Member -MemberType ComputerName -Name Operator -Value $SkypeOnlineFeedback.ComputerName
-        $SessionInfo | Add-Member -MemberType TeamsUpgradeEffectiveMode -Name Operator -Value $SkypeOnlineFeedback.TeamsUpgradeEffectiveMode
+        $SessionInfo.SkypeEnvironment = $SkypeOnlineFeedback.Environment
+        $SessionInfo | Add-Member -MemberType NoteProperty -Name ComputerName -Value $SkypeOnlineFeedback.ComputerName
+        $SessionInfo | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $SkypeOnlineFeedback.TeamsUpgradeEffectiveMode
       }
 
       #Exchange SessionInfo
@@ -554,12 +597,11 @@ function Connect-Me {
         if ($PSBoundParameters.ContainsKey("Debug")) {
           "Function: $($MyInvocation.MyCommand.Name): ExchangeOnlineFeedback:", ($ExchangeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
-        #$SessionInfo | Add-Member -MemberType TBA -Name Operator -Value $ExchangeOnlineFeedback.TBA
       }
 
 
       #Querying Admin Roles
-      if (-not $SessionInfo.AdminRoles ) {
+      if ( -not $SessionInfo.AdminRoles ) {
         #BODGE Rethink the gathering of Admin Roles - PIM might be faster Function may need to be rewritten
         #AdminRoles is already populated if they have been activated with PIM (though only with eligible ones... not with all!)
         $step++
@@ -567,7 +609,13 @@ function Connect-Me {
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
-        $Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName
+        if ( $AzureAdPreviewModule ) {
+          $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
+        }
+        else {
+          $Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
+
+        }
         $SessionInfo.AdminRoles = $Roles
       }
 
@@ -575,7 +623,7 @@ function Connect-Me {
       Write-Output $SessionInfo
 
 
-      Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | " -ForegroundColor Green -NoNewline
+      Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Ready" -ForegroundColor Green
       Get-RandomQuote
     }
 

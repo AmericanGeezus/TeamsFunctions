@@ -1,5 +1,5 @@
 ﻿# Module:     TeamsFunctions
-# Function:   Lookup
+# Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    01-SEP-2020
 # Status:     Live

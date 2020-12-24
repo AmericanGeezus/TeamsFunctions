@@ -24,7 +24,8 @@ function Assert-AzureADConnection {
   param() #param
 
   begin {
-      $Stack = Get-PSCallStack
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
 
   } #begin
 
@@ -35,11 +36,11 @@ function Assert-AzureADConnection {
       if ($stack.length -lt 3) {
         Write-Verbose -Message "[ASSERT ] AzureAD(v2): Connected"
       }
-      return $true
+      return $(if ($Called) { $true })
     }
     else {
       Write-Host "[ASSERT ] ERROR: You must call the Connect-AzureAD cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
-      return $false
+      return $(if ($Called) { $false })
     }
   } #process
 
