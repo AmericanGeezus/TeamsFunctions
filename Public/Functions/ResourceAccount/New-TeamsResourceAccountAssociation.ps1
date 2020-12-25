@@ -118,7 +118,7 @@ function New-TeamsResourceAccountAssociation {
       }
     }
     if ($EntitySearch.Count -gt 1) {
-      $EntityObject = $EntitySearch | Where-Object Name -eq "$Entity"
+      $EntityObject = $EntitySearch | Where-Object Name -EQ "$Entity"
     }
     else {
       $EntityObject = $EntitySearch
@@ -134,7 +134,7 @@ function New-TeamsResourceAccountAssociation {
       return
     }
     elseif ($EntityObject.GetType().BaseType.Name -eq "Array") {
-      $EntityObject = $EntityObject | Where-Object DisplayName -eq
+      $EntityObject = $EntityObject | Where-Object DisplayName -EQ
 
       Write-Verbose -Message "'$Entity' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons, a unique Name to process." -Verbose
       Write-Verbose -Message "Here are all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!" -Verbose
@@ -176,8 +176,7 @@ function New-TeamsResourceAccountAssociation {
     Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $Counter = 1
-    #CHECK $Accounts.Remove will break foreach! - Need to change Processing to different variable or add only successful accounts to new Variable!
-    # This should fix the issue. The Collection $Accounts is modified throughout and it won't impact the Foreach Loop. Needs testing!
+    # Removing an item from an array that is in a ForEach loop will break the foreach. $Accounts is therefore copied to $AccountsFound for processing
     $AccountsFound = $Accounts
     foreach ($Account in $AccountsFound) {
       $Status = "Processing"
@@ -263,6 +262,8 @@ function New-TeamsResourceAccountAssociation {
       Write-Verbose -Message "Processing assignment of all Accounts to $DesiredType '$($EntityObject.Name)'"
       $Counter = 1
       foreach ($Account in $Accounts) {
+        $ErrorEncountered = $null
+
         $Status = "Assignment"
         $Operation = "'$($Account.UserPrincipalName)'"
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
@@ -278,9 +279,28 @@ function New-TeamsResourceAccountAssociation {
         $Operation = "Assigning to $DesiredType '$($EntityObject.Name)'"
         Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step3 / $sMax3 * 100)
         Write-Verbose -Message "$Status - $Operation"
-        #CHECK Rework to Splatting? Output debug?
+
+        # Creating Splatting Object
+        $Parameters = $null
+        $Parameters += @{ 'Identities' = $Account.ObjectId }
+        $Parameters += @{ 'ConfigurationType' = $DesiredType }
+        $Parameters += @{ 'ConfigurationId' = $EntityObject.Identity }
+        $Parameters += @{ 'ErrorAction' = "Stop" }
+
+        # Create CsAutoAttendantCallableEntity
+        Write-Verbose -Message "[PROCESS] Creating Resource Account Association"
+        if ($PSBoundParameters.ContainsKey('Debug')) {
+          "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
+
         if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", "New-CsOnlineApplicationInstanceAssociation")) {
-          $OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType $DesiredType -ConfigurationId $EntityObject.Identity
+          #$OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType $DesiredType -ConfigurationId $EntityObject.Identity
+          try {
+            $OperationStatus = New-CsOnlineApplicationInstanceAssociation @Parameters
+          }
+          catch {
+            $ErrorEncountered = $_
+          }
         }
 
         # Re-query Association Target
@@ -320,6 +340,10 @@ function New-TeamsResourceAccountAssociation {
         Write-Progress -Id 1 -Status "'$($Account.UserPrincipalName)' - Complete" -Activity $MyInvocation.MyCommand -Completed
 
         Write-Output $ResourceAccountAssociationObject
+
+        if ( $ErrorEncountered ) {
+          Write-Error -Message "Association of Object failed with exception: $($ErrorEncountered.Exception.Message)" -ErrorAction Stop
+        }
       }
     }
 

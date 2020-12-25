@@ -1,11 +1,11 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
+# Updated:  01-JAN-2021
 # Status:   Live
 
 
-#TODO Change UserName to AccountId!
+
 
 function Connect-SkypeOnline {
   <#
@@ -85,7 +85,6 @@ function Connect-SkypeOnline {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
-    #TODO: Rework output to be in line with Connect-MicrosoftTeams, Connect-AzureAd, Connect-ExchangeOnlineManagement!
     #Activate 01-FEB 2021
     #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
@@ -242,6 +241,7 @@ function Connect-SkypeOnline {
         $SkypeOnlineSession = New-CsOnlineSession @Parameters
       }
       catch {
+        #TODO Catch "not allowed for PIM!"
         #CHECK Change error to THROW with custom Exception? Or just catch as is in Connect-Me? (Need 'not allowed' this for PIM activation!)
         Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
       }

@@ -140,21 +140,6 @@ function New-TeamsCallableEntity {
     else {
       if ($CEObject.ObjectType -eq "Unknown") {
         Write-Error -Message "Object could not be determined and Cannot be used!" -ErrorAction Stop
-        <# Code commented out as Choice is not a valid option when calling with another command
-        #TODO Evaluate whether a handling parameter (silent?) can be introduced to error here instead of Giving a choice
-        # Correcting Type if lookup fails
-        $Title = "Type cannot be determined"
-        $Prompt = "If the Object exists, please provide Type"
-        $Choices = [System.Management.Automation.Host.ChoiceDescription[]] @("&User", "&ExternalPstn", "&SharedVoicemail", "&ApplicationEndpoint", "E&xit")
-        $Default = 5
-
-        # Prompt for the choice
-        $Type = $host.UI.PromptForChoice($Title, $Prompt, $Choices, $Default)
-
-        if ($Type -eq "Exit") {
-          return
-        }
-        #>
       }
       else {
         # Determining Type

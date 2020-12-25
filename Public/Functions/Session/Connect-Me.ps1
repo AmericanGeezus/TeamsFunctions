@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
 # Author:		David Eberhardt
-# Updated:  01-DEC-2020
+# Updated:  01-JAN-2021
 # Status:   Live
 
 
@@ -323,8 +323,6 @@ function Connect-Me {
       Write-Warning -Message "Command '$Command' not available. Privileged Identity Management functions cannot be executed"
       Write-Verbose -Message "AzureAd & MicrosoftTeams: Establishing a connection will work, though only GET-commands will be able to be executed" -Verbose
       Write-Verbose -Message "SkypeOnline: Establishing a connection will fail if the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated" -Verbose
-      #CHECK what is required for Connection to Exchange?
-      #Write-Verbose -Message "Exchange: Establishing a connection will fail if the '?' ('? Administrator' in the Admin Center) role is not activated" -Verbose
     }
     #endregion
 
@@ -385,7 +383,6 @@ function Connect-Me {
       #endregion
 
       #region MicrosoftTeams
-      #TODO Rework/Remove: Not required if connection to Skype is established with New-CsOnlineSession with MicrosoftTeams.
       if ($ConnectToTeams -or $PSBoundParameters.ContainsKey('MicrosoftTeams')) {
         $Service = "MicrosoftTeams"
         $step++
@@ -602,8 +599,7 @@ function Connect-Me {
 
       #Querying Admin Roles
       if ( -not $SessionInfo.AdminRoles ) {
-        #BODGE Rethink the gathering of Admin Roles - PIM might be faster Function may need to be rewritten
-        #AdminRoles is already populated if they have been activated with PIM (though only with eligible ones... not with all!)
+        #AdminRoles is already populated if they have been activated with PIM (though only with eligible ones) this overwrites the previous set of roles
         $step++
         $Operation = "Querying assigned Admin Roles"
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)

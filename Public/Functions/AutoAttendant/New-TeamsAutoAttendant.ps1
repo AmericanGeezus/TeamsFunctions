@@ -737,7 +737,7 @@ function New-TeamsAutoAttendant {
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
 
-      #TODO When building out Holiday Set (IF!) this needs to be array-proof (see processing of CallFlows Objects for code samples)
+      #TODO when HolidaySet is added, this needs to be array-proof (see processing of CallFlows Objects for code samples)
       #$AfterHoursCallHandlingAssociationParams.CallFlowId = $AfterHoursCallFlow.Id # This works, but want to try whether arraying works too
       $AfterHoursCallHandlingAssociationParams.CallFlowId += $AfterHoursCallFlow.Id
       #endregion

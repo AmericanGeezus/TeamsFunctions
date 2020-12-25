@@ -2,7 +2,7 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    01-SEP-2020
-# Status:     Live
+# Status:     Deprecated
 
 
 
@@ -46,7 +46,8 @@ function Get-AzureAdAssignedAdminRoles {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level Deprecated
+    Write-Verbose -Message "Please use 'Get-AzureAdAdminRole' instead" -Verbose
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

@@ -2,13 +2,22 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v20.12.27 pre-release
+## v20.12.27 pre-release - TBA
 
 ### New
 
+- `Get-AzureAdAdminRole`: New script to find active or eligible Admin Roles for one or more users. <br \>NOTE: `Get-AzureAdAssignedAdminRoles` is now deprecated due to performance
 
 ### Updated
 
+- `Enable-AzureAdAdminRole`:
+  - Prepared to incorporate Privileged Admin Groups (this is in the code, but deactivated for now as no exact match could be found due to lacking Documentation)
+  - Added Force and Confirm to enable all Roles and confirm activation of individual Roles respectively.
+- `Connect-Me`: Complete overhaul
+  - Integrated use of Module MicrosoftTeams (replacing SkypeOnlineConverter in FEB 2021). Connection can be made with either module present.<br />NOTE: If connected to multiple tenants, a dialog is shown to select the Account when connecting to SkypeOnline when using the MicrosoftTeams Module. There is no way this can be prevented currently.
+  - Integrated Privileged Identity Management Role activation with `Enable-AzureAdAdminRole` (used only if Module AzureAdPreview is available PIM is used! )
+  - Integrated `Get-AzureAdAdminRole` to query Admin Roles faster
+- `New-TeamsResourceAccountAssociation`: Added Parameter splatting, debug output and proper error handling for Association command.
 - `Set-TeamsCallQueue`:
   - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
   - TBD: This needs to be reworked for Set and New to query the callable entity and improve checks
@@ -30,9 +39,6 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- `Connect-Me`:
-  - TBD: Reworked to integrate PIM activation with -ActivateAdminRoles (-PIM)
-  - Updated query of Admin Roles
 - `Connect-SkypeOnline`:
   - Reworked Completely to support Module MicrosoftTeams or SkypeOnlineConnector
   - Support for SkypeOnlineConnector in v6 or lower has been dropped
