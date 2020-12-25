@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#CHECK Activation of Roles via PIM / reconnect Skype if it failed before?
+
 
 
 function Connect-Me {
@@ -38,7 +38,7 @@ function Connect-Me {
 		Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
     NOTE: The OverrideAdminDomain is handled by Connect-SkypeOnline (prompts if no connection can be established)
     Using the Parameter here is using it explicitly
-	.PARAMETER Silent
+	.PARAMETER NoFeedback
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
 		Connect-Me admin@domain.com
@@ -213,7 +213,6 @@ function Connect-Me {
       $ConnectDefault = $false
     }
     else {
-
       #Write-Host "No Parameters for individual Services provided. Connecting to SkypeOnline and AzureAD (default)" -ForegroundColor Cyan
       $ConnectDefault = $true
       $sMax = $sMax + 2
@@ -225,6 +224,7 @@ function Connect-Me {
     }
 
     if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+      #$ConnectToTeams is set once $CsOnlineUsername is determined
       $sMax++
     }
 
@@ -306,7 +306,7 @@ function Connect-Me {
     try {
       $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
       $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
-      if ( $CsOnlineUsername ) { $sMax++ }
+      if ( $CsOnlineUsername ) { $sMax++ } else { $ConnectToTeams = $true }
     }
     catch {
       Write-Error -Message "Command '$Command' not available. Please validate Modules MicrosoftTeams or SkypeOnlineConnector" -Category ObjectNotFound -ErrorAction Stop
@@ -386,7 +386,7 @@ function Connect-Me {
 
       #region MicrosoftTeams
       #TODO Rework/Remove: Not required if connection to Skype is established with New-CsOnlineSession with MicrosoftTeams.
-      if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+      if ($ConnectToTeams -or $PSBoundParameters.ContainsKey('MicrosoftTeams')) {
         $Service = "MicrosoftTeams"
         $step++
         $Operation = $Service
@@ -481,7 +481,7 @@ function Connect-Me {
       #endregion
 
       #region MicrosoftTeams
-      if ($PSBoundParameters.ContainsKey('MicrosoftTeams')) {
+      if ($ConnectToTeams -or $PSBoundParameters.ContainsKey('MicrosoftTeams')) {
         $Service = "MicrosoftTeams"
         $step++
         $Operation = $Service
