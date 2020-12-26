@@ -33,12 +33,12 @@ function Assert-MicrosoftTeamsConnection {
 
     if (Test-MicrosoftTeamsConnection) {
       if ($stack.length -lt 3) {
-        Write-Verbose -Message "[ASSERT ] MicrosoftTeams: Connected"
+        Write-Verbose -Message "[ASSERT] MicrosoftTeams: Connected"
       }
       return $(if ($Called) { $true })
     }
     else {
-      Write-Host "[ASSERT ] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
+      Write-Host "[ASSERT] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
       return $(if ($Called) { $false })
     }
 

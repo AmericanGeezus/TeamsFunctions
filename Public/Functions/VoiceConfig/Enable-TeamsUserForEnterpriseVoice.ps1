@@ -48,6 +48,7 @@ function Enable-TeamsUserForEnterpriseVoice {
   process {
     #TODO Check whether Get-TeamsUserVoiceConfig can be used here (performance!) or Get-TeamsUserLicense to
     #TODO Error on not-licensed!
+    #CHECK how to catch Resource Accounts
     $UserObject = Get-CsOnlineUser $Identity -WarningAction SilentlyContinue
     $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
     if ($IsEVenabled) {

@@ -17,22 +17,29 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Integrated use of Module MicrosoftTeams (replacing SkypeOnlineConverter in FEB 2021). Connection can be made with either module present.<br />NOTE: If connected to multiple tenants, a dialog is shown to select the Account when connecting to SkypeOnline when using the MicrosoftTeams Module. There is no way this can be prevented currently.
   - Integrated Privileged Identity Management Role activation with `Enable-AzureAdAdminRole` (used only if Module AzureAdPreview is available PIM is used! )
   - Integrated `Get-AzureAdAdminRole` to query Admin Roles faster
+  - Improved feedback by catching all output and displaying custom object at the end when Parameter `NoFeedback` is not chosen.
+- `Connect-SkypeOnline`:
+  - Update to support Module MicrosoftTeams (no Username)
+  - Added Custom output object in line with Connect-AzureAd and Connect-MicrosoftTeams
+- `Assert-TeamsCallableEntity`: Minor improvements
+- `Get-TeamsCallableEntity`: Minor improvements
 - `New-TeamsResourceAccountAssociation`: Added Parameter splatting, debug output and proper error handling for Association command.
+- `New-TeamsCallQueue`:
+  - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
+  - Reworked OverflowAction Forward: OverflowActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked TimeoutAction Forward: TimeoutActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked Users - Integrated `Assert-TeamsCallableEntity`
 - `Set-TeamsCallQueue`:
   - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
-  - TBD: This needs to be reworked for Set and New to query the callable entity and improve checks
-  - Needs rework: OAT: Forward (Tel, User, VoiceApp) / Voicemail (User Only) / SharedVoicemail (Groups only)
-  - Needs rework: TAT: Forward (Tel, User, VoiceApp) / Voicemail (User Only) / SharedVoicemail (Groups only)
-  - Needs rework: Users: User only
-  - Needs rework: Groups Groups only
-  - Needs rework: Same for NEW
-  - Needs rework: Type can be removed then.
+  - Reworked OverflowAction Forward: OverflowActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked TimeoutAction Forward: TimeoutActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked Users - Integrated `Assert-TeamsCallableEntity`
 
 ## v20.12.20 pre-release
 
 ### New
 
-- `Enable-AzureAdAdminRole.ps1`:
+- `Enable-AzureAdAdminRole`:
   - New script to Enable Assigned Admin roles. Requires Module AzureAdPreview.
   - Script in BETA still, though works with direct assignments already. Needs testing.
   - ToDo: Privileged Admin Groups need to be added/supported as well

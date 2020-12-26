@@ -51,34 +51,31 @@ function Assert-TeamsCallableEntity {
           Write-Verbose -Message "User '$Identity' found and licensed and enabled for EnterpriseVoice" -Verbose
           return $Object
         }
-        elseif ( $(Enable-TeamsUserForEnterpriseVoice -Identity $Identity.UserPrincipalName -Force) ) {
+        elseif ( $(Enable-TeamsUserForEnterpriseVoice -Identity $Object.UserPrincipalName -Force) ) {
           Write-Verbose -Message "User '$Identity' found and licensed and successfully enabled for EnterpriseVoice" -Verbose
+          $Object.EnterpriseVoiceEnabled -eq $true
           return $Object
         }
         else {
-          if ( $Called ) {
-            Write-Warning -Message "User '$Identity' found and licensed, but not enabled for EnterpriseVoice!"
-            return
-          }
-          else {
+          if ( -not $Called ) {
             Write-Error -Message "User '$Identity' found and licensed, but not enabled for EnterpriseVoice!" -Category InvalidResult -ErrorAction Stop
           }
+          return
         }
 
       }
       else {
-        Write-Warning -Message "User '$Identity' found but not licensed (PhoneSystem)" -Verbose
+        if ( -not $Called ) {
+          Write-Warning -Message "User '$Identity' found but not licensed (PhoneSystem)" -Verbose
+        }
         return
       }
     }
     catch {
-      if ( $Called ) {
-        Write-Warning -Message "User '$Identity' not found" -Verbose
-        return
-      }
-      else {
+      if ( -not $Called ) {
         Write-Error -Message "User '$Identity' not found" -Category ObjectNotFound -ErrorAction Stop
       }
+      return
     }
 
   } #process

@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   RC
 
-#TODO Add validation for Extensions / check if Extension is already assigned with Find-TeamsUVC + .Split(';ext=')[1]
+
 
 
 function Set-TeamsUserVoiceConfig {

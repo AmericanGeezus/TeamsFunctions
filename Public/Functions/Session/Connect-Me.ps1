@@ -112,8 +112,10 @@ function Connect-Me {
     [int]$step = 0
     [int]$sMax = 2
 
+
     #region Functions
     function Connect-MeToTheO365Service {
+      [CmdletBinding()]
       param (
         [ValidateSet('AzureAd', 'MicrosoftTeams', 'SkypeOnline', 'ExchangeOnlineManagement')]
         [string]$Service,
@@ -124,6 +126,7 @@ function Connect-Me {
       )
 
       begin {
+        # Modules
         try {
           if ( $Service -eq "SkypeOnline") {
             if ( Test-Module MicrosoftTeams ) {
@@ -146,15 +149,22 @@ function Connect-Me {
           throw "$Service - Error importing Module: $($_.Exception.Message)"
         }
 
-
         # preparing Splatting Object
         $ConnectionParameters = $null
         $ConnectionParameters += @{'ErrorAction' = 'STOP' }
         $ConnectionParameters += @{'WarningAction' = 'Continue' }
 
+        if ($PSBoundParameters.ContainsKey('Verbose')) {
+          $ConnectionParameters += @{ 'Verbose' = $true }
+        }
+        if ($PSBoundParameters.ContainsKey('Debug')) {
+          $ConnectionParameters += @{ 'Debug' = $true }
+        }
+
       }
       process {
         try {
+          $ServiceConnected = $null
           $ServiceConnected = switch ($Service) {
             'AzureAd' { Test-AzureAdConnection }
             'MicrosoftTeams' { Test-MicrosoftTeamsConnection }
@@ -178,13 +188,22 @@ function Connect-Me {
             }
 
             # DEBUG Information
-            if ($PSBoundParameters.ContainsKey("Debug")) {
+            if ( $DisplayDebug ) {
               "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($ConnectionParameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
 
+            $ConnectionFeedback = $null
             $ConnectionFeedback = switch ($Service) {
               'AzureAd' { Connect-AzureAD @ConnectionParameters }
-              'MicrosoftTeams' { Connect-MicrosoftTeams @ConnectionParameters }
+              'MicrosoftTeams' {
+                try {
+                  Connect-MicrosoftTeams @ConnectionParameters
+                }
+                catch {
+                  [void]$ConnectionParameters.Remove('AccountId')
+                  Connect-MicrosoftTeams @ConnectionParameters
+                }
+              }
               'SkypeOnline' { Connect-SkypeOnline @ConnectionParameters }
               'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }
             }
@@ -192,7 +211,7 @@ function Connect-Me {
             return $ConnectionFeedback
           }
           else {
-            Write-Verbose -Message "$Service - Connection already established. If reconnect is desired, please disconnect this seesion first!" -Verbose
+            Write-Warning -Message "$Service - Connection already established. If reconnect is desired, please disconnect this seesion first!"
           }
         }
         catch {
@@ -205,6 +224,14 @@ function Connect-Me {
       }
     }
     #endregion
+
+    #region Preparation
+    # Cleaning up existing sessions
+    $Status = "Preparation"
+    $Operation = "Verifying Parameters"
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    #$null = (Disconnect-Me -ErrorAction SilentlyContinue)
 
     #region Parameter validation
     # Preparing variables
@@ -242,20 +269,11 @@ function Connect-Me {
     }
     #endregion
 
-
-    #region Preparation
-    # Cleaning up existing sessions
-    $Status = "Preparation"
-    $Operation = "Cleaning up existing Sessions"
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation" -Verbose
-    $null = (Disconnect-Me -ErrorAction SilentlyContinue)
-
     #Loading Modules
     $Operation = "Loading Modules"
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation" -Verbose
+    Write-Verbose -Message "$Status - $Operation"
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
     if ( $AzureAdModule -and -not $AzureAdPreviewModule ) {
       Import-Module AzureAd -Force -ErrorAction SilentlyContinue
@@ -268,7 +286,7 @@ function Connect-Me {
     $Operation = "Determining Capabilities"
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation" -Verbose
+    Write-Verbose -Message "$Status - $Operation"
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
       Write-Verbose -Message "Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
@@ -326,6 +344,18 @@ function Connect-Me {
     }
     #endregion
 
+    $MeToTheO365ServiceParams = $null
+    $MeToTheO365ServiceParams += @{ 'AccountId' = $AccountId }
+    $MeToTheO365ServiceParams += @{ 'Service' = "" }
+    $MeToTheO365ServiceParams += @{ 'ErrorAction' = "Stop" }
+
+    if ($PSBoundParameters.ContainsKey('Verbose')) {
+      $MeToTheO365ServiceParams += @{ 'Verbose' = $true }
+    }
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      $MeToTheO365ServiceParams += @{ 'Debug' = $true }
+    }
+
   } #begin
 
   process {
@@ -345,11 +375,12 @@ function Connect-Me {
         Write-Verbose -Message "$Status - $Operation" -Verbose
 
         try {
+          $MeToTheO365ServiceParams.Service = $Service
           if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-            $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+            $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
           }
           else {
-            $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+            $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
           }
         }
         catch {
@@ -376,8 +407,8 @@ function Connect-Me {
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation" -Verbose
-
-        $AzureAdFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+        $MeToTheO365ServiceParams.Service = $Service
+        $AzureAdFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
 
       }
       #endregion
@@ -389,14 +420,14 @@ function Connect-Me {
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation" -Verbose
-
-        $AzureAdFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+        $MeToTheO365ServiceParams.Service = $Service
+        $MicrosoftTeamsFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
 
       }
       #endregion
 
       #region Activating Admin Roles & Re-trying connection to SkypeOnline
-      if ( $PIMavailable ) {
+      if ( $PIMavailable -and $(Test-AzureAdConnection)) {
         $step++
         $Operation = "Enabling eligible Admin Roles"
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -406,25 +437,31 @@ function Connect-Me {
           $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
         }
         catch {
-          Write-Verbose -Message "Enable-AzureAdAdminRole: Tenant is not enabled for PIM" -Verbose
+          if ($_.ErrorRecord.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
+            Write-Verbose -Message "Enable-AzureAdAdminrole - Tenant is not enabled for PIM" -Verbose
+          }
+          else {
+            Write-Error -Message "$_"
+          }
           $PIMavailable = $false
         }
 
         if ($ActivatedRoles) {
-          Write-Host "Enable-AzureAdAdminRole - $($ActivatedRoles.Count) Roles activated. Retrying connection to SkypeOnline now." -ForegroundColor Cyan
+          Write-Host "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Retrying connection to SkypeOnline now." -ForegroundColor Cyan
           if ($RetrySkypeConnection) {
             $Service = "SkypeOnline"
             $step++
             $Operation = "SkypeOnline - Retrying Connection"
             Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message "$Status - $Operation" -Verbose
+            Write-Verbose -Message "$Status - $Operation"
 
             try {
+              $MeToTheO365ServiceParams.Service = $Service
               if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-                $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+                $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
               }
               else {
-                $SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+                $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
               }
             }
             catch {
@@ -451,13 +488,13 @@ function Connect-Me {
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation" -Verbose
-
-        $AzureAdFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+        $MeToTheO365ServiceParams.Service = $Service
+        $AzureAdFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
       }
       #endregion
 
       #region Activating Admin Roles
-      if ( $PIMavailable ) {
+      if ( $PIMavailable -and $(Test-AzureAdConnection) ) {
         $step++
         $Operation = "Enabling eligible Admin Roles"
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -465,15 +502,15 @@ function Connect-Me {
 
         try {
           $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-          Write-Verbose "Enable-AzureAdAdminRole - $($ActivatedRoles.Count) Roles activated." -Verbose
+          Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
         }
         catch {
-          Write-Verbose -Message "Enable-AzureAdAdminRole: Tenant is not enabled for PIM" -Verbose
+          Write-Verbose -Message "Enable-AzureAdAdminrole - Tenant is not enabled for PIM" -Verbose
           $PIMavailable = $false
         }
       }
       else {
-        Write-Verbose -Message "Module AzureAdPreview not installed. Privileged Identity Management functions not available"
+        Write-Verbose -Message "Enable-AzureAdAdminrole - Module AzureAdPreview not installed. Privileged Identity Management functions not available"
       }
       #endregion
 
@@ -484,8 +521,8 @@ function Connect-Me {
         $Operation = $Service
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation" -Verbose
-
-        $null = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
+        $MeToTheO365ServiceParams.Service = $Service
+        $MicrosoftTeamsFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
       }
       #endregion
 
@@ -498,15 +535,13 @@ function Connect-Me {
         Write-Verbose -Message "$Status - $Operation" -Verbose
 
         try {
+          #This should work without the Username even!
+          $MeToTheO365ServiceParams.Service = $Service
           if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-            #This should work without the Username even!
-            #$SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
-            $SkypeOnlineFeedback = (Connect-MeToTheO365Service -Service $Service -OverrideAdminDomain $OverrideAdminDomain -ErrorAction STOP)
+            $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
           }
           else {
-            #This should work without the Username even!
-            #$SkypeOnlineFeedback = (Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction STOP)
-            $SkypeOnlineFeedback = (Connect-MeToTheO365Service -Service $Service -ErrorAction STOP)
+            $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
           }
         }
         catch {
@@ -543,16 +578,16 @@ function Connect-Me {
       $step++
       $Operation = "Querying information about established sessions"
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
+      Write-Verbose -Message "$Status - $Operation" -Verbose
 
       # Preparing Output Object
       $SessionInfo = [PSCustomObject][ordered]@{
-        Account      = $AccountId
-        AdminRoles   = $ActivatedRoles.RoleName -join ', '
-        Tenant       = ""
-        TenantDomain = ""
-        ConnectedTo  = [System.Collections.ArrayList]@()
+        Account          = $AccountId
+        AdminRoles       = $ActivatedRoles.RoleName -join ', '
+        Tenant           = ""
+        TenantDomain     = ""
         TenantId         = ""
+        ConnectedTo      = [System.Collections.ArrayList]@()
         AzureEnvironment = ""
         SkypeEnvironment = ""
       }
@@ -571,6 +606,8 @@ function Connect-Me {
       #MicrosoftTeams SessionInfo
       if ( Test-MicrosoftTeamsConnection ) {
         $SessionInfo.ConnectedTo += "MicrosoftTeams"
+        $SessionInfo.Tenant = $MicrosoftTeamsFeedback.Tenant
+        $SessionInfo.TenantId = $MicrosoftTeamsFeedback.TenantId
       }
 
       #SkypeOnline SessionInfo
@@ -603,16 +640,18 @@ function Connect-Me {
         $step++
         $Operation = "Querying assigned Admin Roles"
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
+        Write-Verbose -Message "$Status - $Operation" -Verbose
 
-        if ( $AzureAdPreviewModule ) {
-          $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
-        }
-        else {
-          $Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
+        if ( Test-AzureADConnection) {
+          if ( $AzureAdPreviewModule ) {
+            $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account).RoleName -join ', '
+          }
+          else {
+            $Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
 
+          }
+          $SessionInfo.AdminRoles = $Roles
         }
-        $SessionInfo.AdminRoles = $Roles
       }
 
       #Output

@@ -40,12 +40,12 @@ function Assert-SkypeOnlineConnection {
       else {
         try {
           $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
-          Write-Verbose -Message "[ASSERT ] SkypeOnline: Connected (and session is valid)"
+          Write-Verbose -Message "[ASSERT] SkypeOnline: Connected (and session is valid)"
           return
         }
         catch {
-          Write-Host "[ASSERT ] ERROR: Session is available, but timed out. Please disconnect and create a new session with Connect-SkypeOnline or Connect-Me." -ForegroundColor Red
-          Write-Verbose "[ASSERT ] INFO:  Connect-Me can be used to disconnect, then connect to multiple Services at once (SkypeOnline, AzureAD & MicrosoftTeams)!"
+          Write-Host "[ASSERT] ERROR: Session is available, but timed out. Please disconnect and create a new session with Connect-SkypeOnline or Connect-Me." -ForegroundColor Red
+          Write-Verbose "[ASSERT] INFO:  Connect-Me can be used to disconnect, then connect to multiple Services at once (SkypeOnline, AzureAD & MicrosoftTeams)!"
           return
         }
       }
@@ -54,20 +54,20 @@ function Assert-SkypeOnlineConnection {
       $Sessions = Get-PSSession -WarningAction SilentlyContinue
       $SkypeSession = $Sessions | Where-Object { $_.Computername -match "online.lync.com" }
       if ( $SkypeSession ) {
-        Write-Verbose "[ASSERT ] SkypeOnline: Session found. Trying to reconnect... (authentication required)" -Verbose
+        Write-Verbose "[ASSERT] SkypeOnline: Session found. Trying to reconnect... (authentication required)" -Verbose
         try {
           $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
           return $(if ($Called) { $true })
         }
         catch {
-          Write-Host "[ASSERT ] ERROR: Reconnect unsuccessful. Please disconnect and create a new session with Connect-SkypeOnline or Connect-Me." -ForegroundColor Red
+          Write-Host "[ASSERT] ERROR: Reconnect unsuccessful. Please disconnect and create a new session with Connect-SkypeOnline or Connect-Me." -ForegroundColor Red
           return $(if ($Called) { $false })
         }
       }
       else {
         $TeamsSession = $Sessions | Where-Object { $_.Computername -eq "api.interfaces.records.teams.microsoft.com" }
         if ( $TeamsSession ) {
-          Write-Verbose "[ASSERT ] SkypeOnline: Session found. Trying to reconnect... (authentication required)" -Verbose
+          Write-Verbose "[ASSERT] SkypeOnline: Session found. Trying to reconnect... (authentication required)" -Verbose
           $Connection = Connect-SkypeOnline
           if ( Test-SkypeOnlineConnection ) {
             return $(if ($Called) { $true } else { $Connection })
@@ -77,7 +77,7 @@ function Assert-SkypeOnlineConnection {
           }
         }
         else {
-          Write-Host "[ASSERT ] ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
+          Write-Host "[ASSERT] ERROR: You must call the Connect-SkypeOnline cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
           return $(if ($Called) { $false })
         }
       }

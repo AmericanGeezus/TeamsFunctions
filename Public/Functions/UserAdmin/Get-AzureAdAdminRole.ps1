@@ -2,7 +2,7 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    01-SEP-2020
-# Status:     Live
+# Status:     PreLive
 
 
 #TODO Add Eligible Groups
@@ -54,7 +54,7 @@ function Get-AzureAdAdminRole {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -73,10 +73,12 @@ function Get-AzureAdAdminRole {
       # Importing all Roles
       Write-Verbose -Message "Querying Azure Privileged Role Definitions"
       try {
+        $ProviderId = "aadRoles"
+        $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
         $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId -ErrorAction Stop
       }
       catch {
-        if ("The tenant needs an AAD Premium 2 license" -in $_.Exception.Message) {
+        if ($_.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
           Write-Error -Message "Cannot query role definitions. AzureAd Premium License Required" -ErrorAction Stop
         }
         else {
@@ -124,9 +126,6 @@ function Get-AzureAdAdminRole {
         }
         "Eligible" {
           $SubjectId = $AzureAdUser.ObjectId
-          $ProviderId = "aadRoles"
-          $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
-
           $MyPrivilegedRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
 
 

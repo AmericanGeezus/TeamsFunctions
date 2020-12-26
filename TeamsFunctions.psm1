@@ -71,7 +71,6 @@ class TFTeamsServicePlan {
   }
 }
 
-
 class TFTeamsLicense {
   [string]$ProductName
   [string]$SkuPartNumber

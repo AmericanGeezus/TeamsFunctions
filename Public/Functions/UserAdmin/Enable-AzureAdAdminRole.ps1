@@ -2,7 +2,7 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    20-DEC-2020
-# Status:     Beta
+# Status:     RC
 
 
 #TODO: Privileged Admin Groups buildout
@@ -104,7 +104,7 @@ function Enable-AzureAdAdminRole {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -154,7 +154,7 @@ function Enable-AzureAdAdminRole {
       $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId -ErrorAction Stop
     }
     catch {
-      if ("The tenant needs an AAD Premium 2 license" -in $_.Exception.Message) {
+      if ($_.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
         Write-Error -Message "Cannot query role definitions. AzureAd Premium License Required" -ErrorAction Stop
       }
       else {

@@ -91,6 +91,11 @@ function Connect-SkypeOnline {
     # Required as Warnings on the OriginalRegistrarPool may halt Script execution
     $WarningPreference = "Continue"
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+
     $Parameters = $null
     $Parameters += @{'ErrorAction' = 'STOP' }
     $Parameters += @{'WarningAction' = 'Continue' }
@@ -180,15 +185,15 @@ function Connect-SkypeOnline {
     # UserName
     if ($CsOnlineUsername) {
       if ( $AccountId) {
-        Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Using '$AccountId'" -Verbose
+        Write-Verbose -Message "Connection Command supports 'Username'. Using '$AccountId'" -Verbose
       }
       else {
         if (Test-AzureADConnection) {
           $AccountId = (Get-AzureADCurrentSessionInfo).Account
-          Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Using '$AccountId' (connected to AzureAd)" -Verbose
+          Write-Verbose -Message "Connection Command supports 'Username'. Using '$AccountId' (connected to AzureAd)" -Verbose
         }
         else {
-          Write-Verbose -Message "Module SkypeOnlineConnector supports 'Username'. Please provide Username" -Verbose
+          Write-Verbose -Message "Connection Command supports 'Username'. Please provide Username" -Verbose
           $AccountId = Read-Host "Enter the sign-in address of a Skype for Business Admin"
         }
       }
@@ -196,7 +201,7 @@ function Connect-SkypeOnline {
     }
     else {
       if ($AccountId) {
-        Write-Verbose -Message "Module SkypeOnlineConnector does not support 'Username'. To be able to support MFA, it will not be passed as a Credential. Please select Account manually" -Verbose
+        Write-Verbose -Message "Connection Command does not support 'Username'. To be able to support MFA, it will not be passed on. Please select Account manually" -Verbose
       }
     }
 
@@ -241,7 +246,6 @@ function Connect-SkypeOnline {
         $SkypeOnlineSession = New-CsOnlineSession @Parameters
       }
       catch {
-        #TODO Catch "not allowed for PIM!"
         #CHECK Change error to THROW with custom Exception? Or just catch as is in Connect-Me? (Need 'not allowed' this for PIM activation!)
         Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
       }
