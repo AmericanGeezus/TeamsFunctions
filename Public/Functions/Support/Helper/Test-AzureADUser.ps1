@@ -7,7 +7,7 @@
 
 
 
-function Test-AzureADUser {
+function Test-AzureAdUser {
   <#
 	.SYNOPSIS
 		Tests whether a User exists in Azure AD (record found)
@@ -68,4 +68,4 @@ function Test-AzureADUser {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Test-AzureADUser
+} #Test-AzureAdUser

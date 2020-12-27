@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   BETA
+# Status:   RC
 
 
 
@@ -227,7 +227,7 @@ function New-TeamsAutoAttendant {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

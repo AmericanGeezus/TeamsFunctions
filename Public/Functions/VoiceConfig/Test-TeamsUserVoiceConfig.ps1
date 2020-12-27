@@ -2,7 +2,7 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   BETA
+# Status:   RC
 
 
 
@@ -72,7 +72,7 @@ function Test-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

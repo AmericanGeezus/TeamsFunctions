@@ -50,7 +50,7 @@ function Get-TeamsTDP {
       $Plans = Get-CsTenantDialPlan -WarningAction SilentlyContinue
       $Filtered = $Plans | Where-Object Identity -Like "*$Identity*"
       if ( $Filtered.Count -gt 2) {
-        $Filtered.Identity
+        $Filtered | Select-Object Identity
       }
       else {
         $Filtered

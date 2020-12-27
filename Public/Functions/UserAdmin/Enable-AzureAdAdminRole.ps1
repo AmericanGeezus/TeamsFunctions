@@ -60,6 +60,8 @@ function Enable-AzureAdAdminRole {
     Currently no way to trigger it via PowerShell. If the activation fails, please sign into Office.com
     Once Authorised, this command can be used to activate your eligible Admin Roles.
     AzureResources provider activation is not yet tested.
+
+    Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1
   .COMPONENT
     UserAdmin
   .ROLE
