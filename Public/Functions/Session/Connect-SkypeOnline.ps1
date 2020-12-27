@@ -246,13 +246,23 @@ function Connect-SkypeOnline {
         $SkypeOnlineSession = New-CsOnlineSession @Parameters
       }
       catch {
-        #CHECK Change error to THROW with custom Exception? Or just catch as is in Connect-Me? (Need 'not allowed' this for PIM activation!)
-        Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
+        #Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
+        if ( $_.Exception.Message.Contains('not allowed to manage')) {
+          throw [System.Management.Automation.SessionStateUnauthorizedAccessException]::New("Session creation failed: $($_.Exception.Message)")
+        }
+        else {
+          throw [System.Management.Automation.SessionStateException]::New("Session creation failed: $($_.Exception.Message)")
+        }
       }
     }
     catch {
-      #CHECK Change error to THROW with custom Exception? Or just catch as is in Connect-Me? (Need 'not allowed' this for PIM activation!)
-      Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
+      #Write-Error -Message "Session creation failed: $($_.Exception.Message)" -Category NotEnabled -RecommendedAction "Please verify input, especially Password, OverrideAdminDomain and, if activated, Azure AD Privileged Identity Management Role activation"
+      if ( $_.Exception.Message.Contains('not allowed to manage')) {
+        throw [System.Management.Automation.SessionStateUnauthorizedAccessException]::New("Session creation failed: $($_.Exception.Message)")
+      }
+      else {
+        throw [System.Management.Automation.SessionStateException]::New("Session creation failed: $($_.Exception.Message)")
+      }
     }
 
     if ( $SkypeOnlineSession ) {

@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-#TODO Add Call Stack - do not display progress bars if called through stack?
+
 
 function Get-TeamsUserVoiceConfig {
   <#
