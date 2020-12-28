@@ -7,8 +7,8 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ### Component Status
 
-- Function Status: 81 Public CmdLets, 6 private CmdLets, 39 Live, 24 PreLive and  10 RC
-- Development Status: 0 in Beta, 5 in Alpha; 6 Unmanaged and 3 Deprecated
+- Function Status: 82 Public CmdLets, 6 private CmdLets, 39 Live, 24 PreLive and  10 RC
+- Development Status: 1 in Beta, 5 in Alpha; 6 Unmanaged and 3 Deprecated
 - Pester Test Status: Tests Passed: 1011, Failed: 0, Skipped: 0 NotRun: 0
 - `TeamsAutoAttendant` Scripts have advanced to RC status.
 - `TeamsCallableEntity` Scripts have been improved upon (GET, FIND, NEW and ASSERT)
@@ -55,6 +55,7 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
   - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
   - `New-TeamsAutoAttendantCallHandlingAssociations` is an Alias to complete the set, but a standalone function was not required.
 - **Voice Functions Lookup Suite** has been extended and updated to display names only  (if more than 2 have been found)
+  - `Find-TeamsUserVoiceRoute`: Finding the route a call takes for a User
   - `Get-TeamsTDP`: Now displays all Identities or max two full Objects
   - `Get-TeamsVNR`: (Get-CsTenantDialPlan $TDP).NormalizationRules, but easier
   - `Get-TeamsOVP`: Now displays all Identities or max two full Objects
