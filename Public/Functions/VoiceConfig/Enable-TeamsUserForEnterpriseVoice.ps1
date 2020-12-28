@@ -4,7 +4,7 @@
 # Updated:    01-DEC-2020
 # Status:     PreLive
 
-#TODO Add Stack - Write direct output when called directly, otherwise verbose
+
 
 
 function Enable-TeamsUserForEnterpriseVoice {
@@ -21,16 +21,17 @@ function Enable-TeamsUserForEnterpriseVoice {
     Enable-TeamsUserForEnterpriseVoice John@domain.com
     Enables John for Enterprise Voice
   .NOTES
-		Simple helper function to enable and verify a User is enabled for Enterprise Voice
+    Simple helper function to enable and verify a User is enabled for Enterprise Voice
+    Returns boolean result and less communication if called by another function
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('Enable-Ev')]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0)]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [Alias('UserPrincipalName')]
-    [string]$Identity,
+    [string[]]$Identity,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force
@@ -43,57 +44,109 @@ function Enable-TeamsUserForEnterpriseVoice {
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
+
   } #begin
 
   process {
-    #TODO Check whether Get-TeamsUserVoiceConfig can be used here (performance!) or Get-TeamsUserLicense to
-    #TODO Error on not-licensed!
-    $UserObject = Get-CsOnlineUser $Identity -WarningAction SilentlyContinue
-    $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-    if ($IsEVenabled) {
-      Write-Verbose -Message "User '$Identity' Enterprise Voice Status: User is already enabled!" -Verbose
-      return $true
-    }
-    else {
-      Write-Verbose -Message "User '$Identity' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
-      try {
-        if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Enabling User for EnterpriseVoice")) {
-          $null = Set-CsUser $Identity -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
-          $i = 0
-          $iMax = 20
-          $Status = "Enable User For Enterprise Voice"
-          $Operation = "Waiting for Get-CsOnlineUser to return a Result"
-          Write-Verbose -Message "$Status - $Operation"
-          while ( -not $(Get-CsOnlineUser $Identity -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
-            if ($i -gt $iMax) {
-              Write-Error -Message "User was not enabled for Enterprise Voice in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled); Continue with Set-TeamsAutoAttendant"
-              return
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+    foreach ($Id in $Identity) {
+      Write-Verbose -Message "[PROCESS] $Id"
+      $UserObject = Get-CsOnlineUser $Id -WarningAction SilentlyContinue
+      $UserLicense = Get-TeamsUserLicense $Id
+      $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+      if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
+        $Message = "User '$Id' is not hosted in Teams!"
+        if ($Called) {
+          Write-Warning -Message $Message
+        return $false
+        }
+        else {
+          throw [System.InvalidOperationException]::New("$Message")
+        }
+      }
+      elseif ( $UserObject.InterpretedUserType -notmatch 'User' ) {
+        $Message = "Object '$Id' is not a User!"
+        if ($Called) {
+          Write-Warning -Message $Message
+          return $false
+        }
+        else {
+          throw [System.InvalidOperationException]::New("$Message")
+        }
+      }
+      elseif ( -not $UserLicense.PhoneSystem ) {
+        $Message = "User '$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required)!"
+        if ($Called) {
+          Write-Warning -Message $Message
+          return $false
+        }
+        else {
+          throw [System.InvalidOperationException]::New("$Message")
+        }
+        return $(if ($Called) { $false })
+      }
+      elseif ( [string]$UserLicense.PhoneSystemStatus.notcontains('Success') ) {
+        $Message = "User '$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required to be enabled)!"
+        if ($Called) {
+          Write-Warning -Message $Message
+          return $false
+        }
+        else {
+          throw [System.InvalidOperationException]::New("$Message")
+        }
+      }
+      elseif ($IsEVenabled) {
+        if ($Called) {
+          return $true
+        }
+        else {
+          Write-Verbose -Message "User '$Id' Enterprise Voice Status: User is already enabled!" -Verbose
+        }
+      }
+      else {
+        Write-Verbose -Message "User '$Id' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
+        try {
+          if ($Force -or $PSCmdlet.ShouldProcess("$Id", "Enabling User for EnterpriseVoice")) {
+            $null = Set-CsUser $Id -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+            $i = 0
+            $iMax = 20
+            $Status = "Enable User For Enterprise Voice"
+            $Operation = "Waiting for Get-CsOnlineUser to return a Result"
+            Write-Verbose -Message "$Status - $Operation"
+            while ( -not $(Get-CsOnlineUser $Id -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
+              if ($i -gt $iMax) {
+                Write-Error -Message "User '$Id' Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled)"
+                return $false
+              }
+              Write-Progress -Id 0 -Activity "Waiting for Azure Active Directory to return a result. Please wait" `
+                -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+
+              Start-Sleep -Milliseconds 1000
+              $i++
             }
-            Write-Progress -Id 0 -Activity "Azure Active Directory is writing to the User Object. Please wait" `
-              -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
-            Start-Sleep -Milliseconds 1000
-            $i++
-          }
-
-          # re-query
-          $EVenabled = $(Get-CsOnlineUser $Identity).EnterpriseVoiceEnabled
-          Write-Verbose -Message "User '$Identity' Enterprise Voice Status: $EVenabled"
-          if ($EVenabled) {
-            Write-Verbose -Message "User '$Identity' Enterprise Voice Status: SUCCESS" -Verbose
-            return $true
-          }
-          else {
-            Write-Verbose -Message "User '$Identity' Enterprise Voice Status: FAILED" -Verbose
-            return $false
+            if ($Called) {
+              return $true
+            }
+            else {
+              Write-Verbose -Message "User '$Id' Enterprise Voice Status: SUCCESS" -Verbose
+            }
           }
         }
-
-      }
-      catch {
-        Write-Verbose -Message "User '$Identity' Enterprise Voice Status: ERROR" -Verbose
-        Write-Error -Message "$($_.Exception.Message)"
-        return $false
+        catch {
+          Write-Verbose -Message "User '$Id' Enterprise Voice Status: ERROR" -Verbose
+          $Message = "User '$Id' - Error enabling user for Enterprise Voice: $($_.Exception.Message)"
+          if ($Called) {
+            Write-Warning -Message $Message
+            return $false
+          }
+          else {
+            throw $_
+          }
+        }
       }
     }
 

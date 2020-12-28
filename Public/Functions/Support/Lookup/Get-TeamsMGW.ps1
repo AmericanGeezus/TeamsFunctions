@@ -50,7 +50,7 @@ function Get-TeamsMGW {
       $Gateways = Get-CsOnlinePstnGateway -WarningAction SilentlyContinue
       $Filtered = $Gateways | Where-Object Identity -Like "*$Identity*"
       if ( $Filtered.Count -gt 2) {
-        $Filtered.Identity
+        $Filtered | Select-Object Identity
       }
       else {
         $Filtered

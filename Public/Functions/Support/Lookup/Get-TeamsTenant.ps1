@@ -62,7 +62,7 @@ function Get-TeamsTenant {
       Domains                          = $T.Domains
       DirSyncEnabled                   = $T.DirSyncEnabled
       LastSyncTimeStamp                = $T.LastSyncTimeStamp
-      AllowedDataLocation              = $T.AllowedDataLocation
+      #AllowedDataLocation              = $T.AllowedDataLocation
       IsValid                          = $T.IsValid
       PendingDeletion                  = $T.PendingDeletion
       WhenCreated                      = $T.WhenCreated

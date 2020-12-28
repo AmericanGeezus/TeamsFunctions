@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   PreLive
 
-#TODO implement Assert-TeamsCallableEntity for OAT, TAT, Users
+
 
 
 function Set-TeamsCallQueue {
@@ -16,7 +16,7 @@ function Set-TeamsCallQueue {
 		UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
 		Set-CsCallQueue   is used to apply parameters dependent on specification.
 		Partial implementation is possible, output will show differences.
-	.PARAMETER Identity
+	.PARAMETER Name
 		Required. Friendly Name of the Call Queue. Used to Identify the Object
 	.PARAMETER DisplayName
 		Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
@@ -32,12 +32,11 @@ function Set-TeamsCallQueue {
 		Accepted Formats: MP3, WAV or WMA, max 5MB
 	.PARAMETER MusicOnHoldAudioFile
 		Optional. Path to Audio File to be used as Music On Hold.
-		Required if UseDefaultMusicOnHold is not specified/set to TRUE
 		Accepted Formats: MP3, WAV or WMA, max 5MB
-	.PARAMETER OverflowAction
-		Optional. Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail, SharedVoiceMail
-		Action to be taken if the Queue size limit (OverflowThreshold) is reached
-		Forward requires specification of OverflowActionTarget
+  .PARAMETER OverflowAction
+    Optional. Action to be taken if the Queue size limit (OverflowThreshold) is reached
+    Forward requires specification of OverflowActionTarget
+    Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail, SharedVoiceMail
 	.PARAMETER OverflowActionTarget
 		Situational. Required only if OverflowAction is not DisconnectWithBusy
 		UserPrincipalName of the Target
@@ -53,9 +52,9 @@ function Set-TeamsCallQueue {
 	.PARAMETER OverflowThreshold
 		Optional. Time in Seconds for the OverflowAction to trigger
 	.PARAMETER TimeoutAction
-		Optional. Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
-		Action to be taken if the TimeoutThreshold is reached
+		Optional. Action to be taken if the TimeoutThreshold is reached
 		Forward requires specification of TimeoutActionTarget
+    Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
 	.PARAMETER TimeoutActionTarget
 		Situational. Required only if TimeoutAction is not Disconnect
 		UserPrincipalName of the Target
@@ -71,16 +70,15 @@ function Set-TeamsCallQueue {
 	.PARAMETER TimeoutThreshold
 		Optional. Time in Seconds for the TimeoutAction to trigger
 	.PARAMETER RoutingMethod
-		Optional. Default: Attendant, Values: Attendant, Serial, RoundRobin, LongestIdle
-		Describes how the Call Queue is hunting for an Agent.
+    Optional. Describes how the Call Queue is hunting for an Agent.
 		Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
 		Attendant behaves like Parallel if PresenceBasedRouting is used.
+    Default: Attendant, Values: Attendant, Serial, RoundRobin, LongestIdle
 	.PARAMETER PresenceBasedRouting
 		Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status).
 	.PARAMETER ConferenceMode
-		Optional. Default: TRUE,   Microsoft Default: FALSE
-		Will establish a conference instead of a direct call and should help with connection time.
-		Documentation vague.
+    Optional. Will establish a conference instead of a direct call and should help with connection time.
+    Default: TRUE,   Microsoft Default: FALSE
 	.PARAMETER DistributionLists
 		Optional. Display Names of DistributionLists or Groups to be used as Agents.
 		Will be parsed after Users if they are specified as well.
@@ -632,147 +630,195 @@ function Set-TeamsCallQueue {
     #region OverflowActionTarget
     # Processing for Target is dependent on Action
     if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
-      switch ($OverflowAction) {
-        "DisconnectWithBusy" {
-          # Explicit setting of DisconnectWithBusy
-          if (-not $PSBoundParameters.ContainsKey('OverflowAction')) {
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': No Overflow-Parameters are processed" -Verbose
+      Write-Verbose -Message "'$NameNormalised' Parsing OverflowActionTarget" -Verbose
+      try {
+        switch ($OverflowAction) {
+          "DisconnectWithBusy" {
+            # Explicit setting of DisconnectWithBusy
+            if (-not $PSBoundParameters.ContainsKey('OverflowAction')) {
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': No Overflow-Parameters are processed" -Verbose
+            }
+            #else: No Action
           }
-          #else: No Action
-        }
-        "Forward" {
-          # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
-          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
-          try {
-            if ($OverflowActionTarget -match "^tel:\+\d") {
-              #Telephone URI
-              $Parameters += @{'OverflowActionTarget' = $OverflowActionTarget }
+          "Forward" {
+            # Forward requires an OverflowActionTarget (Tel URI, ObjectId of UPN of a User or an Application Instance to be translated to GUID)
+            $Target = $OverflowActionTarget
+            $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
+            switch ( $CallTarget.ObjectType ) {
+              "TelURI" {
+                #Telephone Number (E.164)
+                $Parameters += @{'OverflowActionTarget' = $CallTarget.Id }
+              }
+              "User" {
+                $Object = $null
+                $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity
+                $Parameters += @{'OverflowActionTarget' = $Object.ObjectId }
+              }
+              "ApplicationEndpoint" {
+                $Object = $null
+                $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity
+                $Parameters += @{'OverflowActionTarget' = $Object.ObjectId }
+              }
+              default {
+                # Capturing any other specified Target that does not match for the Forward
+                Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' is incompatible and is not processed!"
+                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget expected is: Tel URI or a UPN of a User or Resource Account" -Verbose
+              }
             }
-            elseif ($OverflowActionTarget -match "^\+\d" -and -not ($OverflowActionTarget -match '@')) {
-              #Telephone Number (E.164)
-              #$OverflowActionTargetNormalised = "tel:" + $OverflowActionTarget
-              $OverflowActionTargetNormalised = Format-StringForUse -InputString "$OverflowActionTarget" -As LineURI
-              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetNormalised }
-            }
-            elseif ($OverflowActionTarget -match '@') {
-              #Assume it is a User
-              $Identity = $OverflowActionTarget
-              if ( Test-AzureADUser $Identity ) {
-                $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-                $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-                if ( -not $IsLicensed  ) {
-                  Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
-                }
-                else {
-                  $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-                  if ( -not $IsEVenabled) {
-                    Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
-                    if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                      $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
-                    }
-                  }
 
-                  # Add Target
-                  if ( $IsEVenabled ) {
-                    Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) used" -Verbose
-                    $Parameters += @{'OverflowActionTarget' = $UserObject.ObjectId }
+            <#
+            # Forward requires an OverflowActionTarget (Tel URI or UPN of a User to be translated to GUID)
+            try {
+              if ($OverflowActionTarget -match "^tel:\+\d") {
+                #Telephone URI
+                $Parameters += @{'OverflowActionTarget' = $OverflowActionTarget }
+              }
+              elseif ($OverflowActionTarget -match "^\+\d" -and -not ($OverflowActionTarget -match '@')) {
+                #Telephone Number (E.164)
+                #$OverflowActionTargetNormalised = "tel:" + $OverflowActionTarget
+                $OverflowActionTargetNormalised = Format-StringForUse -InputString "$OverflowActionTarget" -As LineURI
+                $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetNormalised }
+              }
+              elseif ($OverflowActionTarget -match '@') {
+                #Assume it is a User
+                $Identity = $OverflowActionTarget
+                if ( Test-AzureADUser $Identity ) {
+                  $RAObject = $null
+                  $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+                  $RAObject = Get-CsOnlineApplicationInstance "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+                  $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+                  if ( -not $IsLicensed -and -not $RAObject ) {
+                    Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                   }
                   else {
-                    Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+                    $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+                    if ( -not $IsEVenabled) {
+                      Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
+                      if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                      }
+                    }
+
+                    # Add Target
+                    if ( $IsEVenabled ) {
+                      Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) used" -Verbose
+                      $Parameters += @{'OverflowActionTarget' = $UserObject.ObjectId }
+                    }
+                    else {
+                      Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+                    }
                   }
                 }
+                else {
+                  Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) not found. Omitting User"
+                }
+
               }
               else {
-                Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) not found. Omitting User"
+                # Capturing any other specified Target that does not match for the Forward
+                Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' is incompatible and is not processed!"
+                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget expected is a Tel URI or a UPN of a User" -Verbose
               }
-
+            }
+            catch {
+              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            }
+            #>
+          }
+          "VoiceMail" {
+            # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+            $Target = $OverflowActionTarget
+            $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
+            if ($CallTarget.ObjectType -eq "User") {
+              $Object = $null
+              $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity
+              $Parameters += @{'OverflowActionTarget' = $Object.ObjectId }
             }
             else {
-              # Capturing any other specified Target that does not match for the Forward
               Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' is incompatible and is not processed!"
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget expected is a Tel URI or a UPN of a User" -Verbose
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget expected is: UPN of a User" -Verbose
             }
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
-          }
-        }
-        "VoiceMail" {
-          # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
-          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
-          $Identity = $OverflowActionTarget
-          if ( Test-AzureADUser $Identity ) {
-            $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-            $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-            if ( -not $IsLicensed  ) {
-              Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
-            }
-            else {
-              $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-              if ( -not $IsEVenabled ) {
-                Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
-                if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                  $IsEVenabled = $null
-                  $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+
+            <#
+            # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
+            $Identity = $OverflowActionTarget
+            if ( Test-AzureADUser $Identity ) {
+              $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+              $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+              if ( -not $IsLicensed  ) {
+                Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
+              }
+              else {
+                $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+                if ( -not $IsEVenabled ) {
+                  Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
+                  if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                    $IsEVenabled = $null
+                    $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                  }
+                }
+
+                # Add Target
+                if ( $IsEVenabled ) {
+                  Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) used" -Verbose
+                  $Parameters += @{'OverflowActionTarget' = $UserObject.ObjectId }
+                }
+                else {
+                  Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
                 }
               }
-
-              # Add Target
-              if ( $IsEVenabled ) {
-                Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) used" -Verbose
-                $Parameters += @{'OverflowActionTarget' = $UserObject.ObjectId }
-              }
-              else {
-                Write-Verbose -Message "OverflowActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
-              }
-            }
-          }
-          else {
-            Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) not found. Omitting User"
-          }
-
-        }
-        "SharedVoiceMail" {
-          # SharedVoiceMail requires an OverflowActionTarget (UPN of a Group to be translated to GUID)
-          #region SharedVoiceMail prerequisites
-          if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-            # Both Parameters provided
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailAudioFile and OverflowSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
-            [void]$PSBoundParameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
-          }
-          elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-            # Neither Parameter provided
-            Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
-            return
-          }
-          elseif ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-            if (($null -eq $CallQueue.LanguageId) -and (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
-              Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
-              return
-            }
-            elseif ($PSBoundParameters.ContainsKey('LanguageId')) {
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
             }
             else {
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt: Language '$($CallQueue.LanguageId)' is already set"
+              Write-Warning -Message "OverflowActionTarget - Call Target '$Identity' (User) not found. Omitting User"
             }
-          }
-          #endregion
+            #>
 
-          #region Processing OverflowActionTarget for SharedVoiceMail
-          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
-          $CallTarget = $null
-          $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
-          if ( $CallTarget ) {
-            $OverflowActionTargetId = $CallTarget.ObjectId
-            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
-            $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
           }
-          else {
-            Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+          "SharedVoiceMail" {
+            # SharedVoiceMail requires an OverflowActionTarget (UPN of a Group to be translated to GUID)
+            #region SharedVoiceMail prerequisites
+            if ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+              # Both Parameters provided
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailAudioFile and OverflowSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
+              [void]$PSBoundParameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
+            }
+            elseif (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+              # Neither Parameter provided
+              Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
+              return
+            }
+            elseif ($PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
+              if (($null -eq $CallQueue.LanguageId) -and (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
+                Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
+                return
+              }
+              elseif ($PSBoundParameters.ContainsKey('LanguageId')) {
+                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
+              }
+              else {
+                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowSharedVoicemailTextToSpeechPrompt: Language '$($CallQueue.LanguageId)' is already set"
+              }
+            }
+            #endregion
+
+            #region Processing OverflowActionTarget for SharedVoiceMail
+            Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
+            $CallTarget = $null
+            $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
+            if ( $CallTarget ) {
+              $OverflowActionTargetId = $CallTarget.ObjectId
+              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+            }
+            else {
+              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            }
+            #endregion
           }
-          #endregion
         }
+      }
+      catch {
+        Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
       }
     }
     else {
@@ -824,6 +870,9 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region OverflowAction Parameter cleanup
+    if ($Parameters.OverflowActionTarget -eq "") {
+      [void]$Parameters.Remove('OverflowActionTarget')
+    }
     if ($Parameters.ContainsKey('OverflowAction') -and (-not $Parameters.ContainsKey('OverflowActionTarget')) -and ($OverflowAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action not set as OverflowActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('OverflowAction')
@@ -875,145 +924,192 @@ function Set-TeamsCallQueue {
     #region TimeoutActionTarget
     # Processing for Target is dependent on Action
     if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
-      switch ($TimeoutAction) {
-        "Disconnect" {
-          # Explicit setting of DisconnectWithBusy
-          if (-not $PSBoundParameters.ContainsKey('TimeoutAction')) {
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': No Timeout-Parameters are processed" -Verbose
+      Write-Verbose -Message "'$NameNormalised' Parsing TimeoutActionTarget" -Verbose
+      try {
+        switch ($TimeoutAction) {
+          "Disconnect" {
+            # Explicit setting of DisconnectWithBusy
+            if (-not $PSBoundParameters.ContainsKey('TimeoutAction')) {
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': No Timeout-Parameters are processed" -Verbose
+            }
+            #else: No Action
           }
-          #else: No Action
-        }
-        "Forward" {
-          # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
-          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
-          try {
-            if ($TimeoutActionTarget -match "^tel:\+\d") {
-              #Telephone URI
-              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTarget }
+          "Forward" {
+            # Forward requires an TimeoutActionTarget (Tel URI, ObjectId of UPN of a User or an Application Instance to be translated to GUID)
+            $Target = $TimeoutActionTarget
+            $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
+            switch ( $CallTarget.ObjectType ) {
+              "TelURI" {
+                #Telephone Number (E.164)
+                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Id }
+              }
+              "User" {
+                $Object = $null
+                $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity
+                $Parameters += @{'TimeoutActionTarget' = $Object.ObjectId }
+              }
+              "ApplicationEndpoint" {
+                $Object = $null
+                $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity
+                $Parameters += @{'TimeoutActionTarget' = $Object.ObjectId }
+              }
+              default {
+                # Capturing any other specified Target that does not match for the Forward
+                Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' is incompatible and is not processed!"
+                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget expected is: Tel URI or a UPN of a User or Resource Account" -Verbose
+              }
             }
-            elseif ($TimeoutActionTarget -match "^\+\d" -and -not ($TimeoutActionTarget -match '@')) {
-              #Telephone Number (E.164)
-              #$TimeoutActionTargetNormalised = "tel:" + $TimeoutActionTarget
-              $TimeoutActionTarget = Format-StringForUse -InputString "$TimeoutActionTarget" -As LineURI
-              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetNormalised }
-            }
-            elseif ($TimeoutActionTarget -match '@') {
-              #Assume it is a User
-              $Identity = $TimeoutActionTarget
-              if ( Test-AzureADUser $Identity ) {
-                $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-                $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-                if ( -not $IsLicensed  ) {
-                  Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
-                }
-                else {
-                  $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-                  if ( -not $IsEVenabled) {
-                    Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
-                    if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                      $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
-                    }
-                  }
 
-                  # Add Target
-                  if ( $IsEVenabled ) {
-                    Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) used" -Verbose
-                    $Parameters += @{'TimeoutActionTarget' = $UserObject.ObjectId }
+            <#
+            # Forward requires an TimeoutActionTarget (Tel URI or UPN of a User to be translated to GUID)
+            try {
+              if ($TimeoutActionTarget -match "^tel:\+\d") {
+                #Telephone URI
+                $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTarget }
+              }
+              elseif ($TimeoutActionTarget -match "^\+\d" -and -not ($TimeoutActionTarget -match '@')) {
+                #Telephone Number (E.164)
+                #$TimeoutActionTargetNormalised = "tel:" + $TimeoutActionTarget
+                $TimeoutActionTarget = Format-StringForUse -InputString "$TimeoutActionTarget" -As LineURI
+                $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetNormalised }
+              }
+              elseif ($TimeoutActionTarget -match '@') {
+                #Assume it is a User
+                $Identity = $TimeoutActionTarget
+                if ( Test-AzureADUser $Identity ) {
+                  $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+                  $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+                  if ( -not $IsLicensed  ) {
+                    Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
                   }
                   else {
-                    Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+                    $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+                    if ( -not $IsEVenabled) {
+                      Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
+                      if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                        $IsEVenabled = $null
+                        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                      }
+                    }
+
+                    # Add Target
+                    if ( $IsEVenabled ) {
+                      Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) used" -Verbose
+                      $Parameters += @{'TimeoutActionTarget' = $UserObject.ObjectId }
+                    }
+                    else {
+                      Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+                    }
                   }
                 }
-              }
-              else {
-                Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) not found. Omitting User"
-              }
-            }
-            else {
-              # Capturing any other specified Target that does not match for the Forward
-              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' is incompatible and is not processed!"
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget expected is a Tel URI or a UPN of a User" -Verbose
-            }
-          }
-          catch {
-            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
-          }
-        }
-        "VoiceMail" {
-          # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
-          #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
-          $Identity = $TimeoutActionTarget
-          if ( Test-AzureADUser $Identity ) {
-            $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
-            $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
-            if ( -not $IsLicensed  ) {
-              Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
-            }
-            else {
-              $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-              if ( -not $IsEVenabled ) {
-                Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
-                if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-                  $IsEVenabled = $null
-                  $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                else {
+                  Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) not found. Omitting User"
                 }
               }
-
-              # Add Target
-              if ( $IsEVenabled ) {
-                Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) used" -Verbose
-                $Parameters += @{'TimeoutActionTarget' = $UserObject.ObjectId }
-              }
               else {
-                Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+                # Capturing any other specified Target that does not match for the Forward
+                Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' is incompatible and is not processed!"
+                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget expected is a Tel URI or a UPN of a User" -Verbose
               }
             }
-          }
-          else {
-            Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) not found. Omitting User"
-          }
-        }
-        "SharedVoiceMail" {
-          # SharedVoiceMail requires an TimeoutActionTarget (UPN of a Group to be translated to GUID)
-          #region SharedVoiceMail prerequisites
-          if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-            # Both Parameters provided
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailAudioFile and TimeoutSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
-            [void]$PSBoundParameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
-          }
-          elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-            # Neither Parameter provided
-            Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
-            return
-          }
-          elseif ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-            if (($null -eq $CallQueue.LanguageId) -and (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
-              Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
-              return
+            catch {
+              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
             }
-            elseif ($PSBoundParameters.ContainsKey('LanguageId')) {
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
+            #>
+          }
+          "VoiceMail" {
+            # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+            $Target = $TimeoutActionTarget
+            $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
+            if ($CallTarget.ObjectType -eq "User") {
+              $Object = $null
+              $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity
+              $Parameters += @{'TimeoutActionTarget' = $Object.ObjectId }
             }
             else {
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt: Language '$($CallQueue.LanguageId)' is already set"
+              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' is incompatible and is not processed!"
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget expected is: UPN of a User" -Verbose
             }
-          }
-          #endregion
 
-          #region Processing TimeoutActionTarget for SharedVoiceMail
-          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
-          $CallTarget = $null
-          $CallTarget = Find-AzureAdGroup $TimeoutActionTarget -Exact
-          if ( $CallTarget ) {
-            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
-            $TimeoutActionTargetId = $CallTarget.ObjectId
-            $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+            <#
+            # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
+            $Identity = $TimeoutActionTarget
+            if ( Test-AzureADUser $Identity ) {
+              $UserObject = Get-CsOnlineUser "$Identity" -WarningAction SilentlyContinue
+              $IsLicensed = Test-TeamsUserLicense -Identity $Identity -ServicePlan MCOEV
+              if ( -not $IsLicensed  ) {
+                Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) found but not licensed (PhoneSystem). Omitting User"
+              }
+              else {
+                $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+                if ( -not $IsEVenabled ) {
+                  Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) found and licensed, but not enabled for EnterpriseVoice" -Verbose
+                  if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+                    $IsEVenabled = $null
+                    $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+                  }
+                }
+
+                # Add Target
+                if ( $IsEVenabled ) {
+                  Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) used" -Verbose
+                  $Parameters += @{'TimeoutActionTarget' = $UserObject.ObjectId }
+                }
+                else {
+                  Write-Verbose -Message "TimeoutActionTarget - Call Target '$Identity' (User) not enabled for EnterpriseVoice!" -Verbose
+                }
+              }
+            }
+            else {
+              Write-Warning -Message "TimeoutActionTarget - Call Target '$Identity' (User) not found. Omitting User"
+            }
+            #>
           }
-          else {
-            Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+          "SharedVoiceMail" {
+            # SharedVoiceMail requires an TimeoutActionTarget (UPN of a Group to be translated to GUID)
+            #region SharedVoiceMail prerequisites
+            if ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+              # Both Parameters provided
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailAudioFile and TimeoutSharedVoicemailTextToSpeechPrompt are mutually exclusive. Processing File only" -Verbose
+              [void]$PSBoundParameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
+            }
+            elseif (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+              # Neither Parameter provided
+              Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction "Add one of the two parameters"
+              return
+            }
+            elseif ($PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
+              if (($null -eq $CallQueue.LanguageId) -and (-not $PSBoundParameters.ContainsKey('LanguageId'))) {
+                Write-Error -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt requires Language selection. Please provide Parameter LanguageId" -ErrorAction Stop -RecommendedAction "Add Parameter LanguageId"
+                return
+              }
+              elseif ($PSBoundParameters.ContainsKey('LanguageId')) {
+                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt: Language '$Language' is used" -Verbose
+              }
+              else {
+                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutSharedVoicemailTextToSpeechPrompt: Language '$($CallQueue.LanguageId)' is already set"
+              }
+            }
+            #endregion
+
+            #region Processing TimeoutActionTarget for SharedVoiceMail
+            Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
+            $CallTarget = $null
+            $CallTarget = Find-AzureAdGroup $TimeoutActionTarget -Exact
+            if ( $CallTarget ) {
+              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+              $TimeoutActionTargetId = $CallTarget.ObjectId
+              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+            }
+            else {
+              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            }
+            #endregion
           }
-          #endregion
         }
+      }
+      catch {
+        Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
       }
     }
     else {
@@ -1065,6 +1161,9 @@ function Set-TeamsCallQueue {
     #endregion
 
     #region TimeoutAction Parameter cleanup
+    if ($Parameters.TimeoutActionTarget -eq "") {
+      [void]$Parameters.Remove('TimeoutActionTarget')
+    }
     if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'Disconnect')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
@@ -1081,8 +1180,29 @@ function Set-TeamsCallQueue {
 
     [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
-      Write-Verbose -Message "'$NameNormalised' Parsing Users"
-      #TODO rework to utilise Get-TeamsCallableEntity or TeamsUserVoiceConfig?
+      Write-Verbose -Message "'$NameNormalised' Parsing Users" -Verbose
+      foreach ($User in $Users) {
+        $Object = $null
+
+        # Asserting Object - Validation of Type
+        $Object = Assert-TeamsCallableEntity -Identity "$User" -ErrorAction Stop
+        if ( -not $Object ) {
+          Write-Warning -Message "'$NameNormalised' Object '$User' not found in AzureAd, omitting Object!"
+          continue
+        }
+
+        if ( $Object.ObjectType -ne "User") {
+          Write-Warning -Message "'$NameNormalised' Object '$User' is not a User, omitting Object!"
+          continue
+        }
+
+        if ( $Object.EnterpriseVoiceEnabled ) {
+          Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
+          [void]$UserIdList.Add($Object.ObjectId)
+        }
+      }
+
+      <# removed - replaced by above
       foreach ($User in $Users) {
         if ( Test-AzureADUser $User ) {
           try {
@@ -1120,6 +1240,7 @@ function Set-TeamsCallQueue {
           Write-Warning -Message "'$NameNormalised' User '$User' not found in AzureAd, omitting user!"
         }
       }
+      #>
       # NEW: Processing always / SET: Processing only when specified
       Write-Verbose -Message "'$NameNormalised' Users: Adding $($UserIdList.Count) Users as Agents to the Queue" -Verbose
       if ($UserIdList.Count -gt 0) {
@@ -1136,7 +1257,7 @@ function Set-TeamsCallQueue {
 
     [System.Collections.ArrayList]$DLIdList = @()
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
-      Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists"
+      Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists" -Verbose
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
         $DLObject = Find-AzureAdGroup "$DL" -Exact
@@ -1172,8 +1293,7 @@ function Set-TeamsCallQueue {
     #region ACTION
     # DEBUG Information
     if ($PSBoundParameters.ContainsKey("Debug")) {
-      Write-Debug "Parameters to be applied:"
-      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Set the Call Queue with all Parameters provided

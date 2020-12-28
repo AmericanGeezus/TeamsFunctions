@@ -50,7 +50,7 @@ function Get-TeamsOVP {
       $Policies = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
       $Filtered = $Policies | Where-Object Identity -Like "*$Identity*"
       if ( $Filtered.Count -gt 2) {
-        $Filtered.Identity
+        $Filtered | Select-Object Identity
       }
       else {
         $Filtered

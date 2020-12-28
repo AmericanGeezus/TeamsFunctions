@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   RC
 
-#TODO Add validation for Extensions / check if Extension is already assigned with Find-TeamsUVC + .Split(';ext=')[1]
+
 
 
 function Set-TeamsUserVoiceConfig {
@@ -390,7 +390,7 @@ function Set-TeamsUserVoiceConfig {
             }
 
             #CHECK Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
-            Write-Verbose -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again." -Verbose
+            Write-Warning -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again."
           }
 
           # Apply or Remove $PhoneNumber as TelephoneNumber

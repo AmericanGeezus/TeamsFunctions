@@ -36,9 +36,12 @@ function Test-SkypeOnlineConnection {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     $Sessions = Get-PSSession -WarningAction SilentlyContinue
-    if ([bool]($Sessions.Computername -match "online.lync.com")) {
-      $PSSkypeOnlineSession = $Sessions | Where-Object { $_.Computername -match "online.lync.com" -and $_.State -eq "Opened" -and $_.Availability -eq "Available" }
-      if ($PSSkypeOnlineSession.Count -ge 1) {
+    $Sessions = $Sessions | Where-Object { $_.Computername -match "online.lync.com" -or $_.ComputerName -eq "api.interfaces.records.teams.microsoft.com" }
+    if ($Sessions.Count -ge 1) {
+      #Write-Verbose "Teams Session found"
+      $Sessions = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+      if ($Sessions.Count -ge 1) {
+        #Write-Verbose "Teams Session found, open and valid"
         return $true
       }
       else {
@@ -48,6 +51,7 @@ function Test-SkypeOnlineConnection {
     else {
       return $false
     }
+
   } #process
 
   end {

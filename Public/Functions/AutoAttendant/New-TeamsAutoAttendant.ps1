@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   BETA
+# Status:   RC
 
 
 
@@ -227,7 +227,7 @@ function New-TeamsAutoAttendant {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -737,7 +737,7 @@ function New-TeamsAutoAttendant {
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
 
-      #TODO When building out Holiday Set (IF!) this needs to be array-proof (see processing of CallFlows Objects for code samples)
+      #TODO when HolidaySet is added, this needs to be array-proof (see processing of CallFlows Objects for code samples)
       #$AfterHoursCallHandlingAssociationParams.CallFlowId = $AfterHoursCallFlow.Id # This works, but want to try whether arraying works too
       $AfterHoursCallHandlingAssociationParams.CallFlowId += $AfterHoursCallFlow.Id
       #endregion
@@ -798,7 +798,7 @@ function New-TeamsAutoAttendant {
     #region ACTION
     Write-Verbose -Message "[PROCESS] Creating Auto Attendant"
     if ($PSBoundParameters.ContainsKey('Debug')) {
-      "Function: $($MyInvocation.MyCommand.Name)", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Create AA (New-CsAutoAttendant)

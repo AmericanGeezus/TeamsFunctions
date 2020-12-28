@@ -262,7 +262,7 @@ function Set-TeamsResourceAccount {
         }
         $PhoneNumber = $null
       }
-      elseif ($PhoneNumber -match "^(tel:)?\+?[0-9]{6,15}((;ext=[0-9]{3,8}))?$") {
+      elseif ($PhoneNumber -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
         if ( $PhoneNumber -match "ext" ) {
           Write-Warning -Message "PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
         }
@@ -548,7 +548,7 @@ function Set-TeamsResourceAccount {
           try {
             # Loading all Microsoft Telephone Numbers
             $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
-            $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+            $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber
             if ($MSNumber -in $MSTelephoneNumbers) {
               # Set in VoiceApplicationInstance
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {

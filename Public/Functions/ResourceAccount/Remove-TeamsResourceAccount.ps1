@@ -82,7 +82,7 @@ function Remove-TeamsResourceAccount {
 
     # Caveat - Access rights
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
-    Write-Verbose -Message "No verification of required admin roles is performed. Use Get-AzureAdAssignedAdminRoles to determine roles for your account"
+    Write-Verbose -Message "No verification of required admin roles is performed. Use Get-AzureAdAdminRole to determine roles for your account"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }

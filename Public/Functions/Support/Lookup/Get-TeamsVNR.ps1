@@ -1,16 +1,16 @@
-﻿# Module:   TeamsFunctions
+# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-NOV-2020
+# Updated:  22-DEC-2020
 # Status:   PreLive
 
 
 
 
-function Get-TeamsTDP {
+function Get-TeamsVNR {
   <#
   .SYNOPSIS
-    Lists all Tenant Dial Plans by Name
+    Lists all Normalization Rules for a Tenant Dial Plan
   .DESCRIPTION
     To quickly find Tenant Dial Plans to assign, an Alias-Function to Get-CsTenantDialPlan
   .PARAMETER Identity
@@ -53,12 +53,12 @@ function Get-TeamsTDP {
         $Filtered | Select-Object Identity
       }
       else {
-        $Filtered
+        $Filtered.NormalizationRules
       }
     }
     else {
       Write-Verbose -Message "Finding Tenant Dial Plan Names"
-      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object NormalizationRules -ExpandProperty NormalizationRules | Format-Table -AutoSize
     }
 
   } #process

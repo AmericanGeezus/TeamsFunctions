@@ -74,44 +74,6 @@ function Test-AzureAdGroup {
       return $false
     }
 
-    <# Code to be replaced #TODO Requires testing
-    try {
-      $Group = Get-AzureADGroup -SearchString "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
-      if ( $null -ne $Group ) {
-        return $true
-      }
-      else {
-        try {
-          $MailNickName = $Identity.Split('@')[0]
-          $Group2 = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $null -ne $Group2 ) {
-            Write-Verbose -Message "Group find by 'MailNickName'"
-            return $true
-          }
-          else {
-            return $false
-          }
-        }
-        catch {
-          return $false
-        }
-      }
-    }
-    catch {
-      try {
-        $Group3 = Get-AzureADGroup -ObjectId $Identity -WarningAction SilentlyContinue -ErrorAction STOP
-        if ( $null -ne $Group3 ) {
-          return $true
-        }
-        else {
-          return $false
-        }
-      }
-      catch {
-        return $false
-      }
-    }
-    #>
   } #process
 
   end {

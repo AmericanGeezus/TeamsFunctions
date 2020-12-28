@@ -1,5 +1,4 @@
-﻿#Requires -Version 5.1
-<#
+﻿<#
   TeamsFunctions
   Module for Management of Teams Voice Configuration for Tenant and Users
   User Configuration for Voice, Creation and connection of Resource Accounts,
@@ -37,8 +36,19 @@
   20.10       OCT 2020 Release - Added TeamsUserVoiceConfig & TeamsAutoAttendant Functions
   20.11       NOV 2020 Release - Restructuring, Bugfixes and general overhaul. Also more Pester-Testing
   20.12       DEC 2020 Release - Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes
-
+  21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
 #>
+
+#Requires -Version 5.1
+
+#Activate when released
+# AzureAdPreview 2.0.2.129
+#R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
+#R#equires -Modules @{ ModuleName="AzureAd"; ModuleVersion="2.0.2.130" }
+
+#Activate 01-FEB 2021
+#R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
+
 
 #region Classes
 class TFTeamsServicePlan {
@@ -60,7 +70,6 @@ class TFTeamsServicePlan {
     $this.RelevantForTeams = $RelevantForTeams
   }
 }
-
 
 class TFTeamsLicense {
   [string]$ProductName
@@ -142,20 +151,32 @@ Get-ChildItem -Filter *.ps1 -Path $PSScriptRoot\Public\Functions, $PSScriptRoot\
 }
 
 # Adding manual Aliases (not recorded in Functions)
+Set-Alias -Name New-TeamsAutoAttendantCallHandlingAssociation -Value New-CsAutoAttendantCallHandlingAssociation
 Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
 Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
 
+# Dedication
+if ($env:username -eq "Julia.Horvath") {
+  if ($(Get-Date -Format "dd") % 2 -eq 1 ) {
+    Write-Host "Julia, I love you. Thank you for being with me. -D-" -ForegroundColor DarkMagenta
+  }
+  else {
+    Write-Host "Julia, I love you. Thank you for being my friend. -D-" -ForegroundColor DarkYellow
+  }
+}
 
 # Exporting Module Members (Functions)
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
 Export-ModuleMember -Alias con, dis, pol, Set-TeamsUVC, Get-TeamsUVC, Find-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Enable-Ev, `
-  New-TeamsRA, Set-TeamsRA, Get-TeamsRA, Find-TeamsRA, Remove-TeamsRA, New-TeamsRAassoc, Get-TeamsRAassoc, Remove-TeamsRAassoc, Remove-CsOnlineApplicationInstance, `
-  New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ, New-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, Get-TeamsAA, Remove-TeamsAA, `
-  New-TeamsAAPrompt, New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAASchedule, New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAAScope, New-TeamsCAP
+  New-TeamsRA, Set-TeamsRA, Get-TeamsRA, Find-TeamsRA, Remove-TeamsRA, New-TeamsRAassoc, Get-TeamsRAassoc, Remove-TeamsRAassoc, `
+  New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ, New-TeamsAA, Get-TeamsAA, Remove-TeamsAA, `
+  New-TeamsAAPrompt, New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAASchedule, New-TeamsAAEntity, New-TeamsAAScope, `
+  Set-TeamsAA, Set-TeamsAutoAttendant, Remove-CsOnlineApplicationInstance, New-TeamsAutoAttendantCallHandlingAssociation, New-TeamsAutoAttendantCallableEntity #, `
+  #Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP
 
-
+  
 # SIG # Begin signature block
 # MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

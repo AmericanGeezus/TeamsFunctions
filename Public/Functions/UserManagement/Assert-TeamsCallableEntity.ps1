@@ -5,24 +5,20 @@
 # Status:   PreLive
 
 
-#TODO Make standalone function:
-<#
-Add CmdLetBindign
-Add switch for returning ID, otherwise BOOLEAN
-Add Help block
-Add CallStack - Return error if called directly, otherwise warnings
 
-#>
 
 function Assert-TeamsCallableEntity {
   <#
 	.SYNOPSIS
 		Verifies User is ready for Voice Config
   .DESCRIPTION
-		Tests whether a specific Module is loaded
+    Tests whether a the Object can be used as a Callable Entity in Call Queues or Auto Attendant
+  .PARAMETER Identity
+    UserPrincipalName, Group Name or Tel URI
   .EXAMPLE
-		Test-Module -Module ModuleName
-		Will Return $TRUE if the Module 'ModuleName' is loaded
+    Assert-TeamsCallableEntity -Identity John@domain.com
+    Will Return $TRUE if John has a valid PhoneSystem License (Provisioning Status: Success).
+    Enables John for Enterprise Voice if not yet done.
   #>
 
   [CmdletBinding()]
@@ -55,34 +51,31 @@ function Assert-TeamsCallableEntity {
           Write-Verbose -Message "User '$Identity' found and licensed and enabled for EnterpriseVoice" -Verbose
           return $Object
         }
-        elseif ( $(Enable-TeamsUserForEnterpriseVoice -Identity $Identity.UserPrincipalName -Force) ) {
+        elseif ( $(Enable-TeamsUserForEnterpriseVoice -Identity $Object.UserPrincipalName -Force) ) {
           Write-Verbose -Message "User '$Identity' found and licensed and successfully enabled for EnterpriseVoice" -Verbose
+          $Object.EnterpriseVoiceEnabled -eq $true
           return $Object
         }
         else {
-          if ( $Called ) {
-            Write-Warning -Message "User '$Identity' found and licensed, but not enabled for EnterpriseVoice!"
-            return
-          }
-          else {
+          if ( -not $Called ) {
             Write-Error -Message "User '$Identity' found and licensed, but not enabled for EnterpriseVoice!" -Category InvalidResult -ErrorAction Stop
           }
+          return
         }
 
       }
       else {
-        Write-Warning -Message "User '$Identity' found but not licensed (PhoneSystem)" -Verbose
+        if ( -not $Called ) {
+          Write-Warning -Message "User '$Identity' found but not licensed (PhoneSystem)" -Verbose
+        }
         return
       }
     }
     catch {
-      if ( $Called ) {
-        Write-Warning -Message "User '$Identity' not found" -Verbose
-        return
-      }
-      else {
+      if ( -not $Called ) {
         Write-Error -Message "User '$Identity' not found" -Category ObjectNotFound -ErrorAction Stop
       }
+      return
     }
 
   } #process

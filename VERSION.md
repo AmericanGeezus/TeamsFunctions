@@ -3,6 +3,159 @@
 I decided to break this out into its own file as it grows ever so consistently as the Module itself.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v20.01 - January 2021 release
+
+### Component Status
+
+- Function Status: 87 Public CmdLets, 9 private CmdLets, 14 Live
+- Development Status: 40 PreLive, 22 RC Functions; 0 in Beta, 5 in Alpha
+- Pester Test Status: Tests Passed: 1011, Failed: 0, Skipped: 0 NotRun: 0
+- `TeamsUserVoiceConfig` Scripts are in RC/PreLive Status.
+- `TeamsResourceAccount` Scripts are in RC/PreLive Status.
+- `TeamsCallQueue` Scripts are still in RC/PreLive Status.
+- `TeamsAutoAttendant` Scripts have advanced to RC status.
+- `TeamsCallableEntity` Scripts have been improved upon (GET, FIND, NEW and ASSERT)
+- `AzureAdAdminRole` Scripts have been introduced upon (GET and ENABLE)
+
+### Focus for this month
+
+- Transition from Module SkypeOnlineConnector to MicrosoftTeams
+- More Auto Attendant functions and better structure to create value on top of existing scripts.
+- Better support of sub-functions through Callable Entities
+- Support for Privileged Identity Management
+- Better Regex: Identification and normalisation of Phone Numbers
+- Some Classes have been added to the Module for more consistency.
+- Getting to grips with the Call stack - some functions now behave slightly differently (in output) if called by another function
+- More Pipeline support, PassThru support, etc.
+- Performance updates
+
+### Requirements
+
+- This Module currently only `#Requires` PowerShell v5.1, but
+- Module `AzureAd` **or** `AzureAdPreview` are required
+- Module `MicrosoftTeams` (v1.1.6 or higher) **or** `SkypeOnlineConnector` (v7) are required.
+
+### New Functions
+
+- **Introducing Support for Privileged Identity Management (if Module AzureAdPreview is installed):**
+  - `Get-AzureAdAdminRole`:
+    - Used in Connect-Me (and replaces Get-AzureAdAssignedAdminRoles, which was slow)
+    - Queries currently active Admin Roles by default
+    - Queries eligible Admin Roles with `-Type` (requires AzureAdPreview)
+  - `Enable-AzureAdAdminRole`:
+    - Simplifying Admin Role enablement for Users
+    - Used in Connect-Me
+    - Can be used to enable individual Roles (with `-Confirm`) or all eligible
+    - NOTE: Currently does not support Privileged Admin Groups
+- **Expanding on the CallableEntity concept:**
+  - `New-TeamsCallableEntity` (New-TeamsAutoAttendantCallableEntity, New-TeamsAAEntity): Creates a callable Entity for Auto Attendants (renamed and improved)
+  - `Get-TeamsCallableEntity`: Determines the type of Callable Entity to feed into other functions
+  - `Find-TeamsCallableEntity`: Queries Call Queues and Auto Attendants for a User to be attached to.
+  - `Assert-TeamsCallableEntity`: Verifies a User is ready to be used as a Call Target or Callable Entity (incl. enablement for Enterprise Voice)
+- **Completing the Set for AutoAttendants:**
+  - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow): Call Flow Object with default options
+  - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
+  - `New-TeamsAutoAttendantMenuOption` (New-TeamsAAOption): Menu Option Object with default options
+  - `New-TeamsAutoAttendantCallHandlingAssociations` is an Alias to complete the set, but a standalone function was not required.
+- **Voice Functions Lookup Suite** has been extended and updated to display names only  (if more than 2 have been found)
+  - `Get-TeamsTDP`: Now displays all Identities or max two full Objects
+  - `Get-TeamsVNR`: (Get-CsTenantDialPlan $TDP).NormalizationRules, but easier
+  - `Get-TeamsOVP`: Now displays all Identities or max two full Objects
+  - `Get-TeamsOPU`: Get-CsOnlinePstnUsage without the clunkyness.
+  - `Get-TeamsOVR`: Get-CsOnlineVoiceRoute, displays all Identities or max two full Objects
+  - `Get-TeamsMGW`: Get-CsOnlinePstnGateway, displays all Identities or max two full Objects
+
+### Updated Functions & Bugfixes
+
+#### Session Commands
+
+- `Connect-Me`: Complete overhaul
+  - Module MicrosoftTeams is replacing SkypeOnlineConverter in FEB 2021.
+  - Connection can be made with either module present.<br />NOTE: If connected to multiple tenants, a dialog is shown to select the Account when connecting to SkypeOnline when using the MicrosoftTeams Module. There is no way this can be prevented currently.
+  - Integrated Privileged Identity Management Role activation with `Enable-AzureAdAdminRole` (used only if Module AzureAdPreview is available and PIM is used! )
+  - Integrated `Get-AzureAdAdminRole` to query Admin Roles faster
+  - Improved feedback by catching all output and displaying custom object at the end when Parameter `NoFeedback` is not chosen.
+  - Removed automatic disconnect from existing sessions
+- `Connect-SkypeOnline`: Complete overhaul
+  - Now supports Module MicrosoftTeams or SkypeOnlineConnector (v7, support for v6 has been dropped)
+  - Added Custom output object in line with Connect-AzureAd and Connect-MicrosoftTeams
+  - Requirement for an AccountId (Username) has been removed
+- `Disconnect-SkypeOnline`: Updated for compatibility with MicrosoftTeams
+- `Assert-SkypeOnlineConnection`: Performance improvement and integrated reconnection when used with the MicrosoftTeams Module
+- `Test-SkypeOnlineConnection`: Updated to allow verification against new ComputerName: api.interfaces.records.teams.microsoft.com
+
+#### Voice Config
+
+- `Get-TeamsUserLicense`: Better display for PhoneSystemStatus (String instead of Object)
+- `Get-TeamsUserVoiceConfig`: Better display for PhoneSystemStatus (String instead of Object) - Using Get-TeamsUserLicense in the background
+- `Set-TeamsUserVoiceConfig`:
+  - Refined verification of PhoneSystemStatus. As the queried Object from Get-TeamsUserLicense changes, so needs the processing
+  - Refined application of PhoneNumber. Now allowing an empty string and $null (removing the Number) - A warning is displayed as the Object is then not in the correct state to make outbound calls, but as it is a SET command, it shall allow for empty states.
+
+#### Resource Account
+
+- `Remove-TeamsResourceAccount`: Added Parameter PassThru to display UPNs of removed Accounts
+- `Remove-TeamsResourceAccountAssociation`: Added Parameter PassThru to display an Objects detailing the Status of the Account and its associations post change
+- `New-TeamsResourceAccountAssociation`: Performance update: Now faster lookup of Objects (x10)
+
+#### Call Queue
+
+- `Get-TeamsCallQueue`:
+  - Small performance and accuracy improvement when parsing DLs
+  - Detailed results now are only displayed for the first 5 results. Beyond that, only Names are displayed. Pipe is unaffected.
+- `New-TeamsCallQueue`:
+  - Small improvement for enumeration of Voicemail Target (now treted the same as a User) and SharedVoicemail Target (now faster lookup)
+  - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
+  - Reworked OverflowAction Forward: OverflowActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked TimeoutAction Forward: TimeoutActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked Users - Integrated `Assert-TeamsCallableEntity`
+- `Set-TeamsCallQueue`:
+  - Small improvement for enumeration of Voicemail Target (now treted the same as a User) and SharedVoicemail Target (now faster lookup)
+  - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
+  - Reworked OverflowAction Forward: OverflowActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked TimeoutAction Forward: TimeoutActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
+  - Reworked Users - Integrated `Assert-TeamsCallableEntity`
+
+#### Auto Attendant
+
+- `Get-TeamsAutoAttendant`: Detailed results now are only displayed for the first 3 results. Beyond that, only Names are displayed. Pipe is unaffected.
+- `New-TeamsAutoAttendant`: **Major Overhaul**
+  - Simplified requirements for Operator. Parameter OperatorType now obsolete as the Target is parsed with Get-TeamsCallableEntity
+  - Added Parameter EnableTranscription to allow for Transcription with all CallTargets (SharedVoicemail)
+  - Removed Parameter Silent as it wasn't implemeneted and should not be used anyway.
+  - Removed all TargetType parameters as the CallTarget is now found with Get-TeamsCallableEntity.
+  - Parameter Schedule now properly overrides Parameter AfterHoursSchedule (renamed from DefaultSchedule)<br \>NOTE: This may have to change to work with one Parameter to allow for a HolidaySchedule
+  - Parameter Validation is now improved
+  - Separated requirements for DefaultCallflow. Using this parameter now overrides BusinessHours Parameters properly.
+  - Separated requirements for CallFlows and CallHandlingAssociations. Using these parameters now overrides AfterHours Parameters properly.
+- Updated Support Functions:
+  - `New-TeamsAutoAttendantDialScope`: Improved lookup for Groups
+  - `New-TeamsAutoAttendantDialSchedule`: TimeFrame 'AllDay' now is open for 24 hours, not 23 hours and 45 minutes.
+
+#### Other Updates
+
+- Multiple functions:
+  - Lookup improvements to gain unique Objects, ValueFromPipeline, correcting pipeline processing. Better debug output before applying settings.
+  - Cleanup of ToDos and improvement of code bits
+  - Better Error management by throwing instead of writing errors.
+- `Get-TeamsTenant` now displays the HostedMigrationOverrideUrl needed to move users
+- `Set-TeamsUserLicense`: Added Parameter PassThru to display the User License Object post change
+- `Format-StringForUse`:
+  - Added more normalisation and verification for UserPrincipalname: ".@" is now properly caught and the dot removed.
+  - Added normalisation for LineURI
+  - Added normalisation for E164 Format (removing the Extension)
+- `Import-TeamsAudioFile`: File path can now have spaces, yay :)
+
+### Look ahead / Planning for vNext
+
+- Licensing: Switch from custom (static) function `Get-TeamsLicense` to dynamically read `Get-AzureAdLicense`.<br />This requires some pondering and testing
+- Module `MicrosoftTeams` - Further testing and stabilisation for `Connect-Me` and `Connect-SkypeOnline` - The clock is ticking...
+- New Function planned: `Get-TeamsVoiceRoutingConfig` drawing the full chain of Voice Routing Config for OVP-OPU-OVR-MGW in one object
+- New Function planned: `New-TeamsCommonAreaPhone` (New-TeamsCAP): Based on New-TeamsResourceAccount, Creating a new AzureAdUser, assigning CAP license if one is available.
+- New Function planned: `Get-TeamsCommonAreaPhone` (Get-TeamsCAP): Get-TeamsUserVoiceConfig, but displaying parameters more relevant to a CAP (like including Policies)
+- New Function planned: `Remove-TeamsCommonAreaPhone` (Remove-TeamsCAP): Based on Remove-TeamsResourceAccount, removing an AzureAdUser after removing license and settings
+- More Auto Attendant love.
+
 ## v20.12 - December 2020 release
 
 ### Component Status
