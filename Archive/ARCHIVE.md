@@ -11,4 +11,10 @@ Here are some of these functions:
 | `Get-SkuIdFromSkuPartNumber`    | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                         | `Get-AzureAdLicense`   |
 | `Get-SkuPartNumberFromSkuId`    | Helper function for Licensing. Returns a SkuPartNumber from a specific SkuID                         |  `Get-AzureAdLicense`  |
 | `Set-TeamsUserPolicy`           | Assigns specific Policies to a User. Currently only six policies available                           | None                   |
+| `Test-TeamsTenantPolicy`        | Tests whether any Policy is present in the Tenant. Used Invoke-Expression                            | None                   |
 | `Write-ErrorRecord`             | Troubleshooting and to display Errors in a more readable format and in the Output stream             | `Write-Error`          |
+| `ProcessLicense`                | Private Function and the gears behind `Add-TeamsUserLicense`                                         |                        |
+| `GetActionOutputObject2`        | Private Function and like Write-ErrorRecord a way to display output                                  |                        |
+| `GetActionOutputObject3`        | Private Function and like Write-ErrorRecord a way to display output                                  |                        |
+
+

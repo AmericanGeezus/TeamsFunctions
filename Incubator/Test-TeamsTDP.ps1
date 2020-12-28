@@ -7,7 +7,7 @@
 
 #TODO - put better controls around it ($1/$2...!)
 # CHECK Get-CsOnlineEffectiveTenantDialPlan and Test-CsOnlineEffectiveTenantDialPlan
-
+# Change to Test-TeamsTenantDialPlan - Alias: Test-TeamsTDP
 function Test-TeamsTDP {
     param(
         [string]$TDP,

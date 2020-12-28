@@ -2,7 +2,7 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   RC
+# Status:   PreLive
 
 
 
@@ -40,7 +40,7 @@ function Remove-TeamsResourceAccountAssociation {
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('Remove-TeamsRAAssoc', 'Remove-CsOnlineApplicationInstance')]
+  [Alias('Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance')]
   [OutputType([System.Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to manipulate.")]
@@ -55,7 +55,7 @@ function Remove-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

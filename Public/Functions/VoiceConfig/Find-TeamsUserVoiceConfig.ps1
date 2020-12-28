@@ -2,7 +2,7 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -152,7 +152,7 @@ function Find-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

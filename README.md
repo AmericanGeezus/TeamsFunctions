@@ -157,15 +157,15 @@ Creating a Menu or a Call Flow feels clunky to me, the commands require excessiv
 
 | Function (Underlying)                                                   | Alias                | Description                                                                                                                 |
 | ----------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `Import-TeamsAudioFile`<br />(Import-CsOnlineAudioFile)                 |                      | Imports an Audio File for use within Call Queues or Auto Attendants                                                    |
-| `New-TeamsAutoAttendantCallFlow`<br />(New-CsAutoAttendantCallFlow)     | New-TeamsAAFlow      | Creates a `CallFlow` Object with a Prompt and Menu and some default options.                                                                  |
-| New-CsAutoAttendantCallHandlingAssociation                              |                      | Not written, as a CallHandlingAssociation is created for use within Auto Attendants and only contain a `Schedule` object and a `CallFlow` object                                                       |
-| `New-TeamsAutoAttendantDialScope`<br />(New-CsAutoAttendantDialScope)   | New-TeamsAAScope     | Creates a `DialScope` Object for provided Office 365 Group Names                                                                   |
-| `New-TeamsAutoAttendantMenu`<br />(New-CsAutoAttendantMenu)             | New-TeamsAAMenu      | Creates a `Menu` Object for Menu Options in two possible inputs                                                                   |
-| `New-TeamsAutoAttendantMenuOption`<br />(New-CsAutoAttendantMenuOption) | New-TeamsAAOption    | Creates a `MenuOption` Object for easier use                                                                   |
-| `New-TeamsAutoAttendantPrompt`<br />(New-CsAutoAttendantPrompt)         | New-TeamsAAPrompt    | Creates a `Prompt` Object and simplifies usage as it determines the type based on the input string. Used in Call Queues, or Auto Attendant Call Flows or Menus  |
-| `New-TeamsAutoAttendantSchedule`<br />(New-CsAutoAttendantSchedule)     | New-TeamsAASchedule  | Creates a `Schedule` Object and simplifies input for use in AA CHA. Multiple default options are available to define business hours for faster provisioning <br />(THIS is missing from Auto Attendants!)               |
-| `New-TeamsCallableEntity`<br />(New-CsAutoAttendantCallableEntity)      | New-TeamsAAEntity    | Creates a `CallableEntity` Object given a CallTarget (type is enumerated)      |
+| `Import-TeamsAudioFile`<br />(Import-CsOnlineAudioFile)                 |                      | Imports an Audio File for use within Call Queues or Auto Attendants                                                         |
+| `New-TeamsAutoAttendantCallFlow`<br />(New-CsAutoAttendantCallFlow)     | New-TeamsAAFlow      | Creates a `CallFlow` Object with a Prompt and Menu and some default options.                                                |
+| New-CsAutoAttendantCallHandlingAssociation                              |                      | Not written yet, a CallHandlingAssociation is created with only contain a `Schedule` object and a `CallFlow` object         |
+| `New-TeamsAutoAttendantDialScope`<br />(New-CsAutoAttendantDialScope)   | New-TeamsAAScope     | Creates a `DialScope` Object for provided Office 365 Group Names                                                            |
+| `New-TeamsAutoAttendantMenu`<br />(New-CsAutoAttendantMenu)             | New-TeamsAAMenu      | Creates a `Menu` Object for Menu Options in two possible inputs                                                             |
+| `New-TeamsAutoAttendantMenuOption`<br />(New-CsAutoAttendantMenuOption) | New-TeamsAAOption    | Creates a `MenuOption` Object for easier use                                                                                |
+| `New-TeamsAutoAttendantPrompt`<br />(New-CsAutoAttendantPrompt)         | New-TeamsAAPrompt    | Creates a `Prompt` Object and simplifies usage as it determines the type based on the input string.                         |
+| `New-TeamsAutoAttendantSchedule`<br />(New-CsAutoAttendantSchedule)     | New-TeamsAASchedule  | Creates a `Schedule` Object and simplifies input for use in AA CHA. Multiple default options are available                  |
+| `New-TeamsCallableEntity`<br />(New-CsAutoAttendantCallableEntity)      | New-TeamsAAEntity    | Creates a `CallableEntity` Object given a CallTarget (type is enumerated)                                                   |
 
 ***
 
@@ -177,22 +177,24 @@ Functions that do not build the core of this module, but nevertheless are useful
 
 Curtesy of Ken Lasko
 
-| Function             | Description                                                                                                   |
-| -------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `Backup-TeamsEV`     | Takes a backup of all EnterpriseVoice related features in Teams.                                              |
-| `Restore-TeamsEV`    | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!                 |
-| `Backup-TeamsTenant` | An adaptation of the above, backing up as much as can be gathered through available `Get`-Commands from the tenant.<br />NOTE: This is currently static, if additional Get-Commands are added this command is not automatically covering this (yet) |
+| Function             | Description                                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `Backup-TeamsEV`     | Takes a backup of all EnterpriseVoice related features in Teams.                                                    |
+| `Restore-TeamsEV`    | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!                       |
+| `Backup-TeamsTenant` | An adaptation of the above, backing up as much as can be gathered through available `Get`-Commands from the tenant. |
+
+NOTE: `Backup-TeamsTenant` is currently static, if additional Get-Commands are added this command is not automatically covering this (yet)
 
 ### Helper functions
 
-| Function                                 | Description                                                                                                            |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `Format-StringForUse`                    | Formats a String and removes special characters that are not allowed for DisplayNames, UserPrincipalNames, LineUri or E.164 Number formats. |
-| `Format-StringRemoveSpecialCharacter`    | Formats a String and removes special characters (harmonising Display Names)                                            |
-| `Get-RegionFromCountryCode`                    | Just a little helper figuring out which geographical region (AMER, EMEA, APAC) a specific country is in.          |
-| `Get-TeamsObjectType`                    | Little brother to `Get-TeamsCallableEntity` Returns the type of any given Object to identify its use in CQs and AAs.                                               |
-| `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain<br />NOTE: This command is deprecated and not maintained any longer                                              |
-| `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove<br />NOTE: This command is deprecated and not maintained any longer                |
+| Function                                 | Description                                                                                                                               |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `Format-StringForUse`                    | Prepares a string for use as DisplayName, UserPrincipalName, LineUri or E.164 Number, removing special characters as needed.              |
+| `Format-StringRemoveSpecialCharacter`    | Formats a String and removes special characters (harmonising Display Names)                                                               |
+| `Get-RegionFromCountryCode`              | Just a little helper figuring out which geographical region (AMER, EMEA, APAC) a specific country is in.                                  |
+| `Get-TeamsObjectType`                    | Little brother to `Get-TeamsCallableEntity` Returns the type of any given Object to identify its use in CQs and AAs.                      |
+| `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain<br />NOTE: This command is evaluated for revival                               |
+| `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove<br />NOTE: This command is evaluated for revival |
 
 ### Test & Assert Functions
 
@@ -200,31 +202,34 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 | Function                          | Description                                                                                                    |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `Assert-AzureAdConnection`        | Tests connection and visual feedback in the Verbose stream if called directly.                                                                          |
-| `Assert-MicrosoftTeamsConnection` | Tests connection and visual feedback in the Verbose stream if called directly.                                                                          |
-| `Assert-SkypeOnlineConnection`    | Tests connection and visual feedback in the Verbose stream if called directly.<br />**Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life* |
+| `Assert-AzureAdConnection`        | Tests connection and visual feedback in the Verbose stream if called directly.                                 |
+| `Assert-MicrosoftTeamsConnection` | Tests connection and visual feedback in the Verbose stream if called directly.                                 |
+| `Assert-SkypeOnlineConnection`    | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*                  |
 | `Test-AzureAdConnection`          | Verifying a Session to AzureAD exists                                                                          |
 | `Test-MicrosoftTeamsConnection`   | Verifying a Session to MicrosoftTeams exists                                                                   |
 | `Test-SkypeOnlineConnection`      | Verifying a Session to SkypeOnline exists                                                                      |
 | `Test-ExchangeOnlineConnection`   | Verifying a Session to ExchangeOnline exists                                                                   |
 | `Test-Module`                     | Verifying the specified Module is loaded                                                                       |
 | `Test-AzureAdGroup`               | Testing whether the Group exists in AzureAd                                                                    |
-| `Test-AzureAdUser`                | Testing whether the User exists in AzureAd<br />NOTE: This also returns TRUE for Resource Accounts as they too are AzureAd Users!                     |
+| `Test-AzureAdUser`                | Testing whether the User exists in AzureAd (NOTE: Resource Accounts are AzureAd Users too!)                    |
 | `Test-TeamsResourceAccount`       | Testing whether a Resource Account exists in AzureAd                                                           |
 | `Test-TeamsUser`                  | Testing whether the User exists in SkypeOnline/Teams                                                           |
-| `Test-TeamsUserLicense`           | Testing whether the User has a specific Teams License<br />NOTE: This is currently limited to the output from `Get-TeamsLicense`                                |
-| `Test-TeamsUserHasCallPlan`       | Testing whether the User has any Call Plan License<br />NOTE: This is currently limited to the output from `Get-TeamsLicense`                                   |
-| `Test-TeamsTenantPolicy`          | Tests whether any Policy is present in the Tenant<br />NOTE: This command is deprecated and not maintained any longer. It uses Invoke-Expression which is not good practice due to security concerns.                                     |
-| `Test-TeamsExternalDNS`           | Tests DNS Records for Skype for Business Online and Teams<br />NOTE: This command is deprecated and not maintained any longer.                                                      |
+| `Test-TeamsUserLicense`           | Testing whether the User has a specific Teams License                                                          |
+| `Test-TeamsUserHasCallPlan`       | Testing whether the User has any Call Plan License                                                             |
+| `Test-TeamsExternalDNS`           | Tests DNS Records for Skype for Business Online and Teams<br />NOTE: This command is evaluated for revival.    |
+
+NOTE: The `Test-TeamsUser*` CmdLets are currently limited to the output from `Get-TeamsLicense`. These will be reworked to draw from `Get-AzureAdLicense` soon.
 
 ***
 
 ## Appendix
 
-### Change Log
+### Documentation and Change Log
 
-- Please see VERSION.md for a detailed breakdown of the Change log.
-- Changes for Pre-Releases are saved in VERSION-PreRelease.md
+- README.md provides a general overview
+- VERSION.md for a detailed breakdown of the Change log.
+- VERSION-PreRelease.md records all changes for Pre-Releases
+- ARCHIVE.md records all removed functions
 
 ### Current issues
 
@@ -234,11 +239,9 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 ### Update/Extension plans
 
-- Adding all Policies to `Set-TeamsUserPolicy` - currently only 6 are supported.
 - Performance improvements, bug fixing and more testing
 - Adding Functional improvements to lookup
-  - Licensing. Embedding of new Functions and replacement of current Variables. (v21.01)
-  - etc.
+- Licensing. Embedding of new Functions and replacement of current Variables. (v21.02)
 - Comparing backups, changed elements for Change control... Looking at Lee Fords backup scripts :)
 
 ### Limitations

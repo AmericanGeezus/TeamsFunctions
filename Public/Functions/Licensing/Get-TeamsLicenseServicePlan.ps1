@@ -2,7 +2,7 @@
 # Function: Licensing
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   PreLive
+# Status:   Deprecated
 
 
 
@@ -40,7 +40,7 @@ function Get-TeamsLicenseServicePlan {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Deprecated
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     class ServicePlan {

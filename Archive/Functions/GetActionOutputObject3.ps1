@@ -1,8 +1,8 @@
 ﻿# Module:     TeamsFunctions
 # Function:   AzureAd Licensing
-# Author: Jeff Brown
+# Author:     Jeff Brown
 # Updated:    17-APR-2020
-# Status:     Unmanaged
+# Status:     Archived
 
 
 
@@ -35,7 +35,7 @@ function GetActionOutputObject3 {
   )
 
   begin {
-    Show-FunctionStatus -Level Unmanaged
+    Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
   } #begin

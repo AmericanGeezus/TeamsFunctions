@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
 # Author:		David Eberhardt
-# Updated:  01-DEC-2020
-# Status:   RC
+# Updated:  01-JAN-2021
+# Status:   Live
 
 
 
@@ -53,7 +53,7 @@ function Get-TeamsObjectType {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Prelive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

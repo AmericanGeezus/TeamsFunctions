@@ -2,7 +2,7 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -43,7 +43,7 @@ function Get-TeamsResourceAccountAssociation {
     Remove-TeamsResourceAccount
 	#>
   [CmdletBinding()]
-  [Alias('Get-TeamsRAAssoc')]
+  [Alias('Get-TeamsRAA')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to manipulate.")]
@@ -52,7 +52,7 @@ function Get-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

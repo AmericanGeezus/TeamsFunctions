@@ -7,12 +7,9 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ### Component Status
 
-- Function Status: 87 Public CmdLets, 9 private CmdLets, 14 Live
-- Development Status: 40 PreLive, 22 RC Functions; 0 in Beta, 5 in Alpha
+- Function Status: 81 Public CmdLets, 6 private CmdLets, 39 Live, 24 PreLive and  10 RC
+- Development Status: 0 in Beta, 5 in Alpha; 6 Unmanaged and 3 Deprecated
 - Pester Test Status: Tests Passed: 1011, Failed: 0, Skipped: 0 NotRun: 0
-- `TeamsUserVoiceConfig` Scripts are in RC/PreLive Status.
-- `TeamsResourceAccount` Scripts are in RC/PreLive Status.
-- `TeamsCallQueue` Scripts are still in RC/PreLive Status.
 - `TeamsAutoAttendant` Scripts have advanced to RC status.
 - `TeamsCallableEntity` Scripts have been improved upon (GET, FIND, NEW and ASSERT)
 - `AzureAdAdminRole` Scripts have been introduced upon (GET and ENABLE)
@@ -148,11 +145,13 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ### Removed Functions
 
+Yes, it is time to remove some Functions. Mainly letting go of unused (unloved) ones.
+
 - `Add-TeamsUserLicense`: Replaced by `Set-TeamsUserLicense`
 - `Get-SkuIdFromSkuPartNumber`: Superceded by functionality in Get-AzureAdLicense
 - `Get-SkuPartNumberFromSkuId`: Superceded by functionality in Get-AzureAdLicense
 - `Set-TeamsUserPolicy`: Limited usability and not used enough. Was using `Invoke-Expression`
-- `Test-TeamsUserPolicy`: Limited usability and not used enough. Was using `Invoke-Expression`
+- `Test-TeamsTenantPolicy`: Limited usability and not used enough. Was using `Invoke-Expression`
 - `Write-ErrorRecord`: Superceded by proper understanding and use of `throw` and `Write-Error`
 - `ProcessLicense`: Private Function and the gears behind `Add-TeamsUserLicense`
 - `GetActionOutputObject2`: Private Function and like Write-ErrorRecord a way to display output

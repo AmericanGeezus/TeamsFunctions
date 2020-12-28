@@ -71,7 +71,7 @@ function Set-TeamsUserPolicy {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Unmanaged
+    Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection

@@ -153,7 +153,7 @@ function Add-TeamsUserLicense {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Deprecated
+    Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

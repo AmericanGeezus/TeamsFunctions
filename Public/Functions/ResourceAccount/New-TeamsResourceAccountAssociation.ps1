@@ -2,7 +2,7 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   RC
+# Status:   PreLive
 
 
 #CHECK Status display...
@@ -49,7 +49,7 @@ function New-TeamsResourceAccountAssociation {
     Remove-TeamsResourceAccount
   #>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'CallQueue')]
-  [Alias('New-TeamsRAAssoc')]
+  [Alias('New-TeamsRAA')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to change")]
@@ -66,7 +66,7 @@ function New-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

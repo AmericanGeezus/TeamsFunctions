@@ -2,7 +2,7 @@
 # Function: Licensing
 # Author:		Philipp, Scripting.up-in-the.cloud
 # Updated:  01-DEC-2020
-# Status:   RC
+# Status:   PreLive
 
 
 
@@ -48,7 +48,7 @@ function Get-AzureAdLicense {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     [System.Collections.ArrayList]$Products = @()
