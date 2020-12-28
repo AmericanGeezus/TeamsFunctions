@@ -15,16 +15,27 @@ function Show-FunctionStatus {
     On-Screen Output depends on Parameter Level
   .PARAMETER Level
     Level of Detail
+	.EXAMPLE
+    Show-FunctionStatus -Level Deprecated
+    Indicates that the Function is deprecated.
   .NOTES
     This will only ever show the status of the first Command in the Stack (i.E. when called from a function).
     It will not display the same information for any nested commands.
-	.EXAMPLE
-		Show-FunctionStatus -Level PreLive
+    Available options are:
+    Alpha:      Function in development. No guarantee of functionality. Here be dragons.
+    Beta:       Function in development. No guarantee of functionality
+    RC:         Release Candidate. Functionality is built
+    Prelive:    Live function that is only lacking Pester tests.
+    Live:       Live function that has proven with tests or without that it delivers.
+
+    Unmanaged:  Legacy Function from SkypeFunctions, not managed
+    Deprecated: Function flagged for removal/replacement
+    Archived:   Function is archived
   #>
 
   [CmdletBinding()]
   param(
-    [Validateset("Alpha", "Beta", "RC", "PreLive", "Live", "Unmanaged", "Deprectated")]
+    [Validateset("Alpha", "Beta", "RC", "PreLive", "Live", "Unmanaged", "Deprectated", "Archived")]
     $Level
   ) #param
 
@@ -61,7 +72,9 @@ function Show-FunctionStatus {
       "Deprecated" {
         Write-Verbose -Message "$Function is [LIVE] but [DEPRECATED]!" -Verbose
       }
-
+      "Archived" {
+        Write-Verbose -Message "$Function is [ARCHIVED]!" -Verbose
+      }
     }
 
   }

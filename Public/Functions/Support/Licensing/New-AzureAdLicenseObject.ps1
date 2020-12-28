@@ -2,7 +2,10 @@
 # Function:   AzureAd Licensing
 # Author:     David Eberhardt
 # Updated:    01-SEP-2020
-# Status:     PreLive
+# Status:     Live
+
+
+
 
 function New-AzureAdLicenseObject {
   <#
@@ -31,7 +34,7 @@ function New-AzureAdLicenseObject {
     Used in Set-TeamsUserLicense and Add-TeamsUserLicense
 	#>
 
-  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [CmdletBinding(ConfirmImpact = 'Low')]
   [OutputType([Microsoft.Open.AzureAD.Model.AssignedLicenses])] #LicenseObject
   param(
     [Parameter(Mandatory = $false, Position = 0, HelpMessage = "SkuId of the license to Add")]
@@ -43,7 +46,7 @@ function New-AzureAdLicenseObject {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
 

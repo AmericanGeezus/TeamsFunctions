@@ -169,14 +169,17 @@ if ($env:username -eq "Julia.Horvath") {
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, Set-TeamsUVC, Get-TeamsUVC, Find-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Enable-Ev, `
-  New-TeamsRA, Set-TeamsRA, Get-TeamsRA, Find-TeamsRA, Remove-TeamsRA, New-TeamsRAassoc, Get-TeamsRAassoc, Remove-TeamsRAassoc, `
-  New-TeamsCQ, Set-TeamsCQ, Get-TeamsCQ, Remove-TeamsCQ, New-TeamsAA, Get-TeamsAA, Remove-TeamsAA, `
-  New-TeamsAAPrompt, New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAASchedule, New-TeamsAAEntity, New-TeamsAAScope, `
-  Set-TeamsAA, Set-TeamsAutoAttendant, Remove-CsOnlineApplicationInstance, New-TeamsAutoAttendantCallHandlingAssociation, New-TeamsAutoAttendantCallableEntity #, `
-  #Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP
+Export-ModuleMember -Alias con, dis, pol, Enable-Ev, `
+  Set-TeamsUVC, Find-TeamsUVC, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, `
+  #Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Test-TeamsTDP, `
+  Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, `
+  Get-TeamsRAA, New-TeamsRAA, Remove-TeamsRAA, Remove-CsOnlineApplicationInstance, `
+  Get-TeamsCQ, New-TeamsCQ, Remove-TeamsCQ, Set-TeamsCQ, `
+  Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, `
+  New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAAPrompt, New-TeamsAAScope, New-TeamsAASchedule, `
+  New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAutoAttendantCallHandlingAssociation #, `
 
-  
+
 # SIG # Begin signature block
 # MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR

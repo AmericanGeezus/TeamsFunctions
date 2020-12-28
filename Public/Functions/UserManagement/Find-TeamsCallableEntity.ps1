@@ -2,7 +2,7 @@
 # Function: CallQueue
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   RC
+# Status:   PreLive
 
 
 
@@ -60,7 +60,7 @@ function Find-TeamsCallableEntity {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   PreLive
+# Updated:  01-DEC-2020
+# Status:   Live
 
 
 
@@ -64,7 +64,7 @@ function Get-TeamsCallQueue {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -95,9 +95,9 @@ function Get-TeamsCallQueue {
       (Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Name
     }
     else {
+      $DNCounter = 0
       #CHECK Explore Workflows with Parallel parsing:
       #foreach -parallel ($DN in $Name) {
-      $DNCounter = 0
       foreach ($DN in $Name) {
         Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation "Querying CsCallQueue" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
         $DNCounter++

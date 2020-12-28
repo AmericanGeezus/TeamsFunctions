@@ -1,8 +1,8 @@
 # Module:   TeamsFunctions
 # Function: Lookup
-# Author:	David Eberhardt
+# Author:	  David Eberhardt
 # Updated:  11-NOV-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -23,7 +23,7 @@ function Get-TeamsTenant {
   )
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection

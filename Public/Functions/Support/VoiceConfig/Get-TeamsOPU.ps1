@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-NOV-2020
-# Status:   PreLive
+# Updated:  01-JAN-2021
+# Status:   Live
 
 
 
@@ -34,7 +34,7 @@ function Get-TeamsOPU {
   )
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection

@@ -1,8 +1,8 @@
-﻿# Module:   TeamsFunctions
-# Function: Licensing
-# Author:		Jeff Brown
-# Updated:  01-AUG-2020
-# Status:   Deprecated
+﻿# Module:     TeamsFunctions
+# Function:   Licensing
+# Author:		  Jeff Brown
+# Updated:    01-AUG-2020
+# Status:     Archived
 
 
 
@@ -153,7 +153,7 @@ function Add-TeamsUserLicense {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Deprecated
+    Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection

@@ -1,16 +1,16 @@
-# Module:   TeamsFunctions
+﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  22-DEC-2020
-# Status:   PreLive
+# Updated:  01-JAN-2021
+# Status:   Live
 
 
 
 
-function Get-TeamsVNR {
+function Get-TeamsTDP {
   <#
   .SYNOPSIS
-    Lists all Normalization Rules for a Tenant Dial Plan
+    Lists all Tenant Dial Plans by Name
   .DESCRIPTION
     To quickly find Tenant Dial Plans to assign, an Alias-Function to Get-CsTenantDialPlan
   .PARAMETER Identity
@@ -34,7 +34,7 @@ function Get-TeamsVNR {
   )
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
@@ -53,12 +53,12 @@ function Get-TeamsVNR {
         $Filtered | Select-Object Identity
       }
       else {
-        $Filtered.NormalizationRules
+        $Filtered
       }
     }
     else {
       Write-Verbose -Message "Finding Tenant Dial Plan Names"
-      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object NormalizationRules -ExpandProperty NormalizationRules | Format-Table -AutoSize
+      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
     }
 
   } #process

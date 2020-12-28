@@ -2,7 +2,7 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -95,7 +95,7 @@ function Get-TeamsResourceAccount {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -160,7 +160,7 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property ApplicationId -EQ -Value $AppId
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      #normalise as E164 and strip everything
+      #TODO normalise as E164 and strip everything
       $SearchString = Format-StringRemoveSpecialCharacter $P | Format-StringForUse -SpecialChars "tel"
       Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"

@@ -2,7 +2,10 @@
 # Function:   Other
 # Author:     David Eberhardt
 # Updated:    01-JUL-2020
-# Status:     PreLive
+# Status:     Archived
+
+
+
 
 function Set-TeamsUserPolicy {
   <#
@@ -68,7 +71,7 @@ function Set-TeamsUserPolicy {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Unmanaged
+    Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection

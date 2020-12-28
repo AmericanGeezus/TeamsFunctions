@@ -2,7 +2,7 @@
 # Function: Testing
 # Author:		David Eberhardt
 # Updated:  01-AUG-2020
-# Status:   Unmanaged
+# Status:   Archived
 
 
 
@@ -37,7 +37,7 @@ function Test-TeamsTenantPolicy {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Unmanaged
+    Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection
@@ -65,13 +65,10 @@ function Test-TeamsTenantPolicy {
       Return $true
     }
     catch [System.Exception] {
-      if ($_.FullyQualifiedErrorId -like "*MissingItem*") {
-        Return $False
+      if ($_.FullyQualifiedErrorId -notlike "*MissingItem*") {
+        Write-Error -Message $_
       }
-      else {
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
-        Return $False
-      }
+      Return $False
     }
     finally {
       $Error.clear()

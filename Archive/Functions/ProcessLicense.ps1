@@ -1,8 +1,11 @@
 ﻿# Module:     TeamsFunctions
 # Function:   AzureAd Licensing
-# Author: Jeff Brown
+# Author:     Jeff Brown
 # Updated:    29-JUN-2020
-# Status:     Deprecated
+# Status:     Archived
+
+
+
 
 function ProcessLicense {
   <#
@@ -66,7 +69,7 @@ function ProcessLicense {
       }
       catch {
         #$Result = GetActionOutputObject2 -Name $UserID -Result "ERROR: Unable to assign $SkuPartNumber`: $_"
-        Write-ErrorRecord $_ #This handles the error message in human readable format.
+        Write-Error -Message "Exception: $($_.Exception.Message)"
       }
     }
     else {

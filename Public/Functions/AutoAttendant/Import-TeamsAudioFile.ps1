@@ -1,8 +1,10 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Support, CallQueue, AutoAttendant
 # Author:     David Eberhardt
-# Updated:    01-SEP-2020
-# Status:     PreLive
+# Updated:    01-JAN-2021
+# Status:     Live
+
+
 
 
 function Import-TeamsAudioFile {
@@ -46,7 +48,7 @@ function Import-TeamsAudioFile {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection

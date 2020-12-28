@@ -73,7 +73,7 @@ function Disconnect-Me {
       Write-Verbose -Message "AzureAD: Caught NullReferenceException. Not to worry"
     }
     catch {
-      Write-ErrorRecord $_
+      throw $_
     }
   } #process
 
