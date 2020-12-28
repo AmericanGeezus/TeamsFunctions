@@ -1,8 +1,8 @@
-﻿# Module:   TeamsFunctions
-# Function: Licensing
-# Author:		Jeff Brown
-# Updated:  01-AUG-2020
-# Status:   Deprecated
+﻿# Module:     TeamsFunctions
+# Function:   Licensing
+# Author:		  Jeff Brown
+# Updated:    01-AUG-2020
+# Status:     Archived
 
 
 

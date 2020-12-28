@@ -1,8 +1,11 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Other
-# Author: Jeff Brown
+# Author:     Jeff Brown
 # Updated:    01-SEP-2020
 # Status:     PreLive
+
+
+
 
 function Remove-TenantDialPlanNormalizationRule {
   <#
@@ -15,10 +18,10 @@ function Remove-TenantDialPlanNormalizationRule {
 		Note: The Module name is still referencing Skype for Business Online (SkypeOnlineConnector).
 	.PARAMETER DialPlan
 		This is the name of a valid dial plan for the tenant. To view available tenant dial plans,
-		use the command Get-CsTenantDialPlan.
+		use the command Get-TeamsTDP.
 	.EXAMPLE
 		Remove-TenantDialPlanNormalizationRule -DialPlan US-OK-OKC-DialPlan
-		Example 1 will display the available normalization rules to remove from dial plan US-OK-OKC-DialPlan.
+		Displays available normalization rules to remove from dial plan US-OK-OKC-DialPlan.
 	.NOTES
 		The dial plan rules will display in format similar the example below:
 		RuleIndex Name            Pattern    Translation

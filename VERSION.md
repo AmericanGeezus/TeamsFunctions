@@ -146,6 +146,18 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
   - Added normalisation for E164 Format (removing the Extension)
 - `Import-TeamsAudioFile`: File path can now have spaces, yay :)
 
+### Removed Functions
+
+- `Add-TeamsUserLicense`: Replaced by `Set-TeamsUserLicense`
+- `Get-SkuIdFromSkuPartNumber`: Superceded by functionality in Get-AzureAdLicense
+- `Get-SkuPartNumberFromSkuId`: Superceded by functionality in Get-AzureAdLicense
+- `Set-TeamsUserPolicy`: Limited usability and not used enough. Was using `Invoke-Expression`
+- `Test-TeamsUserPolicy`: Limited usability and not used enough. Was using `Invoke-Expression`
+- `Write-ErrorRecord`: Superceded by proper understanding and use of `throw` and `Write-Error`
+- `ProcessLicense`: Private Function and the gears behind `Add-TeamsUserLicense`
+- `GetActionOutputObject2`: Private Function and like Write-ErrorRecord a way to display output
+- `GetActionOutputObject3`: Private Function and like Write-ErrorRecord a way to display output
+
 ### Look ahead / Planning for vNext
 
 - Licensing: Switch from custom (static) function `Get-TeamsLicense` to dynamically read `Get-AzureAdLicense`.<br />This requires some pondering and testing

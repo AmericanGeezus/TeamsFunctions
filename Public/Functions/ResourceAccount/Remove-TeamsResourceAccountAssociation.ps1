@@ -120,7 +120,7 @@ function Remove-TeamsResourceAccountAssociation {
             }
           }
           catch {
-            Write-ErrorRecord $_
+            throw $_
           }
         }
         else {

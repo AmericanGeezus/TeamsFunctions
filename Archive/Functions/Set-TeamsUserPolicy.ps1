@@ -2,7 +2,10 @@
 # Function:   Other
 # Author:     David Eberhardt
 # Updated:    01-JUL-2020
-# Status:     PreLive
+# Status:     Archived
+
+
+
 
 function Set-TeamsUserPolicy {
   <#
