@@ -163,7 +163,7 @@ function Find-TeamsUserVoiceRoute {
         # Normalise Number
         #CHECK Normalisation cannot be with StringForUse as it would cut out short dial and other options
         #$NormalisedNumber = Format-StringForUse $DialedNumber -As E164
-        $NormalisedNumber = Format-StringRemoveSpecialCharacter $DialedNumber -SpecialCharacterToKeep "+" # Keep + in case ppl dial E.164
+        #$NormalisedNumber = Format-StringRemoveSpecialCharacter $DialedNumber -SpecialCharacterToKeep "+" # Keep + in case ppl dial E.164
 
         if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name) - NormalisedNumber", ( $NormalisedNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
@@ -171,8 +171,9 @@ function Find-TeamsUserVoiceRoute {
 
         # Query Effective Tenant Dial Plan
         #$EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id" | Test-CsEffectiveTenantDialPlan -DialedNumber $DialedNumber
-        $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id" | Test-CsEffectiveTenantDialPlan -DialedNumber $NormalisedNumber
+        $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id" | Test-CsEffectiveTenantDialPlan -DialedNumber "$DialedNumber"
         #TEST output from Get-CsEffectiveTenantDialPlan. May need to split Get and Test to get both outputs for use.
+        #CHECK Does the number need to be normalised?
         $UserVoiceRouting.EffectiveDialPlan = $EffectiveTDP.DialPlanName
         if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name) - EffectiveTDP", ( $EffectiveTDP | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
