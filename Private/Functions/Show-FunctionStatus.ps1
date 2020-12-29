@@ -35,7 +35,7 @@ function Show-FunctionStatus {
 
   [CmdletBinding()]
   param(
-    [Validateset("Alpha", "Beta", "RC", "PreLive", "Live", "Unmanaged", "Deprectated", "Archived")]
+    [Validateset("Alpha", "Beta", "RC", "PreLive", "Live", "Unmanaged", "Deprecated", "Archived")]
     $Level
   ) #param
 

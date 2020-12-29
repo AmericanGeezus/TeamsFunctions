@@ -49,7 +49,8 @@ function Get-TeamsVNR {
       Write-Verbose -Message "Finding Tenant Dial Plans with Identity '$Identity'"
       $Plans = Get-CsTenantDialPlan -WarningAction SilentlyContinue
       $Filtered = $Plans | Where-Object Identity -Like "*$Identity*"
-      if ( $Filtered.Count -gt 2) {
+      if ( $Filtered.Count -gt 1) {
+        Write-Warning -Message "Result ambiguous. Multiple Tenant Dial Plans found with Identity '$Identity'. Please choose one to display Normalization Rules"
         $Filtered | Select-Object Identity
       }
       else {
@@ -57,8 +58,8 @@ function Get-TeamsVNR {
       }
     }
     else {
-      Write-Verbose -Message "Finding Tenant Dial Plan Names"
-      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object NormalizationRules -ExpandProperty NormalizationRules | Format-Table -AutoSize
+      Write-Verbose -Message "Finding Tenant Dial Plan Names. Please choose one Dial Plan to display Normalisation Rules for."
+      Get-CsTenantDialPlan | Select-Object Identity
     }
 
   } #process

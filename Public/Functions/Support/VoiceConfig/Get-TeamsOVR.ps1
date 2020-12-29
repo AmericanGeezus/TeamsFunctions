@@ -58,7 +58,7 @@ function Get-TeamsOVR {
     }
     else {
       Write-Verbose -Message "Finding Voice Route Names"
-      Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute" | Select-Object Name -ExpandProperty Name
+      Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute" | Select-Object Name
     }
   } #process
 

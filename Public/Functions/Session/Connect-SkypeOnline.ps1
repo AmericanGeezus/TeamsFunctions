@@ -136,7 +136,7 @@ function Connect-SkypeOnline {
 
     # Verifying Module is loaded correctly
     if ( $TeamsModule.Version -ge "1.1.6" -and -not (Get-Module MicrosoftTeams)) {
-      Write-Host "Module 'MicrosoftTeams' - import failed. Trying to import again!"
+      Write-Verbose "Module 'MicrosoftTeams' - import failed. Trying to import again (forcefully)!" -Verbose
       Import-Module MicrosoftTeams -Force -Global
     }
     #endregion

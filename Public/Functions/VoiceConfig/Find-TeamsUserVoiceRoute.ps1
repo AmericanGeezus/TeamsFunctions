@@ -83,7 +83,6 @@ function Find-TeamsUserVoiceRoute {
       [string]$TenantDialPlan
       [string]$DialedNumber
       [string]$EffectiveDialPlan
-      [string]$MatchingPattern
       [string]$TranslatedNumber
       [string]$MatchingRule
       [string]$OnlineVoiceRoutingPolicy
