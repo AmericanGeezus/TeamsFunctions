@@ -231,7 +231,7 @@ function Connect-Me {
     $Operation = "Verifying Parameters"
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
-    #$null = (Disconnect-Me -ErrorAction SilentlyContinue)
+    $null = (Disconnect-Me -ErrorAction SilentlyContinue)
 
     #region Parameter validation
     # Preparing variables
@@ -273,7 +273,7 @@ function Connect-Me {
     $Operation = "Loading Modules"
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    Write-Verbose -Message "$Status - $Operation" -Verbose
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
     if ( $AzureAdModule -and -not $AzureAdPreviewModule ) {
       Import-Module AzureAd -Force -ErrorAction SilentlyContinue
@@ -286,7 +286,7 @@ function Connect-Me {
     $Operation = "Determining Capabilities"
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    Write-Verbose -Message "$Status - $Operation" -Verbose
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
       Write-Verbose -Message "Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
@@ -455,7 +455,7 @@ function Connect-Me {
               $step++
               $Operation = "SkypeOnline - Retrying Connection"
               Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-              Write-Verbose -Message "$Status - $Operation"
+              Write-Verbose -Message "$Status - $Operation" -Verbose
 
               try {
                 $MeToTheO365ServiceParams.Service = $Service

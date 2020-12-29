@@ -181,7 +181,7 @@ function Enable-AzureAdAdminRole {
     # Identity is not mandatory, using connected Session
     if ( -not $PSBoundParameters.ContainsKey('Identity') ) {
       $Identity = (Get-AzureADCurrentSessionInfo).Account.Id
-      Write-Verbose -Message "No Identity Provided, using user currently connected to AzureAd: '$Identity'"
+      Write-Verbose -Message "No Identity Provided, using user currently connected to AzureAd: '$Identity'" -Verbose
     }
 
   } #begin
@@ -232,6 +232,8 @@ function Enable-AzureAdAdminRole {
           Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
         }
         else {
+          #CHECK Write-Host VS Write-Verbose
+          #Write-Host "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -ForegroundColor Cyan
           Write-Verbose -Message "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -Verbose
         }
 
