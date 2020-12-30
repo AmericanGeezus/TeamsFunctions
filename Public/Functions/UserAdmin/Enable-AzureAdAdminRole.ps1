@@ -232,8 +232,6 @@ function Enable-AzureAdAdminRole {
           Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
         }
         else {
-          #CHECK Write-Host VS Write-Verbose
-          #Write-Host "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -ForegroundColor Cyan
           Write-Verbose -Message "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -Verbose
         }
 
