@@ -52,7 +52,7 @@ function Assert-SkypeOnlineConnection {
     }
     else {
       $Sessions = Get-PSSession -WarningAction SilentlyContinue
-      $SkypeSession = $Sessions | Where-Object { $_.Computername -match "online.lync.com" }
+      $SkypeSession = $Sessions | Where-Object { $_.Computername -match "online.lync.com" -or $_.ComputerName -eq "api.interfaces.records.teams.microsoft.com" }
       if ( $SkypeSession ) {
         Write-Verbose "[ASSERT] SkypeOnline: Session found. Trying to reconnect... (authentication required)" -Verbose
         try {
@@ -70,10 +70,25 @@ function Assert-SkypeOnlineConnection {
           Write-Verbose "[ASSERT] SkypeOnline: Session found. Trying to reconnect... (authentication required)" -Verbose
           $Connection = Connect-SkypeOnline
           if ( Test-SkypeOnlineConnection ) {
-            return $(if ($Called) { $true } else { $Connection })
-          }
-          else {
-            return $(if ($Called) { $false })
+            if ($stack.length -ge 5) {
+              return $true
+            }
+            else {
+              try {
+                $Tenant = Get-CsTenant -WarningAction SilentlyContinue -errorAction Stop
+                if ($Called) {
+                  return $(if ($Called) { $true } else { $Connection })
+                }
+
+              }
+              catch {
+                return $(if ($Called) { $false })
+              }
+            }
+
+            else {
+              return $Connection
+            }
           }
         }
         else {

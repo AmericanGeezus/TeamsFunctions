@@ -45,7 +45,7 @@ function Backup-TeamsEV {
     $Filenames = 'DialPlans.txt', 'VoiceRoutes.txt', 'VoiceRoutingPolicies.txt', 'PSTNUsages.txt', 'TranslationRules.txt', 'PSTNGateways.txt'
 
     If ((Get-PSSession | Where-Object -FilterScript {
-          $_.ComputerName -like '*.online.lync.com'
+          $_.Computername -match "online.lync.com" -or $_.ComputerName -eq "api.interfaces.records.teams.microsoft.com"
         }).State -eq 'Opened') {
       Write-Host -Object 'Using existing session credentials'
     }

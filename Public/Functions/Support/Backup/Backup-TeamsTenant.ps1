@@ -53,7 +53,7 @@ function Backup-TeamsTenant {
     $Filenames = '*.txt'
 
     If ((Get-PSSession -WarningAction SilentlyContinue | Where-Object -FilterScript {
-          $_.ComputerName -like '*.online.lync.com'
+          $_.Computername -match "online.lync.com" -or $_.ComputerName -eq "api.interfaces.records.teams.microsoft.com"
         }).State -eq 'Opened') {
       Write-Host -Object 'Using existing session credentials'
     }
