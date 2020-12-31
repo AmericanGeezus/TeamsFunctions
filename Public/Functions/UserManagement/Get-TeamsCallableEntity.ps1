@@ -93,7 +93,7 @@ function Get-TeamsCallableEntity {
 
     foreach ($Id in $Identity) {
       Write-Verbose -Message "Processing '$Id'"
-      if ($Id -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$" -and -not ($Id -match '@')) {
+      if ($Id -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$" -and -not ($Id -match '@')) {
         Write-Verbose "Target is a Tel URI"
         $Id = Format-StringForUse -InputString "$Id" -As LineURI
         $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", "TelURI", "ExternalPstn")
