@@ -24,6 +24,7 @@ function Remove-TeamsCallQueue {
     System.Object
 	.LINK
 		Get-TeamsCallQueue
+		Find-TeamsCallQueue
     Set-TeamsCallQueue
 		New-TeamsCallQueue
     Remove-TeamsCallQueue

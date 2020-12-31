@@ -90,7 +90,7 @@ function New-TeamsAutoAttendantPrompt {
         Write-Verbose -Message "[PROCESS] Creating Auto Attendant Prompt - AudioFile"
         if ($PSCmdlet.ShouldProcess("$Prompt", "New-CsAutoAttendantPrompt")) {
           try {
-            $audioFile = Import-TeamsAudioFile -ApplicationType AutoAttendant -File $String
+            $audioFile = Import-TeamsAudioFile -ApplicationType AutoAttendant -File "$String"
             $Parameters += @{'ActiveType' = "AudioFile" }
             $Parameters += @{'AudioFilePrompt' = "$audioFile" }
           }

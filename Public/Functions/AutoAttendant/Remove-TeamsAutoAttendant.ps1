@@ -23,6 +23,7 @@ function Remove-TeamsAutoAttendant {
   .OUTPUTS
     System.Object
 	.LINK
+    Find-TeamsAutoAttendant
     Get-TeamsAutoAttendant
     Set-TeamsAutoAttendant
     New-TeamsAutoAttendant

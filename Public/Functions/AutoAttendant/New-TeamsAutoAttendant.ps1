@@ -132,6 +132,7 @@ function New-TeamsAutoAttendant {
 		Creates a Auto Attendant with custom settings and friendly names as input
 	.LINK
 		New-TeamsCallQueue
+    Find-TeamsAutoAttendant
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
     Get-TeamsCallableEntity

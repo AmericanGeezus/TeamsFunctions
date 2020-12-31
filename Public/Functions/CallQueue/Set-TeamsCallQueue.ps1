@@ -120,6 +120,7 @@ function Set-TeamsCallQueue {
 		Changes a Call Queue with friendly names as input
 	.LINK
 		New-TeamsCallQueue
+		Find-TeamsCallQueue
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
@@ -429,7 +430,7 @@ function Set-TeamsCallQueue {
       $MOHFileName = Split-Path $MusicOnHoldAudioFile -Leaf
       Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Parsing: '$MOHFileName'" -Verbose
       try {
-        $MOHFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $MusicOnHoldAudioFile -ErrorAction STOP
+        $MOHFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$MusicOnHoldAudioFile" -ErrorAction STOP
         Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Using:   '$($MOHFile.FileName)'"
         $Parameters += @{'MusicOnHoldAudioFileId' = $MOHFile.Id }
       }
@@ -485,7 +486,7 @@ function Set-TeamsCallQueue {
         $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'" -Verbose
         try {
-          $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $WelcomeMusicAudioFile -ErrorAction STOP
+          $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$WelcomeMusicAudioFile" -ErrorAction STOP
           Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)'"
           $Parameters += @{'WelcomeMusicAudioFileId' = $WMFile.Id }
         }
@@ -776,7 +777,7 @@ function Set-TeamsCallQueue {
         $OfSVmFileName = Split-Path $OverflowSharedVoicemailAudioFile -Leaf
         Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OfSVmFileName'" -Verbose
         try {
-          $OfSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $OverflowSharedVoicemailAudioFile -ErrorAction STOP
+          $OfSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$OverflowSharedVoicemailAudioFile" -ErrorAction STOP
           Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OfSVmFile.FileName)'"
           $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OfSVmFile.Id }
         }
@@ -998,7 +999,7 @@ function Set-TeamsCallQueue {
         $ToSVmFileName = Split-Path $TimeoutSharedVoicemailAudioFile -Leaf
         Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$ToSVmFileName'" -Verbose
         try {
-          $ToSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File $TimeoutSharedVoicemailAudioFile -ErrorAction STOP
+          $ToSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$TimeoutSharedVoicemailAudioFile" -ErrorAction STOP
           Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($ToSVmFile.FileName)'"
           $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $ToSVmFile.Id }
         }

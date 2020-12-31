@@ -7,7 +7,7 @@
 
 
 
-function Get-TeamsAutoAttendant {
+function Find-TeamsAutoAttendant {
   <#
 	.SYNOPSIS
 		Queries Auto Attendants and displays friendly Names (UPN or DisplayName)
@@ -25,7 +25,7 @@ function Get-TeamsAutoAttendant {
 		Get-TeamsAutoAttendant
 		Same result as Get-CsAutoAttendant
 	.EXAMPLE
-		Get-TeamsAutoAttendant -Name "My AutoAttendant"
+		Find-TeamsAutoAttendant -Name "My AutoAttendant"
 		Returns an Object for every Auto Attendant found with the String "My AutoAttendant"
 		Operator and Resource Accounts are displayed with friendly name.
   .INPUTS
@@ -41,7 +41,6 @@ function Get-TeamsAutoAttendant {
 		Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
 	.LINK
 		Get-TeamsCallQueue
-    Find-TeamsAutoAttendant
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
     Get-TeamsCallableEntity
@@ -107,8 +106,7 @@ function Get-TeamsAutoAttendant {
         Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
         # Finding all AAs with this Name (Should return one Object, but since it IS a filter, handling it as an array)
         $AAs = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object *
-        $AAs = $AAs | Where-Object Name -eq "$DN"
-        #[int]$AACount = $AAs.Count
+
         if ( -not $AAs) {
           $AACount = 0
         }
@@ -345,4 +343,4 @@ function Get-TeamsAutoAttendant {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
-} #Get-TeamsAutoAttendant
+} #Find-TeamsAutoAttendant

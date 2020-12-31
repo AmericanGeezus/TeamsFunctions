@@ -7,7 +7,7 @@
 
 
 
-function Get-TeamsCallQueue {
+function Find-TeamsCallQueue {
   <#
 	.SYNOPSIS
 		Queries Call Queues and displays friendly Names (UPN or Displayname)
@@ -22,14 +22,14 @@ function Get-TeamsCallQueue {
     Optional Switch. Displays all Parameters of the CallQueue
     This also shows parameters relating to Ids and Diagnostic Parameters.
 	.EXAMPLE
-		Get-TeamsCallQueue
+		Find-TeamsCallQueue
 		Same result as Get-CsCallQueue
 	.EXAMPLE
-		Get-TeamsCallQueue -Name "My CallQueue"
+		Find-TeamsCallQueue -Name "My CallQueue"
 		Returns an Object for every Call Queue found with the String "My CallQueue"
 		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
 	.EXAMPLE
-		Get-TeamsCallQueue -Name "My CallQueue" -Detailed
+		Find-TeamsCallQueue -Name "My CallQueue" -Detailed
     Returns an Object for every Call Queue found with the String "My CallQueue"
     Displays additional Parameters used for Diagnostics & Shared Voicemail.
 		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
@@ -44,6 +44,7 @@ function Get-TeamsCallQueue {
 		Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
 	.LINK
 		New-TeamsCallQueue
+		Find-TeamsCallQueue
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
@@ -53,7 +54,7 @@ function Get-TeamsCallQueue {
   #>
 
   [CmdletBinding()]
-  [Alias('Get-TeamsCQ')]
+  [Alias('Find-TeamsCQ')]
   [OutputType([System.Object[]])]
   param(
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Partial or full Name of the Call Queue to search')]
@@ -106,8 +107,7 @@ function Get-TeamsCallQueue {
         Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
         # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
         $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP -WarningVariable $Warnings
-        $Queues = $Queues | Where-Object Name -eq "$DN"
-        #[int]$QueueCount = $Queues.Count
+
         if ( -not $Queues) {
           $QueueCount = 0
         }
@@ -310,4 +310,4 @@ function Get-TeamsCallQueue {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
-} #Get-TeamsCallQueue
+} #Find-TeamsCallQueue
