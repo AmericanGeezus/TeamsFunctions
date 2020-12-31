@@ -120,7 +120,6 @@ function Set-TeamsCallQueue {
 		Changes a Call Queue with friendly names as input
 	.LINK
 		New-TeamsCallQueue
-		Find-TeamsCallQueue
 		Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue

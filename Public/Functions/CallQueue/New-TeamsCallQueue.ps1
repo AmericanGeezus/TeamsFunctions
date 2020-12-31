@@ -137,7 +137,6 @@ function New-TeamsCallQueue {
     Creates a Call Queue with custom settings and friendly names as input
   .LINK
     New-TeamsCallQueue
-		Find-TeamsCallQueue
     Get-TeamsCallQueue
     Set-TeamsCallQueue
     Remove-TeamsCallQueue
