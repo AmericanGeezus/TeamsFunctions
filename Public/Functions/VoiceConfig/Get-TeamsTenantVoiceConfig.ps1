@@ -157,26 +157,29 @@ function Get-TeamsTenantVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $MSNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      if ( $null -ne $MSNumbers ) {
-        $MSTelephoneNumbers = $MSNumbers.Count
-        $MSTelephoneNumbersFree = $MSNumbers.IsNotAssigned.Count
+      if (-not $global:MSTelephoneNumbers) {
+        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      }
 
-        $MSNumbersUser = $MSNumbers | Where-Object InventoryType -EQ "Subscriber"
-        $MSTelephoneNumbersUser = $MSNumbersUser.Count
-        $MSTelephoneNumbersUserFree = $MSNumbersUser | Where-Object IsNotAssigned -EQ "True"
+      if ( $null -ne $global:MSTelephoneNumbers ) {
+        $MSTelephoneNumbersCount = $global:MSTelephoneNumbers.Count
+        [int]$MSTelephoneNumbersFree = ($global:MSTelephoneNumbers | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersService = $MSNumbers | Where-Object InventoryType -EQ "Service"
-        $MSTelephoneNumbersService = $MSNumbersService.Count
-        $MSTelephoneNumbersServiceFree = $MSNumbersService | Where-Object IsNotAssigned -EQ "True"
+        $MSNumbersUser = $global:MSTelephoneNumbers | Where-Object InventoryType -EQ "Subscriber"
+        [int]$MSTelephoneNumbersUser = $MSNumbersUser.Count
+        [int]$MSTelephoneNumbersUserFree = ($MSNumbersUser | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersTollFree = $MSNumbers | Where-Object InventoryType -EQ "Subscriber"
-        $MSTelephoneNumbersTollFree = $MSNumbersTollFree.Count
-        $MSTelephoneNumbersTollFreeFree = $MSNumbersTollFree | Where-Object IsNotAssigned -EQ "True"
+        $MSNumbersService = $global:MSTelephoneNumbers | Where-Object InventoryType -EQ "Service"
+        [int]$MSTelephoneNumbersService = $MSNumbersService.Count
+        [int]$MSTelephoneNumbersServiceFree = ($MSNumbersService | Where-Object TargetType -NE $null).Count
+
+        $MSNumbersTollFree = $global:MSTelephoneNumbers | Where-Object InventoryType -EQ "TollFree"
+        [int]$MSTelephoneNumbersTollFree = $MSNumbersTollFree.Count
+        [int]$MSTelephoneNumbersTollFreeFree = ($MSNumbersTollFree | Where-Object TargetType -NE $null).Count
 
       }
       else {
-        $MSTelephoneNumbers = 0
+        $MSTelephoneNumbersCount = 0
         $MSTelephoneNumbersFree = 0
         $MSTelephoneNumbersUser = 0
         $MSTelephoneNumbersUserFree = 0
@@ -186,7 +189,7 @@ function Get-TeamsTenantVoiceConfig {
         $MSTelephoneNumbersTollFreeFree = 0
       }
 
-      $Object | Add-Member -MemberType NoteProperty -Name MSTelephoneNumbers -Value $MSTelephoneNumbers
+      $Object | Add-Member -MemberType NoteProperty -Name MSTelephoneNumbers -Value $MSTelephoneNumbersCount
       $Object | Add-Member -MemberType NoteProperty -Name MSTelephoneNumbersFree -Value $MSTelephoneNumbersFree
       $Object | Add-Member -MemberType NoteProperty -Name MSTelephoneNumbersUser -Value $MSTelephoneNumbersUser
       $Object | Add-Member -MemberType NoteProperty -Name MSTelephoneNumbersUserFree -Value $MSTelephoneNumbersUserFree

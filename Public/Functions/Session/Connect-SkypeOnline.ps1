@@ -176,6 +176,9 @@ function Connect-SkypeOnline {
       Write-Error -Message "A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again." -ErrorAction Stop
     }
 
+    # Cleanup of global Variables set
+    Remove-Variable MSTelephoneNumbers -ErrorAction SilentlyContinue
+
   } #begin
 
   process {

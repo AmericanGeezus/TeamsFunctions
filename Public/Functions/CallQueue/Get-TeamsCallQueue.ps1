@@ -96,6 +96,8 @@ function Get-TeamsCallQueue {
     }
     else {
       $DNCounter = 0
+      #TODO Rework this to allow Filtering with Name and NameFilter - Name searches for the exact one (filtering!)
+      #IF COntains * use filter?
       #CHECK Explore Workflows with Parallel parsing:
       #foreach -parallel ($DN in $Name) {
       foreach ($DN in $Name) {

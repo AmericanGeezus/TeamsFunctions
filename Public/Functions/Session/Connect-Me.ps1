@@ -356,6 +356,9 @@ function Connect-Me {
       $MeToTheO365ServiceParams += @{ 'Debug' = $true }
     }
 
+    # Cleanup of global Variables set
+    Remove-Variable MSTelephoneNumbers -ErrorAction SilentlyContinue
+
   } #begin
 
   process {

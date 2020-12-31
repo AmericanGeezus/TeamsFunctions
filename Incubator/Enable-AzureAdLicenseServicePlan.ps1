@@ -93,19 +93,6 @@ function Enable-AzureAdLicenseServicePlan {
     [Alias('TDP')]
     [string]$TenantDialPlan,
 
-    [Parameter(Mandatory, HelpMessage = "Number to assign to the Object")]
-    [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?[0-9]{3,4}-?[0-9]{3}-?[0-9]{3}[0-9]{1,5}((;ext=[0-9]{3,8}))?$") {
-          $True
-        }
-        else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
-          $false
-        }
-      })]
-    [Alias('Number', 'LineURI')]
-    [string]$PhoneNumber,
-
     [Parameter(ParameterSetName = "CallingPlans", Mandatory, HelpMessage = "Enables an Object for Microsoft Calling Plans")]
     [switch]$CallingPlan,
 
@@ -281,9 +268,11 @@ Set-TeamsUserVoiceConfig -DirectRouting -Identity $UserPrincipalName001 -PhoneNu
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Microsoft Phone Numbers from Tenant" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying Microsoft Phone Numbers from Tenant"
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
+      if (-not $global:MSTelephoneNumbers) {
+        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      }
       $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
-      if ($MSNumber -in $MSTelephoneNumbers) {
+      if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
         Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
       }
       else {

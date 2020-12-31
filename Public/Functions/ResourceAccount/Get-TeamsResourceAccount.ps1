@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Add MSnumbers as global variable and draw from it if it exists
 
 function Get-TeamsResourceAccount {
   <#
@@ -82,7 +82,7 @@ function Get-TeamsResourceAccount {
 
     [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName, HelpMessage = "Telephone Number of the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
@@ -123,7 +123,9 @@ function Get-TeamsResourceAccount {
     $Operation = "Gathering Phone Numbers from the Tenant"
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
+    if (-not $global:MSTelephoneNumbers) {
+      $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+    }
   } #begin
 
   process {
@@ -238,7 +240,7 @@ function Get-TeamsResourceAccount {
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
         $MSNumber = Format-StringRemoveSpecialCharacter -String $ResourceAccount.PhoneNumber | Format-StringForUse -SpecialChars "tel"
-        if ($MSNumber -in $MSTelephoneNumbers) {
+        if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
           $ResourceAccountPhoneNumberType = "Microsoft Number"
         }
         else {
