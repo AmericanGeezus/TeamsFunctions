@@ -106,8 +106,10 @@ function Get-TeamsCallQueue {
         Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
         # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
         $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP -WarningVariable $Warnings
+        #TODO: Instead of Find-Cmdlet, Parameter ExactMatch could be introduced to narrow down. Needs to be fed into XLSX
         $Queues = $Queues | Where-Object Name -eq "$DN"
         #[int]$QueueCount = $Queues.Count
+        #CHECK Produces DevideByZero Error for Write-Progress if only 1 has been found
         if ( -not $Queues) {
           $QueueCount = 0
         }

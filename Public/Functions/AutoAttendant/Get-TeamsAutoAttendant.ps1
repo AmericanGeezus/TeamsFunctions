@@ -107,8 +107,10 @@ function Get-TeamsAutoAttendant {
         Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
         # Finding all AAs with this Name (Should return one Object, but since it IS a filter, handling it as an array)
         $AAs = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object *
+        #TODO: Instead of Find-Cmdlet, Parameter ExactMatch could be introduced to narrow down. Needs to be fed into XLSX
         $AAs = $AAs | Where-Object Name -eq "$DN"
         #[int]$AACount = $AAs.Count
+        #CHECK Produces DevideByZero Error for Write-Progress if only 1 has been found
         if ( -not $AAs) {
           $AACount = 0
         }
