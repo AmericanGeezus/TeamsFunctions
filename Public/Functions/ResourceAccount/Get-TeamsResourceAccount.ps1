@@ -18,6 +18,7 @@ function Get-TeamsResourceAccount {
 		Default and positional. One or more UserPrincipalNames to be queried.
 	.PARAMETER DisplayName
 		Optional. Search parameter. Alternative to Find-TeamsResourceAccount
+		Use Find-TeamsUserVoiceConfig for more search options
 	.PARAMETER ApplicationType
 		Optional. Returns all Call Queues or AutoAttendants
 	.PARAMETER PhoneNumber
@@ -44,7 +45,6 @@ function Get-TeamsResourceAccount {
   .OUTPUTS
     System.Object
 	.NOTES
-		CmdLet currently in testing.
 		Pipeline input possible, though untested. Requires figuring out :)
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
@@ -67,11 +67,11 @@ function Get-TeamsResourceAccount {
   [Alias('Get-TeamsRA')]
   [OutputType([System.Object])]
   param (
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Identity", ValueFromPipelineByPropertyName, HelpMessage = "User Principal Name of the Object.")]
+    [Parameter(Position = 0, ParameterSetName = "Identity", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "User Principal Name of the Object.")]
     [Alias("UPN", "UserPrincipalName")]
     [string[]]$Identity,
 
-    [Parameter(Mandatory, ParameterSetName = "DisplayName", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
+    [Parameter(ParameterSetName = "DisplayName", ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
     [ValidateLength(3, 255)]
     [string]$DisplayName,
 
@@ -168,7 +168,7 @@ function Get-TeamsResourceAccount {
     }
     else {
       Write-Verbose -Message "Listing UserPrincipalName only. To query individual items, please provide Identity" -Verbose
-      (Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue).UserPrincipalName
+      Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Select-Object UserPrincipalName
       return
     }
 
