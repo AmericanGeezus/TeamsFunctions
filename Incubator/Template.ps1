@@ -1,60 +1,52 @@
 # Module:   TeamsFunctions
-# Function: VoiceRouting
+# Function:
 # Author:	  David Eberhardt
-# Updated:  28-DEC-2020
+# Updated:  xx-xxxx-2021
 # Status:   Alpha
 
 
 
 
-function Find-TeamsUserVoiceRoute {
+function Verb-Noun {
   <#
   .SYNOPSIS
     Short description
   .DESCRIPTION
     Long description
   .PARAMETER Identity
-    Required. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan
-    User must have a valid Voice Configuration applied for this script to return a valuable result
-  .PARAMETER DialedNumber
-    Optional. If provided, number will be normalised with the effective Dial Plan, then a matching Route will be found for this number
-    If not provided, the first Voice Route will be chosen.
+    x
+  .PARAMETER x
+    x
   .EXAMPLE
-    Find-TeamsUserVoiceRoute -Identity John@domain.com
-    Finds the Voice Route any call for this user may take. First match (Voice Route with the highest priority) will be returned
-  .EXAMPLE
-    Find-TeamsUserVoiceRoute -Identity John@domain.com -DialledNumber "+1(555) 1234-567"
-    Finds the Voice Route a call to the normalised Number +15551234567 for this user may take. The matching Voice Route will be returned
+    Verb-Noun -Identity John@domain.com
+    xx
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
   .NOTES
-    This is a slightly more intricate on Voice routing, enabling comparisons for multiple users.
-    Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www.lee-ford.co.uk
+    xx
   .COMPONENT
-    VoiceConfig
+    xx
   .ROLE
-    VoiceRouting
+    xx
   .FUNCTIONALITY
-    Voice Routing and Troubleshooting
+    xx
   .LINK
-    Find-TeamsUserVoiceConfig
-    Get-TeamsUserVoiceConfig
-    Set-TeamsUserVoiceConfig
+    Verb2-Noun
   #>
 
   [CmdletBinding()]
-  [Alias('Find-TeamsUVR')]
+  [Alias('')]
   [OutputType([PSCustomObject])]
   param (
-    [Parameter(Mandatory, Position = 0, HelpMessage = "Username(s) to query routing for")]
-    [Alias('Username', 'UserPrincipalName')]
+    [Parameter(Mandatory, Position = 0, HelpMessage = "Username(s)")]
+    [Alias('', '')]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "Phone Number to be normalised with the Dial Plan")]
-    [Alias('Number')]
-    [String]$DialedNumber
+    [Parameter(HelpMessage = "")]
+    [Alias('')]
+    [String]$x
 
   )
 
@@ -97,4 +89,4 @@ function Find-TeamsUserVoiceRoute {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Find-TeamsUserVoiceRoute
+} #Verb-Noun

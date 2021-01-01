@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO Add MSnumbers as global variable and draw from it if it exists
+
 
 function Get-TeamsResourceAccount {
   <#
@@ -82,7 +82,7 @@ function Get-TeamsResourceAccount {
 
     [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName, HelpMessage = "Telephone Number of the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
@@ -162,8 +162,7 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property ApplicationId -EQ -Value $AppId
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      #TODO normalise as E164 and strip everything
-      $SearchString = Format-StringRemoveSpecialCharacter $P | Format-StringForUse -SpecialChars "tel"
+      $SearchString = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
       Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
     }

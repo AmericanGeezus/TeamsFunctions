@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-#CHECK Status display...
+
 
 function New-TeamsResourceAccountAssociation {
   <#
