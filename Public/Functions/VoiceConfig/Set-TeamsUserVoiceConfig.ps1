@@ -254,9 +254,11 @@ function Set-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Microsoft Phone Numbers from Tenant" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying Microsoft Phone Numbers from Tenant"
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
+      if (-not $global:MSTelephoneNumbers) {
+        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      }
       $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
-      if ($MSNumber -in $MSTelephoneNumbers) {
+      if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
         Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
       }
       else {
@@ -343,7 +345,7 @@ function Set-TeamsUserVoiceConfig {
           Write-Progress -Id 0 -Status "Provisioning for Direct Routing" -CurrentOperation "Applying Phone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "Applying Phone Number"
           if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
-            If ($PhoneNumber -notmatch "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+            If ($PhoneNumber -notmatch "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
               Write-Error -Message "PhoneNumber is not in an acceptable format. Multiple formats are expected, but preferred is E.164, with a minimum of 8 digits. Extensions will be stripped" -Category InvalidFormat
               return
             }
@@ -398,7 +400,7 @@ function Set-TeamsUserVoiceConfig {
           Write-Progress -Id 0 -Status "Provisioning for Calling Plans" -CurrentOperation "Applying Phone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "Applying Phone Number"
           if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
-            If ($PhoneNumber -notmatch "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{8,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+            If ($PhoneNumber -notmatch "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
               Write-Error -Message "PhoneNumber is not in an acceptable format. Multiple formats are expected, but preferred is E.164, with a minimum of 8 digits. Extensions will be stripped" -Category InvalidFormat
               return
             }

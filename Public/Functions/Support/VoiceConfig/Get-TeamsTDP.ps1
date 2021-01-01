@@ -58,7 +58,7 @@ function Get-TeamsTDP {
     }
     else {
       Write-Verbose -Message "Finding Tenant Dial Plan Names"
-      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity
     }
 
   } #process

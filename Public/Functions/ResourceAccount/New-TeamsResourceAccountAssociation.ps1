@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-#CHECK Status display...
+
 
 function New-TeamsResourceAccountAssociation {
   <#
@@ -101,6 +101,7 @@ function New-TeamsResourceAccountAssociation {
     $Operation = "Determining Entity"
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
+    #CHECK replace with Get-TeamsCallQueue and Get-TeamsAutoAttendant respectively? Would be taking longer, but improve unique result
     switch ($PSCmdlet.ParameterSetName) {
       'CallQueue' {
         $DesiredType = "CallQueue"
@@ -130,11 +131,14 @@ function New-TeamsResourceAccountAssociation {
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
     if ($null -eq $EntityObject) {
-      Write-Error "$DesiredType '$Entity' - Not found" -Category ParserError -RecommendedAction "Please check 'DesiredType' exists with this Name"
+      #throw "$DesiredType '$Entity' - Not found, please check entity exists with this Name"
+      Write-Error -Exception "ObjectNotFound" -Message "$DesiredType '$Entity' - Not found, please check entity exists with this Name"
       return
     }
-    elseif ($EntityObject.GetType().BaseType.Name -eq "Array") {
-      $EntityObject = $EntityObject | Where-Object DisplayName -EQ
+    elseif ($EntityObject -is [Array]) {
+      #TEST This instead!
+      #elseif ($EntityObject.GetType().BaseType.Name -eq "Array") {
+      $EntityObject = $EntityObject | Where-Object Name -EQ "$Entity"
 
       Write-Verbose -Message "'$Entity' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons, a unique Name to process." -Verbose
       Write-Verbose -Message "Here are all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!" -Verbose
@@ -176,9 +180,8 @@ function New-TeamsResourceAccountAssociation {
     Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $Counter = 1
-    # Removing an item from an array that is in a ForEach loop will break the foreach. $Accounts is therefore copied to $AccountsFound for processing
-    $AccountsFound = $Accounts
-    foreach ($Account in $AccountsFound) {
+    [System.Collections.ArrayList]$ValidatedAccounts = @()
+    foreach ($Account in $Accounts) {
       $Status = "Processing"
       $Operation = "'$($Account.UserPrincipalName)'"
       Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
@@ -202,7 +205,7 @@ function New-TeamsResourceAccountAssociation {
       }
       else {
         Write-Error -Message "'$($Account.UserPrincipalName)' - This account cannot be associated as it is already assigned as '$($ExistingConnection.ConfigurationType)'"
-        [void]$Accounts.Remove($Account)
+        continue
       }
 
       # Comparing ApplicationType
@@ -227,7 +230,7 @@ function New-TeamsResourceAccountAssociation {
           }
           catch {
             Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match and could not be changed! Expected: '$DesiredType' - Please change manually or recreate the Account" -Category InvalidType -RecommendedAction "Please change manually or recreate the Account"
-            [void]$Accounts.Remove($Account)
+            continue
           }
 
           $Operation = "Application Type is not '$DesiredType' - Waiting for AzureAD (2s)"
@@ -242,7 +245,7 @@ function New-TeamsResourceAccountAssociation {
           Write-Verbose -Message "$Status - $Operation"
           if ($DesiredType -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId -WarningAction SilentlyContinue).ApplicationId)) {
             Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed to Desired Type: '$DesiredType'" -Category InvalidType
-            [void]$Accounts.Remove($Account)
+            continue
           }
           else {
             Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to '$DesiredType': SUCCESS" -Verbose
@@ -250,14 +253,16 @@ function New-TeamsResourceAccountAssociation {
         }
         else {
           Write-Warning -Message "'$($Account.UserPrincipalName)' - Application type does not match! Expected '$DesiredType' - Omitting account. Please change type manually or use -Force switch"
-          [void]$Accounts.Remove($Account)
+          continue
         }
       }
+
+      [void]$ValidatedAccounts.Add($Account)
       Write-Progress -Id 1 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
     }
 
     # Processing found accounts
-    if ( $Accounts ) {
+    if ( $ValidatedAccounts ) {
       # Processing Assignment
       Write-Verbose -Message "Processing assignment of all Accounts to $DesiredType '$($EntityObject.Name)'"
       $Counter = 1

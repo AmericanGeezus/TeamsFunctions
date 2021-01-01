@@ -15,9 +15,10 @@ function Get-TeamsResourceAccount {
 		Returns one or more Resource Accounts based on input.
 		This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
 	.PARAMETER Identity
-		Required. Positional. One or more UserPrincipalNames to be queried.
+		Default and positional. One or more UserPrincipalNames to be queried.
 	.PARAMETER DisplayName
 		Optional. Search parameter. Alternative to Find-TeamsResourceAccount
+		Use Find-TeamsUserVoiceConfig for more search options
 	.PARAMETER ApplicationType
 		Optional. Returns all Call Queues or AutoAttendants
 	.PARAMETER PhoneNumber
@@ -44,7 +45,6 @@ function Get-TeamsResourceAccount {
   .OUTPUTS
     System.Object
 	.NOTES
-		CmdLet currently in testing.
 		Pipeline input possible, though untested. Requires figuring out :)
 		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
@@ -67,11 +67,11 @@ function Get-TeamsResourceAccount {
   [Alias('Get-TeamsRA')]
   [OutputType([System.Object])]
   param (
-    [Parameter(ParameterSetName = "Identity", Position = 0, ValueFromPipelineByPropertyName, HelpMessage = "User Principal Name of the Object.")]
+    [Parameter(Position = 0, ParameterSetName = "Identity", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "User Principal Name of the Object.")]
     [Alias("UPN", "UserPrincipalName")]
     [string[]]$Identity,
 
-    [Parameter(ParameterSetName = "DisplayName", Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
+    [Parameter(ParameterSetName = "DisplayName", ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
     [ValidateLength(3, 255)]
     [string]$DisplayName,
 
@@ -82,7 +82,7 @@ function Get-TeamsResourceAccount {
 
     [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName, HelpMessage = "Telephone Number of the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
@@ -123,7 +123,9 @@ function Get-TeamsResourceAccount {
     $Operation = "Gathering Phone Numbers from the Tenant"
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
+    if (-not $global:MSTelephoneNumbers) {
+      $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+    }
   } #begin
 
   process {
@@ -160,14 +162,13 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property ApplicationId -EQ -Value $AppId
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      #TODO normalise as E164 and strip everything
-      $SearchString = Format-StringRemoveSpecialCharacter $P | Format-StringForUse -SpecialChars "tel"
+      $SearchString = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
       Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
     }
     else {
       Write-Verbose -Message "Listing UserPrincipalName only. To query individual items, please provide Identity" -Verbose
-      (Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue).UserPrincipalName
+      Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Select-Object UserPrincipalName
       return
     }
 
@@ -238,7 +239,7 @@ function Get-TeamsResourceAccount {
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
         $MSNumber = Format-StringRemoveSpecialCharacter -String $ResourceAccount.PhoneNumber | Format-StringForUse -SpecialChars "tel"
-        if ($MSNumber -in $MSTelephoneNumbers) {
+        if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
           $ResourceAccountPhoneNumberType = "Microsoft Number"
         }
         else {

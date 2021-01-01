@@ -54,6 +54,10 @@ function Disconnect-Me {
     Import-Module MicrosoftTeams -Force -Global # Must import Forcefully as the command otherwise fails (not available)
     Import-Module AzureAD
     #>
+
+    # Cleanup of global Variables set
+    Remove-Variable MSTelephoneNumbers -ErrorAction SilentlyContinue
+
   } #begin
 
   process {

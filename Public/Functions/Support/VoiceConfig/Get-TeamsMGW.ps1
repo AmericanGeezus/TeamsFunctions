@@ -58,7 +58,7 @@ function Get-TeamsMGW {
     }
     else {
       Write-Verbose -Message "Finding Online Pstn Gateway Names"
-      Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
+      Get-CsOnlinePstnGateway | Select-Object Identity
     }
   } #process
 

@@ -10,63 +10,44 @@
 function Get-TeamsCommonAreaPhone {
   <#
 	.SYNOPSIS
-		Enables a User to consume Voice services in Teams (Pstn breakout)
+		Returns Common Area Phones from AzureAD
 	.DESCRIPTION
-    Enables a User for Direct Routing, Microsoft Callings or for use in Call Queues (EvOnly)
-    User requires a Phone System License in any case.
+    Returns one or more AzureAdUser Accounts that are Common Area Phones
+    Accounts returned are strictly limited to having to have the Common Area Phone License assigned.
   .PARAMETER Identity
-    UserPrincipalName (UPN) of the User to change the configuration for
-  .PARAMETER DirectRouting
-    Optional (Default). Limits the Scope to enable an Object for DirectRouting
-  .PARAMETER CallingPlans
-    Required for CallingPlans. Limits the Scope to enable an Object for CallingPlans
+    Default and positional. One or more UserPrincipalNames to be queried
+  .PARAMETER DisplayName
+		Optional. Search parameter.
+		Use Find-TeamsUserVoiceConfig for more search options
   .PARAMETER PhoneNumber
-    Required. Phone Number in E.164 format to be assigned to the User.
-    For DirectRouting, will populate the OnPremLineUri
-    For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
-  .PARAMETER OnlineVoiceRoutingPolicy
-    Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
-  .PARAMETER TenantDialPlan
-    Optional for DirectRouting. Assigns a Tenant Dial Plan to the User
-  .PARAMETER CallingPlanLicense
-    Optional for CallingPlans. Assigns a Calling Plan License to the User.
-    Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
-	.PARAMETER Force
-    By default, this script only applies changed elements. Force overwrites configuration regardless of current status.
-    Additionally Suppresses confirmation inputs except when $Confirm is explicitly specified
-	.PARAMETER WriteErrorLog
-    If Errors are encountered, writes log to C:\Temp
-  .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
-    Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided
-  .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
-    Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
-    If Errors are encountered, they are written to C:\Temp as well as on screen
-  .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided
+		Optional. Returns all Common Area Phones with a specific string in the PhoneNumber
 	.EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
-  .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
+		Get-TeamsCommonAreaPhone
+		Returns all Common Area Phones.
+		NOTE: Depending on size of the Tenant, this might take a while.
+	.EXAMPLE
+		Get-TeamsCommonAreaPhone -Identity MyCAP@TenantName.onmicrosoft.com
+		Returns the Common Area Phone with the Identity specified, if found.
+	.EXAMPLE
+		Get-TeamsCommonAreaPhone -DisplayName "Lobby"
+		Returns all Common Area Phones with "Lobby" as part of their Display Name.
+	.EXAMPLE
+		Get-TeamsCommonAreaPhone -PhoneNumber +1555123456
+		Returns the Resource Account with the Phone Number specified, if found.
   .INPUTS
     System.String
   .OUTPUTS
-    System.Void (without Switch PassThru)
-    System.Object (with Switch PassThru)
-    System.File (with Switch WriteErrorLog)
+    System.Object
 	.NOTES
-    ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
-    assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default.
-    ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
-    Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
-    Optionally can also assign a Calling Plan license prior.
+    Without input, returns all UserPrincipalNames of all found Common Area Phones (by License assigned)
+    Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones
 	.FUNCTIONALITY
 		TeamsUserVoiceConfig
   .LINK
+    Get-TeamsCommonAreaPhone
+    New-TeamsCommonAreaPhone
+    Set-TeamsCommonAreaPhone
+    Remove-TeamsCommonAreaPhone
     Find-TeamsUserVoiceConfig
     Get-TeamsTenantVoiceConfig
     Get-TeamsUserVoiceConfig
@@ -76,59 +57,28 @@ function Get-TeamsCommonAreaPhone {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('New-TeamsCAP')]
+  [Alias('Get-TeamsCAP')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "UserPrincipalName of the User")]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the User")]
     [string]$Identity,
 
-    [Parameter(ParameterSetName = "DirectRouting", HelpMessage = "Enables an Object for Direct Routing")]
-    [switch]$DirectRouting,
+    [Parameter(ParameterSetName = "DisplayName", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
+    [ValidateLength(3, 255)]
+    [string]$DisplayName,
 
-    [Parameter(ParameterSetName = "DirectRouting", Mandatory, HelpMessage = "Name of the Online Voice Routing Policy")]
-    [Alias('OVP')]
-    [string]$OnlineVoiceRoutingPolicy,
-
-    [Parameter(HelpMessage = "Name of the Tenant Dial Plan")]
-    [Alias('TDP')]
-    [string]$TenantDialPlan,
-
-    [Parameter(Mandatory, HelpMessage = "Number to assign to the Object")]
+    [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName, HelpMessage = "Telephone Number of the Object")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?[0-9]{3,4}-?[0-9]{3}-?[0-9]{3}[0-9]{1,5}((;ext=[0-9]{3,8}))?$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
+          Write-Host "Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted." -ForegroundColor Red
           $false
         }
       })]
-    [Alias('Number', 'LineURI')]
-    [string]$PhoneNumber,
-
-    [Parameter(ParameterSetName = "CallingPlans", Mandatory, HelpMessage = "Enables an Object for Microsoft Calling Plans")]
-    [switch]$CallingPlan,
-
-    [Parameter(ParameterSetName = "CallingPlans", HelpMessage = "Calling Plan License to assign to the Object")]
-    [ValidateScript( {
-        $CallingPlanLicenseValues = (Get-TeamsLicense | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $CallingPlanLicenseValues) {
-          $True
-        }
-        else {
-          Write-Host "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
-        }
-      })]
-    [string[]]$CallingPlanLicense,
-
-    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
-    [switch]$Force,
-
-    [Parameter(HelpMessage = "No output is written by default, Switch PassThru will return changed object")]
-    [switch]$PassThru,
-
-    [Parameter(HelpMessage = "Writes a Log File to C:\Temp")]
-    [switch]$WriteErrorLog
+    [Alias("Tel", "Number", "TelephoneNumber")]
+    [string]$PhoneNumber
   ) #param
 
   begin {
@@ -157,6 +107,9 @@ function Get-TeamsCommonAreaPhone {
 
     # Initialising counters for Progress bars
     [int]$step = 0
+    [int]$sMax = 4
+
+    <#
     [int]$sMax = switch ($PsCmdlet.ParameterSetName) {
       "DirectRouting" { 8 }
       "CallingPlans" { if ( -not $CallingPlanLicense ) { 10 } else { 9 } }
@@ -164,6 +117,7 @@ function Get-TeamsCommonAreaPhone {
     if ( $TenantDialPlan ) { $sMax++ }
     if ( $WriteErrorLog ) { $sMax++ }
     if ( $PassThru ) { $sMax++ }
+    #>
   } #begin
 
   process {
@@ -174,10 +128,27 @@ function Get-TeamsCommonAreaPhone {
 
 
     <# Design
-    Wrap for New-AzureAdUser with defaults
-    Analog to New-TeamsResourceAccount, but with CAP License and optional Phone Number to be applied in one go.
-    1 DisplayName - String to be normalised
-    2
+    Wrap for Get-AzureAdUser with display like Get-TeamsUserVoiceConfig and CAP specific policies.
+    Analog to Get-TeamsResourceAccount, but with CAP License
+    Input
+    0 Identities (Lookup with Foreach)
+    1 DisplayName (Search)
+    2 PhoneNumber (Search)
+
+    Filter
+    Common Area Phone License, IPPHone Policy set?
+
+    ValueAdd
+    Warning if CAP license is not assigned (and found via IP Phone Policy - If Used with NEW command - Departmentname (like RA?))
+    Pipelining to SET-TeamsCommonAreaPhone for provisioning (Policy? could also be simply be piped to Grant-CsTeamsIpPhonePolicy...) or
+    Pipelining to Set-TeamsUserVoiceConfig?
+    Pipelining to Set-TeamsUserLicense? (Probably not as these are already Licensed with CAP)
+    Output: Like Get-TeamsUserVoiceConfig with added IPPhone and other relevant policies depending on
+    Add Nested signinmode? or Nest the whole IpPHonePolicy like with AAs?
+    http://blog.schertz.name/2019/11/managing-microsoft-teams-phone-policies/
+    Also Call Park Policy, Calling Policy (CsTeamsIPPhonePolicy, CsTeamsCallingPolicy, CsTeamsCallParkPolicy)
+
+
 
 
 New-AzureAdUser -UserPrincipalName $UserPrincipalName001 -MailNickName $MailNickName001 -DisplayName "$DisplayName001" -UsageLocation US -AccountEnabled $false -PasswordProfile $PasswordProfile;
@@ -281,9 +252,11 @@ Set-TeamsUserVoiceConfig -DirectRouting -Identity $UserPrincipalName001 -PhoneNu
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Microsoft Phone Numbers from Tenant" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying Microsoft Phone Numbers from Tenant"
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue | Select-Object Id
+      if (-not $global:MSTelephoneNumbers) {
+        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      }
       $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
-      if ($MSNumber -in $MSTelephoneNumbers) {
+      if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
         Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
       }
       else {

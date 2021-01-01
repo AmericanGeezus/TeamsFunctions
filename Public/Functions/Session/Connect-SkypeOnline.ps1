@@ -136,7 +136,7 @@ function Connect-SkypeOnline {
 
     # Verifying Module is loaded correctly
     if ( $TeamsModule.Version -ge "1.1.6" -and -not (Get-Module MicrosoftTeams)) {
-      Write-Host "Module 'MicrosoftTeams' - import failed. Trying to import again!"
+      Write-Verbose "Module 'MicrosoftTeams' - import failed. Trying to import again (forcefully)!" -Verbose
       Import-Module MicrosoftTeams -Force -Global
     }
     #endregion
@@ -158,7 +158,7 @@ function Connect-SkypeOnline {
       $ReconnectionPossible = Get-Command -Name $Command -ErrorAction Stop
     }
     catch {
-      Write-Verbose -Message "Command '$Command' not available. Session cannot reconnect. Please disconnect session cleanly before trying to reconnect!"
+      Write-Verbose -Message "Command '$Command' not available. Session cannot reconnect. Please disconnect session cleanly before trying to reconnect!" -Verbose
     }
 
     # Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
@@ -173,8 +173,11 @@ function Connect-SkypeOnline {
 
     # Existing Session
     if (Test-SkypeOnlineConnection) {
-      Write-Error -Message "A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again." -ErrorAction Stop
+      Write-Error -Message "A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again." -ErrorAction Stop
     }
+
+    # Cleanup of global Variables set
+    Remove-Variable MSTelephoneNumbers -ErrorAction SilentlyContinue
 
   } #begin
 
@@ -185,24 +188,33 @@ function Connect-SkypeOnline {
     # UserName
     if ($CsOnlineUsername) {
       if ( $AccountId) {
-        Write-Verbose -Message "Connection Command supports 'Username'. Using '$AccountId'" -Verbose
+        Write-Verbose -Message "$($MyInvocation.MyCommand) - Parameter 'Username' is available. Using '$AccountId'" -Verbose
       }
       else {
         if (Test-AzureADConnection) {
           $AccountId = (Get-AzureADCurrentSessionInfo).Account
-          Write-Verbose -Message "Connection Command supports 'Username'. Using '$AccountId' (connected to AzureAd)" -Verbose
+          Write-Verbose -Message "$($MyInvocation.MyCommand) - Parameter 'Username' is available. Using '$AccountId' (connected to AzureAd)" -Verbose
         }
         else {
-          Write-Verbose -Message "Connection Command supports 'Username'. Please provide Username" -Verbose
+          Write-Verbose -Message "$($MyInvocation.MyCommand) - Parameter 'Username' is available. Please provide Username to use SSO" -Verbose
           $AccountId = Read-Host "Enter the sign-in address of a Skype for Business Admin"
         }
       }
-      $Parameters += @{ 'Username' = $AccountId }
+      if ($AccountId) {
+        $Parameters += @{ 'Username' = $AccountId }
+      }
+      else {
+        Write-Verbose -Message "$($MyInvocation.MyCommand) - 'Username' not provided. Please select Account manually!" -Verbose
+      }
     }
     else {
       if ($AccountId) {
-        Write-Verbose -Message "Connection Command does not support 'Username'. To be able to support MFA, it will not be passed on. Please select Account manually" -Verbose
+        Write-Warning -Message "$($MyInvocation.MyCommand) - Parameter 'Username' is not available. Please select Account manually!"
       }
+      else {
+        Write-Verbose -Message "$($MyInvocation.MyCommand) - Parameter 'Username' is not available. Please select Account manually!" -Verbose
+      }
+
     }
 
     # OverrideAdminDomain

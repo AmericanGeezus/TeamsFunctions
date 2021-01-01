@@ -231,7 +231,7 @@ function Connect-Me {
     $Operation = "Verifying Parameters"
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
-    #$null = (Disconnect-Me -ErrorAction SilentlyContinue)
+    $null = (Disconnect-Me -ErrorAction SilentlyContinue)
 
     #region Parameter validation
     # Preparing variables
@@ -273,7 +273,7 @@ function Connect-Me {
     $Operation = "Loading Modules"
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    Write-Verbose -Message "$Status - $Operation" -Verbose
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
     if ( $AzureAdModule -and -not $AzureAdPreviewModule ) {
       Import-Module AzureAd -Force -ErrorAction SilentlyContinue
@@ -286,7 +286,7 @@ function Connect-Me {
     $Operation = "Determining Capabilities"
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    Write-Verbose -Message "$Status - $Operation" -Verbose
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
       Write-Verbose -Message "Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
@@ -355,6 +355,9 @@ function Connect-Me {
     if ($PSBoundParameters.ContainsKey('Debug')) {
       $MeToTheO365ServiceParams += @{ 'Debug' = $true }
     }
+
+    # Cleanup of global Variables set
+    Remove-Variable MSTelephoneNumbers -ErrorAction SilentlyContinue
 
   } #begin
 
@@ -437,7 +440,7 @@ function Connect-Me {
           $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
         }
         catch {
-          if ($_.ErrorRecord.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
+          if ($_.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
             Write-Verbose -Message "Enable-AzureAdAdminrole - Tenant is not enabled for PIM" -Verbose
           }
           else {
@@ -446,31 +449,34 @@ function Connect-Me {
           $PIMavailable = $false
         }
 
-        if ($ActivatedRoles) {
-          Write-Host "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Retrying connection to SkypeOnline now." -ForegroundColor Cyan
-          if ($RetrySkypeConnection) {
-            $Service = "SkypeOnline"
-            $step++
-            $Operation = "SkypeOnline - Retrying Connection"
-            Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message "$Status - $Operation"
+        if ( -not (Test-SkypeOnlineConnection)) {
+          #retrying connection
+          if ($ActivatedRoles) {
+            Write-Host "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Retrying connection to SkypeOnline now." -ForegroundColor Cyan
+            if ($RetrySkypeConnection) {
+              $Service = "SkypeOnline"
+              $step++
+              $Operation = "SkypeOnline - Retrying Connection"
+              Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+              Write-Verbose -Message "$Status - $Operation" -Verbose
 
-            try {
-              $MeToTheO365ServiceParams.Service = $Service
-              if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-                $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
+              try {
+                $MeToTheO365ServiceParams.Service = $Service
+                if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+                  $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
+                }
+                else {
+                  $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
+                }
               }
-              else {
-                $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
+              catch {
+                Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!). Exception: $($_.Exception.Message)" -ForegroundColor Red
               }
-            }
-            catch {
-              Write-Host "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!). Exception: $($_.Exception.Message)" -ForegroundColor Red
             }
           }
-        }
-        else {
-          Write-Host "Could not enable Admin Roles and therefore not establish Connection to SkypeOnline, please enable them manually and try again. Exception: $($_.Exception.Message)" -ForegroundColor Red
+          else {
+            Write-Host "Could not enable Admin Roles and therefore not establish Connection to SkypeOnline, please enable them manually and try again. Exception: $($_.Exception.Message)" -ForegroundColor Red
+          }
         }
       }
       else {

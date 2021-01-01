@@ -135,7 +135,6 @@ function New-TeamsAutoAttendant {
     New-TeamsAutoAttendant
     Set-TeamsAutoAttendant
     Get-TeamsCallableEntity
-    Find-TeamsCallableEntity
     New-TeamsCallableEntity
     New-TeamsAutoAttendantCallFlow
     New-TeamsAutoAttendantMenu

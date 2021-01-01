@@ -57,6 +57,8 @@ function Enable-TeamsUserForEnterpriseVoice {
       $UserObject = Get-CsOnlineUser $Id -WarningAction SilentlyContinue
       $UserLicense = Get-TeamsUserLicense $Id
       $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+      <# Deactivated due to Islands mode!
+      #TODO need solution for Islands mode
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
         if ($Called) {
@@ -67,7 +69,9 @@ function Enable-TeamsUserForEnterpriseVoice {
           throw [System.InvalidOperationException]::New("$Message")
         }
       }
-      elseif ( $UserObject.InterpretedUserType -notmatch 'User' ) {
+      else
+      #>
+      if ( $UserObject.InterpretedUserType -notmatch 'User' ) {
         $Message = "Object '$Id' is not a User!"
         if ($Called) {
           Write-Warning -Message $Message

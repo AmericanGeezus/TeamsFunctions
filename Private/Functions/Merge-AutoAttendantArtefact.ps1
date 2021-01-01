@@ -106,7 +106,6 @@ function Merge-AutoAttendantArtefact {
             $CallTargetEntity = Get-TeamsCallableEntity $O.CallTarget.Id
 
             #TODO - Remove custom object and use $CallTargetEntity (Select all but ObjectType instead?) - Repeat
-            #CHECK - Define Classes for these objects here?
             $CallTarget = @()
             $CallTarget = [PsCustomObject][ordered]@{
               'Entity'   = $CallTargetEntity.Entity

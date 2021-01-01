@@ -30,13 +30,9 @@ function Get-NewestModule {
     [string[]]$Module
   )
 
-  $Modules = Get-Module -ListAvailable
-
   foreach ($M in $Module) {
-    $MyModule = $Modules | Where-Object Name -EQ $M
-    if ($MyModule) {
-      $MyModule = $($MyModule | Sort-Object Version -Descending)[0]
-    }
+    $MyModule = Get-Module "$M" -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
+
     Write-Output $MyModule
 
   }

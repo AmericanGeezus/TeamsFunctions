@@ -119,7 +119,7 @@ function New-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "Telephone Number to assign")]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?[0-9]{3,4}-?[0-9]{3,4}-?[0-9]{4,5}[0-9]{3,4}((;ext=[0-9]{3,8}))?$") {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
@@ -204,8 +204,11 @@ function New-TeamsResourceAccount {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
       # Loading all Microsoft Telephone Numbers
-      $MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      $PhoneNumberIsMSNumber = ($PhoneNumber -in $MSTelephoneNumbers)
+      if (-not $global:MSTelephoneNumbers) {
+        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      }
+      $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+      $PhoneNumberIsMSNumber = ($MSNumber -in $global:MSTelephoneNumbers.Id)
       Write-Verbose -Message "'$Name' PhoneNumber parsed"
     }
     #endregion
@@ -263,10 +266,11 @@ function New-TeamsResourceAccount {
           Start-Sleep -Milliseconds 1000
           $i++
         }
+        Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" -Status $Status -Completed
+
         $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue
         if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name)", ($ParamResourceAccountCreatedeters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-          "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "Function: $($MyInvocation.MyCommand.Name)", ($ResourceAccountCreated | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
       }
       else {

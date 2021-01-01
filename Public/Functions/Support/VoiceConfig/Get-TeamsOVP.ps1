@@ -58,7 +58,7 @@ function Get-TeamsOVP {
     }
     else {
       Write-Verbose -Message "Finding Online Voice Routing Policy Names"
-      Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+      Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity
     }
 
   } #process

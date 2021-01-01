@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
 # Author:		David Eberhardt
-# Updated:  01-DEC-2020
+# Updated:  01-JAN-2021
 # Status:   Live
 
 
@@ -16,8 +16,10 @@ function Get-TeamsCallQueue {
 		like UserPrincipalName or DisplayName for the following connected Objects
     OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
 	.PARAMETER Name
-		Optional. Searches all Call Queues for this name (multiple results possible).
+		Optional. Searches all Call Queues for this name (unique results).
     If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+	.PARAMETER SearchString
+		Optional. Searches all Call Queues for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays all Parameters of the CallQueue
     This also shows parameters relating to Ids and Diagnostic Parameters.
@@ -26,20 +28,28 @@ function Get-TeamsCallQueue {
 		Same result as Get-CsCallQueue
 	.EXAMPLE
 		Get-TeamsCallQueue -Name "My CallQueue"
-		Returns an Object for every Call Queue found with the String "My CallQueue"
-		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
+		Returns an Object for every Call Queue found with the exact Name "My CallQueue"
 	.EXAMPLE
 		Get-TeamsCallQueue -Name "My CallQueue" -Detailed
     Returns an Object for every Call Queue found with the String "My CallQueue"
     Displays additional Parameters used for Diagnostics & Shared Voicemail.
-		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
+	.EXAMPLE
+		Get-TeamsCallQueue -SearchString "My CallQueue"
+    Returns an Object for every Call Queue matching the String "My CallQueue"
+    Synonymous with Get-CsCallQueue -NameFilter "My CallQueue", but output shown differently.
+	.EXAMPLE
+		Get-TeamsCallQueue -Name "My CallQueue" -SearchString "My CallQueue"
+		Returns an Object for every Call Queue found with the exact Name "My CallQueue" and
+    Returns an Object for every Call Queue matching the String "My CallQueue"
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
   .NOTES
+    Without any parameters, Get-TeamsCallQueue will show names only
+		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
     Main difference to Get-CsCallQueue (apart from the friendly names) is that the
-    Output view is by default detailed
+    Output view more concise
 	.FUNCTIONALITY
 		Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
 	.LINK
@@ -56,9 +66,13 @@ function Get-TeamsCallQueue {
   [Alias('Get-TeamsCQ')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Partial or full Name of the Call Queue to search')]
+    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Call Queue')]
     [AllowNull()]
     [string[]]$Name,
+
+    [Parameter(HelpMessage = 'Partial or full Name of the Call Queue to search')]
+    [Alias('NameFilter')]
+    [string]$SearchString,
 
     [switch]$Detailed
   ) #param
@@ -90,327 +104,214 @@ function Get-TeamsCallQueue {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     # Capturing no input
-    if (-not $PSBoundParameters.ContainsKey('Name')) {
-      Write-Verbose -Message "Listing names only. To query individual items, please provide Name" -Verbose
-      (Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Name
+    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
+      Write-Verbose -Message "No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString" -Verbose
+      Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object Name
+      return
     }
     else {
-      $DNCounter = 0
-      #CHECK Explore Workflows with Parallel parsing:
-      #foreach -parallel ($DN in $Name) {
-      foreach ($DN in $Name) {
-        Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation "Querying CsCallQueue" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
-        $DNCounter++
-        Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
-        # Finding all Queues with this Name (Should return one Object, but since it IS a filter, handling it as an array)
-        $Queues = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction STOP -WarningVariable $Warnings
-
-        if ( -not $Queues) {
-          $QueueCount = 0
-        }
-        elseif ($($Queues.GetType().BaseType.Name) -eq "Object") {
-          $QueueCount = 1
-        }
-        else {
-          $QueueCount = $Queues.Count
-        }
-
-        # Listing names only if more than 3 have been found
-        if ( $QueueCount -gt 5 ) {
-          Write-Verbose -Message "Too many results found, listing names only. To query individual items, please narrow down with Name" -Verbose
-          $Queues | Select-Object Name
-          continue
-        }
-
-        # Reworking Objects
-        $QueueCounter = 0
-        Write-Verbose -Message "[PROCESS] Finding parsable Objects for $QueueCount Queues"
-        foreach ($Q in $Queues) {
-          # Initialising counters for Progress bars
-          Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
-          $QueueCounter++
-          [int]$step = 0
-          [int]$sMax = 6
-
-          # Initialising Arrays
-          [System.Collections.ArrayList]$UserObjects = @()
-          [System.Collections.ArrayList]$DLNames = @()
-          [System.Collections.ArrayList]$AIObjects = @()
-
-          if ( $Detailed ) {
-            [System.Collections.ArrayList]$AgentObjects = @()
-            $sMax++
-          }
-
-          #region Finding OverflowActionTarget
-          $Operation = "Parsing OverflowActionTarget"
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - $Operation"
-          if ($null -eq $Q.OverflowActionTarget) {
-            $OAT = $null
-          }
-          else {
-            switch ($Q.OverflowActionTarget.Type) {
-              "ApplicationEndpoint" {
-                try {
-                  $OATobject = Get-CsOnlineApplicationInstance "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $OAT = $OATobject.UserPrincipalName
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                }
-              }
-              "Mailbox" {
-                try {
-                  $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $OAT = $OATobject.DisplayName
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                }
-              }
-              "User" {
-                try {
-                  $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $OAT = $OATobject.UserPrincipalName
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                }
-              }
-              "Phone" {
-                try {
-                  $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $OAT = $OATobject.UserPrincipalName
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                }
-              }
-              default {
-                try {
-                  $OATobject = Get-AzureADUser -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $OAT = $OATobject.UserPrincipalName
-                  if ($null -eq $OAT) {
-                    try {
-                      $OATobject = Get-AzureADGroup -ObjectId "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $OAT = $OATobject.DisplayName
-                      if ($null -eq $OAT) {
-                        throw
-                      }
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                    }
-                  }
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' OverflowActionTarget: Not enumerated"
-                }
-              }
-            }
-          }
-          # Output: $OAT, $Q.OverflowActionTarget.Type
-          #endregion
-
-          #region Finding TimeoutActionTarget
-          $step++
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation "Parsing TimeoutActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - Parsing TimeoutActionTarget"
-          if ($null -eq $Q.TimeoutActionTarget) {
-            $TAT = $null
-          }
-          else {
-            switch ($Q.TimeoutActionTarget.Type) {
-              "ApplicationEndpoint" {
-                try {
-                  $TATobject = Get-CsOnlineApplicationInstance "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $TAT = $TATObject.UserPrincipalName
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                }
-              }
-              "Mailbox" {
-                try {
-                  $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $TAT = $TATObject.DisplayName
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                }
-              }
-              "User" {
-                try {
-                  $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $TAT = $TATObject.UserPrincipalName
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                }
-              }
-              default {
-                try {
-                  $TATobject = Get-AzureADUser -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                  $TAT = $TATObject.UserPrincipalName
-                  if ($null -eq $TAT) {
-                    try {
-                      $TATobject = Get-AzureADGroup -ObjectId "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue -ErrorAction STOP
-                      $TAT = $TATObject.DisplayName
-                      if ($null -eq $TAT) {
-                        throw
-                      }
-                    }
-                    catch {
-                      Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                    }
-                  }
-                }
-                catch {
-                  Write-Warning -Message "'$($Q.Name)' TimeoutActionTarget: Not enumerated"
-                }
-              }
-            }
-          }
-          # Output: $TAT, $Q.TimeoutActionTarget.Type
-          #endregion
-
-          #region Endpoints
-          # Distribution Lists
-          $Operation = "Parsing DistributionLists"
-          $step++
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - $Operation"
-          foreach ($DL in $Q.DistributionLists) {
-            #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $DLObject = Get-AzureAdGroup -ObjectId "$DL" -WarningAction SilentlyContinue
-            if ($DLObject) {
-              #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
-              [void]$DLNames.Add($DLObject.DisplayName)
-            }
-          }
-          # Output: $DLNames
-
-          # Users
-          $Operation = "Parsing Users"
-          $step++
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - $Operation"
-          foreach ($User in $Q.Users) {
-            $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-            [void]$UserObjects.Add($UserObject)
-          }
-          # Output: $UserObjects.UserPrincipalName
-
-          if ( $Detailed ) {
-            # Parsing Agents only when the detailed Switch is used
-            $Operation = "Parsing Agents"
-            $step++
-            Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message "'$($Q.Name)' - $Operation"
-
-            foreach ($Agent in $Q.Agents) {
-              $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-              [void]$AgentObjects.Add($AgentObject)
-            }
-            # Output: $AgentObjects.UserPrincipalName
-          }
-          #endregion
-
-          #region Application Instance UPNs
-          $Operation = "Parsing Resource Accounts"
-          $step++
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - $Operation"
-          foreach ($AI in $Q.ApplicationInstances) {
-            $AIObject = $null
-            $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
-            if ($null -ne $AIObject) {
-              [void]$AIObjects.Add($AIObject)
-            }
-          }
-
-          # Output: $AIObjects.UserPrincipalName
-          #endregion
-
-          #region Creating Output Object
-          $Operation = "Constructing Output Object"
-          $step++
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "'$($Q.Name)' - $Operation"
-          # Building custom Object with Friendly Names
-          $QueueObject = [PSCustomObject][ordered]@{
-            Identity                  = $Q.Identity
-            Name                      = $Q.Name
-            LanguageId                = $Q.LanguageId
-            UseDefaultMusicOnHold     = $Q.UseDefaultMusicOnHold
-            MusicOnHoldAudioFileName  = $Q.MusicOnHoldFileName
-            WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
-            RoutingMethod             = $Q.RoutingMethod
-            PresenceBasedRouting      = $Q.PresenceBasedRouting
-            AgentAlertTime            = $Q.AgentAlertTime
-            AllowOptOut               = $Q.AllowOptOut
-            ConferenceMode            = $Q.ConferenceMode
-            OverflowThreshold         = $Q.OverflowThreshold
-            OverflowAction            = $Q.OverflowAction
-            OverflowActionTarget      = $OAT
-            OverflowActionTargetType  = $Q.OverflowActionTarget.Type
-          }
-
-          if ($PSBoundParameters.ContainsKey('Detailed') -or $OverflowActionTargetType -eq 'SharedVoiceMail') {
-            # Displays SharedVoiceMail Parameters only if OverflowActionTargetType is set to SharedVoicemail
-            $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailAudioFilePrompt -Value $Q.OverflowSharedVoicemailAudioFilePrompt
-            $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailAudioFilePromptFileName -Value $Q.OverflowSharedVoicemailAudioFilePromptFileName
-            $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailTextToSpeechPrompt -Value $Q.OverflowSharedVoicemailTextToSpeechPrompt
-            $QueueObject | Add-Member -MemberType NoteProperty -Name EnableOverflowSharedVoicemailTranscription -Value $Q.EnableOverflowSharedVoicemailTranscription
-          }
-
-          # Adding Timeout Parameters
-          $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutThreshold -Value $Q.TimeoutThreshold
-          $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutAction -Value $Q.TimeoutAction
-          $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutActionTarget -Value $TAT
-          $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutActionTargetType -Value $Q.TimeoutActionTarget.Type
-
-          if ($PSBoundParameters.ContainsKey('Detailed') -or $TimeoutActionTargetType -eq 'SharedVoiceMail') {
-            # Displays SharedVoiceMail Parameters only if TimeoutActionTargetType is set to SharedVoicemail
-            $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailAudioFilePrompt -Value $Q.TimeoutSharedVoicemailAudioFilePrompt
-            $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailAudioFilePromptFileName -Value $Q.TimeoutSharedVoicemailAudioFilePromptFileName
-            $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailTextToSpeechPrompt -Value $Q.TimeoutSharedVoicemailTextToSpeechPrompt
-            $QueueObject | Add-Member -MemberType NoteProperty -Name EnableTimeoutSharedVoicemailTranscription -Value $Q.EnableTimeoutSharedVoicemailTranscription
-          }
-
-          # Adding Agent Information
-          $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
-          $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
-          $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
-          $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
-          $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped
-
-          if ($PSBoundParameters.ContainsKey('Detailed')) {
-            # Displays Agents
-            $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
-            # Displays all except reserved Parameters (Microsoft Internal)
-            $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
-            $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId
-            $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldFileDownloadUri -Value $Q.MusicOnHoldFileDownloadUri
-            $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicFileDownloadUri -Value $Q.WelcomeMusicFileDownloadUri
-            $QueueObject | Add-Member -MemberType NoteProperty -Name Description -Value $Q.Description
-          }
-
-          # Adding Resource Accounts
-          $QueueObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.Userprincipalname
-          #endregion
-
-          # Output
-          Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
-          Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
-          if ($Warnings) {
-            Write-Warning -Message $Warnings
-          }
-          Write-Output $QueueObject
+      #region Query objects
+      $Queues = @()
+      if ($PSBoundParameters.ContainsKey('Name')) {
+        # Lookup
+        Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
+        foreach ($DN in $Name) {
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
+          $QueuesByName = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $QueuesByName = $QueuesByName | Where-Object Name -EQ "$DN"
+          $Queues += $QueuesByName
         }
       }
+
+      if ($PSBoundParameters.ContainsKey('SearchString')) {
+        # Search
+        Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
+        $QueuesByString = Get-CsCallQueue -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        $Queues += $QueuesByString
+      }
     }
+    #endregion
+
+    # Parsing found Objects
+    Write-Verbose -Message "[PROCESS] Processing found Queues: $QueueCount"
+    $QueueCounter = 0
+    [int]$QueueCount = $Queues.Count
+    #CHECK Explore Workflows with Parallel parsing:
+    #foreach -parallel ($Q in $Queues) {
+    foreach ($Q in $Queues) {
+      # Initialising counters for Progress bars
+      Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
+      $QueueCounter++
+      [int]$step = 0
+      [int]$sMax = 6
+
+      # Initialising Arrays
+      [System.Collections.ArrayList]$UserObjects = @()
+      [System.Collections.ArrayList]$DLNames = @()
+      [System.Collections.ArrayList]$AIObjects = @()
+
+      if ( $Detailed ) {
+        [System.Collections.ArrayList]$AgentObjects = @()
+        $sMax++
+      }
+
+      #region Finding OverflowActionTarget
+      $Operation = "Parsing OverflowActionTarget"
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - $Operation"
+      $OAT = $null
+      if ($Q.OverflowActionTarget) {
+        $OAT = Get-TeamsCallableEntity -Identity "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue
+      }
+      # Output: $OAT
+      #endregion
+
+      #region Finding TimeoutActionTarget
+      $step++
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation "Parsing TimeoutActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - Parsing TimeoutActionTarget"
+      $TAT = $null
+      if ($Q.TimeoutActionTarget) {
+        $TAT = Get-TeamsCallableEntity -Identity "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue
+      }
+      # Output: $TAT
+      #endregion
+
+      #region Endpoints
+      # Distribution Lists
+      $Operation = "Parsing DistributionLists"
+      $step++
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - $Operation"
+      foreach ($DL in $Q.DistributionLists) {
+        #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        $DLObject = Get-AzureADGroup -ObjectId "$DL" -WarningAction SilentlyContinue
+        if ($DLObject) {
+          #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
+          [void]$DLNames.Add($DLObject.DisplayName)
+        }
+      }
+      # Output: $DLNames
+
+      # Users
+      $Operation = "Parsing Users"
+      $step++
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - $Operation"
+      foreach ($User in $Q.Users) {
+        $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+        [void]$UserObjects.Add($UserObject)
+      }
+      # Output: $UserObjects.UserPrincipalName
+
+      if ( $Detailed ) {
+        # Parsing Agents only when the detailed Switch is used
+        $Operation = "Parsing Agents"
+        $step++
+        Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "'$($Q.Name)' - $Operation"
+
+        foreach ($Agent in $Q.Agents) {
+          $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+          [void]$AgentObjects.Add($AgentObject)
+        }
+        # Output: $AgentObjects.UserPrincipalName
+      }
+      #endregion
+
+      #region Application Instance UPNs
+      $Operation = "Parsing Resource Accounts"
+      $step++
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - $Operation"
+      foreach ($AI in $Q.ApplicationInstances) {
+        $AIObject = $null
+        $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
+        if ($null -ne $AIObject) {
+          [void]$AIObjects.Add($AIObject)
+        }
+      }
+
+      # Output: $AIObjects.UserPrincipalName
+      #endregion
+
+      #region Creating Output Object
+      # Building custom Object with Friendly Names
+      $Operation = "Constructing Output Object"
+      $step++
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - $Operation"
+      $QueueObject = $null
+      $QueueObject = [PSCustomObject][ordered]@{
+        Identity                  = $Q.Identity
+        Name                      = $Q.Name
+        LanguageId                = $Q.LanguageId
+        UseDefaultMusicOnHold     = $Q.UseDefaultMusicOnHold
+        MusicOnHoldAudioFileName  = $Q.MusicOnHoldFileName
+        WelcomeMusicAudioFileName = $Q.WelcomeMusicFileName
+        RoutingMethod             = $Q.RoutingMethod
+        PresenceBasedRouting      = $Q.PresenceBasedRouting
+        AgentAlertTime            = $Q.AgentAlertTime
+        AllowOptOut               = $Q.AllowOptOut
+        ConferenceMode            = $Q.ConferenceMode
+        OverflowThreshold         = $Q.OverflowThreshold
+        OverflowAction            = $Q.OverflowAction
+        OverflowActionTarget      = $OAT.Entity
+        OverflowActionTargetType  = $OAT.Type
+      }
+
+      if ($PSBoundParameters.ContainsKey('Detailed') -or $OverflowActionTargetType -eq 'SharedVoiceMail') {
+        # Displays SharedVoiceMail Parameters only if OverflowActionTargetType is set to SharedVoicemail
+        $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailAudioFilePrompt -Value $Q.OverflowSharedVoicemailAudioFilePrompt
+        $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailAudioFilePromptFileName -Value $Q.OverflowSharedVoicemailAudioFilePromptFileName
+        $QueueObject | Add-Member -MemberType NoteProperty -Name OverflowSharedVoicemailTextToSpeechPrompt -Value $Q.OverflowSharedVoicemailTextToSpeechPrompt
+        $QueueObject | Add-Member -MemberType NoteProperty -Name EnableOverflowSharedVoicemailTranscription -Value $Q.EnableOverflowSharedVoicemailTranscription
+      }
+
+      # Adding Timeout Parameters
+      $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutThreshold -Value $Q.TimeoutThreshold
+      $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutAction -Value $Q.TimeoutAction
+      $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutActionTarget -Value $TAT.Entity
+      $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutActionTargetType -Value $TAT.Type
+
+      if ($PSBoundParameters.ContainsKey('Detailed') -or $TimeoutActionTargetType -eq 'SharedVoiceMail') {
+        # Displays SharedVoiceMail Parameters only if TimeoutActionTargetType is set to SharedVoicemail
+        $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailAudioFilePrompt -Value $Q.TimeoutSharedVoicemailAudioFilePrompt
+        $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailAudioFilePromptFileName -Value $Q.TimeoutSharedVoicemailAudioFilePromptFileName
+        $QueueObject | Add-Member -MemberType NoteProperty -Name TimeoutSharedVoicemailTextToSpeechPrompt -Value $Q.TimeoutSharedVoicemailTextToSpeechPrompt
+        $QueueObject | Add-Member -MemberType NoteProperty -Name EnableTimeoutSharedVoicemailTranscription -Value $Q.EnableTimeoutSharedVoicemailTranscription
+      }
+
+      # Adding Agent Information
+      $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
+      $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
+      $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
+      $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
+      $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped
+
+      if ($PSBoundParameters.ContainsKey('Detailed')) {
+        # Displays Agents
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
+        # Displays all except reserved Parameters (Microsoft Internal)
+        $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
+        $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId
+        $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldFileDownloadUri -Value $Q.MusicOnHoldFileDownloadUri
+        $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicFileDownloadUri -Value $Q.WelcomeMusicFileDownloadUri
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Description -Value $Q.Description
+      }
+
+      # Adding Resource Accounts
+      $QueueObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.Userprincipalname
+      #endregion
+
+      # Output
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
+
+      Write-Output $QueueObject
+    }
+
+
 
   } #process
 
