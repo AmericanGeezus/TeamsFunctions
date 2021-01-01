@@ -101,6 +101,7 @@ function New-TeamsResourceAccountAssociation {
     $Operation = "Determining Entity"
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
+    #CHECK replace with Get-TeamsCallQueue and Get-TeamsAutoAttendant respectively? Would be taking longer, but improve unique result
     switch ($PSCmdlet.ParameterSetName) {
       'CallQueue' {
         $DesiredType = "CallQueue"

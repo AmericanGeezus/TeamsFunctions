@@ -10,48 +10,35 @@
 function Get-TeamsCommonAreaPhone {
   <#
 	.SYNOPSIS
-		Enables a User to consume Voice services in Teams (Pstn breakout)
+		Returns Common Area Phones from AzureAD
 	.DESCRIPTION
-    Enables a User for Direct Routing, Microsoft Callings or for use in Call Queues (EvOnly)
+    Returns one or more AzureAdUser Accounts that are (or may be) Common Area Phones
     User requires a Phone System License in any case.
   .PARAMETER Identity
-    UserPrincipalName (UPN) of the User to change the configuration for
-  .PARAMETER DirectRouting
+    UserPrincipalName (UPN) of the User Account(s) to be queried
+  .PARAMETER DisplayName
     Optional (Default). Limits the Scope to enable an Object for DirectRouting
-  .PARAMETER CallingPlans
-    Required for CallingPlans. Limits the Scope to enable an Object for CallingPlans
   .PARAMETER PhoneNumber
     Required. Phone Number in E.164 format to be assigned to the User.
     For DirectRouting, will populate the OnPremLineUri
     For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
-  .PARAMETER OnlineVoiceRoutingPolicy
-    Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
-  .PARAMETER TenantDialPlan
-    Optional for DirectRouting. Assigns a Tenant Dial Plan to the User
-  .PARAMETER CallingPlanLicense
-    Optional for CallingPlans. Assigns a Calling Plan License to the User.
-    Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
-	.PARAMETER Force
-    By default, this script only applies changed elements. Force overwrites configuration regardless of current status.
-    Additionally Suppresses confirmation inputs except when $Confirm is explicitly specified
-	.PARAMETER WriteErrorLog
-    If Errors are encountered, writes log to C:\Temp
-  .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
-    Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided
-  .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
-    Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
-    If Errors are encountered, they are written to C:\Temp as well as on screen
-  .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided
 	.EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
-  .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
+		Get-TeamsCommonAreaPhone
+		Returns all Resource Accounts.
+		NOTE: Depending on size of the Tenant, this might take a while.
+	.EXAMPLE
+		Get-TeamsCommonAreaPhone -Identity ResourceAccount@TenantName.onmicrosoft.com
+		Returns the Resource Account with the Identity specified, if found.
+	.EXAMPLE
+		Get-TeamsCommonAreaPhone -DisplayName "Queue"
+		Returns all Resource Accounts with "Queue" as part of their Display Name.
+		Use Find-TeamsCommonAreaPhone / Find-CsOnlineApplicationInstance for finer search
+	.EXAMPLE
+		Get-TeamsCommonAreaPhone -ApplicationType AutoAttendant
+		Returns all Resource Accounts of the specified ApplicationType.
+	.EXAMPLE
+		Get-TeamsCommonAreaPhone -PhoneNumber +1555123456
+		Returns the Resource Account with the Phone Number specified, if found.
   .INPUTS
     System.String
   .OUTPUTS

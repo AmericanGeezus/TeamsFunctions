@@ -36,7 +36,8 @@ $commandresult | Where-Object SipAddress -eq _____sip:p.cassin@iprad.com
 ## Evaluate sturdier licensing
 
 Remove only if found on user for example / check whether it is in the tenant first...
-#CHECK solve how to remove disabled plans?
+
+### CHECK solve how to remove disabled plans?
 https://www.reddit.com/r/Office365/comments/9kpmok/assign_office_365_licenses_with_powershell/
 
 Figure out a way to enable individual ServicePlans (PhoneSystem) for a User which has a E5 License assigned.
