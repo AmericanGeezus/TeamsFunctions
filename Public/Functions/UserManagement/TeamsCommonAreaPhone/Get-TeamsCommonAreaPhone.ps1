@@ -2,9 +2,9 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   ALPHA
+# Status:   RC
 
-#TODO Build
+#CHECK Add Switch Detailed to integrate effective Policies like AA?
 
 
 function Get-TeamsCommonAreaPhone {
@@ -56,7 +56,7 @@ function Get-TeamsCommonAreaPhone {
     Test-TeamsUserVoiceConfig
 	#>
 
-  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [CmdletBinding(ConfirmImpact = 'Low')]
   [Alias('Get-TeamsCAP')]
   [OutputType([System.Object])]
   param(
@@ -82,7 +82,7 @@ function Get-TeamsCommonAreaPhone {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level ALPHA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -126,8 +126,6 @@ function Get-TeamsCommonAreaPhone {
   } #begin
 
   process {
-    return "This function is not yet built, sorry!"
-
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $CommonAreaPhones = $null
 
