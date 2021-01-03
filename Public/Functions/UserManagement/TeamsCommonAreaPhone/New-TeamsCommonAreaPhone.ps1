@@ -72,12 +72,14 @@ function New-TeamsCommonAreaPhone {
   .COMPONENT
     TeamsUserVoiceConfig
 	.LINK
-    New-TeamsCommonAreaPhone
     Get-TeamsCommonAreaPhone
-    Find-TeamsCommonAreaPhone
+    New-TeamsCommonAreaPhone
     Set-TeamsCommonAreaPhone
     Remove-TeamsCommonAreaPhone
-    #>
+    Find-TeamsUserVoiceConfig
+    Get-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('New-TeamsCAP')]

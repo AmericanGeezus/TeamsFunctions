@@ -63,16 +63,18 @@ function Set-TeamsCommonAreaPhone {
     This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
 	.FUNCTIONALITY
-		Creates a Common Area Phone in AzureAD for use in Teams
+		Changes a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
     TeamsUserVoiceConfig
 	.LINK
-    New-TeamsCommonAreaPhone
     Get-TeamsCommonAreaPhone
-    Find-TeamsCommonAreaPhone
+    New-TeamsCommonAreaPhone
     Set-TeamsCommonAreaPhone
     Remove-TeamsCommonAreaPhone
-    #>
+    Find-TeamsUserVoiceConfig
+    Get-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('Set-TeamsCAP')]

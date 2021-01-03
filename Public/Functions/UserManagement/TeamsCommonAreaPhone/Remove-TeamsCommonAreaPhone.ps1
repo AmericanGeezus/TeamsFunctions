@@ -30,13 +30,15 @@ function Remove-TeamsCommonAreaPhone {
 	.FUNCTIONALITY
 		Removes a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
-    TeamsAutoAttendant
-    TeamsCallQueue
+		TeamsUserVoiceConfig
 	.LINK
-    New-TeamsCommonAreaPhone
     Get-TeamsCommonAreaPhone
+    New-TeamsCommonAreaPhone
     Set-TeamsCommonAreaPhone
     Remove-TeamsCommonAreaPhone
+    Find-TeamsUserVoiceConfig
+    Get-TeamsUserVoiceConfig
+    Set-TeamsUserVoiceConfig
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
