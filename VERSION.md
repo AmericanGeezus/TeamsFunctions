@@ -79,7 +79,6 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
   - Integrated Privileged Identity Management Role activation with `Enable-AzureAdAdminRole` (used only if Module AzureAdPreview is available and PIM is used! )
   - Integrated `Get-AzureAdAdminRole` to query Admin Roles faster
   - Improved feedback by catching all output and displaying custom object at the end when Parameter `NoFeedback` is not chosen.
-  - Removed automatic disconnect from existing sessions
 - `Connect-SkypeOnline`: Complete overhaul
   - Now supports Module MicrosoftTeams or SkypeOnlineConnector (v7, support for v6 has been dropped)
   - Added Custom output object in line with Connect-AzureAd and Connect-MicrosoftTeams
@@ -99,7 +98,7 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 #### Resource Account
 
 - `Remove-TeamsResourceAccount`: Added Parameter PassThru to display UPNs of removed Accounts
-- `Remove-TeamsResourceAccountAssociation`: Added Parameter PassThru to display an Objects detailing the Status of the Account and its associations post change
+- `Remove-TeamsResourceAccountAssociation`: Added Parameter PassThru to display an Object detailing the Status of the Account and its associations post change
 - `New-TeamsResourceAccountAssociation`: Performance update: Now faster lookup of Objects (x10)
 
 #### Call Queue
@@ -113,15 +112,11 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 - `New-TeamsCallQueue`:
   - Small improvement for enumeration of Voicemail Target (now treted the same as a User) and SharedVoicemail Target (now faster lookup)
   - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
-  - Reworked OverflowAction Forward: OverflowActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
-  - Reworked TimeoutAction Forward: TimeoutActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
-  - Reworked Users - Integrated `Assert-TeamsCallableEntity`
+  - Reworked OverflowAction and TimeoutAction 'Forward' as well as Parsing of Users: Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
 - `Set-TeamsCallQueue`:
   - Small improvement for enumeration of Voicemail Target (now treted the same as a User) and SharedVoicemail Target (now faster lookup)
   - Fixed an issue with Call Queues forwarding to Resource Accounts (were treated as users.)
-  - Reworked OverflowAction Forward: OverflowActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
-  - Reworked TimeoutAction Forward: TimeoutActionTarget - Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
-  - Reworked Users - Integrated `Assert-TeamsCallableEntity`
+  - Reworked OverflowAction and TimeoutAction 'Forward' as well as Parsing of Users: Integrated `Get-TeamsCallableEntity` and `Assert-TeamsCallableEntity`
 
 #### Auto Attendant
 
@@ -176,9 +171,7 @@ Yes, it is time to remove some Functions. Mainly letting go of unused (unloved) 
 - Licensing: Switch from custom (static) function `Get-TeamsLicense` to dynamically read `Get-AzureAdLicense`.<br />This requires some pondering and testing
 - Module `MicrosoftTeams` - Further testing and stabilisation for `Connect-Me` and `Connect-SkypeOnline` - The clock is ticking...
 - New Function planned: `Get-TeamsVoiceRoutingConfig` drawing the full chain of Voice Routing Config for OVP-OPU-OVR-MGW in one object
-- New Function planned: `New-TeamsCommonAreaPhone` (New-TeamsCAP): Based on New-TeamsResourceAccount, Creating a new AzureAdUser, assigning CAP license if one is available.
-- New Function planned: `Get-TeamsCommonAreaPhone` (Get-TeamsCAP): Get-TeamsUserVoiceConfig, but displaying parameters more relevant to a CAP (like including Policies)
-- New Function planned: `Remove-TeamsCommonAreaPhone` (Remove-TeamsCAP): Based on Remove-TeamsResourceAccount, removing an AzureAdUser after removing license and settings
+- Proper testing of the new: `TeamsCommonAreaPhone`-Scripts
 - More Auto Attendant love.
 
 ## v20.12 - December 2020 release
