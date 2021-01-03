@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-DEC-2020
+# Updated:  01-JAN-2020
 # Status:   ALPHA
 
 #TODO Build
@@ -10,129 +10,115 @@
 function New-TeamsCommonAreaPhone {
   <#
 	.SYNOPSIS
-		Enables a User to consume Voice services in Teams (Pstn breakout)
+		Creates a new Common Area Phone
 	.DESCRIPTION
-    Enables a User for Direct Routing, Microsoft Callings or for use in Call Queues (EvOnly)
-    User requires a Phone System License in any case.
-  .PARAMETER Identity
-    UserPrincipalName (UPN) of the User to change the configuration for
-  .PARAMETER DirectRouting
-    Optional (Default). Limits the Scope to enable an Object for DirectRouting
-  .PARAMETER CallingPlans
-    Required for CallingPlans. Limits the Scope to enable an Object for CallingPlans
-  .PARAMETER PhoneNumber
-    Required. Phone Number in E.164 format to be assigned to the User.
-    For DirectRouting, will populate the OnPremLineUri
-    For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
-  .PARAMETER OnlineVoiceRoutingPolicy
-    Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
-  .PARAMETER TenantDialPlan
-    Optional for DirectRouting. Assigns a Tenant Dial Plan to the User
-  .PARAMETER CallingPlanLicense
-    Optional for CallingPlans. Assigns a Calling Plan License to the User.
-    Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
-	.PARAMETER Force
-    By default, this script only applies changed elements. Force overwrites configuration regardless of current status.
-    Additionally Suppresses confirmation inputs except when $Confirm is explicitly specified
-	.PARAMETER WriteErrorLog
-    If Errors are encountered, writes log to C:\Temp
-  .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
-    Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided
-  .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
-    Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
-    If Errors are encountered, they are written to C:\Temp as well as on screen
-  .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided
+		Teams Call Queues and Auto Attendants require a Common Area Phone.
+		It can carry a license and optionally also a phone number.
+		This Function was designed to create the ApplicationInstance in AD,
+		apply a UsageLocation to the corresponding AzureAD User,
+		license the User and subsequently apply a phone number, all with one Command.
+	.PARAMETER UserPrincipalName
+		Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string
+	.PARAMETER DisplayName
+		Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
+	.PARAMETER UsageLocation
+		Required. Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
+		Before a License can be assigned, the account needs a Usage Location populated.
+	.PARAMETER License
+		Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
+		If not provided, will default to PhoneSystem_VirtualUser
+		Unlicensed Objects can exist, but cannot be assigned a phone number
+		NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
+	.PARAMETER PhoneNumber
+		Optional. Adds a Microsoft or Direct Routing Number to the Common Area Phone.
+		Requires the Common Area Phone to be licensed (License Switch)
+		Required format is E.164, starting with a '+' and 10-15 digits long.
 	.EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
-  .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
-    Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
+		New-TeamsCommonAreaPhone -UserPrincipalName "Common Area Phone@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
+		Will create a CommonAreaPhone of the type CallQueue with a Usage Location for 'US'
+		User Principal Name will be normalised to: CommonAreaPhone@TenantName.onmicrosoft.com
+		DisplayName will be taken from the User PrincipalName and normalised to "CommonAreaPhone"
+	.EXAMPLE
+		New-TeamsCommonAreaPhone -UserPrincipalName "Common Area Phone@TenantName.onmicrosoft.com" -Displayname "My {CommonAreaPhone}" -ApplicationType CallQueue -UsageLocation US
+		Will create a CommonAreaPhone of the type CallQueue with a Usage Location for 'US'
+		User Principal Name will be normalised to: CommonAreaPhone@TenantName.onmicrosoft.com
+		DisplayName will be normalised to "My CommonAreaPhone"
+	.EXAMPLE
+		New-TeamsCommonAreaPhone -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -Displayname "Mainline" -ApplicationType AutoAttendant -UsageLocation US -License PhoneSystem -PhoneNumber +1555123456
+		Creates a Common Area Phone for Auto Attendants with a Usage Location for 'US'
+		Applies the specified PhoneSystem License (if available in the Tenant)
+		Assigns the Telephone Number if object could be licensed correctly.
   .INPUTS
     System.String
   .OUTPUTS
-    System.Void (without Switch PassThru)
-    System.Object (with Switch PassThru)
-    System.File (with Switch WriteErrorLog)
+    System.Object
 	.NOTES
-    ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
-    assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default.
-    ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
-    Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
-    Optionally can also assign a Calling Plan license prior.
+		Execution requires User Admin Role in Azure AD
 	.FUNCTIONALITY
-		TeamsUserVoiceConfig
-  .LINK
-    Find-TeamsUserVoiceConfig
-    Get-TeamsTenantVoiceConfig
-    Get-TeamsUserVoiceConfig
-    Set-TeamsUserVoiceConfig
-    Remove-TeamsUserVoiceConfig
-    Test-TeamsUserVoiceConfig
-	#>
+		Creates a Common Area Phone in AzureAD for use in Teams
+  .COMPONENT
+    TeamsAutoAttendant
+    TeamsCallQueue
+	.LINK
+    New-TeamsCommonAreaPhone
+    Get-TeamsCommonAreaPhone
+    Find-TeamsCommonAreaPhone
+    Set-TeamsCommonAreaPhone
+    Remove-TeamsCommonAreaPhone
+    #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('New-TeamsCAP')]
+  [Alias('New-TeamsRA')]
   [OutputType([System.Object])]
-  param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "UserPrincipalName of the User")]
-    [string]$Identity,
+  param (
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = "UPN of the Object to create.")]
+    [ValidateScript( {
+        If ($_ -match '@') {
+          $True
+        }
+        else {
+          Write-Host "Must be a valid UPN" -ForegroundColor Red
+          $false
+        }
+      })]
+    [Alias("Identity")]
+    [string]$UserPrincipalName,
 
-    [Parameter(ParameterSetName = "DirectRouting", HelpMessage = "Enables an Object for Direct Routing")]
-    [switch]$DirectRouting,
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = "Display Name for this Object")]
+    [string]$DisplayName,
 
-    [Parameter(ParameterSetName = "DirectRouting", Mandatory, HelpMessage = "Name of the Online Voice Routing Policy")]
-    [Alias('OVP')]
-    [string]$OnlineVoiceRoutingPolicy,
+    [Parameter(Mandatory = $true, HelpMessage = "Usage Location to assign")]
+    [string]$UsageLocation,
 
-    [Parameter(HelpMessage = "Name of the Tenant Dial Plan")]
-    [Alias('TDP')]
-    [string]$TenantDialPlan,
+    [Parameter(HelpMessage = "License to be assigned")]
+    [ValidateScript( {
+        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) {
+          return $true
+        }
+        else {
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          return $false
+        }
+      })]
+    [string]$License,
 
-    [Parameter(Mandatory, HelpMessage = "Number to assign to the Object")]
+    [Parameter(HelpMessage = "Telephone Number to assign")]
     [ValidateScript( {
         If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
+          Write-Host "Not a valid phone number. Must start with a + and 8 to 15 digits long" -ForegroundColor Red
           $false
         }
       })]
-    [Alias('Number', 'LineURI')]
-    [string]$PhoneNumber,
-
-    [Parameter(ParameterSetName = "CallingPlans", Mandatory, HelpMessage = "Enables an Object for Microsoft Calling Plans")]
-    [switch]$CallingPlan,
-
-    [Parameter(ParameterSetName = "CallingPlans", HelpMessage = "Calling Plan License to assign to the Object")]
-    [ValidateScript( {
-        $CallingPlanLicenseValues = (Get-TeamsLicense | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $CallingPlanLicenseValues) {
-          $True
-        }
-        else {
-          Write-Host "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
-        }
-      })]
-    [string[]]$CallingPlanLicense,
-
-    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
-    [switch]$Force,
-
-    [Parameter(HelpMessage = "No output is written by default, Switch PassThru will return changed object")]
-    [switch]$PassThru,
-
-    [Parameter(HelpMessage = "Writes a Log File to C:\Temp")]
-    [switch]$WriteErrorLog
+    [Alias("Tel", "Number", "TelephoneNumber")]
+    [string]$PhoneNumber
   ) #param
 
   begin {
-    Show-FunctionStatus -Level ALPHA
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -152,332 +138,350 @@ function New-TeamsCommonAreaPhone {
       $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
 
-    # Initialising $ErrorLog
-    [System.Collections.ArrayList]$ErrorLog = @()
-
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = switch ($PsCmdlet.ParameterSetName) {
-      "DirectRouting" { 8 }
-      "CallingPlans" { if ( -not $CallingPlanLicense ) { 10 } else { 9 } }
-    }
-    if ( $TenantDialPlan ) { $sMax++ }
-    if ( $WriteErrorLog ) { $sMax++ }
-    if ( $PassThru ) { $sMax++ }
+    [int]$sMax = 10
+    if ( $License ) { $sMax = $sMax + 2 }
+    if ( $License -and $PhoneNumber ) { $sMax++ }
+    if ( $PhoneNumber ) { $sMax = $sMax + 2 }
+
   } #begin
 
   process {
-    return "This function is not yet built, sorry!"
-
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    #region PREPARATION
+    $Status = "Verifying input"
+    #region Normalising $UserPrincipalname
+    $Operation = "Normalising UserPrincipalName"
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    $UPN = Format-StringForUse -InputString $UserPrincipalName -As UserPrincipalName
+    Write-Verbose -Message "UserPrincipalName normalised to: '$UPN'"
+    #endregion
 
-
-
-    <# Design
-    Wrap for New-AzureAdUser with defaults
-    Analog to New-TeamsResourceAccount, but with CAP License and optional Phone Number to be applied in one go.
-    1 DisplayName - String to be normalised
-    2
-
-
-New-AzureAdUser -UserPrincipalName $UserPrincipalName001 -MailNickName $MailNickName001 -DisplayName "$DisplayName001" -UsageLocation US -AccountEnabled $false -PasswordProfile $PasswordProfile;
-# Wait 10-20s
-Set-TeamsUserLicense -Identity $UserPrincipalName001 -Add CommonAreaPhone;
-# Wait 5-10mins
-Set-TeamsUserVoiceConfig -DirectRouting -Identity $UserPrincipalName001 -PhoneNumber "tel:+12038163105;ext=3105" -OVP "OVP-AMER-GSIP" -TDP "DP-US-DDI" -PassThru
-
-
-    #>
-
-    Write-Verbose -Message "[PROCESS] Processing '$Identity'"
-    #region Information Gathering and Verification
-    # Excluding Resource Accounts
-    Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Account Type is not a Resource Account" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "Querying Account Type"
-    $ResourceAccounts = (Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue).UserPrincipalName
-    if ( $Identity -in $ResourceAccounts) {
-      Write-Error -Message "Resource Account specified! Please use Set-TeamsResourceAccount to provision Resource Accounts" -Category InvalidType -RecommendedAction "Please use Set-TeamsResourceAccount to provision Resource Accounts"
-      return
-    }
-
-    # Querying Identity
-    try {
-      $step++
-      Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying User Account" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "Querying User Account"
-      $CsUser = Get-TeamsUserVoiceConfig "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
-      $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
-    }
-    catch {
-      Write-Error "User '$Identity' not found: $($_.Exception.Message)" -Category ObjectNotFound
-      $ErrorLog += $_.Exception.Message
-      return $ErrorLog
-    }
-
-    # Querying User Licenses
-    try {
-      $step++
-      Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying User License" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "Querying User License"
-      if ( $CsUser.PhoneSystemStatus.Count -gt 1 ) {
-        Write-Verbose -Message "License Status:" -Verbose
-        $CsUser.Licenses
-        $CsUser.ServicePlans
-      }
-
-      if ( "Success" -notin $CsUser.PhoneSystemStatus ) {
-        throw "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
-      }
-
-    }
-    catch {
-      # Unlicensed
-      Write-Warning -Message "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'. Assignment will continue, though be only partially successful. "
-      Write-Verbose -Message "License Status:" -Verbose
-      $CsUser.Licenses
-      $ErrorLog += $_.Exception.Message
-      return
-    }
-
-    # Enable if not Enabled for EnterpriseVoice
+    #region Normalising $DisplayName
+    $Operation = "Normalising DisplayName"
     $step++
-    Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Enterprise Voice Enablement" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "Enterprise Voice Enablement"
-    if ( -not $IsEVenabled) {
-      #Write-Verbose -Message "Enterprise Voice Status: Not enabled, trying to Enable user." -Verbose
-      if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
-      }
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    if ($PSBoundParameters.ContainsKey("DisplayName")) {
+      $Name = Format-StringForUse -InputString $DisplayName -As DisplayName
     }
-
-    if ( -not $IsEVenabled) {
-      Write-Error -Message "Enterprise Voice Status: Not enabled - Could not enable Object. Please investigate"
-      return
+    else {
+      $Name = Format-StringForUse -InputString $($UserPrincipalName.Split('@')[0]) -As DisplayName
     }
+    Write-Verbose -Message "DisplayName normalised to: '$Name'"
+    #endregion
 
-    # Calling Plans - Number verification
-    if ( $PSCmdlet.ParameterSetName -eq "CallingPlans" ) {
-      # Validating License assignment
-      try {
-        if ( -not $CallingPlanLicense ) {
-          $step++
-          Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Testing Calling Plan License" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "Parameter CallingPlanLicense not specified. Testing for existing licenses"
-          if ( -not $CsUser.LicensesAssigned.Contains('Calling')) {
-            throw "User is not licensed correctly. Please check License assignment. A Calling Plan License is required"
-          }
-        }
-      }
-      catch {
-        # Unlicensed
-        $ErrorLogMessage = "User is not licensed (CallingPlan). Please assign a Calling Plan license"
-        Write-Error -Message $ErrorLogMessage -Category ResourceUnavailable -RecommendedAction "Please assign a Calling Plan license" -ErrorAction Stop
-        $ErrorLog += $ErrorLogMessage
-        $ErrorLog += $_.Exception.Message
-        return $ErrorLog
-      }
-
-      # Validating Number
+    #region PhoneNumbers
+    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+      $Operation = "Parsing PhoneNumbers from the Tenant"
       $step++
-      Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Microsoft Phone Numbers from Tenant" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "Querying Microsoft Phone Numbers from Tenant"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      # Loading all Microsoft Telephone Numbers
       if (-not $global:MSTelephoneNumbers) {
         $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
       }
       $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
-      if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
-        Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
+      $PhoneNumberIsMSNumber = ($MSNumber -in $global:MSTelephoneNumbers.Id)
+      Write-Verbose -Message "'$Name' PhoneNumber parsed"
+    }
+    #endregion
+
+    #region UsageLocation
+    $Operation = "Parsing UsageLocation"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    if ($PSBoundParameters.ContainsKey('UsageLocation')) {
+      Write-Verbose -Message "'$Name' UsageLocation parsed: Using '$UsageLocation'"
+    }
+    else {
+      # Querying Tenant Country as basis for Usage Location
+      # This is never triggered as UsageLocation is mandatory! Remaining here regardless
+      $Tenant = Get-CsTenant -WarningAction SilentlyContinue
+      if ($null -ne $Tenant.CountryAbbreviation) {
+        $UsageLocation = $Tenant.CountryAbbreviation
+        Write-Warning -Message "'$Name' UsageLocation not provided. Defaulting to: $UsageLocation. - Please verify and change if needed!"
       }
       else {
-        $ErrorLogMessage = "Phone Number '$PhoneNumber' is not found in the Tenant. Please provide an available number"
-        Write-Error -Message $ErrorLogMessage
-        $ErrorLog += $ErrorLogMessage
+        Write-Error -Message "'$Name' Usage Location not provided and Country not found in the Tenant!" -Category ObjectNotFound -RecommendedAction "Please run command again and specify -UsageLocation" -ErrorAction Stop
+      }
+    }
+    #endregion
+    #endregion
+
+
+    #region ACTION
+    $Status = "Creating Object"
+    #region Creating Account
+    $Operation = "Creating Common Area Phone"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    try {
+      #Trying to create the Common Area Phone
+      Write-Verbose -Message "'$Name' Creating Common Area Phone with New-AzureAdUser..."
+      if ($PSCmdlet.ShouldProcess("$UPN", "New-AzureAdUser")) {
+        #TODO Add all requirements for the AzureAdUser
+        $null = (New-AzureADUser -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
+        $i = 0
+        $iMax = 20
+        Write-Verbose -Message "Common Area Phone '$Name' created; Please be patient while we wait ($iMax s) to be able to parse the Object." -Verbose
+        $Status = "Querying User"
+        $Operation = "Waiting for Get-AzureAdUser to return a Result"
+        Write-Verbose -Message "$Status - $Operation"
+        while ( -not (Test-AzureADUser $UPN)) {
+          if ($i -gt $iMax) {
+            Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction "Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsCommonAreaPhone"
+            return
+          }
+          Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" `
+            -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+
+          Start-Sleep -Milliseconds 1000
+          $i++
+        }
+        Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" -Status $Status -Completed
+
+        $CommonAreaPhoneCreated = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue
+        if ($PSBoundParameters.ContainsKey('Debug')) {
+          "Function: $($MyInvocation.MyCommand.Name)", ($CommonAreaPhoneCreated | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
+      }
+      else {
+        return
+      }
+    }
+    catch {
+      # Catching anything
+      Write-Host "ERROR:   Creation failed: $($_.Exception.Message)" -ForegroundColor Red
+      return
+    }
+    #endregion
+
+    $Status = "Applying Settings"
+    #region UsageLocation
+    #CHECK Integrate into Creation itself?
+    $Operation = "Setting Usage Location"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    try {
+      if ($PSCmdlet.ShouldProcess("$UPN", "Set-AzureADUser -UsageLocation $UsageLocation")) {
+        Set-AzureADUser -ObjectId $UPN -UsageLocation $UsageLocation -ErrorAction STOP
+        Write-Verbose -Message "'$Name' SUCCESS - Usage Location set to: $UsageLocation"
+      }
+    }
+    catch {
+      if ($PSBoundParameters.ContainsKey("License")) {
+        Write-Error -Message "'$Name' Usage Location could not be set. Please apply manually before applying license" -Category NotSpecified -RecommendedAction "Apply manually, then run Set-TeamsCommonAreaPhone to apply license and phone number"
+      }
+      else {
+        Write-Warning -Message "'$Name' Usage Location cannot be set. If a license is needed, please assign UsageLocation manually beforehand"
       }
     }
     #endregion
 
+    #region Licensing
+    # Determining available Licenses from Tenant
+    $Operation = "Querying Tenant Licenses"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    $TenantLicenses = Get-TeamsTenantLicense
 
-    #region Apply Voice Config
-    if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Apply Voice Configuration")) {
-      #region Generic Configuration
-      # Enable HostedVoicemail
-      $step++
-      Write-Progress -Id 0 -Status "Provisioning" -CurrentOperation "Enabling user for Hosted Voicemail" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "Enabling user for Hosted Voicemail"
-      if ( $Force -or -not $CsUser.HostedVoicemail) {
-        try {
-          $CsUser | Set-CsUser -HostedVoicemail $TRUE -ErrorAction Stop
-          Write-Verbose -Message "Enabling user for Hosted Voicemail: OK" -Verbose
-        }
-        catch {
-          $ErrorLogMessage = "Enabling user for Hosted Voicemail: Failed: '$($_.Exception.Message)'"
-          Write-Error -Message $ErrorLogMessage
-          $ErrorLog += $ErrorLogMessage
-        }
+    # Setting License to Common Area Phone if not provided
+    if ( -not $PSBoundParameters.ContainsKey("License")) {
+      $License = "CommonAreaPhone"
+    }
+
+    # Verifying License is available
+    $Operation = "Verifying License is available"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    if ($License -eq "CommonAreaPhone") {
+      $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "MCOCAP" }).Remaining
+      Write-Verbose -Message "INFO: $RemainingCAPLicenses Common Area Phone Licenses still available"
+      if ($RemainingCAPLicenses -lt 1) {
+        Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant." -ErrorAction Stop
       }
       else {
-        Write-Verbose -Message "Enabling user for Hosted Voicemail: Already enabled" -Verbose
+        try {
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add CommonAreaPhone")) {
+            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+            Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+            $IsLicensed = $true
+          }
+        }
+        catch {
+          Write-Error -Message "'$Name' License assignment failed for '$License'"
+        }
       }
+    }
+    else {
+      try {
+        if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+          $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+          Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'" -Verbose
+          $IsLicensed = $true
+        }
+      }
+      catch {
+        Write-Error -Message "'$Name' License assignment failed for '$License'"
+      }
+    }
+    #endregion
 
-      # Apply $TenantDialPlan if provided
-      if ( $TenantDialPlan ) {
-        $step++
-        Write-Progress -Id 0 -Status "Provisioning" -CurrentOperation "Applying Tenant Dial Plan" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "Applying Tenant Dial Plan"
-        if ( $Force -or $CsUser.TenantDialPlan -ne $TenantDialPlan) {
+    #TODO: Remove License application and Phone Number section completely, delegating Phone Number application to Set-TeamsUserVoiceConfig or Set-TeamsCommonAreaPhone
+    # More likely, replace with Policies relevant for CAPS: IP Phone, Calling, CallPark
+    #region Waiting for License Application
+    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+      $Operation = "Waiting for AzureAd to write Object"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      $ServicePlanName = "MCOEV"
+      $i = 0
+      $iMax = 600
+      Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsCommonAreaPhone"
+
+      $Status = "Applying License"
+      $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result"
+      Write-Verbose -Message "$Status - $Operation"
+      while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
+        if ($i -gt $iMax) {
+          Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsCommonAreaPhone); Continue with Set-TeamsCommonAreaPhone" -ErrorAction Stop
+        }
+        Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" `
+          -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+
+        Start-Sleep -Milliseconds 1000
+        $i++
+      }
+    }
+    #endregion
+
+    #region PhoneNumber
+    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+      $Operation = "Applying Phone Number"
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
+      # Assigning Telephone Number
+      Write-Verbose -Message "'$Name' Processing Phone Number"
+      Write-Verbose -Message "NOTE: Assigning a phone number might fail if the Object is not yet replicated" -Verbose
+      if (-not $IsLicensed) {
+        Write-Host "ERROR: A Phone Number can only be assigned to licensed objects." -ForegroundColor Red
+        Write-Host "Please apply a license before assigning the number. Set-TeamsCommonAreaPhone can be used to do both"
+      }
+      else {
+        # Processing paths for Telephone Numbers depending on Type
+        $E164Number = Format-StringForUse $PhoneNumber -As E164
+
+        if ($PhoneNumberIsMSNumber) {
+          # Set in VoiceApplicationInstance
+          Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning for: Microsoft Calling Plans"
           try {
-            $CsUser | Grant-CsTenantDialPlan -PolicyName $TenantDialPlan -ErrorAction Stop
-            Write-Verbose -Message "Applying Tenant Dial Plan: OK - '$TenantDialPlan'" -Verbose
+            if ($PSCmdlet.ShouldProcess("$($CommonAreaPhoneCreated.UserPrincipalName)", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
+              $null = (Set-CsOnlineVoiceApplicationInstance -Identity $CommonAreaPhoneCreated.UserPrincipalName -Telephonenumber $E164Number -ErrorAction STOP)
+            }
           }
           catch {
-            $ErrorLogMessage = "Applying Tenant Dial Plan: Failed: '$($_.Exception.Message)'"
-            Write-Error -Message $ErrorLogMessage
-            $ErrorLog += $ErrorLogMessage
+            Write-Warning -Message "Phone number could not be assigned! Please run Set-TeamsCommonAreaPhone manually"
           }
         }
         else {
-          Write-Verbose -Message "Applying Tenant Dial Plan: Already assigned" -Verbose
-        }
-      }
-      else {
-        Write-Verbose -Message "Applying Tenant Dial Plan: Not provided"
-      }
-      #endregion
-
-      #region Specific Configuration
-      switch ($PSCmdlet.ParameterSetName) {
-        "DirectRouting" {
-          Write-Verbose -Message "[PROCESS] DirectRouting"
-          # Apply $OnlineVoiceRoutingPolicy
-          $step++
-          Write-Progress -Id 0 -Status "Provisioning for Direct Routing" -CurrentOperation "Applying Online Voice Routing Policy" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "Applying Online Voice Routing Policy"
-          if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) {
-            try {
-              $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
-              Write-Verbose -Message "Applying Online Voice Routing Policy: OK - '$OnlineVoiceRoutingPolicy'" -Verbose
-            }
-            catch {
-              $ErrorLogMessage = "Applying Online Voice Routing Policy: Failed: '$($_.Exception.Message)'"
-              Write-Error -Message $ErrorLogMessage
-              $ErrorLog += $ErrorLogMessage
+          # Set in ApplicationInstance
+          Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for: Direct Routing"
+          try {
+            if ($PSCmdlet.ShouldProcess("$($CommonAreaPhoneCreated.UserPrincipalName)", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $PhoneNumber")) {
+              $null = (Set-CsOnlineApplicationInstance -Identity $CommonAreaPhoneCreated.UserPrincipalName -OnPremPhoneNumber $E164Number -ErrorAction STOP)
             }
           }
-          else {
-            Write-Verbose -Message "Applying Online Voice Routing Policy: Already assigned" -Verbose
-          }
-
-          # Apply $PhoneNumber as OnPremLineUri
-          $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI #CHECK LineURI or E164 probably both/either!
-          $step++
-          Write-Progress -Id 0 -Status "Provisioning for Direct Routing" -CurrentOperation "Applying Phone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "Applying Phone Number as '$Number'"
-          if ( $Force -or $CsUser.OnPremLineURI -ne $Number) {
-            try {
-              $CsUser | Set-CsUser -OnPremLineUri $Number -ErrorAction Stop
-              Write-Verbose -Message "Applying Phone Number: OK - '$Number'" -Verbose
-            }
-            catch {
-              $ErrorLogMessage = "Applying Phone Number: Failed: '$($_.Exception.Message)'"
-              Write-Error -Message $ErrorLogMessage
-              $ErrorLog += $ErrorLogMessage
-            }
-          }
-          else {
-            Write-Verbose -Message "Applying Phone Number: Already assigned" -Verbose
-          }
-        }
-
-        "CallingPlans" {
-          Write-Verbose -Message "[PROCESS] CallingPlans"
-          # Apply $CallingPlanLicense
-          if ($CallingPlanLicense) {
-            try {
-              $step++
-              Write-Progress -Id 0 -Status "Provisioning for Calling Plans" -CurrentOperation "Applying CallingPlan License" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-              Write-Verbose -Message "Applying CallingPlan License '$CallingPlanLicense'"
-              $null = Set-TeamsUserLicense -Identity $Identity -Add $CallingPlanLicense -ErrorAction Stop
-            }
-            catch {
-              $ErrorLogMessage = "Applying CallingPlan License '$CallingPlanLicense' failed: '$($_.Exception.Message)'"
-              Write-Error -Message $ErrorLogMessage
-              $ErrorLog += $ErrorLogMessage
-            }
-
-            #CHECK Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
-            Write-Verbose -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again." -Verbose
-          }
-
-          # Apply $PhoneNumber as TelephoneNumber
-          $step++
-          Write-Progress -Id 0 -Status "Provisioning for Calling Plans" -CurrentOperation "Applying Phone Number" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "Applying Phone Number"
-          if ( $Force -or $CsUser.TelephoneNumber -ne $PhoneNumber) {
-            try {
-              # Pipe should work but was not yet tested.
-              #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
-              $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $PhoneNumber -ErrorAction Stop
-            }
-            catch {
-              $ErrorLogMessage = "Applying Phone Number failed: '$($_.Exception.Message)'"
-              Write-Error -Message $ErrorLogMessage
-              $ErrorLog += $ErrorLogMessage
-            }
-          }
-          else {
-            Write-Verbose -Message "Applying Phone Number: Already assigned" -Verbose
+          catch {
+            Write-Warning -Message "'$Name' Number '$PhoneNumber' not assigned! Please run Set-TeamsCommonAreaPhone manually"
           }
         }
       }
-      #endregion
-
     }
+    #  Wating for AAD to write the PhoneNumber so that it may be queried correctly
+    $Operation = "Waiting for AzureAd to write Object (2s)"
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    Start-Sleep -Seconds 2
+    #endregion
     #endregion
 
-
-    #region Log & Output
-    # Write $ErrorLog
-    if ( $WriteErrorLog ) {
-      $Path = "C:\Temp"
-      $Filename = "$($MyInvocation.MyCommand) - $Identity - ERROR.log"
-      $LogPath = "$Path\$Filename"
+    #region OUTPUT
+    #Creating new PS Object
+    try {
+      # Data
+      $Status = "Validation"
+      $Operation = "Querying Object"
       $step++
-      Write-Progress -Id 0 -Status "Output" -CurrentOperation "Writing ErrorLog" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "Errors encountered are written to '$Path'"
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      $CommonAreaPhone = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP
 
-      # Write log entry to $Path
-      $(Get-Date -Format "yyyy-MM-dd HH:mm:ss K") | Out-File -FilePath $LogPath -Append
-      $errorLog | Out-File -FilePath $LogPath -Append
-
-    }
-    else {
-      Write-Verbose -Message "No errors encountered! No log file written."
-    }
-
-
-    # Output
-    if ( $PassThru ) {
-      # Re-Query Object
+      $Operation = "Querying Object License"
       $step++
-      Write-Progress -Id 0 -Status "Output" -CurrentOperation "Waiting for Office 365 to write the Object" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "Waiting 3-5s for Office 365 to write changes to User Object (Policies might not show up yet)" -Verbose
-      Start-Sleep -Seconds 3
-      $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity
-      if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
-        Start-Sleep -Seconds 2
-        $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $Identity
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      $CommonAreaPhoneLicense = Get-TeamsUserLicense -Identity $UPN
+
+      # readable Application type
+      $CommonAreaPhoneApplicationType = GetApplicationTypeFromAppId $CommonAreaPhone.ApplicationId
+
+      # Common Area Phone License
+      if ($IsLicensed) {
+        if ($null -ne $CommonAreaPhone.PhoneNumber) {
+          # Phone Number Type
+          if ($PhoneNumberIsMSNumber) {
+            $CommonAreaPhonePhoneNumberType = "Microsoft Number"
+          }
+          else {
+            $CommonAreaPhonePhoneNumberType = "Direct Routing Number"
+          }
+        }
+        else {
+          $CommonAreaPhonePhoneNumberType = $null
+        }
+
+        # Phone Number is taken from Original Object and should be populated correctly
+
+      }
+      else {
+        $CommonAreaPhonePhoneNumberType = $null
+        # Phone Number is taken from Original Object and should be empty at this point
       }
 
-      if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
-        Write-Warning -Message "Applied Policies take some time to show up on the object. Please verify again with Get-TeamsUserVoiceConfig"
+      # creating new PS Object (synchronous with Get and Set)
+      $CommonAreaPhoneObject = [PSCustomObject][ordered]@{
+        UserPrincipalName = $CommonAreaPhone.UserPrincipalName
+        DisplayName       = $CommonAreaPhone.DisplayName
+        ApplicationType   = $CommonAreaPhoneApplicationType
+        UsageLocation     = $UsageLocation
+        License           = $CommonAreaPhoneLicense.LicensesFriendlyNames
+        PhoneNumberType   = $CommonAreaPhonePhoneNumberType
+        PhoneNumber       = $CommonAreaPhone.PhoneNumber
       }
 
-      Write-Progress -Id 0 -Status "Provisioning" -Activity $MyInvocation.MyCommand -Completed
-      return $UserObjectPost
+      Write-Verbose -Message "Common Area Phone Created:" -Verbose
+      if ($PSBoundParameters.ContainsKey("PhoneNumber") -and $IsLicensed -and $CommonAreaPhone.PhoneNumber -eq "") {
+        Write-Warning -Message "Object replication pending, Phone Number does not show yet. Run Get-TeamsCommonAreaPhone to verify"
+      }
+
+      Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+      Write-Output $CommonAreaPhoneObject
+
     }
-    else {
-      Write-Progress -Id 0 -Status "Provisioning" -Activity $MyInvocation.MyCommand -Completed
-      return
+    catch {
+      Write-Warning -Message "Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance"
     }
     #endregion
 

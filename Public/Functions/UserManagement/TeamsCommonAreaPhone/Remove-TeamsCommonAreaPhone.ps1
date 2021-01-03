@@ -1,33 +1,26 @@
 ﻿# Module:   TeamsFunctions
-# Function: ResourceAccount
+# Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   Live
+# Updated:  01-JAN-2020
+# Status:   RC
 
 
 
 
-function Remove-TeamsResourceAccount {
+function Remove-TeamsCommonAreaPhone {
   <#
 	.SYNOPSIS
-		Removes a Resource Account from AzureAD
+		Removes a Common Area Phone from AzureAD
 	.DESCRIPTION
-		This function allows you to remove Resource Accounts (Application Instances) from AzureAD
+		This function allows you to remove Common Area Phones (AzureAdUser) from AzureAD
 	.PARAMETER UserPrincipalName
 		Required. Identifies the Object being changed
-	.PARAMETER Force
-		Optional. Will also sever all associations this account has in order to remove it
-		If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
 	.PARAMETER PassThru
 		Optional. Displays UserPrincipalName of removed objects.
 	.EXAMPLE
-		Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
-		Removes a ResourceAccount
+		Remove-TeamsCommonAreaPhone -UserPrincipalName "Common Area Phone@TenantName.onmicrosoft.com"
+		Removes a CommonAreaPhone
 		Removes in order: Phone Number, License and Account
-	.EXAMPLE
-		Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
-		Removes a ResourceAccount
-		Removes in order: Association, Phone Number, License and Account
   .INPUTS
     System.String
   .OUTPUTS
@@ -35,23 +28,19 @@ function Remove-TeamsResourceAccount {
 	.NOTES
 		Execution requires User Admin Role in Azure AD
 	.FUNCTIONALITY
-		Removes a resource Account in AzureAD for use in Teams
+		Removes a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
 	.LINK
-    Get-TeamsResourceAccountAssociation
-    New-TeamsResourceAccountAssociation
-		Remove-TeamsResourceAccountAssociation
-    New-TeamsResourceAccount
-    Get-TeamsResourceAccount
-    Find-TeamsResourceAccount
-    Set-TeamsResourceAccount
-    Remove-TeamsResourceAccount
+    New-TeamsCommonAreaPhone
+    Get-TeamsCommonAreaPhone
+    Set-TeamsCommonAreaPhone
+    Remove-TeamsCommonAreaPhone
 	#>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
-  [Alias('Remove-TeamsRA')]
+  [Alias('Remove-TeamsCAP')]
   [OutputType([System.Void])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to create.")]
@@ -68,14 +57,11 @@ function Remove-TeamsResourceAccount {
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
-    [switch]$Force,
-
-    [Parameter(Mandatory = $false)]
     [switch]$PassThru
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -99,11 +85,6 @@ function Remove-TeamsResourceAccount {
     Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
     Write-Verbose -Message "No verification of required admin roles is performed. Use Get-AzureAdAdminRole to determine roles for your account"
 
-    # Enabling $Confirm to work with $Force
-    if ($Force -and -not $Confirm) {
-      $ConfirmPreference = 'None'
-    }
-
     # Adding Types - Required for License manipulation in Process
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
 
@@ -114,83 +95,29 @@ function Remove-TeamsResourceAccount {
     foreach ($UPN in $UserPrincipalName) {
       # Initialising counters for Progress bars
       [int]$step = 0
-      [int]$sMax = 5
+      [int]$sMax = 3
 
       #region Lookup of UserPrincipalName
       Write-Progress -Id 0 -Status "Processing '$UPN'" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Processing: $UPN"
       try {
-        #Trying to query the Resource Account
-        $Object = (Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP)
+        #Trying to query the Common Area Phone
+        $Object = (Get-CsOnlineUser $UPN -WarningAction SilentlyContinue -ErrorAction STOP)
         $DisplayName = $Object.DisplayName
       }
       catch {
         # Catching anything
-        Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Resource Account"
+        Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Common Area Phone"
         continue
       }
       #endregion
 
-      #region Associations
-      # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
-      $Operation = "'$DisplayName' - Associations to Call Queues or Auto Attendants"
+      #region Removing Voice Config
+      $Operation = "'$DisplayName' - Removing Voice Configuration"
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Ignore
-      if ($Associations.count -eq 0) {
-        # Object has no associations
-        Write-Verbose -Message "'$DisplayName' Object does not have any associations"
-        $Associations = $null
-      }
-      else {
-        Write-Verbose -Message "'$DisplayName' associations found"
-        if ($PSBoundParameters.ContainsKey("Force")) {
-          # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
-          # with: Remove-CsOnlineApplicationInstanceAssociation
-          if ($PSCmdlet.ShouldProcess("Resource Account Associations ($($Associations.Count))", 'Remove-CsOnlineApplicationInstanceAssociation')) {
-            try {
-              Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
-              $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations -ErrorAction STOP)
-              Write-Verbose -Message "SUCCESS: Associations removed"
-            }
-            catch {
-              Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
-              return
-            }
-          }
-        }
-        else {
-          Write-Error -Message "Associations detected. Please remove first or use -Force" -Category ResourceExists
-          Write-Output $Associations
-        }
-      }
-      #endregion
-
-      #region PhoneNumber
-      # Removing Phone Number Assignments
-      $Operation = "'$DisplayName' - Phone Number Assignments"
-      $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
-      try {
-        if ($null -ne ($Object.TelephoneNumber)) {
-          # Remove from VoiceApplicationInstance
-          Write-Verbose -Message "'$Name' Removing Microsoft Number"
-          $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UPN -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-          Write-Verbose -Message "SUCCESS"
-        }
-        if ($null -ne ($Object.OnPremLineURI)) {
-          # Remove from ApplicationInstance
-          Write-Verbose -Message "'$Name' Removing Direct Routing Number"
-          $null = (Set-CsOnlineApplicationInstance -Identity $UPN -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-          Write-Verbose -Message "SUCCESS"
-        }
-      }
-      catch {
-        Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
-        return
-      }
+      Remove-TeamsUserVoiceConfig -Identity $UPN -PassThru
       #endregion
 
       #region Licensing
@@ -227,7 +154,7 @@ function Remove-TeamsResourceAccount {
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if ($PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
+      if ($PSCmdlet.ShouldProcess("Common Area Phone with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)
           Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
@@ -239,9 +166,6 @@ function Remove-TeamsResourceAccount {
       else {
         Write-Verbose -Message "SKIPPED - Object removed not confirmed Azure Active Directory"
       }
-
-
-
       #endregion
 
 
@@ -258,4 +182,4 @@ function Remove-TeamsResourceAccount {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
-} #Remove-TeamsResourceAccount
+} #Remove-TeamsCommonAreaPhone

@@ -66,9 +66,6 @@ function Set-TeamsResourceAccount {
     System.String
   .OUTPUTS
     None
-	.NOTES
-		CmdLet currently in testing.
-		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Changes a resource Account in AzureAD for use in Teams
   .COMPONENT

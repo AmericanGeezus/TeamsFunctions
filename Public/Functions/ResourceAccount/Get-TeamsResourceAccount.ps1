@@ -46,7 +46,6 @@ function Get-TeamsResourceAccount {
     System.Object
 	.NOTES
 		Pipeline input possible, though untested. Requires figuring out :)
-		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Returns one or more Resource Accounts
   .COMPONENT

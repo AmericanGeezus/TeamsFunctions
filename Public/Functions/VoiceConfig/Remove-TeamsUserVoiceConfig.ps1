@@ -24,6 +24,8 @@ function Remove-TeamsUserVoiceConfig {
     This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad)
     EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed
     NOTE: If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.
+	.PARAMETER PassThru
+		Optional. Displays Object after action.
 	.PARAMETER Force
 		Optional. Suppresses Confirmation for license Removal unless -Confirm is specified explicitly.
 	.EXAMPLE
@@ -74,6 +76,9 @@ function Remove-TeamsUserVoiceConfig {
     [Parameter(HelpMessage = "Instructs the Script to forego the disablement for EnterpriseVoice")]
     [Alias('DisableEnterpriseVoice')]
     [switch]$DisableEV,
+
+    [Parameter(HelpMessage = "No output is written by default, Switch PassThru will return changed object")]
+    [switch]$PassThru,
 
     [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
     [switch]$Force
@@ -138,7 +143,6 @@ function Remove-TeamsUserVoiceConfig {
         continue
       }
       #endregion
-
 
       #region Call Plan Configuration
       if ($Scope -eq "All" -or $Scope -eq "CallingPlans") {
@@ -230,7 +234,6 @@ function Remove-TeamsUserVoiceConfig {
       }
       #endregion
 
-
       #region Direct Routing Configuration
       if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
         #region Removing OnPremLineURI
@@ -274,7 +277,6 @@ function Remove-TeamsUserVoiceConfig {
         #endregion
       }
       #endregion
-
 
       #region Generic/shared Configuration
       #region Removing Tenant DialPlan
@@ -326,9 +328,15 @@ function Remove-TeamsUserVoiceConfig {
         Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Not enabled)" -Verbose
       }
       #endregion
+      #endregion
+
 
       Write-Progress -Id 1 -Status "User '$User'" -Activity $MyInvocation.MyCommand -Completed
-      #endregion
+
+      # Output
+      if ( $PassThru ) {
+        Get-TeamsUserVoiceConfig "$User"
+      }
 
     }
   } #process
