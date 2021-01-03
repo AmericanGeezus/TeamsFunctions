@@ -290,8 +290,8 @@ function Set-TeamsResourceAccount {
       if ($Usagelocation -eq $CurrentUsageLocation) {
         Write-Verbose -Message "'$Name' Usage Location already set to: $CurrentUsageLocation"
       }
-      elseif ($null -eq $CurrentUsageLocation) {
-        Write-Verbose -Message "'$Name' Usage Location not set! Will be set to: $Usagelocation"
+      else {
+        Write-Verbose -Message "'$Name' Usage Location will be set to: $Usagelocation"
       }
     }
     else {
