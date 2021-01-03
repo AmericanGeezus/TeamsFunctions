@@ -2,7 +2,7 @@
 # Function: VoiceRouting
 # Author:	  David Eberhardt
 # Updated:  28-DEC-2020
-# Status:   Beta
+# Status:   RC
 
 
 
@@ -60,7 +60,7 @@ function Find-TeamsUserVoiceRoute {
   )
 
   begin {
-    Show-FunctionStatus -Level Alpha
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting SkypeOnline Connection

@@ -31,7 +31,9 @@ function Set-TeamsUserVoiceConfig {
   .PARAMETER CallingPlanLicense
     Optional for CallingPlans. Assigns a Calling Plan License to the User.
     Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
-	.PARAMETER Force
+	.PARAMETER PassThru
+    Optional. Displays Object after action.
+  .PARAMETER Force
     By default, this script only applies changed elements. Force overwrites configuration regardless of current status.
     Additionally Suppresses confirmation inputs except when $Confirm is explicitly specified
 	.PARAMETER WriteErrorLog

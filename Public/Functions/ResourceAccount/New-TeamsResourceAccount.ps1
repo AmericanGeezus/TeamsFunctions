@@ -58,8 +58,7 @@ function New-TeamsResourceAccount {
   .OUTPUTS
     System.Object
 	.NOTES
-		CmdLet currently in testing.
-		Please feed back any issues to david.eberhardt@outlook.com
+		Execution requires User Admin Role in Azure AD
 	.FUNCTIONALITY
 		Creates a resource Account in AzureAD for use in Teams
   .COMPONENT
@@ -123,7 +122,7 @@ function New-TeamsResourceAccount {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. Must start with a + and 10 to 15 digits long" -ForegroundColor Red
+          Write-Host "Not a valid phone number. Must start with a + and 8 to 15 digits long" -ForegroundColor Red
           $false
         }
       })]
@@ -322,7 +321,7 @@ function New-TeamsResourceAccount {
       Write-Verbose -Message "$Status - $Operation"
       if ($License -eq "PhoneSystemVirtualUser") {
         $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
-        Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
+        Write-Verbose -Message "INFO: $RemainingPSVULicenses Phone System Virtual User Licenses still available"
         if ($RemainingPSVULicenses -lt 1) {
           Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant." -ErrorAction Stop
         }
@@ -438,6 +437,7 @@ function New-TeamsResourceAccount {
     Start-Sleep -Seconds 2
     #endregion
     #endregion
+
 
     #region OUTPUT
     #Creating new PS Object

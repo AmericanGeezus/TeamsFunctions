@@ -66,9 +66,6 @@ function Set-TeamsResourceAccount {
     System.String
   .OUTPUTS
     None
-	.NOTES
-		CmdLet currently in testing.
-		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Changes a resource Account in AzureAD for use in Teams
   .COMPONENT
@@ -293,8 +290,8 @@ function Set-TeamsResourceAccount {
       if ($Usagelocation -eq $CurrentUsageLocation) {
         Write-Verbose -Message "'$Name' Usage Location already set to: $CurrentUsageLocation"
       }
-      elseif ($null -eq $CurrentUsageLocation) {
-        Write-Verbose -Message "'$Name' Usage Location not set! Will be set to: $Usagelocation"
+      else {
+        Write-Verbose -Message "'$Name' Usage Location will be set to: $Usagelocation"
       }
     }
     else {

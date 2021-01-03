@@ -18,7 +18,7 @@ function Remove-TeamsResourceAccountAssociation {
 	.PARAMETER Force
 		Optional. Suppresses Confirmation dialog if -Confirm is not provided
 	.PARAMETER PassThru
-		Optional. Displays Object after removal.
+		Optional. Displays Object after removal of association.
 	.EXAMPLE
 		Remove-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
 		Removes the Association of the Account 'ResourceAccount@domain.com' from the identified Call Queue or Auto Attendant

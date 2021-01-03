@@ -46,7 +46,6 @@ function Get-TeamsResourceAccount {
     System.Object
 	.NOTES
 		Pipeline input possible, though untested. Requires figuring out :)
-		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Returns one or more Resource Accounts
   .COMPONENT
@@ -203,13 +202,14 @@ function Get-TeamsResourceAccount {
         $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
       }
 
-      # Usage Location from Object
+      <# Commented out as not needed - Usage location comes from License (queried there) and ObjectId comes from Get-CsOnlineUser already
+       # Usage Location from Object
       $Operation = "Parsing Usage Location"
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
-
+      #>
 
       # Parsing CsOnlineUser
       $Operation = "Parsing Online Voice Routing Policy"
@@ -255,7 +255,7 @@ function Get-TeamsResourceAccount {
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AzureAdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       if ( $Association ) {
         $AssociationObject = switch ($Association.ConfigurationType) {
           "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
@@ -274,7 +274,7 @@ function Get-TeamsResourceAccount {
         UserPrincipalName        = $ResourceAccount.UserPrincipalName
         DisplayName              = $ResourceAccount.DisplayName
         ApplicationType          = $ResourceAccountApplicationType
-        UsageLocation            = $AzureAdUser.UsageLocation
+        UsageLocation            = $ResourceAccountLicense.UsageLocation
         License                  = $ResourceAccountLicense.LicensesFriendlyNames
         PhoneNumberType          = $ResourceAccountPhoneNumberType
         PhoneNumber              = $ResourceAccount.PhoneNumber

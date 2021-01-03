@@ -33,9 +33,6 @@ function Find-TeamsResourceAccount {
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		CmdLet currently in testing.
-		Please feed back any issues to david.eberhardt@outlook.com
 	.FUNCTIONALITY
 		Returns one or more Resource Accounts
   .COMPONENT

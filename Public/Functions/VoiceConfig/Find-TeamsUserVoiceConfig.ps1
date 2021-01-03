@@ -121,6 +121,15 @@ function Find-TeamsUserVoiceConfig {
     [string]$Identity,
 
     [Parameter(ParameterSetName = "Tel", Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]
+    [ValidateScript( {
+        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{3,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+          $True
+        }
+        else {
+          Write-Host "Not a valid phone number format. Expected min 3 digits, but multiple formats accepted. Extensions will be stripped" -ForegroundColor Red
+          $false
+        }
+      })]
     [Alias('Number', 'TelephoneNumber', 'Tel', 'LineURI', 'OnPremLineURI')]
     [string[]]$PhoneNumber,
 
@@ -193,7 +202,8 @@ function Find-TeamsUserVoiceConfig {
       } #ID
 
       "Tel" {
-        foreach ($Number in $PhoneNumber) {
+        foreach ($PhoneNr in $PhoneNumber) {
+          $Number = Format-StringRemoveSpecialCharacter -String $($PhoneNr -split ";")[0] | Format-StringForUse -SpecialChars "telxt"
           Write-Verbose -Message "Finding Users with PhoneNumber '$Number' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
@@ -223,13 +233,14 @@ function Find-TeamsUserVoiceConfig {
 
       "Ext" {
         foreach ($Ext in $Extension) {
-          Write-Verbose -Message "Finding Users with Extension '$Ext' (partial or full)" -Verbose
+          $ExtN = Format-StringRemoveSpecialCharacter -String $Ext | Format-StringForUse -SpecialChars "ext"
+          Write-Verbose -Message "Finding Users with Extension '$ExtN' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-          $Filter = 'LineURI -like "*{0}*"' -f ";ext=*$Ext"
+          $Filter = 'LineURI -like "*{0}*"' -f ";ext=*$ExtN"
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
           if ($Users) {
             if ($Users.Count -gt 1) {
-              Write-Warning -Message "Extension: '$Ext' - Found multiple Users matching the criteria! If the search string represents a partial Extension, this is to be expected.`nIf the search string represents a FULL extension, it is assigned incorrectly. Inbound calls to this extension may fail depending on normalisation as Teams will not find a unique match"
+              Write-Warning -Message "Extension: '$ExtN' - Found multiple Users matching the criteria! If the search string represents a partial Extension, this is to be expected.`nIf the search string represents a FULL extension, it is assigned incorrectly. Inbound calls to this extension may fail depending on normalisation as Teams will not find a unique match"
               Write-Verbose -Message "Investigate OnPremLineURI string. Verify unique Extension is applied." -Verbose
             }
 

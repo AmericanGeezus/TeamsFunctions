@@ -161,7 +161,7 @@ function Connect-SkypeOnline {
       Write-Verbose -Message "Command '$Command' not available. Session cannot reconnect. Please disconnect session cleanly before trying to reconnect!" -Verbose
     }
 
-    # Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
+    <# Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
     $IdleTimeoutMS = (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
     $OperationTimeout = $IdleTimeoutMS - (New-TimeSpan -Minutes 15).TotalMilliseconds
     $CancelTimeout = (New-TimeSpan -Seconds 30).TotalMilliseconds
@@ -169,6 +169,7 @@ function Connect-SkypeOnline {
     Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
 
     $Parameters += @{ 'SessionOption' = $SessionOption }
+    #>
     #endregion
 
     # Existing Session

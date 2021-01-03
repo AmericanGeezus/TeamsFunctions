@@ -1,18 +1,19 @@
 # TeamsFunctions - Change Log
 
-I decided to break this out into its own file as it grows ever so consistently as the Module itself.
+Full Change Log for all major releases.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
 ## v20.01 - January 2021 release
 
 ### Component Status
 
-- Function Status: 82 Public CmdLets, 6 private CmdLets, 39 Live, 24 PreLive and  10 RC
-- Development Status: 1 in Beta, 5 in Alpha; 6 Unmanaged and 3 Deprecated
-- Pester Test Status: Tests Passed: 1011, Failed: 0, Skipped: 0 NotRun: 0
+- Function Status: 86 Public CmdLets, 6 private CmdLets, 39 Live, 24 PreLive and  16 RC
+- Development Status: 0 in Beta, 4 in Alpha; 6 Unmanaged and 3 Deprecated
+- Pester Test Status: Tests Passed: 988, Failed: 0, Skipped: 0 NotRun: 0
 - `TeamsAutoAttendant` Scripts have advanced to RC status.
 - `TeamsCallableEntity` Scripts have been improved upon (GET, FIND, NEW and ASSERT)
 - `AzureAdAdminRole` Scripts have been introduced upon (GET and ENABLE)
+- `TeamsCommonAreaPhone` Scripts have been introduced in RC status.
 
 ### Focus for this month
 
@@ -44,11 +45,16 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
     - Used in Connect-Me
     - Can be used to enable individual Roles (with `-Confirm`) or all eligible
     - NOTE: Currently does not support Privileged Admin Groups
+- **New Common Area Phone CmdLets:**
+  - `Get-TeamsCommonAreaPhone`: Queries an AzureAdUser and displays parameters relevant to Common Area Phones
+  - `New-TeamsCommonAreaPhone`: Creates an AzureAdUser for use as a Common Area Phone. Also applies CommonAreaPhone License if not specified differently
+  - `Remove-TeamsCommonAreaPhone`: Removes an AzureAdUser
+  - `Set-TeamsCommonAreaPhone`: Changes a Common Area Phone Object (AzureAdUser and CsOnlineUser).
 - **Expanding on the CallableEntity concept:**
-  - `New-TeamsCallableEntity` (New-TeamsAutoAttendantCallableEntity, New-TeamsAAEntity): Creates a callable Entity for Auto Attendants (renamed and improved)
-  - `Get-TeamsCallableEntity`: Determines the type of Callable Entity to feed into other functions
-  - `Find-TeamsCallableEntity`: Queries Call Queues and Auto Attendants for a User to be attached to.
   - `Assert-TeamsCallableEntity`: Verifies a User is ready to be used as a Call Target or Callable Entity (incl. enablement for Enterprise Voice)
+  - `Find-TeamsCallableEntity`: Queries Call Queues and Auto Attendants for a User to be attached to.
+  - `Get-TeamsCallableEntity`: Determines the type of Callable Entity to feed into other functions
+  - `New-TeamsCallableEntity` (New-TeamsAutoAttendantCallableEntity, New-TeamsAAEntity): Creates a callable Entity for Auto Attendants (renamed and improved)
 - **Completing the Set for AutoAttendants:**
   - `New-TeamsAutoAttendantCallFlow` (New-TeamsAAFlow): Call Flow Object with default options
   - `New-TeamsAutoAttendantMenu` (New-TeamsAAMenu): Menu Object with default options
