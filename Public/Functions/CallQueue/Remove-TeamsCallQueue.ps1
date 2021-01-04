@@ -73,6 +73,7 @@ function Remove-TeamsCallQueue {
       try {
         Write-Verbose -Message "The listed Queues are being removed:" -Verbose
         $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
+        $QueueToRemove = $QueueToRemove | Where-Object Name -EQ "$DN"
 
         if ( $QueueToRemove ) {
           $QueueCounter = 0
