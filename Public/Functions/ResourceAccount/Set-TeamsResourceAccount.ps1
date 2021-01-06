@@ -550,7 +550,7 @@ function Set-TeamsResourceAccount {
             if (-not $global:MSTelephoneNumbers) {
               $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
             }
-            $MSNumber = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+            $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars "tel:+") -split ';')[0]
 
             if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
               # Set in VoiceApplicationInstance

@@ -203,11 +203,16 @@ function Find-TeamsUserVoiceConfig {
 
       "Tel" {
         foreach ($PhoneNr in $PhoneNumber) {
-          $Number = Format-StringRemoveSpecialCharacter -String $($PhoneNr -split ";")[0] | Format-StringForUse -SpecialChars "telxt"
+          if ($PhoneNr -match "(\d+);ext=(\d+)") {
+            $Number = $matches[1]
+          }
+          else {
+            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr"
+          }
           Write-Verbose -Message "Finding Users with PhoneNumber '$Number' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
-          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
+          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
           if ($Users) {
             if ($Users.Count -gt 1) {
               Write-Warning -Message "Number: '$Number' - Found multiple Users matching the criteria! If the search string represents a partial number, this is to be expected.`nIf the search string represents a FULL number, it is assigned incorrectly. Inbound calls to this number will not work as Teams will not find a unique match"
@@ -216,7 +221,7 @@ function Find-TeamsUserVoiceConfig {
 
             if ($Users.Count -gt 3) {
               Write-Verbose -Message "Multiple results found - Displaying limited output only" -Verbose
-              $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+              $Users | Select-Object UserPrincipalName, LineUri
             }
             else {
               Write-Verbose -Message "Limited results found - Displaying User Voice Configuration for each" -Verbose
@@ -233,11 +238,16 @@ function Find-TeamsUserVoiceConfig {
 
       "Ext" {
         foreach ($Ext in $Extension) {
-          $ExtN = Format-StringRemoveSpecialCharacter -String $Ext | Format-StringForUse -SpecialChars "ext"
+          if ($ext -match "(\d+);ext=(\d+)") {
+            $ExtN = "ext=" + $matches[2]
+          }
+          else {
+            $ExtN = "ext=" + $ext
+          }
           Write-Verbose -Message "Finding Users with Extension '$ExtN' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-          $Filter = 'LineURI -like "*{0}*"' -f ";ext=*$ExtN"
-          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
+          $Filter = 'LineURI -like "*{0}*"' -f "$ExtN"
+          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
           if ($Users) {
             if ($Users.Count -gt 1) {
               Write-Warning -Message "Extension: '$ExtN' - Found multiple Users matching the criteria! If the search string represents a partial Extension, this is to be expected.`nIf the search string represents a FULL extension, it is assigned incorrectly. Inbound calls to this extension may fail depending on normalisation as Teams will not find a unique match"
@@ -246,7 +256,7 @@ function Find-TeamsUserVoiceConfig {
 
             if ($Users.Count -gt 3) {
               Write-Verbose -Message "Multiple results found - Displaying limited output only" -Verbose
-              $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+              $Users | Select-Object UserPrincipalName, LineUri
             }
             else {
               Write-Verbose -Message "Limited results found - Displaying User Voice Configuration for each" -Verbose
@@ -254,7 +264,7 @@ function Find-TeamsUserVoiceConfig {
             }
           }
           else {
-            Write-Verbose -Message "Number: '$Number' - No assignments found (LineURI)" -Verbose
+            Write-Verbose -Message "Extension: '$ExtN' - No assignments found (LineURI)" -Verbose
           }
         }
 

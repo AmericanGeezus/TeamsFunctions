@@ -55,11 +55,11 @@ function Get-TeamsCommonAreaPhone {
     Set-TeamsUserVoiceConfig
 	#>
 
-  [CmdletBinding(ConfirmImpact = 'Low')]
+  [CmdletBinding(ConfirmImpact = 'Low', DefaultParameterSetName = "Identity")]
   [Alias('Get-TeamsCAP')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the User")]
+    [Parameter(Position = 0, ParameterSetName = "Identity", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the User")]
     [string[]]$Identity,
 
     [Parameter(ParameterSetName = "DisplayName", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
@@ -152,12 +152,15 @@ function Get-TeamsCommonAreaPhone {
     elseif ($PSBoundParameters.ContainsKey('DisplayName')) {
       # Minimum Character length is 3
       Write-Verbose -Message "DisplayName - Searching for Accounts with DisplayName '$DisplayName'"
-      $CommonAreaPhones = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
+      $Filter = 'DisplayName -like "*{0}*"' -f $DisplayName
+      $CommonAreaPhones = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      #$CommonAreaPhones = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $SearchString = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+      $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars "tel"
       Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
-      $CommonAreaPhones = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
+      $Filter = 'LineURI -like "*{0}*"' -f $SearchString
+      $CommonAreaPhones = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
     }
     else {
       Write-Warning -Message "No parameters provided. Please provide at least one UserPrincipalName with Identity a DisplayName or a PhoneNumber"
@@ -192,10 +195,10 @@ function Get-TeamsCommonAreaPhone {
       if ( -not $CommonAreaPhone.TeamsIPPhonePolicy ) {
         $UserSignInMode = $GlobalIPPhonePolicy.SignInMode
         if ( $GlobalIPPhonePolicy.SignInMode -ne "CommonAreaPhoneSignIn" ) {
-          Write-Warning -Message "Phone '$CommonAreaPhone' - TeamsIpPhonePolicy is not set. The Global policy does not have the Sign-in mode set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please assign a TeamsIpPhonePolicy or change the Global Policy!"
+          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy is not set. The Global policy does not have the Sign-in mode set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please assign a TeamsIpPhonePolicy or change the Global Policy!"
         }
         else {
-          Write-Verbose -Message "Phone '$CommonAreaPhone' - TeamsIpPhonePolicy is not set, but Global policy has set the Sign-in mode set to 'CommonAreaPhoneSignIn'." -Verbose
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy is not set, but Global policy has set the Sign-in mode set to 'CommonAreaPhoneSignIn'." -Verbose
         }
       }
       else {
@@ -203,10 +206,10 @@ function Get-TeamsCommonAreaPhone {
         $UserIpPhonePolicy = Get-CsTeamsIPPhonePolicy $CommonAreaPhone.TeamsIPPhonePolicy -WarningAction SilentlyContinue
         $UserSignInMode = $UserIpPhonePolicy.SignInMode
         if ( $UserIpPhonePolicy.SignInMode -ne "CommonAreaPhoneSignIn" ) {
-          Write-Warning -Message "Phone '$CommonAreaPhone' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set, but the Sign-in mode set not set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please change the TeamsIpPhonePolicy!"
+          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set, but the Sign-in mode set not set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please change the TeamsIpPhonePolicy!"
         }
         else {
-          Write-Verbose -Message "Phone '$CommonAreaPhone' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set and Sign-In Mode is set to 'CommonAreaPhoneSignIn'"
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set and Sign-In Mode is set to 'CommonAreaPhoneSignIn'"
         }
       }
 
@@ -214,10 +217,10 @@ function Get-TeamsCommonAreaPhone {
       if ( -not $CommonAreaPhone.TeamsCallingPolicy ) {
         $UserAllowPrivateCalling = $GlobalCallingPolicy.AllowPrivateCalling
         if ( -not $GlobalCallingPolicy.AllowPrivateCalling ) {
-          Write-Warning -Message "Phone '$CommonAreaPhone' - TeamsCallingPolicy is not set. The Global policy does not Allow Private Calling. To enable ANY calling functionality for this phone, please assign a TeamsCallingPolicy or change the Global Policy!"
+          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy is not set. The Global policy does not Allow Private Calling. To enable ANY calling functionality for this phone, please assign a TeamsCallingPolicy or change the Global Policy!"
         }
         else {
-          Write-Verbose -Message "Phone '$CommonAreaPhone' - TeamsCallingPolicy is not set, but Global policy does Allow Private Calling." -Verbose
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy is not set, but Global policy does Allow Private Calling." -Verbose
         }
       }
       else {
@@ -225,10 +228,10 @@ function Get-TeamsCommonAreaPhone {
         $UserTeamsCallingPolicy = Get-CsTeamsCallingPolicy $CommonAreaPhone.TeamsCallingPolicy -WarningAction SilentlyContinue
         $UserAllowPrivateCalling = $UserTeamsCallingPolicy.AllowPrivateCalling
         if ( -not $UserTeamsCallingPolicy.AllowPrivateCalling ) {
-          Write-Warning -Message "Phone '$CommonAreaPhone' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set, but does not Allow Private Calling. To enable ANY calling functionality for this phone, please change the TeamsCallingPolicy!"
+          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set, but does not Allow Private Calling. To enable ANY calling functionality for this phone, please change the TeamsCallingPolicy!"
         }
         else {
-          Write-Verbose -Message "Phone '$CommonAreaPhone' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set and does Allow Private Calling"
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set and does Allow Private Calling"
         }
       }
 
@@ -236,10 +239,10 @@ function Get-TeamsCommonAreaPhone {
       if ( -not $CommonAreaPhone.TeamsCallParkPolicy ) {
         $UserAllowCallPark = $GlobalCallParkPolicy.AllowCallPark
         if ( -not $GlobalCallParkPolicy.AllowCallPark ) {
-          Write-Warning -Message "Phone '$CommonAreaPhone' - TeamsCallParkPolicy is not set. The Global policy does not allow Call Parking. To enable Call Parking for Common Area phones, please assign a TeamsCallParkPolicy or change the Global Policy!"
+          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy is not set. The Global policy does not allow Call Parking. To enable Call Parking for Common Area phones, please assign a TeamsCallParkPolicy or change the Global Policy!"
         }
         else {
-          Write-Verbose -Message "Phone '$CommonAreaPhone' - TeamsCallParkPolicy is not set, but Global policy does allow Call Parking." -Verbose
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy is not set, but Global policy does allow Call Parking." -Verbose
         }
       }
       else {
@@ -247,10 +250,10 @@ function Get-TeamsCommonAreaPhone {
         $UserCallParkPolicy = Get-CsTeamsCallParkPolicy $CommonAreaPhone.TeamsCallParkPolicy -WarningAction SilentlyContinue
         $UserAllowCallPark = $UserTeamsCallingPolicy.AllowCallPark
         if ( -not $UserCallParkPolicy.AllowCallPark ) {
-          Write-Warning -Message "Phone '$CommonAreaPhone' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set, but does not allow Call Parking. To enable Call Parking, please change the TeamsCallParkPolicy!"
+          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set, but does not allow Call Parking. To enable Call Parking, please change the TeamsCallParkPolicy!"
         }
         else {
-          Write-Verbose -Message "Phone '$CommonAreaPhone' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set and does allow Call Parking"
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set and does allow Call Parking"
         }
       }
       #endregion
@@ -267,9 +270,9 @@ function Get-TeamsCommonAreaPhone {
       $step++
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if ($null -ne $CommonAreaPhone.PhoneNumber) {
+      if ($null -ne $CommonAreaPhone.LineURI) {
         $MSNumber = $null
-        $MSNumber = Format-StringRemoveSpecialCharacter -String $CommonAreaPhone.PhoneNumber | Format-StringForUse -SpecialChars "tel"
+        $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars "tel:+") -split ';')[0]
         if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
           $CommonAreaPhonePhoneNumberType = "Microsoft Number"
         }
@@ -294,7 +297,7 @@ function Get-TeamsCommonAreaPhone {
         PhoneSystemStatus            = $CommonAreaPhoneLicense.PhoneSystemStatus
         EnterpriseVoiceEnabled       = $CommonAreaPhone.EnterpriseVoiceEnabled
         PhoneNumberType              = $CommonAreaPhonePhoneNumberType
-        PhoneNumber                  = $CommonAreaPhone.PhoneNumber
+        PhoneNumber                  = $CommonAreaPhone.LineURI
         TenantDialPlan               = $CommonAreaPhone.TenantDialPlan
         OnlineVoiceRoutingPolicy     = $CommonAreaPhone.OnlineVoiceRoutingPolicy
         TeamsIPPhonePolicy           = $CommonAreaPhone.TeamsIPPhonePolicy
