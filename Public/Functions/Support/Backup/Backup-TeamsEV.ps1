@@ -29,6 +29,8 @@ function Backup-TeamsEV {
 		Copyright © 2020  Ken Lasko
 		klasko@ucdialplans.com
 		https://www.ucdialplans.com
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
 
   [CmdletBinding(ConfirmImpact = 'None')]

@@ -13,6 +13,8 @@ function Test-Module {
   .EXAMPLE
 		Test-Module -Module ModuleName
 		Will Return $TRUE if the Module 'ModuleName' is loaded
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]

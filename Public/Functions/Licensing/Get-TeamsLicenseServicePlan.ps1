@@ -23,6 +23,8 @@ function Get-TeamsLicenseServicePlan {
   .FUNCTIONALITY
 		Returns a list of License Service Plans
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense

@@ -55,14 +55,24 @@ function Connect-SkypeOnline {
     To reconnect fully, please re-run Connect-SkypeOnline to recreate the session cleanly.
     Please note that hanging sessions can cause lockout (session exhaustion)
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Connect-Me
+	.LINK
     Connect-SkypeOnline
+	.LINK
     Connect-AzureAD
+	.LINK
     Connect-MicrosoftTeams
+	.LINK
     Assert-SkypeOnlineConnection
+	.LINK
     Disconnect-Me
+	.LINK
     Disconnect-SkypeOnline
+	.LINK
     Disconnect-AzureAD
+	.LINK
     Disconnect-MicrosoftTeams
   #>
 

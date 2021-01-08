@@ -57,15 +57,25 @@ function New-TeamsAutoAttendantMenuOption {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     New-TeamsAutoAttendant
+	.LINK
     Set-TeamsAutoAttendant
+	.LINK
     New-TeamsCallableEntity
+	.LINK
     New-TeamsAutoAttendantCallFlow
+	.LINK
     New-TeamsAutoAttendantMenu
+	.LINK
     New-TeamsAutoAttendantMenuOption
+	.LINK
     New-TeamsAutoAttendantPrompt
+	.LINK
     New-TeamsAutoAttendantSchedule
+	.LINK
     New-TeamsAutoAttendantDialScope
   #>
 

@@ -18,6 +18,8 @@ function Assert-SkypeOnlineConnection {
     Will run Test-SkypeOnlineConnection and, if successful, stops.
     If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection.
     If that too is unsuccessful, displays request to reconnect with Connect-Me.
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]

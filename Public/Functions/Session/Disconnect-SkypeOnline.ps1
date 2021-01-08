@@ -5,34 +5,43 @@
 # Status:   Live
 
 function Disconnect-SkypeOnline {
-  <#
-		.SYNOPSIS
-			Disconnects Sessions established to SkypeOnline
-    .DESCRIPTION
-      Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
-      By default Office 365 allows two (!) concurrent sessions per User.
-      Session exhaustion may occur if sessions hang or incorrectly closed.
-      Avoid this by cleanly disconnecting the sessions with this function before timeout
-    .EXAMPLE
-			Disconnect-SkypeOnline
-			Removes any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
-    .NOTES
-      Helper function to disconnect from SkypeOnline
-      By default Office 365 allows two (!) concurrent sessions per User.
-      If sessions hang or are incorrectly closed (not properly disconnected),
-      this can lead to session exhaustion which results in not being able to connect again.
-      An admin can sign-out this user from all Sessions through the Office 365 Admin Center
-      This process may take up to 15 mins and is best avoided, through proper disconnect after use
-    .LINK
-      Connect-Me
-      Connect-SkypeOnline
-      Connect-AzureAD
-      Connect-MicrosoftTeams
-      Disconnect-Me
-      Disconnect-SkypeOnline
-      Disconnect-AzureAD
-      Disconnect-MicrosoftTeams
-    #>
+<#
+  .SYNOPSIS
+    Disconnects Sessions established to SkypeOnline
+  .DESCRIPTION
+    Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
+    By default Office 365 allows two (!) concurrent sessions per User.
+    Session exhaustion may occur if sessions hang or incorrectly closed.
+    Avoid this by cleanly disconnecting the sessions with this function before timeout
+  .EXAMPLE
+    Disconnect-SkypeOnline
+    Removes any current Skype for Business Online remote PowerShell sessions and removes any imported modules.
+  .NOTES
+    Helper function to disconnect from SkypeOnline
+    By default Office 365 allows two (!) concurrent sessions per User.
+    If sessions hang or are incorrectly closed (not properly disconnected),
+    this can lead to session exhaustion which results in not being able to connect again.
+    An admin can sign-out this user from all Sessions through the Office 365 Admin Center
+    This process may take up to 15 mins and is best avoided, through proper disconnect after use
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Connect-Me
+  .LINK
+    Connect-SkypeOnline
+  .LINK
+    Connect-AzureAD
+  .LINK
+    Connect-MicrosoftTeams
+  .LINK
+    Disconnect-Me
+  .LINK
+    Disconnect-SkypeOnline
+  .LINK
+    Disconnect-AzureAD
+  .LINK
+    Disconnect-MicrosoftTeams
+  #>
 
   [CmdletBinding()]
   param() #param

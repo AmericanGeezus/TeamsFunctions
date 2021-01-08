@@ -42,10 +42,16 @@ function Find-AzureAdGroup {
     Parses the whole Tenant for Groups, which may take some time, but yield complete results.
     Will return all Groups that have "My Group" in the DisplayName, ObjectId or MailNickName
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Find-AzureAdGroup
+  .LINK
     Find-AzureAdUser
+  .LINK
     Test-AzureAdGroup
+  .LINK
     Test-AzureAdUser
+  .LINK
     Test-TeamsUser
 	#>
 

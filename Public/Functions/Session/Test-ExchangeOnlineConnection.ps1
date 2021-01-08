@@ -14,6 +14,8 @@ function Test-ExchangeOnlineConnection {
 	.EXAMPLE
 		Test-ExchangeOnlineConnection
 		Will Return $TRUE only if a session is found.
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]

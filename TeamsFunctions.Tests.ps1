@@ -48,6 +48,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name "TeamsFunctions Module Tests" {
   $Allfunctions = Get-ChildItem "$PSScriptRoot\Public", "$PSScriptRoot\Private" -Include "*.ps1" -Exclude "*.Tests.ps1" -Recurse #| Select-Object -First 1
   $PublicFunctions = Get-ChildItem "$PSScriptRoot\Public" -Include "*.ps1" -Exclude "*.Tests.ps1" -Recurse #| Select-Object -First 1
   $PrivateFunctions = Get-ChildItem "$PSScriptRoot\Private" -Include "*.ps1" -Exclude "*.Tests.ps1" -Recurse #| Select-Object -First 1
+  $PublicDocs = Get-ChildItem "$PSScriptRoot\docs" -Include "*.md" -Recurse #| Select-Object -First 1
 
   Context "Testing Module ALL Functions" -Foreach $AllFunctions {
 
@@ -90,6 +91,10 @@ Describe -Tags ('Unit', 'Acceptance') -Name "TeamsFunctions Module Tests" {
       "$($_.FullName)" | Should -FileContentMatch '.EXAMPLE'
     }
 
+    It "'$_' should have a LINK to the docs folder in the master branch" {
+      "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/'
+    }
+
     # not all will have the full begin, process, end model
     It "'$($_.BaseName)' should have a BEGIN, PROCESS and END block" {
       "$($_.FullName)" | Should -FileContentMatch 'begin {'
@@ -130,6 +135,13 @@ Describe -Tags ('Unit', 'Acceptance') -Name "TeamsFunctions Module Tests" {
     }
   }
   #>
+
+  Context "Testing Module PUBLIC Functions" -ForEach $PublicDocs {
+
+    It "'$_' should NOT have empty documentation in the MD file" {
+      "$($_.FullName)" | Should -Not -FileContentMatch ([regex]::Escape('{{'))
+    }
+  } # Context "Testing Module DOCS"
 
 }
 

@@ -25,6 +25,20 @@ function Get-TeamsMGW {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Get-TeamsOVP
+  .LINK
+    Get-TeamsOPU
+  .LINK
+    Get-TeamsOVR
+  .LINK
+    Get-TeamsMGW
+  .LINK
+    Get-TeamsTDP
+  .LINK
+    Get-TeamsVNR
   #>
 
   [CmdletBinding()]

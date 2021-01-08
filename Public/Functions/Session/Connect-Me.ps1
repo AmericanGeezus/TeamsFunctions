@@ -60,13 +60,22 @@ function Connect-Me {
   .NOTES
     The base command (without any )
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Connect-Me
+	.LINK
     Connect-SkypeOnline
+	.LINK
     Connect-AzureAD
+	.LINK
     Connect-MicrosoftTeams
+	.LINK
     Disconnect-Me
+	.LINK
     Disconnect-SkypeOnline
+	.LINK
     Disconnect-AzureAD
+	.LINK
     Disconnect-MicrosoftTeams
 	#>
 

@@ -43,6 +43,10 @@ function Get-TeamsObjectType {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Get-TeamsCallableEntity
   #>
 
   [CmdletBinding(ConfirmImpact = 'Low')]

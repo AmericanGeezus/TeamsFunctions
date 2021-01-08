@@ -23,14 +23,22 @@ function Get-TeamsLicense {
   .FUNCTIONALITY
 		Returns a list of Licenses
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
+  .LINK
     Get-TeamsUserLicense
+  .LINK
     Set-TeamsUserLicense
+  .LINK
     Test-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
+  .LINK
     Get-TeamsLicense
+  .LINK
     Get-TeamsLicenseServicePlan
+  .LINK
     Get-AzureAdLicense
+  .LINK
     Get-AzureAdLicenseServicePlan
   #>
 

@@ -145,7 +145,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Object - (default)
-### #    System.String - With Switch ReturnObjectIdOnly
 ## NOTES
 For Users, it will verify the Objects eligibility.
 Requires a valid license but can enable the User Object for Enterprise Voice if needed.

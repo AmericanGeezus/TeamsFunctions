@@ -33,9 +33,14 @@ function Remove-TeamsResourceAccountAssociation {
     TeamsAutoAttendant
     TeamsCallQueue
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsResourceAccountAssociation
+	.LINK
     New-TeamsResourceAccountAssociation
+	.LINK
 		Remove-TeamsResourceAccountAssociation
+	.LINK
     Remove-TeamsResourceAccount
   #>
 

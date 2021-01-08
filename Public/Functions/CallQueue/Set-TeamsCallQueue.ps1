@@ -118,11 +118,17 @@ function Set-TeamsCallQueue {
 		Currently in Testing
 	.FUNCTIONALITY
 		Changes a Call Queue with friendly names as input
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
 		New-TeamsCallQueue
+	.LINK
 		Get-TeamsCallQueue
+	.LINK
     Set-TeamsCallQueue
+	.LINK
     Remove-TeamsCallQueue
+	.LINK
     Set-TeamsAutoAttendant
 	#>
 

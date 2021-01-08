@@ -37,6 +37,10 @@
   20.11       NOV 2020 Release - Restructuring, Bugfixes and general overhaul. Also more Pester-Testing
   20.12       DEC 2020 Release - Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes
   21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
+
+.LINK
+  https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
+
 #>
 
 #Requires -Version 5.1

@@ -46,9 +46,9 @@ function Get-TeamsCommonAreaPhone {
   .COMPONENT
 		TeamsUserVoiceConfig
   .LINK
-    [Get-TeamsCommonAreaPhone](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCommonAreaPhone.md)
-  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Get-TeamsCommonAreaPhone
   .LINK
     New-TeamsCommonAreaPhone
   .LINK

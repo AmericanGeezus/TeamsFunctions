@@ -16,6 +16,8 @@ function Test-AzureADConnection {
 	.EXAMPLE
 		Test-AzureADConnection
 		Will Return $TRUE only if a session is found.
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]

@@ -29,10 +29,15 @@ function Test-TeamsResourceAccount {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
 		Get-TeamsResourceAccount
+	.LINK
 		Find-TeamsResourceAccount
+	.LINK
 		Find-AzureAdUser
+	.LINK
 		Test-AzureAdUser
 	#>
 

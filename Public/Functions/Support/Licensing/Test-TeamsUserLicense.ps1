@@ -40,10 +40,13 @@ function Test-TeamsUserLicense {
   .FUNCTIONALITY
     Returns a boolean value for License or Serviceplan for a specific user.
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
+  .LINK
     Get-TeamsUserLicense
+  .LINK
     Set-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
   #>
 
   [CmdletBinding(DefaultParameterSetName = "ServicePlan")]

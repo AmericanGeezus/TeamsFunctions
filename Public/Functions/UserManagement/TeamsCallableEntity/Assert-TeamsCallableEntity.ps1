@@ -15,12 +15,18 @@ function Assert-TeamsCallableEntity {
     Tests whether a the Object can be used as a Callable Entity in Call Queues or Auto Attendant
   .PARAMETER Identity
     UserPrincipalName, Group Name or Tel URI
+  .PARAMETER Terminate
+    Optional. By default, the Command will not throw terminating errors.
+    Using this switch a terminating error is generated.
+    Useful for scripting to try/catch and silently treat the received error.
   .EXAMPLE
     Assert-TeamsCallableEntity -Identity Jane@domain.com
     Verifies Jane has a valid PhoneSystem License (Provisioning Status: Success) and is enabled for Enterprise Voice
     Enables Jane for Enterprise Voice if not yet done.
   .NOTES
     Returns Boolean Result
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]
@@ -30,6 +36,7 @@ function Assert-TeamsCallableEntity {
     [Parameter(Mandatory, HelpMessage = "User Principal Name of the user")]
     [string]$Identity,
 
+    [Parameter(HelpMessage = "Switch to instruct to throw errors")]
     [switch]$Terminate
   )
 

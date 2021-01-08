@@ -66,13 +66,21 @@ function Set-TeamsCommonAreaPhone {
 		Changes a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
     TeamsUserVoiceConfig
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     Get-TeamsCommonAreaPhone
+	.LINK
     New-TeamsCommonAreaPhone
+	.LINK
     Set-TeamsCommonAreaPhone
+	.LINK
     Remove-TeamsCommonAreaPhone
+	.LINK
     Find-TeamsUserVoiceConfig
+	.LINK
     Get-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
   #>
 

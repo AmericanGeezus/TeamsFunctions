@@ -16,7 +16,9 @@ function Get-TeamsTenant {
   .EXAMPLE
     Get-TeamsTenant
     Lists basic tenant information relevant for working on this Tenant
-  #>
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+ #>
 
   [CmdletBinding()]
   param (

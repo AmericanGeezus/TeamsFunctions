@@ -16,6 +16,8 @@ function Test-MicrosoftTeamsConnection {
 	.EXAMPLE
 		Test-MicrosoftTeamsConnection
 		Will Return $TRUE only if a session is found.
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
 
   [CmdletBinding()]

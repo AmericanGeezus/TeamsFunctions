@@ -35,7 +35,10 @@ function Get-AzureAdAdminRole {
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Enable-AzureAdAdminRole
+  .LINK
     Get-AzureAdAdminRole
   #>
 

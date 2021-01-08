@@ -22,13 +22,21 @@ function Remove-TeamsAutoAttendant {
     System.String
   .OUTPUTS
     System.Object
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     Get-TeamsAutoAttendant
+	.LINK
     Set-TeamsAutoAttendant
+	.LINK
     New-TeamsAutoAttendant
+	.LINK
     Remove-TeamsAutoAttendant
+	.LINK
     Remove-TeamsCallQueue
+	.LINK
 		Remove-TeamsResourceAccount
+	.LINK
 		Remove-TeamsResourceAccountAssociation
 	#>
 

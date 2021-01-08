@@ -34,6 +34,8 @@ function Find-AzureAdUser {
     System.String
   .OUTPUTS
     Microsoft.Open.AzureAD.Model.User
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Search")]

@@ -103,13 +103,20 @@ function Find-TeamsUserVoiceConfig {
 	.FUNCTIONALITY
     Finding Users with a specific values in their Voice Configuration
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   .LINK
     Find-TeamsUserVoiceConfig
+  .LINK
     Get-TeamsTenantVoiceConfig
+  .LINK
     Get-TeamsUserVoiceConfig
+  .LINK
     Set-TeamsUserVoiceConfig
+  .LINK
     Remove-TeamsUserVoiceConfig
+  .LINK
     Test-TeamsUserVoiceConfig
   #>
 
