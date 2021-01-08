@@ -5,72 +5,72 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-TeamsCommonAreaPhone
+# Get-TeamsCallQueue
 
 ## SYNOPSIS
-Returns Common Area Phones from AzureAD
+Queries Call Queues and displays friendly Names (UPN or Displayname)
 
 ## SYNTAX
 
-### Identity (Default)
 ```
-Get-TeamsCommonAreaPhone [[-Identity] <String[]>] [<CommonParameters>]
-```
-
-### DisplayName
-```
-Get-TeamsCommonAreaPhone [-DisplayName <String>] [<CommonParameters>]
-```
-
-### Number
-```
-Get-TeamsCommonAreaPhone [-PhoneNumber <String>] [<CommonParameters>]
+Get-TeamsCallQueue [[-Name] <String[]>] [[-SearchString] <String>] [-Detailed] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Returns one or more AzureAdUser Accounts that are Common Area Phones
-Accounts returned are strictly limited to having to have the Common Area Phone License assigned.
+Same functionality as Get-CsCallQueue, but display reveals friendly Names,
+like UserPrincipalName or DisplayName for the following connected Objects
+  OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsCommonAreaPhone
+Get-TeamsCallQueue
 ```
 
-Returns all Common Area Phones.
-NOTE: Depending on size of the Tenant, this might take a while.
+Same result as Get-CsCallQueue
 
 ### EXAMPLE 2
 ```
-Get-TeamsCommonAreaPhone -Identity MyCAP@TenantName.onmicrosoft.com
+Get-TeamsCallQueue -Name "My CallQueue"
 ```
 
-Returns the Common Area Phone with the Identity specified, if found.
+Returns an Object for every Call Queue found with the exact Name "My CallQueue"
 
 ### EXAMPLE 3
 ```
-Get-TeamsCommonAreaPhone -DisplayName "Lobby"
+Get-TeamsCallQueue -Name "My CallQueue" -Detailed
 ```
 
-Returns all Common Area Phones with "Lobby" as part of their Display Name.
+Returns an Object for every Call Queue found with the String "My CallQueue"
+  Displays additional Parameters used for Diagnostics & Shared Voicemail.
 
 ### EXAMPLE 4
 ```
-Get-TeamsCommonAreaPhone -PhoneNumber +1555123456
+Get-TeamsCallQueue -SearchString "My CallQueue"
 ```
 
-Returns the Resource Account with the Phone Number specified, if found.
+Returns an Object for every Call Queue matching the String "My CallQueue"
+  Synonymous with Get-CsCallQueue -NameFilter "My CallQueue", but output shown differently.
+
+### EXAMPLE 5
+```
+Get-TeamsCallQueue -Name "My CallQueue" -SearchString "My CallQueue"
+```
+
+Returns an Object for every Call Queue found with the exact Name "My CallQueue" and
+  Returns an Object for every Call Queue matching the String "My CallQueue"
 
 ## PARAMETERS
 
-### -Identity
-Default and positional.
-One or more UserPrincipalNames to be queried
+### -Name
+Optional.
+Searches all Call Queues for this name (unique results).
+  If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
 
 ```yaml
 Type: String[]
-Parameter Sets: Identity
+Parameter Sets: (All)
 Aliases:
 
 Required: False
@@ -80,36 +80,36 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -DisplayName
+### -SearchString
 Optional.
-Search parameter.
-Use Find-TeamsUserVoiceConfig for more search options
+Searches all Call Queues for this string (multiple results possible).
 
 ```yaml
 Type: String
-Parameter Sets: DisplayName
+Parameter Sets: (All)
+Aliases: NameFilter
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Detailed
+Optional Switch.
+Displays all Parameters of the CallQueue
+This also shows parameters relating to Ids and Diagnostic Parameters.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -PhoneNumber
-Optional.
-Returns all Common Area Phones with a specific string in the PhoneNumber
-
-```yaml
-Type: String
-Parameter Sets: Number
-Aliases: Tel, Number, TelephoneNumber
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: True (ByPropertyName)
+Default value: False
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -123,16 +123,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
-#Without input, returns all UserPrincipalNames of all found Common Area Phones (by License assigned)
-Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones
+Without any parameters, Get-TeamsCallQueue will show names only
+Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
+Main difference to Get-CsCallQueue (apart from the friendly names) is that the
+Output view more concise
 
 ## RELATED LINKS
 
-[Get-TeamsCommonAreaPhone
-New-TeamsCommonAreaPhone
-Set-TeamsCommonAreaPhone
-Remove-TeamsCommonAreaPhone
-Find-TeamsUserVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig]()
+[New-TeamsCallQueue
+Get-TeamsCallQueue
+  Set-TeamsCallQueue
+  Remove-TeamsCallQueue
+  Get-TeamsAutoAttendant
+  Get-TeamsResourceAccount
+  Get-TeamsResourceAccountAssociation]()
 

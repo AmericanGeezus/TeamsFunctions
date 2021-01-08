@@ -46,12 +46,20 @@ function Get-TeamsCommonAreaPhone {
   .COMPONENT
 		TeamsUserVoiceConfig
   .LINK
+    $global:TeamsFunctionsHelpURLBase\$MyInvocation.MyCommand`.md
+  .LINK
     Get-TeamsCommonAreaPhone
+  .LINK
     New-TeamsCommonAreaPhone
+  .LINK
     Set-TeamsCommonAreaPhone
+  .LINK
     Remove-TeamsCommonAreaPhone
+  .LINK
     Find-TeamsUserVoiceConfig
+  .LINK
     Get-TeamsUserVoiceConfig
+  .LINK
     Set-TeamsUserVoiceConfig
 	#>
 
