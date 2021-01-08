@@ -114,10 +114,15 @@ For a full parameterset, please run:
 
 ## RELATED LINKS
 
-[Find-TeamsUserVoiceConfig
-Get-TeamsTenantVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig
-Remove-TeamsUserVoiceConfig
-Test-TeamsUserVoiceConfig]()
+[Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsTenantVoiceConfig]()
+
+[Get-TeamsUserVoiceConfig]()
+
+[Set-TeamsUserVoiceConfig]()
+
+[Remove-TeamsUserVoiceConfig]()
+
+[Test-TeamsUserVoiceConfig]()
 

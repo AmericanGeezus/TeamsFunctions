@@ -46,12 +46,20 @@ function Get-TeamsCommonAreaPhone {
   .COMPONENT
 		TeamsUserVoiceConfig
   .LINK
-    Get-TeamsCommonAreaPhone
+    [Get-TeamsCommonAreaPhone](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCommonAreaPhone.md)
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     New-TeamsCommonAreaPhone
+  .LINK
     Set-TeamsCommonAreaPhone
+  .LINK
     Remove-TeamsCommonAreaPhone
+  .LINK
     Find-TeamsUserVoiceConfig
+  .LINK
     Get-TeamsUserVoiceConfig
+  .LINK
     Set-TeamsUserVoiceConfig
 	#>
 
@@ -83,6 +91,7 @@ function Get-TeamsCommonAreaPhone {
   begin {
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "[$global:TeamsFunctionsHelpURLBase\$($MyInvocation.MyCommand)`.md]($($MyInvocation.MyCommand))" -Verbose
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }

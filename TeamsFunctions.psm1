@@ -49,6 +49,8 @@
 #Activate 01-FEB 2021
 #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
+# Defining Help URL Base string:
+# https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
 
 #region Classes
 class TFTeamsServicePlan {

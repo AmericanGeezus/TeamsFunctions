@@ -128,11 +128,18 @@ Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common
 
 ## RELATED LINKS
 
-[Get-TeamsCommonAreaPhone
-New-TeamsCommonAreaPhone
-Set-TeamsCommonAreaPhone
-Remove-TeamsCommonAreaPhone
-Find-TeamsUserVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig]()
+[[Get-TeamsCommonAreaPhone](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCommonAreaPhone.md)]()
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[New-TeamsCommonAreaPhone.md](New-TeamsCommonAreaPhone.md)
+
+[Set-TeamsCommonAreaPhone.md](.\Set-TeamsCommonAreaPhone.md)
+
+[Remove-TeamsCommonAreaPhone.md]()
+
+[Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsUserVoiceConfig]()
+
+[Set-TeamsUserVoiceConfig]()
