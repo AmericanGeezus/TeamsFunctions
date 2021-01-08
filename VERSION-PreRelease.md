@@ -6,7 +6,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
-- TBA
+- HELP! - Using PlatyPS to add Markdown Help files. Special thanks to [Andrés Gorzelany](https://github.com/get-itips)
+- `Find-TeamsUserVoiceRoute`: Now formally new and working as intended
+  - Given a user and a Dialled Number, it evaluates the Effective Dial Plan and Effective Voice Route and displays all in a neat output
+  - 
 
 ### Updated
 
