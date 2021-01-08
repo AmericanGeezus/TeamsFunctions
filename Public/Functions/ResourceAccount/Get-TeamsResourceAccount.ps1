@@ -161,7 +161,7 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property ApplicationId -EQ -Value $AppId
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $SearchString = Format-StringRemoveSpecialCharacter $PhoneNumber | Format-StringForUse -SpecialChars "tel"
+      $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars "tel"
       Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
     }
@@ -238,7 +238,7 @@ function Get-TeamsResourceAccount {
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
-        $MSNumber = Format-StringRemoveSpecialCharacter -String $ResourceAccount.PhoneNumber | Format-StringForUse -SpecialChars "tel"
+        $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.LineURI)" -SpecialChars "tel:+") -split ';')[0]
         if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
           $ResourceAccountPhoneNumberType = "Microsoft Number"
         }

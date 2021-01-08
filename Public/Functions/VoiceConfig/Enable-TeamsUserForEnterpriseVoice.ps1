@@ -92,7 +92,7 @@ function Enable-TeamsUserForEnterpriseVoice {
         }
         return $(if ($Called) { $false })
       }
-      elseif ( [string]$UserLicense.PhoneSystemStatus.notcontains('Success') ) {
+      elseif ( -not [string]$UserLicense.PhoneSystemStatus.contains('Success') ) {
         $Message = "User '$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required to be enabled)!"
         if ($Called) {
           Write-Warning -Message $Message

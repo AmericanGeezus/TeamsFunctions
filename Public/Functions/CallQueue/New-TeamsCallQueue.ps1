@@ -643,14 +643,14 @@ function New-TeamsCallQueue {
             switch ( $CallTarget.ObjectType ) {
               "TelURI" {
                 #Telephone Number (E.164)
-                $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
               }
               "User" {
                 try {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not asserted"
@@ -665,7 +665,7 @@ function New-TeamsCallQueue {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not asserted"
@@ -691,7 +691,7 @@ function New-TeamsCallQueue {
                 $Assertion = $null
                 $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                 if ($Assertion) {
-                  $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                  $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                 }
                 else {
                   Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not asserted"
@@ -855,14 +855,14 @@ function New-TeamsCallQueue {
             switch ( $CallTarget.ObjectType ) {
               "TelURI" {
                 #Telephone Number (E.164)
-                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
               }
               "User" {
                 try {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not asserted"
@@ -877,7 +877,7 @@ function New-TeamsCallQueue {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not asserted"
@@ -902,7 +902,7 @@ function New-TeamsCallQueue {
               $Object = $null
               $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -ErrorAction Stop
               if ($Object) {
-                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
               }
             }
             else {

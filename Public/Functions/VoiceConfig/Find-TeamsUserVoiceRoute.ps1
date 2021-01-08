@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-
+#EXPAND: Make Number an Array?
 
 function Find-TeamsUserVoiceRoute {
   <#
@@ -83,44 +83,44 @@ function Find-TeamsUserVoiceRoute {
       [string]$TenantDialPlan
       [string]$DialedNumber
       [string]$EffectiveDialPlan
-      [string]$TranslatedNumber
       [string]$MatchingRule
+      [string]$MatchingPattern
+      [string]$TranslatedNumber
       [string]$OnlineVoiceRoutingPolicy
       [string]$OnlinePstnUsage
       $MatchedVoiceRoutes #Can be a string or an Object
       [string]$OnlineVoiceRoute
       [string]$OnlinePstnGateway
-      [string]$MatchingPattern
-      [string]$Translation
+      [string]$NumberPattern
 
       TFVoiceRouting(
         [string]$Identity,
         [string]$TenantDialPlan,
         [string]$DialedNumber,
         [string]$EffectiveDialPlan,
-        [string]$TranslatedNumber,
         [string]$MatchingRule,
+        [string]$MatchingPattern,
+        [string]$TranslatedNumber,
         [string]$OnlineVoiceRoutingPolicy,
         [string]$OnlinePstnUsage,
         $MatchedVoiceRoutes,
         [string]$OnlineVoiceRoute,
         [string]$OnlinePstnGateway,
-        [string]$MatchingPattern,
-        [string]$Translation
+        [string]$NumberPattern
       ) {
         $this.Identity = $Identity
         $this.TenantDialPlan = $TenantDialPlan
         $this.DialedNumber = $DialedNumber
         $this.EffectiveDialPlan = $EffectiveDialPlan
-        $this.TranslatedNumber = $TranslatedNumber
         $this.MatchingRule = $MatchingRule
+        $this.MatchingPattern = $MatchingPattern
+        $this.TranslatedNumber = $TranslatedNumber
         $this.OnlineVoiceRoutingPolicy = $OnlineVoiceRoutingPolicy
         $this.OnlinePstnUsage = $OnlinePstnUsage
         $this.MatchedVoiceRoutes = $MatchedVoiceRoutes
         $this.OnlineVoiceRoute = $OnlineVoiceRoute
         $this.OnlinePstnGateway = $OnlinePstnGateway
-        $this.MatchingPattern = $MatchingPattern
-        $this.Translation = $Translation
+        $this.NumberPattern = $NumberPattern
       }
     }
     #endregion
@@ -140,15 +140,7 @@ function Find-TeamsUserVoiceRoute {
       # Query User and prepare object
       try {
         $User = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
-        if ( $User ) {
-          $UserVoiceRouting = $null
-          $UserVoiceRouting = [TFVoiceRouting]::new()
-          $UserVoiceRouting.Identity = $User.UserPrincipalName
-          $UserVoiceRouting.TenantDialPlan = $User.TenantDialPlan
-          $UserVoiceRouting.DialedNumber = $User.DialedNumber
-          $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
-        }
-        else {
+        if ( -not $User ) {
           throw
         }
       }
@@ -156,6 +148,16 @@ function Find-TeamsUserVoiceRoute {
         #throw [System.Data.ObjectNotFoundException]::New("User '$Id' not found")
         Write-Error -Message "User '$Id' not found" -Category ResourceUnavailable
         continue
+      }
+
+      # User
+      if ( $User ) {
+        $UserVoiceRouting = $null
+        $UserVoiceRouting = [TFVoiceRouting]::new("", "", "", "", "", "", "", "", "", $null, "", "", "")
+        $UserVoiceRouting.Identity = $User.UserPrincipalName
+        $UserVoiceRouting.TenantDialPlan = $User.TenantDialPlan
+        $UserVoiceRouting.DialedNumber = $DialedNumber
+        $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
       }
 
       # Number
@@ -170,19 +172,26 @@ function Find-TeamsUserVoiceRoute {
         }
 
         # Query Effective Tenant Dial Plan
-        #$EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id" | Test-CsEffectiveTenantDialPlan -DialedNumber $DialedNumber
         $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id" | Test-CsEffectiveTenantDialPlan -DialedNumber "$DialedNumber"
-        #TEST output from Get-CsEffectiveTenantDialPlan. May need to split Get and Test to get both outputs for use.
-        #CHECK Does the number need to be normalised?
-        $UserVoiceRouting.EffectiveDialPlan = $EffectiveTDP.DialPlanName
+
         if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name) - EffectiveTDP", ( $EffectiveTDP | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
 
         if ( $EffectiveTDP.TranslatedNumber ) {
           Write-Verbose "User '$Id' - Dialed Number '$DialedNumber' translated to '$($EffectiveTDP.TranslatedNumber)'"
-          Write-Verbose "User '$Id' - Normalization rule '$($EffectiveTDP.MatchingRule -replace ";", "`n"))" #TEST replacement
+          Write-Verbose "User '$Id' - Normalization rule '$($EffectiveTDP.MatchingRule -replace ";", "`n"))"
+          $UserVoiceRouting.MatchingRule = $EffectiveTDP.MatchingRule.Name
+          $UserVoiceRouting.MatchingPattern = $EffectiveTDP.MatchingRule.Pattern
           $UserVoiceRouting.TranslatedNumber = $EffectiveTDP.TranslatedNumber
+          $VoiceRouteNumber = $EffectiveTDP.TranslatedNumber
+        }
+        else {
+          $VoiceRouteNumber = $DialedNumber
+        }
+
+        if ($DP.EffectiveTenantDialPlanName -match "_(?<content>.*)_") {
+          $UserVoiceRouting.EffectiveDialPlan = $matches.content
         }
       }
 
@@ -194,7 +203,7 @@ function Find-TeamsUserVoiceRoute {
       if ($OPUs) {
         [System.Collections.ArrayList]$VoiceRoutes = @()
         foreach ($OPU in $OPUs) {
-          $VoiceRoutes += Get-CsOnlineVoiceRoute | Where-Object { $_.OnlinePstnUsages -contains $OPU } | Select-Object *, @{label = ”PSTNUsage”; Expression = { $OPU } }
+          $VoiceRoutes += Get-CsOnlineVoiceRoute | Where-Object { $_.OnlinePstnUsages -contains $OPU } | Select-Object *, @{label = "PSTNUsage"; Expression = { $OPU } }
         }
         if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name) - VoiceRoutes", ( $VoiceRoutes | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
@@ -204,7 +213,7 @@ function Find-TeamsUserVoiceRoute {
           $MatchedVoiceRoutes = $null
           $UsedVoiceRoute = $null
           if ($DialedNumber) {
-            $MatchedVoiceRoutes = $VoiceRoutes | Where-Object { $NormalisedNumber -match $_.NumberPattern }
+            $MatchedVoiceRoutes = $VoiceRoutes | Where-Object { $VoiceRouteNumber -match $_.NumberPattern }
             if ( $MatchedVoiceRoutes ) {
               # Selecting PSTN Usage of the first Voice Route
               $UserVoiceRouting.OnlinePstnUsage = $MatchedVoiceRoutes[0].PSTNUsage
@@ -219,7 +228,7 @@ function Find-TeamsUserVoiceRoute {
               $UsedVoiceRoute = $MatchedVoiceRoutesByPriority | Select-Object -First 1
             }
             else {
-              Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online Voice Routes have been found matching Number '$DialedNumber'"
+              Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online Voice Routes have been found matching Number '$($VoiceRouteNumber)'"
             }
           }
           else {
@@ -232,8 +241,7 @@ function Find-TeamsUserVoiceRoute {
 
           # Populating Parameters based on selection
           $UserVoiceRouting.OnlineVoiceRoute = $UsedVoiceRoute.Name
-          $UserVoiceRouting.MatchingPattern = $UsedVoiceRoute.MatchingPattern
-          $UserVoiceRouting.Translation = $UsedVoiceRoute.Translation
+          $UserVoiceRouting.NumberPattern = $UsedVoiceRoute.NumberPattern
           $UserVoiceRouting.OnlinePstnGateway = $($UsedVoiceRoute.OnlinePstnGatewayList -join (', '))
 
         }

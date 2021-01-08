@@ -232,7 +232,7 @@ function New-TeamsCommonAreaPhone {
     else {
       $PasswordProfile.Password = "CAP-" + $(Get-Date -Format "dd-MMM-yyyy")
     }
-    $Parameters += @{ 'PasswordProfile ' = $PasswordProfile }
+    $Parameters += @{ 'PasswordProfile' = $PasswordProfile }
     $Parameters += @{ 'AccountEnabled' = $true }
     #endregion
 
@@ -347,21 +347,21 @@ function New-TeamsCommonAreaPhone {
     Write-Verbose -Message "$Status - $Operation"
 
     if ($PSBoundParameters.ContainsKey("IPPhonePolicy")) {
-      Grant-TeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
+      Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
     }
     else {
       Write-Verbose -Message "No IP Phone Policy supplied - Global Policy is in effect!" -Verbose
     }
 
     if ($PSBoundParameters.ContainsKey("TeamsCallingPolicy")) {
-      Grant-TeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
+      Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
     }
     else {
       Write-Verbose -Message "No Calling Policy supplied - Global Policy is in effect!" -Verbose
     }
 
     if ($PSBoundParameters.ContainsKey("TeamsCallParkPolicy")) {
-      Grant-TeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
+      Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
     }
     else {
       Write-Verbose -Message "No Call Park Policy supplied - Global Policy is in effect!" -Verbose

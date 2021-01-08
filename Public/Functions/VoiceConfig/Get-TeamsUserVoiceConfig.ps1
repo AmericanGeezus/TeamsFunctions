@@ -163,6 +163,7 @@ function Get-TeamsUserVoiceConfig {
       $UserObject = [PSCustomObject][ordered]@{
         UserPrincipalName          = $CsUser.UserPrincipalName
         SipAddress                 = $CsUser.SipAddress
+        DisplayName                = $CsUser.DisplayName
         ObjectId                   = $CsUser.ObjectId
         Identity                   = $CsUser.Identity
         HostingProvider            = $CsUser.HostingProvider

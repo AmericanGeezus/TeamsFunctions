@@ -384,6 +384,8 @@ function Set-TeamsCallQueue {
 
     # Initial Query to determine unique result (single object)
     $CallQueue = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue
+    $CallQueue = $CallQueue | Where-Object Name -EQ "$Name"
+
     if ($null -eq $CallQueue) {
       Write-Error "'$Name' No Object found" -Category ParserError -RecommendedAction "Please check 'Name' provided" -ErrorAction Stop
     }
@@ -648,14 +650,14 @@ function Set-TeamsCallQueue {
             switch ( $CallTarget.ObjectType ) {
               "TelURI" {
                 #Telephone Number (E.164)
-                $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
               }
               "User" {
                 try {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not asserted"
@@ -670,7 +672,7 @@ function Set-TeamsCallQueue {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not asserted"
@@ -696,7 +698,7 @@ function Set-TeamsCallQueue {
                 $Assertion = $null
                 $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                 if ($Assertion) {
-                  $Parameters += @{'OverflowActionTarget' = $CallTarget.Entity }
+                  $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                 }
                 else {
                   Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not asserted"
@@ -878,14 +880,14 @@ function Set-TeamsCallQueue {
             switch ( $CallTarget.ObjectType ) {
               "TelURI" {
                 #Telephone Number (E.164)
-                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
               }
               "User" {
                 try {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not asserted"
@@ -900,7 +902,7 @@ function Set-TeamsCallQueue {
                   $Assertion = $null
                   $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
                   if ($Assertion) {
-                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                    $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
                   else {
                     Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not asserted"
@@ -925,7 +927,7 @@ function Set-TeamsCallQueue {
               $Assertion = $null
               $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -ErrorAction SilentlyContinue
               if ($Assertion) {
-                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Entity }
+                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
               }
             }
             else {

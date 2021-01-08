@@ -73,6 +73,7 @@ function Remove-TeamsAutoAttendant {
       try {
         Write-Verbose -Message "The listed Auto Attendants are being removed:" -Verbose
         $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
+        $AAToRemove = $AAToRemove | Where-Object Name -EQ "$DN"
 
         if ( $QueueToRemove ) {
           $AACounter = 0
