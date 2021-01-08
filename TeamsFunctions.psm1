@@ -50,7 +50,7 @@
 #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
 # Defining Help URL Base string:
-$global:TeamsFunctionsHelpURLBase = "https://github.com/DEberhardt/TeamsFunctions/tree/master/docs"
+# https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
 
 #region Classes
 class TFTeamsServicePlan {
