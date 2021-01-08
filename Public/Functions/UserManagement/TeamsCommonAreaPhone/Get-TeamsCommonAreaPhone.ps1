@@ -46,7 +46,8 @@ function Get-TeamsCommonAreaPhone {
   .COMPONENT
 		TeamsUserVoiceConfig
   .LINK
-    $global:TeamsFunctionsHelpURLBase\$MyInvocation.MyCommand`.md
+    [$global:TeamsFunctionsHelpURLBase\$MyInvocation.MyCommand`.md]($MyInvocation.MyCommand)
+    Online version: http://www.fabrikam.com/extension.html
   .LINK
     Get-TeamsCommonAreaPhone
   .LINK
@@ -91,6 +92,7 @@ function Get-TeamsCommonAreaPhone {
   begin {
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "[$global:TeamsFunctionsHelpURLBase\$($MyInvocation.MyCommand)`.md]($($MyInvocation.MyCommand))" -Verbose
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
