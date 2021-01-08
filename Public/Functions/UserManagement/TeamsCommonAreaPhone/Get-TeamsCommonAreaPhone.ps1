@@ -46,10 +46,9 @@ function Get-TeamsCommonAreaPhone {
   .COMPONENT
 		TeamsUserVoiceConfig
   .LINK
-    [$global:TeamsFunctionsHelpURLBase\$MyInvocation.MyCommand`.md]($MyInvocation.MyCommand)
-    Online version: http://www.fabrikam.com/extension.html
+    [Get-TeamsCommonAreaPhone](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCommonAreaPhone.md)
   .LINK
-    Get-TeamsCommonAreaPhone
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     New-TeamsCommonAreaPhone
   .LINK
