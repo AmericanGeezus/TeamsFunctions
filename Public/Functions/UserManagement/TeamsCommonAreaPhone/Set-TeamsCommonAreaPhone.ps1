@@ -96,7 +96,7 @@ function Set-TeamsCommonAreaPhone {
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = "Display Name for this Object")]
     [string]$DisplayName,
 
-    [Parameter(Mandatory = $true, HelpMessage = "Usage Location to assign")]
+    [Parameter(HelpMessage = "Usage Location to assign")]
     [string]$UsageLocation,
 
     [Parameter(HelpMessage = "License to be assigned")]
@@ -170,7 +170,8 @@ function Set-TeamsCommonAreaPhone {
       $CsOnlineUser = (Get-CsOnlineUser -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction STOP)
       $CurrentDisplayName = $CsOnlineUser.DisplayName
       Write-Verbose -Message "'$UserPrincipalName' Teams Object found: '$CurrentDisplayName'"
-      $Parameters += @{ 'UserPrincipalName' = "$UserPrincipalName" }
+
+      $Parameters += @{ 'ObjectId' = $CsOnlineUser.ObjectId }
     }
     catch {
       # Catching anything
@@ -246,7 +247,8 @@ function Set-TeamsCommonAreaPhone {
         "Function: $($MyInvocation.MyCommand.Name) - Parameters", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
       if ($PSCmdlet.ShouldProcess("$UPN", "Set-AzureAdUser")) {
-        $AzureAdUser = Set-AzureADUser @Parameters
+        $null = Set-AzureADUser @Parameters
+        $AzureAdUser = Get-AzureADUser -ObjectId $Parameters.ObjectId
       }
       else {
         return
@@ -318,15 +320,15 @@ function Set-TeamsCommonAreaPhone {
     Write-Verbose -Message "$Status - $Operation"
 
     if ($PSBoundParameters.ContainsKey("IPPhonePolicy")) {
-      Grant-TeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
+      Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
     }
 
     if ($PSBoundParameters.ContainsKey("TeamsCallingPolicy")) {
-      Grant-TeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
+      Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
     }
 
     if ($PSBoundParameters.ContainsKey("TeamsCallParkPolicy")) {
-      Grant-TeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
+      Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
     }
     #endregion
     #endregion

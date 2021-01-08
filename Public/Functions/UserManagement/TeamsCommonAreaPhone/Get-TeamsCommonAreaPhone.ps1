@@ -270,7 +270,7 @@ function Get-TeamsCommonAreaPhone {
       $step++
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if ($null -ne $CommonAreaPhone.LineURI) {
+      if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars "tel:+") -split ';')[0]
         if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
