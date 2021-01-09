@@ -27,17 +27,29 @@ function New-TeamsAutoAttendantDialScope {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     New-TeamsAutoAttendant
+	.LINK
     Set-TeamsAutoAttendant
+	.LINK
     Get-TeamsCallableEntity
+	.LINK
     Find-TeamsCallableEntity
+	.LINK
     New-TeamsCallableEntity
+	.LINK
     New-TeamsAutoAttendantCallFlow
+	.LINK
     New-TeamsAutoAttendantMenu
+	.LINK
     New-TeamsAutoAttendantMenuOption
+	.LINK
     New-TeamsAutoAttendantPrompt
+	.LINK
     New-TeamsAutoAttendantSchedule
+	.LINK
     New-TeamsAutoAttendantDialScope
   #>
 

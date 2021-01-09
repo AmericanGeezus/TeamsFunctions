@@ -136,12 +136,20 @@ function New-TeamsCallQueue {
   .FUNCTIONALITY
     Creates a Call Queue with custom settings and friendly names as input
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     New-TeamsCallQueue
+  .LINK
     Get-TeamsCallQueue
+  .LINK
     Set-TeamsCallQueue
+  .LINK
     Remove-TeamsCallQueue
+  .LINK
     New-TeamsAutoAttendant
+  .LINK
     New-TeamsResourceAccount
+  .LINK
     New-TeamsResourceAccountAssociation
   #>
 

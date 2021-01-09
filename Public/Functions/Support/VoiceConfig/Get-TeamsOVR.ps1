@@ -25,6 +25,20 @@ function Get-TeamsOVR {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute"  | Select-Object Name -ExpandProperty Name
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Get-TeamsOVP
+  .LINK
+    Get-TeamsOPU
+  .LINK
+    Get-TeamsOVR
+  .LINK
+    Get-TeamsMGW
+  .LINK
+    Get-TeamsTDP
+  .LINK
+    Get-TeamsVNR
   #>
 
   [CmdletBinding()]

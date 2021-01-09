@@ -38,6 +38,8 @@ function Merge-AutoAttendantArtefact {
     Schedule requires the queried Object from Get-CsOnlineSchedule
     All other parmeter work with the nested Object from the Auto Attendant Object
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsAutoAttendant
 
 	#>

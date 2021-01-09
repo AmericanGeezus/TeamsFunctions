@@ -29,11 +29,18 @@ function Get-TeamsTenantVoiceConfig {
 	.NOTES
 		General notes
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Find-TeamsUserVoiceConfig
+  .LINK
     Get-TeamsTenantVoiceConfig
+  .LINK
     Get-TeamsUserVoiceConfig
+  .LINK
     Set-TeamsUserVoiceConfig
+  .LINK
     Remove-TeamsUserVoiceConfig
+  .LINK
     Test-TeamsUserVoiceConfig
   #>
 

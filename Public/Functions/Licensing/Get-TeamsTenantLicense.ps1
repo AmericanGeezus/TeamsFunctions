@@ -48,6 +48,8 @@ function Get-TeamsTenantLicense {
   .FUNCTIONALITY
 		Returns a list of Licenses on the Tenant depending on input
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense

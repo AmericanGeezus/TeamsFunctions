@@ -42,19 +42,28 @@ function New-TeamsCallableEntity {
     System.String
   .OUTPUTS
     System.Object - (default)
-#    System.String - With Switch ReturnObjectIdOnly
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     New-TeamsAutoAttendant
+	.LINK
     Set-TeamsAutoAttendant
+	.LINK
     Get-TeamsCallableEntity
+	.LINK
     Find-TeamsCallableEntity
+	.LINK
     New-TeamsCallableEntity
+	.LINK
     New-TeamsAutoAttendantDialScope
+	.LINK
     New-TeamsAutoAttendantMenu
+	.LINK
     New-TeamsAutoAttendantPrompt
+	.LINK
     New-TeamsAutoAttendantSchedule
   #>
 

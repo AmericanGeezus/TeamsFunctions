@@ -49,6 +49,10 @@ function Format-StringForUse {
     System.String
   .OUTPUTS
     System.String
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Format-StringRemoveSpecialCharacter
 	#>
 
   [CmdletBinding(DefaultParameterSetName = "Manual")]

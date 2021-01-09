@@ -17,6 +17,8 @@ function Assert-MicrosoftTeamsConnection {
 		Assert-MicrosoftTeamsConnection
     Will run Test-MicrosoftTeamsConnection and, if successful, stops.
     If unsuccessful, displays request to create a new session and stops.
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]

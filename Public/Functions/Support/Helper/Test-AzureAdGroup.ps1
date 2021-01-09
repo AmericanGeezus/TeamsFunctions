@@ -20,10 +20,16 @@ function Test-AzureAdGroup {
 		Will Return $TRUE only if the object "My Group" is found.
     Will Return $FALSE in any other case
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Find-AzureAdGroup
+  .LINK
     Find-AzureAdUser
+  .LINK
     Test-AzureAdGroup
+  .LINK
     Test-AzureAdUser
+  .LINK
     Test-TeamsUser
 	#>
 

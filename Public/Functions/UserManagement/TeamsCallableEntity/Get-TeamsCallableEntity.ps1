@@ -48,12 +48,21 @@ function Get-TeamsCallableEntity {
     TeamsAutoAttendant
     TeamsCallQueue
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Find-TeamsCallableEntity
+  .LINK
     Get-TeamsCallableEntity
+  .LINK
     New-TeamsCallableEntity
+  .LINK
     Get-TeamsObjectType
+  .LINK
     Get-TeamsCallQueue
+  .LINK
     Get-TeamsAutoAttendant
+  .LINK
+    Get-TeamsObjectType
 	#>
 
   [CmdletBinding()]

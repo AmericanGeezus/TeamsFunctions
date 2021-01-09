@@ -26,6 +26,8 @@ function Test-TeamsUserHasCallPlan {
   .FUNCTIONALITY
     Returns a boolean value for when any of the Calling Plan licenses are found assigned to a specific user.
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Test-TeamsUserLicense
   #>
 

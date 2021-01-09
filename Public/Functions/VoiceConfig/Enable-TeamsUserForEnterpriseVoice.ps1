@@ -23,6 +23,8 @@ function Enable-TeamsUserForEnterpriseVoice {
   .NOTES
     Simple helper function to enable and verify a User is enabled for Enterprise Voice
     Returns boolean result and less communication if called by another function
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

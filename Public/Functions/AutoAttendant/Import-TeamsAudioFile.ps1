@@ -30,8 +30,11 @@ function Import-TeamsAudioFile {
     Captures different behavior of Get-Content (ByteStream syntax) in PowerShell 6 and above VS PowerShell 5 and below
 	.FUNCTIONALITY
 		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
 		New-TeamsCallQueue
+	.LINK
 		Set-TeamsCallQueue
 	#>
 

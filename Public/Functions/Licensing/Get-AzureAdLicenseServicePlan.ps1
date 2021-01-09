@@ -13,8 +13,11 @@ function Get-AzureAdLicenseServicePlan {
     License information for AzureAD Service Plans related to Teams
   .DESCRIPTION
     Returns an Object containing all Teams related License Service Plans
+  .PARAMETER FilterRelevantForTeams
+    Optional. By default, shows all 365 License Service Plans
+    Using this switch, shows only Service Plans relevant for Teams
   .EXAMPLE
-    Get-TeamsLicense
+    Get-AzureAdLicenseServicePlan
     Returns 39 Azure AD Licenses that relate to Teams for use in other commands
   .NOTES
     Source
@@ -29,14 +32,22 @@ function Get-AzureAdLicenseServicePlan {
   .FUNCTIONALITY
     Returns a list of License Service Plans
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
+  .LINK
     Get-TeamsUserLicense
+  .LINK
     Set-TeamsUserLicense
+  .LINK
     Test-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
+  .LINK
     Get-TeamsLicense
+  .LINK
     Get-TeamsLicenseServicePlan
+  .LINK
     Get-AzureAdLicense
+  .LINK
     Get-AzureAdLicenseServicePlan
   #>
 

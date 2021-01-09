@@ -64,16 +64,25 @@ function New-TeamsResourceAccount {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     Get-TeamsResourceAccountAssociation
+	.LINK
     New-TeamsResourceAccountAssociation
+	.LINK
 		Remove-TeamsResourceAccountAssociation
+	.LINK
     New-TeamsResourceAccount
+	.LINK
     Get-TeamsResourceAccount
+	.LINK
     Find-TeamsResourceAccount
+	.LINK
     Set-TeamsResourceAccount
+	.LINK
     Remove-TeamsResourceAccount
-    #>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('New-TeamsRA')]

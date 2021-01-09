@@ -5,105 +5,88 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-TeamsUserLicense
+# Set-TeamsResourceAccount
 
 ## SYNOPSIS
-Changes the License of an AzureAD Object
+Changes a new Resource Account
 
 ## SYNTAX
 
-### Add (Default)
 ```
-Set-TeamsUserLicense [-Identity] <String[]> -Add <String[]> [-UsageLocation <String>] [-PassThru] [-WhatIf]
- [-Confirm] [<CommonParameters>]
-```
-
-### RemoveAll
-```
-Set-TeamsUserLicense [-Identity] <String[]> [-Add <String[]>] [-RemoveAll] [-UsageLocation <String>]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
-### Remove
-```
-Set-TeamsUserLicense [-Identity] <String[]> [-Add <String[]>] -Remove <String[]> [-UsageLocation <String>]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-TeamsResourceAccount [-UserPrincipalName] <String> [-DisplayName <String>] [-ApplicationType <String>]
+ [-UsageLocation <String>] [-License <String>] [-PhoneNumber <String>] [-PassThru] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Adds, removes or purges teams related Licenses from an AzureAD Object
-Supports all Licenses listed in Get-TeamsLicense
-Uses friendly Names for Parameter Values, supports Arrays.
-Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
-This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
-Will verify major Licenses and their exclusivity, but not all.
-Verifies whether the Licenses selected are available on the Tenant before executing
+This function allows you to update Resource accounts for Teams Call Queues and Auto Attendants.
+It can carry a license and optionally also a phone number.
+This Function was designed to service the ApplicationInstance in AD,
+the corresponding AzureAD User and its license and enable use of a phone number, all with one Command.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E5
+Set-TeamsResourceAccount -UserPrincipalName ResourceAccount@TenantName.onmicrosoft.com -Displayname "My {ResourceAccount}"
 ```
 
-Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
+Will normalize the Display Name (i.E.
+remove special characters), then set it as "My ResourceAccount"
 
 ### EXAMPLE 2
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem
+Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -UsageLocation US
 ```
 
-Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
-This requires a main license to be present as PhoneSystem is an add-on license
+Sets the UsageLocation for the Account in AzureAD to US.
 
 ### EXAMPLE 3
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E3,PhoneSystem
+Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -License PhoneSystem_VirtualUser
 ```
 
-Set-TeamsUserLicense -Identity Name@domain.com -Add @('MS365E3','PhoneSystem')
-Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
+Requires the Account to have a UsageLocation populated.
+Applies the License to Resource Account AA-Mainline.
+If no license is assigned, will try to assign.
+If the license is already applied, no action is taken.
+NOTE: Swapping licenses is currently not possible.
 
 ### EXAMPLE 4
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add O365E5 -Remove SFBOP2
+Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber +1555123456
 ```
 
-Special Case Scenario to replace a specific license with another.
-Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
+Changes the Phone number of the Object.
+Will cleanly remove the Phone Number first before reapplying it.
+This will only succeed if the object is licensed correctly!
 
 ### EXAMPLE 5
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
+Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber $Null
 ```
 
-Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
-Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
+Removes the Phone number from the Object
 
 ### EXAMPLE 6
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Remove PhoneSystem
+Set-TeamsResourceAccount -UserPrincipalName MyRessourceAccount@TenantName.onmicrosoft.com -ApplicationType AutoAttendant
 ```
 
-Removes the Phone System License from the Object.
-
-### EXAMPLE 7
-```
-Set-TeamsUserLicense -Identity Name@domain.com -RemoveAll
-```
-
-Removes all licenses the Object is currently provisioned for!
+Switches MyResourceAccount to the Type AutoAttendant
+NOTE: This is currently untested, errors might occur simply because not all caveats could be captured.
+Handle with care!
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Required.
-UserPrincipalName of the Object to be manipulated
+Identifies the Object being changed
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: (All)
-Aliases: UPN, UserPrincipalName, Username
+Aliases: Identity
 
 Required: True
 Position: 1
@@ -112,74 +95,10 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -Add
+### -DisplayName
 Optional.
-Licenses to be added (main function)
-Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
-
-```yaml
-Type: String[]
-Parameter Sets: Add
-Aliases: License, AddLicense, AddLicenses
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String[]
-Parameter Sets: RemoveAll, Remove
-Aliases: License, AddLicense, AddLicenses
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Remove
-Optional.
-Licenses to be removed (alternative function)
-Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
-
-```yaml
-Type: String[]
-Parameter Sets: Remove
-Aliases: RemoveLicense, RemoveLicenses
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -RemoveAll
-Optional Switch.
-Removes all licenses currently assigned (intended for replacements)
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: RemoveAll
-Aliases: RemoveAllLicenses
-
-Required: True
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -UsageLocation
-Optional String.
-ISO3166-Alpha2 CountryCode indicating the Country for the User.
-Required for Licensing
-If required, the script will try to apply the UsageLocation (pending right).
-If not provided, defaults to 'US'
+The Name it will show up as in Teams.
+Invalid characters are stripped from the provided string
 
 ```yaml
 Type: String
@@ -188,14 +107,87 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: US
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ApplicationType
+CallQueue or AutoAttendant.
+Determines the association the account can have:
+A resource Account of the type "CallQueue" can only be associated with to a Call Queue
+A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
+NOTE: Though switching the account type is possible, this is currently untested: Handle with Care!
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: Type
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UsageLocation
+Two Digit Country Code of the Location of the entity.
+Should correspond to the Phone Number.
+Before a License can be assigned, the account needs a Usage Location populated.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -License
+Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
+If not provided, will default to PhoneSystem_VirtualUser
+Unlicensed Objects can exist, but cannot be assigned a phone number
+If a license already exists, it will try to swap the license to the specified one.
+NOTE: PhoneSystem is an add-on license and cannot be assigned on its own.
+it has therefore been deactivated for now.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PhoneNumber
+Changes the Phone Number of the object.
+Can either be a Microsoft Number or a Direct Routing Number.
+Requires the Resource Account to be licensed correctly
+Required format is E.164, starting with a '+' and 10-15 digits long.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: Tel, Number, TelephoneNumber
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -PassThru
-Optional.
-Displays User License Object after action.
+{{ Fill PassThru Description }}
 
 ```yaml
 Type: SwitchParameter
@@ -245,43 +237,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
-### System.Void
+### None
 ## NOTES
-Many license packages are available, the following Licenses are most predominant:
-# Main License Packages
-- Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)
-- Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-- Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)
-- Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
-- Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-- Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-
-# Add-On Licenses (Require Main License Package from above)
-- Audio Conferencing License - AudioConferencing (MCOMEETADV)
-- Phone System - PhoneSystem (MCOEV)
-
-# Standalone Licenses (Special)
-- Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
-- Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
-
-# Microsoft Calling Plan Licenses
-- Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
-- Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
-
-# Data in Get-TeamsLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
-https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 
 ## RELATED LINKS
 
-[Get-TeamsTenantLicense
-Get-TeamsUserLicense
-Set-TeamsUserLicense
-Test-TeamsUserLicense
-Add-TeamsUserLicense (deprecated)
-Get-TeamsLicense
-Get-TeamsLicenseServicePlan
-Get-AzureAdLicense
-Get-AzureAdLicenseServicePlan]()
+[Get-TeamsResourceAccountAssociation
+New-TeamsResourceAccountAssociation
+Remove-TeamsResourceAccountAssociation
+New-TeamsResourceAccount
+Get-TeamsResourceAccount
+Find-TeamsResourceAccount
+Set-TeamsResourceAccount
+Remove-TeamsResourceAccount]()
 

@@ -28,13 +28,22 @@ function Disconnect-Me {
     This process may take up to 15 mins and is best avoided, through proper disconnect after use
     An Alias is available for this function: dis
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Connect-Me
+	.LINK
     Connect-SkypeOnline
+	.LINK
     Connect-AzureAD
+	.LINK
     Connect-MicrosoftTeams
+	.LINK
     Disconnect-Me
+	.LINK
     Disconnect-SkypeOnline
+	.LINK
     Disconnect-AzureAD
+	.LINK
     Disconnect-MicrosoftTeams
 	#>
 

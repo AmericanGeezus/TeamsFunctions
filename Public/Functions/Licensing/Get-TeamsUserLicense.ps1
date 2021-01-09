@@ -38,6 +38,8 @@ function Get-TeamsUserLicense {
   .FUNCTIONALITY
 		Returns a list of Licenses assigned to a specific User depending on input
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense

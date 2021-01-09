@@ -90,13 +90,19 @@ function Add-TeamsUserLicense {
   .FUNCTIONALITY
 		Returns a list of Licenses depending on input
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsLicense
+  .LINK
     Get-TeamsLicenseServicePlan
+  .LINK
     Get-TeamsTenantLicense
+  .LINK
     Get-TeamsUserLicense
+  .LINK
     Set-TeamsUserLicense
+  .LINK
     Test-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'General')]

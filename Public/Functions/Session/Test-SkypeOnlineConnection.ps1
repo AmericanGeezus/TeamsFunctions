@@ -20,6 +20,8 @@ function Test-SkypeOnlineConnection {
 	.NOTES
 		Added check for Open Session to err on the side of caution.
 		Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
 
   [CmdletBinding()]

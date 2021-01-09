@@ -13,8 +13,11 @@ function Get-AzureAdLicense {
     License information for AzureAD Licenses related to Teams
   .DESCRIPTION
     Returns an Object containing all Teams related Licenses
+  .PARAMETER FilterRelevantForTeams
+    Optional. By default, shows all 365 Licenses
+    Using this switch, shows only Licenses relevant for Teams
   .EXAMPLE
-    Get-TeamsLicense
+    Get-AzureAdLicense
     Returns 39 Azure AD Licenses that relate to Teams for use in other commands
   .NOTES
     Source
@@ -29,14 +32,22 @@ function Get-AzureAdLicense {
   .FUNCTIONALITY
 		Returns a list of Licenses
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
+  .LINK
     Get-TeamsUserLicense
+  .LINK
     Set-TeamsUserLicense
+  .LINK
     Test-TeamsUserLicense
-    Add-TeamsUserLicense (deprecated)
+  .LINK
     Get-TeamsLicense
+  .LINK
     Get-TeamsLicenseServicePlan
+  .LINK
     Get-AzureAdLicense
+  .LINK
     Get-AzureAdLicenseServicePlan
   #>
 

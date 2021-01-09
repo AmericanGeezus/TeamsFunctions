@@ -20,10 +20,16 @@ function Test-AzureAdUser {
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Find-AzureAdGroup
+  .LINK
     Find-AzureAdUser
+  .LINK
     Test-AzureAdGroup
+  .LINK
     Test-AzureAdUser
+  .LINK
     Test-TeamsUser
   #>
 

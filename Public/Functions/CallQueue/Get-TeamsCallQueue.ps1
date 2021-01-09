@@ -52,13 +52,21 @@ function Get-TeamsCallQueue {
     Output view more concise
 	.FUNCTIONALITY
 		Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
 		New-TeamsCallQueue
+	.LINK
 		Get-TeamsCallQueue
+	.LINK
     Set-TeamsCallQueue
+	.LINK
     Remove-TeamsCallQueue
+	.LINK
     Get-TeamsAutoAttendant
+	.LINK
     Get-TeamsResourceAccount
+	.LINK
     Get-TeamsResourceAccountAssociation
   #>
 

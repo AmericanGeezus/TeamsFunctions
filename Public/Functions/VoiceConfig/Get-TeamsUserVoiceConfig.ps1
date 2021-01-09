@@ -46,6 +46,8 @@ function Get-TeamsUserVoiceConfig {
 	.FUNCTIONALITY
 		The functionality that best describes this cmdlet
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Find-TeamsUserVoiceConfig
   .LINK
     Get-TeamsTenantVoiceConfig

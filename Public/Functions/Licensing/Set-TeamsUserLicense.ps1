@@ -92,6 +92,8 @@ function Set-TeamsUserLicense {
   .FUNCTIONALITY
     This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Get-TeamsTenantLicense
     Get-TeamsUserLicense
     Set-TeamsUserLicense

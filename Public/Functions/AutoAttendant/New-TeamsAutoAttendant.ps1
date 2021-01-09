@@ -66,7 +66,7 @@ function New-TeamsAutoAttendant {
     Optional. Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7
     A more granular Schedule can be used with the Parameter -Schedule
     If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
- .PARAMETER Schedule
+  .PARAMETER Schedule
     Optional. Custom Schedule object to apply for After Hours Call Flow
     Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule
     If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
@@ -130,20 +130,35 @@ function New-TeamsAutoAttendant {
 		Currently in Testing
 	.FUNCTIONALITY
 		Creates a Auto Attendant with custom settings and friendly names as input
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
 		New-TeamsCallQueue
+	.LINK
     New-TeamsAutoAttendant
+	.LINK
     Set-TeamsAutoAttendant
+	.LINK
     Get-TeamsCallableEntity
+	.LINK
     New-TeamsCallableEntity
+	.LINK
     New-TeamsAutoAttendantCallFlow
+	.LINK
     New-TeamsAutoAttendantMenu
+	.LINK
     New-TeamsAutoAttendantMenuOption
+	.LINK
     New-TeamsAutoAttendantPrompt
+	.LINK
     New-TeamsAutoAttendantSchedule
+	.LINK
     New-TeamsAutoAttendantDialScope
+	.LINK
     Remove-TeamsAutoAttendant
+	.LINK
     New-TeamsResourceAccount
+	.LINK
     New-TeamsResourceAccountAssociation
 	#>
 

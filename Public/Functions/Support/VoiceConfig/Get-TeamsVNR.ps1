@@ -25,6 +25,20 @@ function Get-TeamsVNR {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Get-TeamsTDP
+  .LINK
+    Get-TeamsVNR
+  .LINK
+    Get-TeamsOVP
+  .LINK
+    Get-TeamsOPU
+  .LINK
+    Get-TeamsOVR
+  .LINK
+    Get-TeamsMGW
   #>
 
   [CmdletBinding()]

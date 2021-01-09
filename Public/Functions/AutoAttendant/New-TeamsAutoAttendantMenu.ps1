@@ -100,17 +100,29 @@ function New-TeamsAutoAttendantMenu {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     New-TeamsAutoAttendant
+	.LINK
     Set-TeamsAutoAttendant
+	.LINK
     New-TeamsCallableEntity
+	.LINK
     New-TeamsAutoAttendantCallFlow
+	.LINK
     New-TeamsAutoAttendantMenu
+	.LINK
     New-TeamsAutoAttendantMenuOption
+	.LINK
     New-TeamsAutoAttendantPrompt
+	.LINK
     New-TeamsAutoAttendantSchedule
+	.LINK
     New-TeamsAutoAttendantDialScope
+	.LINK
     https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH
+	.LINK
     https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps
   #>
 

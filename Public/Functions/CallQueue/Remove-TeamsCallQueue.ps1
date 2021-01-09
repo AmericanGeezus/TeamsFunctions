@@ -22,13 +22,21 @@ function Remove-TeamsCallQueue {
     System.String
   .OUTPUTS
     System.Object
-	.LINK
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
 		Get-TeamsCallQueue
+	.LINK
     Set-TeamsCallQueue
+	.LINK
 		New-TeamsCallQueue
+	.LINK
     Remove-TeamsCallQueue
+	.LINK
     Remove-TeamsAutoAttendant
+	.LINK
 		Remove-TeamsResourceAccount
+	.LINK
 		Remove-TeamsResourceAccountAssociation
 	#>
 

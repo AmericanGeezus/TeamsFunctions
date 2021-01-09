@@ -39,7 +39,9 @@ function Set-TeamsResourceAccount {
 		Can either be a Microsoft Number or a Direct Routing Number.
 		Requires the Resource Account to be licensed correctly
 		Required format is E.164, starting with a '+' and 10-15 digits long.
-	.EXAMPLE
+  .PARAMETER PassThru
+    By default, no output is generated, PassThru will display the Object changed
+  .EXAMPLE
 		Set-TeamsResourceAccount -UserPrincipalName ResourceAccount@TenantName.onmicrosoft.com -Displayname "My {ResourceAccount}"
 		Will normalize the Display Name (i.E. remove special characters), then set it as "My ResourceAccount"
 	.EXAMPLE
@@ -71,14 +73,23 @@ function Set-TeamsResourceAccount {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
     Get-TeamsResourceAccountAssociation
+	.LINK
     New-TeamsResourceAccountAssociation
+	.LINK
 		Remove-TeamsResourceAccountAssociation
+	.LINK
     New-TeamsResourceAccount
+	.LINK
     Get-TeamsResourceAccount
+	.LINK
     Find-TeamsResourceAccount
+	.LINK
     Set-TeamsResourceAccount
+	.LINK
     Remove-TeamsResourceAccount
 	#>
 
@@ -129,6 +140,7 @@ function Set-TeamsResourceAccount {
     [AllowEmptyString()]
     [string]$PhoneNumber,
 
+    [Parameter(HelpMessage = "By default, no output is generated, PassThru will display the Object changed")]
     [switch]$PassThru
   ) #param
 

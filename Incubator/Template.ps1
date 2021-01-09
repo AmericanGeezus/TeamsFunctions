@@ -33,6 +33,8 @@ function Verb-Noun {
   .FUNCTIONALITY
     xx
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     Verb2-Noun
   #>
 

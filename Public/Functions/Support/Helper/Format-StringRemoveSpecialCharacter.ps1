@@ -40,6 +40,10 @@ function Format-StringRemoveSpecialCharacter {
 		@lazywinadmin
 		lazywinadmin.com
 		github.com/lazywinadmin
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Format-StringForUse
 	#>
 
   [CmdletBinding()]
