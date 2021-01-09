@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -47,7 +47,10 @@ Accept wildcard characters: False
 ```
 
 ### -Terminate
-{{ Fill Terminate Description }}
+Optional.
+By default, the Command will not throw terminating errors.
+Using this switch a terminating error is generated.
+Useful for scripting to try/catch and silently treat the received error.
 
 ```yaml
 Type: SwitchParameter
@@ -73,3 +76,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Returns Boolean Result
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+

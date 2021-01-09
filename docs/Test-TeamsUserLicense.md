@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -112,8 +112,11 @@ This Script is indiscriminate against the User Type, all AzureAD User Objects ca
 
 ## RELATED LINKS
 
-[Get-TeamsTenantLicense
-Get-TeamsUserLicense
-Set-TeamsUserLicense
-Add-TeamsUserLicense (deprecated)]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsTenantLicense]()
+
+[Get-TeamsUserLicense]()
+
+[Set-TeamsUserLicense]()
 

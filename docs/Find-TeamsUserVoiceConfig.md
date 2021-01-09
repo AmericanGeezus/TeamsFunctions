@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -291,12 +291,19 @@ Please see Related Link for more information
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
 
-[Find-TeamsUserVoiceConfig
-Get-TeamsTenantVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig
-Remove-TeamsUserVoiceConfig
-Test-TeamsUserVoiceConfig]()
+[Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsTenantVoiceConfig]()
+
+[Get-TeamsUserVoiceConfig]()
+
+[Set-TeamsUserVoiceConfig]()
+
+[Remove-TeamsUserVoiceConfig]()
+
+[Test-TeamsUserVoiceConfig]()
 

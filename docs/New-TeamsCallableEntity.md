@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -153,13 +153,23 @@ For ExternalPstn it will construct the Tel URI
 
 ## RELATED LINKS
 
-[New-TeamsAutoAttendant
-Set-TeamsAutoAttendant
-Get-TeamsCallableEntity
-Find-TeamsCallableEntity
-New-TeamsCallableEntity
-New-TeamsAutoAttendantDialScope
-New-TeamsAutoAttendantMenu
-New-TeamsAutoAttendantPrompt
-New-TeamsAutoAttendantSchedule]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[New-TeamsAutoAttendant]()
+
+[Set-TeamsAutoAttendant]()
+
+[Get-TeamsCallableEntity]()
+
+[Find-TeamsCallableEntity]()
+
+[New-TeamsCallableEntity]()
+
+[New-TeamsAutoAttendantDialScope]()
+
+[New-TeamsAutoAttendantMenu]()
+
+[New-TeamsAutoAttendantPrompt]()
+
+[New-TeamsAutoAttendantSchedule]()
 

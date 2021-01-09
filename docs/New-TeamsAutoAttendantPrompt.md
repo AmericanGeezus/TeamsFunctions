@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -100,15 +100,27 @@ Warning: This will break if the String ends in a supported File extension (WAV, 
 
 ## RELATED LINKS
 
-[New-TeamsAutoAttendant
-Set-TeamsAutoAttendant
-Get-TeamsCallableEntity
-Find-TeamsCallableEntity
-New-TeamsCallableEntity
-New-TeamsAutoAttendantCallFlow
-New-TeamsAutoAttendantMenu
-New-TeamsAutoAttendantMenuOption
-New-TeamsAutoAttendantPrompt
-New-TeamsAutoAttendantSchedule
-New-TeamsAutoAttendantDialScope]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[New-TeamsAutoAttendant]()
+
+[Set-TeamsAutoAttendant]()
+
+[Get-TeamsCallableEntity]()
+
+[Find-TeamsCallableEntity]()
+
+[New-TeamsCallableEntity]()
+
+[New-TeamsAutoAttendantCallFlow]()
+
+[New-TeamsAutoAttendantMenu]()
+
+[New-TeamsAutoAttendantMenuOption]()
+
+[New-TeamsAutoAttendantPrompt]()
+
+[New-TeamsAutoAttendantSchedule]()
+
+[New-TeamsAutoAttendantDialScope]()
 

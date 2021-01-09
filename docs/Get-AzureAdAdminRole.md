@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -84,6 +84,9 @@ The Output can be used as baseline for other functions (-contains "Teams Service
 
 ## RELATED LINKS
 
-[Enable-AzureAdAdminRole
-Get-AzureAdAdminRole]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Enable-AzureAdAdminRole]()
+
+[Get-AzureAdAdminRole]()
 

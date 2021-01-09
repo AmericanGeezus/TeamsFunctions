@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -123,10 +123,17 @@ For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI
 
 ## RELATED LINKS
 
-[Find-TeamsUserVoiceConfig
-Get-TeamsTenantVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig
-Remove-TeamsUserVoiceConfig
-Test-TeamsUserVoiceConfig]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsTenantVoiceConfig]()
+
+[Get-TeamsUserVoiceConfig]()
+
+[Set-TeamsUserVoiceConfig]()
+
+[Remove-TeamsUserVoiceConfig]()
+
+[Test-TeamsUserVoiceConfig]()
 

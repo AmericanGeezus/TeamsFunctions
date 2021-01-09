@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -65,3 +65,18 @@ Without parameters, it executes the following string:
 Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsOVP]()
+
+[Get-TeamsOPU]()
+
+[Get-TeamsOVR]()
+
+[Get-TeamsMGW]()
+
+[Get-TeamsTDP]()
+
+[Get-TeamsVNR]()
+

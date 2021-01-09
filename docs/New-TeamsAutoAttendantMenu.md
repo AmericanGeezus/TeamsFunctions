@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -330,15 +330,27 @@ https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-atten
 
 ## RELATED LINKS
 
-[New-TeamsAutoAttendant
-Set-TeamsAutoAttendant
-New-TeamsCallableEntity
-New-TeamsAutoAttendantCallFlow
-New-TeamsAutoAttendantMenu
-New-TeamsAutoAttendantMenuOption
-New-TeamsAutoAttendantPrompt
-New-TeamsAutoAttendantSchedule
-New-TeamsAutoAttendantDialScope
-https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH
-https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[New-TeamsAutoAttendant]()
+
+[Set-TeamsAutoAttendant]()
+
+[New-TeamsCallableEntity]()
+
+[New-TeamsAutoAttendantCallFlow]()
+
+[New-TeamsAutoAttendantMenu]()
+
+[New-TeamsAutoAttendantMenuOption]()
+
+[New-TeamsAutoAttendantPrompt]()
+
+[New-TeamsAutoAttendantSchedule]()
+
+[New-TeamsAutoAttendantDialScope]()
+
+[https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH](https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH)
+
+[https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps](https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps)
 

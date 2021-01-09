@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -522,18 +522,33 @@ Currently in Testing
 
 ## RELATED LINKS
 
-[New-TeamsCallQueue
-  New-TeamsAutoAttendant
-  Set-TeamsAutoAttendant
-  Get-TeamsCallableEntity
-  New-TeamsCallableEntity
-  New-TeamsAutoAttendantCallFlow
-  New-TeamsAutoAttendantMenu
-  New-TeamsAutoAttendantMenuOption
-  New-TeamsAutoAttendantPrompt
-  New-TeamsAutoAttendantSchedule
-  New-TeamsAutoAttendantDialScope
-  Remove-TeamsAutoAttendant
-  New-TeamsResourceAccount
-  New-TeamsResourceAccountAssociation]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[New-TeamsCallQueue]()
+
+[New-TeamsAutoAttendant]()
+
+[Set-TeamsAutoAttendant]()
+
+[Get-TeamsCallableEntity]()
+
+[New-TeamsCallableEntity]()
+
+[New-TeamsAutoAttendantCallFlow]()
+
+[New-TeamsAutoAttendantMenu]()
+
+[New-TeamsAutoAttendantMenuOption]()
+
+[New-TeamsAutoAttendantPrompt]()
+
+[New-TeamsAutoAttendantSchedule]()
+
+[New-TeamsAutoAttendantDialScope]()
+
+[Remove-TeamsAutoAttendant]()
+
+[New-TeamsResourceAccount]()
+
+[New-TeamsResourceAccountAssociation]()
 

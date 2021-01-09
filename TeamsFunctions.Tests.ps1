@@ -136,7 +136,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name "TeamsFunctions Module Tests" {
   }
   #>
 
-  Context "Testing Module PUBLIC Functions" -ForEach $PublicDocs {
+  Context "Testing Module PUBLIC Documentation" -ForEach $PublicDocs {
 
     It "'$_' should NOT have empty documentation in the MD file" {
       "$($_.FullName)" | Should -Not -FileContentMatch ([regex]::Escape('{{'))

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -23,7 +23,7 @@ Returns an Object containing all Teams related License Service Plans
 
 ### EXAMPLE 1
 ```
-Get-TeamsLicense
+Get-AzureAdLicenseServicePlan
 ```
 
 Returns 39 Azure AD Licenses that relate to Teams for use in other commands
@@ -31,7 +31,9 @@ Returns 39 Azure AD Licenses that relate to Teams for use in other commands
 ## PARAMETERS
 
 ### -FilterRelevantForTeams
-{{ Fill FilterRelevantForTeams Description }}
+Optional.
+By default, shows all 365 License Service Plans
+Using this switch, shows only Service Plans relevant for Teams
 
 ```yaml
 Type: SwitchParameter
@@ -62,13 +64,21 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 
 ## RELATED LINKS
 
-[Get-TeamsTenantLicense
-Get-TeamsUserLicense
-Set-TeamsUserLicense
-Test-TeamsUserLicense
-Add-TeamsUserLicense (deprecated)
-Get-TeamsLicense
-Get-TeamsLicenseServicePlan
-Get-AzureAdLicense
-Get-AzureAdLicenseServicePlan]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsTenantLicense]()
+
+[Get-TeamsUserLicense]()
+
+[Set-TeamsUserLicense]()
+
+[Test-TeamsUserLicense]()
+
+[Get-TeamsLicense]()
+
+[Get-TeamsLicenseServicePlan]()
+
+[Get-AzureAdLicense]()
+
+[Get-AzureAdLicenseServicePlan]()
 

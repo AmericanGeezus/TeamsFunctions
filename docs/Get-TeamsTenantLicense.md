@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -123,13 +123,21 @@ Requires a connection to Azure Active Directory
 
 ## RELATED LINKS
 
-[Get-TeamsTenantLicense
-Get-TeamsUserLicense
-Set-TeamsUserLicense
-Test-TeamsUserLicense
-Add-TeamsUserLicense (deprecated)
-Get-TeamsLicense
-Get-TeamsLicenseServicePlan
-Get-AzureAdLicense
-Get-AzureAdLicenseServicePlan]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsTenantLicense]()
+
+[Get-TeamsUserLicense]()
+
+[Set-TeamsUserLicense]()
+
+[Test-TeamsUserLicense]()
+
+[Get-TeamsLicense]()
+
+[Get-TeamsLicenseServicePlan]()
+
+[Get-AzureAdLicense]()
+
+[Get-AzureAdLicenseServicePlan]()
 
