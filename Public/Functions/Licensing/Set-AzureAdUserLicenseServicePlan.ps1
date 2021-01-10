@@ -1,10 +1,10 @@
 # Module:   TeamsFunctions
 # Function: VoiceConfig/Licensing
 # Author:		David Eberhardt
-# Updated:  01-DEC-2020
-# Status:   ALPHA
+# Updated:  10-JAN-2021
+# Status:   BETA
 
-#TODO Build
+
 
 
 function Set-AzureAdUserLicenseServicePlan {
@@ -99,26 +99,21 @@ function Set-AzureAdUserLicenseServicePlan {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level ALPHA
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     #Loading Service Plan data
     if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) {
-      $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue
     }
 
     if ($PSBoundParameters.ContainsKey('Enable') -and $PSBoundParameters.ContainsKey('Disable')) {
