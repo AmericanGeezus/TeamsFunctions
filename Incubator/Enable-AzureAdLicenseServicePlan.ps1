@@ -83,10 +83,10 @@ function Enable-AzureAdLicenseServicePlan {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
-  [Alias('New-TeamsCAP')]
+  [Alias('Enable-ServicePlan')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "UserPrincipalName of the User")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, HelpMessage = "UserPrincipalName of the User")]
     [string]$Identity,
 
     [Parameter(ParameterSetName = "DirectRouting", HelpMessage = "Enables an Object for Direct Routing")]

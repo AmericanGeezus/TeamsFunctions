@@ -69,7 +69,7 @@ function Test-TeamsUserVoiceConfig {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [string[]]$Identity,
 
-    [Parameter(Mandatory, HelpMessage = "Defines Scope to remove Voice Configuration")]
+    [Parameter(Mandatory, HelpMessage = "Defines Type of Voice Configuration to test this user against")]
     [ValidateSet('DirectRouting', 'CallingPlans', 'SkypeHybridPSTN')]
     [string]$Scope,
 

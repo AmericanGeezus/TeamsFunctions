@@ -76,7 +76,7 @@ function Remove-TeamsUserVoiceConfig {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "Defines Scope to remove Voice Configuration")]
+    [Parameter(HelpMessage = "Defines Type of Voice Configuration to remove")]
     [ValidateSet('All', 'DirectRouting', 'CallingPlans')]
     [string]$Scope = "All",
 

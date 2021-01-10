@@ -93,7 +93,7 @@ function New-TeamsCommonAreaPhone {
   [Alias('New-TeamsCAP')]
   [OutputType([System.Object])]
   param (
-    [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = "UPN of the Object to create.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to create.")]
     [ValidateScript( {
         If ($_ -match '@') {
           $True

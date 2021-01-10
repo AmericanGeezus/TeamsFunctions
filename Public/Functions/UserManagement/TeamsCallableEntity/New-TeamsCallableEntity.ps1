@@ -71,7 +71,7 @@ function New-TeamsCallableEntity {
   [Alias('New-TeamsAutoAttendantCallableEntity', 'New-TeamsAAEntity')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, Position = 0, HelpMessage = "Identity of the Call Target")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "Identity of the Call Target")]
     [string]$Identity,
 
     [Parameter(HelpMessage = "Enables Transcription (for Shared Voicemail only)")]

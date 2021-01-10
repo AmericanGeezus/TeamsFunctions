@@ -66,6 +66,7 @@ function Set-TeamsUserVoiceConfig {
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
     Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
     Optionally can also assign a Calling Plan license prior.
+    This script does not allow Pipeline input
 	.FUNCTIONALITY
 		TeamsUserVoiceConfig
   .LINK
@@ -88,7 +89,7 @@ function Set-TeamsUserVoiceConfig {
   [Alias('Set-TeamsUVC')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "UserPrincipalName of the User")]
+    [Parameter(Mandatory, Position = 0, HelpMessage = "UserPrincipalName of the User")]
     [string]$Identity,
 
     [Parameter(ParameterSetName = "DirectRouting", HelpMessage = "Enables an Object for Direct Routing")]

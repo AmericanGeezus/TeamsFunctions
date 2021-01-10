@@ -53,13 +53,13 @@ function Test-TeamsUserLicense {
   [Alias('Test-TeamsUserLicence')]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity,
 
-    [Parameter(Mandatory = $true, ParameterSetName = "ServicePlan", HelpMessage = "AzureAd Service Plan")]
+    [Parameter(Mandatory, ParameterSetName = "ServicePlan", HelpMessage = "AzureAd Service Plan")]
     [string]$ServicePlan,
 
-    [Parameter(Mandatory = $true, ParameterSetName = "License", HelpMessage = "Teams License Package: E5,E3,S2")]
+    [Parameter(Mandatory, ParameterSetName = "License", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateScript( {
         $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {

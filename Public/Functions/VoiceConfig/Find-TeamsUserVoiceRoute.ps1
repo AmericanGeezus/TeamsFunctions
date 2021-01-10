@@ -53,7 +53,7 @@ function Find-TeamsUserVoiceRoute {
   [Alias('Find-TeamsUVR')]
   [OutputType([PSCustomObject])]
   param (
-    [Parameter(Mandatory, Position = 0, HelpMessage = "Username(s) to query routing for")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Username(s) to query routing for")]
     [Alias('Username', 'UserPrincipalName')]
     [string[]]$Identity,
 

@@ -33,7 +33,7 @@ function Assert-TeamsCallableEntity {
   [OutputType([Boolean])]
   Param
   (
-    [Parameter(Mandatory, HelpMessage = "User Principal Name of the user")]
+    [Parameter(Mandatory, ValueFromPipeline, HelpMessage = "User Principal Name of the user")]
     [string]$Identity,
 
     [Parameter(HelpMessage = "Switch to instruct to throw errors")]

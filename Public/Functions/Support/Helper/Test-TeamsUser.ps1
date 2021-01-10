@@ -36,7 +36,7 @@ function Test-TeamsUser {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the UserID (UPN)")]
     [string]$Identity
   ) #param
 

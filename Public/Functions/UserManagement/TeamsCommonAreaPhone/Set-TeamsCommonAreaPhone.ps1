@@ -88,7 +88,7 @@ function Set-TeamsCommonAreaPhone {
   [Alias('Set-TeamsCAP')]
   [OutputType([System.Void])]
   param (
-    [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = "UPN of the Object to query.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to query.")]
     [ValidateScript( {
         If ($_ -match '@') {
           $True

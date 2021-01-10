@@ -56,7 +56,7 @@ function Find-TeamsCallableEntity {
   [CmdletBinding()]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = 'User Identifier')]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'User Identifier')]
     [Alias('ObjectId', 'UserPrincipalName')]
     [string[]]$Identity,
 

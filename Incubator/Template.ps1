@@ -42,7 +42,7 @@ function Verb-Noun {
   [Alias('')]
   [OutputType([PSCustomObject])]
   param (
-    [Parameter(Mandatory, Position = 0, HelpMessage = "Username(s)")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "Username(s)")]
     [Alias('', '')]
     [string[]]$Identity,
 

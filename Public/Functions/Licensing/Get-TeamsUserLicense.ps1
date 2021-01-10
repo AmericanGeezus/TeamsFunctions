@@ -60,7 +60,7 @@ function Get-TeamsUserLicense {
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = "Enter the UPN or login name of the user account, typically <user>@<domain>.")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the UPN or login name of the user account, typically <user>@<domain>.")]
     [Alias("UPN", "UserPrincipalName", "Username")]
     [string[]]$Identity,
 

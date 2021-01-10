@@ -52,7 +52,7 @@ function Get-TeamsObjectType {
   [CmdletBinding(ConfirmImpact = 'Low')]
   [OutputType([System.String])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "Identity of the Call Target")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, HelpMessage = "Identity of the Call Target")]
     [string]$Identity
   ) #param
 
