@@ -118,8 +118,8 @@ function Get-TeamsCommonAreaPhone {
     $Operation = "Gathering Phone Numbers from the Tenant"
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    if (-not $global:MSTelephoneNumbers) {
-      $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+    if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+      $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
     }
 
     # Querying Global Policies
@@ -282,7 +282,7 @@ function Get-TeamsCommonAreaPhone {
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars "tel:+") -split ';')[0]
-        if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
+        if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
           $CommonAreaPhonePhoneNumberType = "Microsoft Number"
         }
         else {

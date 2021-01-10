@@ -264,11 +264,11 @@ function Set-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Microsoft Phone Numbers from Tenant" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying Microsoft Phone Numbers from Tenant"
-      if (-not $global:MSTelephoneNumbers) {
-        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
       }
       $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars "tel:+") -split ';')[0]
-      if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
+      if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
         Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
       }
       else {

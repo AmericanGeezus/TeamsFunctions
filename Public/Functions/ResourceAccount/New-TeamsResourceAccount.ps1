@@ -212,11 +212,11 @@ function New-TeamsResourceAccount {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
       # Loading all Microsoft Telephone Numbers
-      if (-not $global:MSTelephoneNumbers) {
-        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
       }
       $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars "tel:+") -split ';')[0]
-      $PhoneNumberIsMSNumber = ($MSNumber -in $global:MSTelephoneNumbers.Id)
+      $PhoneNumberIsMSNumber = ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id)
       Write-Verbose -Message "'$Name' PhoneNumber parsed"
     }
     #endregion

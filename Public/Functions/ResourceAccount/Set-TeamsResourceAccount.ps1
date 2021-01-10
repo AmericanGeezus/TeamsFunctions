@@ -559,12 +559,12 @@ function Set-TeamsResourceAccount {
           # Processing paths for Telephone Numbers depending on Type
           try {
             # Loading all Microsoft Telephone Numbers
-            if (-not $global:MSTelephoneNumbers) {
-              $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+            if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+              $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
             }
             $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars "tel:+") -split ';')[0]
 
-            if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
+            if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
               # Set in VoiceApplicationInstance
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
                 Write-Verbose -Message "'$Name' Number '$Number' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans" -Verbose

@@ -188,7 +188,7 @@ function Connect-SkypeOnline {
     }
 
     # Cleanup of global Variables set
-    Remove-Variable MSTelephoneNumbers -ErrorAction SilentlyContinue
+    Remove-TeamsFunctionsGlobalVariable
 
   } #begin
 

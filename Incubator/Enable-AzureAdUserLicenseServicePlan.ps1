@@ -1,13 +1,13 @@
-﻿# Module:   TeamsFunctions
-# Function: Licensing
+# Module:   TeamsFunctions
+# Function: VoiceConfig/Licensing
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   PreLive
+# Updated:  01-DEC-2020
+# Status:   ALPHA
+
+#TODO Build
 
 
-
-
-function Set-TeamsUserLicense {
+function Enable-AzureAdLicenseServicePlan {
   <#
   .SYNOPSIS
     Changes the License of an AzureAD Object
@@ -198,7 +198,7 @@ function Set-TeamsUserLicense {
     try {
       if ($PSBoundParameters.ContainsKey('Add') -and $PSBoundParameters.ContainsKey('Remove')) {
         # Check if any are listed in both!
-        Write-Verbose -Message "Validating input for Add and Remove (identifying inconsistencies)"
+        Write-Verbose -Message "Validating input for Add and Remove (identifying inconsistencies)" -Verbose
 
         foreach ($Lic in $Add) {
           if ($Lic -in $Remove) {
@@ -208,7 +208,7 @@ function Set-TeamsUserLicense {
       }
 
       if ($PSBoundParameters.ContainsKey('Add')) {
-        Write-Verbose -Message "Validating input for Adding Licenses (identifying inconsistencies)"
+        Write-Verbose -Message "Validating input for Adding Licenses (identifying inconsistencies)" -Verbose
         #region Disclaimer
         # Checking any other combinations then the verified
         if ( -not ('Microsoft365E3' -in $Add -or 'Office365E5' -in $Add -or 'Office365E5NoAudioConferencing' -in $Add `
@@ -365,7 +365,7 @@ function Set-TeamsUserLicense {
     #region Queries
     # Querying licenses in the Tenant to compare SKUs
     try {
-      Write-Verbose -Message "Querying Licenses from the Tenant"
+      Write-Verbose -Message "Querying Licenses from the Tenant" -Verbose
       $TenantLicenses = Get-TeamsTenantLicense -Detailed -ErrorAction STOP
     }
     catch {
@@ -383,10 +383,9 @@ function Set-TeamsUserLicense {
       # Querying User
       try {
         $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction STOP
-        Write-Verbose -Message "[PROCESS] $($UserObject.UserPrincipalName)"
       }
       catch {
-        Write-Error -Message "User '$ID' - Account not valid" -Category ObjectNotFound -RecommendedAction "Verify UserPrincipalName"
+        Write-Error -Message "User Account not valid" -Category ObjectNotFound -RecommendedAction "Verify UserPrincipalName"
         continue
       }
 
@@ -396,7 +395,7 @@ function Set-TeamsUserLicense {
           if ($PSCmdlet.ShouldProcess("$ID", "Set-AzureADUser -UsageLocation $UsageLocation")) {
             Set-AzureADUser -ObjectId $UserObject.ObjectId -UsageLocation $UsageLocation -ErrorAction Stop
             if ($PSBoundParameters.ContainsKey('UsageLocation')) {
-              Write-Verbose -Message "User '$ID' UsageLocation set to $UsageLocation"
+              Write-Verbose -Message "User '$ID' UsageLocation set to $UsageLocation" -Verbose
             }
             else {
               Write-Warning -Message "User '$ID' UsageLocation set to $UsageLocation (Default)- Please correct if necessary"
@@ -411,15 +410,19 @@ function Set-TeamsUserLicense {
       else {
         Write-Verbose -Message "User '$ID' UsageLocation already set ($UsageLocation)"
       }
+      #endregion
 
-      # License Query from Object
-      $ObjectAssignedLicenses = Get-AzureADUserLicenseDetail -ObjectId $UserObject.ObjectId -WarningAction SilentlyContinue
+      #region License Query from User Object
+      $UserLicenses = Get-AzureADUserLicenseDetail -ObjectId $UserObject.ObjectId -WarningAction SilentlyContinue
+
+
+
       #endregion
 
       Write-Verbose -Message "Processing Licenses"
       #region Add
       if ($PSBoundParameters.ContainsKey('Add')) {
-        Write-Verbose -Message "Parsing 'Add'"
+        Write-Verbose -Message "Parsing 'Add'" -Verbose
         try {
           # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
           [System.Collections.ArrayList]$AddSkuIds = @()
@@ -440,12 +443,12 @@ function Set-TeamsUserLicense {
                 continue
               }
               else {
-                Write-Verbose -Message "Adding License '$AddLicName' - License found in the Tenant. Free unit available!"
+                Write-Verbose -Message "Adding License '$AddLicName' - License found in the Tenant. Free unit available!" -Verbose
               }
             }
 
             # Verifying user has not already this license assigned
-            if ($SkuPartNumber -in $ObjectAssignedLicenses.SkuPartNumber) {
+            if ($SkuPartNumber -in $UserLicenses.SkuPartNumber) {
               Write-Warning -Message "Adding License '$AddLicName' - License already assigned to the User, omitting!"
             }
             else {
@@ -463,14 +466,14 @@ function Set-TeamsUserLicense {
 
       #region Remove
       if ($PSBoundParameters.ContainsKey('Remove')) {
-        Write-Verbose -Message "Parsing 'Remove'"
+        Write-Verbose -Message "Parsing 'Remove'" -Verbose
         try {
           # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
           [System.Collections.ArrayList]$RemoveSkuIds = @()
           foreach ($RemoveLic in $Remove) {
             $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
             $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
-            if ($RemoveSku -in $ObjectAssignedLicenses.SkuId) {
+            if ($RemoveSku -in $UserLicenses.SkuId) {
               Write-Verbose -Message "Removing License '$RemoveLicName' - License assigned, adding to list"
               [void]$RemoveSkuIds.Add("$RemoveSku")
             }
@@ -495,7 +498,7 @@ function Set-TeamsUserLicense {
         $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveSkuIds }
       }
       if ($PSBoundParameters.ContainsKey('RemoveAll')) {
-        $NewLicenseObjParameters += @{'RemoveSkuId' = $ObjectAssignedLicenses.SkuId }
+        $NewLicenseObjParameters += @{'RemoveSkuId' = $UserLicenses.SkuId }
       }
 
       $LicenseObject = New-AzureAdLicenseObject @NewLicenseObjParameters
@@ -512,7 +515,7 @@ function Set-TeamsUserLicense {
 
       # Output
       if ($PassThru) {
-        Get-TeamsUserLicense -Identity $Identity
+        Get-TeamsUserLicense $Identity
       }
 
     }
@@ -521,4 +524,4 @@ function Set-TeamsUserLicense {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Set-TeamsUserLicense
+} #Enable-AzureAdLicenseServicePlan
