@@ -76,7 +76,7 @@ function Remove-TeamsUserVoiceConfig {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "Defines Scope to remove Voice Configuration")]
+    [Parameter(HelpMessage = "Defines Type of Voice Configuration to remove")]
     [ValidateSet('All', 'DirectRouting', 'CallingPlans')]
     [string]$Scope = "All",
 
@@ -103,15 +103,10 @@ function Remove-TeamsUserVoiceConfig {
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {

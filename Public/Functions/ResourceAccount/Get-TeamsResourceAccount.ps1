@@ -113,15 +113,10 @@ function Get-TeamsResourceAccount {
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -131,8 +126,8 @@ function Get-TeamsResourceAccount {
     $Operation = "Gathering Phone Numbers from the Tenant"
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    if (-not $global:MSTelephoneNumbers) {
-      $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+    if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+      $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
     }
   } #begin
 
@@ -248,7 +243,7 @@ function Get-TeamsResourceAccount {
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.LineURI)" -SpecialChars "tel:+") -split ';')[0]
-        if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
+        if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
           $ResourceAccountPhoneNumberType = "Microsoft Number"
         }
         else {

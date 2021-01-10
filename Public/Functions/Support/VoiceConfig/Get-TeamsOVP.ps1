@@ -43,7 +43,7 @@ function Get-TeamsOVP {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, HelpMessage = "Name of the Voice Routing Policy")]
+    [Parameter(Position = 0, ValueFromPipeline, HelpMessage = "Name of the Voice Routing Policy")]
     [string]$Identity
   )
 

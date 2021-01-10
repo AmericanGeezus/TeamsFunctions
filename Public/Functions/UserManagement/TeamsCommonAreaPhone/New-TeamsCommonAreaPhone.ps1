@@ -93,7 +93,7 @@ function New-TeamsCommonAreaPhone {
   [Alias('New-TeamsCAP')]
   [OutputType([System.Object])]
   param (
-    [Parameter(Mandatory, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = "UPN of the Object to create.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to create.")]
     [ValidateScript( {
         If ($_ -match '@') {
           $True
@@ -151,15 +151,10 @@ function New-TeamsCommonAreaPhone {
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -385,7 +380,7 @@ function New-TeamsCommonAreaPhone {
 
     $ObjectCreated = $null
     $ObjectCreated = Get-TeamsCommonAreaPhone -Identity $UPN
-    #CHECK Password application
+    #CHECK Output and Password application
     #$ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $AzureAdUser.Password
     $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordProfile.Password
     Write-Output $ObjectCreated

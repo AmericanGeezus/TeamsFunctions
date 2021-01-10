@@ -43,7 +43,7 @@ function Get-TeamsVNR {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, HelpMessage = "Name of the Tenant Dial Plan")]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Tenant Dial Plan")]
     [string]$Identity
   )
 

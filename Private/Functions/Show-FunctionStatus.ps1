@@ -40,7 +40,7 @@ function Show-FunctionStatus {
   ) #param
 
   $Stack = Get-PSCallStack
-  if ($stack.length -ge 3) {
+  if ($stack.length -gt 3) {
     return
   }
   else {
@@ -58,7 +58,7 @@ function Show-FunctionStatus {
         Write-Debug -Message "$Function has [BETA] Status: Build is not completed, functionality missing or parts untested. Please report issues via GitHub"
       }
       "RC" {
-        Write-Verbose -Message "$Function has [RC] Status: Functional, but still being tested. Please report issues via GitHub" -Verbose
+          Write-Verbose -Message "$Function has [RC] Status: Functional, but still being tested. Please report issues via GitHub" -Verbose
       }
       "PreLive" {
         Write-Verbose -Message "$Function has [PreLIVE] Status. Should you encounter issues, please get in touch via GitHub or 'TeamsFunctions@outlook.com'"

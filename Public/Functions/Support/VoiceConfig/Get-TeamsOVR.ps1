@@ -43,7 +43,7 @@ function Get-TeamsOVR {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, HelpMessage = "Name of the Voice Route")]
+    [Parameter(Position = 0, ValueFromPipeline, HelpMessage = "Name of the Voice Route")]
     [string]$Identity
   )
 

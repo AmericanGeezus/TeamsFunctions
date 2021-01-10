@@ -164,23 +164,23 @@ function Get-TeamsTenantVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if (-not $global:MSTelephoneNumbers) {
-        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
       }
 
-      if ( $null -ne $global:MSTelephoneNumbers ) {
-        $MSTelephoneNumbersCount = $global:MSTelephoneNumbers.Count
-        [int]$MSTelephoneNumbersFree = ($global:MSTelephoneNumbers | Where-Object TargetType -NE $null).Count
+      if ( $null -ne $global:TeamsFunctionsMSTelephoneNumbers ) {
+        $MSTelephoneNumbersCount = $global:TeamsFunctionsMSTelephoneNumbers.Count
+        [int]$MSTelephoneNumbersFree = ($global:TeamsFunctionsMSTelephoneNumbers | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersUser = $global:MSTelephoneNumbers | Where-Object InventoryType -EQ "Subscriber"
+        $MSNumbersUser = $global:TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ "Subscriber"
         [int]$MSTelephoneNumbersUser = $MSNumbersUser.Count
         [int]$MSTelephoneNumbersUserFree = ($MSNumbersUser | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersService = $global:MSTelephoneNumbers | Where-Object InventoryType -EQ "Service"
+        $MSNumbersService = $global:TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ "Service"
         [int]$MSTelephoneNumbersService = $MSNumbersService.Count
         [int]$MSTelephoneNumbersServiceFree = ($MSNumbersService | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersTollFree = $global:MSTelephoneNumbers | Where-Object InventoryType -EQ "TollFree"
+        $MSNumbersTollFree = $global:TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ "TollFree"
         [int]$MSTelephoneNumbersTollFree = $MSNumbersTollFree.Count
         [int]$MSTelephoneNumbersTollFreeFree = ($MSNumbersTollFree | Where-Object TargetType -NE $null).Count
 

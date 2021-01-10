@@ -53,7 +53,7 @@ function Find-TeamsUserVoiceRoute {
   [Alias('Find-TeamsUVR')]
   [OutputType([PSCustomObject])]
   param (
-    [Parameter(Mandatory, Position = 0, HelpMessage = "Username(s) to query routing for")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Username(s) to query routing for")]
     [Alias('Username', 'UserPrincipalName')]
     [string[]]$Identity,
 
@@ -71,15 +71,10 @@ function Find-TeamsUserVoiceRoute {
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     #region Defining Output Object
     class TFVoiceRouting {
@@ -166,15 +161,6 @@ function Find-TeamsUserVoiceRoute {
 
       # Number
       if ($DialedNumber) {
-        # Normalise Number
-        #CHECK Normalisation cannot be with StringForUse as it would cut out short dial and other options
-        #$NormalisedNumber = Format-StringForUse $DialedNumber -As E164
-        #$NormalisedNumber = Format-StringRemoveSpecialCharacter $DialedNumber -SpecialCharacterToKeep "+" # Keep + in case ppl dial E.164
-
-        if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name) - NormalisedNumber", ( $NormalisedNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
-
         # Query Effective Tenant Dial Plan
         $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id" | Test-CsEffectiveTenantDialPlan -DialedNumber "$DialedNumber"
 

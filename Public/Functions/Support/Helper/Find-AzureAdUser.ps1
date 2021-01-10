@@ -41,11 +41,11 @@ function Find-AzureAdUser {
   [CmdletBinding(DefaultParameterSetName = "Search")]
   [OutputType([Microsoft.Open.AzureAD.Model.User])]
   param(
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", HelpMessage = "Search string")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", ValueFromPipeline, HelpMessage = "Search string")]
     [ValidateLength(3, 255)]
     [string]$SearchString,
 
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipelineByPropertyName, HelpMessage = "This is the UserID (UPN)")]
     [Alias('UserPrincipalName', 'Id')]
     [string[]]$Identity
 

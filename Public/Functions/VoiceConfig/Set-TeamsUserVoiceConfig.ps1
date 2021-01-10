@@ -66,6 +66,7 @@ function Set-TeamsUserVoiceConfig {
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
     Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
     Optionally can also assign a Calling Plan license prior.
+    This script does not allow Pipeline input
 	.FUNCTIONALITY
 		TeamsUserVoiceConfig
   .LINK
@@ -88,7 +89,7 @@ function Set-TeamsUserVoiceConfig {
   [Alias('Set-TeamsUVC')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, HelpMessage = "UserPrincipalName of the User")]
+    [Parameter(Mandatory, Position = 0, HelpMessage = "UserPrincipalName of the User")]
     [string]$Identity,
 
     [Parameter(ParameterSetName = "DirectRouting", HelpMessage = "Enables an Object for Direct Routing")]
@@ -144,15 +145,12 @@ function Set-TeamsUserVoiceConfig {
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+
 
     # Initialising $ErrorLog
     [System.Collections.ArrayList]$ErrorLog = @()
@@ -263,11 +261,11 @@ function Set-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying Microsoft Phone Numbers from Tenant" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying Microsoft Phone Numbers from Tenant"
-      if (-not $global:MSTelephoneNumbers) {
-        $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
       }
       $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars "tel:+") -split ';')[0]
-      if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
+      if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
         Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
       }
       else {
@@ -401,7 +399,7 @@ function Set-TeamsUserVoiceConfig {
             }
 
             #CHECK Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
-            Write-Warning -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again."
+            Write-Warning -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again after a few minutes."
           }
 
           # Apply or Remove $PhoneNumber as TelephoneNumber

@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   RC
 
-#CHECK Add Switch Detailed to integrate effective Policies like AA?
+
 
 
 function Get-TeamsCommonAreaPhone {
@@ -67,6 +67,7 @@ function Get-TeamsCommonAreaPhone {
   [OutputType([System.Object])]
   param(
     [Parameter(Position = 0, ParameterSetName = "Identity", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the User")]
+    [Alias("UserPrincipalName")]
     [string[]]$Identity,
 
     [Parameter(ParameterSetName = "DisplayName", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
@@ -99,15 +100,10 @@ function Get-TeamsCommonAreaPhone {
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -117,8 +113,8 @@ function Get-TeamsCommonAreaPhone {
     $Operation = "Gathering Phone Numbers from the Tenant"
     Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    if (-not $global:MSTelephoneNumbers) {
-      $global:MSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+    if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+      $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
     }
 
     # Querying Global Policies
@@ -281,7 +277,7 @@ function Get-TeamsCommonAreaPhone {
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars "tel:+") -split ';')[0]
-        if ($MSNumber -in $global:MSTelephoneNumbers.Id) {
+        if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
           $CommonAreaPhonePhoneNumberType = "Microsoft Number"
         }
         else {

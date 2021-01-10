@@ -49,12 +49,12 @@ function Get-TeamsLicense {
 
   begin {
     Show-FunctionStatus -Level Deprecated
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     [System.Collections.ArrayList]$TeamsLicenses = @()
 
     #region LicensePackages (which include Teams)
@@ -555,7 +555,7 @@ function Get-TeamsLicense {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end
 } #Get-TeamsLicense

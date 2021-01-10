@@ -165,7 +165,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Assert-TeamsCallableEntity</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>UserPrincipalName, Group Name or Tel URI</maml:para>
@@ -191,7 +191,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>UserPrincipalName, Group Name or Tel URI</maml:para>
@@ -1653,7 +1653,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Find-AzureAdUser</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>SearchString</maml:name>
           <maml:Description>
             <maml:para>Required for ParameterSet Search: A 3-255 digit string to be found on any Object.</maml:para>
@@ -1668,7 +1668,7 @@
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Find-AzureAdUser</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Id">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName, Id">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.</maml:para>
@@ -1683,7 +1683,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>SearchString</maml:name>
         <maml:Description>
           <maml:para>Required for ParameterSet Search: A 3-255 digit string to be found on any Object.</maml:para>
@@ -1695,7 +1695,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Id">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName, Id">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.</maml:para>
@@ -1778,7 +1778,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Find-TeamsCallableEntity</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="ObjectId, UserPrincipalName">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Required. Callable Entity Object to be found (Tel URI, User, Group, Resource Account)</maml:para>
@@ -1805,7 +1805,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="ObjectId, UserPrincipalName">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, UserPrincipalName">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Required. Callable Entity Object to be found (Tel URI, User, Group, Resource Account)</maml:para>
@@ -2464,7 +2464,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Find-TeamsUserVoiceRoute</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username, UserPrincipalName">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Username, UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Required. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan User must have a valid Voice Configuration applied for this script to return a valuable result</maml:para>
@@ -2491,7 +2491,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username, UserPrincipalName">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Username, UserPrincipalName">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Required. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan User must have a valid Voice Configuration applied for this script to return a valuable result</maml:para>
@@ -3733,7 +3733,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsCallableEntity</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="ObjectId">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>The ObjectId of the CallableEntity linked</maml:para>
@@ -3748,7 +3748,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="ObjectId">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>The ObjectId of the CallableEntity linked</maml:para>
@@ -4061,7 +4061,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsCommonAreaPhone</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Default and positional. One or more UserPrincipalNames to be queried</maml:para>
@@ -4106,7 +4106,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Default and positional. One or more UserPrincipalNames to be queried</maml:para>
@@ -4412,7 +4412,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsMGW</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Pstn Gateways</maml:para>
@@ -4427,7 +4427,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Pstn Gateways</maml:para>
@@ -4509,7 +4509,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsObjectType</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Required. String for the TelURI, Group Name or Mailnickname, UserPrincipalName, depending on the Entity Type</maml:para>
@@ -4524,7 +4524,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Required. String for the TelURI, Group Name or Mailnickname, UserPrincipalName, depending on the Entity Type</maml:para>
@@ -4736,7 +4736,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsOVP</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Voice Routing Policies (except "Global")</maml:para>
@@ -4751,7 +4751,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Voice Routing Policies (except "Global")</maml:para>
@@ -4833,7 +4833,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsOVR</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoute, listing one Route If not provided, lists Identities of all Online Voice Route (except "LocalRoute")</maml:para>
@@ -4848,7 +4848,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoute, listing one Route If not provided, lists Identities of all Online Voice Route (except "LocalRoute")</maml:para>
@@ -5278,7 +5278,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsTDP</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing one Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
@@ -5293,7 +5293,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing one Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
@@ -5716,7 +5716,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsUserLicense</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UPN, UserPrincipalName, Username">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>The Identity/UPN/sign-in address for the user entered in the format &lt;name&gt;@&lt;domain&gt;.   Aliases include: "UPN","UserPrincipalName","Username"</maml:para>
@@ -5742,7 +5742,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UPN, UserPrincipalName, Username">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>The Identity/UPN/sign-in address for the user entered in the format &lt;name&gt;@&lt;domain&gt;.   Aliases include: "UPN","UserPrincipalName","Username"</maml:para>
@@ -6025,7 +6025,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsVNR</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing one Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
@@ -6040,7 +6040,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing one Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
@@ -9203,7 +9203,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>New-TeamsCallableEntity</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Required. Tel URI, Group Name or UserPrincipalName, depending on the Entity Type</maml:para>
@@ -9274,7 +9274,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Required. Tel URI, Group Name or UserPrincipalName, depending on the Entity Type</maml:para>
@@ -10243,7 +10243,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>New-TeamsCommonAreaPhone</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="Identity">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
           <maml:name>UserPrincipalName</maml:name>
           <maml:Description>
             <maml:para>Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string</maml:para>
@@ -10364,7 +10364,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="Identity">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
         <maml:name>UserPrincipalName</maml:name>
         <maml:Description>
           <maml:para>Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string</maml:para>
@@ -12598,6 +12598,232 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Set-AzureAdUserLicenseServicePlan</command:name>
+      <command:verb>Set</command:verb>
+      <command:noun>AzureAdUserLicenseServicePlan</command:noun>
+      <maml:description>
+        <maml:para>Changes one or more Service Plans for Licenses assigned to an AzureAD Object</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Enables or disables a ServicePlan from all assigned Licenses to an AzureAD Object Supports all Service Plans listed in Get-AzureAdLicenseServicePlan</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Set-AzureAdUserLicenseServicePlan</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
+          <maml:name>Identity</maml:name>
+          <maml:Description>
+            <maml:para>Required. UserPrincipalName of the Object to be manipulated</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Enable</maml:name>
+          <maml:Description>
+            <maml:para>Optional. Service Plans to be enabled (main function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Disable</maml:name>
+          <maml:Description>
+            <maml:para>Optional. Service Plans to be disabled (alternative function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:Description>
+            <maml:para>Optional. Displays User License Object after action.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:Description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:Description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
+        <maml:name>Identity</maml:name>
+        <maml:Description>
+          <maml:para>Required. UserPrincipalName of the Object to be manipulated</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Enable</maml:name>
+        <maml:Description>
+          <maml:para>Optional. Service Plans to be enabled (main function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Disable</maml:name>
+        <maml:Description>
+          <maml:para>Optional. Service Plans to be disabled (alternative function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PassThru</maml:name>
+        <maml:Description>
+          <maml:para>Optional. Displays User License Object after action.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+        <maml:name>WhatIf</maml:name>
+        <maml:Description>
+          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+        <maml:name>Confirm</maml:name>
+        <maml:Description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Void</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Data in Get-AzureAdLicenseServicePlan as per Microsoft Docs Article: Published Service Plan IDs for Licensing https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Enable MCOEV</dev:code>
+        <dev:remarks>
+          <maml:para>Enables the Service Plan Phone System (MCOEV) on all Licenses assigned to Name@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Disable MCOEV,TEAMS1</dev:code>
+        <dev:remarks>
+          <maml:para>Disables the Service Plans Phone System (MCOEV) and Teams (TEAMS1) on all Licenses assigned to Name@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Enable MCOEV,TEAMS1 -PassThru</dev:code>
+        <dev:remarks>
+          <maml:para>Enables the Service Plans Phone System (MCOEV) and Teams (TEAMS1) on all Licenses assigned to Name@domain.com Displays User License Object after application</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Set-TeamsCallQueue</command:name>
       <command:verb>Set</command:verb>
       <command:noun>TeamsCallQueue</command:noun>
@@ -13418,7 +13644,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Set-TeamsCommonAreaPhone</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="Identity">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
           <maml:name>UserPrincipalName</maml:name>
           <maml:Description>
             <maml:para>Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string</maml:para>
@@ -13527,7 +13753,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="Identity">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
         <maml:name>UserPrincipalName</maml:name>
         <maml:Description>
           <maml:para>Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string</maml:para>
@@ -14522,6 +14748,14 @@
         <maml:linkText>Get-AzureAdLicenseServicePlan</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-AzureAdUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Disable-AzureAdUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
@@ -14956,7 +15190,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice, assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default. ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans. Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!) Optionally can also assign a Calling Plan license prior.</maml:para>
+        <maml:para>ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice, assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default. ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans. Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!) Optionally can also assign a Calling Plan license prior. This script does not allow Pipeline input</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -15798,7 +16032,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-TeamsUserHasCallPlan</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Mandatory. The sign-in address or User Principal Name of the user account to modify.</maml:para>
@@ -15813,7 +16047,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Mandatory. The sign-in address or User Principal Name of the user account to modify.</maml:para>
@@ -15884,7 +16118,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-TeamsUserLicense</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Mandatory. The sign-in address or User Principal Name of the user account to modify.</maml:para>
@@ -15911,7 +16145,7 @@
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Test-TeamsUserLicense</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:Description>
             <maml:para>Mandatory. The sign-in address or User Principal Name of the user account to modify.</maml:para>
@@ -15938,7 +16172,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:Description>
           <maml:para>Mandatory. The sign-in address or User Principal Name of the user account to modify.</maml:para>

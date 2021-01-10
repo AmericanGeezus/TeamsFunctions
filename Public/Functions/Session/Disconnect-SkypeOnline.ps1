@@ -53,7 +53,7 @@ function Disconnect-SkypeOnline {
     [bool]$sessionFound = $false
 
     # Cleanup of global Variables set
-    Remove-Variable MSTelephoneNumbers -ErrorAction SilentlyContinue
+    Remove-TeamsFunctionsGlobalVariable
 
   } #begin
 
