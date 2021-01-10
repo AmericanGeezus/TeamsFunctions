@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -91,7 +91,11 @@ Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www
 
 ## RELATED LINKS
 
-[Find-TeamsUserVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsUserVoiceConfig]()
+
+[Set-TeamsUserVoiceConfig]()
 

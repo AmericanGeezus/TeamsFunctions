@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -113,6 +113,8 @@ For a full parameterset, please run:
 - for Teams:      "Get-CsOnlineUser $Identity"
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [Find-TeamsUserVoiceConfig]()
 

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -89,11 +89,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[Get-TeamsAutoAttendant
-Set-TeamsAutoAttendant
-New-TeamsAutoAttendant
-Remove-TeamsAutoAttendant
-Remove-TeamsCallQueue
-Remove-TeamsResourceAccount
-Remove-TeamsResourceAccountAssociation]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsAutoAttendant]()
+
+[Set-TeamsAutoAttendant]()
+
+[New-TeamsAutoAttendant]()
+
+[Remove-TeamsAutoAttendant]()
+
+[Remove-TeamsCallQueue]()
+
+[Remove-TeamsResourceAccount]()
+
+[Remove-TeamsResourceAccountAssociation]()
 

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -83,3 +83,8 @@ However, applying the output of this Function does.
 Used in Set-TeamsUserLicense and Add-TeamsUserLicense
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Set-TeamsUserLicense]()
+

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -109,11 +109,19 @@ Execution requires User Admin Role in Azure AD
 
 ## RELATED LINKS
 
-[Get-TeamsCommonAreaPhone
-New-TeamsCommonAreaPhone
-Set-TeamsCommonAreaPhone
-Remove-TeamsCommonAreaPhone
-Find-TeamsUserVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsCommonAreaPhone]()
+
+[New-TeamsCommonAreaPhone]()
+
+[Set-TeamsCommonAreaPhone]()
+
+[Remove-TeamsCommonAreaPhone]()
+
+[Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsUserVoiceConfig]()
+
+[Set-TeamsUserVoiceConfig]()
 

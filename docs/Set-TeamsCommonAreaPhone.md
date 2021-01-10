@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -230,11 +230,19 @@ This Script only covers relevant elements for Common Area Phones themselves.
 
 ## RELATED LINKS
 
-[Get-TeamsCommonAreaPhone
-New-TeamsCommonAreaPhone
-Set-TeamsCommonAreaPhone
-Remove-TeamsCommonAreaPhone
-Find-TeamsUserVoiceConfig
-Get-TeamsUserVoiceConfig
-Set-TeamsUserVoiceConfig]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsCommonAreaPhone]()
+
+[New-TeamsCommonAreaPhone]()
+
+[Set-TeamsCommonAreaPhone]()
+
+[Remove-TeamsCommonAreaPhone]()
+
+[Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsUserVoiceConfig]()
+
+[Set-TeamsUserVoiceConfig]()
 

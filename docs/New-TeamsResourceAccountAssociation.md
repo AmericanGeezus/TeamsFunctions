@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -153,11 +153,19 @@ Parameter Force can be used to change the type of RA to align to the entity if p
 
 ## RELATED LINKS
 
-[Get-TeamsResourceAccountAssociation
-New-TeamsResourceAccountAssociation
-Remove-TeamsResourceAccountAssociation
-New-TeamsResourceAccount
-Get-TeamsResourceAccount
-Set-TeamsResourceAccount
-Remove-TeamsResourceAccount]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsResourceAccountAssociation]()
+
+[New-TeamsResourceAccountAssociation]()
+
+[Remove-TeamsResourceAccountAssociation]()
+
+[New-TeamsResourceAccount]()
+
+[Get-TeamsResourceAccount]()
+
+[Set-TeamsResourceAccount]()
+
+[Remove-TeamsResourceAccount]()
 

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -76,6 +76,9 @@ Captures different behavior of Get-Content (ByteStream syntax) in PowerShell 6 a
 
 ## RELATED LINKS
 
-[New-TeamsCallQueue
-Set-TeamsCallQueue]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[New-TeamsCallQueue]()
+
+[Set-TeamsCallQueue]()
 

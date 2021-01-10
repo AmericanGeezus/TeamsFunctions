@@ -39,7 +39,6 @@ function Get-TeamsCommonAreaPhone {
   .OUTPUTS
     System.Object
 	.NOTES
-    #Without input, returns all UserPrincipalNames of all found Common Area Phones (by License assigned)
     Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones
 	.FUNCTIONALITY
 		Queries a Common Area Phone in AzureAD for use in Teams

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -187,7 +187,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
+By default, no output is generated, PassThru will display the Object changed
 
 ```yaml
 Type: SwitchParameter
@@ -245,12 +245,21 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[Get-TeamsResourceAccountAssociation
-New-TeamsResourceAccountAssociation
-Remove-TeamsResourceAccountAssociation
-New-TeamsResourceAccount
-Get-TeamsResourceAccount
-Find-TeamsResourceAccount
-Set-TeamsResourceAccount
-Remove-TeamsResourceAccount]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Get-TeamsResourceAccountAssociation]()
+
+[New-TeamsResourceAccountAssociation]()
+
+[Remove-TeamsResourceAccountAssociation]()
+
+[New-TeamsResourceAccount]()
+
+[Get-TeamsResourceAccount]()
+
+[Find-TeamsResourceAccount]()
+
+[Set-TeamsResourceAccount]()
+
+[Remove-TeamsResourceAccount]()
 

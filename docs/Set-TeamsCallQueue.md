@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -585,9 +585,15 @@ Currently in Testing
 
 ## RELATED LINKS
 
-[New-TeamsCallQueue
-Get-TeamsCallQueue
-  Set-TeamsCallQueue
-  Remove-TeamsCallQueue
-  Set-TeamsAutoAttendant]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[New-TeamsCallQueue]()
+
+[Get-TeamsCallQueue]()
+
+[Set-TeamsCallQueue]()
+
+[Remove-TeamsCallQueue]()
+
+[Set-TeamsAutoAttendant]()
 

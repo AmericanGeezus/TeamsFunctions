@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version:
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
@@ -128,13 +128,23 @@ Please note that hanging sessions can cause lockout (session exhaustion)
 
 ## RELATED LINKS
 
-[Connect-Me
-Connect-SkypeOnline
-Connect-AzureAD
-Connect-MicrosoftTeams
-Assert-SkypeOnlineConnection
-Disconnect-Me
-Disconnect-SkypeOnline
-Disconnect-AzureAD
-Disconnect-MicrosoftTeams]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Connect-Me]()
+
+[Connect-SkypeOnline]()
+
+[Connect-AzureAD]()
+
+[Connect-MicrosoftTeams]()
+
+[Assert-SkypeOnlineConnection]()
+
+[Disconnect-Me]()
+
+[Disconnect-SkypeOnline]()
+
+[Disconnect-AzureAD]()
+
+[Disconnect-MicrosoftTeams]()
 

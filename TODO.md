@@ -1,5 +1,13 @@
 ﻿# ToDo List
 
+## Documentation
+
+TeamsFunctions-help.xml
+
+Update Markdown files with Platypus does not automatically update .MD files...
+
+Pester tests do fail still - Test "doc" (Update-DocsAndPester)
+
 ## Auto Attendant
 
 ### New-TeamsAutoAttendant
