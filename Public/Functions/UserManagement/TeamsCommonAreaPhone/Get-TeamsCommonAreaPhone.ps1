@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   RC
 
-#CHECK Add Switch Detailed to integrate effective Policies like AA?
+
 
 
 function Get-TeamsCommonAreaPhone {
@@ -67,6 +67,7 @@ function Get-TeamsCommonAreaPhone {
   [OutputType([System.Object])]
   param(
     [Parameter(Position = 0, ParameterSetName = "Identity", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the User")]
+    [Alias("UserPrincipalName")]
     [string[]]$Identity,
 
     [Parameter(ParameterSetName = "DisplayName", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]

@@ -385,7 +385,7 @@ function New-TeamsCommonAreaPhone {
 
     $ObjectCreated = $null
     $ObjectCreated = Get-TeamsCommonAreaPhone -Identity $UPN
-    #CHECK Password application
+    #CHECK Output and Password application
     #$ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $AzureAdUser.Password
     $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordProfile.Password
     Write-Output $ObjectCreated

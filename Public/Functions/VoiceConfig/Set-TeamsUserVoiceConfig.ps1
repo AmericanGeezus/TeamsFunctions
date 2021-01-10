@@ -402,7 +402,7 @@ function Set-TeamsUserVoiceConfig {
             }
 
             #CHECK Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
-            Write-Warning -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again."
+            Write-Warning -Message "No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again after a few minutes."
           }
 
           # Apply or Remove $PhoneNumber as TelephoneNumber
