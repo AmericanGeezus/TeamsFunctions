@@ -290,3 +290,7 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 
 [Get-AzureAdLicenseServicePlan]()
 
+[Enable-AzureAdUserLicenseServicePlan]()
+
+[Disable-AzureAdUserLicenseServicePlan]()
+

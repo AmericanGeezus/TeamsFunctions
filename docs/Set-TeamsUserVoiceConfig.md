@@ -281,6 +281,7 @@ This is the default.
 ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
 Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
 Optionally can also assign a Calling Plan license prior.
+This script does not allow Pipeline input
 
 ## RELATED LINKS
 

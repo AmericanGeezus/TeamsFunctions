@@ -71,7 +71,7 @@ One or more UserPrincipalNames to be queried
 ```yaml
 Type: String[]
 Parameter Sets: Identity
-Aliases:
+Aliases: UserPrincipalName
 
 Required: False
 Position: 1
