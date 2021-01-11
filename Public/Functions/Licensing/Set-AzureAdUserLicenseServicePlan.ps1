@@ -177,7 +177,7 @@ function Set-AzureAdUserLicenseServicePlan {
         # Creating a new License Object
         $License = New-AzureAdLicenseObject -AddSkuId $L.SkuId
         $DisabledPlans = $null
-        $DisabledPlans = $L.ServicePlans | Where-Object ProvisioningStatus -EQ "Disabled" | Select-Object ServicePlanId -ExpandProperty ServicePlanId
+        $DisabledPlans = $L.ServicePlans | Where-Object ProvisioningStatus -EQ "Disabled" | Select-Object ServicePlanId -ExpandProperty ServicePlanId -ErrorAction SilentlyContinue
         $($License.AddLicenses).DisabledPlans = $DisabledPlans
 
         if ($PSBoundParameters.ContainsKey('Debug')) {

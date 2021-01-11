@@ -214,7 +214,8 @@ function Find-TeamsUserVoiceConfig {
             $Number = $matches[1]
           }
           else {
-            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr"
+            #BODGE Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
+            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep "tel:+;x"
           }
           Write-Verbose -Message "Finding Users with PhoneNumber '$Number' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
