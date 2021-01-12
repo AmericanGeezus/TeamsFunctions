@@ -279,7 +279,7 @@ function Get-TeamsResourceAccount {
         DisplayName              = $ResourceAccount.DisplayName
         ApplicationType          = $ResourceAccountApplicationType
         UsageLocation            = $ResourceAccountLicense.UsageLocation
-        License                  = $ResourceAccountLicense.LicensesFriendlyNames
+        License                  = $ResourceAccountLicense.Licenses
         PhoneNumberType          = $ResourceAccountPhoneNumberType
         PhoneNumber              = $ResourceAccount.PhoneNumber
         OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy

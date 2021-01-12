@@ -19,6 +19,7 @@ function Get-TeamsUserLicense {
     Aliases include: "UPN","UserPrincipalName","Username"
   .PARAMETER DisplayAll
     Displays all ServicePlans, not only relevant Teams Plans
+    Also displays AllLicenses and AllServicePlans object for further processing
 	.EXAMPLE
 		Get-TeamsUserLicense -Identity John@domain.com
 		Displays all licenses assigned to User John@domain.com
@@ -47,10 +48,6 @@ function Get-TeamsUserLicense {
     Set-TeamsUserLicense
   .LINK
     Test-TeamsUserLicense
-  .LINK
-    Get-TeamsLicense
-  .LINK
-    Get-TeamsLicenseServicePlan
   .LINK
     Get-AzureAdLicense
   .LINK
@@ -85,10 +82,19 @@ function Get-TeamsUserLicense {
     $OFS = ", "
 
     # Loading License Array
+    if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
+      $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
+    }
+
     $AllLicenses = $null
-    $AllLicenses = Get-TeamsLicense
+    $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
+
+    if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) {
+      $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue
+    }
+
     $AllServicePlans = $null
-    $AllServicePlans = Get-TeamsLicenseServicePlan
+    $AllServicePlans = $global:TeamsFunctionsMSAzureAdLicenseServicePlans
 
   } #begin
 
@@ -117,8 +123,13 @@ function Get-TeamsUserLicense {
           [void]$UserLicenses.Add($Lic)
         }
       }
-      $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, FriendlyName
-      [string]$LicensesFriendlyNames = ($UserLicensesSorted | Where-Object FriendlyName -NE $null).FriendlyName
+      $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, ProductName
+      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+        [string]$LicensesProductNames = $UserLicensesSorted.ProductName
+      }
+      else {
+        [string]$LicensesProductNames = ($UserLicensesSorted | Where-Object { $_.IncludesTeams -or $_.IncludesPhoneSystem } ).ProductName
+      }
 
       # Querying Service Plans
       $assignedServicePlans = $UserLicenseDetail.ServicePlans | Sort-Object ServicePlanName
@@ -128,15 +139,22 @@ function Get-TeamsUserLicense {
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
         if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
           $LicObj = [PSCustomObject][ordered]@{
-            FriendlyName       = $Lic.FriendlyName
+            ProductName        = if ($Lic.ProductName) {$Lic.ProductName} else {$ServicePlan.ServicePlanName}
             ServicePlanName    = $ServicePlan.ServicePlanName
             ProvisioningStatus = $ServicePlan.ProvisioningStatus
+            RelevantForTeams   = $Lic.RelevantForTeams
           }
           [void]$UserServicePlans.Add($LicObj)
         }
       }
-      $UserServicePlansSorted = $UserServicePlans | Sort-Object Friendlyname, ProvisioningStatus, ServicePlanName
-      [string]$ServicePlansFriendlyNames = ($UserServicePlansSorted | Where-Object FriendlyName -NE $null).FriendlyName
+      $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
+      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+        [string]$ServicePlansProductNames = $UserServicePlansSorted.ProductName
+      }
+      else {
+        #[string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object { $_.RelevantForTeams }).ProductName
+        [string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName
+      }
 
       $PhoneSystemLicense = ("MCOEV" -in $UserServicePlans.ServicePlanName)
       $AudioConfLicense = ("MCOMEETADV" -in $UserServicePlans.ServicePlanName)
@@ -170,13 +188,13 @@ function Get-TeamsUserLicense {
 
       # Calling Plans
       if ($CallingPlanDom120) {
-        $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN5"
+        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN5").ProductName
       }
       elseif ($CallingPlanDom) {
-        $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN1"
+        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN1").ProductName
       }
       elseif ($CallingPlanInt) {
-        $currentCallingPlan = $AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN2"
+        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN2").ProductName
       }
       else {
         [string]$currentCallingPlan = $null
@@ -187,8 +205,8 @@ function Get-TeamsUserLicense {
         UserPrincipalName         = $User
         DisplayName               = $DisplayName
         UsageLocation             = $UserObject.UsageLocation
-        LicensesFriendlyNames     = $LicensesFriendlyNames
-        ServicePlansFriendlyNames = $ServicePlansFriendlyNames
+        Licenses                  = $LicensesProductNames
+        ServicePlans              = $ServicePlansProductNames
         AudioConferencing         = $AudioConfLicense
         CommoneAreaPhoneLicense   = $CommonAreaPhoneLic
         PhoneSystemVirtualUser    = $PhoneSystemVirtual
@@ -199,8 +217,11 @@ function Get-TeamsUserLicense {
         CallingPlanInternational  = $CallingPlanInt
         CommunicationsCredits     = $CommunicationCredits
         CallingPlan               = $currentCallingPlan
-        Licenses                  = $UserLicensesSorted
-        ServicePlans              = $UserServicePlansSorted
+      }
+
+      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+        $output | Add-Member -MemberType NoteProperty -Name AllLicenses -Value $($UserLicensesSorted | Select-Object *)
+        $output | Add-Member -MemberType NoteProperty -Name AllServicePlans -Value $UserServicePlansSorted
       }
 
       Write-Output $output

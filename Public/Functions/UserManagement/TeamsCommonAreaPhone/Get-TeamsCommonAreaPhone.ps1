@@ -296,7 +296,7 @@ function Get-TeamsCommonAreaPhone {
         Description                  = $CommonAreaPhone.Description
         UsageLocation                = $CommonAreaPhoneLicense.UsageLocation
         InterpretedUserType          = $CommonAreaPhone.InterpretedUserType
-        License                      = $CommonAreaPhoneLicense.LicensesFriendlyNames
+        License                      = $CommonAreaPhoneLicense.Licenses
         PhoneSystem                  = $CommonAreaPhoneLicense.PhoneSystem
         PhoneSystemStatus            = $CommonAreaPhoneLicense.PhoneSystemStatus
         EnterpriseVoiceEnabled       = $CommonAreaPhone.EnterpriseVoiceEnabled

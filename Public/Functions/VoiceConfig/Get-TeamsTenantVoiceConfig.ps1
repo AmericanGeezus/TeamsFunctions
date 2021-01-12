@@ -116,7 +116,7 @@ function Get-TeamsTenantVoiceConfig {
       Domains                                = $Tenant.Domains
       SipDomains                             = $SipDomains.Name
       TeamsUpgradeEffectiveMode              = $Tenant.TeamsUpgradeEffectiveMode
-      TenantLicenses                         = $TenantLicenses.FriendlyName
+      TenantLicenses                         = $TenantLicenses.ProductName
       InternationalCallingPlanUnitsRemaining = $CallPlanINT.Remaining
       DomesticCallingPlanUnitsRemaining      = $CallPlanDOM.Remaining
       DomesticCallingPlan120UnitsRemaining   = $CallPlanDOM120.Remaining

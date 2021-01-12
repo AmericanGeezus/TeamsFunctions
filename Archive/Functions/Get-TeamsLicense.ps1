@@ -33,10 +33,6 @@ function Get-TeamsLicense {
   .LINK
     Test-TeamsUserLicense
   .LINK
-    Get-TeamsLicense
-  .LINK
-    Get-TeamsLicenseServicePlan
-  .LINK
     Get-AzureAdLicense
   .LINK
     Get-AzureAdLicenseServicePlan

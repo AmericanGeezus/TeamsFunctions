@@ -114,12 +114,12 @@ function New-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "License to be assigned")]
     [ValidateScript( {
-        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -492,7 +492,7 @@ function New-TeamsResourceAccount {
         DisplayName       = $ResourceAccount.DisplayName
         ApplicationType   = $ResourceAccountApplicationType
         UsageLocation     = $UsageLocation
-        License           = $ResourceAccountLicense.LicensesFriendlyNames
+        License           = $ResourceAccountLicense.Licenses
         PhoneNumberType   = $ResourceAccountPhoneNumberType
         PhoneNumber       = $ResourceAccount.PhoneNumber
       }

@@ -45,7 +45,13 @@ function Test-TeamsUserHasCallPlan {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    $AllLicenses = Get-TeamsLicense
+    # Loading License Array
+    if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
+      $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
+    }
+
+    $AllLicenses = $null
+    $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
 
   } #begin
 

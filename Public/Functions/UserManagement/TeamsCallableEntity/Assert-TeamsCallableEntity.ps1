@@ -94,6 +94,15 @@ function Assert-TeamsCallableEntity {
         Write-Verbose -Message "Target '$Identity' found and licensed"
       }
       else {
+        #TODO Add try Set-AzureAdLicenseServicePlan to enable PhoneSystem
+        <#
+        try {
+          Set-AzureAdLicenseServicePlan -Identity "$Identity" -Enable MCOEV -ErrorAction Stop
+        }
+        catch {
+          Write-Error -Message "" -RecommendedAction "" -Category  -Exception $_.Exception.Message
+        }
+        #>
         $ErrorMessage = "Target '$Identity' found but not licensed correctly (PhoneSystem)"
         if ($Terminate) {
           throw $ErrorMessage
