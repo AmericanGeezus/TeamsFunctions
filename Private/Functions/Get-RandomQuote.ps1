@@ -322,9 +322,9 @@ function Get-RandomQuote {
     "The road to success is dotted with many tempting parking spaces. (Will Rogers)", `
     "When I die, I want to die like my grandfather who died peacefully in his sleep. Not screaming like all the passengers in his car. (Will Rogers)", `
     "Common sense and a sense of humor are the same thing, moving at different speeds. A sense of humor is just common sense, dancing. (William James)", `
-    "A lie gets halfway around the world before the truth has a chance to get its pants on. (Winston Churchill)", `
-    "If you're going through hell, keep going. (Winston Churchill)", `
-    "You have enemies? Good. That means you've stood up for something, sometime in your life. (Winston Churchill)", `
+    "A lie gets halfway around the world before the truth has a chance to get its pants on.", `
+    "If you're going through hell, keep going.", `
+    "You have enemies? Good. That means you've stood up for something, sometime in your life.", `
     "I don't want to achieve immortality through my work. I want to achieve it through not dying. (Woody Allen)", `
     "Marriage is like mushrooms: we notice too late if they are good or bad. (Woody Allen)", `
     "Everybody laughs the same in every language because laughter is a universal connection. (Yakov Smirnoff)", `
