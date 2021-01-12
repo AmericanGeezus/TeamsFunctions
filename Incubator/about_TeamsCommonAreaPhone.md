@@ -32,7 +32,7 @@ The generated about topic will be encoded UTF-8.
 
 {{ Long Description Placeholder }}
 
-## Optional Subtopics
+## CmdLets
 
 {{ Optional Subtopic Placeholder }}
 
@@ -41,6 +41,10 @@ The generated about topic will be encoded UTF-8.
 {{ Code or descriptive examples of how to leverage the functions described. }}
 
 ## NOTE
+
+{{ Note Placeholder - Additional information that a user needs to know.}}
+
+## Development Status
 
 {{ Note Placeholder - Additional information that a user needs to know.}}
 

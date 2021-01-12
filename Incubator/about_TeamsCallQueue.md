@@ -49,17 +49,26 @@ The generated about topic will be encoded UTF-8.
 
 ## LONG DESCRIPTION
 
-{{ Long Description Placeholder }}
+Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bit cumbersome for the average admin. Though the Searchstring parameter is available, enabling me to utilise it as a basic input method for `TeamsCallQueue` CmdLets. They query by *DisplayName*, which comes with a drawback for the `Set`-command: It requires a unique result. Also uses Filenames instead of IDs when adding Audio Files. Microsoft is continuing to improve these scripts, so I hope these can stand the test of time and make managing Call Queues easier.
 
-## Optional Subtopics
+## CmdLets
 
-{{ Optional Subtopic Placeholder }}
+| Function                | Underlying Function | Description                                                        |
+| ----------------------- | ------------------- | ------------------------------------------------------------------ |
+| `Get-TeamsCallQueue`    | Get-CsCallQueue     | Queries a Call Queue with friendly inputs (UPN) and output         |
+| `New-TeamsCallQueue`    | New-CsCallQueue     | Creates a Call Queue with friendly inputs (File Names, UPNs, etc.) |
+| `Set-TeamsCallQueue`    | Set-CsCallQueue     | Changes a Call Queue with friendly inputs (File Names, UPNs, etc.) |
+| `Remove-TeamsCallQueue` | Remove-CsCallQueue  | Removes a Call Queue from the Tenant                               |
 
 ## EXAMPLES
 
 {{ Code or descriptive examples of how to leverage the functions described. }}
 
 ## NOTE
+
+{{ Note Placeholder - Additional information that a user needs to know.}}
+
+## Development Status
 
 {{ Note Placeholder - Additional information that a user needs to know.}}
 
