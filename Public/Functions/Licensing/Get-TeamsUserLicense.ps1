@@ -38,6 +38,8 @@ function Get-TeamsUserLicense {
     Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses assigned to a specific User depending on input
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -139,7 +141,7 @@ function Get-TeamsUserLicense {
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
         if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
           $LicObj = [PSCustomObject][ordered]@{
-            ProductName        = if ($Lic.ProductName) {$Lic.ProductName} else {$ServicePlan.ServicePlanName}
+            ProductName        = if ($Lic.ProductName) { $Lic.ProductName } else { $ServicePlan.ServicePlanName }
             ServicePlanName    = $ServicePlan.ServicePlanName
             ProvisioningStatus = $ServicePlan.ProvisioningStatus
             RelevantForTeams   = $Lic.RelevantForTeams
@@ -202,21 +204,21 @@ function Get-TeamsUserLicense {
 
 
       $output = [PSCustomObject][ordered]@{
-        UserPrincipalName         = $User
-        DisplayName               = $DisplayName
-        UsageLocation             = $UserObject.UsageLocation
-        Licenses                  = $LicensesProductNames
-        ServicePlans              = $ServicePlansProductNames
-        AudioConferencing         = $AudioConfLicense
-        CommoneAreaPhoneLicense   = $CommonAreaPhoneLic
-        PhoneSystemVirtualUser    = $PhoneSystemVirtual
-        PhoneSystem               = $PhoneSystemLicense
-        PhoneSystemStatus         = $PhoneSystemStatus
-        CallingPlanDomestic120    = $CallingPlanDom120
-        CallingPlanDomestic       = $CallingPlanDom
-        CallingPlanInternational  = $CallingPlanInt
-        CommunicationsCredits     = $CommunicationCredits
-        CallingPlan               = $currentCallingPlan
+        UserPrincipalName        = $User
+        DisplayName              = $DisplayName
+        UsageLocation            = $UserObject.UsageLocation
+        Licenses                 = $LicensesProductNames
+        ServicePlans             = $ServicePlansProductNames
+        AudioConferencing        = $AudioConfLicense
+        CommoneAreaPhoneLicense  = $CommonAreaPhoneLic
+        PhoneSystemVirtualUser   = $PhoneSystemVirtual
+        PhoneSystem              = $PhoneSystemLicense
+        PhoneSystemStatus        = $PhoneSystemStatus
+        CallingPlanDomestic120   = $CallingPlanDom120
+        CallingPlanDomestic      = $CallingPlanDom
+        CallingPlanInternational = $CallingPlanInt
+        CommunicationsCredits    = $CommunicationCredits
+        CallingPlan              = $currentCallingPlan
       }
 
       if ($PSBoundParameters.ContainsKey('DisplayAll')) {

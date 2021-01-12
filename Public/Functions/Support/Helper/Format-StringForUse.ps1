@@ -49,6 +49,8 @@ function Format-StringForUse {
     System.String
   .OUTPUTS
     System.String
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

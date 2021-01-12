@@ -28,6 +28,8 @@ function Get-TeamsTenantVoiceConfig {
     Also displays diagnostic parameters for troubleshooting
 	.NOTES
 		General notes
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

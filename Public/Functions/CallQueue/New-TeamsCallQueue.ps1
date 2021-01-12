@@ -135,6 +135,8 @@ function New-TeamsCallQueue {
     Currently in Testing
   .FUNCTIONALITY
     Creates a Call Queue with custom settings and friendly names as input
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

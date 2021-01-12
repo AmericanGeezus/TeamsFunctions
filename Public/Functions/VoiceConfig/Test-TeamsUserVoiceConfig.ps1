@@ -46,6 +46,8 @@ function Test-TeamsUserVoiceConfig {
     For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI
       This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.
       "Remove-TeamsUserVoiceConfig -Force" can help
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK

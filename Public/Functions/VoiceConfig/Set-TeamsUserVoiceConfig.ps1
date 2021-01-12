@@ -69,6 +69,8 @@ function Set-TeamsUserVoiceConfig {
     This script does not allow Pipeline input
 	.FUNCTIONALITY
 		TeamsUserVoiceConfig
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

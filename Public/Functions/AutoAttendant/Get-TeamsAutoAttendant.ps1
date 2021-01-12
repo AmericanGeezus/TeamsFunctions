@@ -53,6 +53,8 @@ function Get-TeamsAutoAttendant {
     This also works with Get-CsAutoAttendant, but with the help of "Display" Parameters.
 	.FUNCTIONALITY
 		Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK

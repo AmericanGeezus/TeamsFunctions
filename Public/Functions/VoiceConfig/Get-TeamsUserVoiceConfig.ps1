@@ -45,6 +45,8 @@ function Get-TeamsUserVoiceConfig {
     - for Teams:      "Get-CsOnlineUser $Identity"
 	.FUNCTIONALITY
 		The functionality that best describes this cmdlet
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

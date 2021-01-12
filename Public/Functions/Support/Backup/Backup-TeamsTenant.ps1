@@ -34,6 +34,8 @@ function Backup-TeamsTenant {
 		14-MAY 2020
 
 		The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>

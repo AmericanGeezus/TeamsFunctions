@@ -102,6 +102,8 @@ function Find-TeamsUserVoiceConfig {
     Please see Related Link for more information
 	.FUNCTIONALITY
     Finding Users with a specific values in their Voice Configuration
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

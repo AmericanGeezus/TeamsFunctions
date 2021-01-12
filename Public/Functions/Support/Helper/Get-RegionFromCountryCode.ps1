@@ -27,6 +27,8 @@ function Get-RegionFromCountryCode {
 	.NOTES
 		CountryCode must be provided otherwise InvalidData Error will be thrown
 		FullyQualifiedErrorId: ParameterArgumentValidationErrorEmptyStringNotAllowed
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>

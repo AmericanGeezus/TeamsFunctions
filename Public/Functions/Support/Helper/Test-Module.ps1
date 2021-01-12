@@ -13,6 +13,8 @@ function Test-Module {
   .EXAMPLE
 		Test-Module -Module ModuleName
 		Will Return $TRUE if the Module 'ModuleName' is loaded
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
@@ -43,5 +45,5 @@ function Test-Module {
 
   end {
 
-	} #end
+  } #end
 } #Test-Module

@@ -31,6 +31,8 @@ function Get-AzureAdAssignedAdminRoles {
     Activating Admin Roles
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -83,7 +85,7 @@ function Get-AzureAdAssignedAdminRoles {
     Write-Verbose -Message "Membership of Group assignments or Privileged Admin Groups is currently not queried by $($MyInvocation.MyCommand)" -Verbose
     Write-Output $AssignedRoles
 
-    } #process
+  } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"

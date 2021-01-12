@@ -25,6 +25,8 @@ function Test-TeamsUserHasCallPlan {
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
   .FUNCTIONALITY
     Returns a boolean value for when any of the Calling Plan licenses are found assigned to a specific user.
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

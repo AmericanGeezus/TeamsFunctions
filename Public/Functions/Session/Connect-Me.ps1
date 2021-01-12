@@ -59,6 +59,8 @@ function Connect-Me {
     Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
   .NOTES
     The base command (without any )
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
