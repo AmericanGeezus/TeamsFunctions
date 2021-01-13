@@ -71,7 +71,7 @@ Find-TeamsUserVoiceRoute -Identity John@domain.com -DialedNumber +15551234567
 
 Evaluating the Voice Routing for one user based on the Number being dialed
 
-````powershell
+````Output
 # Example 1 - Output
 
 ````
