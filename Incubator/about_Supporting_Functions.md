@@ -1,21 +1,6 @@
-﻿# ABOUT
+﻿# Support Functions
 
-## about_ABOUT
-
-```
-ABOUT TOPIC NOTE:
-The first header of the about topic should be the topic name.
-The second header contains the lookup name used by the help system.
-
-IE:
-# Some Help Topic Name
-## SomeHelpTopicFileName
-
-This will be transformed into the text file
-as `about_SomeHelpTopicFileName`.
-Do not include file extensions.
-The second header should have no spaces.
-```
+## about_Supporting_Functions
 
 ## SHORT DESCRIPTION
 
@@ -37,9 +22,11 @@ Taking a backup of every outputable CmdLet that Teams has to offer. Curtesy of K
 | `Restore-TeamsEV`    | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!                       |
 | `Backup-TeamsTenant` | An adaptation of the above, backing up as much as can be gathered through available `Get`-Commands from the tenant. |
 
-NOTE: `Backup-TeamsTenant` is currently static, if additional Get-Commands are added this command is not automatically covering this (yet)
+> [!NOTE] The Get-Commands in this function is currently static. While this is fine for Backup-TeamsEV, `Backup-TeamsTenant` may see drift as a result. If additional Get-Commands are added to Teams, this command will need an update. Please let me know. An Automatic mechanism to discover these is desired.
 
 ### Helper functions
+
+String reformatting is needed to normalise Numbers as E.164 numbers and allow a more diverse input (like: `'+1(555)-1234 567'`) it also serves to normalise DisplayNames and UPNs should characters be used that are not allowed.
 
 | Function                                 | Description                                                                                                                               |
 | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
@@ -47,12 +34,10 @@ NOTE: `Backup-TeamsTenant` is currently static, if additional Get-Commands are a
 | `Format-StringRemoveSpecialCharacter`    | Formats a String and removes special characters (harmonising Display Names)                                                               |
 | `Get-RegionFromCountryCode`              | Just a little helper figuring out which geographical region (AMER, EMEA, APAC) a specific country is in.                                  |
 | `Get-TeamsObjectType`                    | Little brother to `Get-TeamsCallableEntity` Returns the type of any given Object to identify its use in CQs and AAs.                      |
-| `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain<br />NOTE: This command is evaluated for revival                               |
-| `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove<br />NOTE: This command is evaluated for revival |
 
 ### Test & Assert Functions
 
-These are helper functions for testing Connections and Modules. All Functions return boolean output.
+These are helper functions for testing Connections and Modules. All Functions return boolean output. Asserting the Status of the SkypeOnline Connection however also tries to reconnect a broken session in the hope of reducing downtime.
 
 | Function                          | Description                                                                                                 |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
@@ -74,7 +59,19 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 ## EXAMPLES
 
-{{ Code or descriptive examples of how to leverage the functions described. }}
+```powershell
+# Example 1 will format numbers as E.164 Number
+'+1(555)-1234 567' | Format-StringForUse -As E164
+```
+
+This will return `+15551234567`
+
+```powershell
+# Example 2 will format numbers as a TEL URI
+'+1(555)-1234 567' | Format-StringForUse -As E164
+```
+
+This will return `tel:+15551234567`. This could also have an extension set.
 
 ## NOTE
 
@@ -82,7 +79,9 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 ## Development Status
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+Mature
+
+All of these CmdLets are pretty static and only receive minor updates. The String manipulation ones even have Pester tests defined already.
 
 ## TROUBLESHOOTING NOTE
 
@@ -100,7 +99,6 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 {{List alternate names or titles for this topic that readers might use.}}
 
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
+- Test Functions
+- Asserting
+- Formatting

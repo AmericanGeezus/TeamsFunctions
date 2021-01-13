@@ -16,6 +16,8 @@ function Get-TeamsMGW {
   .PARAMETER Identity
     If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
     If not provided, lists Identities of all Online Pstn Gateways
+  .PARAMETER Filter
+    Searches for all Online Pstn Gateways that contains the string in the Name.
   .EXAMPLE
     Get-TeamsMGW
     Lists Identities (Names) of all Online Pstn Gateways
@@ -45,8 +47,11 @@ function Get-TeamsMGW {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, HelpMessage = "Name of the Tenant Dial Plan")]
-    [string]$Identity
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Online Pstn Gateway")]
+    [string]$Identity,
+
+    [Parameter(ParameterSetName = "Filter", HelpMessage = "Name of the Online Pstn Gateway to search")]
+    [string]$Filter
   )
 
   begin {
@@ -63,8 +68,16 @@ function Get-TeamsMGW {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Pstn Gateways with Identity '$Identity'"
-      $Gateways = Get-CsOnlinePstnGateway -WarningAction SilentlyContinue
-      $Filtered = $Gateways | Where-Object Identity -Like "*$Identity*"
+      $Result = Get-CsOnlinePstnGateway -WarningAction SilentlyContinue
+      switch ($PSCmdlet.ParameterSetName) {
+        "Identity" {
+          $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
+        }
+        "Filter" {
+          $Filtered = $Result | Where-Object Identity -Like "*$Identity*"
+        }
+      }
+
       if ( $Filtered.Count -gt 2) {
         $Filtered | Select-Object Identity
       }

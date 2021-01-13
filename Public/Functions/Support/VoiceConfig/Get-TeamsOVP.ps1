@@ -16,6 +16,8 @@ function Get-TeamsOVP {
   .PARAMETER Identity
     If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
     If not provided, lists Identities of all Online Voice Routing Policies (except "Global")
+  .PARAMETER Filter
+    Searches for all Online Voice Routing Policies that contains the string in the Name.
   .EXAMPLE
     Get-TeamsOVP
     Lists Identities (Names) of all Online Voice Routing Policies (except "Global")
@@ -45,8 +47,11 @@ function Get-TeamsOVP {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, HelpMessage = "Name of the Voice Routing Policy")]
-    [string]$Identity
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Online Voice Routing Policy")]
+    [string]$Identity,
+
+    [Parameter(ParameterSetName = "Filter", HelpMessage = "Name of the Online Voice Routing Policy to search")]
+    [string]$Filter
   )
 
   begin {
@@ -63,9 +68,17 @@ function Get-TeamsOVP {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routing Policy with Identity '$Identity'"
-      $Policies = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
-      $Filtered = $Policies | Where-Object Identity -Like "*$Identity*"
-      if ( $Filtered.Count -gt 2) {
+      $Result = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
+      switch ($PSCmdlet.ParameterSetName) {
+        "Identity" {
+          $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
+        }
+        "Filter" {
+          $Filtered = $Result | Where-Object Identity -Like "*$Identity*"
+        }
+      }
+
+      if ( $Filtered.Count -gt 3) {
         $Filtered | Select-Object Identity
       }
       else {

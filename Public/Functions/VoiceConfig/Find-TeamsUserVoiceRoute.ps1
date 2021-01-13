@@ -152,97 +152,114 @@ function Find-TeamsUserVoiceRoute {
       }
 
       # User
-      if ( $User ) {
-        $UserVoiceRouting = $null
-        $UserVoiceRouting = [TFVoiceRouting]::new("", "", "", "", "", "", "", "", "", $null, "", "", "")
-        $UserVoiceRouting.Identity = $User.UserPrincipalName
-        $UserVoiceRouting.TenantDialPlan = $User.TenantDialPlan
-        $UserVoiceRouting.DialedNumber = $DialedNumber
-        $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
+      $UserVoiceRouting = $null
+      $UserVoiceRouting = [TFVoiceRouting]::new("", "", "", "", "", "", "", "", "", $null, "", "", "")
+      $UserVoiceRouting.Identity = $User.UserPrincipalName
+      $UserVoiceRouting.TenantDialPlan = $User.TenantDialPlan
+      $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
+
+      if ( -not $User.EnterpriseVoiceEnabled ) {
+        Write-Warning -Message "User '$Id' - Not enabled for Enterprise Voice"
       }
 
       # Number
       if ($DialedNumber) {
+        # Gently harmonising the Number if entered with unwanted characters (deliberately not using any of the Format-CmdLets)
+        if ($DialedNumber.contains(' ') -or $DialedNumber.contains('(') -or $DialedNumber.contains(')') -or $DialedNumber.contains('-')) {
+          Write-Verbose -Message "User '$Id' - Number was normalised to remove special characters (parenthesis, dash and space) to allow correct translation" -Verbose
+          $DialedNumber = $DialedNumber.replace('(', '').replace(')', '').replace('-', '').replace(' ', '')
+        }
+        elseif ($DialedNumber.contains('+')) {
+          Write-Warning -Message "User '$Id' - Number was dialed with a leading plus, this bypasses the Dial Plan and normalisation!"
+        }
+
+        $UserVoiceRouting.DialedNumber = $DialedNumber
+
         # Query Effective Tenant Dial Plan
-        $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id" | Test-CsEffectiveTenantDialPlan -DialedNumber "$DialedNumber"
+        $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$Id"
+        $EffectiveTranslation = $EffectiveTDP | Test-CsEffectiveTenantDialPlan -DialedNumber "$DialedNumber"
 
         if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name) - EffectiveTDP", ( $EffectiveTDP | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "Function: $($MyInvocation.MyCommand.Name) - EffectiveTranslation", ( $EffectiveTranslation | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
 
-        if ( $EffectiveTDP.TranslatedNumber ) {
-          Write-Verbose "User '$Id' - Dialed Number '$DialedNumber' translated to '$($EffectiveTDP.TranslatedNumber)'"
-          Write-Verbose "User '$Id' - Normalization rule '$($EffectiveTDP.MatchingRule -replace ";", "`n"))"
-          $UserVoiceRouting.MatchingRule = $EffectiveTDP.MatchingRule.Name
-          $UserVoiceRouting.MatchingPattern = $EffectiveTDP.MatchingRule.Pattern
-          $UserVoiceRouting.TranslatedNumber = $EffectiveTDP.TranslatedNumber
-          $VoiceRouteNumber = $EffectiveTDP.TranslatedNumber
+        if ( $EffectiveTranslation.TranslatedNumber ) {
+          Write-Verbose "User '$Id' - Dialed Number '$DialedNumber' translated to '$($EffectiveTranslation.TranslatedNumber)'"
+          Write-Verbose "User '$Id' - Normalization rule '$($EffectiveTranslation.MatchingRule -replace ";", "`n"))"
+          $UserVoiceRouting.MatchingRule = $EffectiveTranslation.MatchingRule.Name
+          $UserVoiceRouting.MatchingPattern = $EffectiveTranslation.MatchingRule.Pattern
+          $UserVoiceRouting.TranslatedNumber = $EffectiveTranslation.TranslatedNumber
         }
         else {
-          $VoiceRouteNumber = $DialedNumber
+          $UserVoiceRouting.TranslatedNumber = Format-StringForUse -InputString $DialedNumber -As E164
         }
+        $VoiceRouteNumber = $UserVoiceRouting.TranslatedNumber
 
-        if ($DP.EffectiveTenantDialPlanName -match "_(?<content>.*)_") {
+        if ($EffectiveTDP.EffectiveTenantDialPlanName -match "_(?<content>.*)_") {
           $UserVoiceRouting.EffectiveDialPlan = $matches.content
         }
       }
 
       # Voice Routing
-      Write-Verbose "User '$Id' - Querying Voice Routing Path with Online Voice Routing Policy '$($User.OnlineVoiceRoutingPolicy)'"
+      if ($User.OnlineVoiceRoutingPolicy) {
+        Write-Verbose "User '$Id' - Querying Voice Routing Path with Online Voice Routing Policy '$($User.OnlineVoiceRoutingPolicy)'"
+        $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $User.OnlineVoiceRoutingPolicy).OnlinePstnUsages
 
-      $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $User.OnlineVoiceRoutingPolicy).OnlinePstnUsages
+        if ($OPUs) {
+          [System.Collections.ArrayList]$VoiceRoutes = @()
+          foreach ($OPU in $OPUs) {
+            $VoiceRoutes += Get-CsOnlineVoiceRoute | Where-Object { $_.OnlinePstnUsages -contains $OPU } | Select-Object *, @{label = "PSTNUsage"; Expression = { $OPU } }
+          }
+          if ($PSBoundParameters.ContainsKey('Debug')) {
+            "Function: $($MyInvocation.MyCommand.Name) - VoiceRoutes", ( $VoiceRoutes | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          }
 
-      if ($OPUs) {
-        [System.Collections.ArrayList]$VoiceRoutes = @()
-        foreach ($OPU in $OPUs) {
-          $VoiceRoutes += Get-CsOnlineVoiceRoute | Where-Object { $_.OnlinePstnUsages -contains $OPU } | Select-Object *, @{label = "PSTNUsage"; Expression = { $OPU } }
-        }
-        if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name) - VoiceRoutes", ( $VoiceRoutes | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
+          if ($VoiceRoutes) {
+            $MatchedVoiceRoutes = $null
+            $UsedVoiceRoute = $null
+            if ($DialedNumber) {
+              $MatchedVoiceRoutes = $VoiceRoutes | Where-Object { $VoiceRouteNumber -match $_.NumberPattern }
+              if ( $MatchedVoiceRoutes ) {
+                # Selecting PSTN Usage of the first Voice Route
+                $UserVoiceRouting.OnlinePstnUsage = $MatchedVoiceRoutes[0].PSTNUsage
 
-        if ($VoiceRoutes) {
-          $MatchedVoiceRoutes = $null
-          $UsedVoiceRoute = $null
-          if ($DialedNumber) {
-            $MatchedVoiceRoutes = $VoiceRoutes | Where-Object { $VoiceRouteNumber -match $_.NumberPattern }
-            if ( $MatchedVoiceRoutes ) {
-              # Selecting PSTN Usage of the first Voice Route
-              $UserVoiceRouting.OnlinePstnUsage = $MatchedVoiceRoutes[0].PSTNUsage
+                # Populating MatchedVoiceRoutes
+                $MatchedVoiceRoutesByPriority = $MatchedVoiceRoutes | Where-Object { $_.PSTNUsage -eq $UserVoiceRouting.OnlinePstnUsage } | Sort-Object Priority
+                $UserVoiceRouting.MatchedVoiceRoutes = $MatchedVoiceRoutesByPriority.Name -join (', ')
+                #if ( $MatchedVoiceRoutes.Count -gt 1 ) { #TEST This could be used to attach all with .ToString (like AA)  }
+                Write-Verbose "OVP '$($User.OnlineVoiceRoutingPolicy)' - OPU '$($UserVoiceRouting.OnlinePstnUsage)' - Matching Voice Route(s): $($UserVoiceRouting.MatchedVoiceRoutes)"
 
-              # Populating MatchedVoiceRoutes
-              $MatchedVoiceRoutesByPriority = $MatchedVoiceRoutes | Where-Object { $_.PSTNUsage -eq $UserVoiceRouting.OnlinePstnUsage } | Sort-Object Priority
-              $UserVoiceRouting.MatchedVoiceRoutes = $MatchedVoiceRoutesByPriority.Name -join (', ')
-              #if ( $MatchedVoiceRoutes.Count -gt 1 ) { #TEST This could be used to attach all with .ToString (like AA)  }
-              Write-Verbose "OVP '$($User.OnlineVoiceRoutingPolicy)' - OPU '$($UserVoiceRouting.OnlinePstnUsage)' - Matching Voice Route(s): $($UserVoiceRouting.MatchedVoiceRoutes)"
-
-              # Selecting Voice Route
-              $UsedVoiceRoute = $MatchedVoiceRoutesByPriority | Select-Object -First 1
+                # Selecting Voice Route
+                $UsedVoiceRoute = $MatchedVoiceRoutesByPriority | Select-Object -First 1
+              }
+              else {
+                Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online Voice Routes have been found matching Number '$($VoiceRouteNumber)'"
+              }
             }
             else {
-              Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online Voice Routes have been found matching Number '$($VoiceRouteNumber)'"
+              # Selecting PSTN Usage of the first Voice Route
+              $UserVoiceRouting.OnlinePstnUsage = $VoiceRoutes[0].PSTNUsage
+
+              # Selecting first Voice Route
+              $UsedVoiceRoute = $VoiceRoutes | Select-Object -First 1
             }
+
+            # Populating Parameters based on selection
+            $UserVoiceRouting.OnlineVoiceRoute = $UsedVoiceRoute.Name
+            $UserVoiceRouting.NumberPattern = $UsedVoiceRoute.NumberPattern
+            $UserVoiceRouting.OnlinePstnGateway = $($UsedVoiceRoute.OnlinePstnGatewayList -join (', '))
+
           }
           else {
-            # Selecting PSTN Usage of the first Voice Route
-            $UserVoiceRouting.OnlinePstnUsage = $VoiceRoutes[0].PSTNUsage
-
-            # Selecting first Voice Route
-            $UsedVoiceRoute = $VoiceRoutes | Select-Object -First 1
+            Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online Voice Routes have been found"
           }
-
-          # Populating Parameters based on selection
-          $UserVoiceRouting.OnlineVoiceRoute = $UsedVoiceRoute.Name
-          $UserVoiceRouting.NumberPattern = $UsedVoiceRoute.NumberPattern
-          $UserVoiceRouting.OnlinePstnGateway = $($UsedVoiceRoute.OnlinePstnGatewayList -join (', '))
-
         }
         else {
-          Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online Voice Routes have been found"
+          Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online PSTN Usages have been found"
         }
       }
       else {
-        Write-Warning -Message "OVP '$($User.OnlineVoiceRoutingPolicy)' - No Online PSTN Usages have been found"
+        Write-Warning -Message "User '$Id' - No OnlineVoiceRoutingPolicy assigned"
       }
 
       Write-Output $UserVoiceRouting

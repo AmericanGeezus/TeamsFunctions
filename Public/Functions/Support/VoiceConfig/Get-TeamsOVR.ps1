@@ -16,6 +16,8 @@ function Get-TeamsOVR {
   .PARAMETER Identity
     If provided, acts as an Alias to Get-CsOnlineVoiceRoute, listing one Route
     If not provided, lists Identities of all Online Voice Route (except "LocalRoute")
+  .PARAMETER Filter
+    Searches for all Online Voice Routes that contains the string in the Name.
   .EXAMPLE
     Get-TeamsOVR
     Lists Identities (Names) of all Online Voice Route (except "LocalRoute")
@@ -45,8 +47,11 @@ function Get-TeamsOVR {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, HelpMessage = "Name of the Voice Route")]
-    [string]$Identity
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Online Voice Route")]
+    [string]$Identity,
+
+    [Parameter(ParameterSetName = "Filter", HelpMessage = "Name of the Online Voice Route to search")]
+    [string]$Filter
   )
 
   begin {
@@ -63,9 +68,17 @@ function Get-TeamsOVR {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
-      $Routes = Get-CsOnlineVoiceRoute -WarningAction SilentlyContinue
-      $Filtered = $Routes | Where-Object Identity -Like "*$Identity*"
-      if ( $Filtered.Count -gt 2) {
+      $Result = Get-CsOnlineVoiceRoute -WarningAction SilentlyContinue
+      switch ($PSCmdlet.ParameterSetName) {
+        "Identity" {
+          $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
+        }
+        "Filter" {
+          $Filtered = $Result | Where-Object Identity -Like "*$Identity*"
+        }
+      }
+
+      if ( $Filtered.Count -gt 3) {
         $Filtered | Select-Object Identity
       }
       else {
