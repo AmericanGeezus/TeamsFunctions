@@ -42,7 +42,6 @@ Finding Users, Groups or other objects is sometimes too complex for my taste. Us
 | `Get-TeamsCallableEntity`  | Creates a new Object emulating the output of a `Callable Entity`, validating the Object type and its usability for CQs or AAs.          |
 | `New-TeamsCallableEntity`  | Used for Auto Attendants, creates a `Callable Entity` Object given a CallTarget (the type is enumerated through lookup)                 |
 
-
 ## Support CmdLet
 
 | Function                          | Description                                                                                                 |

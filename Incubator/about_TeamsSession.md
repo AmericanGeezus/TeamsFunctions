@@ -2,24 +2,9 @@
 
 ## about_ABOUT
 
-```
-ABOUT TOPIC NOTE:
-The first header of the about topic should be the topic name.
-The second header contains the lookup name used by the help system.
-
-IE:
-# Some Help Topic Name
-## SomeHelpTopicFileName
-
-This will be transformed into the text file
-as `about_SomeHelpTopicFileName`.
-Do not include file extensions.
-The second header should have no spaces.
-```
-
 ## SHORT DESCRIPTION
 
-{{ Short Description Placeholder }}
+Connecting to the Teams Backend is, for now, still done via SkypeOnline
 
 ## LONG DESCRIPTION
 
@@ -38,7 +23,7 @@ SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services. Cre
 
 Activating Admin Roles made easier. Please note that Privileged Access Groups are not yet integrated as there are no PowerShell commands available yet in the AzureAdPreview Module. This will be added as soon as possible. Commands are used with `Connect-Me`, but can be used on its own just as well.
 
-> [!NOTE] Please note, that Privileged Admin Groups are currently not covered by these CmdLets. This will be added as soon as possible
+> [!NOTE] Please **note**, that Privileged Admin Groups are currently not covered by these CmdLets. This will be added as soon as possible
 
 | Function                  | Description                                                                                                                                     |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -59,7 +44,15 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 
 ## EXAMPLES
 
-{{ Code or descriptive examples of how to leverage the functions described. }}
+````powershell
+# Example 1 - Teams User Voice Route
+Connect-SkypeOnline -Identity John@domain.com [-OverrideAdminDomain domain.onmicrosoft.com]
+````
+
+Establishes a session to SkypeOnline (aka the Teams BackEnd). The Override Admin Domain is optional and only needed for Hybrid Scenarios where the DNS entries point to the Skype OnPrem Platform.
+
+- If the SkypeOnlineConnector is used, enables the session for reconnection.
+- If the MicrosoftTeams Module is used, an authentication dialog is shown.
 
 ## NOTE
 
