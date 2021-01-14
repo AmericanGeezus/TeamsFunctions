@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Add Identity? Enable to pipe? Enable to find it with Get-TeamsUserVoiceConfig?
 
 function Get-TeamsUserLicense {
   <#

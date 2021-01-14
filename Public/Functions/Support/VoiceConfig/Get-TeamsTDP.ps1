@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Filter currently doesn't work - update lik OVP, examples like OVP and Documentation
 
 function Get-TeamsTDP {
   <#
@@ -77,7 +77,7 @@ function Get-TeamsTDP {
           $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
         }
         "Filter" {
-          $Filtered = $Result | Where-Object Identity -Like "*$Identity*"
+          $Filtered = $Result | Where-Object Identity -Like "*$Filter*"
         }
       }
 

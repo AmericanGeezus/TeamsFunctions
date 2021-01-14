@@ -14,19 +14,25 @@ function Get-TeamsOVP {
   .DESCRIPTION
     To quickly find Online Voice Routing Policies to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
   .PARAMETER Identity
-    If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
-    If not provided, lists Identities of all Online Voice Routing Policies (except "Global")
-  .PARAMETER Filter
-    Searches for all Online Voice Routing Policies that contains the string in the Name.
+    String. Name or part of the Voice Routing Policy. Can be omitted to list Names of all Policies (except "Global").
+    If provided without a '*' in the name, an exact match is sought.
   .EXAMPLE
     Get-TeamsOVP
-    Lists Identities (Names) of all Online Voice Routing Policies (except "Global")
+    Returns the Object for all Online Voice Routing Policies (except "Global")
+    Behaviour like: Get-CsOnlineVoiceRoutingPolicy, if more than 3 results are found, only names are returned
   .EXAMPLE
     Get-TeamsOVP -Identity OVP-EMEA-National
-    Lists Online Voice Routing Policy "OVP-EMEA-National" as Get-CsOnlineVoiceRoutingPolicy does (provided it exists).
+    Returns the Object for the Online Voice Route "OVP-EMEA-National" (provided it exists).
+    Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"
+  .EXAMPLE
+    Get-TeamsOVP -Identity OVP-EMEA-*
+    Lists Online Voice Routes with "OVP-EMEA-" in the Name
+    Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "OVP-EMEA-"
   .NOTES
-    Without parameters, it executes the following string:
-    Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+    This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
+    If more than 3 results are found, behaves like Get-CsOnlineVoiceRoutingPolicy | Select Identity
+    Without any parameters, it lists names only:
+    Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity
   .EXTERNALHELP
     https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
@@ -45,13 +51,10 @@ function Get-TeamsOVP {
     Get-TeamsVNR
   #>
 
-  [CmdletBinding(DefaultParameterSetName = "Identity")]
+  [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Online Voice Routing Policy")]
-    [string]$Identity,
-
-    [Parameter(ParameterSetName = "Filter", HelpMessage = "Name of the Online Voice Routing Policy to search")]
-    [string]$Filter
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Online Voice Routing Policy")]
+    [string]$Identity
   )
 
   begin {
@@ -68,14 +71,11 @@ function Get-TeamsOVP {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routing Policy with Identity '$Identity'"
-      $Result = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
-      switch ($PSCmdlet.ParameterSetName) {
-        "Identity" {
-          $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
-        }
-        "Filter" {
-          $Filtered = $Result | Where-Object Identity -Like "*$Identity*"
-        }
+      if ($Identity -match [regex]::Escape("*")) {
+        $Filtered = Get-CsOnlineVoiceRoutingPolicy -Filter "*$Identity*"
+      }
+      else {
+        $Filtered = Get-CsOnlineVoiceRoutingPolicy -Identity "$Identity"
       }
 
       if ( $Filtered.Count -gt 3) {

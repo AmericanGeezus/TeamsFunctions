@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Check Documentation and simplification?
 
 function Get-TeamsOPU {
   <#

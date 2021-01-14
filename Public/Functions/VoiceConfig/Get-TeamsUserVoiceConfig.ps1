@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#FIX Check user is found in AD first - if no license is assigned, user is currently not found!
 
 function Get-TeamsUserVoiceConfig {
   <#
