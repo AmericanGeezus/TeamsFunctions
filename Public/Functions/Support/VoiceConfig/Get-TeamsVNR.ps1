@@ -48,7 +48,7 @@ function Get-TeamsVNR {
     Get-TeamsMGW
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = "Identity")]
   param (
     [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Tenant Dial Plan")]
     [string]$Identity,

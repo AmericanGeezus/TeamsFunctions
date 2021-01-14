@@ -45,7 +45,7 @@ function Get-TeamsMGW {
     Get-TeamsVNR
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = "Identity")]
   param (
     [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Online Pstn Gateway")]
     [string]$Identity,
