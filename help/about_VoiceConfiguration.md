@@ -1,10 +1,10 @@
-﻿# ABOUT
+﻿# Voice Configuration
 
-## about_ABOUT
+## about_VoiceConfiguration
 
 ## SHORT DESCRIPTION
 
-Querying and setting Teams Voice Configuration, both for Direct Routing and Calling Plans
+All things needed to configure for Voice, Direct Routing or Calling Plans
 
 ## LONG DESCRIPTION
 
@@ -122,15 +122,18 @@ OnPremLineURI              : tel:+15551234567;ext=4567
 
 ## SEE ALSO
 
-{{ See also placeholder }}
+[about_TeamsLicensing](about_TeamsLicensing.md)
 
-{{ You can also list related articles, blogs, and video URLs. }}
+[about_UserManagement](about_UserManagement.md)
+
+[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
+
+[about_Supporting_Functions](about_Supporting_Functions.md)
 
 ## KEYWORDS
 
-{{List alternate names or titles for this topic that readers might use.}}
-
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
+- DirectRouting
+- CallingPlans
+- Licensing
+- PhoneSystem
+- EnterpriseVoice

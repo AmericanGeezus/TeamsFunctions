@@ -1,6 +1,6 @@
-﻿# ABOUT
+﻿# Teams Callable Entity
 
-## about_ABOUT
+## about_TeamsCallableEntity
 
 ## SHORT DESCRIPTION
 
@@ -40,14 +40,17 @@ These scripts aim to address all these requirements and validate them before all
 
 ## SEE ALSO
 
-{{ See also placeholder }}
+[about_TeamsCallQueue](about_TeamsCallQueue.md)
 
-{{ You can also list related articles, blogs, and video URLs. }}
+[about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
+
+[about_TeamsResourceAccount](about_TeamsResourceAccount.md)
 
 ## KEYWORDS
 
-{{List alternate names or titles for this topic that readers might use.}}
-
+- Creation
+- Configuration
+- Management
 - AzureAdUser
 - AzureAdGroup
 - CsOnlineUser

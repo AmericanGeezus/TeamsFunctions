@@ -1,6 +1,6 @@
-﻿# ABOUT
+﻿# Teams Common Area Phones
 
-## about_ABOUT
+## about_TeamsCommonAreaPhone
 
 ## SHORT DESCRIPTION
 

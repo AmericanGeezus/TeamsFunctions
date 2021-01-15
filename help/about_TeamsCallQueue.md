@@ -1,40 +1,6 @@
-﻿# ABOUT
-## about_ABOUT
+﻿# Teams Call Queue
 
-```
-ABOUT TOPIC NOTE:
-The first header of the about topic should be the topic name.
-The second header contains the lookup name used by the help system.
-
-IE:
-# Some Help Topic Name
-## SomeHelpTopicFileName
-
-This will be transformed into the text file
-as `about_SomeHelpTopicFileName`.
-Do not include file extensions.
-The second header should have no spaces.
-```
-
-# SHORT DESCRIPTION
-{{ Short Description Placeholder }# ABOUT
-
-## about_ABOUT
-
-```
-ABOUT TOPIC NOTE:
-The first header of the about topic should be the topic name.
-The second header contains the lookup name used by the help system.
-
-IE:
-# Some Help Topic Name
-## SomeHelpTopicFileName
-
-This will be transformed into the text file
-as `about_SomeHelpTopicFileName`.
-Do not include file extensions.
-The second header should have no spaces.
-```
+## about_TeamsCallQueue
 
 ## SHORT DESCRIPTION
 
@@ -73,16 +39,19 @@ Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bi
 
 ## SEE ALSO
 
-{{ See also placeholder }}
+[about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
 
-{{ You can also list related articles, blogs, and video URLs. }}
+[about_TeamsResourceAccount](about_TeamsResourceAccount.md)
+
+[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
 
 ## KEYWORDS
 
-{{List alternate names or titles for this topic that readers might use.}}
-
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-}
+- Creation
+- Configuration
+- Management
+- AzureAdUser
+- AzureAdGroup
+- CsOnlineUser
+- CsOnlineApplicationInstance
+- TeamsResourceAccount
