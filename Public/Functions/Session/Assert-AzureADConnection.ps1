@@ -17,6 +17,8 @@ function Assert-AzureADConnection {
 		Assert-AzureADConnection
     Will run Test-AzureADConnection and, if successful, stops.
     If unsuccessful, displays request to create a new session and stops.
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>

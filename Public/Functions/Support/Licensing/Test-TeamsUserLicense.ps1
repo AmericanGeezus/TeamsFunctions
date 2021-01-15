@@ -39,6 +39,8 @@ function Test-TeamsUserLicense {
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
   .FUNCTIONALITY
     Returns a boolean value for License or Serviceplan for a specific user.
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -61,12 +63,12 @@ function Test-TeamsUserLicense {
 
     [Parameter(Mandatory, ParameterSetName = "License", HelpMessage = "Teams License Package: E5,E3,S2")]
     [ValidateScript( {
-        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -81,7 +83,14 @@ function Test-TeamsUserLicense {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    $AllLicenses = Get-TeamsLicense
+    # Loading License Array
+    if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
+      $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
+    }
+
+    $AllLicenses = $null
+    $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
+
 
   } #begin
 

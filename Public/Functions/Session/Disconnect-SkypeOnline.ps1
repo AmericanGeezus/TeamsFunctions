@@ -5,7 +5,7 @@
 # Status:   Live
 
 function Disconnect-SkypeOnline {
-<#
+  <#
   .SYNOPSIS
     Disconnects Sessions established to SkypeOnline
   .DESCRIPTION
@@ -23,6 +23,8 @@ function Disconnect-SkypeOnline {
     this can lead to session exhaustion which results in not being able to connect again.
     An admin can sign-out this user from all Sessions through the Office 365 Admin Center
     This process may take up to 15 mins and is best avoided, through proper disconnect after use
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Examples like OVP and Documentation
 
 function Get-TeamsMGW {
   <#
@@ -25,6 +25,8 @@ function Get-TeamsMGW {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -43,7 +45,7 @@ function Get-TeamsMGW {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, HelpMessage = "Name of the Tenant Dial Plan")]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Online Pstn Gateway")]
     [string]$Identity
   )
 
@@ -60,10 +62,15 @@ function Get-TeamsMGW {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
-      Write-Verbose -Message "Finding Online Pstn Gateways with Identity '$Identity'"
-      $Gateways = Get-CsOnlinePstnGateway -WarningAction SilentlyContinue
-      $Filtered = $Gateways | Where-Object Identity -Like "*$Identity*"
-      if ( $Filtered.Count -gt 2) {
+      Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
+      if ($Identity -match [regex]::Escape("*")) {
+        $Filtered = Get-CsOnlinePstnGateway -Filter "*$Identity*"
+      }
+      else {
+        $Filtered = Get-CsOnlinePstnGateway -Identity "$Identity"
+      }
+
+      if ( $Filtered.Count -gt 3) {
         $Filtered | Select-Object Identity
       }
       else {

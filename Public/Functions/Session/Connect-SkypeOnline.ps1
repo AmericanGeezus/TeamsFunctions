@@ -54,6 +54,8 @@ function Connect-SkypeOnline {
     This will require re-authentication and its success is dependent on the Tenant settings.
     To reconnect fully, please re-run Connect-SkypeOnline to recreate the session cleanly.
     Please note that hanging sessions can cause lockout (session exhaustion)
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

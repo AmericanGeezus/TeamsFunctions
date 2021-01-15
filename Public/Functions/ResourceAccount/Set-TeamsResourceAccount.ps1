@@ -73,6 +73,8 @@ function Set-TeamsResourceAccount {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -123,12 +125,12 @@ function Set-TeamsResourceAccount {
 
     [Parameter(HelpMessage = "License to be assigned")]
     [ValidateScript( {
-        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
           return $false
         }
       })]

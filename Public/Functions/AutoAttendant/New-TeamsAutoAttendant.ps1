@@ -130,6 +130,8 @@ function New-TeamsAutoAttendant {
 		Currently in Testing
 	.FUNCTIONALITY
 		Creates a Auto Attendant with custom settings and friendly names as input
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK

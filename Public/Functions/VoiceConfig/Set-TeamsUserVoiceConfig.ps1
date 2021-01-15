@@ -69,6 +69,8 @@ function Set-TeamsUserVoiceConfig {
     This script does not allow Pipeline input
 	.FUNCTIONALITY
 		TeamsUserVoiceConfig
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -114,7 +116,7 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = "CallingPlans", HelpMessage = "Calling Plan License to assign to the Object")]
     [ValidateScript( {
-        $CallingPlanLicenseValues = (Get-TeamsLicense | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $CallingPlanLicenseValues = (Get-AzureAdLicense | Where-Object LicenseType -EQ "CallingPlan").ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $CallingPlanLicenseValues) {
           $True
         }
@@ -185,7 +187,7 @@ function Set-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying User Account" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying User Account"
       $CsUser = Get-TeamsUserVoiceConfig "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
-      $UserLic = Get-TeamsUserLicense "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
+      $UserLic = Get-TeamsUserLicense -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
     catch {
@@ -195,24 +197,38 @@ function Set-TeamsUserVoiceConfig {
     }
 
     # Querying User Licenses
+    #TODO Check whether to replace this with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
     try {
       $step++
       Write-Progress -Id 0 -Status "Verifying Object" -CurrentOperation "Querying User License" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Querying User License"
-      if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
-        throw "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
-      }
+      if ( $CsUser.PhoneSystem ) {
+        Write-Verbose -Message "User '$User' PhoneSystem License is assigned - Validating PhoneSystemStatus"
+        if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
+          try {
+            Set-AzureAdLicenseServicePlan -Identity $CsUser.UserPrincipalName -Enable MCOEV -ErrorAction Stop
+            if (-not (Get-TeamsUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
+              throw
+            }
+          }
+          catch {
+            throw "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
+          }
+        }
 
-      if ( $CsUser.PhoneSystemStatus.Contains(',')) {
-        Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
-        Write-Verbose -Message "All licenses assigned to the User:" -Verbose
-        Write-Output $UserLic.Licenses
+        if ( $CsUser.PhoneSystemStatus.Contains(',')) {
+          Write-Warning -Message "User '$User' PhoneSystem License: Multiple assignments found. Please verify License assignment."
+          Write-Verbose -Message "All licenses assigned to the User:" -Verbose
+          Write-Output $UserLic.Licenses
+        }
       }
-
+      else {
+        throw "User '$User' PhoneSystem License is not assigned"
+      }
     }
     catch {
       # Unlicensed
-      Write-Warning -Message "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'. Assignment will continue, though be only partially successful. "
+      Write-Warning -Message "User '$User' PhoneSystem License is not assigned. User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status must be 'Success'. Assignment will continue, though be only partially successful."
       Write-Verbose -Message "License Status:" -Verbose
       $UserLic.Licenses
       $ErrorLog += $_.Exception.Message

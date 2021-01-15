@@ -44,6 +44,8 @@ function Get-TeamsCommonAreaPhone {
 		Queries a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
 		TeamsUserVoiceConfig
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -296,7 +298,7 @@ function Get-TeamsCommonAreaPhone {
         Description                  = $CommonAreaPhone.Description
         UsageLocation                = $CommonAreaPhoneLicense.UsageLocation
         InterpretedUserType          = $CommonAreaPhone.InterpretedUserType
-        License                      = $CommonAreaPhoneLicense.LicensesFriendlyNames
+        License                      = $CommonAreaPhoneLicense.Licenses
         PhoneSystem                  = $CommonAreaPhoneLicense.PhoneSystem
         PhoneSystemStatus            = $CommonAreaPhoneLicense.PhoneSystemStatus
         EnterpriseVoiceEnabled       = $CommonAreaPhone.EnterpriseVoiceEnabled

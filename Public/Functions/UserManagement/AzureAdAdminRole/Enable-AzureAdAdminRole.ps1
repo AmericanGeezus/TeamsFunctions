@@ -68,6 +68,8 @@ function Enable-AzureAdAdminRole {
     Activating Admin Roles
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

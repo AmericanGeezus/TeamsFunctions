@@ -11,13 +11,14 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Updated Comment Based help and Helpmessages for all parameters (corrected LINK section)
 - `Find-TeamsUserVoiceRoute`: Given a user and a Dialled Number, evaluates the Effective Dial Plan and Effective Voice Route and displays all with neat output
 - `Set-AzureAdUserLicenseServicePlan`: Enabling and disabling a ServicePlan for all Licenses assigned to a User
-- First Function writing to Information stream
+- First Function writing to Information stream (finally!)
 
 ### Updated
 
 - Updated all Functions:
   - PreferenceVariables (added DebugPreference to Continue if provided, no more individual confirmation)
   - Show-FunctionStatus was too quiet, functionality was repaired
+  - Added .EXTERNALHELP, separated all .LINK
 
 ---------------------------------------------
 

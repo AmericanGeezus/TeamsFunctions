@@ -28,6 +28,8 @@ function Get-TeamsTenantVoiceConfig {
     Also displays diagnostic parameters for troubleshooting
 	.NOTES
 		General notes
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -116,7 +118,7 @@ function Get-TeamsTenantVoiceConfig {
       Domains                                = $Tenant.Domains
       SipDomains                             = $SipDomains.Name
       TeamsUpgradeEffectiveMode              = $Tenant.TeamsUpgradeEffectiveMode
-      TenantLicenses                         = $TenantLicenses.FriendlyName
+      TenantLicenses                         = $TenantLicenses.ProductName
       InternationalCallingPlanUnitsRemaining = $CallPlanINT.Remaining
       DomesticCallingPlanUnitsRemaining      = $CallPlanDOM.Remaining
       DomesticCallingPlan120UnitsRemaining   = $CallPlanDOM120.Remaining

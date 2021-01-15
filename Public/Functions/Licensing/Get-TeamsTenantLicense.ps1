@@ -18,7 +18,7 @@ function Get-TeamsTenantLicense {
     format with descriptive names, SkuPartNumber, active, consumed, remaining, and expiring licenses.
   .PARAMETER License
     Optional. Limits the Output to one license.
-    Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
+    Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
   .PARAMETER Detailed
     Displays all Parameters.
     By default, only Parameters relevant to determine License availability are shown.
@@ -47,6 +47,8 @@ function Get-TeamsTenantLicense {
     Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses on the Tenant depending on input
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -57,10 +59,6 @@ function Get-TeamsTenantLicense {
     Set-TeamsUserLicense
   .LINK
     Test-TeamsUserLicense
-  .LINK
-    Get-TeamsLicense
-  .LINK
-    Get-TeamsLicenseServicePlan
   .LINK
     Get-AzureAdLicense
   .LINK
@@ -79,12 +77,12 @@ function Get-TeamsTenantLicense {
 
     [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
     [ValidateScript( {
-        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -106,8 +104,12 @@ function Get-TeamsTenantLicense {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     #Loading License Array
+    if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
+      $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
+    }
+
     $AllLicenses = $null
-    $AllLicenses = Get-TeamsLicense
+    $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
 
     $AllLicenses | Add-Member -NotePropertyName Available -NotePropertyValue 0 -Force
     $AllLicenses | Add-Member -NotePropertyName Consumed -NotePropertyValue 0 -Force
@@ -150,14 +152,14 @@ function Get-TeamsTenantLicense {
       else {
         if ($PSBoundParameters.ContainsKey('DisplayAll')) {
           $NewLic = [PSCustomObject][ordered]@{
-            FriendlyName        = $null
             ProductName         = "Unknown"
             SkuPartNumber       = $tenantSKU.SkuPartNumber
-            SkuId               = $tenantSKU.SkuId
             LicenseType         = "Unknown"
             ParameterName       = $null
             IncludesTeams       = $null
             IncludesPhoneSystem = $null
+            SkuId               = $tenantSKU.SkuId
+            ServicePlans        = "Unknown"
             Available           = $($tenantSKU.PrepaidUnits.Enabled)
             Consumed            = $($tenantSKU.ConsumedUnits)
             Remaining           = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
@@ -180,7 +182,7 @@ function Get-TeamsTenantLicense {
       Write-Output $TenantLicenses
     }
     else {
-      Write-Output $TenantLicenses | Select-Object FriendlyName, SkuPartNumber, LicenseType, Available, Consumed, Remaining, Expiring
+      Write-Output $TenantLicenses | Select-Object ProductName, SkuPartNumber, LicenseType, Available, Consumed, Remaining, Expiring
     }
   } #process
 

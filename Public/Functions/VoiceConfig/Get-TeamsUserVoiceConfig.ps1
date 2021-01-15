@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#FIX Check user is found in AD first - if no license is assigned, user is currently not found!
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -45,6 +45,8 @@ function Get-TeamsUserVoiceConfig {
     - for Teams:      "Get-CsOnlineUser $Identity"
 	.FUNCTIONALITY
 		The functionality that best describes this cmdlet
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -191,7 +193,7 @@ function Get-TeamsUserVoiceConfig {
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
-        $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.LicensesFriendlyNames
+        $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $CsUserLicense.PhoneSystemStatus
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem

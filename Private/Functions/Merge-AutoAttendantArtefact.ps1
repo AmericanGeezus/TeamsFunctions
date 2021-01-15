@@ -37,6 +37,8 @@ function Merge-AutoAttendantArtefact {
   .NOTES
     Schedule requires the queried Object from Get-CsOnlineSchedule
     All other parmeter work with the nested Object from the Auto Attendant Object
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

@@ -13,20 +13,18 @@ function Set-TeamsUserLicense {
     Changes the License of an AzureAD Object
   .DESCRIPTION
     Adds, removes or purges teams related Licenses from an AzureAD Object
-    Supports all Licenses listed in Get-TeamsLicense
-    Uses friendly Names for Parameter Values, supports Arrays.
-    Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
-    This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
+    Supports all Licenses listed in Get-AzureAdLicense
+    Supports all AzureAD Object that can receive Licenses and not just Teams Licenses
     Will verify major Licenses and their exclusivity, but not all.
     Verifies whether the Licenses selected are available on the Tenant before executing
   .PARAMETER Identity
     Required. UserPrincipalName of the Object to be manipulated
   .PARAMETER Add
     Optional. Licenses to be added (main function)
-    Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
+    Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
   .PARAMETER Remove
     Optional. Licenses to be removed (alternative function)
-    Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
+    Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
   .PARAMETER RemoveAll
     Optional Switch. Removes all licenses currently assigned (intended for replacements)
   .PARAMETER UsageLocation
@@ -79,7 +77,7 @@ function Set-TeamsUserLicense {
       - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
       - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
 
-    Data in Get-TeamsLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
+    Data in Get-AzureAdLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
     https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 
   .COMPONENT
@@ -88,6 +86,9 @@ function Set-TeamsUserLicense {
     Licensing
   .FUNCTIONALITY
     This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
+    Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -98,10 +99,6 @@ function Set-TeamsUserLicense {
     Set-TeamsUserLicense
   .LINK
     Test-TeamsUserLicense
-  .LINK
-    Get-TeamsLicense
-  .LINK
-    Get-TeamsLicenseServicePlan
   .LINK
     Get-AzureAdLicense
   .LINK
@@ -123,12 +120,12 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'Remove', HelpMessage = 'License(s) to be added to this Object')]
     [Parameter(ParameterSetName = 'RemoveAll', HelpMessage = 'License(s) to be added to this Object')]
     [ValidateScript( {
-        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'Add' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          Write-Host "Parameter 'Add' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -137,12 +134,12 @@ function Set-TeamsUserLicense {
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateScript( {
-        $LicenseParams = (Get-TeamsLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
         else {
-          Write-Host "Parameter 'Remove' - Invalid license string. Supported Parameternames can be found with Get-TeamsLicense" -ForegroundColor Red
+          Write-Host "Parameter 'Remove' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
           return $false
         }
       })]
@@ -174,9 +171,13 @@ function Set-TeamsUserLicense {
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
-    #Loading License Array
+    # Loading License Array
+    if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
+      $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
+    }
+
     $AllLicenses = $null
-    $AllLicenses = Get-TeamsLicense
+    $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
 
     #region Input verification
     # All Main licenses are mutually exclusive
@@ -421,7 +422,7 @@ function Set-TeamsUserLicense {
           foreach ($AddLic in $Add) {
             $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
             $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
-            $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('FriendlyName')
+            $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('ProductName')
 
             # Verifying license is available in the Tenant
             if (-not ($SkuPartNumber -in $($TenantLicenses.SkuPartNumber))) {
@@ -464,7 +465,7 @@ function Set-TeamsUserLicense {
           [System.Collections.ArrayList]$RemoveSkuIds = @()
           foreach ($RemoveLic in $Remove) {
             $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
-            $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('FriendlyName')
+            $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('ProductName')
             if ($RemoveSku -in $ObjectAssignedLicenses.SkuId) {
               Write-Verbose -Message "Removing License '$RemoveLicName' - License assigned, adding to list"
               [void]$RemoveSkuIds.Add("$RemoveSku")

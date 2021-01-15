@@ -8,6 +8,8 @@ Here are some of these functions:
 | Function                        | Description                                                                                          | Replacement            |
 | ------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------- |
 | `Add-TeamsUserLicense`          | Adds one or more Licenses specified per Switch to the provided Identity                              | `Set-TeamsUserLicense` |
+| `Get-TeamsLicense`              | v1 of the Licensing Function for Licenses                                                            | `Get-AzureAdLicense`   |
+| `Get-TeamsLicenseServicePlan`   | v1 of the Licensing Function for Service Plans                                                       | `Get-AzureAdLicenseServicePlan` |
 | `Get-SkuIdFromSkuPartNumber`    | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                         | `Get-AzureAdLicense`   |
 | `Get-SkuPartNumberFromSkuId`    | Helper function for Licensing. Returns a SkuPartNumber from a specific SkuID                         |  `Get-AzureAdLicense`  |
 | `Set-TeamsUserPolicy`           | Assigns specific Policies to a User. Currently only six policies available                           | None                   |
@@ -16,5 +18,3 @@ Here are some of these functions:
 | `ProcessLicense`                | Private Function and the gears behind `Add-TeamsUserLicense`                                         |                        |
 | `GetActionOutputObject2`        | Private Function and like Write-ErrorRecord a way to display output                                  |                        |
 | `GetActionOutputObject3`        | Private Function and like Write-ErrorRecord a way to display output                                  |                        |
-
-

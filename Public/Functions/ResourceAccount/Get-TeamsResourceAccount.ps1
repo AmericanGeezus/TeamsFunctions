@@ -51,6 +51,8 @@ function Get-TeamsResourceAccount {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -279,7 +281,7 @@ function Get-TeamsResourceAccount {
         DisplayName              = $ResourceAccount.DisplayName
         ApplicationType          = $ResourceAccountApplicationType
         UsageLocation            = $ResourceAccountLicense.UsageLocation
-        License                  = $ResourceAccountLicense.LicensesFriendlyNames
+        License                  = $ResourceAccountLicense.Licenses
         PhoneNumberType          = $ResourceAccountPhoneNumberType
         PhoneNumber              = $ResourceAccount.PhoneNumber
         OnlineVoiceRoutingPolicy = $CsOnlineUser.OnlineVoiceRoutingPolicy

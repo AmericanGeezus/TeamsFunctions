@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-
+#TODO Needs revision! Rework like AzureAdUser - Identity (Exact) and SearchString 
 
 function Find-AzureAdGroup {
   <#
@@ -41,19 +41,15 @@ function Find-AzureAdGroup {
 		Find-AzureAdGroup -Identity $UPN -All
     Parses the whole Tenant for Groups, which may take some time, but yield complete results.
     Will return all Groups that have "My Group" in the DisplayName, ObjectId or MailNickName
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    Find-AzureAdGroup
-  .LINK
     Find-AzureAdUser
   .LINK
-    Test-AzureAdGroup
-  .LINK
-    Test-AzureAdUser
-  .LINK
-    Test-TeamsUser
-	#>
+    Get-AzureAdGroup
+  #>
 
   [CmdletBinding(DefaultParameterSetName = "Search")]
   [OutputType([System.Object])]

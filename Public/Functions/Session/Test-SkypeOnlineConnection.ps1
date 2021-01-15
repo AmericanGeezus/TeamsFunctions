@@ -20,6 +20,8 @@ function Test-SkypeOnlineConnection {
 	.NOTES
 		Added check for Open Session to err on the side of caution.
 		Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>

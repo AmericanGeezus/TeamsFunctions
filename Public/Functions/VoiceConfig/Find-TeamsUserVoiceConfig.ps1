@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Check for SupportsPaging for OVP and TDP (result size is not managable!)
 
 function Find-TeamsUserVoiceConfig {
   <#
@@ -102,6 +102,8 @@ function Find-TeamsUserVoiceConfig {
     Please see Related Link for more information
 	.FUNCTIONALITY
     Finding Users with a specific values in their Voice Configuration
+  .EXTERNALHELP
+    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -214,7 +216,8 @@ function Find-TeamsUserVoiceConfig {
             $Number = $matches[1]
           }
           else {
-            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr"
+            #BODGE Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
+            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep "tel:+;x"
           }
           Write-Verbose -Message "Finding Users with PhoneNumber '$Number' (partial or full)" -Verbose
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
