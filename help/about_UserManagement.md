@@ -45,9 +45,9 @@ Finding Users, Groups or other objects is sometimes too complex for my taste. Us
 
 ## SEE ALSO
 
-about_TeamsCallableEntity
+[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
 
-about_TeamsCommonAreaPhone
+[about_TeamsCommonAreaPhone](about_TeamsCommonAreaPhone.md)
 
 ## KEYWORDS
 

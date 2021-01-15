@@ -1,6 +1,6 @@
-﻿# ABOUT
+﻿# Teams Resource Account
 
-## about_ABOUT
+## about_TeamsResourceAccount
 
 ## SHORT DESCRIPTION
 
@@ -56,15 +56,19 @@ Connecting these Resource Accounts to their Call Queues or Auto Attendants, whil
 
 ## SEE ALSO
 
-{{ See also placeholder }}
+[about_TeamsCallQueue](about_TeamsCallQueue.md)
 
-{{ You can also list related articles, blogs, and video URLs. }}
+[about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
+
+[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
 
 ## KEYWORDS
 
-{{List alternate names or titles for this topic that readers might use.}}
-
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
+- Creation
+- Configuration
+- Management
+- AzureAdUser
+- AzureAdGroup
+- CsOnlineUser
+- CsOnlineApplicationInstance
+- TeamsResourceAccount

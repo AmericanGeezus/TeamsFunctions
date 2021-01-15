@@ -97,8 +97,6 @@ All of these CmdLets are pretty static and only receive minor updates. The Strin
 
 ## KEYWORDS
 
-{{List alternate names or titles for this topic that readers might use.}}
-
 - Test Functions
 - Asserting
 - Formatting

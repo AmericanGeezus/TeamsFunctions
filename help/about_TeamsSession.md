@@ -1,6 +1,6 @@
-﻿# ABOUT
+﻿# Teams Session CmdLets
 
-## about_ABOUT
+## about_TeamsSession
 
 ## SHORT DESCRIPTION
 
@@ -8,7 +8,9 @@ Connecting to the Teams Backend is, for now, still done via SkypeOnline
 
 ## LONG DESCRIPTION
 
-SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services. Creating a Session to them is not implemented very nicely. The introduction of Privileged Identity Management and Privileged Access Groups further requires some manual steps that the following are trying to make simpler and provide an easier way to connect and activate your roles
+SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services. Creating a Session to them is not implemented very nicely. These CmdLets try to address this.
+
+The introduction of Privileged Identity Management and Privileged Access Groups further requires some manual steps that these are trying to make simpler and provide an easier way to connect and activate your roles
 
 ## CmdLets
 
@@ -23,7 +25,7 @@ SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services. Cre
 
 Activating Admin Roles made easier. Please note that Privileged Access Groups are not yet integrated as there are no PowerShell commands available yet in the AzureAdPreview Module. This will be added as soon as possible. Commands are used with `Connect-Me`, but can be used on its own just as well.
 
-> [!NOTE] Please **note**, that Privileged Admin Groups are currently not covered by these CmdLets. This will be added as soon as possible
+> [!NOTE] Please **note**, that Privileged Admin Groups are currently not covered by these CmdLets. This will be added as soon as they have been fully documented and PowerShell CmdLets are available for them.
 
 | Function                                                      | Description                                                                                                                                     |
 | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -49,7 +51,7 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 Connect-SkypeOnline -Identity John@domain.com [-OverrideAdminDomain domain.onmicrosoft.com]
 ````
 
-Establishes a session to SkypeOnline (aka the Teams BackEnd). The Override Admin Domain is optional and only needed for Hybrid Scenarios where the DNS entries point to the Skype OnPrem Platform.
+Example 1 establishes a session to SkypeOnline (aka the Teams BackEnd). The Override Admin Domain is optional and only needed for Hybrid Scenarios where the DNS entries point to the Skype OnPrem Platform.
 
 - If the SkypeOnlineConnector is used, enables the session for reconnection.
 - If the MicrosoftTeams Module is used, an authentication dialog is shown.
@@ -67,9 +69,7 @@ Mature, but a moving target - Continuous in Progress. An update to the Microsoft
 
 ## TROUBLESHOOTING NOTE
 
-{{ Troubleshooting Placeholder - Warns users of bugs}}
-
-{{ Explains behavior that is likely to change with fixes }}
+Please disconnect your session cleanly, before reconnecting. Sometimes, with the MicrosoftTeams Module, I have found that the whole PowerShell Session needs to be recreated which is annoying. This is still evaluated and tested with every PreRelease.
 
 ## SEE ALSO
 
@@ -81,7 +81,7 @@ Mature, but a moving target - Continuous in Progress. An update to the Microsoft
 
 {{List alternate names or titles for this topic that readers might use.}}
 
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
+- SkypeOnline
+- MicrosoftTeams
+- Module
+- Requirements
