@@ -21,6 +21,8 @@ In particular assignment and enablement of the PhoneSystem Service Plan.
 | [`Get-AzureAdLicense`](/docs/Get-AzureAdLicense.md)                       | A Script to query all published Licenses and their Service Plans. Switch can filter for Teams related Licenses |
 | [`Get-AzureAdLicenseServicePlan`](/docs/Get-AzureAdLicenseServicePlan.md) | Same as above, but displaying Service Plans only. Switch can filter for Teams related ServicePlans             |
 
+> [!NOTE] Get-AzureAdLicense forms the baseline of the Licensing functions, reading directly from [Microsoft Docs](https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference). This bears the risk that an update to the site may break all Licensing functions, but it also gives you the most up to date Licensing information available.
+
 ### Support CmdLets
 
 | Function                                                          | Description                                                                         |
@@ -31,17 +33,17 @@ In particular assignment and enablement of the PhoneSystem Service Plan.
 
 ## EXAMPLES
 
-````Example 1
+````powershell
 Set-TeamsUserLicense -Identity John@domain.com -Add Office365E3,PhoneSystem
 ````
 
-Assigns the Office 365 E3 License and the PhoneSystem License to the User
+Example 1 assigns the Office 365 E3 License and the PhoneSystem License to the User
 
-````Example 2
+````powershell
 Get-TeamsUserLicense -Identity John@domain.com
 ````
 
-Queries license related elements for a User and returns a custom Object incl.PhoneSystem and PhoneSystemStatus
+Example 2 queries license related elements for a User and returns a custom Object incl.PhoneSystem and PhoneSystemStatus
 
 ## NOTE
 
@@ -49,7 +51,7 @@ Queries license related elements for a User and returns a custom Object incl.Pho
 
 ## Development Status
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+Some gremlines might still lurk in my code, but otherwise these are quite mature.
 
 ## TROUBLESHOOTING NOTE
 

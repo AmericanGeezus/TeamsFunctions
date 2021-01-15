@@ -2,63 +2,50 @@
 
 ## about_ABOUT
 
-```
-ABOUT TOPIC NOTE:
-The first header of the about topic should be the topic name.
-The second header contains the lookup name used by the help system.
-
-IE:
-# Some Help Topic Name
-## SomeHelpTopicFileName
-
-This will be transformed into the text file
-as `about_SomeHelpTopicFileName`.
-Do not include file extensions.
-The second header should have no spaces.
-```
-
 ## SHORT DESCRIPTION
 
 Querying and setting Teams Voice Configuration, both for Direct Routing and Calling Plans
 
 ## LONG DESCRIPTION
 
-{{ Long Description Placeholder }}
+Ascertaining accurate information about the Tenant and an individual user account (or resource account) is the cornerstone of these CmdLets. `Get-TeamsUserVoiceConfig` therefore carefully selects parameters from the `CsOnlineUser`-Object and, with the `DiagnosticLevel`-switch taps further and further into parameters that may be relevant for troubleshooting issues, finally also padding the object with keys from the `AzureAdUser`-Object.
+
+Applying the required elements to enable a User for Direct Routing or Calling Plans should make this easier, more reliable and faster for all admins
 
 ## CmdLets
 
 | Function                             | Description                                                                                                                                       |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Enable-TeamsUserForEnterpriseVoice` | Validates User License requirements and enables a User for Enterprise Voice (I needed a shortcut)                                                 |
-| `Find-TeamsUserVoiceRoute`           | Queries a users Voice Configuration chain to finding a route a call takes for a User (more granular with a `-DialedNumber`)                       |
-| `Find-TeamsUserVoiceConfig`          | Queries Voice Configuration parameters against all Users on the tenant. Finding assignments of a number, usage of a specific OVP or TDP, etc.     |
-| `Get-TeamsTenantVoiceConfig`         | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                       |
-| `Get-TeamsUserVoiceConfig`           | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output, extensible through `-DiagnosticLevel`      |
-| `Remove-TeamsUserVoiceConfig`        | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set |
-| `Set-TeamsUserVoiceConfig`           | Applies a full Set of Voice Configuration (Number, Online Voice Routing Policy, Tenant Dial Plan, etc.) to the provided Identity                  |
-| `Test-TeamsUserVoiceConfig`          | Tests an individual VoiceConfig Package against the provided Identity                                                                             |
+| [`Enable-TeamsUserForEnterpriseVoice`](/docs/Enable-TeamsUserForEnterpriseVoice.md) | Validates User License requirements and enables a User for Enterprise Voice (I needed a shortcut)                                                 |
+| [`Find-TeamsUserVoiceRoute`](/docs/Find-TeamsUserVoiceRoute.md)           | Queries a users Voice Configuration chain to finding a route a call takes for a User (more granular with a `-DialedNumber`)                       |
+| [`Find-TeamsUserVoiceConfig`](/docs/Find-TeamsUserVoiceConfig.md)          | Queries Voice Configuration parameters against all Users on the tenant. Finding assignments of a number, usage of a specific OVP or TDP, etc.     |
+| [`Get-TeamsTenantVoiceConfig`](/docs/Get-TeamsTenantVoiceConfig.md)         | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                       |
+| [`Get-TeamsUserVoiceConfig`](/docs/Get-TeamsUserVoiceConfig.md)           | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output, extensible through `-DiagnosticLevel`      |
+| [`Remove-TeamsUserVoiceConfig`](/docs/Remove-TeamsUserVoiceConfig.md)        | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set |
+| [`Set-TeamsUserVoiceConfig`](/docs/Set-TeamsUserVoiceConfig.md)           | Applies a full Set of Voice Configuration (Number, Online Voice Routing Policy, Tenant Dial Plan, etc.) to the provided Identity                  |
+| [`Test-TeamsUserVoiceConfig`](/docs/Test-TeamsUserVoiceConfig.md)          | Tests an individual VoiceConfig Package against the provided Identity                                                                             |
 
 ### Support CmdLets
 
-The others are mainly helping to cut down on typing when doing stuff quickly. Sometimes knowing just enough is enough, like knowing only the names of the Tenant Dial Plan or the Online Voice Routing Policy in question is just what I need, nothing more.
+Diving more into Voice Configuration for the Tenant and defining Direct Routing breakouts, though the provided CmdLets are solid since its Lync days, getting information fast and without the hassle of piping, filtering and selecting was the goal behind creating the below shortcuts.
 
 | Function          | Description                                                                         |
 | ----------------- | ----------------------------------------------------------------------------------- |
-| `Get-TeamsTenant` | Get-CsTenant gives too much output? This can help.                                  |
-| `Get-TeamsOVP`    | Get-CsOnlineVoiceRoutingPolicy is too long to type? Here is a shorter one :)        |
-| `Get-TeamsOPU`    | Get-CsOnlinePstnUsage is too clunky. Here is a shorter one, with a search function! |
-| `Get-TeamsOVR`    | Get-CsOnlineVoiceRoute                                                              |
-| `Get-TeamsMGW`    | Get-CsOnlinePstnGateway                                                             |
-| `Get-TeamsTDP`    | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...        |
-| `Get-TeamsVNR`    | Displays all Voice Normalization Rules (VNR) for a given Dial Plan                  |
+| [`Get-TeamsTenant`](/docs/Get-TeamsTenant.md) | Get-CsTenant gives too much output? This can help.                                  |
+| [`Get-TeamsOVP`](/docs/Get-TeamsOVP.md)    | Get-CsOnlineVoiceRoutingPolicy is too long to type? Here is a shorter one :)        |
+| [`Get-TeamsOPU`](/docs/Get-TeamsOPU.md)    | Get-CsOnlinePstnUsage is too clunky. Here is a shorter one, with a search function! |
+| [`Get-TeamsOVR`](/docs/Get-TeamsOVR.md)    | Get-CsOnlineVoiceRoute                                                              |
+| [`Get-TeamsMGW`](/docs/Get-TeamsMGW.md)    | Get-CsOnlinePstnGateway                                                             |
+| [`Get-TeamsTDP`](/docs/Get-TeamsTDP.md)    | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...        |
+| [`Get-TeamsVNR`](/docs/Get-TeamsVNR.md)    | Displays all Voice Normalization Rules (VNR) for a given Dial Plan                  |
 
 ### Legacy support CmdLets
 
 These are the last remnants of the old SkypeFunctions module. Their functionality has been barely touched.
 | Function                                 | Description                                                                              |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `Get-SkypeOnlineConferenceDialInNumbers` | Gathers Dial-In Conferencing Numbers for a specific Domain                               |
-| `Remove-TenantDialPlanNormalizationRule` | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove |
+| [`Get-SkypeOnlineConferenceDialInNumbers`](/docs/Get-SkypeOnlineConferenceDialInNumbers.md) | Gathers Dial-In Conferencing Numbers for a specific Domain                               |
+| [`Remove-TenantDialPlanNormalizationRule`](/docs/Remove-TenantDialPlanNormalizationRule.md) | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove |
 
 >[NOTE] These commands are being evaluated for revival and re-integration.
 
