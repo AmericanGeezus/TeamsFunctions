@@ -22,16 +22,16 @@ This module currently contains over 85 Functions covering a broad area of Teams 
 
 Each topic will get its own ABOUT file soon, diving deeper into the Scripts.
 
-- SkypeOnline Session connection
-- AzureAd Licensing (Tenant queries and User assignments)
-- AzureAd Privileged Identity Management (Role Activation)
-- AzureAd Object Preparation for Voice Configuration (EnterpriseVoice)
-- Teams Voice Configuration (Direct Routing and Calling Plans)
-- Teams Common Area Phone (new CmdLets)
-- Teams Analog Contact Object (new CmdLets coming soon)
-- Teams Resource Account (wrappers for existing CmdLets)
-- Teams Call Queue (wrappers for existing CmdLets)
-- Teams Auto Attendant (wrappers for existing CmdLets)
+- SkypeOnline Session connection, reconnection and verification
+- AzureAd Licensing: Tenant queries, User assignments and verification
+- AzureAd Privileged Identity Management: Role Activation
+- Object Preparation for EnterpriseVoice Configuration
+- Teams Voice Configuration: Direct Routing and Calling Plans
+- Teams Common Area Phone: New CmdLets (currently in testing!)
+- Teams Analog Contact Object: New CmdLets (coming soon)
+- Teams Resource Account: Improvements on existing CmdLets
+- Teams Call Queue: Improvements on existing CmdLets
+- Teams Auto Attendant: Improvements on existing CmdLets
 - Support and Helper functions for Admin tasks
 
 ## EXAMPLES
@@ -62,6 +62,24 @@ Please attach Verbose and/or Debug output of the Script in question and ideally 
 ## SEE ALSO
 
 [about_TeamsFunctionsAliases](about_TeamsFunctionsAliases.md)
+
+[about_TeamsSession](about_TeamsSession.md)
+
+[about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
+
+[about_TeamsCallQueue](about_TeamsCallQueue.md)
+
+[about_TeamsResourceAccount](about_TeamsResourceAccount.md)
+
+[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
+
+[about_Licensing](about_Licensing.md)
+
+[about_UserManagement](about_UserManagement.md)
+
+[about_VoiceConfiguration](about_VoiceConfiguration.md)
+
+[about_Supporting_Functions](about_Supporting_Functions.md)
 
 ## KEYWORDS
 
