@@ -9,13 +9,13 @@ As Teams evolves, so does this Module.
 ## Documentation
 
 - Where to start [about_TeamsFunctions](/help/about_TeamsFunctions.md)
-- Individual about_-Files for each Topic have been created in [/help](/help])
+- Individual about_-Files for each Topic have been created in [/help](/help)
 - Documentation for individual CmdLets can be found in [/docs](/docs)
 - External Help is available as XML in [/docs](/docs)
 - Markdown documentation is generated automatically with PlatyPS and updated with each Version
-- More information can be found via [my blog](https://davideberhardt.wordpress.com/)
-- A breakdown of the Change log for Major Versions can be found in VERSION.md
-- A detailed breakdown of changes for Pre-Release Versions is recorded in VERSION-PreRelease.md
+- More information can be found in [my blog](https://davideberhardt.wordpress.com/) from time to time.
+- A breakdown of the Change log for Major Versions can be found in [VERSION.md](VERSION.md)
+- A detailed breakdown of changes for Pre-Release Versions is recorded in [VERSION-PreRelease.md](VERSION-PreRelease.md)
 
 ## Current Focus
 
