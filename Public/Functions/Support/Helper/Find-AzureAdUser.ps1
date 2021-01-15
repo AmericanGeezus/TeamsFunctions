@@ -38,7 +38,11 @@ function Find-AzureAdUser {
     https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-	#>
+  .LINK
+    Find-AzureAdGroup
+  .LINK
+    Get-AzureAdUser
+  #>
 
   [CmdletBinding(DefaultParameterSetName = "Search")]
   [OutputType([Microsoft.Open.AzureAD.Model.User])]
@@ -70,12 +74,18 @@ function Find-AzureAdUser {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($PsCmdlet.ParameterSetName) {
       "Search" {
-        $User = Get-AzureADUser -All:$true -SearchString $SearchString -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        $User = Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         if ( $User ) {
           return $User
         }
         else {
-          Find-AzureAdUser -Identity $SearchString
+          if ($Searchstring -contains " ") {
+            $SearchString = $SearchString.split(" ") | Select-Object -Last 1
+            Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          }
+          else {
+            Find-AzureAdUser -Identity "$SearchString"
+          }
         }
       }
 

@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-
+#TODO Needs revision! Rework like AzureAdUser - Identity (Exact) and SearchString 
 
 function Find-AzureAdGroup {
   <#
@@ -46,16 +46,10 @@ function Find-AzureAdGroup {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    Find-AzureAdGroup
-  .LINK
     Find-AzureAdUser
   .LINK
-    Test-AzureAdGroup
-  .LINK
-    Test-AzureAdUser
-  .LINK
-    Test-TeamsUser
-	#>
+    Get-AzureAdGroup
+  #>
 
   [CmdletBinding(DefaultParameterSetName = "Search")]
   [OutputType([System.Object])]
