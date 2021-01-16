@@ -4,7 +4,7 @@
 
 ## SHORT DESCRIPTION
 
-All things needed to configure for Voice, Direct Routing or Calling Plans
+All things needed to configure Users for Direct Routing or Calling Plans
 
 ## LONG DESCRIPTION
 
@@ -116,9 +116,7 @@ OnPremLineURI              : tel:+15551234567;ext=4567
 
 ## TROUBLESHOOTING NOTE
 
-{{ Troubleshooting Placeholder - Warns users of bugs}}
-
-{{ Explains behavior that is likely to change with fixes }}
+None needed.
 
 ## SEE ALSO
 
