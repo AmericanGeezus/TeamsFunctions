@@ -1,5 +1,10 @@
 # CmdLets for AzureAd and Teams adding to and improving on Microsoft CmdLets
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE)
+[![Documentation - GitHub](https://img.shields.io/badge/Documentation-TeamsFunctions-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs)
+[![PowerShell Gallery - TeamsFunctions](https://img.shields.io/badge/PowerShell%20Gallery-TeamsFunctions-blue.svg)](https://www.powershellgallery.com/packages/TeamsFunctions/)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+
 ## Introduction
 
 This module exists as many of Microsofts Teams back-end (SkypeOnline) Cmdlets are too clunky to handle easily on a daily basis without building a big library of quirks and GUIDs and snippets as well as a growing understanding of all the pitfalls and requirements needed for individual features.
