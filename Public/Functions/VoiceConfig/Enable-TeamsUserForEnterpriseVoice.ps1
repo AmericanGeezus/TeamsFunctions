@@ -37,7 +37,7 @@ function Enable-TeamsUserForEnterpriseVoice {
     [Alias('UserPrincipalName')]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
+    [Parameter(HelpMessage = 'Suppresses confirmation prompt unless -Confirm is used explicitly')]
     [switch]$Force
   ) #param
 
@@ -111,24 +111,26 @@ function Enable-TeamsUserForEnterpriseVoice {
         }
         else {
           Write-Verbose -Message "User '$Id' Enterprise Voice Status: User is already enabled!" -Verbose
+          #Enabling HostedVoicemail is done silently (just in case)
+          $null = Set-CsUser $Id -HostedVoiceMail $TRUE -ErrorAction SilentlyContinue
         }
       }
       else {
         Write-Verbose -Message "User '$Id' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
         try {
-          if ($Force -or $PSCmdlet.ShouldProcess("$Id", "Enabling User for EnterpriseVoice")) {
-            $null = Set-CsUser $Id -EnterpriseVoiceEnabled $TRUE -ErrorAction STOP
+          if ($Force -or $PSCmdlet.ShouldProcess("$Id", 'Enabling User for EnterpriseVoice')) {
+            $null = Set-CsUser $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
             $i = 0
             $iMax = 20
-            $Status = "Enable User For Enterprise Voice"
-            $Operation = "Waiting for Get-CsOnlineUser to return a Result"
+            $Status = 'Enable User For Enterprise Voice'
+            $Operation = 'Waiting for Get-CsOnlineUser to return a Result'
             Write-Verbose -Message "$Status - $Operation"
             while ( -not $(Get-CsOnlineUser $Id -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
               if ($i -gt $iMax) {
-                Write-Error -Message "User '$Id' Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify Object has been enabled (EnterpriseVoiceEnabled)"
+                Write-Error -Message "User '$Id' Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false
               }
-              Write-Progress -Id 0 -Activity "Waiting for Azure Active Directory to return a result. Please wait" `
+              Write-Progress -Id 0 -Activity 'Waiting for Azure Active Directory to return a result. Please wait' `
                 -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
               Start-Sleep -Milliseconds 1000
