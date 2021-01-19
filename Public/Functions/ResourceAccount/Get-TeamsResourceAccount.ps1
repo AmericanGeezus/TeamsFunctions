@@ -244,7 +244,7 @@ function Get-TeamsResourceAccount {
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
-        $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.LineURI)" -SpecialChars 'tel:+') -split ';')[0]
+        $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.PhoneNumber)" -SpecialChars 'tel:+') -split ';')[0]
         if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
           $ResourceAccountPhoneNumberType = 'Microsoft Number'
         }
