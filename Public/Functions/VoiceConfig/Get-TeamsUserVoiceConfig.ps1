@@ -95,7 +95,7 @@ function Get-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -111,7 +111,7 @@ function Get-TeamsUserVoiceConfig {
       if ( -not $SkipLicenseCheck ) { $sMax++ }
 
       #region Information Gathering
-      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation "Querying User Account" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
+      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
@@ -124,32 +124,32 @@ function Get-TeamsUserVoiceConfig {
       }
 
       # Constructing InterpretedVoiceConfigType
-      $Operation = "Verification, Testing InterpretedVoiceConfigType"
+      $Operation = 'Verification, Testing InterpretedVoiceConfigType'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if ($CsUser.VoicePolicy -eq "BusinessVoice") {
+      if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
-        $InterpretedVoiceConfigType = "CallingPlans"
+        $InterpretedVoiceConfigType = 'CallingPlans'
       }
-      elseif ($CsUser.VoicePolicy -eq "HybridVoice") {
+      elseif ($CsUser.VoicePolicy -eq 'HybridVoice') {
         Write-Verbose -Message "VoicePolicy found as 'HybridVoice'"
         if ($null -ne $CsUser.VoiceRoutingPolicy -and $null -eq $CsUser.OnlineVoiceRoutingPolicy) {
           Write-Verbose -Message "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
-          $InterpretedVoiceConfigType = "SkypeHybridPSTN"
+          $InterpretedVoiceConfigType = 'SkypeHybridPSTN'
         }
         else {
           Write-Verbose -Message "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
-          $InterpretedVoiceConfigType = "DirectRouting"
+          $InterpretedVoiceConfigType = 'DirectRouting'
         }
       }
       else {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'Unknown' (undetermined)"
-        $InterpretedVoiceConfigType = "Unknown"
+        $InterpretedVoiceConfigType = 'Unknown'
       }
 
       # Testing ObjectType
-      $Operation = "Verification, Testing ObjectType"
+      $Operation = 'Verification, Testing ObjectType'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
@@ -158,7 +158,7 @@ function Get-TeamsUserVoiceConfig {
 
 
       #region Creating Base Custom Object
-      $Operation = "Preparing Output Object"
+      $Operation = 'Preparing Output Object'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
@@ -182,14 +182,14 @@ function Get-TeamsUserVoiceConfig {
       # Adding Licensing Parameters if not skipped
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses
-        $Operation = "Querying User Licenses"
+        $Operation = 'Querying User Licenses'
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
         $CsUserLicense = Get-TeamsUserLicense -Identity "$($CsUser.UserPrincipalName)"
 
         # Adding Parameters
-        $Operation = "Adding Parameters: Licensing Configuration"
+        $Operation = 'Adding Parameters: Licensing Configuration'
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
@@ -200,7 +200,7 @@ function Get-TeamsUserVoiceConfig {
       }
 
       # Adding Provisioning Parameters
-      $Operation = "Adding Parameters: Voice Configuration"
+      $Operation = 'Adding Parameters: Voice Configuration'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
@@ -219,7 +219,7 @@ function Get-TeamsUserVoiceConfig {
         switch ($DiagnosticLevel) {
           { $PSItem -ge 1 } {
             # Displaying basic diagnostic parameters (Hybrid)
-            $Operation = "Adding Parameters: Voice Configuration, DiagnosticLevel 1 - Voice related Parameters"
+            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 1 - Voice related Parameters'
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
@@ -233,7 +233,7 @@ function Get-TeamsUserVoiceConfig {
 
           { $PSItem -ge 2 } {
             # Displaying extended diagnostic parameters
-            $Operation = "Adding Parameters: Voice Configuration, DiagnosticLevel 2 - Voice related Policies"
+            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 2 - Voice related Policies'
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
@@ -248,7 +248,7 @@ function Get-TeamsUserVoiceConfig {
 
           { $PSItem -ge 3 } {
             # Querying AD Object (if Diagnostic Level is 3 or higher)
-            $Operation = "Querying AzureAd User"
+            $Operation = 'Querying AzureAd User'
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
@@ -260,7 +260,7 @@ function Get-TeamsUserVoiceConfig {
             }
 
             # Displaying advanced diagnostic parameters
-            $Operation = "Adding Parameters: Voice Configuration, DiagnosticLevel 3 - AzureAd Parameters, Status"
+            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 3 - AzureAd Parameters, Status'
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
@@ -275,7 +275,7 @@ function Get-TeamsUserVoiceConfig {
           }
           { $PSItem -ge 4 } {
             # Displaying all of CsOnlineUser (previously omitted)
-            $Operation = "Adding Parameters: Voice Configuration, DiagnosticLevel 3 - AzureAd Parameters, DirSync"
+            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 3 - AzureAd Parameters, DirSync'
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation

@@ -111,7 +111,7 @@ function Add-TeamsUserLicense {
   [OutputType([Void])]
   param(
     [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-    [Alias("UPN", "UserPrincipalName", "Username")]
+    [Alias('UPN', 'UserPrincipalName', 'Username')]
     [string[]]$Identity,
 
     [Parameter(Mandatory = $false, ParameterSetName = 'General')]
@@ -133,26 +133,26 @@ function Add-TeamsUserLicense {
     [switch]$AddOffice365E5NoAudioConferencing,
 
     [Parameter(Mandatory = $false, ParameterSetName = 'General')]
-    [Alias("AddPSTNConferencing", "AddMeetAdv")]
+    [Alias('AddPSTNConferencing', 'AddMeetAdv')]
     [switch]$AddAudioConferencing,
 
     [Parameter(Mandatory = $false, ParameterSetName = 'General')]
     [Parameter(Mandatory = $true, ParameterSetName = 'PhoneSystem')]
     [switch]$AddPhoneSystem,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'PhoneSystemVirtualUser', HelpMessage = "This is an exclusive license!")]
+    [Parameter(Mandatory = $true, ParameterSetName = 'PhoneSystemVirtualUser', HelpMessage = 'This is an exclusive license!')]
     [switch]$AddPhoneSystemVirtualUser,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'CommonAreaPhone', HelpMessage = "This is an exclusive license!")]
-    [Alias("AddCAP")]
+    [Parameter(Mandatory = $true, ParameterSetName = 'CommonAreaPhone', HelpMessage = 'This is an exclusive license!')]
+    [Alias('AddCAP')]
     [switch]$AddCommonAreaPhone,
 
     [Parameter(Mandatory = $true, ParameterSetName = 'AddDomestic')]
-    [Alias("AddDomesticCallingPlan")]
+    [Alias('AddDomesticCallingPlan')]
     [switch]$AddMSCallingPlanDomestic,
 
     [Parameter(Mandatory = $true, ParameterSetName = 'AddInternational')]
-    [Alias("AddInternationalCallingPlan")]
+    [Alias('AddInternationalCallingPlan')]
     [switch]$AddMSCallingPlanInternational,
 
     [Parameter(Mandatory = $false, ParameterSetName = 'PhoneSystem', HelpMessage = 'Will swap a PhoneSystem License to a Virtual User License and vice versa')]
@@ -171,7 +171,7 @@ function Add-TeamsUserLicense {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     Write-Verbose -Message "This function is deprecated. Its limitations have prompted development of 'Set-TeamsUserLicense'" -Verbose
 
@@ -187,18 +187,18 @@ function Add-TeamsUserLicense {
     # Build Skype SKU Variables from Available Licenses in the Tenant
     foreach ($tenantSKU in $tenantSKUs) {
       switch ($tenantSKU.SkuPartNumber) {
-        "MCOPSTN1" { $DomesticCallingPlan = $tenantSKU.SkuId; break }
-        "MCOPSTN2" { $InternationalCallingPlan = $tenantSKU.SkuId; break }
-        "MCOMEETADV" { $AudioConferencing = $tenantSKU.SkuId; break }
-        "MCOEV" { $PhoneSystem = $tenantSKU.SkuId; break }
-        "PHONESYSTEM_VIRTUALUSER" { $PhoneSystemVirtualUser = $tenantSKU.SkuId; break }
-        "SPE_E3" { $MSE3 = $tenantSKU.SkuId; break }
-        "SPE_E5" { $MSE5 = $tenantSKU.SkuId; break }
-        "ENTERPRISEPREMIUM" { $E5WithPhoneSystem = $tenantSKU.SkuId; break }
-        "ENTERPRISEPREMIUM_NOPSTNCONF" { $E5NoAudioConferencing = $tenantSKU.SkuId; break }
-        "ENTERPRISEPACK" { $E3 = $tenantSKU.SkuId; break }
-        "MCOSTANDARD" { $SkypeStandalonePlan = $tenantSKU.SkuId; break }
-        "MCOCAP" { $CommonAreaPhone = $tenantSKU.SkuId; break }
+        'MCOPSTN1' { $DomesticCallingPlan = $tenantSKU.SkuId; break }
+        'MCOPSTN2' { $InternationalCallingPlan = $tenantSKU.SkuId; break }
+        'MCOMEETADV' { $AudioConferencing = $tenantSKU.SkuId; break }
+        'MCOEV' { $PhoneSystem = $tenantSKU.SkuId; break }
+        'PHONESYSTEM_VIRTUALUSER' { $PhoneSystemVirtualUser = $tenantSKU.SkuId; break }
+        'SPE_E3' { $MSE3 = $tenantSKU.SkuId; break }
+        'SPE_E5' { $MSE5 = $tenantSKU.SkuId; break }
+        'ENTERPRISEPREMIUM' { $E5WithPhoneSystem = $tenantSKU.SkuId; break }
+        'ENTERPRISEPREMIUM_NOPSTNCONF' { $E5NoAudioConferencing = $tenantSKU.SkuId; break }
+        'ENTERPRISEPACK' { $E3 = $tenantSKU.SkuId; break }
+        'MCOSTANDARD' { $SkypeStandalonePlan = $tenantSKU.SkuId; break }
+        'MCOCAP' { $CommonAreaPhone = $tenantSKU.SkuId; break }
       } # End of switch statement
     } # End of foreach $tenantSKUs
   } #begin
@@ -210,7 +210,7 @@ function Add-TeamsUserLicense {
         $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
-        Write-Error -Message "User Account not valid" -Category ObjectNotFound -RecommendedAction "Verify UserPrincipalName" -ErrorAction Stop
+        Write-Error -Message 'User Account not valid' -Category ObjectNotFound -RecommendedAction 'Verify UserPrincipalName' -ErrorAction Stop
       }
 
       try {
@@ -219,7 +219,7 @@ function Add-TeamsUserLicense {
         }
       }
       catch {
-        Write-Error -Message "Usage Location not set" -Category InvalidResult -RecommendedAction "Set Usage Location, then try assigning a License again" -ErrorAction Stop
+        Write-Error -Message 'Usage Location not set' -Category InvalidResult -RecommendedAction 'Set Usage Location, then try assigning a License again' -ErrorAction Stop
       }
 
       # Get user's currently assigned licenses
@@ -266,19 +266,19 @@ function Add-TeamsUserLicense {
         if ((Get-AzureADUser -ObjectId "$ID").Department -eq 'Microsoft Communication Application Instance') {
           # This is a correct resource Account
           if ($Replace) {
-            Write-Warning -Message "Currently not possible as PhoneSystem cannot be assigned standalone"
+            Write-Warning -Message 'Currently not possible as PhoneSystem cannot be assigned standalone'
             $ReplaceLicenseSkuID = Get-SkuIDfromSkuPartNumber PHONESYSTEM_VIRTUALUSER # Replaces PhoneSystem_VirtualUser
             ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem -ReplaceLicense $ReplaceLicenseSkuID
           }
           else {
-            Write-Warning -Message "Currently not possible as PhoneSystem cannot be assigned standalone. Combine with other Licenses"
+            Write-Warning -Message 'Currently not possible as PhoneSystem cannot be assigned standalone. Combine with other Licenses'
             ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem
           }
         }
         else {
           # This is not supported. Non-Resource Accounts must not have VirtualUser licenses
           ProcessLicense -UserID $ID -LicenseSkuID $PhoneSystem
-          Write-Error -Message "Non-Resource Account determined. No replacement can be executed" -Category InvalidOperation -RecommendedAction "Verify Account Type is correct. For Resource Accounts, verify Department is set to 'Microsoft Communication Application Instance'" -ErrorAction Stop
+          Write-Error -Message 'Non-Resource Account determined. No replacement can be executed' -Category InvalidOperation -RecommendedAction "Verify Account Type is correct. For Resource Accounts, verify Department is set to 'Microsoft Communication Application Instance'" -ErrorAction Stop
         }
       }
 
@@ -296,7 +296,7 @@ function Add-TeamsUserLicense {
         }
         else {
           # This is not supported. Non-Resource Accounts must not have VirtualUser licenses
-          Write-Error -Message "Non-Resource Account determined. No replacement can be executed" -Category InvalidOperation -RecommendedAction "Verify Account Type is correct. For Resource Accounts, verify Department is set to 'Microsoft Communication Application Instance'" -ErrorAction Stop
+          Write-Error -Message 'Non-Resource Account determined. No replacement can be executed' -Category InvalidOperation -RecommendedAction "Verify Account Type is correct. For Resource Accounts, verify Department is set to 'Microsoft Communication Application Instance'" -ErrorAction Stop
         }
       }
 

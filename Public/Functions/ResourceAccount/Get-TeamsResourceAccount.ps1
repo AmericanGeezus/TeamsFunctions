@@ -73,34 +73,34 @@ function Get-TeamsResourceAccount {
     Remove-TeamsResourceAccount
 	#>
 
-  [CmdletBinding(DefaultParameterSetName = "Identity")]
+  [CmdletBinding(DefaultParameterSetName = 'Identity')]
   [Alias('Get-TeamsRA')]
   [OutputType([System.Object])]
   param (
-    [Parameter(Position = 0, ParameterSetName = "Identity", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "User Principal Name of the Object.")]
-    [Alias("UPN", "UserPrincipalName")]
+    [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'User Principal Name of the Object.')]
+    [Alias('UPN', 'UserPrincipalName')]
     [string[]]$Identity,
 
-    [Parameter(ParameterSetName = "DisplayName", ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
+    [Parameter(ParameterSetName = 'DisplayName', ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
     [ValidateLength(3, 255)]
     [string]$DisplayName,
 
-    [Parameter(ParameterSetName = "AppType", HelpMessage = "Limits search to specific Types: CallQueue or AutoAttendant")]
-    [ValidateSet("CallQueue", "AutoAttendant", "CQ", "AA")]
-    [Alias("Type")]
+    [Parameter(ParameterSetName = 'AppType', HelpMessage = 'Limits search to specific Types: CallQueue or AutoAttendant')]
+    [ValidateSet('CallQueue', 'AutoAttendant', 'CQ', 'AA')]
+    [Alias('Type')]
     [string]$ApplicationType,
 
-    [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName, HelpMessage = "Telephone Number of the Object")]
+    [Parameter(ParameterSetName = 'Number', ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number of the Object')]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted. Extensions will be stripped" -ForegroundColor Red
+          Write-Host 'Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted. Extensions will be stripped' -ForegroundColor Red
           $false
         }
       })]
-    [Alias("Tel", "Number", "TelephoneNumber")]
+    [Alias('Tel', 'Number', 'TelephoneNumber')]
     [string]$PhoneNumber
   ) #param
 
@@ -118,15 +118,15 @@ function Get-TeamsResourceAccount {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
     [int]$sMax = 3
 
     # Loading all Microsoft Telephone Numbers
-    $Operation = "Gathering Phone Numbers from the Tenant"
-    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    $Operation = 'Gathering Phone Numbers from the Tenant'
+    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
       $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
@@ -138,9 +138,9 @@ function Get-TeamsResourceAccount {
     $ResourceAccounts = $null
 
     #region Data gathering
-    $Operation = "Querying Resource Accounts"
+    $Operation = 'Querying Resource Accounts'
     $step++
-    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     if ($PSBoundParameters.ContainsKey('Identity')) {
       # Default Parameterset
@@ -167,19 +167,19 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property ApplicationId -EQ -Value $AppId
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars "tel"
+      $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars 'tel'
       Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
     }
     else {
-      Write-Verbose -Message "Listing UserPrincipalName only. To query individual items, please provide Identity" -Verbose
+      Write-Verbose -Message 'Listing UserPrincipalName only. To query individual items, please provide Identity' -Verbose
       Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Select-Object UserPrincipalName
       return
     }
 
     # Stop script if no data has been determined
     if ($ResourceAccounts.Count -eq 0) {
-      Write-Verbose -Message "No Data found."
+      Write-Verbose -Message 'No Data found.'
       return
     }
 
@@ -190,7 +190,7 @@ function Get-TeamsResourceAccount {
     # Creating new PS Object
     $Operation = "Parsing Information for $($ResourceAccounts.Count) Resource Accounts"
     $step++
-    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     foreach ($ResourceAccount in $ResourceAccounts) {
       # Initialising counters for Progress bars
@@ -198,7 +198,7 @@ function Get-TeamsResourceAccount {
       [int]$sMax = 7
 
       # readable Application type
-      $Operation = "Parsing ApplicationType"
+      $Operation = 'Parsing ApplicationType'
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($PSBoundParameters.ContainsKey('ApplicationType')) {
@@ -218,7 +218,7 @@ function Get-TeamsResourceAccount {
       #>
 
       # Parsing CsOnlineUser
-      $Operation = "Parsing Online Voice Routing Policy"
+      $Operation = 'Parsing Online Voice Routing Policy'
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
@@ -231,25 +231,25 @@ function Get-TeamsResourceAccount {
 
 
       # Parsing TeamsUserLicense
-      $Operation = "Parsing License Assignments"
+      $Operation = 'Parsing License Assignments'
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $ResourceAccountLicense = Get-TeamsUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
 
       # Phone Number Type
-      $Operation = "Parsing PhoneNumber"
+      $Operation = 'Parsing PhoneNumber'
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
-        $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.LineURI)" -SpecialChars "tel:+") -split ';')[0]
+        $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.LineURI)" -SpecialChars 'tel:+') -split ';')[0]
         if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
-          $ResourceAccountPhoneNumberType = "Microsoft Number"
+          $ResourceAccountPhoneNumberType = 'Microsoft Number'
         }
         else {
-          $ResourceAccountPhoneNumberType = "Direct Routing Number"
+          $ResourceAccountPhoneNumberType = 'Direct Routing Number'
         }
       }
       else {
@@ -257,15 +257,15 @@ function Get-TeamsResourceAccount {
       }
 
       # Associations
-      $Operation = "Parsing Association"
+      $Operation = 'Parsing Association'
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       if ( $Association ) {
         $AssociationObject = switch ($Association.ConfigurationType) {
-          "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
-          "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+          'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+          'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
         }
         $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       }
@@ -295,7 +295,7 @@ function Get-TeamsResourceAccount {
     }
 
     #endregion
-    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
   } #process
 

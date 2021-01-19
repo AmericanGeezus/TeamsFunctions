@@ -65,17 +65,17 @@ function Remove-TeamsResourceAccount {
   [Alias('Remove-TeamsRA')]
   [OutputType([System.Void])]
   param (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to create.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
         If ($_ -match '@') {
           $True
         }
         else {
-          Write-Host "Must be a valid UPN" -ForegroundColor Red
+          Write-Host 'Must be a valid UPN' -ForegroundColor Red
           $false
         }
       })]
-    [Alias("Identity", "ObjectId")]
+    [Alias('Identity', 'ObjectId')]
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
@@ -99,11 +99,11 @@ function Remove-TeamsResourceAccount {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Caveat - Access rights
-    Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
-    Write-Verbose -Message "No verification of required admin roles is performed. Use Get-AzureAdAdminRole to determine roles for your account"
+    Write-Verbose -Message 'This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser' -Verbose
+    Write-Verbose -Message 'No verification of required admin roles is performed. Use Get-AzureAdAdminRole to determine roles for your account'
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -132,7 +132,7 @@ function Remove-TeamsResourceAccount {
       }
       catch {
         # Catching anything
-        Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Resource Account"
+        Write-Warning -Message 'Object not found! Please provide a valid UserPrincipalName of an existing Resource Account'
         continue
       }
       #endregion
@@ -151,23 +151,23 @@ function Remove-TeamsResourceAccount {
       }
       else {
         Write-Verbose -Message "'$DisplayName' associations found"
-        if ($PSBoundParameters.ContainsKey("Force")) {
+        if ($PSBoundParameters.ContainsKey('Force')) {
           # Removing all Associations to of this Resource Account to Call Queues or Auto Attendants
           # with: Remove-CsOnlineApplicationInstanceAssociation
           if ($PSCmdlet.ShouldProcess("Resource Account Associations ($($Associations.Count))", 'Remove-CsOnlineApplicationInstanceAssociation')) {
             try {
-              Write-Verbose -Message "Trying to remove the Associations of this Resource Account"
+              Write-Verbose -Message 'Trying to remove the Associations of this Resource Account'
               $null = (Remove-CsOnlineApplicationInstanceAssociation $Associations -ErrorAction STOP)
-              Write-Verbose -Message "SUCCESS: Associations removed"
+              Write-Verbose -Message 'SUCCESS: Associations removed'
             }
             catch {
-              Write-Error -Message "Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation" -Category InvalidOperation
+              Write-Error -Message 'Associations could not be removed! Please check manually with Remove-CsOnlineApplicationInstanceAssociation' -Category InvalidOperation
               return
             }
           }
         }
         else {
-          Write-Error -Message "Associations detected. Please remove first or use -Force" -Category ResourceExists
+          Write-Error -Message 'Associations detected. Please remove first or use -Force' -Category ResourceExists
           Write-Output $Associations
         }
       }
@@ -184,17 +184,17 @@ function Remove-TeamsResourceAccount {
           # Remove from VoiceApplicationInstance
           Write-Verbose -Message "'$Name' Removing Microsoft Number"
           $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UPN -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-          Write-Verbose -Message "SUCCESS"
+          Write-Verbose -Message 'SUCCESS'
         }
         if ($null -ne ($Object.OnPremLineURI)) {
           # Remove from ApplicationInstance
           Write-Verbose -Message "'$Name' Removing Direct Routing Number"
           $null = (Set-CsOnlineApplicationInstance -Identity $UPN -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-          Write-Verbose -Message "SUCCESS"
+          Write-Verbose -Message 'SUCCESS'
         }
       }
       catch {
-        Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
+        Write-Error -Message 'Removal of Number failed' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Remove-AzureAdUser'
         return
       }
       #endregion
@@ -217,11 +217,11 @@ function Remove-TeamsResourceAccount {
           Write-Verbose -Message "'$DisplayName' Removing Removing licenses"
           $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
           Set-AzureADUserLicense -ObjectId $Object.ObjectId -AssignedLicenses $Licenses -ErrorAction STOP
-          Write-Verbose -Message "SUCCESS"
+          Write-Verbose -Message 'SUCCESS'
         }
       }
       catch {
-        Write-Error -Message "Removal of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
+        Write-Error -Message 'Removal of Licenses failed' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Set-AzureADUserLicense'
         return
       }
 
@@ -236,14 +236,14 @@ function Remove-TeamsResourceAccount {
       if ($PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)
-          Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
+          Write-Verbose -Message 'SUCCESS - Object removed from Azure Active Directory'
         }
         catch {
-          Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
+          Write-Error -Message 'Removal failed' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Remove-AzureAdUser'
         }
       }
       else {
-        Write-Verbose -Message "SKIPPED - Object removed not confirmed Azure Active Directory"
+        Write-Verbose -Message 'SKIPPED - Object removed not confirmed Azure Active Directory'
       }
 
 
@@ -251,7 +251,7 @@ function Remove-TeamsResourceAccount {
       #endregion
 
 
-      Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
       # Output
       if ($PassThru) {

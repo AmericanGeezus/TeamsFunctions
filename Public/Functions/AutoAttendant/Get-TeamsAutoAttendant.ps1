@@ -106,7 +106,7 @@ function Get-TeamsAutoAttendant {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     if ($PSBoundParameters.ContainsKey('Detailed')) {
       Write-Verbose -Message "Parameter 'Detailed' - This may take a bit of time..." -Verbose
@@ -118,7 +118,7 @@ function Get-TeamsAutoAttendant {
 
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
-      Write-Verbose -Message "Listing names only. To query individual items, please provide Parameter Name or SearchString" -Verbose
+      Write-Verbose -Message 'Listing names only. To query individual items, please provide Parameter Name or SearchString' -Verbose
       Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object Name
       return
     }
@@ -163,7 +163,7 @@ function Get-TeamsAutoAttendant {
       [System.Collections.ArrayList]$AIObjects = @()
 
       #region Finding Operator
-      $Operation = "Parsing Operator"
+      $Operation = 'Parsing Operator'
       Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($AA.Name)' - $Operation"
       if ($null -eq $AA.Operator) {
@@ -183,7 +183,7 @@ function Get-TeamsAutoAttendant {
       #endregion
 
       #region Application Instance UPNs
-      $Operation = "Parsing Application Instances"
+      $Operation = 'Parsing Application Instances'
       $step++
       Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($AA.Name)' - $Operation"
@@ -200,7 +200,7 @@ function Get-TeamsAutoAttendant {
 
       #region Creating Output Object
       # Building custom Object with Friendly Names
-      $Operation = "Constructing Output Object"
+      $Operation = 'Constructing Output Object'
       $step++
       Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($AA.Name)' - $Operation"
@@ -226,7 +226,7 @@ function Get-TeamsAutoAttendant {
       #region Extending Output Object with Switch Detailed
       if ($PSBoundParameters.ContainsKey('Detailed')) {
         #region Operator
-        $Operation = "Switch Detailed - Parsing Operator"
+        $Operation = 'Switch Detailed - Parsing Operator'
         $step++
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"
@@ -248,7 +248,7 @@ function Get-TeamsAutoAttendant {
         #endregion
 
         #region DefaultCallFlow
-        $Operation = "Switch Detailed - Parsing DefaultCallFlow"
+        $Operation = 'Switch Detailed - Parsing DefaultCallFlow'
         $step++
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"
@@ -279,7 +279,7 @@ function Get-TeamsAutoAttendant {
         #endregion
 
         #region CallFlows
-        $Operation = "Switch Detailed - Parsing CallFlows"
+        $Operation = 'Switch Detailed - Parsing CallFlows'
         $step++
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"
@@ -313,7 +313,7 @@ function Get-TeamsAutoAttendant {
         #endregion
 
         #region Schedules
-        $Operation = "Switch Detailed - Parsing Schedules"
+        $Operation = 'Switch Detailed - Parsing Schedules'
         $step++
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"
@@ -326,7 +326,7 @@ function Get-TeamsAutoAttendant {
         #endregion
 
         #region CallHandlingAssociations
-        $Operation = "Switch Detailed - Parsing CallHandlingAssociations"
+        $Operation = 'Switch Detailed - Parsing CallHandlingAssociations'
         $step++
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"

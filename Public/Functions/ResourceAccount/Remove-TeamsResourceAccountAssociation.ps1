@@ -50,7 +50,7 @@ function Remove-TeamsResourceAccountAssociation {
   [Alias('Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance')]
   [OutputType([System.Void])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to manipulate.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to manipulate.')]
     [Alias('Identity')]
     [string[]]$UserPrincipalName,
 
@@ -75,7 +75,7 @@ function Remove-TeamsResourceAccountAssociation {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -147,7 +147,7 @@ function Remove-TeamsResourceAccountAssociation {
       }
     }
     else {
-      Write-Warning -Message "No Accounts found"
+      Write-Warning -Message 'No Accounts found'
     }
   } #process
 

@@ -78,18 +78,18 @@ function Remove-TeamsUserVoiceConfig {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "Defines Type of Voice Configuration to remove")]
+    [Parameter(HelpMessage = 'Defines Type of Voice Configuration to remove')]
     [ValidateSet('All', 'DirectRouting', 'CallingPlans')]
-    [string]$Scope = "All",
+    [string]$Scope = 'All',
 
-    [Parameter(HelpMessage = "Instructs the Script to forego the disablement for EnterpriseVoice")]
+    [Parameter(HelpMessage = 'Instructs the Script to forego the disablement for EnterpriseVoice')]
     [Alias('DisableEnterpriseVoice')]
     [switch]$DisableEV,
 
-    [Parameter(HelpMessage = "No output is written by default, Switch PassThru will return changed object")]
+    [Parameter(HelpMessage = 'No output is written by default, Switch PassThru will return changed object')]
     [switch]$PassThru,
 
-    [Parameter(HelpMessage = "Suppresses confirmation prompt unless -Confirm is used explicitly")]
+    [Parameter(HelpMessage = 'Suppresses confirmation prompt unless -Confirm is used explicitly')]
     [switch]$Force
 
   ) #param
@@ -108,7 +108,7 @@ function Remove-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -127,14 +127,14 @@ function Remove-TeamsUserVoiceConfig {
       # Initialising counters for Progress bars
       [int]$step = 0
       [int]$sMax = switch ($Scope) {
-        "All" { 7 }
-        "CallingPlans" { 4 }
-        "DirectRouting" { 4 }
+        'All' { 7 }
+        'CallingPlans' { 4 }
+        'DirectRouting' { 4 }
       }
       if ( $DisableEV ) { $sMax++ }
 
       #region Information Gathering
-      $Operation = "Querying User Account"
+      $Operation = 'Querying User Account'
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       # Querying Identity
@@ -149,9 +149,9 @@ function Remove-TeamsUserVoiceConfig {
       #endregion
 
       #region Call Plan Configuration
-      if ($Scope -eq "All" -or $Scope -eq "CallingPlans") {
+      if ($Scope -eq 'All' -or $Scope -eq 'CallingPlans') {
         # Querying User Licenses
-        $Operation = "Calling Plans - Querying User Licenses"
+        $Operation = 'Calling Plans - Querying User Licenses'
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
@@ -176,7 +176,7 @@ function Remove-TeamsUserVoiceConfig {
           # Action only if Call Plan licenses found
           if ($Force -or $RemoveLicenses.Count -gt 0) {
             # Removing TelephoneNumber
-            $Operation = "Calling Plans - Removing Telephone Number"
+            $Operation = 'Calling Plans - Removing Telephone Number'
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
@@ -186,7 +186,7 @@ function Remove-TeamsUserVoiceConfig {
                 Write-Verbose -Message "User '$User' - Removing TelephoneNumber: OK" -Verbose
               }
               catch {
-                if ( "Your tenant is Disabled for this service. You are not permitted to use this cmdlet." -in $_.Exception.Message) {
+                if ( 'Your tenant is Disabled for this service. You are not permitted to use this cmdlet.' -in $_.Exception.Message) {
                   Write-Verbose -Message "User '$User' - Removing TelephoneNumber: OK (Service Disabled)" -Verbose
                 }
                 else {
@@ -200,7 +200,7 @@ function Remove-TeamsUserVoiceConfig {
             }
 
             # Removing Call Plan Licenses (with Confirmation)
-            $Operation = "Calling Plans - Removing Calling Plan Licenses"
+            $Operation = 'Calling Plans - Removing Calling Plan Licenses'
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
@@ -239,9 +239,9 @@ function Remove-TeamsUserVoiceConfig {
       #endregion
 
       #region Direct Routing Configuration
-      if ($Scope -eq "All" -or $Scope -eq "DirectRouting") {
+      if ($Scope -eq 'All' -or $Scope -eq 'DirectRouting') {
         #region Removing OnPremLineURI
-        $Operation = "Direct Routing - Removing OnPremLineURI"
+        $Operation = 'Direct Routing - Removing OnPremLineURI'
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
@@ -261,7 +261,7 @@ function Remove-TeamsUserVoiceConfig {
         #endregion
 
         #region Removing Online Voice Routing Policy
-        $Operation = "Direct Routing - Removing Online Voice Routing Policy"
+        $Operation = 'Direct Routing - Removing Online Voice Routing Policy'
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
@@ -284,7 +284,7 @@ function Remove-TeamsUserVoiceConfig {
 
       #region Generic/shared Configuration
       #region Removing Tenant DialPlan
-      $Operation = "Generic - Removing Tenant Dial Plan"
+      $Operation = 'Generic - Removing Tenant Dial Plan'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
@@ -306,12 +306,12 @@ function Remove-TeamsUserVoiceConfig {
       #region Disabling EnterpriseVoice
       if ( $Force -or $CsUser.EnterpriseVoiceEnabled ) {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
-          $Operation = "Generic - Disabling Enterprise Voice"
+          $Operation = 'Generic - Disabling Enterprise Voice'
           $step++
           Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message $Operation
           try {
-            if ($Force -or $PSCmdlet.ShouldProcess("$User", "Disabling EnterpriseVoice")) {
+            if ($Force -or $PSCmdlet.ShouldProcess("$User", 'Disabling EnterpriseVoice')) {
               $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
               Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: OK" -Verbose
             }

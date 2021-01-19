@@ -57,7 +57,7 @@ function Get-TeamsResourceAccountAssociation {
   [Alias('Get-TeamsRAA')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to manipulate.")]
+    [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to manipulate.')]
     [Alias('UserPrincipalName')]
     [string[]]$Identity
   ) #param
@@ -76,7 +76,7 @@ function Get-TeamsResourceAccountAssociation {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -91,7 +91,7 @@ function Get-TeamsResourceAccountAssociation {
     $Accounts = $null
     [System.Collections.ArrayList]$Accounts = @()
     if (-not $PSBoundParameters.ContainsKey('Identity')) {
-      Write-Verbose -Message "Querying all Resource Accounts, this may take some time..." -Verbose
+      Write-Verbose -Message 'Querying all Resource Accounts, this may take some time...' -Verbose
       $Accounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue
     }
     else {
@@ -145,7 +145,7 @@ function Get-TeamsResourceAccountAssociation {
       }
     }
     else {
-      Write-Verbose -Message "No Accounts found" -Verbose
+      Write-Verbose -Message 'No Accounts found' -Verbose
     }
   } #process
 

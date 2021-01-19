@@ -38,7 +38,7 @@ function Remove-TenantDialPlanNormalizationRule {
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the name of the dial plan to modify the normalization rules.")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the name of the dial plan to modify the normalization rules.')]
     [string]$DialPlan
   ) #param
 
@@ -53,7 +53,7 @@ function Remove-TenantDialPlanNormalizationRule {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -86,10 +86,10 @@ function Remove-TenantDialPlanNormalizationRule {
         $ruleArray | Out-Host
 
         do {
-          $indexToRemove = Read-Host -Prompt "Enter the Rule Index of the normalization rule to remove from the dial plan (leave blank to quit without changes)"
+          $indexToRemove = Read-Host -Prompt 'Enter the Rule Index of the normalization rule to remove from the dial plan (leave blank to quit without changes)'
 
           if ($indexToRemove -NotIn $indexArray -and $indexToRemove.Length -ne 0) {
-            Write-Warning -Message "That is not a valid Rule Index. Please try again or leave blank to quit."
+            Write-Warning -Message 'That is not a valid Rule Index. Please try again or leave blank to quit.'
           }
         } until ($indexToRemove -in $indexArray -or $indexToRemove.Length -eq 0)
 
@@ -100,12 +100,12 @@ function Remove-TenantDialPlanNormalizationRule {
         if ($ruleCount -ne 1) {
           $newNormRules = $currentNormRules
           [void]$newNormRules.Remove($currentNormRules[$indexToRemove])
-          if ($PSCmdlet.ShouldProcess("$DialPlan", "Set-CsTenantDialPlan")) {
+          if ($PSCmdlet.ShouldProcess("$DialPlan", 'Set-CsTenantDialPlan')) {
             Set-CsTenantDialPlan -Identity $DialPlan -NormalizationRules $newNormRules
           }
         }
         else {
-          if ($PSCmdlet.ShouldProcess("$DialPlan", "Set-CsTenantDialPlan")) {
+          if ($PSCmdlet.ShouldProcess("$DialPlan", 'Set-CsTenantDialPlan')) {
             Set-CsTenantDialPlan -Identity $DialPlan -NormalizationRules $null
           }
         }

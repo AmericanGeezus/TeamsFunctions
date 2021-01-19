@@ -73,13 +73,13 @@ function New-TeamsCallableEntity {
   [Alias('New-TeamsAutoAttendantCallableEntity', 'New-TeamsAAEntity')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "Identity of the Call Target")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'Identity of the Call Target')]
     [string]$Identity,
 
-    [Parameter(HelpMessage = "Enables Transcription (for Shared Voicemail only)")]
+    [Parameter(HelpMessage = 'Enables Transcription (for Shared Voicemail only)')]
     [switch]$EnableTranscription,
 
-    [Parameter(HelpMessage = "Callable Entity type: ExternalPstn, User, SharedVoiceMail, ApplicationEndpoint")]
+    [Parameter(HelpMessage = 'Callable Entity type: ExternalPstn, User, SharedVoiceMail, ApplicationEndpoint')]
     [ValidateSet('User', 'ExternalPstn', 'SharedVoicemail', 'ApplicationEndpoint')]
     [string]$Type,
 
@@ -87,7 +87,7 @@ function New-TeamsCallableEntity {
     [Parameter(HelpMessage = "OutputType: Object or ObjectId")]
     [switch]$ReturnObjectIdOnly,
  #>
-    [Parameter(HelpMessage = "Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified")]
+    [Parameter(HelpMessage = 'Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified')]
     [switch]$Force
 
   ) #param
@@ -106,7 +106,7 @@ function New-TeamsCallableEntity {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -117,14 +117,14 @@ function New-TeamsCallableEntity {
     $Parameters = $null
 
     # Normalising TelephoneNumber
-    If ($Identity -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+    If ($Identity -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
       $Identity = Format-StringForUse $Identity -As E164 | Format-StringForUse -As LineURI
       Write-Verbose -Message "Callable Entity Type matches Phone Number - Number normalised to '$Identity'" -Verbose
     }
 
     # Determining Callable Entity
     try {
-      $CEObject = Get-TeamsCallableEntity $Identity -ErrorAction Stop
+      $CEObject = Get-TeamsCallableEntity "$Identity" -ErrorAction Stop
     }
     catch {
       Write-Error -Message "No Unique Target found for '$Identity'" -Exception System.Reflection.AmbiguousMatchException
@@ -135,49 +135,48 @@ function New-TeamsCallableEntity {
     if ( $Type ) {
       # Type is provided
       if ($CEObject.Type -ne $Type) {
-        Write-Error -Message "Callable Entity Type does not match queried type. Either omit the Type parameter or provide correct Type"
+        Write-Error -Message 'Callable Entity Type does not match queried type. Either omit the Type parameter or provide correct Type'
         return
       }
       else {
-        Write-Verbose -Message "Callable Entity Type matches queried type. OK"
+        Write-Verbose -Message 'Callable Entity Type matches queried type. OK'
       }
     }
     else {
-      if ($CEObject.ObjectType -eq "Unknown") {
-        Write-Error -Message "Object could not be determined and Cannot be used!" -ErrorAction Stop
+      if ($CEObject.Type -eq 'Unknown') {
+        Write-Error -Message 'Object could not be determined and Cannot be used!' -ErrorAction Stop
       }
       else {
         # Determining Type
-        $Type = $CEObject.ObjectType
-        Write-Verbose -Message "Callable Entity Type determined: '$Type'"
+        Write-Verbose -Message "Callable Entity Type determined: '$($CEObject.Type)'"
       }
     }
 
     # Adding Parameters
     $Parameters = @{'Identity' = $CEObject.Identity }
-    $Parameters += @{'Type' = $Type }
+    $Parameters += @{'Type' = $CEObject.Type }
 
 
     # EnableTranscription
     if ( $EnableTranscription ) {
-      if ($CEObject.Type -eq "SharedVoicemail") {
-        Write-Verbose -Message "EnableTranscription - Transcription is activated for SharedVoicemail"
+      if ($CEObject.Type -eq 'SharedVoicemail') {
+        Write-Verbose -Message 'EnableTranscription - Transcription is activated for SharedVoicemail'
         $Parameters += @{'EnableTranscription' = $true }
       }
       else {
-        Write-Verbose -Message "EnableTranscription - Transcription can only be activated for SharedVoicemail." -Verbose
+        Write-Verbose -Message 'EnableTranscription - Transcription can only be activated for SharedVoicemail.' -Verbose
       }
     }
     #endregion
 
 
     # Create CsAutoAttendantCallableEntity
-    Write-Verbose -Message "[PROCESS] Creating Callable Entity"
+    Write-Verbose -Message '[PROCESS] Creating Callable Entity'
     if ($PSBoundParameters.ContainsKey('Debug')) {
       "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-    if ($PSCmdlet.ShouldProcess("$Identity", "New-CsAutoAttendantCallableEntity")) {
+    if ($PSCmdlet.ShouldProcess("$Identity", 'New-CsAutoAttendantCallableEntity')) {
       New-CsAutoAttendantCallableEntity @Parameters
     }
   }

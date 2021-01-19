@@ -44,11 +44,11 @@ function Verb-Noun {
   [Alias('')]
   [OutputType([PSCustomObject])]
   param (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "Username(s)")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'Username(s)')]
     [Alias('', '')]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "")]
+    [Parameter(HelpMessage = '')]
     [Alias('')]
     [String]$x
 
@@ -68,7 +68,7 @@ function Verb-Noun {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
 
   } #begin

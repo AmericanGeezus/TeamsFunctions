@@ -55,17 +55,17 @@ function Remove-TeamsCommonAreaPhone {
   [Alias('Remove-TeamsCAP')]
   [OutputType([System.Void])]
   param (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to create.")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
         If ($_ -match '@') {
           $True
         }
         else {
-          Write-Host "Must be a valid UPN" -ForegroundColor Red
+          Write-Host 'Must be a valid UPN' -ForegroundColor Red
           $false
         }
       })]
-    [Alias("Identity", "ObjectId")]
+    [Alias('Identity', 'ObjectId')]
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
@@ -86,11 +86,11 @@ function Remove-TeamsCommonAreaPhone {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Caveat - Access rights
-    Write-Verbose -Message "This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser" -Verbose
-    Write-Verbose -Message "No verification of required admin roles is performed. Use Get-AzureAdAdminRole to determine roles for your account"
+    Write-Verbose -Message 'This Script requires the executor to have access to AzureAD and rights to execute Remove-AzureAdUser' -Verbose
+    Write-Verbose -Message 'No verification of required admin roles is performed. Use Get-AzureAdAdminRole to determine roles for your account'
 
     # Adding Types - Required for License manipulation in Process
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
@@ -114,7 +114,7 @@ function Remove-TeamsCommonAreaPhone {
       }
       catch {
         # Catching anything
-        Write-Warning -Message "Object not found! Please provide a valid UserPrincipalName of an existing Common Area Phone"
+        Write-Warning -Message 'Object not found! Please provide a valid UserPrincipalName of an existing Common Area Phone'
         continue
       }
       #endregion
@@ -145,11 +145,11 @@ function Remove-TeamsCommonAreaPhone {
           Write-Verbose -Message "'$DisplayName' Removing Removing licenses"
           $Licenses.RemoveLicenses = @($UserLicenseSkuIDs)
           Set-AzureADUserLicense -ObjectId $Object.ObjectId -AssignedLicenses $Licenses -ErrorAction STOP
-          Write-Verbose -Message "SUCCESS"
+          Write-Verbose -Message 'SUCCESS'
         }
       }
       catch {
-        Write-Error -Message "Removal of Licenses failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-AzureADUserLicense"
+        Write-Error -Message 'Removal of Licenses failed' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Set-AzureADUserLicense'
         return
       }
 
@@ -164,19 +164,19 @@ function Remove-TeamsCommonAreaPhone {
       if ($PSCmdlet.ShouldProcess("Common Area Phone with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)
-          Write-Verbose -Message "SUCCESS - Object removed from Azure Active Directory"
+          Write-Verbose -Message 'SUCCESS - Object removed from Azure Active Directory'
         }
         catch {
-          Write-Error -Message "Removal failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
+          Write-Error -Message 'Removal failed' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Remove-AzureAdUser'
         }
       }
       else {
-        Write-Verbose -Message "SKIPPED - Object removed not confirmed Azure Active Directory"
+        Write-Verbose -Message 'SKIPPED - Object removed not confirmed Azure Active Directory'
       }
       #endregion
 
 
-      Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
       # Output
       if ($PassThru) {

@@ -84,11 +84,11 @@ function Connect-SkypeOnline {
     [Alias('Username')]
     [string]$AccountId,
 
-    [Parameter(Helpmessage = "Required only if the Administrators domain is not set up to allow sign-in")]
+    [Parameter(Helpmessage = 'Required only if the Administrators domain is not set up to allow sign-in')]
     [AllowNull()]
     [string]$OverrideAdminDomain,
 
-    [Parameter(Helpmessage = "Idle Timeout of the session in hours between 1 and 8; Default is 4")]
+    [Parameter(Helpmessage = 'Idle Timeout of the session in hours between 1 and 8; Default is 4')]
     [ValidateRange(1, 8)]
     [int]$IdleTimeout = 4
   ) #param
@@ -101,13 +101,13 @@ function Connect-SkypeOnline {
     #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
     # Required as Warnings on the OriginalRegistrarPool may halt Script execution
-    $WarningPreference = "Continue"
+    $WarningPreference = 'Continue'
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     $Parameters = $null
     $Parameters += @{'ErrorAction' = 'STOP' }
@@ -118,29 +118,29 @@ function Connect-SkypeOnline {
     $TeamsModule, $SkypeModule = Get-NewestModule MicrosoftTeams, SkypeOnlineConnector
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
-      Write-Verbose -Message "Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366"
-      Write-Verbose -Message "Module MicrosoftTeams not installed. Please install v1.1.6 or higher" -Verbose
-      Write-Error -Message "Module missing. Please install MicrosoftTeams or SkypeOnlineConnector" -Category ObjectNotFound -ErrorAction Stop
+      Write-Verbose -Message 'Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366'
+      Write-Verbose -Message 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher' -Verbose
+      Write-Error -Message 'Module missing. Please install MicrosoftTeams or SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
 
     }
-    elseif ( $TeamsModule.Version -lt "1.1.6" -and -not $SkypeModule ) {
+    elseif ( $TeamsModule.Version -lt '1.1.6' -and -not $SkypeModule ) {
       try {
-        Write-Verbose -Message "Module MicrosoftTeams is outdated, trying to update to v1.1.6" -Verbose
+        Write-Verbose -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6' -Verbose
         Update-Module MicrosoftTeams -Force -ErrorAction Stop
         $TeamsModule = Get-NewestModule MicrosoftTeams
         Import-Module MicrosoftTeams -MinimumVersion 1.1.6 -Force -Global
       }
       catch {
-        Write-Verbose -Message "Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher" -Verbose
-        Write-Error -Message "Module outdated. Please update Module MicrosoftTeams or install SkypeOnlineConnector" -Category ObjectNotFound -ErrorAction Stop
+        Write-Verbose -Message 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher' -Verbose
+        Write-Error -Message 'Module outdated. Please update Module MicrosoftTeams or install SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
       }
     }
-    elseif ( $TeamsModule.Version -ge "1.1.6" -and -not $SkypeModule ) {
+    elseif ( $TeamsModule.Version -ge '1.1.6' -and -not $SkypeModule ) {
       Import-Module MicrosoftTeams -Force -Global
     }
     elseif ( $SkypeModule ) {
       if ($SkypeModule.Version.Major -ne 7) {
-        Write-Error -Message "Module SkypeOnlineConnector outdated. Version 7 is required. Please switch to Module MicrosoftTeams or update SkypeOnlineConnector to Version 7" -Category ObjectNotFound -ErrorAction Stop
+        Write-Error -Message 'Module SkypeOnlineConnector outdated. Version 7 is required. Please switch to Module MicrosoftTeams or update SkypeOnlineConnector to Version 7' -Category ObjectNotFound -ErrorAction Stop
       }
       else {
         Import-Module SkypeOnlineConnector -Force -Global
@@ -148,7 +148,7 @@ function Connect-SkypeOnline {
     }
 
     # Verifying Module is loaded correctly
-    if ( $TeamsModule.Version -ge "1.1.6" -and -not (Get-Module MicrosoftTeams)) {
+    if ( $TeamsModule.Version -ge '1.1.6' -and -not (Get-Module MicrosoftTeams)) {
       Write-Verbose "Module 'MicrosoftTeams' - import failed. Trying to import again (forcefully)!" -Verbose
       Import-Module MicrosoftTeams -Force -Global
     }
@@ -156,7 +156,7 @@ function Connect-SkypeOnline {
 
     #region CsOnlineSession, CsOnlineSessionForReconnection, SessionOptions
     # Determining capabilities of New-CsOnlineSession
-    $Command = "New-CsOnlineSession"
+    $Command = 'New-CsOnlineSession'
     try {
       $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
       $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
@@ -166,7 +166,7 @@ function Connect-SkypeOnline {
       Write-Error -Message "Command '$Command' not available. Please validate Modules MicrosoftTeams or SkypeOnlineConnector" -Category ObjectNotFound -ErrorAction Stop
     }
 
-    $Command = "Enable-CsOnlineSessionForReconnection"
+    $Command = 'Enable-CsOnlineSessionForReconnection'
     try {
       $ReconnectionPossible = Get-Command -Name $Command -ErrorAction Stop
     }
@@ -187,7 +187,7 @@ function Connect-SkypeOnline {
 
     # Existing Session
     if (Test-SkypeOnlineConnection) {
-      Write-Error -Message "A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again." -ErrorAction Stop
+      Write-Error -Message 'A Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again.' -ErrorAction Stop
     }
 
     # Cleanup of global Variables set
@@ -211,7 +211,7 @@ function Connect-SkypeOnline {
         }
         else {
           Write-Verbose -Message "$($MyInvocation.MyCommand) - Parameter 'Username' is available. Please provide Username to use SSO" -Verbose
-          $AccountId = Read-Host "Enter the sign-in address of a Skype for Business Admin"
+          $AccountId = Read-Host 'Enter the sign-in address of a Skype for Business Admin'
         }
       }
       if ($AccountId) {
@@ -243,12 +243,12 @@ function Connect-SkypeOnline {
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
     }
     else {
-      Write-Verbose -Message "OverrideAdminDomain not used!"
+      Write-Verbose -Message 'OverrideAdminDomain not used!'
     }
     #endregion
 
     # Creating Session
-    if ($PSBoundParameters.ContainsKey("Debug")) {
+    if ($PSBoundParameters.ContainsKey('Debug')) {
       "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
@@ -258,8 +258,8 @@ function Connect-SkypeOnline {
     }
     catch [System.Net.WebException] {
       try {
-        Write-Warning -Message "Session could not be created. Maybe missing OverrideAdminDomain to connect?"
-        $Domain = Read-Host "Please enter an OverrideAdminDomain for this Tenant"
+        Write-Warning -Message 'Session could not be created. Maybe missing OverrideAdminDomain to connect?'
+        $Domain = Read-Host 'Please enter an OverrideAdminDomain for this Tenant'
         if ( $Parameters.OverrideAdminDomain ) {
           $Parameters.OverrideAdminDomain = $Domain
         }
@@ -299,14 +299,14 @@ function Connect-SkypeOnline {
           Write-Verbose -Message "Session is enabled for reconnection, allowing it to be re-used! (Use 'PoL' or Get-TeamsTenant to reconnect) - Note: This setting depends on the Tenants Security settings" -Verbose
         }
         else {
-          Write-Verbose -Message "Session cannot be enabled for reconnection. Please disconnect cleanly before connecting anew" -Verbose
+          Write-Verbose -Message 'Session cannot be enabled for reconnection. Please disconnect cleanly before connecting anew' -Verbose
         }
       }
       catch {
         Write-Verbose -Message "Session import failed - Error for troubleshooting: $($_.Exception.Message)" -Verbose
       }
 
-      $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like "*.online.lync.com" -or $_.Computername -eq "api.interfaces.records.teams.microsoft.com") -and $_.State -eq "Opened" -and $_.Availability -eq "Available" } -WarningAction STOP -ErrorAction STOP
+      $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like '*.online.lync.com' -or $_.Computername -eq 'api.interfaces.records.teams.microsoft.com') -and $_.State -eq 'Opened' -and $_.Availability -eq 'Available' } -WarningAction STOP -ErrorAction STOP
       $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
       $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
       $Timeout = New-TimeSpan -Hours $($PSSkypeOnlineSession.IdleTimeout / 3600000)

@@ -54,7 +54,7 @@ function Get-TeamsObjectType {
   [CmdletBinding(ConfirmImpact = 'Low')]
   [OutputType([System.String])]
   param(
-    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, HelpMessage = "Identity of the Call Target")]
+    [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, HelpMessage = 'Identity of the Call Target')]
     [string]$Identity
   ) #param
 
@@ -72,38 +72,38 @@ function Get-TeamsObjectType {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    if ($Identity -match "^tel:\+\d") {
+    if ($Identity -match '^tel:\+\d') {
       Write-Verbose -Message "Callable Entity - Call Target '$Identity' (TelURI) found: TelURI (ExternalPstn)"
-      return "TelURI"
+      return 'TelURI'
     }
     else {
       $User = Find-AzureAdUser $Identity
       if ( $User ) {
-        if ($User[0].Department -eq "Microsoft Communication Application Instance") {
+        if ($User[0].Department -eq 'Microsoft Communication Application Instance') {
           #if ( Test-TeamsResourceAccount $Identity ) {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: ResourceAccount (ApplicationInstance), (VoiceApp)"
-          return "ResourceAccount"
+          return 'ResourceAccount'
         }
         else {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: User (Forward, Voicemail)"
-          return "User"
+          return 'User'
         }
       }
       else {
         if ( Test-AzureADGroup $Identity ) {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: Group (SharedVoicemail)"
-          return "Group"
+          return 'Group'
         }
         else {
           # Catch neither
-          Write-Verbose -Message "ObjectType cannot be determined." -Verbose
+          Write-Verbose -Message 'ObjectType cannot be determined.' -Verbose
           return
         }
       }

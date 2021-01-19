@@ -55,11 +55,11 @@ function Find-TeamsUserVoiceRoute {
   [Alias('Find-TeamsUVR')]
   [OutputType([PSCustomObject])]
   param (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Username(s) to query routing for")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s) to query routing for')]
     [Alias('Username', 'UserPrincipalName')]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "Phone Number to be normalised with the Dial Plan")]
+    [Parameter(HelpMessage = 'Phone Number to be normalised with the Dial Plan')]
     [Alias('Number')]
     [String]$DialedNumber
 
@@ -76,7 +76,7 @@ function Find-TeamsUserVoiceRoute {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     #region Defining Output Object
     class TFVoiceRouting {
@@ -127,7 +127,7 @@ function Find-TeamsUserVoiceRoute {
     #endregion
 
     if (-not $DialedNumber) {
-      Write-Warning -Message "Parameter DialedNumber was not provided, only basic routing path (first match) is shown"
+      Write-Warning -Message 'Parameter DialedNumber was not provided, only basic routing path (first match) is shown'
     }
 
   } #begin
@@ -153,7 +153,7 @@ function Find-TeamsUserVoiceRoute {
 
       # User
       $UserVoiceRouting = $null
-      $UserVoiceRouting = [TFVoiceRouting]::new("", "", "", "", "", "", "", "", "", $null, "", "", "")
+      $UserVoiceRouting = [TFVoiceRouting]::new('', '', '', '', '', '', '', '', '', $null, '', '', '')
       $UserVoiceRouting.Identity = $User.UserPrincipalName
       $UserVoiceRouting.TenantDialPlan = $User.TenantDialPlan
       $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
@@ -185,7 +185,7 @@ function Find-TeamsUserVoiceRoute {
 
         if ( $EffectiveTranslation.TranslatedNumber ) {
           Write-Verbose "User '$Id' - Dialed Number '$DialedNumber' translated to '$($EffectiveTranslation.TranslatedNumber)'"
-          Write-Verbose "User '$Id' - Normalization rule '$($EffectiveTranslation.MatchingRule -replace ";", "`n"))"
+          Write-Verbose "User '$Id' - Normalization rule '$($EffectiveTranslation.MatchingRule -replace ';', "`n"))"
           $UserVoiceRouting.MatchingRule = $EffectiveTranslation.MatchingRule.Name
           $UserVoiceRouting.MatchingPattern = $EffectiveTranslation.MatchingRule.Pattern
           $UserVoiceRouting.TranslatedNumber = $EffectiveTranslation.TranslatedNumber
@@ -195,7 +195,7 @@ function Find-TeamsUserVoiceRoute {
         }
         $VoiceRouteNumber = $UserVoiceRouting.TranslatedNumber
 
-        if ($EffectiveTDP.EffectiveTenantDialPlanName -match "_(?<content>.*)_") {
+        if ($EffectiveTDP.EffectiveTenantDialPlanName -match '_(?<content>.*)_') {
           $UserVoiceRouting.EffectiveDialPlan = $matches.content
         }
       }
@@ -208,7 +208,7 @@ function Find-TeamsUserVoiceRoute {
         if ($OPUs) {
           [System.Collections.ArrayList]$VoiceRoutes = @()
           foreach ($OPU in $OPUs) {
-            $VoiceRoutes += Get-CsOnlineVoiceRoute | Where-Object { $_.OnlinePstnUsages -contains $OPU } | Select-Object *, @{label = "PSTNUsage"; Expression = { $OPU } }
+            $VoiceRoutes += Get-CsOnlineVoiceRoute | Where-Object { $_.OnlinePstnUsages -contains $OPU } | Select-Object *, @{label = 'PSTNUsage'; Expression = { $OPU } }
           }
           if ($PSBoundParameters.ContainsKey('Debug')) {
             "Function: $($MyInvocation.MyCommand.Name) - VoiceRoutes", ( $VoiceRoutes | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
