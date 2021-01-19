@@ -64,29 +64,29 @@ function Get-TeamsCommonAreaPhone {
     Set-TeamsUserVoiceConfig
 	#>
 
-  [CmdletBinding(ConfirmImpact = 'Low', DefaultParameterSetName = "Identity")]
+  [CmdletBinding(ConfirmImpact = 'Low', DefaultParameterSetName = 'Identity')]
   [Alias('Get-TeamsCAP')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Position = 0, ParameterSetName = "Identity", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UserPrincipalName of the User")]
-    [Alias("UserPrincipalName")]
+    [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UserPrincipalName of the User')]
+    [Alias('UserPrincipalName')]
     [string[]]$Identity,
 
-    [Parameter(ParameterSetName = "DisplayName", ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Searches for AzureAD Object with this Name")]
+    [Parameter(ParameterSetName = 'DisplayName', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
     [ValidateLength(3, 255)]
     [string]$DisplayName,
 
-    [Parameter(ParameterSetName = "Number", ValueFromPipelineByPropertyName, HelpMessage = "Telephone Number of the Object")]
+    [Parameter(ParameterSetName = 'Number', ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number of the Object')]
     [ValidateScript( {
-        If ($_ -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
+        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
           $True
         }
         else {
-          Write-Host "Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted." -ForegroundColor Red
+          Write-Host 'Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted.' -ForegroundColor Red
           $false
         }
       })]
-    [Alias("Tel", "Number", "TelephoneNumber")]
+    [Alias('Tel', 'Number', 'TelephoneNumber')]
     [string]$PhoneNumber
   ) #param
 
@@ -105,28 +105,28 @@ function Get-TeamsCommonAreaPhone {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
     [int]$sMax = 4
 
     # Loading all Microsoft Telephone Numbers
-    $Operation = "Gathering Phone Numbers from the Tenant"
-    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    $Operation = 'Gathering Phone Numbers from the Tenant'
+    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
       $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
     }
 
     # Querying Global Policies
-    $Operation = "Querying Global Policies"
+    $Operation = 'Querying Global Policies'
     $step++
-    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    $GlobalIPPhonePolicy = Get-CsTeamsIpPhonePolicy "Global"
-    $GlobalCallingPolicy = Get-CsTeamsCallingPolicy "Global"
-    $GlobalCallParkPolicy = Get-CsTeamsCallParkPolicy "Global"
+    $GlobalIPPhonePolicy = Get-CsTeamsIpPhonePolicy 'Global'
+    $GlobalCallingPolicy = Get-CsTeamsCallingPolicy 'Global'
+    $GlobalCallParkPolicy = Get-CsTeamsCallParkPolicy 'Global'
 
   } #begin
 
@@ -135,9 +135,9 @@ function Get-TeamsCommonAreaPhone {
     $CommonAreaPhones = $null
 
     #region Data gathering
-    $Operation = "Querying Common Area Phones"
+    $Operation = 'Querying Common Area Phones'
     $step++
-    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     if ($PSBoundParameters.ContainsKey('Identity')) {
       # Default Parameterset
@@ -163,19 +163,19 @@ function Get-TeamsCommonAreaPhone {
       #$CommonAreaPhones = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
     }
     elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars "tel"
+      $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars 'tel'
       Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
       $Filter = 'LineURI -like "*{0}*"' -f $SearchString
       $CommonAreaPhones = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
     }
     else {
-      Write-Warning -Message "No parameters provided. Please provide at least one UserPrincipalName with Identity a DisplayName or a PhoneNumber"
+      Write-Warning -Message 'No parameters provided. Please provide at least one UserPrincipalName with Identity a DisplayName or a PhoneNumber'
       return
     }
 
     # Stop script if no data has been determined
     if ($CommonAreaPhones.Count -eq 0) {
-      Write-Verbose -Message "No Data found."
+      Write-Verbose -Message 'No Data found.'
       return
     }
     #endregion
@@ -185,7 +185,7 @@ function Get-TeamsCommonAreaPhone {
     # Creating new PS Object
     $Operation = "Parsing Information for $($CommonAreaPhones.Count) Common Area Phones"
     $step++
-    Write-Progress -Id 0 -Status "Information Gathering" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     foreach ($CommonAreaPhone in $CommonAreaPhones) {
       # Initialising counters for Progress bars
@@ -193,14 +193,14 @@ function Get-TeamsCommonAreaPhone {
       [int]$sMax = 3
 
       #region Parsing Policies
-      $Operation = "Parsing Policies"
+      $Operation = 'Parsing Policies'
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
 
       # TeamsIPPhonePolicy and CommonAreaPhoneSignIn
       if ( -not $CommonAreaPhone.TeamsIPPhonePolicy ) {
         $UserSignInMode = $GlobalIPPhonePolicy.SignInMode
-        if ( $GlobalIPPhonePolicy.SignInMode -ne "CommonAreaPhoneSignIn" ) {
+        if ( $GlobalIPPhonePolicy.SignInMode -ne 'CommonAreaPhoneSignIn' ) {
           Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy is not set. The Global policy does not have the Sign-in mode set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please assign a TeamsIpPhonePolicy or change the Global Policy!"
         }
         else {
@@ -211,7 +211,7 @@ function Get-TeamsCommonAreaPhone {
         $UserIpPhonePolicy = $null
         $UserIpPhonePolicy = Get-CsTeamsIPPhonePolicy $CommonAreaPhone.TeamsIPPhonePolicy -WarningAction SilentlyContinue
         $UserSignInMode = $UserIpPhonePolicy.SignInMode
-        if ( $UserIpPhonePolicy.SignInMode -ne "CommonAreaPhoneSignIn" ) {
+        if ( $UserIpPhonePolicy.SignInMode -ne 'CommonAreaPhoneSignIn' ) {
           Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set, but the Sign-in mode set not set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please change the TeamsIpPhonePolicy!"
         }
         else {
@@ -265,25 +265,25 @@ function Get-TeamsCommonAreaPhone {
       #endregion
 
       # Parsing TeamsUserLicense
-      $Operation = "Parsing License Assignments"
+      $Operation = 'Parsing License Assignments'
       $step++
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $CommonAreaPhoneLicense = Get-TeamsUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
 
       # Phone Number Type
-      $Operation = "Parsing PhoneNumber"
+      $Operation = 'Parsing PhoneNumber'
       $step++
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
-        $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars "tel:+") -split ';')[0]
+        $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars 'tel:+') -split ';')[0]
         if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
-          $CommonAreaPhonePhoneNumberType = "Microsoft Number"
+          $CommonAreaPhonePhoneNumberType = 'Microsoft Number'
         }
         else {
-          $CommonAreaPhonePhoneNumberType = "Direct Routing Number"
+          $CommonAreaPhonePhoneNumberType = 'Direct Routing Number'
         }
       }
       else {
@@ -319,7 +319,7 @@ function Get-TeamsCommonAreaPhone {
     }
 
     #endregion
-    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
   } #process
 

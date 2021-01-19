@@ -99,31 +99,31 @@ function Set-TeamsResourceAccount {
   [Alias('Set-TeamsRA')]
   [OutputType([System.Void])]
   param (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to change")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
         If ($_ -match '@') {
           $True
         }
         else {
-          Write-Host "Must be a valid UPN" -ForegroundColor Red
+          Write-Host 'Must be a valid UPN' -ForegroundColor Red
           $false
         }
       })]
-    [Alias("Identity")]
+    [Alias('Identity')]
     [string]$UserPrincipalName,
 
-    [Parameter(HelpMessage = "Display Name is shown in Teams")]
+    [Parameter(HelpMessage = 'Display Name is shown in Teams')]
     [string]$DisplayName,
 
-    [Parameter(HelpMessage = "CallQueue or AutoAttendant")]
-    [ValidateSet("CallQueue", "AutoAttendant", "CQ", "AA")]
-    [Alias("Type")]
+    [Parameter(HelpMessage = 'CallQueue or AutoAttendant')]
+    [ValidateSet('CallQueue', 'AutoAttendant', 'CQ', 'AA')]
+    [Alias('Type')]
     [string]$ApplicationType,
 
-    [Parameter(HelpMessage = "Usage Location to assign")]
+    [Parameter(HelpMessage = 'Usage Location to assign')]
     [string]$UsageLocation,
 
-    [Parameter(HelpMessage = "License to be assigned")]
+    [Parameter(HelpMessage = 'License to be assigned')]
     [ValidateScript( {
         $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
@@ -136,13 +136,13 @@ function Set-TeamsResourceAccount {
       })]
     [string]$License,
 
-    [Parameter(HelpMessage = "Telephone Number to assign")]
-    [Alias("Tel", "Number", "TelephoneNumber")]
+    [Parameter(HelpMessage = 'Telephone Number to assign')]
+    [Alias('Tel', 'Number', 'TelephoneNumber')]
     [AllowNull()]
     [AllowEmptyString()]
     [string]$PhoneNumber,
 
-    [Parameter(HelpMessage = "By default, no output is generated, PassThru will display the Object changed")]
+    [Parameter(HelpMessage = 'By default, no output is generated, PassThru will display the Object changed')]
     [switch]$PassThru
   ) #param
 
@@ -160,7 +160,7 @@ function Set-TeamsResourceAccount {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -178,9 +178,9 @@ function Set-TeamsResourceAccount {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
-    $Status = "Verifying input"
+    $Status = 'Verifying input'
     #region Lookup of UserPrincipalName
-    $Operation = "Querying Object"
+    $Operation = 'Querying Object'
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
 
@@ -192,14 +192,14 @@ function Set-TeamsResourceAccount {
     }
     catch {
       # Catching anything
-      Write-Error -Message "'$UserPrincipalName' OnlineApplicationInstance not found!" -Category ObjectNotFound -RecommendedAction "Please provide a valid UserPrincipalName of an existing Resource Account" #-ErrorAction Stop
+      Write-Error -Message "'$UserPrincipalName' OnlineApplicationInstance not found!" -Category ObjectNotFound -RecommendedAction 'Please provide a valid UserPrincipalName of an existing Resource Account' #-ErrorAction Stop
       return
     }
     #endregion
 
     #region Normalising $DisplayName
-    if ($PSBoundParameters.ContainsKey("DisplayName")) {
-      $Operation = "DisplayName"
+    if ($PSBoundParameters.ContainsKey('DisplayName')) {
+      $Operation = 'DisplayName'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -214,8 +214,8 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region ApplicationType and Associations
-    if ($PSBoundParameters.ContainsKey("ApplicationType")) {
-      $Operation = "Application Type"
+    if ($PSBoundParameters.ContainsKey('ApplicationType')) {
+      $Operation = 'Application Type'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -233,7 +233,7 @@ function Set-TeamsResourceAccount {
         $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Ignore
         if ($Associations.count -gt 0) {
           # Associations found. Aborting
-          Write-Error -Message "'$Name' ApplicationType cannot be changed! Object is associated with Call Queue or AutoAttendant." -Category OperationStopped -RecommendedAction "Remove Associations with Remove-CsOnlineApplicationInstanceAssociation manually" -ErrorAction Stop
+          Write-Error -Message "'$Name' ApplicationType cannot be changed! Object is associated with Call Queue or AutoAttendant." -Category OperationStopped -RecommendedAction 'Remove Associations with Remove-CsOnlineApplicationInstanceAssociation manually' -ErrorAction Stop
         }
         else {
           Write-Verbose -Message "'$Name' Application Type will be changed to: $ApplicationType"
@@ -243,7 +243,7 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region PhoneNumber
-    $Operation = "Phone Number"
+    $Operation = 'Phone Number'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
@@ -258,28 +258,28 @@ function Set-TeamsResourceAccount {
       Write-Verbose -Message "'$Name' Phone Number assigned currently: NONE"
     }
 
-    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
+    if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
       #Validating Phone Number
-      if ($PhoneNumber -eq "" -or $null -eq $PhoneNumber) {
+      if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
         if ($CurrentPhoneNumber) {
           Write-Warning -Message "PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
         }
         else {
-          Write-Verbose -Message "PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken"
+          Write-Verbose -Message 'PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken'
         }
         $PhoneNumber = $null
       }
-      elseif ($PhoneNumber -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$") {
-        if ( $PhoneNumber -match "ext" ) {
+      elseif ($PhoneNumber -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
+        if ( $PhoneNumber -match 'ext' ) {
           Write-Warning -Message "PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
         }
         $E164Number = Format-StringForUse $PhoneNumber -As E164
         Write-Verbose -Message "PhoneNumber '$E164Number' is in a usable format and will be applied"
         # Checking number is free
-        Write-Verbose -Message "PhoneNumber - Finding Number assignments"
+        Write-Verbose -Message 'PhoneNumber - Finding Number assignments'
         $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
         if ($UserWithThisNumber) {
-          Write-Error -Message "'$Name' Number '$E164Number' is already assigned to another User" -Category NotImplemented -RecommendedAction "Please specify a different Number " -ErrorAction Stop
+          Write-Error -Message "'$Name' Number '$E164Number' is already assigned to another User" -Category NotImplemented -RecommendedAction 'Please specify a different Number ' -ErrorAction Stop
         }
       }
       else {
@@ -289,7 +289,7 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region UsageLocation
-    $Operation = "Usage Location"
+    $Operation = 'Usage Location'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
@@ -310,7 +310,7 @@ function Set-TeamsResourceAccount {
       }
       else {
         if (($PSBoundParameters.ContainsKey('License')) -or ($PSBoundParameters.ContainsKey('PhoneNumber'))) {
-          Write-Error -Message "'$Name' Usage Location not set!" -Category ObjectNotFound -RecommendedAction "Please run command again and specify -UsageLocation"# -ErrorAction Stop
+          Write-Error -Message "'$Name' Usage Location not set!" -Category ObjectNotFound -RecommendedAction 'Please run command again and specify -UsageLocation'# -ErrorAction Stop
           return
         }
         else {
@@ -321,19 +321,19 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region Current License
-    $Operation = "License Assignment"
+    $Operation = 'License Assignment'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
 
-    if ($PSBoundParameters.ContainsKey("License") -or $PSBoundParameters.ContainsKey("PhoneNumber")) {
+    if ($PSBoundParameters.ContainsKey('License') -or $PSBoundParameters.ContainsKey('PhoneNumber')) {
       $CurrentLicense = $null
       # Determining license Status of Object
       if (Test-TeamsUserLicense -Identity $UserPrincipalName -License PhoneSystem) {
-        $CurrentLicense = "PhoneSystem"
+        $CurrentLicense = 'PhoneSystem'
       }
       elseif (Test-TeamsUserLicense -Identity $UserPrincipalName -License PhoneSystemVirtualUser) {
-        $CurrentLicense = "PhoneSystemVirtualUser"
+        $CurrentLicense = 'PhoneSystemVirtualUser'
       }
       if ($null -ne $CurrentLicense) {
         Write-Verbose -Message "'$Name' Current License assigned: $CurrentLicense"
@@ -347,10 +347,10 @@ function Set-TeamsResourceAccount {
 
 
     #region ACTION
-    $Status = "Applying Settings"
+    $Status = 'Applying Settings'
     #region DisplayName
-    if ($PSBoundParameters.ContainsKey("DisplayName")) {
-      $Operation = "DisplayName"
+    if ($PSBoundParameters.ContainsKey('DisplayName')) {
+      $Operation = 'DisplayName'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -364,16 +364,16 @@ function Set-TeamsResourceAccount {
         }
       }
       catch {
-        Write-Verbose -Message "FAILED - Error encountered changing DisplayName"
-        Write-Error -Message "Problem encountered with changing DisplayName" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
+        Write-Verbose -Message 'FAILED - Error encountered changing DisplayName'
+        Write-Error -Message 'Problem encountered with changing DisplayName' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Set-CsOnlineApplicationInstance'
         Write-Debug $_
       }
     }
     #endregion
 
     #region Application Type
-    if ($PSBoundParameters.ContainsKey("ApplicationType")) {
-      $Operation = "Application Type"
+    if ($PSBoundParameters.ContainsKey('ApplicationType')) {
+      $Operation = 'Application Type'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -384,11 +384,11 @@ function Set-TeamsResourceAccount {
           if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -ApplicationId $AppId")) {
             Write-Verbose -Message "'$Name' Setting Application Type to: $ApplicationType"
             $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -ApplicationId $AppId -ErrorAction STOP)
-            Write-Verbose -Message "SUCCESS"
+            Write-Verbose -Message 'SUCCESS'
           }
         }
         catch {
-          Write-Error -Message "Problem encountered changing Application Type" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Set-CsOnlineApplicationInstance"
+          Write-Error -Message 'Problem encountered changing Application Type' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Set-CsOnlineApplicationInstance'
           Write-Debug $_
         }
       }
@@ -396,8 +396,8 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region UsageLocation
-    if ($PSBoundParameters.ContainsKey("UsageLocation")) {
-      $Operation = "Usage Location"
+    if ($PSBoundParameters.ContainsKey('UsageLocation')) {
+      $Operation = 'Usage Location'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -408,8 +408,8 @@ function Set-TeamsResourceAccount {
           Write-Verbose -Message "'$Name' SUCCESS - Usage Location set to: $UsageLocation"
         }
         catch {
-          if ($PSBoundParameters.ContainsKey("License")) {
-            Write-Error -Message "'$Name' Usage Location could not be set. Please apply manually before applying license" -Category NotSpecified -RecommendedAction "Apply manually, then run Set-TeamsResourceAccount to apply license and phone number"
+          if ($PSBoundParameters.ContainsKey('License')) {
+            Write-Error -Message "'$Name' Usage Location could not be set. Please apply manually before applying license" -Category NotSpecified -RecommendedAction 'Apply manually, then run Set-TeamsResourceAccount to apply license and phone number'
           }
           else {
             Write-Warning -Message "'$Name' Usage Location cannot be set. If a license is needed, please assign UsageLocation manually beforehand"
@@ -420,17 +420,17 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region Licensing
-    if ($PSBoundParameters.ContainsKey("License")) {
+    if ($PSBoundParameters.ContainsKey('License')) {
       # Verifying License is available to be assigned
       # Determining available Licenses from Tenant
-      $Operation = "Querying Licenses"
+      $Operation = 'Querying Licenses'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
       $TenantLicenses = Get-TeamsTenantLicense
 
       # Changing License only if required
-      $Operation = "License Assignment"
+      $Operation = 'License Assignment'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -441,15 +441,15 @@ function Set-TeamsResourceAccount {
         $IsLicensed = $true
       }
       # Verifying License is available
-      elseif ($License -eq "PhoneSystemVirtualUser") {
-        $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq "PHONESYSTEM_VIRTUALUSER" }).Remaining
+      elseif ($License -eq 'PhoneSystemVirtualUser') {
+        $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'PHONESYSTEM_VIRTUALUSER' }).Remaining
         Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
         if ($RemainingPSVULicenses -lt 1) {
-          Write-Error -Message "ERROR: No free PhoneSystem Virtual User License remaining in the Tenant."
+          Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.'
         }
         else {
           try {
-            if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-TeamsUserLicense -Add PhoneSystemVirtualUser")) {
+            if ($PSCmdlet.ShouldProcess("$UserPrincipalName", 'Set-TeamsUserLicense -Add PhoneSystemVirtualUser')) {
               $null = (Set-TeamsUserLicense -Identity $UserPrincipalName -Add $License -ErrorAction STOP)
               Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
               $IsLicensed = $true
@@ -478,43 +478,43 @@ function Set-TeamsResourceAccount {
     #endregion
 
     #region Waiting for License Application
-    if ($PSBoundParameters.ContainsKey("License") -and $PSBoundParameters.ContainsKey("PhoneNumber")) {
-      $Operation = "Waiting for AzureAd to write Object"
+    if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
+      $Operation = 'Waiting for AzureAd to write Object'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      if ($License -eq "PhoneSystemVirtualUser") {
-        $ServicePlanName = "MCOEV_VIRTUALUSER"
+      if ($License -eq 'PhoneSystemVirtualUser') {
+        $ServicePlanName = 'MCOEV_VIRTUALUSER'
       }
       else {
-        $ServicePlanName = "MCOEV"
+        $ServicePlanName = 'MCOEV'
       }
       $i = 0
       $iMax = 600
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
 
-      $Status = "Applying License"
-      $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result"
+      $Status = 'Applying License'
+      $Operation = 'Waiting for Get-AzureAdUserLicenseDetail to return a Result'
       Write-Verbose -Message "$Status - $Operation"
       while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
         if ($i -gt $iMax) {
-          Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction "Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount"
+          Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount'
           return
         }
-        Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" `
+        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
           -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
         Start-Sleep -Milliseconds 1000
         $i++
       }
-      Write-Progress -Id 1 -Activity "Azure Active Directory is applying License. Please wait" -Status $Status -Completed
+      Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
     }
     #endregion
 
     #region PhoneNumber
-    if ($PSBoundParameters.ContainsKey("PhoneNumber")) {
-      $Operation = "Phone Number"
+    if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
+      $Operation = 'Phone Number'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -527,17 +527,17 @@ function Set-TeamsResourceAccount {
             # Remove from VoiceApplicationInstance
             Write-Verbose -Message "'$Name' Removing Microsoft Number"
             $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-            Write-Verbose -Message "SUCCESS"
+            Write-Verbose -Message 'SUCCESS'
           }
           if ($null -ne ($Object.OnPremLineURI)) {
             # Remove from ApplicationInstance
             Write-Verbose -Message "'$Name' Removing Direct Routing Number"
             $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
-            Write-Verbose -Message "SUCCESS"
+            Write-Verbose -Message 'SUCCESS'
           }
         }
         catch {
-          Write-Error -Message "Removal of Number failed" -Category NotImplemented -Exception $_.Exception -RecommendedAction "Try manually with Remove-AzureAdUser"
+          Write-Error -Message 'Removal of Number failed' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Remove-AzureAdUser'
           Write-Debug $_
         }
       }
@@ -548,7 +548,7 @@ function Set-TeamsResourceAccount {
       # Assigning Telephone Number
       if ($PhoneNumber) {
         if ($null -eq $CurrentLicense -and -not $IsLicensed) {
-          Write-Error -Message "A Phone Number can only be assigned to licensed objects." -Category ResourceUnavailable -RecommendedAction "Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both"
+          Write-Error -Message 'A Phone Number can only be assigned to licensed objects.' -Category ResourceUnavailable -RecommendedAction 'Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
         }
         else {
           Write-Verbose -Message "'$Name' ACTION: Assigning Phone Number"
@@ -559,7 +559,7 @@ function Set-TeamsResourceAccount {
             if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
               $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
             }
-            $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars "tel:+") -split ';')[0]
+            $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
 
             if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
               # Set in VoiceApplicationInstance
@@ -577,7 +577,7 @@ function Set-TeamsResourceAccount {
             }
           }
           catch {
-            Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction "Please run Set-TeamsResourceAccount manually"
+            Write-Error -Message "'$Name' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction 'Please run Set-TeamsResourceAccount manually'
             Write-Debug $_
           }
 
@@ -587,17 +587,17 @@ function Set-TeamsResourceAccount {
     #endregion
     #endregion
 
-    Write-Progress -Id 1 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 1 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
     if ( $PassThru ) {
-      $Status = "Output"
-      $Operation = "Querying Object"
+      $Status = 'Output'
+      $Operation = 'Querying Object'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
       $RAObject = Get-TeamsResourceAccount -Identity $UserPrincipalName
-      Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
       Write-Output $RAObject
     }
   } #process

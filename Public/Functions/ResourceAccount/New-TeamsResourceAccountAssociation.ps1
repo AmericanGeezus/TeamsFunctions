@@ -62,13 +62,13 @@ function New-TeamsResourceAccountAssociation {
   [Alias('New-TeamsRAA')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "UPN of the Object to change")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [string[]]$UserPrincipalName,
 
-    [Parameter(Mandatory, ParameterSetName = 'CallQueue', ValueFromPipelineByPropertyName, HelpMessage = "Name of the CallQueue")]
+    [Parameter(Mandatory, ParameterSetName = 'CallQueue', ValueFromPipelineByPropertyName, HelpMessage = 'Name of the CallQueue')]
     [string]$CallQueue,
 
-    [Parameter(Mandatory, ParameterSetName = 'AutoAttendant', ValueFromPipelineByPropertyName, HelpMessage = "Name of the AutoAttendant")]
+    [Parameter(Mandatory, ParameterSetName = 'AutoAttendant', ValueFromPipelineByPropertyName, HelpMessage = 'Name of the AutoAttendant')]
     [string]$AutoAttendant,
 
     [Parameter(Mandatory = $false)]
@@ -89,7 +89,7 @@ function New-TeamsResourceAccountAssociation {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -102,20 +102,20 @@ function New-TeamsResourceAccountAssociation {
 
     #region Determining and Validating Entity
     # Determining $EntityObject
-    $Status = "Validation"
-    $Operation = "Determining Entity"
+    $Status = 'Validation'
+    $Operation = 'Determining Entity'
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
     switch ($PSCmdlet.ParameterSetName) {
       'CallQueue' {
-        $DesiredType = "CallQueue"
+        $DesiredType = 'CallQueue'
         $Entity = $CallQueue
         # Querying Call Queue by Name - need Unique Result
         Write-Verbose -Message "Querying Call Queue '$CallQueue'"
         $EntitySearch = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
       }
       'AutoAttendant' {
-        $DesiredType = "AutoAttendant"
+        $DesiredType = 'AutoAttendant'
         $Entity = $AutoAttendant
         # Querying Auto Attendant by Name - need Unique Result
         Write-Verbose -Message "Querying Auto Attendant '$AutoAttendant'"
@@ -130,22 +130,22 @@ function New-TeamsResourceAccountAssociation {
     }
 
     # Validating Unique result received
-    $Operation = "Unique result"
+    $Operation = 'Unique result'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
     if ($null -eq $EntityObject) {
       #throw "$DesiredType '$Entity' - Not found, please check entity exists with this Name"
-      Write-Error -Exception "ObjectNotFound" -Message "$DesiredType '$Entity' - Not found, please check entity exists with this Name"
+      Write-Error -Exception 'ObjectNotFound' -Message "$DesiredType '$Entity' - Not found, please check entity exists with this Name"
       return
     }
     elseif ($EntityObject -is [Array]) {
       $EntityObject = $EntityObject | Where-Object Name -EQ "$Entity"
 
       Write-Verbose -Message "'$Entity' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons, a unique Name to process." -Verbose
-      Write-Verbose -Message "Here are all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!" -Verbose
+      Write-Verbose -Message 'Here are all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!' -Verbose
       $EntityObject | Select-Object Identity, Name | Format-Table
-      Write-Error "$DesiredType '$Entity' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction "Please use New-CsOnlineApplicationInstanceAssociation!"
+      Write-Error "$DesiredType '$Entity' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction 'Please use New-CsOnlineApplicationInstanceAssociation!'
       return
     }
     else {
@@ -159,7 +159,7 @@ function New-TeamsResourceAccountAssociation {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Query $UserPrincipalName
     [System.Collections.ArrayList]$Accounts = @()
-    $Operation = "Processing provided UserPrincipalNames"
+    $Operation = 'Processing provided UserPrincipalNames'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
@@ -177,14 +177,14 @@ function New-TeamsResourceAccountAssociation {
       }
     }
 
-    $Operation = "Processing found Resource Accounts"
+    $Operation = 'Processing found Resource Accounts'
     $step++
     Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     $Counter = 1
     [System.Collections.ArrayList]$ValidatedAccounts = @()
     foreach ($Account in $Accounts) {
-      $Status = "Processing"
+      $Status = 'Processing'
       $Operation = "'$($Account.UserPrincipalName)'"
       Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -196,7 +196,7 @@ function New-TeamsResourceAccountAssociation {
       [int]$sMax2 = 6
 
       $Status = "'$($Account.UserPrincipalName)'"
-      $Operation = "Querying existing associations"
+      $Operation = 'Querying existing associations'
       Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
       Write-Verbose -Message "$Status - $Operation"
       $ExistingConnection = $null
@@ -211,7 +211,7 @@ function New-TeamsResourceAccountAssociation {
       }
 
       # Comparing ApplicationType
-      $Operation = "Validating ApplicationType"
+      $Operation = 'Validating ApplicationType'
       $step2++
       Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -231,7 +231,7 @@ function New-TeamsResourceAccountAssociation {
             $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdFromApplicationType $DesiredType) -ErrorAction Stop
           }
           catch {
-            Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match and could not be changed! Expected: '$DesiredType' - Please change manually or recreate the Account" -Category InvalidType -RecommendedAction "Please change manually or recreate the Account"
+            Write-Error -Message "'$($Account.UserPrincipalName)' - Application type does not match and could not be changed! Expected: '$DesiredType' - Please change manually or recreate the Account" -Category InvalidType -RecommendedAction 'Please change manually or recreate the Account'
             continue
           }
 
@@ -260,7 +260,7 @@ function New-TeamsResourceAccountAssociation {
       }
 
       [void]$ValidatedAccounts.Add($Account)
-      Write-Progress -Id 1 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
     }
 
     # Processing found accounts
@@ -271,7 +271,7 @@ function New-TeamsResourceAccountAssociation {
       foreach ($Account in $Accounts) {
         $ErrorEncountered = $null
 
-        $Status = "Assignment"
+        $Status = 'Assignment'
         $Operation = "'$($Account.UserPrincipalName)'"
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
         Write-Verbose -Message "$Status - $Operation"
@@ -292,15 +292,15 @@ function New-TeamsResourceAccountAssociation {
         $Parameters += @{ 'Identities' = $Account.ObjectId }
         $Parameters += @{ 'ConfigurationType' = $DesiredType }
         $Parameters += @{ 'ConfigurationId' = $EntityObject.Identity }
-        $Parameters += @{ 'ErrorAction' = "Stop" }
+        $Parameters += @{ 'ErrorAction' = 'Stop' }
 
         # Create CsAutoAttendantCallableEntity
-        Write-Verbose -Message "[PROCESS] Creating Resource Account Association"
+        Write-Verbose -Message '[PROCESS] Creating Resource Account Association'
         if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
 
-        if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", "New-CsOnlineApplicationInstanceAssociation")) {
+        if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", 'New-CsOnlineApplicationInstanceAssociation')) {
           #$OperationStatus = New-CsOnlineApplicationInstanceAssociation -Identities $Account.ObjectId -ConfigurationType $DesiredType -ConfigurationId $EntityObject.Identity
           try {
             $OperationStatus = New-CsOnlineApplicationInstanceAssociation @Parameters
@@ -354,7 +354,7 @@ function New-TeamsResourceAccountAssociation {
       }
     }
 
-    Write-Progress -Id 0 -Status "Complete" -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
   } #process
 

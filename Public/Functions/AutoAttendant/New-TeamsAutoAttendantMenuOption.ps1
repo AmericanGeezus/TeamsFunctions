@@ -81,30 +81,30 @@ function New-TeamsAutoAttendantMenuOption {
     New-TeamsAutoAttendantDialScope
   #>
 
-  [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = "DisconnectCall", ConfirmImpact = 'Low')]
+  [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'DisconnectCall', ConfirmImpact = 'Low')]
   [Alias('New-TeamsAAOption')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, ParameterSetName = "DisconnectCall", Position = 0, HelpMessage = "Option to disconnect for default menus")]
+    [Parameter(Mandatory, ParameterSetName = 'DisconnectCall', Position = 0, HelpMessage = 'Option to disconnect for default menus')]
     [switch]$DisconnectCall,
 
-    [Parameter(ParameterSetName = "Operator", HelpMessage = "Number to press on the Dial Pad")]
-    [Parameter(ParameterSetName = "CallTarget", HelpMessage = "Number to press on the Dial Pad")]
+    [Parameter(ParameterSetName = 'Operator', HelpMessage = 'Number to press on the Dial Pad')]
+    [Parameter(ParameterSetName = 'CallTarget', HelpMessage = 'Number to press on the Dial Pad')]
     [Alias('DtmfResponseTone')]
     [ValidateRange(0, 9)]
     [int]$Press,
 
-    [Parameter(Mandatory, ParameterSetName = "Operator", HelpMessage = "Option to transfer the Call to the Operator defined")]
+    [Parameter(Mandatory, ParameterSetName = 'Operator', HelpMessage = 'Option to transfer the Call to the Operator defined')]
     [Alias('Operator')]
     [switch]$TransferToOperator,
 
-    [Parameter(ParameterSetName = "Operator", HelpMessage = "Alternative voice Response")]
-    [Parameter(ParameterSetName = "CallTarget", HelpMessage = "Alternative voice Response")]
+    [Parameter(ParameterSetName = 'Operator', HelpMessage = 'Alternative voice Response')]
+    [Parameter(ParameterSetName = 'CallTarget', HelpMessage = 'Alternative voice Response')]
     [Alias('VoiceResponses', 'Say')]
-    [ValidateScript( { if ($_ -match '^[^\W_]+$') { $true } else { Write-Error -Message "Voice Response must be one word without spaces or symbols." } })]
+    [ValidateScript( { if ($_ -match '^[^\W_]+$') { $true } else { Write-Error -Message 'Voice Response must be one word without spaces or symbols.' } })]
     [string]$OrSay,
 
-    [Parameter(ParameterSetName = "CallTarget", HelpMessage = "CallTarget")]
+    [Parameter(ParameterSetName = 'CallTarget', HelpMessage = 'CallTarget')]
     [string]$CallTarget
 
   ) #param
@@ -123,7 +123,7 @@ function New-TeamsAutoAttendantMenuOption {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Preparing Splatting Object
     $Parameters = $null
@@ -133,47 +133,47 @@ function New-TeamsAutoAttendantMenuOption {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     switch ($PSCmdlet.ParameterSetName) {
-      "DisconnectCall" {
-        $Parameters += @{'DtmfResponse' = "Automatic" }
-        $Parameters += @{'Action' = "DisconnectCall" }
+      'DisconnectCall' {
+        $Parameters += @{'DtmfResponse' = 'Automatic' }
+        $Parameters += @{'Action' = 'DisconnectCall' }
 
       }
 
-      "Operator" {
+      'Operator' {
         if ($Press) {
-          $DtmfResponse = "Tone" + $Press
+          $DtmfResponse = 'Tone' + $Press
           if ($OrSay) {
             Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
           }
         }
         else {
-          $DtmfResponse = "Automatic"
+          $DtmfResponse = 'Automatic'
           if ($OrSay) {
             Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
           }
         }
 
         $Parameters += @{'DtmfResponse' = $DtmfResponse }
-        $Parameters += @{'Action' = "TransferCallToOperator" }
+        $Parameters += @{'Action' = 'TransferCallToOperator' }
 
       }
 
-      "CallTarget" {
+      'CallTarget' {
         if ($Press) {
-          $DtmfResponse = "Tone" + $Press
+          $DtmfResponse = 'Tone' + $Press
           if ($OrSay) {
             $Parameters += @{'VoiceResponses' = $OrSay }
           }
         }
         else {
-          $DtmfResponse = "Automatic"
+          $DtmfResponse = 'Automatic'
           if ($OrSay) {
             Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
           }
         }
 
         $Parameters += @{'DtmfResponse' = $DtmfResponse }
-        $Parameters += @{'Action' = "TransferCallToTarget" }
+        $Parameters += @{'Action' = 'TransferCallToTarget' }
 
 
         # Determine Call Target
@@ -190,12 +190,12 @@ function New-TeamsAutoAttendantMenuOption {
     }
 
     # Create Menu Option
-    Write-Verbose -Message "[PROCESS] Creating Menu Option"
+    Write-Verbose -Message '[PROCESS] Creating Menu Option'
     if ($PSBoundParameters.ContainsKey('Debug')) {
       "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-    if ($PSCmdlet.ShouldProcess("New MenuOption", "New-CsAutoAttendantMenuOption")) {
+    if ($PSCmdlet.ShouldProcess('New MenuOption', 'New-CsAutoAttendantMenuOption')) {
       New-CsAutoAttendantMenuOption @Parameters
     }
   }

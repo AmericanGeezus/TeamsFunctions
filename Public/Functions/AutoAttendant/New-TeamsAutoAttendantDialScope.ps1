@@ -59,7 +59,7 @@ function New-TeamsAutoAttendantDialScope {
   [Alias('New-TeamsAAScope')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "Name of the Auto Attendant")]
+    [Parameter(Mandatory = $true, HelpMessage = 'Name of the Auto Attendant')]
     [string[]]$GroupName
 
   ) #param
@@ -78,7 +78,7 @@ function New-TeamsAutoAttendantDialScope {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -87,10 +87,10 @@ function New-TeamsAutoAttendantDialScope {
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
       $Object = $null
-      $Object = Find-AzureADGroup "$Group" -Exact
+      $Object = Get-TeamsCallableEntity -Identity "$Group"
       if ($Object) {
 
-        $GroupIds += $Object.ObjectId
+        $GroupIds += $Object.Identity
       }
       else {
         Write-Warning -Message "Group not found: '$Group' - Skipping"
@@ -99,12 +99,12 @@ function New-TeamsAutoAttendantDialScope {
     }
 
     # Create dial Scope
-    Write-Verbose -Message "[PROCESS] Creating Dial Scope"
+    Write-Verbose -Message '[PROCESS] Creating Dial Scope'
     if ($PSBoundParameters.ContainsKey('Debug')) {
       Write-Debug "$groupIds"
     }
 
-    if ($PSCmdlet.ShouldProcess("$groupIds", "New-CsAutoAttendantDialScope")) {
+    if ($PSCmdlet.ShouldProcess("$groupIds", 'New-CsAutoAttendantDialScope')) {
       New-CsAutoAttendantDialScope -GroupScope -GroupIds $groupIds
     }
   }

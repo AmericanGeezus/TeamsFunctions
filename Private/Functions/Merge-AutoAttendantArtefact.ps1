@@ -24,13 +24,12 @@ function Merge-AutoAttendantArtefact {
     Only valid for Type Menu - Object representing the Menu Options
   .PARAMETER Menu
     Only valid for Type Call Flow - Object representing the Menu
-
   .INPUTS
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation
-    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Schedule
+    Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Schedule
     Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt
   .OUTPUTS
     PSCustomObject
@@ -46,28 +45,28 @@ function Merge-AutoAttendantArtefact {
 
 	#>
 
-  [CmdletBinding(DefaultParameterSetName = "Prompt")]
+  [CmdletBinding(DefaultParameterSetName = 'Prompt')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, HelpMessage = 'Deserialized Object for the AA')]
     [object[]]$Object,
 
-    [Parameter(Mandatory, HelpMessage = "Type of Object presented. Determines Output")]
+    [Parameter(Mandatory, HelpMessage = 'Type of Object presented. Determines Output')]
     [ValidateSet('Prompt', 'MenuOption', 'Menu', 'CallFlow', 'Schedule', 'CallHandlingAssociation')]
     [string]$Type,
 
-    [Parameter(Mandatory, ParameterSetName = "Menu", HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
-    [Parameter(Mandatory, ParameterSetName = "CallFlow", HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
+    [Parameter(Mandatory, ParameterSetName = 'Menu', HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
+    [Parameter(Mandatory, ParameterSetName = 'CallFlow', HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
     [AllowNull()]
     [object[]]$Prompts,
 
-    [Parameter(Mandatory, ParameterSetName = "Menu", HelpMessage = "Merged Object of 'MenuOptions' to be added to Menus")]
+    [Parameter(Mandatory, ParameterSetName = 'Menu', HelpMessage = "Merged Object of 'MenuOptions' to be added to Menus")]
     [object[]]$MenuOptions,
 
-    [Parameter(Mandatory, ParameterSetName = "CallFlow", HelpMessage = "Merged Object of 'Menu' to be added to Call Flows")]
+    [Parameter(Mandatory, ParameterSetName = 'CallFlow', HelpMessage = "Merged Object of 'Menu' to be added to Call Flows")]
     [object]$Menu,
 
-    [Parameter(Mandatory, ParameterSetName = "CallHandlingAssociation", HelpMessage = "CallHandling Association only: Name of the Call Flow")]
+    [Parameter(Mandatory, ParameterSetName = 'CallHandlingAssociation', HelpMessage = 'CallHandling Association only: Name of the Call Flow')]
     [object]$CallFlowName
   ) #param
 
@@ -82,7 +81,7 @@ function Merge-AutoAttendantArtefact {
 
     $MergedObject = @()
     switch ($Type) {
-      "Prompt" {
+      'Prompt' {
         foreach ($O in $Object) {
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
@@ -103,7 +102,7 @@ function Merge-AutoAttendantArtefact {
         return $MergedObject
       }
 
-      "MenuOption" {
+      'MenuOption' {
         foreach ($O in $Object) {
           # Enumerating Call Target
           if ($O.CallTarget.Id) {
@@ -144,7 +143,7 @@ function Merge-AutoAttendantArtefact {
         return $MergedObject
       }
 
-      "Menu" {
+      'Menu' {
         foreach ($O in $Object) {
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
@@ -165,7 +164,7 @@ function Merge-AutoAttendantArtefact {
         return $MergedObject
       }
 
-      "CallFlow" {
+      'CallFlow' {
         foreach ($O in $Object) {
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
@@ -185,7 +184,7 @@ function Merge-AutoAttendantArtefact {
         return $MergedObject
       }
 
-      "Schedule" {
+      'Schedule' {
         foreach ($O in $Object) {
           switch ($O.Type) {
             0 {
@@ -232,7 +231,7 @@ function Merge-AutoAttendantArtefact {
         return $MergedObject
       }
 
-      "CallHandlingAssociation" {
+      'CallHandlingAssociation' {
         foreach ($O in $Object) {
           <# INFO Alternatively, this Object can be drilled down further (but would be duplicate)
           $AACallHandlingAssociationsSchedule = @()

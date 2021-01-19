@@ -60,22 +60,22 @@ function Find-TeamsResourceAccount {
     Remove-TeamsResourceAccount
 	#>
 
-  [CmdletBinding(DefaultParameterSetName = "Search")]
+  [CmdletBinding(DefaultParameterSetName = 'Search')]
   [Alias('Find-TeamsRA')]
   [OutputType([System.Object])]
   param (
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", HelpMessage = "Part of the DisplayName to be found")]
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "AssociatedOnly", HelpMessage = "Part of the DisplayName to be found")]
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "UnAssociatedOnly", HelpMessage = "Part of the DisplayName to be found")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Search', HelpMessage = 'Part of the DisplayName to be found')]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'AssociatedOnly', HelpMessage = 'Part of the DisplayName to be found')]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'UnAssociatedOnly', HelpMessage = 'Part of the DisplayName to be found')]
     [ValidateLength(3, 255)]
     [string]$SearchQuery,
 
-    [Parameter(Mandatory, Position = 1, ParameterSetName = "AssociatedOnly", HelpMessage = "Returns only Objects assigned to CQ or AA")]
-    [Alias("Assigned", "InUse")]
+    [Parameter(Mandatory, Position = 1, ParameterSetName = 'AssociatedOnly', HelpMessage = 'Returns only Objects assigned to CQ or AA')]
+    [Alias('Assigned', 'InUse')]
     [switch]$AssociatedOnly,
 
-    [Parameter(Mandatory, Position = 1, ParameterSetName = "UnAssociatedOnly", HelpMessage = "Returns only Objects not assigned to CQ or AA")]
-    [Alias("Unassigned", "Free")]
+    [Parameter(Mandatory, Position = 1, ParameterSetName = 'UnAssociatedOnly', HelpMessage = 'Returns only Objects not assigned to CQ or AA')]
+    [Alias('Unassigned', 'Free')]
     [switch]$UnAssociatedOnly
   ) #param
 
@@ -93,7 +93,7 @@ function Find-TeamsResourceAccount {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -116,11 +116,11 @@ function Find-TeamsResourceAccount {
     }
 
     if ( -not $ResourceAccounts ) {
-      Write-Verbose -Message "No Resource Accounts found matching this string."
+      Write-Verbose -Message 'No Resource Accounts found matching this string.'
       return
     }
     else {
-      Write-Verbose -Message "Found Resource Accounts. Performing lookup. Please wait..."
+      Write-Verbose -Message 'Found Resource Accounts. Performing lookup. Please wait...'
       foreach ($ResourceAccount in $ResourceAccounts) {
         Write-Verbose -Message "Querying Account '$($ResourceAccount.Id)'"
         $AdUser = Get-AzureADUser -ObjectId $ResourceAccount.Id -WarningAction SilentlyContinue -ErrorAction Stop
@@ -139,8 +139,8 @@ function Find-TeamsResourceAccount {
           Write-Verbose -Message "'$($AdUser.DisplayName)' Parsing: Association"
           $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
           $AssociationObject = switch ($Association.ConfigurationType) {
-            "CallQueue" { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
-            "AutoAttendant" { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+            'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
+            'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
           }
           $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
@@ -161,10 +161,10 @@ function Find-TeamsResourceAccount {
     #region OUTPUT
     # Creating new PS Object
     try {
-      Write-Verbose -Message "Parsing Resource Accounts, please wait..."
+      Write-Verbose -Message 'Parsing Resource Accounts, please wait...'
     }
     catch {
-      Write-Warning -Message "Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance"
+      Write-Warning -Message 'Object Output could not be determined. Please verify manually with Get-CsOnlineApplicationInstance'
     }
     #endregion
   } #process

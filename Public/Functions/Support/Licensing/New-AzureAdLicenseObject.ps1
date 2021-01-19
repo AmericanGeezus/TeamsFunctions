@@ -43,11 +43,11 @@ function New-AzureAdLicenseObject {
   [CmdletBinding(ConfirmImpact = 'Low')]
   [OutputType([Microsoft.Open.AzureAD.Model.AssignedLicenses])] #LicenseObject
   param(
-    [Parameter(Mandatory = $false, Position = 0, HelpMessage = "SkuId of the license to Add")]
+    [Parameter(Mandatory = $false, Position = 0, HelpMessage = 'SkuId of the license to Add')]
     [Alias('AddSkuId')]
     [string[]]$SkuId,
 
-    [Parameter(Mandatory = $false, Position = 1, HelpMessage = "SkuId of the license to Remove")]
+    [Parameter(Mandatory = $false, Position = 1, HelpMessage = 'SkuId of the license to Remove')]
     [string[]]$RemoveSkuId
   ) #param
 
@@ -59,7 +59,7 @@ function New-AzureAdLicenseObject {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client

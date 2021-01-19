@@ -4,7 +4,7 @@
 
 ## SHORT DESCRIPTION
 
-Connecting to the Teams Backend is, for now, still done via SkypeOnline
+Connecting to the Teams Backend is, for now, still done through SkypeOnline
 
 ## LONG DESCRIPTION
 
@@ -16,10 +16,12 @@ The introduction of Privileged Identity Management and Privileged Access Groups 
 
 | Function                                                    | Description                                                                                                                                  |
 | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Connect-SkypeOnline`](/docs/Connect-SkypeOnline.md)       | Creates a Session to SkypeOnline (v7 also extends Timeout Limit!)                                                                            |
-| [`Connect-Me`](/docs/Connect-Me.md) (con)                   | Creates a Session to SkypeOnline and AzureAD in one go. Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt! |
-| [`Disconnect-SkypeOnline`](/docs/Disconnect-SkypeOnline.md) | Disconnects from a Session to SkypeOnline. This prevents timeouts and hanging sessions                                                       |
+| [`Connect-SkypeOnline`](/docs/Connect-SkypeOnline.md)       | Creates a Session to SkypeOnline                                                                            |
+| [`Connect-Me`](/docs/Connect-Me.md) (con)                   | Creates a Session to SkypeOnline and AzureAD in one go. Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt! Also tries to enable your Admin Roles in PIM. |
+| [`Disconnect-SkypeOnline`](/docs/Disconnect-SkypeOnline.md) | Disconnects from a Session to SkypeOnline. This helps preventing timeouts and hanging sessions                                                       |
 | [`Disconnect-Me`](/docs/Disconnect-Me.md) (dis)             | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD                                                                     |
+
+Connect-Me aims to solve the issue of having and maintaining a connection to all Office 365 needed for Administration. In most cases, that will be AzureAd and SkypeOnline, but could also need ExchangeOnline and MicrosoftTeams (which is now being tethered to SkypeOnline if the CsOnlineSession is created with the Module MicrosoftTeams)
 
 ## Admin Roles
 
@@ -44,6 +46,8 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 | [`Test-SkypeOnlineConnection`](/docs/Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                     |
 | [`Test-ExchangeOnlineConnection`](/docs/Test-ExchangeOnlineConnection.md)     | Verifying a Session to ExchangeOnline exists                                                  |
 
+The Assert cmdlets are nested in all Scripts to ensure sessions are created and available
+
 ## EXAMPLES
 
 ````powershell
@@ -65,17 +69,17 @@ The command to establish a connection has been ported to `MicrosoftTeams` in `v1
 
 ## Development Status
 
-Mature, but a moving target - Continuous in Progress. An update to the MicrosoftTeams Command and documentation is anticipated that would enable Single-sign-on with MFA enabled. Issues have been raised via Github to address.
+Mature, but a moving target - Continuously 'in Progress'. An update to the MicrosoftTeams Command and documentation is anticipated that would enable Single-sign-on with MFA enabled. Issues have been raised via Github to address.
 
 ## TROUBLESHOOTING NOTE
 
-Please disconnect your session cleanly, before reconnecting. Sometimes, with the MicrosoftTeams Module, I have found that the whole PowerShell Session needs to be recreated which is annoying. This is still evaluated and tested with every PreRelease.
+Please disconnect your session cleanly, before reconnecting. I have found that, when using the MicrosoftTeams Module, the whole PowerShell Session needs to be recreated which is annoying. This is still evaluated and tested with every PreRelease.
+
+The Session can also currently not be reconnected to, a credential Dialog is shown with the Username "oAuth". Please cancel this and the following empty credential dialog and run Connect-Me again. This will try to reconnect. I am trying to write a script that can catch that and try to reconnect you more cleanly.
 
 ## SEE ALSO
 
-{{ See also placeholder }}
-
-{{ You can also list related articles, blogs, and video URLs. }}
+[`New-CsOnlineSession`](https://docs.microsoft.com/en-us/powershell/module/skype/new-csonlinesession?view=skype-ps)
 
 ## KEYWORDS
 

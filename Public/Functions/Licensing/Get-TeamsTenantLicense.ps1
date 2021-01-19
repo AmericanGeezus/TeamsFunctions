@@ -69,10 +69,10 @@ function Get-TeamsTenantLicense {
   [Alias('Get-TeamsTenantLicence')]
   [OutputType([Object[]])]
   param(
-    [Parameter(Mandatory = $false, HelpMessage = "Displays all Parameters")]
+    [Parameter(Mandatory = $false, HelpMessage = 'Displays all Parameters')]
     [switch]$Detailed,
 
-    [Parameter(Mandatory = $false, HelpMessage = "Displays all ServicePlans")]
+    [Parameter(Mandatory = $false, HelpMessage = 'Displays all ServicePlans')]
     [switch]$DisplayAll,
 
     [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
@@ -101,7 +101,7 @@ function Get-TeamsTenantLicense {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     #Loading License Array
     if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
@@ -152,14 +152,14 @@ function Get-TeamsTenantLicense {
       else {
         if ($PSBoundParameters.ContainsKey('DisplayAll')) {
           $NewLic = [PSCustomObject][ordered]@{
-            ProductName         = "Unknown"
+            ProductName         = 'Unknown'
             SkuPartNumber       = $tenantSKU.SkuPartNumber
-            LicenseType         = "Unknown"
+            LicenseType         = 'Unknown'
             ParameterName       = $null
             IncludesTeams       = $null
             IncludesPhoneSystem = $null
             SkuId               = $tenantSKU.SkuId
-            ServicePlans        = "Unknown"
+            ServicePlans        = 'Unknown'
             Available           = $($tenantSKU.PrepaidUnits.Enabled)
             Consumed            = $($tenantSKU.ConsumedUnits)
             Remaining           = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)

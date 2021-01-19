@@ -59,11 +59,11 @@ function Get-TeamsUserLicense {
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the UPN or login name of the user account, typically <user>@<domain>.")]
-    [Alias("UPN", "UserPrincipalName", "Username")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
+    [Alias('UPN', 'UserPrincipalName', 'Username')]
     [string[]]$Identity,
 
-    [Parameter(Mandatory = $false, HelpMessage = "Displays all ServicePlans")]
+    [Parameter(Mandatory = $false, HelpMessage = 'Displays all ServicePlans')]
     [switch]$DisplayAll
   ) #param
 
@@ -78,10 +78,10 @@ function Get-TeamsUserLicense {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # preparing Output Field Separator
-    $OFS = ", "
+    $OFS = ', '
 
     # Loading License Array
     if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
@@ -158,22 +158,22 @@ function Get-TeamsUserLicense {
         [string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName
       }
 
-      $PhoneSystemLicense = ("MCOEV" -in $UserServicePlans.ServicePlanName)
-      $AudioConfLicense = ("MCOMEETADV" -in $UserServicePlans.ServicePlanName)
-      $PhoneSystemVirtual = ("MCOEV_VIRTUALUSER" -in $UserServicePlans.ServicePlanName)
-      $CommonAreaPhoneLic = ("MCOCAP" -in $UserServicePlans.ServicePlanName)
-      $CommunicationCredits = ("MCOPSTNC" -in $UserServicePlans.ServicePlanName)
-      $CallingPlanDom = ("MCOPSTN1" -in $UserServicePlans.ServicePlanName)
-      $CallingPlanInt = ("MCOPSTN2" -in $UserServicePlans.ServicePlanName)
-      $CallingPlanDom120 = ("MCOPSTN5" -in $UserServicePlans.ServicePlanName)
+      $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
+      $AudioConfLicense = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
+      $PhoneSystemVirtual = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
+      $CommonAreaPhoneLic = ('MCOCAP' -in $UserServicePlans.ServicePlanName)
+      $CommunicationCredits = ('MCOPSTNC' -in $UserServicePlans.ServicePlanName)
+      $CallingPlanDom = ('MCOPSTN1' -in $UserServicePlans.ServicePlanName)
+      $CallingPlanInt = ('MCOPSTN2' -in $UserServicePlans.ServicePlanName)
+      $CallingPlanDom120 = ('MCOPSTN5' -in $UserServicePlans.ServicePlanName)
 
       # Phone System
       if ( $PhoneSystemLicense ) {
-        $PhoneSystemProvisioningStatus = $UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV"
+        $PhoneSystemProvisioningStatus = $UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV'
         if ( $PhoneSystemProvisioningStatus.Count -gt 1 ) {
           # PhoneSystem assigned more than once!
           Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
-          $PhoneSystemStatus = ($PhoneSystemProvisioningStatus | Select-Object -ExpandProperty ProvisioningStatus) -join ", "
+          $PhoneSystemStatus = ($PhoneSystemProvisioningStatus | Select-Object -ExpandProperty ProvisioningStatus) -join ', '
 
         }
         else {
@@ -182,21 +182,21 @@ function Get-TeamsUserLicense {
 
       }
       elseif ( $PhoneSystemVirtual ) {
-        $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ "MCOEV_VIRTUALUSER").ProvisioningStatus
+        $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV_VIRTUALUSER').ProvisioningStatus
       }
       else {
-        $PhoneSystemStatus = "Unassigned"
+        $PhoneSystemStatus = 'Unassigned'
       }
 
       # Calling Plans
       if ($CallingPlanDom120) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN5").ProductName
+        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN5').ProductName
       }
       elseif ($CallingPlanDom) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN1").ProductName
+        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN1').ProductName
       }
       elseif ($CallingPlanInt) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ "MCOPSTN2").ProductName
+        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN2').ProductName
       }
       else {
         [string]$currentCallingPlan = $null

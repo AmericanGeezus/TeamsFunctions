@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-
+#TODO ADD Start and End Time instead of BusinessHours for even more flexibility!
 
 function New-TeamsAutoAttendantSchedule {
   <#
@@ -129,7 +129,7 @@ function New-TeamsAutoAttendantSchedule {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -145,26 +145,26 @@ function New-TeamsAutoAttendantSchedule {
     #$Parameters.ErrorAction' = $Stop }
 
     if ($Complement) {
-      Write-Verbose -Message "[PROCESS] Processing Complement"
+      Write-Verbose -Message '[PROCESS] Processing Complement'
       $Parameters.Complement = $true
     }
     #endregion
 
     #region Defining recurrance Fixed/Weekly
     if ($PSBoundParameters.ContainsKey('WeeklyRecurrentSchedule')) {
-      Write-Verbose -Message "[PROCESS] Processing WeeklyRecurrentSchedule"
+      Write-Verbose -Message '[PROCESS] Processing WeeklyRecurrentSchedule'
       $Parameters.WeeklyRecurrentSchedule = $true
     }
     elseif ($PSBoundParameters.ContainsKey('Fixed')) {
-      Write-Verbose -Message "[PROCESS] Processing Fixed"
+      Write-Verbose -Message '[PROCESS] Processing Fixed'
       $Parameters.Fixed = $true
     }
     #endregion
 
     #region Defining $TimeFrame
     if ($PSBoundParameters.ContainsKey('DateTimeRanges')) {
-      Write-Verbose -Message "[PROCESS] Processing DateTimeRanges"
-      Write-Verbose -Message "Please note, the DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care" -Verbose
+      Write-Verbose -Message '[PROCESS] Processing DateTimeRanges'
+      Write-Verbose -Message 'Please note, the DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care' -Verbose
       $TimeFrame = @($DateTimeRanges)
     }
     else {
@@ -274,12 +274,12 @@ function New-TeamsAutoAttendantSchedule {
 
 
     # Creating Schedule
-    Write-Verbose -Message "[PROCESS] Creating Schedule"
+    Write-Verbose -Message '[PROCESS] Creating Schedule'
     if ($PSBoundParameters.ContainsKey('Debug')) {
       "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-    if ($PSCmdlet.ShouldProcess("$Name", "New-CsOnlineSchedule")) {
+    if ($PSCmdlet.ShouldProcess("$Name", 'New-CsOnlineSchedule')) {
       New-CsOnlineSchedule @Parameters
     }
 

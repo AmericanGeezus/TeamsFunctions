@@ -1,23 +1,40 @@
-# Teams Scripts and Functions
+# CmdLets for AzureAd and Teams adding to and improving on Microsoft CmdLets
 
-This module exists as many of Microsofts Teams back-end (SkypeOnline) Cmdlets were too clunky to handle easily on a daily basis without building a big library of quirks and GUIDs and snippets as well as a growing understanding of all the pitfalls and requirements needed for individual features.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE)
+[![Documentation - GitHub](https://img.shields.io/badge/Documentation-TeamsFunctions-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs)
+[![PowerShell Gallery - TeamsFunctions](https://img.shields.io/badge/PowerShell%20Gallery-TeamsFunctions-blue.svg)](https://www.powershellgallery.com/packages/TeamsFunctions/)
+[![Minimum Supported PowerShell Version](https://img.shields.io/badge/PowerShell-5.1-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
-Teams Voice CmdLets adding and improving on AzureAd and MicrosoftTeams CmdLets
+## Introduction
 
-As Teams evolves, so does this Module.
+This module exists as many of Microsofts Teams back-end (SkypeOnline) Cmdlets are too clunky to handle easily on a daily basis without building a big library of quirks and GUIDs and snippets as well as a growing understanding of all the pitfalls and requirements needed for individual features.
 
-## Documentation
+The goal is to make this easier for day-to-day use, to simplify the input and to feed back good information if not successful.
+Teams evolves constantly, so does this Module: Released monthly, with weekly pre-releases.
 
-- Where to start [about_TeamsFunctions](/help/about_TeamsFunctions.md)
+### Content
+
+- Consistently handling Session Connection to AzureAd, MicrosoftTeams and SkypeOnline
+- Improving Admin Authorisation with Privileged Identity Management Role Activation
+- Improving User Administration for Licensing, Direct Routing and Calling Plans
+- Enabling Administration for Common Area Phones, Analog Contact Objects, etc.
+- Improving Teams Resource Accounts, Call Queues and Auto Attendants
+- Improving Day-to-day Administration with little helpers
+
+### Documentation
+
+- General overview: [about_TeamsFunctions](/help/about_TeamsFunctions.md)
+- The aliases: [about_TeamsFunctionsAliases](/help/about_TeamsFunctionsAliases.md)
 - Individual about_-Files for each Topic have been created in [/help](/help)
-- Documentation for individual CmdLets can be found in [/docs](/docs)
 - External Help is available as XML in [/docs](/docs)
-- Markdown documentation is generated automatically with PlatyPS and updated with each Version
-- More information can be found in [my blog](https://davideberhardt.wordpress.com/) from time to time.
+- Markdown files for all CmdLets can be found in [/docs](/docs) automatically with PlatyPS and updated with each Version
+- [My blog](https://davideberhardt.wordpress.com/) will contain updates and explanations from time to time.
 - A breakdown of the Change log for Major Versions can be found in [VERSION.md](VERSION.md)
 - A detailed breakdown of changes for Pre-Release Versions is recorded in [VERSION-PreRelease.md](VERSION-PreRelease.md)
 
-## Current Focus
+## Development
+
+### Current Focus
 
 - Performance improvements, bug fixing and more testing
 - Adding Functional improvements to lookup

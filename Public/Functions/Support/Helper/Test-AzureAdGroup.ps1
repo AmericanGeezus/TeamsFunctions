@@ -52,6 +52,13 @@ function Test-AzureAdGroup {
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
     Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
+
+    # Loading all Groups
+    if ( -not $global:TeamsFunctionsTenantAzureAdGroups) {
+      Write-Verbose -Message 'Groups not loaded yet, depending on the size of the Tenant, this will run for a while!' -Verbose
+      $global:TeamsFunctionsTenantAzureAdGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    }
+
   } #begin
 
   process {
@@ -65,12 +72,11 @@ function Test-AzureAdGroup {
         $CallTarget = Get-AzureADGroup -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        try {
-          $MailNickName = $Identity.Split('@')[0]
-          $CallTarget = Get-AzureADGroup -SearchString "$MailNickName" -WarningAction SilentlyContinue -ErrorAction STOP
+        if ($Identity -contains '@') {
+          $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
-        catch {
-          $CallTarget = Get-AzureADGroup | Where-Object Mail -EQ "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        else {
+          $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -EQ "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
       }
     }

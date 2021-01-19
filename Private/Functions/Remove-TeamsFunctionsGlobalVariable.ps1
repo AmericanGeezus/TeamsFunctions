@@ -30,7 +30,8 @@ function Remove-TeamsFunctionsGlobalVariable {
   $VariableNames = @(
     "TeamsFunctionsMSTelephoneNumbers", # Used for Microsoft TelephoneNumbers from the Tenant
     "TeamsFunctionsMSAzureAdLicenses", # Used for all Licensing commands
-    "TeamsFunctionsMSAzureAdLicenseServicePlans" # Used for all Licensing commands
+    "TeamsFunctionsMSAzureAdLicenseServicePlans", # Used for all Licensing commands
+    "TeamsFunctionsTenantAzureAdGroups"
   )
 
   $null = (Remove-Variable -Name $VariableNames -Scope Global -ErrorAction SilentlyContinue)

@@ -64,7 +64,7 @@ function Find-TeamsCallableEntity {
 
     [Parameter(HelpMessage = 'Scope')]
     [ValidateSet('All', 'CallQueue', 'AutoAttendant')]
-    [string]$Scope = "All"
+    [string]$Scope = 'All'
 
   ) #param
 
@@ -82,7 +82,7 @@ function Find-TeamsCallableEntity {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     #Scope Hardcoded (will become a parameter later)
     #$Scope = "CallQueue"
@@ -92,20 +92,20 @@ function Find-TeamsCallableEntity {
     [int]$sMax0 = 3
 
     #region Information Gathering 1
-    $Status = "Information Gathering"
+    $Status = 'Information Gathering'
     # Call Queues and Auto Attendants
-    if ( $Scope -in ("All", "CallQueue") ) {
+    if ( $Scope -in ('All', 'CallQueue') ) {
       # Query Queues
-      $Operation = "Querying Call Queues"
+      $Operation = 'Querying Call Queues'
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step0 / $sMax0 * 100)
       $CQs = Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       Write-Verbose -Message "$Status - $Operation -Objects found: $($CQs.Count)"
       $step0++
     }
 
-    if ( $Scope -in ("All", "AutoAttendant") ) {
+    if ( $Scope -in ('All', 'AutoAttendant') ) {
       # Query Queues
-      $Operation = "Querying Auto Attendants"
+      $Operation = 'Querying Auto Attendants'
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step0 / $sMax0 * 100)
       $AAs = Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       Write-Verbose -Message "$Status - $Operation - Objects found: $($AAs.Count)"
@@ -132,13 +132,13 @@ function Find-TeamsCallableEntity {
       [int]$step = 0
       [int]$sMax = 1
       switch ($Scope) {
-        "CallQueue" { $sMax = $sMax + 4 }
-        "AutoAttendant" { $sMax = $sMax + 3 }
-        "All" { $sMax = $sMax + 7 }
+        'CallQueue' { $sMax = $sMax + 4 }
+        'AutoAttendant' { $sMax = $sMax + 3 }
+        'All' { $sMax = $sMax + 7 }
       }
 
       # Object
-      $Operation = "Teams Callable Entity"
+      $Operation = 'Teams Callable Entity'
       Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
       try {
@@ -160,9 +160,9 @@ function Find-TeamsCallableEntity {
       #region Search Results
       $Status = "$($CallTarget.Type) '$($CallTarget.Entity)'"
       #region Call Queues
-      if ( $Scope -in ("All", "CallQueue") ) {
+      if ( $Scope -in ('All', 'CallQueue') ) {
         # 1 Searching for Agent or User
-        $Operation = "Call Queues: Agent or User"
+        $Operation = 'Call Queues: Agent or User'
         $step++
         Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
@@ -170,47 +170,47 @@ function Find-TeamsCallableEntity {
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.Agents.ObjectId ) {
             if ( $CallTarget.Identity -in $CQ.Users ) {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "User", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'User', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
             }
             else {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "Agent", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'Agent', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
             }
           }
         }
 
         # 2 Searching for Group
-        $Operation = "Call Queues: Group"
+        $Operation = 'Call Queues: Group'
         $step++
         Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.DistributionLists ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "Group", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'Group', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
           }
         }
 
         # 3 Searching for Overflow Target
-        $Operation = "Call Queues: Overflow Action Target"
+        $Operation = 'Call Queues: Overflow Action Target'
         $step++
         Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.OverflowActionTarget ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "OverflowActionTarget", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'OverflowActionTarget', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
           }
         }
 
         # 4 Searching for Timeout Target
-        $Operation = "Call Queues: Timout Action Target"
+        $Operation = 'Call Queues: Timout Action Target'
         $step++
         Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.TimeoutActionTarget ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "TimeoutActionTarget", "CallQueue", "$($CQ.Name)", "$($CQ.Identity)"))
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'TimeoutActionTarget', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
           }
         }
 
@@ -218,21 +218,21 @@ function Find-TeamsCallableEntity {
       #endregion
 
       #region Auto Attendants
-      if ( $Scope -in ("All", "AutoAttendant") ) {
+      if ( $Scope -in ('All', 'AutoAttendant') ) {
         # 1 Searching for Operator
-        $Operation = "Auto Attendants: Operator"
+        $Operation = 'Auto Attendants: Operator'
         $step++
         Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
         foreach ($AA in $AAs) {
           if ( $CallTarget.Identity -in $AA.Operator.Id ) {
-            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "Operator", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
+            [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'Operator', 'AutoAttendant', "$($AA.Name)", "$($AA.Identity)"))
           }
         }
 
         # 2 Searching for Routing Target
-        $Operation = "Auto Attendants: MenuOption - Default Call Flow"
+        $Operation = 'Auto Attendants: MenuOption - Default Call Flow'
         $step++
         Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
@@ -240,13 +240,13 @@ function Find-TeamsCallableEntity {
         foreach ($AA in $AAs) {
           foreach ($Target in $AA.DefaultCallFlow.Menu.MenuOptions.CallTarget) {
             if ( $CallTarget.Identity -in $Target.Id ) {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "DefaultCallFlow", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'DefaultCallFlow', 'AutoAttendant', "$($AA.Name)", "$($AA.Identity)"))
             }
           }
         }
 
         # 3 Searching for Routing Target
-        $Operation = "Auto Attendants: MenuOption - Call Flows"
+        $Operation = 'Auto Attendants: MenuOption - Call Flows'
         $step++
         Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
@@ -254,7 +254,7 @@ function Find-TeamsCallableEntity {
         foreach ($AA in $AAs) {
           foreach ($Target in $AA.CallFlows.Menu.MenuOptions.CallTarget) {
             if ( $CallTarget.Identity -in $Target.Id ) {
-              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", "CallFlows", "AutoAttendant", "$($AA.Name)", "$($AA.Identity)"))
+              [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'CallFlows', 'AutoAttendant', "$($AA.Name)", "$($AA.Identity)"))
             }
           }
         }

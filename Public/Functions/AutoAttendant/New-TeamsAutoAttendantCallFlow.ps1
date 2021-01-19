@@ -74,25 +74,25 @@ function New-TeamsAutoAttendantCallFlow {
     New-TeamsAutoAttendantDialScope
   #>
 
-  [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = "Disconnect", ConfirmImpact = 'Low')]
+  [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Disconnect', ConfirmImpact = 'Low')]
   [Alias('New-TeamsAAFlow')]
   [OutputType([System.Object])]
   param(
-    [Parameter(HelpMessage = "Optional Name of the Call Flow")]
+    [Parameter(HelpMessage = 'Optional Name of the Call Flow')]
     [ValidateLength(5, 63)]
     [string]$Name,
 
-    [Parameter(HelpMessage = "Prompt Object, Text-To-Voice String or Full path to AudioFile")]
+    [Parameter(HelpMessage = 'Prompt Object, Text-To-Voice String or Full path to AudioFile')]
     #Type is determined in BEGIN block
     $Greeting,
 
-    [Parameter(ParameterSetName = "Menu", HelpMessage = "Menu Object to be used")]
+    [Parameter(ParameterSetName = 'Menu', HelpMessage = 'Menu Object to be used')]
     [Object]$Menu,
 
-    [Parameter(ParameterSetName = "Disconnect", HelpMessage = "Creates a menu, using Disconnect")]
+    [Parameter(ParameterSetName = 'Disconnect', HelpMessage = 'Creates a menu, using Disconnect')]
     [switch]$Disconnect,
 
-    [Parameter(ParameterSetName = "TransferToCallTarget", HelpMessage = "Creates a menu, redirecting to the Call Target")]
+    [Parameter(ParameterSetName = 'TransferToCallTarget', HelpMessage = 'Creates a menu, redirecting to the Call Target')]
     [string]$TransferToCallTarget
   ) #param
 
@@ -110,7 +110,7 @@ function New-TeamsAutoAttendantCallFlow {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # Preparing Splatting Object
     $Parameters = $null
@@ -124,18 +124,18 @@ function New-TeamsAutoAttendantCallFlow {
       # Processing Greeting
       $GreetingType = ($Greeting | Get-Member | Select-Object TypeName -First 1).TypeName
       switch ($GreetingType) {
-        "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt" {
-          Write-Verbose -Message "Call Flow - Greeting provided is a Prompt Object"
+        'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt' {
+          Write-Verbose -Message 'Call Flow - Greeting provided is a Prompt Object'
           $Parameters += @{'Greetings' = @($Greeting) }
 
         }
-        "System.String" {
-          Write-Verbose -Message "Call Flow - Greeting provided as a String"
+        'System.String' {
+          Write-Verbose -Message 'Call Flow - Greeting provided as a String'
           # Process Greeting
           try {
             $GreetingObject = New-TeamsAutoAttendantPrompt -String $Greeting
             if ($GreetingObject) {
-              Write-Verbose -Message "Prompts - Adding 1 Prompts created (Greeting)"
+              Write-Verbose -Message 'Prompts - Adding 1 Prompts created (Greeting)'
               $Parameters += @{'Greetings' = $GreetingObject }
             }
           }
@@ -145,7 +145,7 @@ function New-TeamsAutoAttendantCallFlow {
         }
 
         default {
-          Write-Error -Message "Type not accepted as a Greeting/Prompt, please provide a Prompts Object or a String" -ErrorAction Stop
+          Write-Error -Message 'Type not accepted as a Greeting/Prompt, please provide a Prompts Object or a String' -ErrorAction Stop
         }
       }
     }
@@ -155,28 +155,28 @@ function New-TeamsAutoAttendantCallFlow {
     #region Options
     # Processing Options
     switch ($PSCmdlet.ParameterSetName) {
-      "Menu" {
+      'Menu' {
         if ($Menu) {
           #<#
           $MenuType = ($Menu | Get-Member | Select-Object TypeName -First 1).TypeName
-          if ($MenuType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu") {
-            Write-Verbose -Message "Menu - Provided Object is a Menu Object. Adding Menu"
+          if ($MenuType -eq 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu') {
+            Write-Verbose -Message 'Menu - Provided Object is a Menu Object. Adding Menu'
           }
           else {
-            Write-Error -Message "Menu - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenu or New-CsAutoAttendantMenu" -ErrorAction Stop
+            Write-Error -Message 'Menu - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenu or New-CsAutoAttendantMenu' -ErrorAction Stop
           }
           #>
         }
         else {
-          Write-Error -Message "Menu - Provided Object is NULL" -ErrorAction Stop
+          Write-Error -Message 'Menu - Provided Object is NULL' -ErrorAction Stop
         }
       }
 
-      "Disconnect" {
+      'Disconnect' {
         $Menu = New-TeamsAutoAttendantMenu -Action Disconnect
       }
 
-      "TransferToCallTarget" {
+      'TransferToCallTarget' {
         $Menu = New-TeamsAutoAttendantMenu -Action TransferToCallTarget -CallTarget $TransferToCallTarget
       }
     }
@@ -187,7 +187,7 @@ function New-TeamsAutoAttendantCallFlow {
 
     #region Other Parameters
     if ( -not $Name) {
-      $Name = "Call Flow using '$($PSCmdlet.ParameterSetName)'" + $(if ($Parameters.Greetings) { " and Greeting" })
+      $Name = "Call Flow using '$($PSCmdlet.ParameterSetName)'" + $(if ($Parameters.Greetings) { ' and Greeting' })
     }
     $Parameters += @{'Name' = "$Name" }
 
@@ -195,12 +195,12 @@ function New-TeamsAutoAttendantCallFlow {
 
 
     # Create Call Flow
-    Write-Verbose -Message "[PROCESS] Creating Call Flow"
+    Write-Verbose -Message '[PROCESS] Creating Call Flow'
     if ($PSBoundParameters.ContainsKey('Debug')) {
       "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-    if ($PSCmdlet.ShouldProcess("$($Parameters.Name)", "New-CsAutoAttendantCallFlow")) {
+    if ($PSCmdlet.ShouldProcess("$($Parameters.Name)", 'New-CsAutoAttendantCallFlow')) {
       New-CsAutoAttendantCallFlow @Parameters
     }
   }

@@ -46,7 +46,7 @@ function Remove-TeamsAutoAttendant {
   [Alias('Remove-TeamsAA')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Auto Attendant")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Auto Attendant')]
     [string]$Name
   ) #param
 
@@ -64,7 +64,7 @@ function Remove-TeamsAutoAttendant {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -72,19 +72,20 @@ function Remove-TeamsAutoAttendant {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $DNCounter = 0
     foreach ($DN in $Name) {
-      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation "Querying CsAutoAttendant" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
+      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation 'Querying CsAutoAttendant' -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
       $DNCounter++
       try {
-        Write-Verbose -Message "The listed Auto Attendants are being removed:" -Verbose
+        Write-Verbose -Message 'The listed Auto Attendants are being removed:' -Verbose
         $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
         $AAToRemove = $AAToRemove | Where-Object Name -EQ "$DN"
 
-        if ( $QueueToRemove ) {
+        if ( $AAToRemove ) {
           $AACounter = 0
+          $AAs = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
-            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $($AAToRemove.Count) * 100)
-            Write-Verbose -Message "Removing: '$($AA.Name)'"
+            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AAs * 100)
+            Write-Verbose -Message "Removing: '$($AA.Name)'" -Verbose
             $AACounter++
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity $($AA.Identity) -ErrorAction STOP

@@ -101,7 +101,7 @@ function Get-TeamsCallQueue {
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
   } #begin
 
@@ -110,7 +110,7 @@ function Get-TeamsCallQueue {
 
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
-      Write-Verbose -Message "No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString" -Verbose
+      Write-Verbose -Message 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString' -Verbose
       Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object Name
       return
     }
@@ -161,7 +161,7 @@ function Get-TeamsCallQueue {
       }
 
       #region Finding OverflowActionTarget
-      $Operation = "Parsing OverflowActionTarget"
+      $Operation = 'Parsing OverflowActionTarget'
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       $OAT = $null
@@ -173,7 +173,7 @@ function Get-TeamsCallQueue {
 
       #region Finding TimeoutActionTarget
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation "Parsing TimeoutActionTarget" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation 'Parsing TimeoutActionTarget' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - Parsing TimeoutActionTarget"
       $TAT = $null
       if ($Q.TimeoutActionTarget) {
@@ -184,7 +184,7 @@ function Get-TeamsCallQueue {
 
       #region Endpoints
       # Distribution Lists
-      $Operation = "Parsing DistributionLists"
+      $Operation = 'Parsing DistributionLists'
       $step++
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
@@ -199,7 +199,7 @@ function Get-TeamsCallQueue {
       # Output: $DLNames
 
       # Users
-      $Operation = "Parsing Users"
+      $Operation = 'Parsing Users'
       $step++
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
@@ -211,7 +211,7 @@ function Get-TeamsCallQueue {
 
       if ( $Detailed ) {
         # Parsing Agents only when the detailed Switch is used
-        $Operation = "Parsing Agents"
+        $Operation = 'Parsing Agents'
         $step++
         Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($Q.Name)' - $Operation"
@@ -225,7 +225,7 @@ function Get-TeamsCallQueue {
       #endregion
 
       #region Application Instance UPNs
-      $Operation = "Parsing Resource Accounts"
+      $Operation = 'Parsing Resource Accounts'
       $step++
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
@@ -242,7 +242,7 @@ function Get-TeamsCallQueue {
 
       #region Creating Output Object
       # Building custom Object with Friendly Names
-      $Operation = "Constructing Output Object"
+      $Operation = 'Constructing Output Object'
       $step++
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
