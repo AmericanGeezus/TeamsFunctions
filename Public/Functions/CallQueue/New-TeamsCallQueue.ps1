@@ -738,9 +738,9 @@ function New-TeamsCallQueue {
             #region Processing OverflowActionTarget for SharedVoiceMail
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
             $CallTarget = $null
-            $CallTarget = Find-AzureAdGroup $OverflowActionTarget -Exact
+            $CallTarget = Get-TeamsCallableEntity -Identity "$OverflowActionTarget"
             if ( $CallTarget ) {
-              $OverflowActionTargetId = $CallTarget.ObjectId
+              $OverflowActionTargetId = $CallTarget.Identity
               Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
               $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
             }
@@ -942,10 +942,10 @@ function New-TeamsCallQueue {
             #region Processing TimeoutActionTarget for SharedVoiceMail
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
             $CallTarget = $null
-            $CallTarget = Find-AzureAdGroup $TimeoutActionTarget -Exact
+            $CallTarget = Get-TeamsCallableEntity -Identity "$TimeoutActionTarget"
             if ( $CallTarget ) {
+              $TimeoutActionTargetId = $CallTarget.Identity
               Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
-              $TimeoutActionTargetId = $CallTarget.ObjectId
               $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
             }
             else {
@@ -1067,13 +1067,13 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists" -Verbose
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
-        $DLObject = Find-AzureAdGroup "$DL" -Exact
+        $DLObject = Get-TeamsCallableEntity -Identity "$DL"
         if ($DLObject) {
           Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
           # Test whether Users in DL are enabled for EV and/or licensed?
 
           # Add to List
-          [void]$DLIdList.Add($DLObject.ObjectId)
+          [void]$DLIdList.Add($DLObject.Identity)
         }
         else {
           Write-Warning -Message "Group '$DL' not found or not unique in AzureAd, omitting Group!"

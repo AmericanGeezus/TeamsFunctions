@@ -99,36 +99,37 @@ function Get-TeamsCallableEntity {
 
     foreach ($Id in $Identity) {
       Write-Verbose -Message "Processing '$Id'"
-      if ($Id -match "^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$" -and -not ($Id -match '@')) {
-        Write-Verbose "Target is a Tel URI"
+      if ($Id -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$' -and -not ($Id -match '@')) {
+        Write-Verbose 'Target is a Tel URI'
         $Id = Format-StringForUse -InputString "$Id" -As LineURI
-        $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", "TelURI", "ExternalPstn")
+        $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", 'TelURI', 'ExternalPstn')
 
       }
       else {
-        Write-Verbose "Target is not a Tel URI"
+        Write-Verbose 'Target is not a Tel URI'
         try {
           # FIRST: Trying an AzureAdUser for User or ApplicationEndPoint
           $CallTarget = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue
-          Write-Verbose "Target is a User or Application Endpoint"
+          Write-Verbose 'Target is a User or Application Endpoint'
           if ( $CallTarget ) {
             try {
               $null = Get-CsOnlineApplicationInstance -Identity $CallTarget.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
-              Write-Verbose "Target is an Application Endpoint"
-              $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", "ApplicationEndpoint", "ApplicationEndpoint")
+              Write-Verbose 'Target is an Application Endpoint'
+              $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", 'ApplicationEndpoint', 'ApplicationEndpoint')
             }
             catch {
-              Write-Verbose "Target is a User"
-              $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", "User", "User")
+              Write-Verbose 'Target is a User'
+              $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", 'User', 'User')
             }
           }
           else {
-            Write-Verbose "Target is not a User or Application Endpoint"
+            Write-Verbose 'Target is not a User or Application Endpoint'
             throw
           }
         }
         catch {
           # Not a User, not an ApplicationEndPoint
+          Write-Verbose 'Target is not a User or Application Endpoint'
           try {
             # SECOND: Trying a AzureAdGroup for SharedVoicemail
             $CallTarget = $null
@@ -138,26 +139,36 @@ function Get-TeamsCallableEntity {
                 $CallTarget = Get-AzureADGroup -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
               }
               catch {
-                $CallTarget = Get-AzureADGroup | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+                Write-Verbose -Message 'Performing Search... finding ALL Groups' -Verbose
+                if ( -not $global:TeamsFunctionsTenantAzureAdGroups) {
+                  Write-Verbose -Message 'Groups not loaded yet, depending on the size of the Tenant, this will run for a while!' -Verbose
+                  $global:TeamsFunctionsTenantAzureAdGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+                }
+                if ($Id -contains '@') {
+                  $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+                }
+                else {
+                  $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+                }
               }
             }
             else {
-              Write-Verbose "Target is a Group"
+              Write-Verbose 'Target is a Group'
             }
 
             # dealing with potential duplicates
             if ( $CallTarget.Count -gt 1 ) {
-              Write-Verbose "Target is a Group, but multiple Groups found"
+              Write-Verbose 'Target is a Group, but multiple Groups found'
               $CallTarget = $CallTarget | Where-Object DisplayName -EQ "$Id"
             }
             if ( $CallTarget.Count -gt 1 ) {
-              Write-Verbose "Target is a Group, but not unique!"
+              Write-Verbose 'Target is a Group, but not unique!'
               throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
             }
             else {
               # Unique result found
               if ( $CallTarget ) {
-                $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.DisplayName)", "$($CallTarget.ObjectId)", "Group", "SharedVoicemail")
+                $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.DisplayName)", "$($CallTarget.ObjectId)", 'Group', 'SharedVoicemail')
               }
               else {
                 throw
@@ -168,9 +179,9 @@ function Get-TeamsCallableEntity {
             Write-Error -Message "No Unique Target found for '$Id'" -Exception System.Reflection.AmbiguousMatchException -ErrorAction Stop
           }
           catch {
-            Write-Warning -Message "The Object is not supported as a Callable Entity for AutoAttendants or CallQueues"
+            Write-Warning -Message 'The Object is not supported as a Callable Entity for AutoAttendants or CallQueues'
             # Defaulting to Unknown
-            $CallableEntity = [TFCallableEntity]::new( $null, "$Id", "Unknown", $null )
+            $CallableEntity = [TFCallableEntity]::new( $null, "$Id", 'Unknown', $null )
           }
         }
       }

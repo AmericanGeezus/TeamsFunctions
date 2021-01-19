@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-#TODO Needs revision! Rework like AzureAdUser - Identity (Exact) and SearchString 
+#TODO Needs revision! Rework like AzureAdUser - Identity (Exact) and SearchString
 
 function Find-AzureAdGroup {
   <#
@@ -129,16 +129,19 @@ function Find-AzureAdGroup {
 
       'All' {
         # Query
-        Write-Verbose -Message "Performing Search... finding ALL Groups - Depending on the size of the Tenant, this will run for a while!" -Verbose
-        $AllGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        Write-Verbose -Message "Performing Search... finding ALL Groups" -Verbose
+        if ( -not $global:TeamsFunctionsTenantAzureAdGroups) {
+          Write-Verbose -Message 'Groups not loaded yet, depending on the size of the Tenant, this will run for a while!' -Verbose
+          $global:TeamsFunctionsTenantAzureAdGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        }
         [System.Collections.ArrayList]$Groups = @()
-        $Groups += $AllGroups | Where-Object DisplayName -Like "*$Identity*"
-        $Groups += $AllGroups | Where-Object Description -Like "*$Identity*"
-        $Groups += $AllGroups | Where-Object ObjectId -Like "*$Identity*"
-        $Groups += $AllGroups | Where-Object Mail -Like "*$Identity*"
+        $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -Like "*$Identity*"
+        $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Description -Like "*$Identity*"
+        $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object ObjectId -Like "*$Identity*"
+        $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -Like "*$Identity*"
 
         $MailNickName = $Identity.Split('@')[0]
-        $Groups += $AllGroups | Where-Object Mailnickname -Like "*$MailNickName*"
+        $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mailnickname -Like "*$MailNickName*"
 
       } #All
     }
