@@ -80,11 +80,12 @@ function Remove-TeamsAutoAttendant {
         $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
         $AAToRemove = $AAToRemove | Where-Object Name -EQ "$DN"
 
-        if ( $QueueToRemove ) {
+        if ( $AAToRemove ) {
           $AACounter = 0
+          $AAs = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
-            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $($AAToRemove.Count) * 100)
-            Write-Verbose -Message "Removing: '$($AA.Name)'"
+            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AAs * 100)
+            Write-Verbose -Message "Removing: '$($AA.Name)'" -Verbose
             $AACounter++
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity $($AA.Identity) -ErrorAction STOP

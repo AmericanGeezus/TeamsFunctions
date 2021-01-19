@@ -46,7 +46,7 @@ function Remove-TeamsCallQueue {
   [Alias('Remove-TeamsCQ')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = "Name of the Call Queue")]
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, HelpMessage = 'Name of the Call Queue')]
     [string[]]$Name
   ) #param
 
@@ -72,21 +72,22 @@ function Remove-TeamsCallQueue {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $DNCounter = 0
     foreach ($DN in $Name) {
-      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation "Querying CsCallQueue" -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
+      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation 'Querying CsCallQueue' -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
       $DNCounter++
       try {
-        Write-Verbose -Message "The listed Queues are being removed:" -Verbose
+        Write-Verbose -Message 'The listed Queues are being removed:' -Verbose
         $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
         $QueueToRemove = $QueueToRemove | Where-Object Name -EQ "$DN"
 
         if ( $QueueToRemove ) {
           $QueueCounter = 0
+          $Queues = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
           foreach ($Q in $QueueToRemove) {
-            Write-Progress -Id 1 -Status "Removing Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $($QueueToRemove.Count) * 100)
-            Write-Verbose -Message "Removing: '$($Q.Name)'"
+            Write-Progress -Id 1 -Status "Removing Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $Queues * 100)
+            Write-Verbose -Message "Removing: '$($Q.Name)'" -Verbose
             $QueueCounter++
-            if ($PSCmdlet.ShouldProcess("$($Q.Identity)", 'Remove-CsCallQueue')) {
+            if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
               Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP
             }
           }
@@ -96,7 +97,7 @@ function Remove-TeamsCallQueue {
         }
       }
       catch {
-        Write-Error -Message "Removal of Call Queue '$DN' failed" -Category OperationStopped
+        Write-Error -Message "Removal of Call Queue '$DN' failed with Exception: $($_.Exception.Message)" -Category OperationStopped
         return
       }
     }
