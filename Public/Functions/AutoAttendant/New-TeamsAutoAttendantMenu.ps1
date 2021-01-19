@@ -198,7 +198,7 @@ function New-TeamsAutoAttendantMenu {
         #region Prompt
         $PromptsType = ($Prompts | Get-Member | Select-Object TypeName -First 1).TypeName
         switch ($PromptsType) {
-          'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Prompt' {
+          'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt' {
             Write-Verbose -Message 'Call Flow - Prompts provided is a Prompt Object'
             $Parameters += @{'Prompts' = $Prompts }
 
@@ -233,7 +233,7 @@ function New-TeamsAutoAttendantMenu {
             foreach ($MenuOption in $MenuOptions) {
               $MenuOptionType = $null
               $MenuOptionType = ($MenuOption | Get-Member | Select-Object TypeName -First 1).TypeName
-              if ($MenuOptionType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.MenuOption") {
+              if ($MenuOptionType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption") {
                 Write-Verbose -Message "Menu Option - Provided Object is a Menu Object. Adding Menu Option"
               }
               else {

@@ -304,8 +304,8 @@ function New-TeamsAutoAttendant {
       if ($PSBoundParameters.ContainsKey('BusinessHoursCallTarget')) { $PSBoundParameters.Remove('BusinessHoursCallTarget') }
 
       # Testing provided Object Type
-      if (($DefaultCallFlow | Get-Member | Select-Object TypeName -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.CallFlow') {
-        Write-Error "DefaultCallFlow - Type is not of 'Microsoft.Rtc.Management.Hosted.Online.Models.CallFlow'. Please provide a Call Flow Object" -Category InvalidType
+      if (($DefaultCallFlow | Get-Member | Select-Object TypeName -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow') {
+        Write-Error "DefaultCallFlow - Type is not of 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'. Please provide a Call Flow Object" -Category InvalidType
         break
       }
     }
@@ -336,8 +336,8 @@ function New-TeamsAutoAttendant {
         }
         else {
           # Testing provided Object Type
-          if (($BusinessHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Menu') {
-            Write-Error -Message "BusinessHoursCallFlowOption (Menu) - BusinessHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.Online.Models.Menu'" -Category InvalidType
+          if (($BusinessHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu') {
+            Write-Error -Message "BusinessHoursCallFlowOption (Menu) - BusinessHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType
             break
           }
         }
@@ -375,16 +375,16 @@ function New-TeamsAutoAttendant {
 
       # Testing provided Object Type
       foreach ($Flow in $CallFlows) {
-        if (($Flow | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.CallFlow') {
-          Write-Error -Message "CallFlows - '$($Flow.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.Online.Models.CallFlow'" -Category InvalidType
+        if (($Flow | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow') {
+          Write-Error -Message "CallFlows - '$($Flow.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow'" -Category InvalidType
           break
         }
       }
 
       # Testing provided Object Type
       foreach ($CHA in $CallHandlingAssociations) {
-        if (($CHA | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.CallHandlingAssociation') {
-          Write-Error -Message "CallHandlingAssociations - '$($CHA.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.Online.Models.CallHandlingAssociation'" -Category InvalidType
+        if (($CHA | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation') {
+          Write-Error -Message "CallHandlingAssociations - '$($CHA.Name)' -Object not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation'" -Category InvalidType
           break
         }
       }
@@ -415,8 +415,8 @@ function New-TeamsAutoAttendant {
           break
         }
         else {
-          if (($AfterHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Menu') {
-            Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.Online.Models.Menu'" -Category InvalidType
+          if (($AfterHoursMenu | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu') {
+            Write-Error -Message "AfterHoursCallFlowOption (Menu) - AfterHoursMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType
             break
           }
         }
@@ -566,11 +566,11 @@ function New-TeamsAutoAttendant {
 
           # Process BusinessHoursCallTarget
           try {
-            $BusinessHoursCallTargetEntity = New-TeamsCallableEntity $AfterHoursCallTarget -ErrorAction Stop
+            $BusinessHoursCallTargetEntity = New-TeamsCallableEntity "$BusinessHoursCallTarget" -ErrorAction Stop
 
             # Building Menu Only if Successful
             if ($BusinessHoursCallTargetEntity) {
-              $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity.Id -DtmfResponse Automatic
+              $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity -DtmfResponse Automatic
               $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name 'Business Hours Menu' -MenuOptions @($BusinessHoursMenuOptionTransfer)
 
               break
@@ -674,11 +674,11 @@ function New-TeamsAutoAttendant {
 
           # Process AfterHoursCallTarget
           try {
-            $AfterHoursCallTargetEntity = New-TeamsCallableEntity $AfterHoursCallTarget -ErrorAction Stop
+            $AfterHoursCallTargetEntity = New-TeamsCallableEntity "$AfterHoursCallTarget" -ErrorAction Stop
 
             # Building Menu Only if Successful
             if ($AfterHoursCallTargetEntity) {
-              $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity.Id -DtmfResponse Automatic
+              $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity -DtmfResponse Automatic
               $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name 'After Hours Menu' -MenuOptions @($AfterHoursMenuOptionTransfer)
 
               break

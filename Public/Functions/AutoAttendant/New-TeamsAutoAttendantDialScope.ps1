@@ -87,10 +87,10 @@ function New-TeamsAutoAttendantDialScope {
     foreach ($Group in $GroupName) {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
       $Object = $null
-      $Object = Find-AzureADGroup "$Group" -Exact
+      $Object = Get-TeamsCallableEntity -Identity "$Group"
       if ($Object) {
 
-        $GroupIds += $Object.ObjectId
+        $GroupIds += $Object.Identity
       }
       else {
         Write-Warning -Message "Group not found: '$Group' - Skipping"

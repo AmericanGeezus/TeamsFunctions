@@ -25,12 +25,12 @@ function Merge-AutoAttendantArtefact {
   .PARAMETER Menu
     Only valid for Type Call Flow - Object representing the Menu
   .INPUTS
-    Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.CallFlow
-    Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Menu
-    Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.MenuOption
-    Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.CallHandlingAssociation
+    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallFlow
+    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu
+    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption
+    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.CallHandlingAssociation
     Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Schedule
-    Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Prompt
+    Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt
   .OUTPUTS
     PSCustomObject
   .NOTES

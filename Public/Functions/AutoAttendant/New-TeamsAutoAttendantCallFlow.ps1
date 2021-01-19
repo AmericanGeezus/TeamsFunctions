@@ -124,7 +124,7 @@ function New-TeamsAutoAttendantCallFlow {
       # Processing Greeting
       $GreetingType = ($Greeting | Get-Member | Select-Object TypeName -First 1).TypeName
       switch ($GreetingType) {
-        'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Prompt' {
+        'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Prompt' {
           Write-Verbose -Message 'Call Flow - Greeting provided is a Prompt Object'
           $Parameters += @{'Greetings' = @($Greeting) }
 
@@ -159,7 +159,7 @@ function New-TeamsAutoAttendantCallFlow {
         if ($Menu) {
           #<#
           $MenuType = ($Menu | Get-Member | Select-Object TypeName -First 1).TypeName
-          if ($MenuType -eq 'Deserialized.Microsoft.Rtc.Management.Hosted.Online.Models.Menu') {
+          if ($MenuType -eq 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu') {
             Write-Verbose -Message 'Menu - Provided Object is a Menu Object. Adding Menu'
           }
           else {

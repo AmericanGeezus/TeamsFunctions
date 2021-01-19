@@ -143,7 +143,7 @@ function New-TeamsCallableEntity {
       }
     }
     else {
-      if ($CEObject.Type -eq 'Unknown') {
+      if ($CEObject.ObjectType -eq 'Unknown') {
         Write-Error -Message 'Object could not be determined and Cannot be used!' -ErrorAction Stop
       }
       else {

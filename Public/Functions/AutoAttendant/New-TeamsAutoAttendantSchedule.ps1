@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-
+#TODO ADD Start and End Time instead of BusinessHours for even more flexibility!
 
 function New-TeamsAutoAttendantSchedule {
   <#
