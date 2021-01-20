@@ -30,8 +30,6 @@ function Import-TeamsAudioFile {
     Captures different behavior of Get-Content (ByteStream syntax) in PowerShell 6 and above VS PowerShell 5 and below
 	.FUNCTIONALITY
 		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -65,7 +63,7 @@ function Import-TeamsAudioFile {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Testing File
     if (-not (Test-Path $File)) {
-      Write-Error -Message "File not found!" -ErrorAction Stop
+      Write-Error -Message 'File not found!' -ErrorAction Stop
     }
 
     $FileName = Split-Path $File -Leaf

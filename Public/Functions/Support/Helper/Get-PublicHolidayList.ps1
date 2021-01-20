@@ -36,8 +36,6 @@ function Get-PublicHolidayList {
     Helper Function
   .FUNCTIONALITY
     HolidaySet
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -50,7 +48,7 @@ function Get-PublicHolidayList {
   #[Alias('')]
   [OutputType([PSCustomObject])]
   param (
-    [Parameter(Mandatory, Position = 0, HelpMessage = "ISO 3166-alpha2 Country Code (2-digit CC)")]
+    [Parameter(Mandatory, Position = 0, HelpMessage = 'ISO 3166-alpha2 Country Code (2-digit CC)')]
     [ValidateScript( {
         $Countries = Get-PublicHolidayCountry
         if ($_ -in $Countries.CountryCode) { $true } else { Write-Host "Country '$_' not supported (yet), sorry. Please provide a CountryCode from the output of Get-PublicHolidayCountry" -ForegroundColor Red; $false }
@@ -58,7 +56,7 @@ function Get-PublicHolidayList {
     [Alias('CC')]
     [String]$CountryCode,
 
-    [Parameter(Position = 1, ValueFromPipeline, HelpMessage = "Username(s)")]
+    [Parameter(Position = 1, ValueFromPipeline, HelpMessage = 'Username(s)')]
     [Alias('Y')]
     [ValidateRange(2000, 3000)]
     [int]$Year
@@ -72,7 +70,7 @@ function Get-PublicHolidayList {
     if (-not $PSBoundParameters.ContainsKey('Year')) {
       $Today = Get-Date
       $Year = $Today.Year
-      $null = $Today.Datetime -match "\d\d (.*?) \d"
+      $null = $Today.Datetime -match '\d\d (.*?) \d'
       If ($Today.Month -eq 12) {
         $Year++
       }

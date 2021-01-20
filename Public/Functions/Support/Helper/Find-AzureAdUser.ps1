@@ -34,8 +34,6 @@ function Find-AzureAdUser {
     System.String
   .OUTPUTS
     Microsoft.Open.AzureAD.Model.User
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -44,14 +42,14 @@ function Find-AzureAdUser {
     Get-AzureAdUser
   #>
 
-  [CmdletBinding(DefaultParameterSetName = "Search")]
+  [CmdletBinding(DefaultParameterSetName = 'Search')]
   [OutputType([Microsoft.Open.AzureAD.Model.User])]
   param(
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Search", ValueFromPipeline, HelpMessage = "Search string")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Search', ValueFromPipeline, HelpMessage = 'Search string')]
     [ValidateLength(3, 255)]
     [string]$SearchString,
 
-    [Parameter(Mandatory, Position = 0, ParameterSetName = "Id", ValueFromPipelineByPropertyName, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Id', ValueFromPipelineByPropertyName, HelpMessage = 'This is the UserID (UPN)')]
     [Alias('UserPrincipalName', 'Id')]
     [string[]]$Identity
 
@@ -73,14 +71,14 @@ function Find-AzureAdUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($PsCmdlet.ParameterSetName) {
-      "Search" {
+      'Search' {
         $User = Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         if ( $User ) {
           return $User
         }
         else {
-          if ($Searchstring -contains " ") {
-            $SearchString = $SearchString.split(" ") | Select-Object -Last 1
+          if ($Searchstring -contains ' ') {
+            $SearchString = $SearchString.split(' ') | Select-Object -Last 1
             Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
           }
           else {
@@ -89,7 +87,7 @@ function Find-AzureAdUser {
         }
       }
 
-      "Id" {
+      'Id' {
         foreach ($Id in $Identity) {
           try {
             $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction STOP

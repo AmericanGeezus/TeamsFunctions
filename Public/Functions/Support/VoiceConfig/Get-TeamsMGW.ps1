@@ -25,8 +25,6 @@ function Get-TeamsMGW {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -45,7 +43,7 @@ function Get-TeamsMGW {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Online Pstn Gateway")]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Pstn Gateway')]
     [string]$Identity
   )
 
@@ -63,7 +61,7 @@ function Get-TeamsMGW {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
-      if ($Identity -match [regex]::Escape("*")) {
+      if ($Identity -match [regex]::Escape('*')) {
         $Filtered = Get-CsOnlinePstnGateway -Filter "*$Identity*"
       }
       else {
@@ -78,7 +76,7 @@ function Get-TeamsMGW {
       }
     }
     else {
-      Write-Verbose -Message "Finding Online Pstn Gateway Names"
+      Write-Verbose -Message 'Finding Online Pstn Gateway Names'
       Get-CsOnlinePstnGateway | Select-Object Identity
     }
   } #process

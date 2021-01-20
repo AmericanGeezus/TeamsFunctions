@@ -25,8 +25,6 @@ function Get-TeamsOPU {
   .NOTES
     It executes the following string:
     Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -45,7 +43,7 @@ function Get-TeamsOPU {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, HelpMessage = "Name of the Voice Routing Policy")]
+    [Parameter(Position = 0, HelpMessage = 'Name of the Voice Routing Policy')]
     [string]$Usage
   )
 
@@ -68,7 +66,7 @@ function Get-TeamsOPU {
 
     }
     else {
-      Write-Verbose -Message "Finding Online Pstn Usage Names"
+      Write-Verbose -Message 'Finding Online Pstn Usage Names'
       Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage
 
     }

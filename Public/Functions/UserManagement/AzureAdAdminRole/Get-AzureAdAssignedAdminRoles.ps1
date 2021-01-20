@@ -31,8 +31,6 @@ function Get-AzureAdAssignedAdminRoles {
     Activating Admin Roles
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -44,8 +42,8 @@ function Get-AzureAdAssignedAdminRoles {
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity of the User to Query")]
-    [Alias("UPN", "UserPrincipalName", "Username")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the User to Query')]
+    [Alias('UPN', 'UserPrincipalName', 'Username')]
     [string]$Identity
 
   ) #param
@@ -67,7 +65,7 @@ function Get-AzureAdAssignedAdminRoles {
     $RoleCounter = 0
     $Roles = Get-AzureADDirectoryRole
     FOREACH ($R in $Roles) {
-      Write-Progress -Status "Querying Members for Roles" -CurrentOperation "Role: '$($R.DisplayName)'" -Activity $MyInvocation.MyCommand -PercentComplete ($RoleCounter / $($Roles.Count) * 100)
+      Write-Progress -Status 'Querying Members for Roles' -CurrentOperation "Role: '$($R.DisplayName)'" -Activity $MyInvocation.MyCommand -PercentComplete ($RoleCounter / $($Roles.Count) * 100)
       $RoleCounter++
 
       $Members = (Get-AzureADDirectoryRoleMember -ObjectId $R.ObjectId).UserprincipalName
@@ -79,7 +77,7 @@ function Get-AzureAdAssignedAdminRoles {
 
     #Output
     if ( -not $AssignedRoles ) {
-      Write-Warning -Message "No direct assignments found. This user may have Admin Role access through Group assignment or Privileged Admin Groups"
+      Write-Warning -Message 'No direct assignments found. This user may have Admin Role access through Group assignment or Privileged Admin Groups'
     }
 
     Write-Verbose -Message "Membership of Group assignments or Privileged Admin Groups is currently not queried by $($MyInvocation.MyCommand)" -Verbose

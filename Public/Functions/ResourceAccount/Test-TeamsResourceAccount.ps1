@@ -29,8 +29,6 @@ function Test-TeamsResourceAccount {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -46,10 +44,10 @@ function Test-TeamsResourceAccount {
 	[CmdletBinding()]
 	[OutputType([Boolean])]
 	param(
-		[Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the UserID (UPN)")]
+		[Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
 		[string]$Identity,
 
-		[Parameter(HelpMessage = "Quick test against AzureAdUser Department")]
+		[Parameter(HelpMessage = 'Quick test against AzureAdUser Department')]
 		[switch]$Quick
 
 	) #param
@@ -66,9 +64,9 @@ function Test-TeamsResourceAccount {
 	process {
 		Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 		if ( $Quick ) {
-			Write-Verbose -Message "Querying AzureAdUser (Quick search and fast, but may not be 100% accurate!)"
+			Write-Verbose -Message 'Querying AzureAdUser (Quick search and fast, but may not be 100% accurate!)'
 			$User = Find-AzureAdUser $Identity
-			if ( $User.Department -eq "Microsoft Communication Application Instance") {
+			if ( $User.Department -eq 'Microsoft Communication Application Instance') {
 				return $true
 			}
 			else {
@@ -76,7 +74,7 @@ function Test-TeamsResourceAccount {
 			}
 		}
 		else {
-			Write-Verbose -Message "Querying CsOnlineApplicationInstance (Thorough search, but slower)"
+			Write-Verbose -Message 'Querying CsOnlineApplicationInstance (Thorough search, but slower)'
 			$RA = Find-CsOnlineApplicationInstance -SearchQuery "$Identity" -WarningAction SilentlyContinue
 			if ( $RA ) {
 				return $true

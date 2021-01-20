@@ -17,8 +17,6 @@ function Assert-MicrosoftTeamsConnection {
 		Assert-MicrosoftTeamsConnection
     Will run Test-MicrosoftTeamsConnection and, if successful, stops.
     If unsuccessful, displays request to create a new session and stops.
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
@@ -37,12 +35,12 @@ function Assert-MicrosoftTeamsConnection {
 
     if (Test-MicrosoftTeamsConnection) {
       if ($stack.length -lt 3) {
-        Write-Verbose -Message "[ASSERT] MicrosoftTeams: Connected"
+        Write-Verbose -Message '[ASSERT] MicrosoftTeams: Connected'
       }
       return $(if ($Called) { $true })
     }
     else {
-      Write-Host "[ASSERT] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) " -ForegroundColor Red
+      Write-Host '[ASSERT] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) ' -ForegroundColor Red
       return $(if ($Called) { $false })
     }
 

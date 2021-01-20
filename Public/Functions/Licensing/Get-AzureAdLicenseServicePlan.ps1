@@ -31,8 +31,6 @@ function Get-AzureAdLicenseServicePlan {
     Licensing
   .FUNCTIONALITY
     Returns a list of License Service Plans
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -69,15 +67,15 @@ function Get-AzureAdLicenseServicePlan {
 
   process {
     #read the content of the Microsoft web page and extract the first table
-    $url = "https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference"
+    $url = 'https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference'
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $content = (Invoke-WebRequest $url -UseBasicParsing).Content
-    $content = $content.SubString($content.IndexOf("<tbody>"))
-    $content = $content.Substring(0, $content.IndexOf("</tbody>"))
+    $content = $content.SubString($content.IndexOf('<tbody>'))
+    $content = $content.Substring(0, $content.IndexOf('</tbody>'))
 
     #eliminate line feeds so that we can use regular expression to get the table rows...
     $content = $content -replace "`r?`n", ''
-    $rows = (Select-String -InputObject $content -Pattern "<tr>(.*?)</tr>" -AllMatches).Matches | ForEach-Object {
+    $rows = (Select-String -InputObject $content -Pattern '<tr>(.*?)</tr>' -AllMatches).Matches | ForEach-Object {
       $_.Groups[1].Value
     }
 
@@ -87,7 +85,7 @@ function Get-AzureAdLicenseServicePlan {
     #   3rd cell contains the included service plans (with string IDs)
     #   3rd cell contains the included service plans (with display names)
     $rows | ForEach-Object {
-      $cells = (Select-String -InputObject $_ -Pattern "<td>(.*?)</td>" -AllMatches).Matches | ForEach-Object {
+      $cells = (Select-String -InputObject $_ -Pattern '<td>(.*?)</td>' -AllMatches).Matches | ForEach-Object {
         $_.Groups[1].Value
       }
 
@@ -97,11 +95,11 @@ function Get-AzureAdLicenseServicePlan {
       if (($srcServicePlan.Trim() -ne '') -and ($srcServicePlanName.Trim() -ne '')) {
 
         #store the service plan string IDs for later match
-        $srcServicePlan -split "<br.?>" | ForEach-Object {
-          $planServicePlanName = ($_.SubString(0, $_.LastIndexOf("("))).Trim()
-          $planServicePlanId = $_.SubString($_.LastIndexOf("(") + 1)
-          if ($planServicePlanId.Contains(")")) {
-            $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(")"))
+        $srcServicePlan -split '<br.?>' | ForEach-Object {
+          $planServicePlanName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
+          $planServicePlanId = $_.SubString($_.LastIndexOf('(') + 1)
+          if ($planServicePlanId.Contains(')')) {
+            $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
           }
 
           if (-not $planServicePlanNames.ContainsKey($planServicePlanId)) {
@@ -110,11 +108,11 @@ function Get-AzureAdLicenseServicePlan {
         }
 
         #get te included service plans
-        $srcServicePlanName -split "<br.?>" | ForEach-Object {
-          $planProductName = ($_.SubString(0, $_.LastIndexOf("("))).Trim()
-          $planServicePlanId = $_.SubString($_.LastIndexOF("(") + 1)
-          if ($planServicePlanId.Contains(")")) {
-            $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(")"))
+        $srcServicePlanName -split '<br.?>' | ForEach-Object {
+          $planProductName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
+          $planServicePlanId = $_.SubString($_.LastIndexOF('(') + 1)
+          if ($planServicePlanId.Contains(')')) {
+            $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
           }
 
           # Add RelevantForTeams
@@ -133,7 +131,7 @@ function Get-AzureAdLicenseServicePlan {
           # reworking ProductName into TitleCase
           $TextInfo = (Get-Culture).TextInfo
           $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
-          $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep "()+ -"
+          $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep '()+ -'
 
           # Building Object
           if ($Plans.ServicePlanId -notcontains $planServicePlanId) {
@@ -142,7 +140,7 @@ function Get-AzureAdLicenseServicePlan {
             }
             catch {
               Write-Verbose "[TFTeamsServicePlan] Couldn't add entry for $planProductName"
-              if ( $planProductName -ne "Powerapps For Office 365 K1") {
+              if ( $planProductName -ne 'Powerapps For Office 365 K1') {
                 $PlansNotAdded += $planProductName
               }
 
@@ -153,8 +151,8 @@ function Get-AzureAdLicenseServicePlan {
     }
 
     # Manually Adding to List of $Plans
-    [void]$Plans.Add([TFTeamsServicePlan]::new("Communications Credits", "MCOPSTNC", "505e180f-f7e0-4b65-91d4-00d670bbd18c", $true))
-    [void]$Plans.Add([TFTeamsServicePlan]::new("Phone System - Virtual User", "MCOEV_VIRTUALUSER", "f47330e9-c134-43b3-9993-e7f004506889", $true))
+    [void]$Plans.Add([TFTeamsServicePlan]::new('Communications Credits', 'MCOPSTNC', '505e180f-f7e0-4b65-91d4-00d670bbd18c', $true))
+    [void]$Plans.Add([TFTeamsServicePlan]::new('Phone System - Virtual User', 'MCOEV_VIRTUALUSER', 'f47330e9-c134-43b3-9993-e7f004506889', $true))
 
     # Output
     if ( $PlansNotAdded.Count -gt 0 ) {

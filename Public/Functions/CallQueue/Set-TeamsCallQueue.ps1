@@ -118,8 +118,6 @@ function Set-TeamsCallQueue {
 		Currently in Testing
 	.FUNCTIONALITY
 		Changes a Call Queue with friendly names as input
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK

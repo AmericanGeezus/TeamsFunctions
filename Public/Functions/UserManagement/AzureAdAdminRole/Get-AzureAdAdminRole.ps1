@@ -34,8 +34,6 @@ function Get-AzureAdAdminRole {
     Activating Admin Roles
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -47,14 +45,14 @@ function Get-AzureAdAdminRole {
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity of the User to Query")]
-    [Alias("UPN", "UserPrincipalName", "Username")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the User to Query')]
+    [Alias('UPN', 'UserPrincipalName', 'Username')]
     [string[]]$Identity,
 
-    [Parameter(HelpMessage = "Active, Eligible")]
+    [Parameter(HelpMessage = 'Active, Eligible')]
     [ValidateSet('Active', 'Eligible')]
     #[ValidateSet('Active', 'Eligible','Group')]
-    [string]$Type = "Active"
+    [string]$Type = 'Active'
 
   ) #param
 
@@ -66,25 +64,25 @@ function Get-AzureAdAdminRole {
     if (-not (Assert-AzureADConnection)) { break }
 
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
-    if ($Type -eq "Eligible") {
+    if ($Type -eq 'Eligible') {
       try {
         Import-Module AzureAdPreview -Force -ErrorAction Stop
       }
       catch {
-        Write-Error -Message "Module AzureAdPreview not present or failed to import. Please make sure the Module is installed"
+        Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'
         return
       }
 
       # Importing all Roles
-      Write-Verbose -Message "Querying Azure Privileged Role Definitions"
+      Write-Verbose -Message 'Querying Azure Privileged Role Definitions'
       try {
-        $ProviderId = "aadRoles"
+        $ProviderId = 'aadRoles'
         $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
         $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId -ErrorAction Stop
       }
       catch {
         if ($_.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
-          Write-Error -Message "Cannot query role definitions. AzureAd Premium License Required" -ErrorAction Stop
+          Write-Error -Message 'Cannot query role definitions. AzureAd Premium License Required' -ErrorAction Stop
         }
         else {
           Write-Error -Message "Cannot query role definitions. Exception: $($_.Exception.Message)" -ErrorAction Stop
@@ -104,13 +102,13 @@ function Get-AzureAdAdminRole {
       [System.Collections.ArrayList]$MyRoles = @()
 
       switch ($Type) {
-        "Active" {
+        'Active' {
           $MyMemberships = Get-AzureADUserMembership -ObjectId $AzureAdUser.ObjectId #-All $true #CHECK Test Performance and reliability without "all!"
           $ActiveRoles = $MyMemberships | Where-Object ObjectType -EQ Role
 
           #Output
           if ( -not $ActiveRoles ) {
-            Write-Warning -Message "No active, direct assignments found. This user may be eligible for activating Admin Role access through Group assignment or Privileged Admin Groups"
+            Write-Warning -Message 'No active, direct assignments found. This user may be eligible for activating Admin Role access through Group assignment or Privileged Admin Groups'
             Write-Verbose -Message "Membership of Group assignments or Privileged Admin Groups is currently not queried by $($MyInvocation.MyCommand)" -Verbose
           }
 
@@ -120,16 +118,16 @@ function Get-AzureAdAdminRole {
             $Role = [PsCustomObject][ordered]@{
               'User'            = $Id
               'Rolename'        = $R.DisplayName
-              'Type'            = "Direct" # This may be different once we incorporate Groups too!
-              'ActiveUntil'     = ""
-              'AssignmentState' = "Active"
+              'Type'            = 'Direct' # This may be different once we incorporate Groups too!
+              'ActiveUntil'     = ''
+              'AssignmentState' = 'Active'
             }
 
             [void]$MyRoles.Add($Role)
           }
 
         }
-        "Eligible" {
+        'Eligible' {
           $SubjectId = $AzureAdUser.ObjectId
           $MyPrivilegedRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
 

@@ -33,8 +33,6 @@ function Get-TeamsOVR {
     If more than 3 results are found, behaves like Get-CsOnlineVoiceRoute | Select Identity
     Without any parameters, it lists names only:
     Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute"  | Select-Object Name
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -53,7 +51,7 @@ function Get-TeamsOVR {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Online Voice Route")]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Route')]
     [string]$Identity
   )
 
@@ -71,7 +69,7 @@ function Get-TeamsOVR {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
-      if ($Identity -match [regex]::Escape("*")) {
+      if ($Identity -match [regex]::Escape('*')) {
         $Filtered = Get-CsOnlineVoiceRoute -Filter "*$Identity*"
       }
       else {
@@ -86,8 +84,8 @@ function Get-TeamsOVR {
       }
     }
     else {
-      Write-Verbose -Message "Finding Voice Route Names"
-      Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute" | Select-Object Name
+      Write-Verbose -Message 'Finding Voice Route Names'
+      Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Name
     }
   } #process
 

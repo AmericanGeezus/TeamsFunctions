@@ -19,8 +19,6 @@ function Test-AzureAdGroup {
 		Test-AzureAdGroup -Identity "My Group"
 		Will Return $TRUE only if the object "My Group" is found.
     Will Return $FALSE in any other case
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -38,7 +36,7 @@ function Test-AzureAdGroup {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the Name or UserPrincipalName of the Group')]
     [string]$Identity
   ) #param
 

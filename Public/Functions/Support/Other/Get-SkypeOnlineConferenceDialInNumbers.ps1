@@ -23,15 +23,13 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 		Example 1 will gather the conference dial-in numbers for contoso.com based on their conference dial-in number web page.
 	.NOTES
 		This function was taken 1:1 from SkypeFunctions and remains untested for Teams
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
 
   [CmdletBinding()]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "Enter the domain name to gather the available conference dial-in numbers")]
+    [Parameter(Mandatory = $true, HelpMessage = 'Enter the domain name to gather the available conference dial-in numbers')]
     [string]$Domain
   ) #param
 
@@ -55,7 +53,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
       return
     }
 
-    $tables = $siteContents.ParsedHtml.getElementsByTagName("TABLE")
+    $tables = $siteContents.ParsedHtml.getElementsByTagName('TABLE')
     $table = $tables[0]
     $rows = @($table.rows)
 
@@ -66,7 +64,7 @@ function Get-SkypeOnlineConferenceDialInNumbers {
     }
 
     for ($n = 0; $n -lt $rows.Count; $n += 1) {
-      if ($rows[$n].innerHTML -like "<TH*") {
+      if ($rows[$n].innerHTML -like '<TH*') {
         $output.Location = $rows[$n].innerText
       }
       else {

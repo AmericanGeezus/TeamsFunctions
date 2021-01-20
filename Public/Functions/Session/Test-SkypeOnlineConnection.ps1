@@ -20,8 +20,6 @@ function Test-SkypeOnlineConnection {
 	.NOTES
 		Added check for Open Session to err on the side of caution.
 		Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
@@ -40,10 +38,10 @@ function Test-SkypeOnlineConnection {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     $Sessions = Get-PSSession -WarningAction SilentlyContinue
-    $Sessions = $Sessions | Where-Object { $_.Computername -match "online.lync.com" -or $_.ComputerName -eq "api.interfaces.records.teams.microsoft.com" }
+    $Sessions = $Sessions | Where-Object { $_.Computername -match 'online.lync.com' -or $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
     if ($Sessions.Count -ge 1) {
       #Write-Verbose "Teams Session found"
-      $Sessions = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+      $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
       if ($Sessions.Count -ge 1) {
         #Write-Verbose "Teams Session found, open and valid"
         return $true

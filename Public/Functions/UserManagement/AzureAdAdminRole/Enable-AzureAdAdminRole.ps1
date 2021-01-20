@@ -68,8 +68,6 @@ function Enable-AzureAdAdminRole {
     Activating Admin Roles
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -82,30 +80,30 @@ function Enable-AzureAdAdminRole {
   [OutputType([Void])]
 
   param(
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Enter the identity of the Admin Account")]
-    [Alias("UPN", "UserPrincipalName", "Username")]
+    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the Admin Account')]
+    [Alias('UPN', 'UserPrincipalName', 'Username')]
     [string]$Identity,
 
-    [Parameter(HelpMessage = "Optional Reason for the request")]
+    [Parameter(HelpMessage = 'Optional Reason for the request')]
     [string]$Reason,
 
-    [Parameter(HelpMessage = "Integer in hours to activate role(s) for")]
+    [Parameter(HelpMessage = 'Integer in hours to activate role(s) for')]
     [int]$Duration,
 
-    [Parameter(HelpMessage = "Ticket Number for use to provide to the request")]
+    [Parameter(HelpMessage = 'Ticket Number for use to provide to the request')]
     [int]$TicketNr,
 
-    [Parameter(HelpMessage = "Azure ProviderId to be used")]
+    [Parameter(HelpMessage = 'Azure ProviderId to be used')]
     [ValidateSet('aadRoles', 'azureResources')]
     [string]$ProviderId = 'aadRoles',
 
-    [Parameter(HelpMessage = "Tries to extend the activation.")]
+    [Parameter(HelpMessage = 'Tries to extend the activation.')]
     [switch]$Extend,
 
-    [Parameter(HelpMessage = "Displays output of activated roles to verify")]
+    [Parameter(HelpMessage = 'Displays output of activated roles to verify')]
     [switch]$PassThru,
 
-    [Parameter(HelpMessage = "Overrides confirmation dialog and enables all eligible roles")]
+    [Parameter(HelpMessage = 'Overrides confirmation dialog and enables all eligible roles')]
     [switch]$Force
 
   ) #param
@@ -123,7 +121,7 @@ function Enable-AzureAdAdminRole {
       Import-Module AzureAdPreview -Force -ErrorAction Stop
     }
     catch {
-      Write-Error -Message "Module AzureAdPreview not present or failed to import. Please make sure the Module is installed"
+      Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'
       return
     }
 
@@ -139,7 +137,7 @@ function Enable-AzureAdAdminRole {
     }
 
     # Reason & Ticket Number
-    if ( -not $Reason ) { $Reason = "Admin" }
+    if ( -not $Reason ) { $Reason = 'Admin' }
     if ( $TicketNr ) { $Reason = "Ticket: $TicketNr - $Reason" }
     $Parameters += @{'Reason' = $Reason }
 
@@ -148,7 +146,7 @@ function Enable-AzureAdAdminRole {
     $Parameters += @{'ProviderId' = $ProviderId }
 
     # ResourceId - is the Tenant Id
-    Write-Verbose -Message "Querying Azure Tenant Id"
+    Write-Verbose -Message 'Querying Azure Tenant Id'
     $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
     $Parameters += @{'ResourceId' = $ResourceId }
 
@@ -156,13 +154,13 @@ function Enable-AzureAdAdminRole {
     $Parameters += @{'AssignmentState' = 'Active' }
 
     # Importing all Roles
-    Write-Verbose -Message "Querying Azure Privileged Role Definitions"
+    Write-Verbose -Message 'Querying Azure Privileged Role Definitions'
     try {
       $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId -ErrorAction Stop
     }
     catch {
       if ($_.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
-        Write-Error -Message "Cannot query role definitions. AzureAd Premium License Required" -ErrorAction Stop
+        Write-Error -Message 'Cannot query role definitions. AzureAd Premium License Required' -ErrorAction Stop
       }
       else {
         Write-Error -Message "Cannot query role definitions. Exception: $($_.Exception.Message)" -ErrorAction Stop
@@ -176,9 +174,9 @@ function Enable-AzureAdAdminRole {
     $end = $Date.AddHours($Duration).ToUniversalTime()
 
     $schedule = New-Object Microsoft.Open.MSGraph.Model.AzureADMSPrivilegedSchedule
-    $schedule.Type = "Once"
-    $schedule.StartDateTime = $start.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-    $schedule.endDateTime = $end.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+    $schedule.Type = 'Once'
+    $schedule.StartDateTime = $start.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+    $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
     Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
     $Parameters += @{'Schedule' = $schedule }
     #endregion
@@ -209,7 +207,7 @@ function Enable-AzureAdAdminRole {
         }
       }
       catch {
-        Write-Error -Message "User Account not valid" -Category ObjectNotFound -RecommendedAction "Verify Identity/UserPrincipalName"
+        Write-Error -Message 'User Account not valid' -Category ObjectNotFound -RecommendedAction 'Verify Identity/UserPrincipalName'
         continue
       }
 
@@ -223,8 +221,8 @@ function Enable-AzureAdAdminRole {
       $MyRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
 
 
-      $MyActiveRoles = $MyRoles | Where-Object AssignmentState -EQ "Active"
-      $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ "Eligible"
+      $MyActiveRoles = $MyRoles | Where-Object AssignmentState -EQ 'Active'
+      $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ 'Eligible'
       Write-Verbose -Message "User '$Id' has currently $($MyActiveRoles.Count) of $($MyEligibleRoles.Count) activated"
 
       [System.Collections.ArrayList]$RolesAndGroups = @()
@@ -332,13 +330,13 @@ function Enable-AzureAdAdminRole {
               [void]$ActivatedRoles.Add($ActivatedRole)
             }
             catch {
-              if ($_.Exception.Message.Contains("ExpirationRule")) {
+              if ($_.Exception.Message.Contains('ExpirationRule')) {
                 # Amending Schedule
                 if ($Duration -eq 4) { $Duration = 2 } else { $Duration = 4 }
                 Write-Warning -Message "Specified Duration is not allowed, re-trying with $Duration hours"
                 $end = $Date.AddHours($Duration).ToUniversalTime()
 
-                $schedule.endDateTime = $end.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+                $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
                 Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
                 $Parameters.Schedule = $schedule
 
@@ -349,8 +347,8 @@ function Enable-AzureAdAdminRole {
                   [void]$ActivatedRoles.Add($ActivatedRole)
                 }
                 catch {
-                  if ($_.Exception.Message.Contains("ExpirationRule")) {
-                    Write-Error -Message "Specified Duration is not allowed, please try again with a lower number." -Category InvalidData
+                  if ($_.Exception.Message.Contains('ExpirationRule')) {
+                    Write-Error -Message 'Specified Duration is not allowed, please try again with a lower number.' -Category InvalidData
                   }
                   else {
                     Write-Error -Message $_.Exception.Message

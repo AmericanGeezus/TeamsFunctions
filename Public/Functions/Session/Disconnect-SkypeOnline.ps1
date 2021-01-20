@@ -23,8 +23,6 @@ function Disconnect-SkypeOnline {
     this can lead to session exhaustion which results in not being able to connect again.
     An admin can sign-out this user from all Sessions through the Office 365 Admin Center
     This process may take up to 15 mins and is best avoided, through proper disconnect after use
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -64,17 +62,17 @@ function Disconnect-SkypeOnline {
     $PSSessions = Get-PSSession -WarningAction SilentlyContinue
 
     foreach ($session in $PSSessions) {
-      if ($session.ComputerName -like "*.online.lync.com" -or $session.ComputerName -eq "api.interfaces.records.teams.microsoft.com") {
+      if ($session.ComputerName -like '*.online.lync.com' -or $session.ComputerName -eq 'api.interfaces.records.teams.microsoft.com') {
         $sessionFound = $true
         Remove-PSSession $session
       }
     }
 
     if ( $sessionFound ) {
-      Get-Module | Where-Object { $_.Description -like "*.online.lync.com*" } | Remove-Module
+      Get-Module | Where-Object { $_.Description -like '*.online.lync.com*' } | Remove-Module
     }
     else {
-      Write-Verbose -Message "No remote PowerShell sessions to Skype Online currently exist"
+      Write-Verbose -Message 'No remote PowerShell sessions to Skype Online currently exist'
     }
   } #process
 

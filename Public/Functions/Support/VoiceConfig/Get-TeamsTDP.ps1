@@ -30,8 +30,6 @@ function Get-TeamsTDP {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -48,12 +46,12 @@ function Get-TeamsTDP {
     Get-TeamsMGW
   #>
 
-  [CmdletBinding(DefaultParameterSetName = "Identity")]
+  [CmdletBinding(DefaultParameterSetName = 'Identity')]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Tenant Dial Plan")]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Identity', HelpMessage = 'Name of the Tenant Dial Plan')]
     [string]$Identity,
 
-    [Parameter(ParameterSetName = "Filter", HelpMessage = "Name of the Tenant Dial Plan to search")]
+    [Parameter(ParameterSetName = 'Filter', HelpMessage = 'Name of the Tenant Dial Plan to search')]
     [string]$Filter
   )
 
@@ -73,10 +71,10 @@ function Get-TeamsTDP {
       Write-Verbose -Message "Finding Tenant Dial Plans with Identity '$Identity'"
       $Result = Get-CsTenantDialPlan -WarningAction SilentlyContinue
       switch ($PSCmdlet.ParameterSetName) {
-        "Identity" {
+        'Identity' {
           $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
         }
-        "Filter" {
+        'Filter' {
           $Filtered = $Result | Where-Object Identity -Like "*$Filter*"
         }
       }
@@ -89,8 +87,8 @@ function Get-TeamsTDP {
       }
     }
     else {
-      Write-Verbose -Message "Finding Tenant Dial Plan Names"
-      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity
+      Write-Verbose -Message 'Finding Tenant Dial Plan Names'
+      Get-CsTenantDialPlan | Where-Object Identity -NE 'Global' | Select-Object Identity
     }
 
   } #process
