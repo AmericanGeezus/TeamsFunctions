@@ -12,7 +12,7 @@ function Get-TeamsOVP {
   .SYNOPSIS
     Lists all Online Voice Routing Policies by Name
   .DESCRIPTION
-    To quickly find Online Voice Routing Policies to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
+    To quickly find Online Voice Routing Policies to assign, combining Lookup and Search
   .PARAMETER Identity
     String. Name or part of the Voice Routing Policy. Can be omitted to list Names of all Policies (except "Global").
     If provided without a '*' in the name, an exact match is sought.
@@ -21,13 +21,13 @@ function Get-TeamsOVP {
     Returns the Object for all Online Voice Routing Policies (except "Global")
     Behaviour like: Get-CsOnlineVoiceRoutingPolicy, if more than 3 results are found, only names are returned
   .EXAMPLE
-    Get-TeamsOVP -Identity OVP-EMEA-National
+    Get-TeamsOVP [-Identity] OVP-EMEA-National
     Returns the Object for the Online Voice Route "OVP-EMEA-National" (provided it exists).
     Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"
   .EXAMPLE
     Get-TeamsOVP -Identity OVP-EMEA-*
     Lists Online Voice Routes with "OVP-EMEA-" in the Name
-    Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "OVP-EMEA-"
+    Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
     If more than 3 results are found, behaves like Get-CsOnlineVoiceRoutingPolicy | Select Identity
@@ -93,4 +93,4 @@ function Get-TeamsOVP {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsOVP
+} # Get-TeamsOVP

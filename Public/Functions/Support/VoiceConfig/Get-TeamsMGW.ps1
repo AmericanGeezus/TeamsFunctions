@@ -5,26 +5,34 @@
 # Status:   Live
 
 
-#TODO Examples like OVP and Documentation
+
 
 function Get-TeamsMGW {
   <#
   .SYNOPSIS
     Lists all Online Pstn Gateways by Name
   .DESCRIPTION
-    To quickly find Online Pstn Gateways to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
+    To quickly find Online Pstn Gateways to assign, combining Lookup and Search
   .PARAMETER Identity
-    If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
-    If not provided, lists Identities of all Online Pstn Gateways
+    String. Name or part of the Pstn Gateways. Can be omitted to list Names of all Media Gateways.
+    If provided without a '*' in the name, an exact match is sought.
   .EXAMPLE
     Get-TeamsMGW
     Lists Identities (Names) of all Online Pstn Gateways
+    Behaviour like: Get-CsOnlinePstnGateway, if more than 3 results are found, only names are returned
   .EXAMPLE
-    Get-TeamsMGW -Identity PstnGateway1.domain.com
-    Lists Online Pstn Gateway as Get-CsOnlinePstnGateway does (provided it exists).
+    Get-TeamsMGW [-Identity] PstnGateway1.domain.com
+    Lists Online Pstn Gateways as Get-CsOnlinePstnGateway does (provided it exists).
+    Behaviour like: Get-CsOnlinePstnGateway -Identity "PstnGateway1.domain.com"
+  .EXAMPLE
+    Get-TeamsMGW -Identity PstnGateway*
+    Lists Online Pstn Gateway with "PstnGateway" in the Name
+    Behaviour like: Get-CsOnlinePstnGateway -Filter "*PstnGateway*"
   .NOTES
-    Without parameters, it executes the following string:
-    Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
+    This script is indulging the lazy admin. It behaves like Get-CsOnlinePstnGateway with a twist:
+    If more than 3 results are found, behaves like Get-CsOnlinePstnGateway | Select Identity
+    Without any parameters, it lists names only:
+    Get-CsOnlinePstnGateway | Select-Object Identity
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -84,4 +92,4 @@ function Get-TeamsMGW {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsOVP
+} # Get-TeamsMGW

@@ -12,7 +12,7 @@ function Get-TeamsOVR {
   .SYNOPSIS
     Lists all Online Voice Routes by Name
   .DESCRIPTION
-    To quickly find Online Voice Routes to troubleshoot, an Alias-Function to Get-CsOnlineVoiceRoute
+    To quickly find Online Voice Routes to troubleshoot, combining Lookup and Search
   .PARAMETER Identity
     String. Name or part of the Voice Route. Can be omitted to list Names of all Routes (except "Global").
     If provided without a '*' in the name, an exact match is sought.
@@ -21,13 +21,13 @@ function Get-TeamsOVR {
     Returns the Object for all Online Voice Routes (except "LocalRoute")
     Behaviour like: Get-CsOnlineVoiceRoute, if more than 3 results are found, only names are returned
   .EXAMPLE
-    Get-TeamsOVR -Identity OVR-EMEA-National
+    Get-TeamsOVR [-Identity] OVR-EMEA-National
     Returns the Object for the Online Voice Route "OVR-EMEA-National" (provided it exists).
     Behaviour like: Get-CsOnlineVoiceRoute -Identity "OVR-EMEA-National"
   .EXAMPLE
     Get-TeamsOVR -Identity OVR-EMEA-*
     Lists Online Voice Routes with "OVR-EMEA-" in the Name
-    Behaviour like: Get-CsOnlineVoiceRoute -Filter "OVR-EMEA-"
+    Behaviour like: Get-CsOnlineVoiceRoute -Filter "*OVR-EMEA-*"
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
     If more than 3 results are found, behaves like Get-CsOnlineVoiceRoute | Select Identity
@@ -84,7 +84,7 @@ function Get-TeamsOVR {
       }
     }
     else {
-      Write-Verbose -Message 'Finding Voice Route Names'
+      Write-Verbose -Message 'Finding Online Voice Route Names'
       Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Name
     }
   } #process
@@ -92,4 +92,4 @@ function Get-TeamsOVR {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsOVR
+} # Get-TeamsOVR
