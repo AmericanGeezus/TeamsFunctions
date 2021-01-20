@@ -2,7 +2,20 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v21.01.10 pre-release - TBA
+## v21.01.19 pre-release
+
+### New
+
+- `Enable-CsOnlineSessionForReconnection`: Thanks to the original Author, [Andrés Gorzelany](https://github.com/get-itips), this function, originally shipped with the SkypeOnlineConnector Module has made it into this module. We are able to reconnect sessions again, even when using the Module MicrosoftTeams
+
+### Updated
+
+- `Connect-Me` has been updated to reflect `Enable-CsOnlineSessionForReconnection`.
+- Updated all Functions:
+  - Formatting updates: VSCode Auto-Formatting now changes the quotes to single quotes where applicable.
+  - Removed .EXTERNALHELP as it has broken all help for the functions. sorry!
+
+## v21.01.10 pre-release
 
 ### New
 

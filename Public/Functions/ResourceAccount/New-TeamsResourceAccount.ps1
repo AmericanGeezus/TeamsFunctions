@@ -254,7 +254,7 @@ function New-TeamsResourceAccount {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         $i = 0
         $iMax = 20
-        Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Please be patient while we wait ($iMax s) to be able to parse the Object." -Verbose
+        Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)" -Verbose
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
@@ -376,6 +376,7 @@ function New-TeamsResourceAccount {
       $Status = 'Applying License'
       $Operation = 'Waiting for Get-AzureAdUserLicenseDetail to return a Result'
       Write-Verbose -Message "$Status - $Operation"
+      #FIX There seems to be a bug here - either in the WHILE or in the Test-TeamsUserLicense... can't pinpoint
       while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
         if ($i -gt $iMax) {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop

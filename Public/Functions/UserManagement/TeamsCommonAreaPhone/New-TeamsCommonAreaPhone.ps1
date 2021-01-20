@@ -265,7 +265,7 @@ function New-TeamsCommonAreaPhone {
 
         $i = 0
         $iMax = 20
-        Write-Verbose -Message "Common Area Phone '$Name' created; Please be patient while we wait ($iMax s) to be able to parse the Object." -Verbose
+        Write-Verbose -Message "Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)" -Verbose
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"

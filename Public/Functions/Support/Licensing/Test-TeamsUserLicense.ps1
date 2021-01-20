@@ -116,7 +116,7 @@ function Test-TeamsUserLicense {
             return $true
           }
           else {
-            Write-Verbose -Message 'Service Plan found, but not provisioned successful.'
+            Write-Verbose -Message 'Service Plan found, but not provisioned successfully.'
             return $false
           }
         }
