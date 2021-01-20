@@ -222,11 +222,11 @@ function Connect-Me {
       $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
       $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
       if ( $CsOnlineUsername ) {
-        Write-Host 'Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first' -ForegroundColor Cyan
+        #Write-Host 'Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first' -ForegroundColor Cyan
         $sMax++
       }
       else {
-        Write-Host 'Sessions are established with Module MicrosoftTeams: Seamless Single-Sign-on is not (yet) available.' -ForegroundColor Cyan
+        #Write-Host 'Sessions are established with Module MicrosoftTeams: Seamless Single-Sign-on is not (yet) available.' -ForegroundColor Cyan
         $ConnectToTeams = $true
       }
     }

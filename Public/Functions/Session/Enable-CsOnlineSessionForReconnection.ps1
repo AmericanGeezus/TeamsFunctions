@@ -112,7 +112,7 @@ function Enable-CsOnlineSessionForReconnection {
               $psClosed | Remove-PSSession;
               #delete broken sessions - end
             }
-            if (($null -ne $script:PSSession) -or ($script:PSSession.Runspace.RunspaceStateInfo.State -ne 'Opened')) {
+            if (($null -eq $script:PSSession) -or ($script:PSSession.Runspace.RunspaceStateInfo.State -ne 'Opened')) {
               throw 'No session has been associated with this implicit remoting module'
             }
 
