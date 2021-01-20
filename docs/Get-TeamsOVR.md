@@ -26,20 +26,32 @@ To quickly find Online Voice Routes to troubleshoot, an Alias-Function to Get-Cs
 Get-TeamsOVR
 ```
 
-Lists Identities (Names) of all Online Voice Route (except "LocalRoute")
+Returns the Object for all Online Voice Routes (except "LocalRoute")
+Behaviour like: Get-CsOnlineVoiceRoute, if more than 3 results are found, only names are returned
 
 ### EXAMPLE 2
 ```
-Get-TeamsOVP -Identity OVR-EMEA-National
+Get-TeamsOVR -Identity OVR-EMEA-National
 ```
 
-Lists Online Voice Route "OVR-EMEA-National" as Get-CsOnlineVoiceRoute does (provided it exists).
+Returns the Object for the Online Voice Route "OVR-EMEA-National" (provided it exists).
+Behaviour like: Get-CsOnlineVoiceRoute -Identity "OVR-EMEA-National"
+
+### EXAMPLE 3
+```
+Get-TeamsOVR -Identity OVR-EMEA-*
+```
+
+Lists Online Voice Routes with "OVR-EMEA-" in the Name
+Behaviour like: Get-CsOnlineVoiceRoute -Filter "OVR-EMEA-"
 
 ## PARAMETERS
 
 ### -Identity
-If provided, acts as an Alias to Get-CsOnlineVoiceRoute, listing one Route
-If not provided, lists Identities of all Online Voice Route (except "LocalRoute")
+String.
+Name or part of the Voice Route.
+Can be omitted to list Names of all Routes (except "Global").
+If provided without a '*' in the name, an exact match is sought.
 
 ```yaml
 Type: String
@@ -49,7 +61,7 @@ Aliases:
 Required: False
 Position: 1
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -61,8 +73,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
-Without parameters, it executes the following string:
-Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute"  | Select-Object Name -ExpandProperty Name
+This script is indulging the lazy admin.
+It behaves like Get-CsOnlineVoiceRoute with a twist:
+If more than 3 results are found, behaves like Get-CsOnlineVoiceRoute | Select Identity
+Without any parameters, it lists names only:
+Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute"  | Select-Object Name
 
 ## RELATED LINKS
 

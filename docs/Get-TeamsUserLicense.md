@@ -64,6 +64,7 @@ Accept wildcard characters: False
 
 ### -DisplayAll
 Displays all ServicePlans, not only relevant Teams Plans
+Also displays AllLicenses and AllServicePlans object for further processing
 
 ```yaml
 Type: SwitchParameter
@@ -99,10 +100,6 @@ Requires a connection to Azure Active Directory
 [Set-TeamsUserLicense]()
 
 [Test-TeamsUserLicense]()
-
-[Get-TeamsLicense]()
-
-[Get-TeamsLicenseServicePlan]()
 
 [Get-AzureAdLicense]()
 
