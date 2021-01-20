@@ -60,7 +60,7 @@
 class TFTeamsServicePlan {
   [string]$ProductName
   [string]$ServicePlanName
-  [ValidatePattern("^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$")]
+  [ValidatePattern('^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$')]
   [string]$ServicePlanId
   [bool]$RelevantForTeams
 
@@ -84,7 +84,7 @@ class TFTeamsLicense {
   [string]$ParameterName
   [bool]$IncludesTeams
   [bool]$IncludesPhoneSystem
-  [ValidatePattern("^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$")]
+  [ValidatePattern('^(\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\}{0,1})$')]
   [string]$SkuId
   [object]$ServicePlans
 
@@ -107,6 +107,29 @@ class TFTeamsLicense {
     $this.SkuId = $SkuId
     $this.ServicePlans = $ServicePlans
   }
+}
+
+class TFTeamsUserLicense {
+  # Properties
+  [String]$UserPrincipalName
+  [String]$DisplayName
+  [string]$ObjectId
+  [String]$UsageLocation
+  [String[]]$Licenses
+  [String[]]$ServicePlans
+  [bool]$AudioConferencing
+  [bool]$CommoneAreaPhoneLicense
+  [bool]$PhoneSystemVirtualUser
+  [bool]$PhoneSystem
+  [String]$PhoneSystemStatus
+  [bool]$CallingPlanDomestic120
+  [bool]$CallingPlanDomestic
+  [bool]$CallingPlanInternational
+  [bool]$CommunicationsCredits
+  [String]$CallingPlan
+
+  # Hidden property Identity to enable piping
+  #hidden [string] $ObjectId
 }
 
 class TFCallableEntity {
@@ -162,12 +185,12 @@ Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
 Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
 
 # Dedication
-if ($env:username -eq "Julia.Horvath") {
-  if ($(Get-Date -Format "dd") % 2 -eq 1 ) {
-    Write-Host "Julia, I love you. Thank you for being with me. -D-" -ForegroundColor DarkMagenta
+if ($env:username -eq 'Julia.Horvath') {
+  if ($(Get-Date -Format 'dd') % 2 -eq 1 ) {
+    Write-Host 'Julia, I love you. Thank you for being with me. -D-' -ForegroundColor DarkMagenta
   }
   else {
-    Write-Host "Julia, I love you. Thank you for being my friend. -D-" -ForegroundColor DarkYellow
+    Write-Host 'Julia, I love you. Thank you for being my friend. -D-' -ForegroundColor DarkYellow
   }
 }
 
