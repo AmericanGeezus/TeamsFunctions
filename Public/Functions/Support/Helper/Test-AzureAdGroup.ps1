@@ -70,7 +70,7 @@ function Test-AzureAdGroup {
         $CallTarget = Get-AzureADGroup -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        if ($Identity -contains '@') {
+        if ($Identity -match '@') {
           $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
         else {

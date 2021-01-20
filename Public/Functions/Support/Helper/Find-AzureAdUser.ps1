@@ -77,7 +77,7 @@ function Find-AzureAdUser {
           return $User
         }
         else {
-          if ($Searchstring -contains ' ') {
+          if ($Searchstring -match ' ') {
             $SearchString = $SearchString.split(' ') | Select-Object -Last 1
             Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
           }

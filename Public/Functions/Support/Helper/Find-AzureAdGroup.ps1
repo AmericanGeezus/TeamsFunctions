@@ -73,7 +73,7 @@ function Find-AzureAdGroup {
       }
       catch {
         Write-Verbose -Message 'Performing Search... finding ALL Groups'
-        if ($Id -contains '@') {
+        if ($Id -match '@') {
           $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
         else {

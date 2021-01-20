@@ -142,7 +142,7 @@ function Get-TeamsCallableEntity {
                   Write-Verbose -Message 'Groups not loaded yet, depending on the size of the Tenant, this will run for a while!' -Verbose
                   $global:TeamsFunctionsTenantAzureAdGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
                 }
-                if ($Id -contains '@') {
+                if ($Id -match '@') {
                   $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
                 }
                 else {
@@ -179,7 +179,7 @@ function Get-TeamsCallableEntity {
           catch {
             Write-Warning -Message 'The Object is not supported as a Callable Entity for AutoAttendants or CallQueues'
             # Defaulting to Unknown
-            $CallableEntity = [TFCallableEntity]::new( $null, "$Id", 'Unknown', $null )
+            $CallableEntity = [TFCallableEntity]::new( "$Id", $null, 'Unknown', $null )
           }
         }
       }

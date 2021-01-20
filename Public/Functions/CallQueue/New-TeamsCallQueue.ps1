@@ -737,13 +737,18 @@ function New-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
             $CallTarget = $null
             $CallTarget = Get-TeamsCallableEntity -Identity "$OverflowActionTarget"
-            if ( $CallTarget ) {
-              $OverflowActionTargetId = $CallTarget.Identity
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
-              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            switch ( $CallTarget.ObjectType ) {
+              'Group' {
+                $OverflowActionTargetId = $CallTarget.Identity
+                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+                $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+              }
+              'Unknown' {
+                Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+              }
+              default {
+                Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not a Group!"
+              }
             }
             #endregion
           }
@@ -802,6 +807,11 @@ function New-TeamsCallQueue {
     if ($Parameters.ContainsKey('OverflowAction') -and (-not $Parameters.ContainsKey('OverflowActionTarget')) -and ($OverflowAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': Action not set as OverflowActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('OverflowAction')
+    }
+    # NOTE: This is only applicable to NEW, not to SET
+    if (-not $Parameters.OverflowActionTarget) {
+      [void]$Parameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
+      [void]$Parameters.Remove('OverflowSharedVoicemailAudioFile')
     }
     #endregion
     #endregion
@@ -941,13 +951,18 @@ function New-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
             $CallTarget = $null
             $CallTarget = Get-TeamsCallableEntity -Identity "$TimeoutActionTarget"
-            if ( $CallTarget ) {
-              $TimeoutActionTargetId = $CallTarget.Identity
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
-              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            switch ( $CallTarget.ObjectType ) {
+              'Group' {
+                $TimeoutActionTargetId = $CallTarget.Identity
+                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+                $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+              }
+              'Unknown' {
+                Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+              }
+              default {
+                Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not a Group!"
+              }
             }
             #endregion
           }
@@ -1005,6 +1020,11 @@ function New-TeamsCallQueue {
     if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
+    }
+    # NOTE: This is only applicable to NEW, not to SET
+    if (-not $Parameters.TimeoutActionTarget) {
+      [void]$Parameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
+      [void]$Parameters.Remove('TimeoutSharedVoicemailAudioFile')
     }
     #endregion
     #endregion
