@@ -40,8 +40,6 @@ function Restore-TeamsEV {
 		Copyright © 2020  Ken Lasko
 		klasko@ucdialplans.com
 		https://www.ucdialplans.com
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
@@ -60,6 +58,7 @@ function Restore-TeamsEV {
   begin {
     Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     Try {
       $ZipPath = (Resolve-Path -Path $File)
@@ -71,7 +70,7 @@ function Restore-TeamsEV {
       return
     }
 
-    If ((Get-PSSession -WarningAction SilentlyContinue | Where-Object -FilterScript { $_.Computername -match "online.lync.com" -or $_.ComputerName -eq "api.interfaces.records.teams.microsoft.com" }).State -eq 'Opened') {
+    If ((Get-PSSession -WarningAction SilentlyContinue | Where-Object -FilterScript { $_.Computername -match 'online.lync.com' -or $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }).State -eq 'Opened') {
       Write-Host -Object 'Using existing session credentials'
     }
     Else {
@@ -151,7 +150,7 @@ function Restore-TeamsEV {
 
       # Only include the external access prefix if one is defined. MS throws an error if you pass a null/empty ExternalAccessPrefix
       If ($Dialplan.ExternalAccessPrefix) {
-        [void]$DPDetails.Add("ExternalAccessPrefix", $Dialplan.ExternalAccessPrefix)
+        [void]$DPDetails.Add('ExternalAccessPrefix', $Dialplan.ExternalAccessPrefix)
       }
 
       If ($DPExists) {

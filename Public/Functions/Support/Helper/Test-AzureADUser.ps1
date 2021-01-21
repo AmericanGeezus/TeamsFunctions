@@ -19,8 +19,6 @@ function Test-AzureAdUser {
 		Test-AzureADUser -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -38,13 +36,14 @@ function Test-AzureAdUser {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
     [string]$Identity
   ) #param
 
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }

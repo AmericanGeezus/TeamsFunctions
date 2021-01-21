@@ -53,8 +53,6 @@ function Get-TeamsAutoAttendant {
     This also works with Get-CsAutoAttendant, but with the help of "Display" Parameters.
 	.FUNCTIONALITY
 		Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -95,6 +93,7 @@ function Get-TeamsAutoAttendant {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }

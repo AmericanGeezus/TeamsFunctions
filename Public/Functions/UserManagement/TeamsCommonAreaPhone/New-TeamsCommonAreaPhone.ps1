@@ -71,8 +71,6 @@ function New-TeamsCommonAreaPhone {
 		Creates a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
     TeamsUserVoiceConfig
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -145,6 +143,7 @@ function New-TeamsCommonAreaPhone {
   begin {
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -267,7 +266,7 @@ function New-TeamsCommonAreaPhone {
 
         $i = 0
         $iMax = 20
-        Write-Verbose -Message "Common Area Phone '$Name' created; Please be patient while we wait ($iMax s) to be able to parse the Object." -Verbose
+        Write-Verbose -Message "Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)" -Verbose
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"

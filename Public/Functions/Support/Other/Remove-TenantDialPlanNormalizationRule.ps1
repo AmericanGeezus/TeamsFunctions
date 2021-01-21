@@ -30,8 +30,6 @@ function Remove-TenantDialPlanNormalizationRule {
 		1 Extension Rule  ^(\d{5})$  +155512$1
 		2 Long Distance   ^1(\d+)$   +1$1
 		3 Default         ^(\d+)$    +1$1
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	#>
@@ -45,6 +43,7 @@ function Remove-TenantDialPlanNormalizationRule {
   begin {
     Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }

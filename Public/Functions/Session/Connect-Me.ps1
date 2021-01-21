@@ -59,8 +59,6 @@ function Connect-Me {
     Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
   .NOTES
     The base command (without any )
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -116,6 +114,7 @@ function Connect-Me {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     $WarningPreference = 'Continue'
 
@@ -224,11 +223,11 @@ function Connect-Me {
       $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
       $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
       if ( $CsOnlineUsername ) {
-        Write-Host 'Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first' -ForegroundColor Cyan
+        #Write-Host 'Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first' -ForegroundColor Cyan
         $sMax++
       }
       else {
-        Write-Host 'Sessions are established with Module MicrosoftTeams: Seamless Single-Sign-on is not (yet) available.' -ForegroundColor Cyan
+        #Write-Host 'Sessions are established with Module MicrosoftTeams: Seamless Single-Sign-on is not (yet) available.' -ForegroundColor Cyan
         $ConnectToTeams = $true
       }
     }

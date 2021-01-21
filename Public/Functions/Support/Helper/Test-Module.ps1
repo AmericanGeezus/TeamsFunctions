@@ -13,8 +13,6 @@ function Test-Module {
   .EXAMPLE
 		Test-Module -Module ModuleName
 		Will Return $TRUE if the Module 'ModuleName' is loaded
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
@@ -23,7 +21,7 @@ function Test-Module {
   [OutputType([Boolean])]
   Param
   (
-    [Parameter(Mandatory = $true, HelpMessage = "Module to test.")]
+    [Parameter(Mandatory = $true, HelpMessage = 'Module to test.')]
     [string]$Module
   )
 

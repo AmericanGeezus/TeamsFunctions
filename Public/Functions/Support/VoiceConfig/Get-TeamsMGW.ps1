@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO Examples like OVP and Documentation
+
 
 function Get-TeamsMGW {
   <#
@@ -25,8 +25,6 @@ function Get-TeamsMGW {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -45,13 +43,14 @@ function Get-TeamsMGW {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = "Name of the Online Pstn Gateway")]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Pstn Gateway')]
     [string]$Identity
   )
 
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online: $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -59,11 +58,12 @@ function Get-TeamsMGW {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
-      if ($Identity -match [regex]::Escape("*")) {
+      if ($Identity -match [regex]::Escape('*')) {
         $Filtered = Get-CsOnlinePstnGateway -Filter "*$Identity*"
       }
       else {
@@ -78,7 +78,7 @@ function Get-TeamsMGW {
       }
     }
     else {
-      Write-Verbose -Message "Finding Online Pstn Gateway Names"
+      Write-Verbose -Message 'Finding Online Pstn Gateway Names'
       Get-CsOnlinePstnGateway | Select-Object Identity
     }
   } #process
@@ -86,4 +86,4 @@ function Get-TeamsMGW {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsOVP
+} # Get-TeamsMGW

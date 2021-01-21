@@ -32,10 +32,8 @@ Set-TeamsUserLicense [-Identity] <String[]> [-Add <String[]>] -Remove <String[]>
 
 ## DESCRIPTION
 Adds, removes or purges teams related Licenses from an AzureAD Object
-Supports all Licenses listed in Get-TeamsLicense
-Uses friendly Names for Parameter Values, supports Arrays.
-Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
-This will work with ANY AzureAD Object, not just for Teams, but only Licenses relevant to Teams are covered.
+Supports all Licenses listed in Get-AzureAdLicense
+Supports all AzureAD Object that can receive Licenses and not just Teams Licenses
 Will verify major Licenses and their exclusivity, but not all.
 Verifies whether the Licenses selected are available on the Tenant before executing
 
@@ -115,7 +113,7 @@ Accept wildcard characters: False
 ### -Add
 Optional.
 Licenses to be added (main function)
-Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
+Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
 
 ```yaml
 Type: String[]
@@ -144,7 +142,7 @@ Accept wildcard characters: False
 ### -Remove
 Optional.
 Licenses to be removed (alternative function)
-Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
+Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
 
 ```yaml
 Type: String[]
@@ -267,7 +265,7 @@ Many license packages are available, the following Licenses are most predominant
   - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
   - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
 
-Data in Get-TeamsLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
+Data in Get-AzureAdLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
 https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
 
 ## RELATED LINKS
@@ -281,10 +279,6 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 [Set-TeamsUserLicense]()
 
 [Test-TeamsUserLicense]()
-
-[Get-TeamsLicense]()
-
-[Get-TeamsLicenseServicePlan]()
 
 [Get-AzureAdLicense]()
 

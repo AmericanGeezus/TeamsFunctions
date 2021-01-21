@@ -39,8 +39,6 @@ function Test-TeamsUserLicense {
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
   .FUNCTIONALITY
     Returns a boolean value for License or Serviceplan for a specific user.
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -51,17 +49,17 @@ function Test-TeamsUserLicense {
     Set-TeamsUserLicense
   #>
 
-  [CmdletBinding(DefaultParameterSetName = "ServicePlan")]
+  [CmdletBinding(DefaultParameterSetName = 'ServicePlan')]
   [Alias('Test-TeamsUserLicence')]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the UserID (UPN)")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
     [string]$Identity,
 
-    [Parameter(Mandatory, ParameterSetName = "ServicePlan", HelpMessage = "AzureAd Service Plan")]
+    [Parameter(Mandatory, ParameterSetName = 'ServicePlan', HelpMessage = 'AzureAd Service Plan')]
     [string]$ServicePlan,
 
-    [Parameter(Mandatory, ParameterSetName = "License", HelpMessage = "Teams License Package: E5,E3,S2")]
+    [Parameter(Mandatory, ParameterSetName = 'License', HelpMessage = 'Teams License Package: E5,E3,S2')]
     [ValidateScript( {
         $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
@@ -79,6 +77,7 @@ function Test-TeamsUserLicense {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -103,31 +102,31 @@ function Test-TeamsUserLicense {
 
     # ParameterSetName ServicePlan VS License
     switch ($PsCmdlet.ParameterSetName) {
-      "ServicePlan" {
+      'ServicePlan' {
         Write-Verbose -Message "'$DisplayName' Testing against '$ServicePlan'"
         if ($ServicePlan -in $UserLicenseObject.ServicePlans.ServicePlanName) {
-          Write-Verbose -Message "Service Plan found. Testing for ProvisioningStatus"
+          Write-Verbose -Message 'Service Plan found. Testing for ProvisioningStatus'
           #Checks if the Provisioning Status is also "Success"
           $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object -Property ServicePlanName -EQ -Value $ServicePlan)
           Write-Verbose -Message "ServicePlan: $ServicePlanStatus"
           if ('Success' -in $ServicePlanStatus.ProvisioningStatus) {
-            Write-Verbose -Message "Service Plan found and provisioned successfully."
+            Write-Verbose -Message 'Service Plan found and provisioned successfully.'
             if ( $ServicePlanStatus.ProvisioningStatus.Count -gt 1 ) {
-              Write-Warning -Message "Multiple assignments found for PhoneSystem. Please verify License assignment!"
+              Write-Warning -Message 'Multiple assignments found for PhoneSystem. Please verify License assignment!'
             }
             return $true
           }
           else {
-            Write-Verbose -Message "Service Plan found, but not provisioned successful."
+            Write-Verbose -Message 'Service Plan found, but not provisioned successfully.'
             return $false
           }
         }
         else {
-          Write-Verbose -Message "Service Plan not found."
+          Write-Verbose -Message 'Service Plan not found.'
           return $false
         }
       }
-      "License" {
+      'License' {
         Write-Verbose -Message "'$DisplayName' Testing against '$License'"
         $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
         $Sku = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber

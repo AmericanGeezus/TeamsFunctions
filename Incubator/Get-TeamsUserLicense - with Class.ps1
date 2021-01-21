@@ -79,9 +79,6 @@ function Get-TeamsUserLicense {
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
-    # preparing Output Field Separator
-    $OFS = ', '
-
     # Loading License Array
     if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
       $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
@@ -103,16 +100,23 @@ function Get-TeamsUserLicense {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
       try {
-        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object UsageLocation, DisplayName
+        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+
+        $UserLicenseObject = $null
+        $UserLicenseObject = [TFTeamsUserLicense]::New()
+
+        $UserLicenseObject.ObjectId = $UserObject.ObjectId
+        $UserLicenseObject.UserPrincipalName = $User
+        $UserLicenseObject.DisplayName = $UserObject.DisplayName
+        $UserLicenseObject.UsageLocation = $UserObject.UsageLocation
+
       }
       catch {
         #Write-Error -Message "Error ocurred for User '$User': $($_.Exception.Message)" -Category InvalidResult
         throw $_
         continue
       }
-
-      [string]$DisplayName = $UserObject.DisplayName
 
       # Querying Licenses
       $assignedSkuPartNumbers = $UserLicenseDetail.SkuPartNumber
@@ -124,13 +128,17 @@ function Get-TeamsUserLicense {
           [void]$UserLicenses.Add($Lic)
         }
       }
+
       $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, ProductName
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$LicensesProductNames = $UserLicensesSorted.ProductName
-      }
-      else {
-        [string]$LicensesProductNames = ($UserLicensesSorted | Where-Object { $_.IncludesTeams -or $_.IncludesPhoneSystem } ).ProductName
-      }
+      $UserLicenseObject.Licenses = $(
+        if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+          $UserLicensesSorted.ProductName
+        }
+        else {
+          $(($UserLicensesSorted | Where-Object { $_.IncludesTeams -or $_.IncludesPhoneSystem } ).ProductName)
+        }
+      )
+
 
       # Querying Service Plans
       $assignedServicePlans = $UserLicenseDetail.ServicePlans | Sort-Object ServicePlanName
@@ -148,84 +156,79 @@ function Get-TeamsUserLicense {
           [void]$UserServicePlans.Add($LicObj)
         }
       }
+
       $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$ServicePlansProductNames = $UserServicePlansSorted.ProductName
-      }
-      else {
-        #[string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object { $_.RelevantForTeams }).ProductName
-        [string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName
-      }
-
-      $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
-      $AudioConfLicense = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
-      $PhoneSystemVirtual = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
-      $CommonAreaPhoneLic = ('MCOCAP' -in $UserServicePlans.ServicePlanName)
-      $CommunicationCredits = ('MCOPSTNC' -in $UserServicePlans.ServicePlanName)
-      $CallingPlanDom = ('MCOPSTN1' -in $UserServicePlans.ServicePlanName)
-      $CallingPlanInt = ('MCOPSTN2' -in $UserServicePlans.ServicePlanName)
-      $CallingPlanDom120 = ('MCOPSTN5' -in $UserServicePlans.ServicePlanName)
-
-      # Phone System
-      if ( $PhoneSystemLicense ) {
-        $PhoneSystemProvisioningStatus = $UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV'
-        if ( $PhoneSystemProvisioningStatus.Count -gt 1 ) {
-          # PhoneSystem assigned more than once!
-          Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
-          $PhoneSystemStatus = ($PhoneSystemProvisioningStatus | Select-Object -ExpandProperty ProvisioningStatus) -join ', '
-
+      $UserLicenseObject.ServicePlans = $(
+        if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+          $UserServicePlansSorted.ProductName
         }
         else {
-          $PhoneSystemStatus = $PhoneSystemProvisioningStatus.ProvisioningStatus
+          $(($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName)
         }
+      )
 
-      }
-      elseif ( $PhoneSystemVirtual ) {
-        $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV_VIRTUALUSER').ProvisioningStatus
-      }
-      else {
-        $PhoneSystemStatus = 'Unassigned'
-      }
+      $UserLicenseObject.AudioConferencing = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
+      $UserLicenseObject.CommoneAreaPhoneLicense = ('MCOCAP' -in $UserServicePlans.ServicePlanName)
+      $UserLicenseObject.PhoneSystemVirtualUser = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
+      $UserLicenseObject.PhoneSystem = ('MCOEV' -in $UserServicePlans.ServicePlanName)
+
+      $UserLicenseObject.CallingPlanDomestic120 = ('MCOPSTN5' -in $UserServicePlans.ServicePlanName)
+      $UserLicenseObject.CallingPlanDomestic = ('MCOPSTN1' -in $UserServicePlans.ServicePlanName)
+      $UserLicenseObject.CallingPlanInternational = ('MCOPSTN2' -in $UserServicePlans.ServicePlanName)
+      $UserLicenseObject.CommunicationsCredits = ('MCOPSTNC' -in $UserServicePlans.ServicePlanName)
+
+      # Phone System
+      $UserLicenseObject.PhoneSystemStatus = $(
+        if ( $UserLicenseObject.PhoneSystem ) {
+          $PhoneSystemProvisioningStatus = $UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV'
+          if ( $PhoneSystemProvisioningStatus.Count -gt 1 ) {
+            # PhoneSystem assigned more than once!
+            Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
+            $(($PhoneSystemProvisioningStatus | Select-Object -ExpandProperty ProvisioningStatus) -join ', ')
+          }
+          else {
+            $PhoneSystemProvisioningStatus.ProvisioningStatus
+          }
+        }
+        elseif ( $UserLicenseObject.PhoneSystemVirtualUser ) {
+          $(($UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV_VIRTUALUSER').ProvisioningStatus)
+        }
+        else {
+          'Unassigned'
+        }
+      )
+
 
       # Calling Plans
-      if ($CallingPlanDom120) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN5').ProductName
-      }
-      elseif ($CallingPlanDom) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN1').ProductName
-      }
-      elseif ($CallingPlanInt) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN2').ProductName
-      }
-      else {
-        [string]$currentCallingPlan = $null
-      }
+      $UserLicenseObject.CallingPlan = $(
+        if ($UserLicenseObject.CallingPlanDomestic120) {
+          $(($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN5').ProductName)
+        }
+        elseif ($UserLicenseObject.CallingPlanDomestic) {
+          $(($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN1').ProductName)
+        }
+        elseif ($UserLicenseObject.CallingPlanInternational) {
+          $(($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN2').ProductName)
+        }
+        else {
+          $null
+        }
+      )
 
-
-      $output = [PSCustomObject][ordered]@{
-        UserPrincipalName        = $User
-        DisplayName              = $DisplayName
-        UsageLocation            = $UserObject.UsageLocation
-        Licenses                 = $LicensesProductNames
-        ServicePlans             = $ServicePlansProductNames
-        AudioConferencing        = $AudioConfLicense
-        CommoneAreaPhoneLicense  = $CommonAreaPhoneLic
-        PhoneSystemVirtualUser   = $PhoneSystemVirtual
-        PhoneSystem              = $PhoneSystemLicense
-        PhoneSystemStatus        = $PhoneSystemStatus
-        CallingPlanDomestic120   = $CallingPlanDom120
-        CallingPlanDomestic      = $CallingPlanDom
-        CallingPlanInternational = $CallingPlanInt
-        CommunicationsCredits    = $CommunicationCredits
-        CallingPlan              = $currentCallingPlan
-      }
-
+      # DisplayAll
       if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        $output | Add-Member -MemberType NoteProperty -Name AllLicenses -Value $($UserLicensesSorted | Select-Object *)
-        $output | Add-Member -MemberType NoteProperty -Name AllServicePlans -Value $UserServicePlansSorted
+        $UserLicenseObject | Add-Member -MemberType NoteProperty -Name AllLicenses -Value $($UserLicensesSorted | Select-Object *)
+        $UserLicenseObject | Add-Member -MemberType NoteProperty -Name AllServicePlans -Value $UserServicePlansSorted -
       }
 
-      Write-Output $output
+      <#
+      $UserLicenseObject.PSTypeNames.Add('TeamsUserLicense')
+      Update-TypeData -TypeName TeamsUserLicense -DefaultDisplayPropertySet 'UserPrincipalName', 'DisplayName', 'UsageLocation', 'Licenses', 'ServicePlans', 'AudioConferencing', 'CommoneAreaPhoneLicense', 'PhoneSystemVirtualUser', 'PhoneSystem', 'PhoneSystemStatus', 'CallingPlanDomestic120', 'CallingPlanDomestic', 'CallingPlanInternational', 'CommunicationsCredits', 'CallingPlan'
+      $UserLicenseObject.PSTypeNames.Add('TeamsUserLicenseFull')
+      Update-TypeData -TypeName TeamsUserLicenseFull -DefaultDisplayPropertySet 'UserPrincipalName', 'DisplayName', 'UsageLocation', 'Licenses', 'ServicePlans', 'AudioConferencing', 'CommoneAreaPhoneLicense', 'PhoneSystemVirtualUser', 'PhoneSystem', 'PhoneSystemStatus', 'CallingPlanDomestic120', 'CallingPlanDomestic', 'CallingPlanInternational', 'CommunicationsCredits', 'CallingPlan', 'Identity'
+      #>
+
+      Write-Output $UserLicenseObject
     }
   } #process
 

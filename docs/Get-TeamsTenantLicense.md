@@ -96,7 +96,7 @@ Accept wildcard characters: False
 ### -License
 Optional.
 Limits the Output to one license.
-Accepted Values can be retrieved with Get-TeamsLicense (Column ParameterName)
+Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
 
 ```yaml
 Type: String
@@ -132,10 +132,6 @@ Requires a connection to Azure Active Directory
 [Set-TeamsUserLicense]()
 
 [Test-TeamsUserLicense]()
-
-[Get-TeamsLicense]()
-
-[Get-TeamsLicenseServicePlan]()
 
 [Get-AzureAdLicense]()
 

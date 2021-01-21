@@ -49,76 +49,75 @@ function Format-StringForUse {
     System.String
   .OUTPUTS
     System.String
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     Format-StringRemoveSpecialCharacter
 	#>
 
-  [CmdletBinding(DefaultParameterSetName = "Manual")]
+  [CmdletBinding(DefaultParameterSetName = 'Manual')]
   [OutputType([String])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "String to reformat")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'String to reformat')]
     [string]$InputString,
 
-    [Parameter(HelpMessage = "Replacement character or string for each removed character")]
-    [string]$Replacement = "",
+    [Parameter(HelpMessage = 'Replacement character or string for each removed character')]
+    [string]$Replacement = '',
 
-    [Parameter(ParameterSetName = "Specific")]
-    [ValidateSet("UserPrincipalName", "DisplayName", "E164", "LineURI")]
+    [Parameter(ParameterSetName = 'Specific')]
+    [ValidateSet('UserPrincipalName', 'DisplayName', 'E164', 'LineURI')]
     [string]$As,
 
-    [Parameter(ParameterSetName = "Manual")]
-    [string]$SpecialChars = "?()[]{}"
+    [Parameter(ParameterSetName = 'Manual')]
+    [string]$SpecialChars = '?()[]{}'
   ) #param
 
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($PsCmdlet.ParameterSetName) {
-      "Specific" {
+      'Specific' {
         switch ($As) {
-          "UserPrincipalName" {
+          'UserPrincipalName' {
             $CharactersToRemove = '\%&*+/=?{}|<>();:,[]"'
             $CharactersToRemove += "'´"
           }
-          "DisplayName" {
+          'DisplayName' {
             $CharactersToRemove = '\%*+/=?{}|<>[]"'
           }
-          "E164" {
+          'E164' {
             $CharactersToRemove = '\%*/@:=-()?{}|<>[]" abcdefghijklmnopqrstuvwxyz;'
 
-            if ( $Replacement -ne "") {
+            if ( $Replacement -ne '') {
               Write-Warning -Message "Replacement is not allowed for '$As'. Ignoring input"
-              $Replacement = "" # Replacement is not allowed
+              $Replacement = '' # Replacement is not allowed
             }
           }
-          "LineURI" {
+          'LineURI' {
             $CharactersToRemove = '\%*/-()?{}|<>[]" abcdfghijkmnopqrsuvwyz'
 
-            if ( $Replacement -ne "") {
+            if ( $Replacement -ne '') {
               Write-Warning -Message "Replacement is not allowed for '$As'. Ignoring input"
-              $Replacement = "" # Replacement is not allowed
+              $Replacement = '' # Replacement is not allowed
             }
           }
         }
       }
-      "Manual" { $CharactersToRemove = $SpecialChars }
+      'Manual' { $CharactersToRemove = $SpecialChars }
       Default { }
     }
 
-    $rePattern = ($CharactersToRemove.ToCharArray() | ForEach-Object { [regex]::Escape($_) }) -join "|"
+    $rePattern = ($CharactersToRemove.ToCharArray() | ForEach-Object { [regex]::Escape($_) }) -join '|'
 
     if ($As -eq 'E164') {
       # Truncating Extension if specified ";ext=" if specified
-      $InputString = $InputString.split(";")[0]
+      $InputString = $InputString.split(';')[0]
     }
 
     [String]$String = $InputString -replace $rePattern, $Replacement
@@ -127,36 +126,36 @@ function Format-StringForUse {
       # Validate User Side of a UPN does not end in a '.'
       [String]$OutputString = $String.replace('.@', '@');
       if ( $($String.split('@')[0]).length -gt 64 ) {
-        Write-Error -Message "UserPrincipalName - Prefix (User) must not exceed 64 characters" -Category LimitsExceeded -ErrorAction Stop
+        Write-Error -Message 'UserPrincipalName - Prefix (User) must not exceed 64 characters' -Category LimitsExceeded -ErrorAction Stop
       }
       if ( $($String.split('@')[1]).length -gt 48 ) {
-        Write-Error -Message "UserPrincipalName - Suffix (Domain) must not exceed 48 characters" -Category LimitsExceeded -ErrorAction Stop
+        Write-Error -Message 'UserPrincipalName - Suffix (Domain) must not exceed 48 characters' -Category LimitsExceeded -ErrorAction Stop
       }
     }
     elseif ($As -eq 'E164') {
       switch -regex ($String) {
-        "^\d" { [String]$OutputString = "+" + $String; Break }
-        "^\+\d" { [String]$OutputString = $String; Break }
+        '^\d' { [String]$OutputString = '+' + $String; Break }
+        '^\+\d' { [String]$OutputString = $String; Break }
         default {
           if ($String -match '\+') {
-            [String]$OutputString = "+" + $String.replace('+', '');
+            [String]$OutputString = '+' + $String.replace('+', '');
           }
           Break
         }
       }
       if ( -not $OutputString ) {
-        [String]$OutputString = ""
+        [String]$OutputString = ''
       }
     }
     elseif ($As -eq 'LineURI') {
       switch -regex ($String) {
-        "^\d" { [String]$OutputString = "tel:+" + $String; Break }
-        "^\+\d" { [String]$OutputString = "tel:" + $String; Break }
-        "^tel:\+\d" { [String]$OutputString = $String; Break }
-        "^tel:\d" { [String]$OutputString = $String -replace "tel:", "tel:+"; Break }
+        '^\d' { [String]$OutputString = 'tel:+' + $String; Break }
+        '^\+\d' { [String]$OutputString = 'tel:' + $String; Break }
+        '^tel:\+\d' { [String]$OutputString = $String; Break }
+        '^tel:\d' { [String]$OutputString = $String -replace 'tel:', 'tel:+'; Break }
       }
       if ( -not $OutputString ) {
-        [String]$OutputString = ""
+        [String]$OutputString = ''
       }
     }
     else {

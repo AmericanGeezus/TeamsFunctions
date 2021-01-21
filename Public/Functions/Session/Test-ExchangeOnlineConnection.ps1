@@ -14,8 +14,6 @@ function Test-ExchangeOnlineConnection {
 	.EXAMPLE
 		Test-ExchangeOnlineConnection
 		Will Return $TRUE only if a session is found.
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
@@ -34,8 +32,8 @@ function Test-ExchangeOnlineConnection {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     $Sessions = Get-PSSession -WarningAction SilentlyContinue
-    if ([bool]($Sessions.Computername -match "outlook.office365.com")) {
-      $PSExchangeOnlineSession = $Sessions | Where-Object { $_.State -eq "Opened" -and $_.Availability -eq "Available" }
+    if ([bool]($Sessions.Computername -match 'outlook.office365.com')) {
+      $PSExchangeOnlineSession = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
       if ($PSExchangeOnlineSession.Count -ge 1) {
         return $true
       }

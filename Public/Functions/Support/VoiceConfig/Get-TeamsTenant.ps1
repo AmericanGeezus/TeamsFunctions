@@ -16,8 +16,6 @@ function Get-TeamsTenant {
   .EXAMPLE
     Get-TeamsTenant
     Lists basic tenant information relevant for working on this Tenant
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
  #>
@@ -29,6 +27,7 @@ function Get-TeamsTenant {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -37,15 +36,15 @@ function Get-TeamsTenant {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "This is abbreviated output of Get-CsTenant. For full information, please run Get-CsTenant" -Verbose
+    Write-Verbose -Message 'This is abbreviated output of Get-CsTenant. For full information, please run Get-CsTenant' -Verbose
 
     $T = Get-CsTenant -WarningAction SilentlyContinue # This should trigger a reconnect as well.
 
     #Determining OverrideURL
     $TenantId = $T | Select-Object -ExpandProperty identity
 
-    if ($TenantId -match ".*DC\=lync(.*)001\,DC=local") {
-      $Id = $TenantId.Substring($TenantId.IndexOf("lync") + 4, 2)
+    if ($TenantId -match '.*DC\=lync(.*)001\,DC=local') {
+      $Id = $TenantId.Substring($TenantId.IndexOf('lync') + 4, 2)
       $OverrideURL = "https://admin$Id.online.lync.com/HostedMigration/hostedmigrationService.svc"
     }
     else {

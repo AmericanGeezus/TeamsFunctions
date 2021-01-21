@@ -5,28 +5,28 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsLicense
+# Get-PublicHolidayCountry
 
 ## SYNOPSIS
-License information for AzureAD Licenses related to Teams
+Returns a list of Countries for which Public Holidays are available
 
 ## SYNTAX
 
 ```
-Get-TeamsLicense [<CommonParameters>]
+Get-PublicHolidayCountry [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Returns an Object containing all Teams related Licenses
+Queries the Nager.Date API for supported Countries
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsLicenseServicePlan
+Get-PublicHolidayCountry
 ```
 
-Returns 13 Service Plans from Azure AD Licenses that relate to Teams for use in other commands
+Lists the Countries for which Public Holidays are available
 
 ## PARAMETERS
 
@@ -35,28 +35,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.Void
 ## OUTPUTS
 
-### System.Object[]
+### System.Object
 ## NOTES
+The Nager.Date API currently supports a bit over 100 Countries.
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[Get-TeamsTenantLicense]()
+[Get-PublicHolidayCountry]()
 
-[Get-TeamsUserLicense]()
-
-[Set-TeamsUserLicense]()
-
-[Test-TeamsUserLicense]()
-
-[Get-TeamsLicense]()
-
-[Get-TeamsLicenseServicePlan]()
-
-[Get-AzureAdLicense]()
-
-[Get-AzureAdLicenseServicePlan]()
+[Get-PublicHolidayList]()
 

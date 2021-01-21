@@ -27,8 +27,6 @@ function Disconnect-Me {
     An admin can sign-out this user from all Sessions through the Office 365 Admin Center
     This process may take up to 15 mins and is best avoided, through proper disconnect after use
     An Alias is available for this function: dis
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -56,9 +54,10 @@ function Disconnect-Me {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
-    $WarningPreference = "SilentlyContinue"
-    $ErrorActionPreference = "SilentlyContinue"
+    $WarningPreference = 'SilentlyContinue'
+    $ErrorActionPreference = 'SilentlyContinue'
 
     <# Assuming Modules are already imported
     Import-Module SkypeOnlineConnector
@@ -75,17 +74,17 @@ function Disconnect-Me {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
-      Write-Verbose -Message "Disconnecting Session from SkypeOnline"
+      Write-Verbose -Message 'Disconnecting Session from SkypeOnline'
       $null = (Disconnect-SkypeOnline)
-      Write-Verbose -Message "Disconnecting Session from MicrosoftTeams"
+      Write-Verbose -Message 'Disconnecting Session from MicrosoftTeams'
       $null = (Disconnect-MicrosoftTeams)
-      Write-Verbose -Message "Disconnecting Session from AzureAd"
+      Write-Verbose -Message 'Disconnecting Session from AzureAd'
       $null = (Disconnect-AzureAD)
     }
     catch [NullReferenceException] {
       # Disconnecting from AzureAD results in a duplicated error which the ERRORACTION only suppresses one of.
       # This is to capture the second
-      Write-Verbose -Message "AzureAD: Caught NullReferenceException. Not to worry"
+      Write-Verbose -Message 'AzureAD: Caught NullReferenceException. Not to worry'
     }
     catch {
       throw $_

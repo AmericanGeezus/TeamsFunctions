@@ -30,8 +30,6 @@ function Get-TeamsTDP {
   .NOTES
     Without parameters, it executes the following string:
     Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -48,18 +46,15 @@ function Get-TeamsTDP {
     Get-TeamsMGW
   #>
 
-  [CmdletBinding(DefaultParameterSetName = "Identity")]
+  [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = "Identity", HelpMessage = "Name of the Tenant Dial Plan")]
-    [string]$Identity,
-
-    [Parameter(ParameterSetName = "Filter", HelpMessage = "Name of the Tenant Dial Plan to search")]
-    [string]$Filter
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Identity', HelpMessage = 'Name of the Tenant Dial Plan')]
+    [string]$Identity
   )
-
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Mess"Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -73,10 +68,10 @@ function Get-TeamsTDP {
       Write-Verbose -Message "Finding Tenant Dial Plans with Identity '$Identity'"
       $Result = Get-CsTenantDialPlan -WarningAction SilentlyContinue
       switch ($PSCmdlet.ParameterSetName) {
-        "Identity" {
+        'Identity' {
           $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
         }
-        "Filter" {
+        'Filter' {
           $Filtered = $Result | Where-Object Identity -Like "*$Filter*"
         }
       }
@@ -89,8 +84,8 @@ function Get-TeamsTDP {
       }
     }
     else {
-      Write-Verbose -Message "Finding Tenant Dial Plan Names"
-      Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity
+      Write-Verbose -Message 'Finding Tenant Dial Plan Names'
+      Get-CsTenantDialPlan | Where-Object Identity -NE 'Global' | Select-Object Identity
     }
 
   } #process

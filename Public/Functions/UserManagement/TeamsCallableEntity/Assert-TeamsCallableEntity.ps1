@@ -25,8 +25,6 @@ function Assert-TeamsCallableEntity {
     Enables Jane for Enterprise Voice if not yet done.
   .NOTES
     Returns Boolean Result
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
@@ -35,16 +33,17 @@ function Assert-TeamsCallableEntity {
   [OutputType([Boolean])]
   Param
   (
-    [Parameter(Mandatory, ValueFromPipeline, HelpMessage = "User Principal Name of the user")]
+    [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'User Principal Name of the user')]
     [string]$Identity,
 
-    [Parameter(HelpMessage = "Switch to instruct to throw errors")]
+    [Parameter(HelpMessage = 'Switch to instruct to throw errors')]
     [switch]$Terminate
   )
 
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
   } #begin
 
@@ -67,13 +66,13 @@ function Assert-TeamsCallableEntity {
     }
 
     switch ($Object.ObjectType) {
-      "ResourceAccount" {
+      'ResourceAccount' {
         #Check RA is assigned to CQ/AA
         $CheckLicense = $true
         $CheckAssignment = $true
         #Return Object if true, otherwise error
       }
-      "User" {
+      'User' {
         #Check License and EV-enable if needed
         $CheckLicense = $true
         $CheckEV = $true
@@ -139,7 +138,7 @@ function Assert-TeamsCallableEntity {
 
     if ( $CheckAssignment ) {
       $RA = Get-TeamsResourceAccount "$Identity"
-      if ( $RA.AssociationStatus -ne "Success" ) {
+      if ( $RA.AssociationStatus -ne 'Success' ) {
         Write-Verbose -Message "Target '$Identity' found and correctly assigned"
         return $true
       }

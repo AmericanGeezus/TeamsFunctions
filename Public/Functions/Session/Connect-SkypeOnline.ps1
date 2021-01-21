@@ -54,8 +54,6 @@ function Connect-SkypeOnline {
     This will require re-authentication and its success is dependent on the Tenant settings.
     To reconnect fully, please re-run Connect-SkypeOnline to recreate the session cleanly.
     Please note that hanging sessions can cause lockout (session exhaustion)
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -96,6 +94,7 @@ function Connect-SkypeOnline {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     #Activate 01-FEB 2021
     #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
@@ -303,7 +302,7 @@ function Connect-SkypeOnline {
         }
       }
       catch {
-        Write-Verbose -Message "Session import failed - Error for troubleshooting: $($_.Exception.Message)" -Verbose
+        Write-Verbose -Message 'ception.Message)' -Verbose
       }
 
       $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like '*.online.lync.com' -or $_.Computername -eq 'api.interfaces.records.teams.microsoft.com') -and $_.State -eq 'Opened' -and $_.Availability -eq 'Available' } -WarningAction STOP -ErrorAction STOP

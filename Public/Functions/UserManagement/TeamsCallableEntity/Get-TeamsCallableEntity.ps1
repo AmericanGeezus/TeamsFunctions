@@ -47,8 +47,6 @@ function Get-TeamsCallableEntity {
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -79,6 +77,7 @@ function Get-TeamsCallableEntity {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -144,7 +143,7 @@ function Get-TeamsCallableEntity {
                   Write-Verbose -Message 'Groups not loaded yet, depending on the size of the Tenant, this will run for a while!' -Verbose
                   $global:TeamsFunctionsTenantAzureAdGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
                 }
-                if ($Id -contains '@') {
+                if ($Id -match '@') {
                   $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
                 }
                 else {
@@ -181,7 +180,7 @@ function Get-TeamsCallableEntity {
           catch {
             Write-Warning -Message 'The Object is not supported as a Callable Entity for AutoAttendants or CallQueues'
             # Defaulting to Unknown
-            $CallableEntity = [TFCallableEntity]::new( $null, "$Id", 'Unknown', $null )
+            $CallableEntity = [TFCallableEntity]::new( "$Id", $null, 'Unknown', $null )
           }
         }
       }

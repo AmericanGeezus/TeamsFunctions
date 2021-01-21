@@ -118,8 +118,6 @@ function Set-TeamsCallQueue {
 		Currently in Testing
 	.FUNCTIONALITY
 		Changes a Call Queue with friendly names as input
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -328,6 +326,7 @@ function Set-TeamsCallQueue {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -747,13 +746,18 @@ function Set-TeamsCallQueue {
             Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Querying Object"
             $CallTarget = $null
             $CallTarget = Get-TeamsCallableEntity -Identity "$OverflowActionTarget"
-            if ( $CallTarget ) {
-              $OverflowActionTargetId = $CallTarget.Identity
-              Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
-              $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+            switch ( $CallTarget.ObjectType ) {
+              'Group' {
+                $OverflowActionTargetId = $CallTarget.Identity
+                Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' - Object found!"
+                $Parameters += @{'OverflowActionTarget' = $OverflowActionTargetId }
+              }
+              'Unknown' {
+                Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not set! Error enumerating Target"
+              }
+              default {
+                Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget '$OverflowActionTarget' not a Group!"
+              }
             }
             #endregion
           }
@@ -968,14 +972,18 @@ function Set-TeamsCallQueue {
             #region Processing TimeoutActionTarget for SharedVoiceMail
             Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Querying Object"
             $CallTarget = $null
-            $CallTarget = Get-TeamsCallableEntity -Identity "$TimeoutActionTarget"
-            if ( $CallTarget ) {
-              $TimeoutActionTargetId = $CallTarget.Identity
-              Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
-              $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
-            }
-            else {
-              Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+            switch ( $CallTarget.ObjectType ) {
+              'Group' {
+                $TimeoutActionTargetId = $CallTarget.Identity
+                Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' - Object found!"
+                $Parameters += @{'TimeoutActionTarget' = $TimeoutActionTargetId }
+              }
+              'Unknown' {
+                Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not set! Error enumerating Target"
+              }
+              default {
+                Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not a Group!"
+              }
             }
             #endregion
           }

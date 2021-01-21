@@ -22,8 +22,6 @@ function Find-AzureAdGroup {
 	.EXAMPLE
 		Find-AzureAdGroup -Identity "MyGroup@domain.com"
     Will return all Groups that match "MyGroup@domain.com" in the DisplayName, ObjectId or MailNickName
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -45,6 +43,7 @@ function Find-AzureAdGroup {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -75,7 +74,7 @@ function Find-AzureAdGroup {
       }
       catch {
         Write-Verbose -Message 'Performing Search... finding ALL Groups'
-        if ($Id -contains '@') {
+        if ($Id -match '@') {
           $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
         else {

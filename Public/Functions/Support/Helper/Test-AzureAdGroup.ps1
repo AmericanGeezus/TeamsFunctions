@@ -19,8 +19,6 @@ function Test-AzureAdGroup {
 		Test-AzureAdGroup -Identity "My Group"
 		Will Return $TRUE only if the object "My Group" is found.
     Will Return $FALSE in any other case
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -38,13 +36,14 @@ function Test-AzureAdGroup {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "This is the Name or UserPrincipalName of the Group")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the Name or UserPrincipalName of the Group')]
     [string]$Identity
   ) #param
 
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -72,7 +71,7 @@ function Test-AzureAdGroup {
         $CallTarget = Get-AzureADGroup -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        if ($Identity -contains '@') {
+        if ($Identity -match '@') {
           $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Identity" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
         else {

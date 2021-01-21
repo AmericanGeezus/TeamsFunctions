@@ -46,8 +46,6 @@ function Test-TeamsUserVoiceConfig {
     For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI
       This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.
       "Remove-TeamsUserVoiceConfig -Force" can help
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -71,7 +69,7 @@ function Test-TeamsUserVoiceConfig {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [string[]]$Identity,
 
-    [Parameter(Mandatory, HelpMessage = "Defines Type of Voice Configuration to test this user against")]
+    [Parameter(Mandatory, HelpMessage = 'Defines Type of Voice Configuration to test this user against')]
     [ValidateSet('DirectRouting', 'CallingPlans', 'SkypeHybridPSTN')]
     [string]$Scope,
 
@@ -83,6 +81,7 @@ function Test-TeamsUserVoiceConfig {
   begin {
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -103,9 +102,9 @@ function Test-TeamsUserVoiceConfig {
       }
 
       switch ($Scope) {
-        "DirectRouting" {
+        'DirectRouting' {
           if ($PSBoundParameters.ContainsKey('Partial')) {
-            if ($CsUser.VoicePolicy -eq "HybridVoice" -and $null -eq $CsUser.VoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.OnlineVoiceRoutingPolicy)) {
+            if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $null -eq $CsUser.VoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.OnlineVoiceRoutingPolicy)) {
               return $true
             }
             else {
@@ -113,7 +112,7 @@ function Test-TeamsUserVoiceConfig {
             }
           }
           else {
-            if ($CsUser.VoicePolicy -eq "HybridVoice" -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
+            if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
               return $true
             }
             else {
@@ -122,16 +121,16 @@ function Test-TeamsUserVoiceConfig {
           }
         }
 
-        "SkypeHybridPSTN" {
+        'SkypeHybridPSTN' {
           if ($PSBoundParameters.ContainsKey('Partial')) {
-            if ($CsUser.VoicePolicy -eq "HybridVoice" -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.VoiceRoutingPolicy)) {
+            if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.VoiceRoutingPolicy)) {
               return $true
             }
             else {
               return $false
             }
             else {
-              if ($CsUser.VoicePolicy -eq "HybridVoice" -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
+              if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
                 return $true
               }
               else {
@@ -141,9 +140,9 @@ function Test-TeamsUserVoiceConfig {
           }
         }
 
-        "CallingPlans" {
+        'CallingPlans' {
           if ($PSBoundParameters.ContainsKey('Partial')) {
-            if ($CsUser.VoicePolicy -eq "BusinessVoice" -or (Test-TeamsUserHasCallPlan $User) -or $null -ne $CsUser.TelephoneNumber) {
+            if ($CsUser.VoicePolicy -eq 'BusinessVoice' -or (Test-TeamsUserHasCallPlan $User) -or $null -ne $CsUser.TelephoneNumber) {
               return $true
             }
             else {
@@ -151,7 +150,7 @@ function Test-TeamsUserVoiceConfig {
             }
           }
           else {
-            if ($CsUser.VoicePolicy -eq "BusinessVoice" -and (Test-TeamsUserHasCallPlan $User) -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.TelephoneNumber) {
+            if ($CsUser.VoicePolicy -eq 'BusinessVoice' -and (Test-TeamsUserHasCallPlan $User) -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.TelephoneNumber) {
               return $true
             }
             else {

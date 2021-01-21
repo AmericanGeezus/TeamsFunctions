@@ -40,8 +40,6 @@ function Format-StringRemoveSpecialCharacter {
 		@lazywinadmin
 		lazywinadmin.com
 		github.com/lazywinadmin
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -52,12 +50,12 @@ function Format-StringRemoveSpecialCharacter {
   [OutputType([String])]
   param
   (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = "String to reformat")]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'String to reformat')]
     [ValidateNotNullOrEmpty()]
     [Alias('Text')]
     [System.String[]]$String,
 
-    [Alias("Keep")]
+    [Alias('Keep')]
     #[ValidateNotNullOrEmpty()]
     [String[]]$SpecialCharacterToKeep
   ) #param
@@ -65,6 +63,7 @@ function Format-StringRemoveSpecialCharacter {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
 
   } #begin
@@ -72,11 +71,11 @@ function Format-StringRemoveSpecialCharacter {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      if ($PSBoundParameters["SpecialCharacterToKeep"]) {
-        $Regex = "[^\p{L}\p{Nd}"
+      if ($PSBoundParameters['SpecialCharacterToKeep']) {
+        $Regex = '[^\p{L}\p{Nd}'
         foreach ($Character in $SpecialCharacterToKeep) {
-          if ($Character -eq "-") {
-            $Regex += "-"
+          if ($Character -eq '-') {
+            $Regex += '-'
           }
           else {
             $Regex += [Regex]::Escape($Character)
@@ -84,13 +83,13 @@ function Format-StringRemoveSpecialCharacter {
           #$Regex += "/$character"
         }
 
-        $Regex += "]+"
+        $Regex += ']+'
       } #IF($PSBoundParameters["SpecialCharacterToKeep"])
-      else { $Regex = "[^\p{L}\p{Nd}]+" }
+      else { $Regex = '[^\p{L}\p{Nd}]+' }
 
       foreach ($Str in $string) {
         Write-Verbose -Message "Original String: $Str"
-        $Str -replace $regex, ""
+        $Str -replace $regex, ''
       }
     }
     catch {

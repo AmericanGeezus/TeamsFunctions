@@ -130,8 +130,6 @@ function New-TeamsAutoAttendant {
 		Currently in Testing
 	.FUNCTIONALITY
 		Creates a Auto Attendant with custom settings and friendly names as input
-  .EXTERNALHELP
-    https://raw.githubusercontent.com/DEberhardt/TeamsFunctions/master/docs/TeamsFunctions-help.xml
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -245,6 +243,7 @@ function New-TeamsAutoAttendant {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -670,7 +669,7 @@ function New-TeamsAutoAttendant {
       #region Processing AfterHoursCallFlowOption
       switch ($AfterHoursCallFlowOption) {
         'TransferCallToTarget' {
-          Write-Verbose -Message "'$NameNormalised' Call Flow - Transferring to Target" -Verbose
+          Write-Verbose -Message "'$NameNormalised' CallFlow - Transferring to Target" -Verbose
 
           # Process AfterHoursCallTarget
           try {
