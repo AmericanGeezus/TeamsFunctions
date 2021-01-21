@@ -65,6 +65,7 @@ function Get-PublicHolidayList {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Handling Year
     if (-not $PSBoundParameters.ContainsKey('Year')) {

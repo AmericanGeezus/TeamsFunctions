@@ -36,8 +36,6 @@ function Test-TeamsResourceAccount {
 	.LINK
 		Find-TeamsResourceAccount
 	.LINK
-		Find-AzureAdUser
-	.LINK
 		Test-AzureAdUser
 	#>
 
@@ -65,7 +63,7 @@ function Test-TeamsResourceAccount {
 		Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 		if ( $Quick ) {
 			Write-Verbose -Message 'Querying AzureAdUser (Quick search and fast, but may not be 100% accurate!)'
-			$User = Find-AzureAdUser $Identity
+			$User = Get-AzureAdUser -ObjectId $Identity
 			if ( $User.Department -eq 'Microsoft Communication Application Instance') {
 				return $true
 			}

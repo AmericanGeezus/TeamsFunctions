@@ -91,7 +91,7 @@ function Get-TeamsCommonAreaPhone {
   begin {
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "[$global:TeamsFunctionsHelpURLBase\$($MyInvocation.MyCommand)`.md]($($MyInvocation.MyCommand))" -Verbose
+    Write-Verbose -Message "Need help? Online: $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -324,4 +324,4 @@ function Get-TeamsCommonAreaPhone {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsCommonAreaPhone
+} # Get-TeamsCommonAreaPhone

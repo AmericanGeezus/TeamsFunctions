@@ -52,6 +52,7 @@ function Get-AzureAdAssignedAdminRoles {
     Show-FunctionStatus -Level Deprecated
     Write-Verbose -Message "Please use 'Get-AzureAdAdminRole' instead" -Verbose
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }

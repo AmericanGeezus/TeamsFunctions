@@ -94,6 +94,7 @@ function Connect-SkypeOnline {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     #Activate 01-FEB 2021
     #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
@@ -231,17 +232,17 @@ function Connect-SkypeOnline {
 
     # OverrideAdminDomain
     if ( $OverrideAdminDomain) {
-      Write-Verbose -Message "$($MyInvocation.MyCommand) - OverrideAdminDomain provided. Used: $OverrideAdminDomain"
+      Write-Verbose -Message "OverrideAdminDomain provided. Used: $OverrideAdminDomain"
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
 
     }
     elseif ( $AccountId ) {
       $OverrideAdminDomain = $AccountId.Split('@')[1]
-      Write-Verbose -Message "$($MyInvocation.MyCommand) - OverrideAdminDomain taken from Username. Used: $OverrideAdminDomain"
+      Write-Verbose -Message "OverrideAdminDomain taken from Username. Used: $OverrideAdminDomain"
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
     }
     else {
-      Write-Verbose -Message "$($MyInvocation.MyCommand) - OverrideAdminDomain not used!"
+      Write-Verbose -Message 'OverrideAdminDomain not used!'
     }
     #endregion
 
@@ -251,12 +252,12 @@ function Connect-SkypeOnline {
     }
 
     try {
-      Write-Verbose -Message "$($MyInvocation.MyCommand) - Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
+      Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
       $SkypeOnlineSession = New-CsOnlineSession @Parameters
     }
     catch [System.Net.WebException] {
       try {
-        Write-Warning -Message "$($MyInvocation.MyCommand) - Session could not be created. Maybe missing OverrideAdminDomain to connect?"
+        Write-Warning -Message 'Session could not be created. Maybe missing OverrideAdminDomain to connect?'
         $Domain = Read-Host 'Please enter an OverrideAdminDomain for this Tenant'
         if ( $Parameters.OverrideAdminDomain ) {
           $Parameters.OverrideAdminDomain = $Domain
@@ -266,7 +267,7 @@ function Connect-SkypeOnline {
         }
 
         # Creating Session (again)
-        Write-Verbose -Message "$($MyInvocation.MyCommand) - Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
+        Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
         $SkypeOnlineSession = New-CsOnlineSession @Parameters
       }
       catch {
@@ -294,14 +295,14 @@ function Connect-SkypeOnline {
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global
         if ( $ReconnectionPossible ) {
           $null = Enable-CsOnlineSessionForReconnection
-          Write-Verbose -Message "$($MyInvocation.MyCommand) - Session reconnection is enabled (effectiveness depend on the Tenant Security settings)" -Verbose
+          Write-Verbose -Message "Session is enabled for reconnection, allowing it to be re-used! (Use 'PoL' or Get-TeamsTenant to reconnect) - Note: This setting depends on the Tenants Security settings" -Verbose
         }
         else {
-          Write-Verbose -Message "$($MyInvocation.MyCommand) - Session reconnection cannot be enabled. Please disconnect cleanly before connecting anew" -Verbose
+          Write-Verbose -Message 'Session cannot be enabled for reconnection. Please disconnect cleanly before connecting anew' -Verbose
         }
       }
       catch {
-        Write-Verbose -Message "$($MyInvocation.MyCommand) - Session import failed - Error for troubleshooting: $($_.Exception.Message)" -Verbose
+        Write-Verbose -Message 'ception.Message)' -Verbose
       }
 
       $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like '*.online.lync.com' -or $_.Computername -eq 'api.interfaces.records.teams.microsoft.com') -and $_.State -eq 'Opened' -and $_.Availability -eq 'Available' } -WarningAction STOP -ErrorAction STOP

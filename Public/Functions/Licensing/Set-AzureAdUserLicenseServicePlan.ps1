@@ -101,6 +101,7 @@ function Set-AzureAdUserLicenseServicePlan {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }

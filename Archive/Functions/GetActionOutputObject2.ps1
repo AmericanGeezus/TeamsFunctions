@@ -22,16 +22,17 @@ function GetActionOutputObject2 {
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
-    [Parameter(Mandatory = $true, HelpMessage = "Name of account being modified")]
+    [Parameter(Mandatory = $true, HelpMessage = 'Name of account being modified')]
     [string]$Name,
 
-    [Parameter(Mandatory = $true, HelpMessage = "Result of action being performed")]
+    [Parameter(Mandatory = $true, HelpMessage = 'Result of action being performed')]
     [string]$Result
   )
 
   begin {
     Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
   } #begin
 

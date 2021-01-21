@@ -12,20 +12,18 @@ function Get-TeamsOPU {
   .SYNOPSIS
     Lists all Online PSTN Usages by Name
   .DESCRIPTION
-    To quickly find Online PSTN Usages, combining Lookup and Search
+    To quickly find Online PSTN Usages, an Alias-Function to Get-CsOnlinePstnUsage
   .PARAMETER Usage
-    If provided, acts as an Alias to Get-CsOnlinePstnUsage, listing one Policy
-    If provided without a '*' in the name, an exact match is sought.
+    If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
+    If not provided, lists Identities of all Online Voice Routing Policies (except "Global")
   .EXAMPLE
     Get-TeamsOPU
     Lists Identities (Names) of all Online Pstn Usages
   .EXAMPLE
-    Get-TeamsOPU [-Usage] "PstnUsageName"
+    Get-TeamsOPU "PstnUsageName"
     Lists all PstnUsages with the String PstnUsageName of all Online Pstn Usages
   .NOTES
-    This script is indulging the lazy admin. It behaves like Get-CsOnlinePstnUsage with a twist:
-    Built in search function/filter missing from Get-CsOnlinePstnUsage.
-    Without any parameters, it lists names only:
+    It executes the following string:
     Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -53,7 +51,8 @@ function Get-TeamsOPU {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
-    # Asserting SkypeOnline Connection
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
   } #begin
@@ -78,4 +77,4 @@ function Get-TeamsOPU {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} # Get-TeamsOPU
+} #Get-TeamsOPU

@@ -82,6 +82,7 @@ function Get-TeamsUserVoiceConfig {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -151,7 +152,8 @@ function Get-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
+      #$ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
+      $ObjectType = (Get-TeamsCallableEntity -Identity $CsUser.UserPrincipalName).ObjectType
       #endregion
 
 

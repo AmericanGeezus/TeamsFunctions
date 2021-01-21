@@ -46,6 +46,7 @@ function Get-TeamsLicenseServicePlan {
   begin {
     Show-FunctionStatus -Level Deprecated
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     class ServicePlan {
       [string]$ProductName

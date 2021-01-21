@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Filter currently doesn't work - update lik OVP, examples like OVP and Documentation
 
 function Get-TeamsVNR {
   <#
@@ -14,21 +14,21 @@ function Get-TeamsVNR {
   .DESCRIPTION
     To quickly find Tenant Dial Plans to assign, an Alias-Function to Get-CsTenantDialPlan
   .PARAMETER Identity
-    String. Name or part of the Tenant Dial Plan. Can be omitted to list Names of all Policies (except "Global").
-    If provided without a '*' in the name, an exact match is sought.
+    If provided, acts as an Alias to Get-CsTenantDialPlan, listing Normalisation Rules for this Dial Plan
+    If not provided, lists Identities of all Tenant Dial Plans (except "Global")
+  .PARAMETER Filter
+    Searches for all Tenant Dial Plans that contains the string in the Name.
   .EXAMPLE
     Get-TeamsVNR
     Lists Identities (Names) of all Tenant Dial Plans (except "Global")
   .EXAMPLE
-    Get-TeamsVNR [-Identity] DP-HUN
-    Lists Normalization Rules for Tenant Dial Plan DP-HUN as Get-CsTenantDialPlan does.
+    Get-TeamsVNR -Identity DP-HUN
+    Lists Tenant Dial Plan DP-HUN as Get-CsTenantDialPlan does.
   .EXAMPLE
-    Get-TeamsVNR -Identity DP-HU*
-    Lists Normalization Rules for all Tenant Dials that contain the strign "DP-HU*" in the Name.
+    Get-TeamsVNR -Filter DP-HUN
+    Lists all Tenant Dials that contain the strign "DP-HUN" in the Name.
   .NOTES
-    This script is indulging the lazy admin. It behaves like Get-CsTenantDialPlan with a twist:
-    If more than 3 results are found, behaves like Get-CsTenantDialPlan | Select Identity
-    Without any parameters, it lists names only:
+    Without parameters, it executes the following string:
     Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -46,12 +46,16 @@ function Get-TeamsVNR {
     Get-TeamsMGW
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = 'Identity')]
   param (
     [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Identity', HelpMessage = 'Name of the Tenant Dial Plan')]
-    [string]$Identity
-  )
+    [string]$Identity,
 
+    [Parameter(ParameterSetName = 'Filter', HelpMessage = 'Name of the Tenant Dial Plan to search')]
+    [string]$Filter
+  )
+  Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+  Write-Verbose -Mess"Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"sese
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
@@ -61,19 +65,22 @@ function Get-TeamsVNR {
 
   } #begin
 
-  process {
+  Get-process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Tenant Dial Plans with Identity '$Identity'"
-      if ($Identity -match [regex]::Escape('*')) {
-        $Filtered = Get-CsTenantDialPlan -Filter "*$Identity*"
-      }
-      else {
-        $Filtered = Get-CsTenantDialPlan -Identity "$Identity"
+      $Result = Get-CsTenantDialPlan -WarningAction SilentlyContinue
+      switch ($PSCmdlet.ParameterSetName) {
+        'Identity' {
+          $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
+        }
+        'Filter' {
+          $Filtered = $Result | Where-Object Identity -Like "*$Filter*"
+        }
       }
 
-      if ( $Filtered.Count -gt 3) {
+      if ( $Filtered.Count -gt 2) {
         $Filtered | Select-Object Identity
       }
       else {
@@ -82,7 +89,7 @@ function Get-TeamsVNR {
     }
     else {
       Write-Verbose -Message 'Finding Tenant Dial Plan Names. Please choose one Dial Plan to display Normalisation Rules for.'
-      Get-CsTenantDialPlan | Where-Object Identity -NE 'Global' | Select-Object Identity
+      Get-CsTenantDialPlan | Select-Object Identity
     }
 
   } #process
@@ -90,4 +97,4 @@ function Get-TeamsVNR {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} # Get-TeamsVNR
+} #Get-TeamsTDP

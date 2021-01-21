@@ -57,6 +57,7 @@ function Get-AzureAdLicenseServicePlan {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     [System.Collections.ArrayList]$Plans = @()
     [System.Collections.ArrayList]$PlansNotAdded = @()

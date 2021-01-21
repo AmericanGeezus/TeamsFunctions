@@ -54,7 +54,7 @@
 #R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
 # Defining Help URL Base string:
-# https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
+$global:TeamsFunctionsHelpURLBase = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/docs/'
 
 #region Classes
 class TFTeamsServicePlan {
@@ -107,29 +107,6 @@ class TFTeamsLicense {
     $this.SkuId = $SkuId
     $this.ServicePlans = $ServicePlans
   }
-}
-
-class TFTeamsUserLicense {
-  # Properties
-  [String]$UserPrincipalName
-  [String]$DisplayName
-  [string]$ObjectId
-  [String]$UsageLocation
-  [String[]]$Licenses
-  [String[]]$ServicePlans
-  [bool]$AudioConferencing
-  [bool]$CommoneAreaPhoneLicense
-  [bool]$PhoneSystemVirtualUser
-  [bool]$PhoneSystem
-  [String]$PhoneSystemStatus
-  [bool]$CallingPlanDomestic120
-  [bool]$CallingPlanDomestic
-  [bool]$CallingPlanInternational
-  [bool]$CommunicationsCredits
-  [String]$CallingPlan
-
-  # Hidden property Identity to enable piping
-  #hidden [string] $ObjectId
 }
 
 class TFCallableEntity {
@@ -233,4 +210,27 @@ Export-ModuleMember -Alias con, dis, pol, Enable-Ev, Set-ServicePlan, `
 # Sp6WVW56xFX26VBPg6EhI4dCKKY5VpiipN4/3CAcJ8u9owgfoPY+SejJXNLDml2S
 # pslhMopY7CPa3O9aG4tejz6EhjvoiUnAu/3LQODoZKQl1BEllVI8hKt4Dr1rF6qt
 # qJpqVVlCAuCR/0IduwtpdgAk+CRr3WvumG+BEg==
-# SIG # End signature block
+# SIG # Begin signature block
+# MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQULd+hnHTwr/fAvfh/7bTaWJV2
+# qzCgggIZMIICFTCCAX6gAwIEAgIQa3i9Sh/NdbhOjG+nwKFPfjANBdkqhk G9w0B
+# AQUFADAlMSMwIQYDVQQDDBpEYXZpZCBFYmVyaGFyZHQgLSBDb2RlU2lsbjAeFw0y
+# MDA2MTMxMTA4NTNaFw0yNDA2MTMwMDAwMDBaMCUxIzAhBgNVBAMMGkRhdmlkIEVi
+# ZXJoYXJkdCAtIENvZGVTaWduMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3
+# m6z32wDOJ/ZnUYR5tJaujtCN2MVrOYs/ZwSVJvralxDUKHSLAGdmKmO1H5hH4Nmv
+# NBe1/L95AVDugTaoH9UK/snN9pcYJ7E7UqLH4ySqJuqE10VmpD2sRi3I2RDL1/eh
+# weUut8B3G4bwrA3o2Iy4Y6Kd7IMUAZzUVWwl01jsPQIDAQABo0YwRDATBgNVHSUE
+# DDAKBggrBgEFBQcDAzAdBgNVHQ4EFgQUO8DeqyD0FHkF6JO8JT7syAeXJXAwDgYD
+# VR0PAQH/BAQDAgeAMA0GCSqGSIb3DQEBBQUAA4GBAFCN2PtWoAvowM+pcxIV/gp2
+# RB2rFyPfjLWjfAeKPfXmcfsMAPIoevTrKj3VAzzoF32wZRvdHk7jLssrhT0nmF7L
+# 20n7K7RxJ3lccZ0MEdIHsmiklqbV+f9moVtXmgwwJzYkWekjIfrDUSdJeu0BYzR0
+# H+8/FVd9YHgogHQN9t3hMYIBWTCCAVUCAQEwOTAlMSMwIQYDVQQDDBpEYXZpZCBF
+# YmVyaGFyZHQgLSBDb2RlU2lnbgIQa3i9Sh/NdbhOjG+ewKFPfjAJBgUrDgMCGgUA
+# oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
+# BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
+# CQQxFgQURQxzgfgGfXHvpGs06jzjJFcKCwYwDQYJKoZIhvcNAQEBBQAEgYBt2/9H
+# Sp6WVW56xFX26VBPg6EhI4dCKKY5VpiipN4/3CAcJ8u9owgfoPY+SejJXNLDml2S
+# pslhMopY7CPa3O9aG4tejz6EhjvoiUnAu/3LQODoZKQl1BEllVI8hKt4Dr1rF6qt
+# qJpqVVlCAuCR/0IduwtpdgAk+CRr3WvumG+BEg==
+# SIG # Endignature block

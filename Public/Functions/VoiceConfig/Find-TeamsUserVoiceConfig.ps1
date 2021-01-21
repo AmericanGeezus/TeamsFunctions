@@ -170,6 +170,7 @@ function Find-TeamsUserVoiceConfig {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -405,4 +406,4 @@ function Find-TeamsUserVoiceConfig {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Find-TeamsUserVoiceConfig
+} # Find-TeamsUserVoiceConfig

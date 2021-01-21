@@ -12,27 +12,19 @@ function Get-TeamsMGW {
   .SYNOPSIS
     Lists all Online Pstn Gateways by Name
   .DESCRIPTION
-    To quickly find Online Pstn Gateways to assign, combining Lookup and Search
+    To quickly find Online Pstn Gateways to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
   .PARAMETER Identity
-    String. Name or part of the Pstn Gateways. Can be omitted to list Names of all Media Gateways.
-    If provided without a '*' in the name, an exact match is sought.
+    If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
+    If not provided, lists Identities of all Online Pstn Gateways
   .EXAMPLE
     Get-TeamsMGW
     Lists Identities (Names) of all Online Pstn Gateways
-    Behaviour like: Get-CsOnlinePstnGateway, if more than 3 results are found, only names are returned
   .EXAMPLE
-    Get-TeamsMGW [-Identity] PstnGateway1.domain.com
-    Lists Online Pstn Gateways as Get-CsOnlinePstnGateway does (provided it exists).
-    Behaviour like: Get-CsOnlinePstnGateway -Identity "PstnGateway1.domain.com"
-  .EXAMPLE
-    Get-TeamsMGW -Identity PstnGateway*
-    Lists Online Pstn Gateway with "PstnGateway" in the Name
-    Behaviour like: Get-CsOnlinePstnGateway -Filter "*PstnGateway*"
+    Get-TeamsMGW -Identity PstnGateway1.domain.com
+    Lists Online Pstn Gateway as Get-CsOnlinePstnGateway does (provided it exists).
   .NOTES
-    This script is indulging the lazy admin. It behaves like Get-CsOnlinePstnGateway with a twist:
-    If more than 3 results are found, behaves like Get-CsOnlinePstnGateway | Select Identity
-    Without any parameters, it lists names only:
-    Get-CsOnlinePstnGateway | Select-Object Identity
+    Without parameters, it executes the following string:
+    Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -58,6 +50,7 @@ function Get-TeamsMGW {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online: $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -65,7 +58,8 @@ function Get-TeamsMGW {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"

@@ -58,6 +58,7 @@ function Find-AzureAdUser {
   begin {
     Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -70,41 +71,50 @@ function Find-AzureAdUser {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    switch ($PsCmdlet.ParameterSetName) {
-      'Search' {
-        $User = Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        if ( $User ) {
-          return $User
-        }
-        else {
-          if ($Searchstring -match ' ') {
-            $SearchString = $SearchString.split(' ') | Select-Object -Last 1
-            Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+
+
+    foreach ($Id in $Identity) {
+
+      switch ($PsCmdlet.ParameterSetName) {
+        'Search' {
+          $User = Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          if ( $User ) {
+            return $User
           }
           else {
-            Find-AzureAdUser -Identity "$SearchString"
+            if ($Searchstring -contains ' ') {
+              $SearchString2 = $SearchString.split(' ') | Select-Object -Last 1
+              Get-AzureADUser -All:$true -SearchString "$SearchString2" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            }
+            elseif ($Searchstring -contains '.') {
+              $SearchString2 = $SearchString.split('.') | Select-Object -Last 1
+              Get-AzureADUser -All:$true -SearchString "$SearchString2" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            }
+            else {
+              Find-AzureAdUser -Identity "$SearchString"
+            }
           }
         }
-      }
 
-      'Id' {
-        foreach ($Id in $Identity) {
-          try {
-            $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction STOP
-            Write-Output $User
+        'Id' {
+          foreach ($Id in $Identity) {
+            try {
+              $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction STOP
+              Write-Output $User
+            }
+            catch [Microsoft.Open.AzureAD16.Client.ApiException] {
+              Write-Verbose -Message "User '$Id' not found"
+              continue
+            }
+            catch {
+              Write-Verbose -Message "User '$Id' not found"
+              continue
+            }
           }
-          catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-            Write-Verbose -Message "User '$Id' not found"
-            continue
-          }
-          catch {
-            Write-Verbose -Message "User '$Id' not found"
-            continue
-          }
+
         }
       }
     }
-
   } #process
 
   end {

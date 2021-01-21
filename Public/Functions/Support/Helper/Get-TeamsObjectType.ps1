@@ -59,6 +59,7 @@ function Get-TeamsObjectType {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -82,7 +83,7 @@ function Get-TeamsObjectType {
       return 'TelURI'
     }
     else {
-      $User = Find-AzureAdUser $Identity
+      $User = Get-AzureADUser -ObjectId "$Identity"
       if ( $User ) {
         if ($User[0].Department -eq 'Microsoft Communication Application Instance') {
           #if ( Test-TeamsResourceAccount $Identity ) {

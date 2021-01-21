@@ -29,23 +29,24 @@ function Test-TeamsTenantPolicy {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory = $true, HelpMessage = "This is the Noun of Policy, i.e. 'TeamsUpgradePolicy' of 'Get-TeamsUpgradePolicy'")]
-    [Alias("Noun")]
+    [Alias('Noun')]
     [string]$Policy,
 
-    [Parameter(Mandatory = $true, HelpMessage = "This is the Name of the Policy to test")]
+    [Parameter(Mandatory = $true, HelpMessage = 'This is the Name of the Policy to test')]
     [string]$PolicyName
   ) #param
 
   begin {
     Show-FunctionStatus -Level Archived
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
     # Data Gathering
     try {
-      $TestCommand = "Get-" + $Policy + " -ErrorAction Stop"
+      $TestCommand = 'Get-' + $Policy + ' -ErrorAction Stop'
       Invoke-Expression "$TestCommand" -ErrorAction STOP | Out-Null
     }
     catch {
@@ -60,12 +61,12 @@ function Test-TeamsTenantPolicy {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      $Command = "Get-" + $Policy + " -Identity " + $PolicyName + " -ErrorAction Stop"
+      $Command = 'Get-' + $Policy + ' -Identity ' + $PolicyName + ' -ErrorAction Stop'
       Invoke-Expression "$Command" -ErrorAction STOP | Out-Null
       Return $true
     }
     catch [System.Exception] {
-      if ($_.FullyQualifiedErrorId -notlike "*MissingItem*") {
+      if ($_.FullyQualifiedErrorId -notlike '*MissingItem*') {
         Write-Error -Message $_
       }
       Return $False
