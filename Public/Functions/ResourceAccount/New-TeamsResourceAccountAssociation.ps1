@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-
+#TODO: Doesn't stop if AA or RA are not found! - Check!
 
 function New-TeamsResourceAccountAssociation {
   <#

@@ -669,7 +669,7 @@ function New-TeamsAutoAttendant {
       #region Processing AfterHoursCallFlowOption
       switch ($AfterHoursCallFlowOption) {
         'TransferCallToTarget' {
-          Write-Verbose -Message "'$NameNormalised' Call Flow - Transferring to Target" -Verbose
+          Write-Verbose -Message "'$NameNormalised' CallFlow - Transferring to Target" -Verbose
 
           # Process AfterHoursCallTarget
           try {
