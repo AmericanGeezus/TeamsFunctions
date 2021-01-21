@@ -46,26 +46,22 @@ function Get-TeamsVNR {
     Get-TeamsMGW
   #>
 
-  [CmdletBinding(DefaultParameterSetName = 'Identity')]
+  [CmdletBinding()]
   param (
     [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Identity', HelpMessage = 'Name of the Tenant Dial Plan')]
-    [string]$Identity,
-
-    [Parameter(ParameterSetName = 'Filter', HelpMessage = 'Name of the Tenant Dial Plan to search')]
-    [string]$Filter
+    [string]$Identity
   )
-  Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-  Write-Verbose -Mess"Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"sese
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Write-Verbose -Mess"Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
   } #begin
 
-  Get-process {
+  process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
@@ -97,4 +93,4 @@ function Get-TeamsVNR {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsTDP
+} # Get-TeamsVNR

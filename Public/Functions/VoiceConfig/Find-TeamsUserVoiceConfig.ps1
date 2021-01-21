@@ -211,7 +211,11 @@ function Find-TeamsUserVoiceConfig {
 
       'Tel' {
         foreach ($PhoneNr in $PhoneNumber) {
-          if ($PhoneNr -match '(\d+);ext=(\d+)') {
+          if ($PhoneNr -match '@') {
+            Find-TeamsUserVoiceConfig -Identity "$PhoneNr"
+            continue
+          }
+          elseif ($PhoneNr -match '(\d+);ext=(\d+)') {
             $Number = $matches[1]
           }
           else {
