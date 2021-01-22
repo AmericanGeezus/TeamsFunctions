@@ -47,11 +47,12 @@
 
 #Activate when released
 # AzureAdPreview 2.0.2.129
-#R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
-#R#equires -Modules @{ ModuleName="AzureAd"; ModuleVersion="2.0.2.130" }
+#Re#quires -Modules @{ ModuleName="AzureAd"; ModuleVersion="2.0.2.129" }
+#Re#quires -Modules @{ ModuleName="AzureAdPreview"; ModuleVersion="2.0.2.24" }
 
 #Activate 01-FEB 2021
-#R#equires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
+#Re#quires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
+
 
 # Defining Help URL Base string:
 $global:TeamsFunctionsHelpURLBase = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/docs/'

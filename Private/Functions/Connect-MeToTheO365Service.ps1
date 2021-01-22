@@ -60,32 +60,11 @@ function Connect-MeToTheO365Service {
     Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
-    # Modules
-    try {
-      if ( $Service -eq "SkypeOnline") {
-        if ( Test-Module MicrosoftTeams ) {
-          Import-Module MicrosoftTeams -Force -ErrorAction Stop
-        }
-        elseif (Test-Module SkypeOnlineConverter) {
-          Import-Module SkypeOnlineConverter -Force -ErrorAction Stop
-        }
-      }
-      elseif ( -not (Test-Module $Service)) {
-        if ($Service -eq "AzureAd" -and (Test-Module AzureAdPreview)) {
-          Import-Module AzureAdPreview -Force -ErrorAction Stop
-        }
-        else {
-          Import-Module $Service -Force -ErrorAction Stop
-        }
-      }
-    }
-    catch {
-      throw "$Service - Error importing Module: $($_.Exception.Message)"
-    }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # preparing Splatting Object
     $ConnectionParameters = $null
-    $ConnectionParameters += @{'ErrorAction' = 'STOP' }
+    $ConnectionParameters += @{'ErrorAction' = 'Stop' }
     $ConnectionParameters += @{'WarningAction' = 'Continue' }
 
     if ($PSBoundParameters.ContainsKey('Verbose')) {
