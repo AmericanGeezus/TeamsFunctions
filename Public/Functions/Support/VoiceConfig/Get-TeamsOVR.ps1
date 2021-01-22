@@ -76,21 +76,20 @@ function Get-TeamsOVR {
       else {
         $Filtered = Get-CsOnlineVoiceRoute -Identity "$Identity"
       }
-
-      if ( $Filtered.Count -gt 3) {
-        $Filtered | Select-Object Identity
-      }
-      else {
-        $Filtered
-      }
     }
     else {
-      Write-Verbose -Message 'Findingames'
-      Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Name
+      Write-Verbose -Message 'Finding Online Voice Route Names'
+      $Filtered = Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute'
     }
+
+    if ( $Filtered.Count -gt 3) {
+      $Filtered = $Filtered | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList
+    }
+    return $Filtered | Sort-Object Identity
+
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #t-TeamsOVRRRR
+} # Get-TeamsOVR
