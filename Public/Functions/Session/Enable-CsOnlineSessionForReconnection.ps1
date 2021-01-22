@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
 # Author:		Andrés Gorzelany
-# Updated:  01-JAN-2021
+# Updated:  19-JAN-2021
 # Status:   Live
 
 
@@ -34,6 +34,9 @@ function Enable-CsOnlineSessionForReconnection {
   param() #param
 
   begin {
+    Show-FunctionStatus -Level Live
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+
   } #begin
 
   process {

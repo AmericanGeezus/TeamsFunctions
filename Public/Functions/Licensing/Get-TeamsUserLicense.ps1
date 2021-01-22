@@ -80,7 +80,7 @@ function Get-TeamsUserLicense {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
 
     # preparing Output Field Separator
-    $OFS = ', '
+    $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
 
     # Loading License Array
     if (-not $global:TeamsFunctionsMSAzureAdLicenses) {

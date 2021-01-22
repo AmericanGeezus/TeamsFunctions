@@ -76,22 +76,18 @@ function Get-TeamsOVP {
       else {
         $Filtered = Get-CsOnlineVoiceRoutingPolicy -Identity "$Identity"
       }
-
-      if ( $Filtered.Count -gt 3) {
-        $Filtered | Select-Object Identity
-      }
-      else {
-        $Filtered
-      }
     }
     else {
       Write-Verbose -Message 'Finding Online Voice Routing Policy Names'
-      Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity
+      $Filtered = Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global'
     }
+
+    $Filtered = $Filtered | Select-Object Identity, Description, OnlinePstnUsages
+    return $Filtered | Sort-Object Identity
 
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} # Gt-TeamsOVPP
+} # Get-TeamsOVP

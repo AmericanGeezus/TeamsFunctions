@@ -66,26 +66,24 @@ function Get-TeamsVNR {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Tenant Dial Plans with Identity '$Identity'"
-      $Result = Get-CsTenantDialPlan -WarningAction SilentlyContinue
-      switch ($PSCmdlet.ParameterSetName) {
-        'Identity' {
-          $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
-        }
-        'Filter' {
-          $Filtered = $Result | Where-Object Identity -Like "*$Filter*"
-        }
-      }
-
-      if ( $Filtered.Count -gt 2) {
-        $Filtered | Select-Object Identity
+      if ($Identity -match [regex]::Escape('*')) {
+        $Filtered = Get-CsTenantDialPlan -WarningAction SilentlyContinue -Filter "*$Identity*"
       }
       else {
-        $Filtered.NormalizationRules
+        $Filtered = Get-CsTenantDialPlan -WarningAction SilentlyContinue -Identity "Tag:$Identity"
       }
     }
     else {
-      Write-Verbose -Message 'Finding Tenant Dial Plan Names. Please choose one Dial Plan to display Normalisation Rules for.'
-      Get-CsTenantDialPlan | Select-Object Identity
+      Write-Verbose -Message 'Finding Tenant Dial Plan Names'
+      $Filtered = Get-CsTenantDialPlan | Where-Object Identity -NE 'Global' | Sort-Object Identity | Select-Object Identity
+    }
+
+    if ( $Filtered.Count -gt 3) {
+      $Filtered = $Filtered | Select-Object Identity
+      return $Filtered
+    }
+    else {
+      return $Filtered.NormalizationRules | Select-Object Name, Pattern, Translation, Description
     }
 
   } #process

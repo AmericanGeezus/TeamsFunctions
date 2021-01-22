@@ -66,26 +66,24 @@ function Get-TeamsTDP {
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Tenant Dial Plans with Identity '$Identity'"
-      $Result = Get-CsTenantDialPlan -WarningAction SilentlyContinue
-      switch ($PSCmdlet.ParameterSetName) {
-        'Identity' {
-          $Filtered = $Result | Where-Object Identity -EQ "Tag:$Identity"
-        }
-        'Filter' {
-          $Filtered = $Result | Where-Object Identity -Like "*$Filter*"
-        }
-      }
-
-      if ( $Filtered.Count -gt 2) {
-        $Filtered | Select-Object Identity
+      if ($Identity -match [regex]::Escape('*')) {
+        $Filtered = Get-CsTenantDialPlan -WarningAction SilentlyContinue -Filter "*$Identity*"
       }
       else {
-        $Filtered
+        $Filtered = Get-CsTenantDialPlan -WarningAction SilentlyContinue -Identity "Tag:$Identity"
       }
     }
     else {
       Write-Verbose -Message 'Finding Tenant Dial Plan Names'
-      Get-CsTenantDialPlan | Where-Object Identity -NE 'Global' | Select-Object Identity
+      $Filtered = Get-CsTenantDialPlan | Where-Object Identity -NE 'Global'
+    }
+
+    if ( $Filtered.Count -gt 3) {
+      $Filtered = $Filtered | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description
+      return $Filtered | Sort-Object Identity
+    }
+    else {
+      return $Filtered | Sort-Object Identity
     }
 
   } #process

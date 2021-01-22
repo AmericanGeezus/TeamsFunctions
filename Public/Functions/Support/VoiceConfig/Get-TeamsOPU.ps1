@@ -50,9 +50,9 @@ function Get-TeamsOPU {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
+
+    # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
   } #begin
@@ -60,21 +60,17 @@ function Get-TeamsOPU {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    $Filtered = Get-CsOnlinePstnUsage Global
     if ($PSBoundParameters.ContainsKey('Usage')) {
       Write-Verbose -Message "Finding Online Pstn Usages with Usage '$Usage'"
-      $Usages = Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage
-      $Usages | Where-Object { $_ -Like "*$Usage*" }
-
+      $Filtered = $Filtered | Where-Object Usage -Like "*$Usage*"
     }
-    else {
-      Write-Verbose -Message 'Finding Online Pstn Usage Names'
-      Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage
 
-    }
+    return $Filtered | Sort-Object Usage | Select-Object Usage -ExpandProperty Usage
 
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsOPU
+} # Get-TeamsOPU

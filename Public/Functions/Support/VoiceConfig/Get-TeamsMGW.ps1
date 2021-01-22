@@ -58,8 +58,7 @@ function Get-TeamsMGW {
   } #begin
 
   process {
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
@@ -69,18 +68,17 @@ function Get-TeamsMGW {
       else {
         $Filtered = Get-CsOnlinePstnGateway -Identity "$Identity"
       }
-
-      if ( $Filtered.Count -gt 3) {
-        $Filtered | Select-Object Identity
-      }
-      else {
-        $Filtered
-      }
     }
     else {
       Write-Verbose -Message 'Finding Online Pstn Gateway Names'
-      Get-CsOnlinePstnGateway | Select-Object Identity
+      $Filtered = Get-CsOnlinePstnGateway
     }
+
+    if ( $Filtered.Count -gt 3) {
+      $Filtered = $Filtered | Select-Object Identity, SipSignalingPort, Enabled, MediaByPass
+    }
+    return $Filtered | Sort-Object Identity
+
   } #process
 
   end {
