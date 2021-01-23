@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO Check Documentation and simplification?
+
 
 function Get-TeamsOPU {
   <#
@@ -14,17 +14,17 @@ function Get-TeamsOPU {
   .DESCRIPTION
     To quickly find Online PSTN Usages, an Alias-Function to Get-CsOnlinePstnUsage
   .PARAMETER Usage
-    If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
-    If not provided, lists Identities of all Online Voice Routing Policies (except "Global")
+    String. Name or part of the Online Pstn Usage. Can be omitted to list Names of all Usages.
+    Searches for Usages with Get-CsOnlinePstnUsage, listing all that match.
   .EXAMPLE
     Get-TeamsOPU
     Lists Identities (Names) of all Online Pstn Usages
   .EXAMPLE
     Get-TeamsOPU "PstnUsageName"
-    Lists all PstnUsages with the String PstnUsageName of all Online Pstn Usages
+    Lists all PstnUsages with the String 'PstnUsageName' in the name of the Online Pstn Usage
   .NOTES
-    It executes the following string:
-    Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage
+    This script is indulging the lazy admin. It behaves like (Get-CsOnlinePstnUsage).Usage
+    This CmdLet behaves slightly different than the others, due to the nature of Pstn Usages.
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

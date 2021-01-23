@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO rework Verbose to Informational output
+
 #TODO Check for SupportsPaging for OVP and TDP (result size is not managable!)
 
 function Find-TeamsUserVoiceConfig {
