@@ -64,6 +64,7 @@ function Remove-TeamsAutoAttendant {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
   } #begin
 
@@ -75,7 +76,7 @@ function Remove-TeamsAutoAttendant {
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
       $DNCounter++
       try {
-        Write-Verbose -Message 'The listed Auto Attendants are being removed:' -Verbose
+        Write-Information 'INFO: The listed Auto Attendants are being removed:'
         $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
         $AAToRemove = $AAToRemove | Where-Object Name -EQ "$DN"
 
@@ -84,7 +85,7 @@ function Remove-TeamsAutoAttendant {
           $AAs = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
             Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AAs * 100)
-            Write-Verbose -Message "Removing: '$($AA.Name)'" -Verbose
+            Write-Information "Removing Auto Attendant: '$($AA.Name)'"
             $AACounter++
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity $($AA.Identity) -ErrorAction STOP

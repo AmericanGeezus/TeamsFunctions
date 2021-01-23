@@ -108,6 +108,7 @@ function Remove-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -182,11 +183,11 @@ function Remove-TeamsUserVoiceConfig {
             if ( $Force -or $CsUser.TelephoneNumber ) {
               try {
                 Set-CsOnlineVoiceUser -Identity $User -TelephoneNumber $Null -ErrorAction Stop
-                Write-Verbose -Message "User '$User' - Removing TelephoneNumber: OK" -Verbose
+                Write-Information "User '$User' - Removing TelephoneNumber: OK"
               }
               catch {
                 if ( 'Your tenant is Disabled for this service. You are not permitted to use this cmdlet.' -in $_.Exception.Message) {
-                  Write-Verbose -Message "User '$User' - Removing TelephoneNumber: OK (Service Disabled)" -Verbose
+                  Write-Verbose -Message "User '$User' - Removing TelephoneNumber: OK (Service Disabled)"
                 }
                 else {
                   Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Failed" -Verbose
@@ -195,7 +196,7 @@ function Remove-TeamsUserVoiceConfig {
               }
             }
             else {
-              Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Not assigned" -Verbose
+              Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Not assigned"
             }
 
             # Removing Call Plan Licenses (with Confirmation)
@@ -207,10 +208,10 @@ function Remove-TeamsUserVoiceConfig {
               if ( $Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
                 if ( $RemoveLicenses.Count -gt 0 ) {
                   Set-TeamsUserLicense -Identity $User -RemoveLicenses $RemoveLicenses
-                  Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: OK" -Verbose
+                  Write-Information "User '$User' - Removing Call Plan Licenses: OK"
                 }
                 else {
-                  Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned" -Verbose
+                  Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned"
                 }
               }
             }
@@ -221,7 +222,7 @@ function Remove-TeamsUserVoiceConfig {
           }
           else {
             $step++
-            Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned" -Verbose
+            Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned"
           }
 
         }
@@ -230,8 +231,8 @@ function Remove-TeamsUserVoiceConfig {
             Write-Error -Message "User '$User' - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
           }
           else {
-            Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Not assigned" -Verbose
-            Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned" -Verbose
+            Write-Verbose -Message "User '$User' - Removing TelephoneNumber: Not assigned"
+            Write-Verbose -Message "User '$User' - Removing Call Plan Licenses: None assigned"
           }
         }
       }
@@ -247,7 +248,7 @@ function Remove-TeamsUserVoiceConfig {
         if ( $Force -or $CsUser.OnPremLineURI ) {
           try {
             $CsUser | Set-CsUser -OnPremLineURI $Null
-            Write-Verbose -Message "User '$User' - Removing OnPremLineURI: OK" -Verbose
+            Write-Information "User '$User' - Removing OnPremLineURI: OK"
           }
           catch {
             Write-Verbose -Message "User '$User' - Removing OnPremLineURI: Failed" -Verbose
@@ -255,7 +256,7 @@ function Remove-TeamsUserVoiceConfig {
           }
         }
         else {
-          Write-Verbose -Message "User '$User' - Removing OnPremLineURI: Not assigned" -Verbose
+          Write-Verbose -Message "User '$User' - Removing OnPremLineURI: Not assigned"
         }
         #endregion
 
@@ -267,7 +268,7 @@ function Remove-TeamsUserVoiceConfig {
         if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy ) {
           try {
             $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
-            Write-Verbose -Message "User '$User' - Removing Online Voice Routing Policy: OK" -Verbose
+            Write-Information "User '$User' - Removing Online Voice Routing Policy: OK"
           }
           catch {
             Write-Verbose -Message "User '$User' - Removing Online Voice Routing Policy: Failed" -Verbose
@@ -290,7 +291,7 @@ function Remove-TeamsUserVoiceConfig {
       if ( $Force -or $CsUser.TenantDialPlan ) {
         try {
           $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
-          Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan: OK" -Verbose
+          Write-Information "User '$User' - Removing Tenant Dial Plan: OK"
         }
         catch {
           Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan: Failed" -Verbose
@@ -298,7 +299,7 @@ function Remove-TeamsUserVoiceConfig {
         }
       }
       else {
-        Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan: Not assigned" -Verbose
+        Write-Verbose -Message "User '$User' - Removing Tenant Dial Plan: Not assigned"
       }
       #endregion
 
@@ -312,10 +313,10 @@ function Remove-TeamsUserVoiceConfig {
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$User", 'Disabling EnterpriseVoice')) {
               $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
-              Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: OK" -Verbose
+              Write-Information "User '$User' - Disabling EnterpriseVoice: OK"
             }
             else {
-              Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Not confirmed)" -Verbose
+              Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Not confirmed)"
             }
           }
           catch {
@@ -328,7 +329,7 @@ function Remove-TeamsUserVoiceConfig {
         }
       }
       else {
-        Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Not enabled)" -Verbose
+        Write-Verbose -Message "User '$User' - Disabling EnterpriseVoice: Skipped (Not enabled)"
       }
       #endregion
       #endregion

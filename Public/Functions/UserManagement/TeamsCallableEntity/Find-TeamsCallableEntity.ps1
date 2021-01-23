@@ -82,6 +82,7 @@ function Find-TeamsCallableEntity {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Scope Hardcoded (will become a parameter later)
     #$Scope = "CallQueue"
@@ -269,7 +270,7 @@ function Find-TeamsCallableEntity {
         Write-Output $Output #| Select-Object LinkedAs, ObjectType, ObjectName
       }
       else {
-        Write-Verbose -Message "No Call Queues or Auto Attendants found for Identity '$Id'" -Verbose
+        Write-Verbose -Message "No Call Queues or Auto Attendants found where Identity '$Id' is linked" -Verbose
       }
     }
 

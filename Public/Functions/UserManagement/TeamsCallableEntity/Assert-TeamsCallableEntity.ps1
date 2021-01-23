@@ -95,13 +95,26 @@ function Assert-TeamsCallableEntity {
         Write-Verbose -Message "Target '$Identity' found and licensed"
       }
       else {
-        #TODO Add try Set-AzureAdLicenseServicePlan to enable PhoneSystem
+        #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet
         <#
         try {
-          Set-AzureAdLicenseServicePlan -Identity "$Identity" -Enable MCOEV -ErrorAction Stop
+          Write-Information "Target '$Identity' found and licensed, but PhoneSystem is disabled. Trying to Enable"
+          Set-AzureAdLicenseServicePlan -Identity "$Identity" -Enable MCOEV
+          $UserLicense = Get-TeamsUserLicense $Identity
+          if ( $UserLicense.PhoneSystemStatus -ne "Success" -or $UserLicense.PhoneSystemStatus -ne "PendingInput") {
+            throw
+          }
         }
         catch {
           Write-Error -Message "" -RecommendedAction "" -Category  -Exception $_.Exception.Message
+          $ErrorMessage = "Target '$Identity' found but not licensed correctly (PhoneSystem) - Service Plan could not be enabled!"
+          if ($Terminate) {
+            throw $ErrorMessage
+          }
+          else {
+            Write-Error -Message $ErrorMessage
+            return $false
+          }
         }
         #>
         $ErrorMessage = "Target '$Identity' found but not licensed correctly (PhoneSystem)"

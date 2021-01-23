@@ -59,6 +59,11 @@ function Get-AzureAdLicense {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     [System.Collections.ArrayList]$Products = @()
 
     $srcProductPlans = @{}
@@ -151,7 +156,7 @@ function Get-AzureAdLicense {
               [void]$srcProductPlans.Add([TFTeamsServicePlan]::new("$planProductName", "$($planServicePlanNames[$planServicePlanId])", "$planServicePlanId", $Relevant))
             }
             catch {
-              Write-Verbose "[TFTeamsServicePlan] Couldn't add entry for $planProductName"
+              Write-Debug "[TFTeamsServicePlan] Couldn't add entry for $planProductName"
               if ( $planProductName -ne 'Powerapps For Office 365 K1') {
                 $PlansNotAdded += $planProductName
               }
@@ -243,7 +248,7 @@ function Get-AzureAdLicense {
         [void]$Products.Add([TFTeamsLicense]::new( "$ProductName", "$srcSkuPartNumber", "$LicenseType", "$ParameterName", $IncludesTeams, $IncludesPhoneSystem, "$srcSkuId", $srcProductPlans))
       }
       catch {
-        Write-Verbose "[TFTeamsLicense] Couldn't add entry for '$ProductName'" -Verbose
+        Write-Debug "[TFTeamsLicense] Couldn't add entry for '$ProductName'" -Debug
         $ProductsNotAdded += $ProductName
       }
     }

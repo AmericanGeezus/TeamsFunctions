@@ -39,6 +39,11 @@ function Show-FunctionStatus {
     $Level
   ) #param
 
+  # Setting Preference Variables according to Upstream settings
+  if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+  if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+  if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
   $Stack = Get-PSCallStack
   if ($stack.length -gt 3) {
     return
@@ -70,10 +75,10 @@ function Show-FunctionStatus {
         Write-Verbose -Message "$Function is [LIVE] but [UNMANAGED] and comes as-is."
       }
       "Deprecated" {
-        Write-Verbose -Message "$Function is [LIVE] but [DEPRECATED]!" -Verbose
+        Write-Information "$Function is [LIVE] but [DEPRECATED]!"
       }
       "Archived" {
-        Write-Verbose -Message "$Function is [ARCHIVED]!" -Verbose
+        Write-Information "$Function is [ARCHIVED]!"
       }
     }
 

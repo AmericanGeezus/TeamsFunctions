@@ -89,6 +89,7 @@ function New-TeamsResourceAccountAssociation {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -140,9 +141,8 @@ function New-TeamsResourceAccountAssociation {
     }
     elseif ($EntityObject -is [Array]) {
       $EntityObject = $EntityObject | Where-Object Name -EQ "$Entity"
-
       Write-Verbose -Message "'$Entity' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons, a unique Name to process." -Verbose
-      Write-Verbose -Message 'Here are all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!' -Verbose
+      Write-Verbose -Message 'Listing all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!' -Verbose
       $EntityObject | Select-Object Identity, Name | Format-Table
       Write-Error "$DesiredType '$Entity' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction 'Please use New-CsOnlineApplicationInstanceAssociation!'
       return
@@ -249,7 +249,7 @@ function New-TeamsResourceAccountAssociation {
             continue
           }
           else {
-            Write-Verbose -Message "'$($Account.UserPrincipalName)' - Changing Application Type to '$DesiredType': SUCCESS" -Verbose
+            Write-Information "'$($Account.UserPrincipalName)' - Changing Application Type to '$DesiredType': SUCCESS"
           }
         }
         else {

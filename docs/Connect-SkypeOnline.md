@@ -18,10 +18,10 @@ Connect-SkypeOnline [[-AccountId] <String>] [[-OverrideAdminDomain] <String>] [[
 ```
 
 ## DESCRIPTION
-The Connect-SkypeOnline cmdlet connects an authenticated account to use for Microsoft Teams (SkypeOnline) cmdlet requests.
+The Connect-SkypeOnline cmdlet connects an account to use for Microsoft Teams (SkypeOnline) cmdlet requests.
 Establishing a remote PowerShell session to Microsoft Teams (SkypeOnline)
-A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect
-To execute commands against Teams, one of the Teams Admin roles is required.
+A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect and execute GET-commands.
+To execute other commands against Teams, a Teams Admin roles with appropriate rights is required.
 
 ## EXAMPLES
 
@@ -38,15 +38,31 @@ Prompt for the Username and password of an administrator with permissions to con
 Connect-SkypeOnline -AccountId admin@contoso.com
 ```
 
-If supported, will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account
-  to connect out to Microsoft Teams (SkypeOnline).
-Additional prompts for Multi Factor Authentication are displayed as required.
+When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com
+  and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
+  When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
+  The OverrideAdminDomain is not provided, so it is constructed from the domain part.
+Please see Notes for details.
+  Additional prompts for Multi Factor Authentication are displayed as required.
+
+### EXAMPLE 3
+```
+Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com
+```
+
+When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com
+  and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
+  When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
+  The provided OverrideAdminDomain will be used to establish the connection.
+If not provided, it is constructed.
 
 ## PARAMETERS
 
 ### -AccountId
 Optional String.
 The Username or sign-in address to use when making the remote PowerShell session connection.
+  If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.
+  Please see Notes for a detailed example
 
 ```yaml
 Type: String
@@ -62,7 +78,8 @@ Accept wildcard characters: False
 
 ### -OverrideAdminDomain
 Optional.
-Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
+Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.
+If an AccountId is provided, the Domain is constructed from the domain part and only queried from the User if needed.
 
 ```yaml
 Type: String
@@ -80,7 +97,9 @@ Accept wildcard characters: False
 Optional.
 Defines the IdleTimeout of the session in full hours between 1 and 8.
 Default is 4 hrs.
-Note, by default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
+  By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
+  Please note that this setting could not be verified working.
+SessionOptions seem to be ignored by the CmdLet.
 
 ```yaml
 Type: Int32
@@ -102,29 +121,49 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
-Requires that the Module Microoft Teams (v1.1.6) or Skype Online Connector PowerShell module (v7.0.0.0 or higher) to be installed.
-If the SkypeOnlineConnector is used, the Username can be passed to along and the Session can be reconnected (Enable-CsOnlineSessionForReconnection is run).
-The following Tasks are preformed by this cmdlet:
+Connection to SkypeOnline is done by creating a Session with New-CsOnlineSession, which later needs to be imported.
+A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E.
+SkypeOnline)
+
+New-CsOnlineSession is available in the Module MicrosoftTeams or the MSI-Installer SkypeOnlineConnector which is
+now deprecated and no longer actively supported.
+When using the SkypeOnlineConnector, a separate connection
+to MicrosoftTeams must be established to also manage Teams and Channels use Connect-MicrosoftTeams to connect.
+When using the Module MicrosoftTeams, a connection is always established to both!
+
+Background:
+In order to retire the SkypeOnlineConnector, the CmdLet New-CsOnlineSession was ported to MicrosoftTeams (in v1.1.6)
+However, not all functionality was made available:
+The Parameter Username has been retired, resulting in seamless single-sign-on currently not being available.
+Multiple connection prompts will be displayed, but already signed-in accounts can be used (Password required only once)
+Enable-CsOnlineSessionForReconnection is not available in MicrosoftTeams either, but thanks to the original author
+Andrés Gorzelany, the command is now offered with this module and is available consistently.
+Established Sessions will now always be enabled for reconnection.
+The ability to reconnect a session depends on the settings in the Tenant.
+Re-Authentication may be required.
+
+OverrideAdminDomain Handling and Example:
+AccountId John@domain.com - Domain.com is first used as the OverrideAdminDomain
+If unsuccessful, "domain.onmicrosoft.com" is tried.
+If this too is unsuccessful, the OverrideAdminDomain is queried from the User for input.
+
+Session Timeout & Reconnection:
+The session timeout is currently not adhered to correctly and does not work as intended!
+It has therefore been disabled.
+The parameter IdleTimeout is without effect.
+
+To help reconnect sessions, Assert-SkypeOnlineConnection is integrated into every CmdLet in the module.
+It can be triggered manually as well, with the alias 'pol' (Ping-of-life) to trigger the reconnection.
+This will require re-authentication and its success is dependent on the Tenant settings.
+Sometimes even the reconnection fails, if so, please disconnect the current session (Disconnect-SkypeOnline) and
+re-run Connect-SkypeOnline to recreate the session cleanly.
+Please note that hanging sessions can cause lockout (session exhaustion)
+
+This CmdLet is preforming the following Tasks:
 - Verifying Module MicrosoftTeams or SkypeOnlineConnector are installed and imported
 - Prompting for Username and password to establish the session
 - Prompting for MFA if required
-- Prompting for OverrideAdminDomain if connection fails to establish and retries connection attempt
-- Extending the session time-out limit beyond 60mins (SkypeOnlineConnector only!)
-
-Download v7 here: https://www.microsoft.com/download/details.aspx?id=39366
-The SkypeOnline Session allows you to administer SkypeOnline and Teams respectively.
-Note: A separate connection to MicrosoftTeams must be established when using SkypeOnlineConnector.
-
-To manage Teams, Channels, etc.
-within Microsoft Teams, use Connect-MicrosoftTeams
-Connect-MicrosoftTeams requires a Teams Admin role and is part of the PowerShell Module MicrosoftTeams
-https://www.powershellgallery.com/packages/MicrosoftTeams
-
-Please note, that the session timeout is broken and does currently not work as intended
-To help reconnect sessions, Assert-SkypeOnlineConnection can be used (Alias: pol) which runs Get-CsTenant to trigger the reconnect
-This will require re-authentication and its success is dependent on the Tenant settings.
-To reconnect fully, please re-run Connect-SkypeOnline to recreate the session cleanly.
-Please note that hanging sessions can cause lockout (session exhaustion)
+- Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)
 
 ## RELATED LINKS
 

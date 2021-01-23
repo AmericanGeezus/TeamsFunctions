@@ -256,6 +256,7 @@ function New-TeamsAutoAttendant {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -289,14 +290,14 @@ function New-TeamsAutoAttendant {
     else {
       $TimeZoneId = (Get-CsAutoAttendantSupportedTimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
       Write-Verbose -Message "TimeZone - Found! Using: '$TimeZoneId'"
-      Write-Verbose -Message 'TimeZone - This is an approximate match, please validate in Admin Center and select a more precise match if needed!' -Verbose
+      Write-Information 'TimeZone - This is a correct match for the Time Zone, but might not be fully precise. - Please fine-tune Time Zone in the Admin Center if needed.'
     }
 
     #region BusinessHours
     # Main Call Flow -- DefaultCallFlow VS BusinessHours*
     if ($DefaultCallFlow) {
       # DefaultCallFlow
-      Write-Verbose -Message 'DefaultCallFlow - Overriding all BusinessHours-Parameters' -Verbose
+      Write-Information 'DefaultCallFlow - Overriding all BusinessHours-Parameters'
 
       if ($PSBoundParameters.ContainsKey('BusinessHoursGreeting')) { $PSBoundParameters.Remove('BusinessHoursGreeting') }
       if ($PSBoundParameters.ContainsKey('BusinessHoursCallFlowOption')) { $PSBoundParameters.Remove('BusinessHoursCallFlowOption') }
@@ -311,7 +312,7 @@ function New-TeamsAutoAttendant {
     else {
       # BusinessHours Parameters
       if (-not $PSBoundParameters.ContainsKey('BusinessHoursCallFlowOption')) {
-        Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!" -Verbose
+        Write-Verbose -Message "BusinessHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
         $BusinessHoursCallFlowOption = 'Disconnect'
       }
       elseif ($BusinessHoursCallFlowOption -eq 'TransferCallToTarget') {
@@ -354,7 +355,7 @@ function New-TeamsAutoAttendant {
     # Call Flows & Call Handling Associations
     if ($CallFlows -or $CallHandlingAssociations) {
       # Custom Call Flows
-      Write-Verbose -Message 'CallFlows - Overriding all AfterHours-Parameters' -Verbose
+      Write-Information 'CallFlows - Overriding all AfterHours-Parameters'
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) { $PSBoundParameters.Remove('AfterHoursGreeting') }
       if ($PSBoundParameters.ContainsKey('AfterHoursCallFlowOption')) { $PSBoundParameters.Remove('AfterHoursCallFlowOption') }
       if ($PSBoundParameters.ContainsKey('AfterHoursCallTarget')) { $PSBoundParameters.Remove('AfterHoursCallTarget') }
@@ -430,7 +431,7 @@ function New-TeamsAutoAttendant {
       #region Schedule & AfterHoursSchedule
       if ($Schedule) {
         if ($AfterHoursSchedule) {
-          Write-Verbose -Message 'Schedule - Custom Schedule Object overrides AfterHoursSchedule provided' -Verbose
+          Write-Information 'Schedule - Custom Schedule Object overrides AfterHoursSchedule provided'
           $PSBoundParameters.Remove('AfterHoursSchedule')
         }
 
@@ -442,11 +443,10 @@ function New-TeamsAutoAttendant {
       }
       else {
         if ( $AfterHoursSchedule) {
-          Write-Verbose -Message "Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'" -Verbose
+          Write-Information "Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'"
         }
         else {
           $AfterHoursSchedule = 'MonToFri9to5'
-          Write-Verbose -Message "Schedule - Neither Schedule nor AfterHoursSchedule provided, Using Default: '$AfterHoursSchedule'" -Verbose
         }
 
         # Creating Schedule
@@ -454,7 +454,6 @@ function New-TeamsAutoAttendant {
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
-        Write-Verbose -Message "Schedule - Default Schedule used: '$AfterHoursSchedule'" -Verbose
 
         $Schedule = switch ($AfterHoursSchedule) {
           'Open24x7' {
@@ -467,6 +466,7 @@ function New-TeamsAutoAttendant {
             New-TeamsAutoAttendantSchedule -Name 'Business Hours Schedule' -WeeklyRecurrentSchedule -BusinessDays MonToFri -BusinessHours 8to12and13to18 -Complement
           }
         }
+        Write-Verbose -Message "Schedule - Schedule created: '$AfterHoursSchedule'"
       }
     }
     #endregion
@@ -549,19 +549,19 @@ function New-TeamsAutoAttendant {
 
     if ( $DefaultCallFlow ) {
       # Using As-Is
-      Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Custom Object provided." -Verbose
+      Write-Information "'$NameNormalised' DefaultCallFlow - Custom Object provided. Over-riding other options (like switch 'BusinessHoursCallFlow')"
       $Parameters += @{'DefaultCallFlow' = $DefaultCallFlow }
 
     }
     else {
-      Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - No Custom Object - Processing 'BusinessHoursCallFlowOption'..." -Verbose
+      Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - No Custom Object - Processing 'BusinessHoursCallFlowOption'..."
       $BusinessHoursCallFlowParameters = @{}
       $BusinessHoursCallFlowParameters.Name = "$NameNormalised - Business Hours CF"
 
       #region Processing BusinessHoursCallFlowOption
       switch ($BusinessHoursCallFlowOption) {
         'TransferCallToTarget' {
-          Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Transferring to Target" -Verbose
+          Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Transferring to Target"
 
           # Process BusinessHoursCallTarget
           try {
@@ -571,7 +571,7 @@ function New-TeamsAutoAttendant {
             if ($BusinessHoursCallTargetEntity) {
               $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity -DtmfResponse Automatic
               $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name 'Business Hours Menu' -MenuOptions @($BusinessHoursMenuOptionTransfer)
-
+              Write-Information "'$NameNormalised' Business Hours Call Flow - Menu (TransferCallToTarget) created"
               break
             }
             else {
@@ -589,10 +589,11 @@ function New-TeamsAutoAttendant {
         }
 
         'Menu' {
-          Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Menu" -Verbose
+          Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - Menu"
           if ($PSBoundParameters.ContainsKey('BusinessHoursMenu')) {
             # Menu is passed on as-is - $BusinessHoursMenu is defined and attached
             $BusinessHoursMenuObject = $BusinessHoursMenu
+            Write-Information "'$NameNormalised' Business Hours Call Flow - Menu (BusinessHoursMenu) used"
           }
           else {
             # No custom / default Menu is currently created
@@ -602,7 +603,7 @@ function New-TeamsAutoAttendant {
 
         default {
           # Defaulting to Disconnect
-          Write-Verbose -Message "'$NameNormalised' DefaultCallFlow not provided or 'Disconnect' - Using default (Disconnect)" -Verbose
+          Write-Verbose -Message "'$NameNormalised' DefaultCallFlow not provided or 'Disconnect' - Using default (Disconnect)"
           $BusinessHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
           $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name 'Business Hours Menu' -MenuOptions @($BusinessHoursMenuOptionDefault)
         }
@@ -620,6 +621,7 @@ function New-TeamsAutoAttendant {
         try {
           $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $BusinessHoursGreeting
           if ($BusinessHoursGreetingObject) {
+            Write-Information "'$NameNormalised' Business Hours Call Flow - Greeting created"
             $BusinessHoursCallFlowParameters.Greetings = @($BusinessHoursGreetingObject)
           }
         }
@@ -638,6 +640,7 @@ function New-TeamsAutoAttendant {
       # Adding Business Hours Call Flow
       $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenuObject
       $BusinessHoursCallFlow = New-CsAutoAttendantCallFlow @BusinessHoursCallFlowParameters
+      Write-Information "'$NameNormalised' Business Hours Call Flow - Call Flow created"
       $Parameters += @{'DefaultCallFlow' = $BusinessHoursCallFlow }
       #endregion
     }
@@ -657,19 +660,19 @@ function New-TeamsAutoAttendant {
 
     if ($PSBoundParameters.ContainsKey('CallFlows')) {
       # Custom Option provided - Using As-Is
-      Write-Verbose -Message "'$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')" -Verbose
+      Write-Information "'$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')"
       $Parameters += @{'CallFlows' = $CallFlows }
     }
     else {
       # Option Selected
-      Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'AfterHoursCallFlowOption'..." -Verbose
+      Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'AfterHoursCallFlowOption'..."
       $AfterHoursCallFlowParameters = @{}
       $AfterHoursCallFlowParameters.Name = "$CallFlowNamePrefix - After Hours CF"
 
       #region Processing AfterHoursCallFlowOption
       switch ($AfterHoursCallFlowOption) {
         'TransferCallToTarget' {
-          Write-Verbose -Message "'$NameNormalised' CallFlow - Transferring to Target" -Verbose
+          Write-Verbose -Message "'$NameNormalised' CallFlow - Transferring to Target"
 
           # Process AfterHoursCallTarget
           try {
@@ -679,7 +682,7 @@ function New-TeamsAutoAttendant {
             if ($AfterHoursCallTargetEntity) {
               $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity -DtmfResponse Automatic
               $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name 'After Hours Menu' -MenuOptions @($AfterHoursMenuOptionTransfer)
-
+              Write-Information "'$NameNormalised' After Hours Call Flow - Menu (TransferCallToTarget) created"
               break
             }
             else {
@@ -697,10 +700,11 @@ function New-TeamsAutoAttendant {
         }
 
         'Menu' {
-          Write-Verbose -Message "'$NameNormalised' CallFlow - AfterHoursCallFlow - Menu" -Verbose
+          Write-Verbose -Message "'$NameNormalised' CallFlow - AfterHoursCallFlow - Menu"
           if ($PSBoundParameters.ContainsKey('AfterHoursMenu')) {
             # Menu is passed on as-is - $AfterHoursMenu is defined and attached
             $AfterHoursMenuObject = $AfterHoursMenu
+            Write-Information "'$NameNormalised' After Hours Call Flow - Menu (BusinessHoursMenu) used"
           }
           else {
             # No custom / default Menu is currently created
@@ -710,7 +714,7 @@ function New-TeamsAutoAttendant {
 
         default {
           # Defaulting to Disconnect
-          Write-Verbose -Message "'$NameNormalised' CallFlow - AfterHoursCallFlow not provided or Disconnect. Using default (Disconnect)" -Verbose
+          Write-Verbose -Message "'$NameNormalised' CallFlow - AfterHoursCallFlow not provided or Disconnect. Using default (Disconnect)"
           $AfterHoursMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
           $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name 'Business Hours Menu' -MenuOptions @($AfterHoursMenuOptionDefault)
         }
@@ -728,6 +732,7 @@ function New-TeamsAutoAttendant {
         try {
           $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $AfterHoursGreeting
           if ($AfterHoursGreetingObject) {
+            Write-Information "'$NameNormalised' After Hours Call Flow - Greeting created"
             $AfterHoursCallFlowParameters.Greetings = @($AfterHoursGreetingObject)
           }
         }
@@ -746,6 +751,7 @@ function New-TeamsAutoAttendant {
       # Adding After Hours Call Flow
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
+      Write-Information "'$NameNormalised' After Hours Call Flow - Call Flow created"
       $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
 
       #TODO when HolidaySet is added, this needs to be array-proof (see processing of CallFlows Objects for code samples)
@@ -759,10 +765,10 @@ function New-TeamsAutoAttendant {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      Write-Verbose -Message "'$NameNormalised' Schedule - Applying Schedule" -Verbose
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
       #TODO when HolidaySet is added, a second CHA will need to be added here! +=?
+      Write-Information "'$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
       $Parameters += @{'CallHandlingAssociation' = @($AfterHoursCallHandlingAssociation) }
       #endregion
     }
@@ -823,7 +829,7 @@ function New-TeamsAutoAttendant {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
         $null = (New-CsAutoAttendant @Parameters)
-        Write-Verbose -Message "SUCCESS: '$NameNormalised' Auto Attendant created with all Parameters"
+        Write-Information "Auto Attendant '$NameNormalised' created with all Parameters"
       }
       catch {
         Write-Error -Message "Error creating the Auto Attendant: $($_.Exception.Message)" -Category InvalidResult

@@ -160,6 +160,7 @@ function Set-TeamsResourceAccount {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -358,7 +359,7 @@ function Set-TeamsResourceAccount {
         if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -Displayname `"$DisplayNameNormalised`"")) {
           Write-Verbose -Message "'$CurrentDisplayName' Changing DisplayName to: $DisplayNameNormalised"
           $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -Displayname "$DisplayNameNormalised" -ErrorAction STOP)
-          Write-Verbose "SUCCESS: Displayname changed to '$DisplayName'" -Verbose
+          Write-Information "SUCCESS: Displayname changed to '$DisplayName'"
           $CurrentDisplayName = $Object.DisplayName
         }
       }
@@ -436,7 +437,7 @@ function Set-TeamsResourceAccount {
 
       if ($License -eq $CurrentLicense) {
         # No action required
-        Write-Verbose -Message "'$Name' License '$License' already assigned." -Verbose
+        Write-Information "'$Name' License '$License' already assigned."
         $IsLicensed = $true
       }
       # Verifying License is available
@@ -450,7 +451,7 @@ function Set-TeamsResourceAccount {
           try {
             if ($PSCmdlet.ShouldProcess("$UserPrincipalName", 'Set-TeamsUserLicense -Add PhoneSystemVirtualUser')) {
               $null = (Set-TeamsUserLicense -Identity $UserPrincipalName -Add $License -ErrorAction STOP)
-              Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+              Write-Information "'$Name' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
           }
@@ -464,7 +465,7 @@ function Set-TeamsResourceAccount {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
             $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-            Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+            Write-Information "'$Name' License assignment - '$License' SUCCESS"
             $IsLicensed = $true
           }
         }
@@ -563,14 +564,14 @@ function Set-TeamsResourceAccount {
             if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
               # Set in VoiceApplicationInstance
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
-                Write-Verbose -Message "'$Name' Number '$Number' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans" -Verbose
+                Write-Information "'$Name' Number '$Number' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans"
                 $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $E164Number -ErrorAction STOP)
               }
             }
             else {
               # Set in ApplicationInstance
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
-                Write-Verbose -Message "'$Name' Number '$E164Number' not found in Tenant, assuming provisioning for: Direct Routing" -Verbose
+                Write-Information "'$Name' Number '$E164Number' not found in Tenant, assuming provisioning for: Direct Routing"
                 $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $E164Number -ErrorAction STOP)
               }
             }

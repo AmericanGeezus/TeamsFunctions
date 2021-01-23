@@ -13,56 +13,52 @@ Connect to AzureAd, Teams and SkypeOnline and optionally also to Exchange
 ## SYNTAX
 
 ```
-Connect-Me [-AccountId] <String> [-AzureAD] [-MicrosoftTeams] [-SkypeOnline] [-ExchangeOnline]
- [-OverrideAdminDomain <String>] [-NoFeedback] [<CommonParameters>]
+Connect-Me [-AccountId] <String> [-ExchangeOnline] [-OverrideAdminDomain <String>] [-NoFeedback]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 One function to connect them all.
-  This function solves the requirement for individual authentication prompts for
-  AzureAD and MicrosoftTeams, SkypeOnline (and optionally also to ExchangeOnline) when multiple connections are required.
-For AzureAD, no particular role is needed as GET-commands are available without a role.
-For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin)
-For SkypeOnline, the Skype for Business Legacy Administrator Roles is required
-Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
-Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
-  By default SkypeOnline and AzureAD are selected (without parameters).
-  Combine as desired, if Parameters are specified, only connections to these services are established.
-  Available: AzureAD, MicrosoftTeams, SkypeOnline and ExchangeOnline
-  Without parameters, connections are established to AzureAd and SkypeOnline/MicrosoftTeams
+  This CmdLet solves the requirement for individual authentication prompts for AzureAD, MicrosoftTeams, SkypeOnline
+  (and optionally also to ExchangeOnline) when multiple connections are required.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Connect-Me admin@domain.com
+Connect-Me [-AccountId] admin@domain.com
 ```
 
-Connects to AzureAD and Teams (SkypeOnline) prompting ONCE for a Password for 'admin@domain.com'
+Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
 
 ### EXAMPLE 2
 ```
-Connect-Me -AccountId admin@domain.com -SkypeOnline -AzureAD -MicrosoftTeams
+Connect-Me -AccountId admin@domain.com -NoFeedBack
 ```
 
-Connects to AzureAD and Teams (SkypeOnline) & MicrosoftTeams prompting ONCE for a Password for 'admin@domain.com'
+Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
+  If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
+  Does not display Session Information Object at the end - This is useful if called by other functions.
 
 ### EXAMPLE 3
 ```
-Connect-Me -AccountId admin@domain.com -SkypeOnline -ExchangeOnline
+Connect-Me -AccountId admin@domain.com -ExchangeOnline
 ```
 
-Connects to Teams (SkypeOnline) and ExchangeOnline prompting ONCE for a Password for 'admin@domain.com'
+Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
+  Also connects to ExchangeOnline
 
 ### EXAMPLE 4
 ```
-Connect-Me -AccountId admin@domain.com -SkypeOnline -OverrideAdminDomain domain.co.uk
+Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicrosoft.com
 ```
 
-Connects to Teams (SkypeOnline) prompting ONCE for a Password for 'admin@domain.com' using the explicit OverrideAdminDomain domain.co.uk
+Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
+  The OverrideAdminDomin is queried from the AzureAd Tenant once the connection has been established.
+  If used explicitly, this will use the provided OverrideAdminDomain
 
 ## PARAMETERS
 
@@ -78,58 +74,6 @@ Aliases: Username
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -AzureAD
-Optional.
-Connects to Azure Active Directory (AAD).
-Requires no Office 365 Admin roles (Read-only access to AzureAD)
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: AAD
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -MicrosoftTeams
-Optional.
-Connects to MicrosoftTeams.
-Requires Office 365 Admin role for Teams, e.g.
-Microsoft Teams Service Administrator
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: Teams
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SkypeOnline
-Optional.
-Connects to SkypeOnline.
-Requires Office 365 Admin role Skype for Business Legacy Administrator
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: SfBO
-
-Required: False
-Position: Named
-Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -153,9 +97,7 @@ Accept wildcard characters: False
 
 ### -OverrideAdminDomain
 Optional.
-Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.
-  NOTE: The OverrideAdminDomain is handled by Connect-SkypeOnline (prompts if no connection can be established)
-  Using the Parameter here is using it explicitly
+Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.
 
 ```yaml
 Type: String
@@ -194,7 +136,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
-The base command (without any )
+This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams, SkypeOnline and ExchangeOnline
+Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets)
+For AzureAD, no particular role is needed for connection and query.
+Get-CmdLets are available without an Admin-role.
+For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator)
+For SkypeOnline, the Skype for Business Legacy Administrator Roles is required to connect, a Teams Admin role to action.
+Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
+Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
 
 ## RELATED LINKS
 

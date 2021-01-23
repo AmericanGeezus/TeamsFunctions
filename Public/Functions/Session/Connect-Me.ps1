@@ -113,7 +113,7 @@ function Connect-Me {
 
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
-    if (-not $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -144,7 +144,7 @@ function Connect-Me {
     $Operation = 'Loading Modules'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation" -Verbose
+    Write-Verbose -Message "$Status - $Operation"
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
 
     # Modules
@@ -167,30 +167,28 @@ function Connect-Me {
     $Operation = 'Determining Capabilities'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation" -Verbose
+    Write-Verbose -Message "$Status - $Operation"
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
       Write-Verbose -Message 'Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366'
-      Write-Verbose -Message 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher' -Verbose
+      Write-Information 'INFO: Module MicrosoftTeams not installed. Please install v1.1.6 or higher'
       Write-Error -Message 'Module missing. Please install MicrosoftTeams or SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
     }
     elseif ( $TeamsModule.Version -lt '1.1.6' -and -not $SkypeModule ) {
       try {
-        Write-Verbose -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6' -Verbose
+        Write-Warning -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6'
         Update-Module MicrosoftTeams -Force -ErrorAction Stop
         $TeamsModule = Get-NewestModule MicrosoftTeams
-        Import-Module MicrosoftTeams -MinimumVersion 1.1.6 -Force -Global
+        Assert-Module MicrosoftTeams
       }
       catch {
-        Write-Verbose -Message 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher' -Verbose
+        Write-Information 'INFO: Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher'
         Write-Error -Message 'Module outdated. Please update Module MicrosoftTeams or install SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
       }
     }
     elseif ( $TeamsModule.Version -ge '1.1.6' -and -not $SkypeModule ) {
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
-      if (-not (Get-Module MicrosoftTeams)) {
-        Import-Module MicrosoftTeams -Verbose:$false #-Force -Global
-      }
+      Assert-Module MicrosoftTeams
     }
     elseif ( $SkypeModule ) {
       if ($SkypeModule.Version.Major -ne 7) {
@@ -200,7 +198,7 @@ function Connect-Me {
         Write-Warning -Message 'Module SkypeOnlineConnector is deprecated. Please switch to using MicrosoftTeams soon'
         Remove-Module MicrosoftTeams -ErrorAction SilentlyContinue -Verbose:$false
         if (-not (Get-Module SkypeOnlineConnector)) {
-          Import-Module SkypeOnlineConnector -Verbose:$false #-Force -Global
+          Import-Module SkypeOnlineConnector -Verbose:$false -ErrorAction Stop
         }
       }
     }
@@ -211,7 +209,7 @@ function Connect-Me {
       $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
       $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
       if ( $CsOnlineUsername ) {
-        Write-Information 'Command '$Command' - Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first' -InformationAction Continue
+        Write-Information 'Command '$Command' - Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first'
       }
       else {
         Write-Information 'Command '$Command' - Sessions are established with Module MicrosoftTeams: Seamless Single-Sign-on is not (yet) available.'
@@ -229,7 +227,7 @@ function Connect-Me {
       if ( $PIMavailable ) { $sMax++ }
     }
     catch {
-      Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command" -InformationAction Continue
+      Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
       Write-Verbose -Message 'AzureAd & MicrosoftTeams: Establishing a connection will work, though only GET-commands will be able to be executed'
       Write-Verbose -Message "SkypeOnline: Establishing a connection will fail if the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
     }
@@ -254,7 +252,7 @@ function Connect-Me {
 
     #region Connections
     $Status = 'Establishing Connection'
-    Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])" -InformationAction Continue
+    Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     if (-not $CsOnlineUsername) {
       # Employing new method - Connecting to AzureAd first, then validating Admin Roles, then to all other Services
       $ConnectionOrder = @('AzureAd', 'SkypeOnline') # , 'MicrosoftTeams')
@@ -271,7 +269,7 @@ function Connect-Me {
       $step++
       $Operation = $Service
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation" -Verbose
+      Write-Information "$Status - $Operation"
 
       $MeToTheO365ServiceParams.Service = $Service
       try {
@@ -327,12 +325,12 @@ function Connect-Me {
           Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
         }
         catch {
-          Write-Verbose -Message 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+          Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
           $PIMavailable = $false
         }
       }
       else {
-        Write-Verbose -Message 'Enable-AzureAdAdminrole - Module AzureAdPreview not installed. Privileged Identity Management functions not available'
+        Write-Verbose 'Enable-AzureAdAdminrole - Module AzureAdPreview not installed. Privileged Identity Management functions not available' -Verbose
       }
       #endregion
     }
@@ -346,8 +344,7 @@ function Connect-Me {
           $step++
           $Operation = 'SkypeOnline - Retrying Connection'
           Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "$Status - $Operation" -Verbose
-
+          Write-Information "$Status - $Operation"
           try {
             $MeToTheO365ServiceParams.Service = $Service
             if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
@@ -401,7 +398,7 @@ function Connect-Me {
         Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
       }
       catch {
-        Write-Verbose -Message 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+        Write-Information 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM'
         $PIMavailable = $false
       }
     }

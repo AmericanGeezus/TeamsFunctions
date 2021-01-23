@@ -35,7 +35,7 @@ function Assert-MicrosoftTeamsConnection {
 
     if (Test-MicrosoftTeamsConnection) {
       if ($stack.length -lt 3) {
-        Write-Verbose -Message '[ASSERT] MicrosoftTeams: Connected'
+        Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Connected'
       }
       return $(if ($Called) { $true })
     }

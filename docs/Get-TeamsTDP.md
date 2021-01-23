@@ -12,14 +12,8 @@ Lists all Tenant Dial Plans by Name
 
 ## SYNTAX
 
-### Identity (Default)
 ```
 Get-TeamsTDP [[-Identity] <String>] [<CommonParameters>]
-```
-
-### Filter
-```
-Get-TeamsTDP [-Filter <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -56,28 +50,13 @@ If not provided, lists Identities of all Tenant Dial Plans (except "Global")
 
 ```yaml
 Type: String
-Parameter Sets: Identity
+Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 1
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Filter
-Searches for all Tenant Dial Plans that contains the string.
-
-```yaml
-Type: String
-Parameter Sets: Filter
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

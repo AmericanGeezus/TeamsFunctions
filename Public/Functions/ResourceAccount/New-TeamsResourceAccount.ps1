@@ -155,6 +155,7 @@ function New-TeamsResourceAccount {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -255,7 +256,7 @@ function New-TeamsResourceAccount {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         $i = 0
         $iMax = 20
-        Write-Verbose -Message "Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)" -Verbose
+        Write-Information "Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
@@ -334,7 +335,7 @@ function New-TeamsResourceAccount {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add PhoneSystemVirtualUser')) {
               $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-              Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+              Write-Information "'$Name' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
           }
@@ -347,7 +348,7 @@ function New-TeamsResourceAccount {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
             $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-            Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'" -Verbose
+            Write-Information "'$Name' License assignment - '$License' SUCCESS"
             $IsLicensed = $true
           }
         }
@@ -400,7 +401,7 @@ function New-TeamsResourceAccount {
 
       # Assigning Telephone Number
       Write-Verbose -Message "'$Name' Processing Phone Number"
-      Write-Verbose -Message 'NOTE: Assigning a phone number might fail if the Object is not yet replicated' -Verbose
+      Write-Information 'INFO: Assigning a phone number might fail if the Object is not yet replicated'
       if (-not $IsLicensed) {
         Write-Host 'ERROR: A Phone Number can only be assigned to licensed objects.' -ForegroundColor Red
         Write-Host 'Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
@@ -499,7 +500,7 @@ function New-TeamsResourceAccount {
         PhoneNumber       = $ResourceAccount.PhoneNumber
       }
 
-      Write-Verbose -Message 'Resource Account Created:' -Verbose
+      Write-Information "Resource Account '$($ResourceAccountObject.UserPrincipalName)' created"
       if ($PSBoundParameters.ContainsKey('PhoneNumber') -and $IsLicensed -and $ResourceAccount.PhoneNumber -eq '') {
         Write-Warning -Message 'Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount to verify'
       }
