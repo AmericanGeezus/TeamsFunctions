@@ -171,26 +171,24 @@ function Connect-Me {
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
       Write-Verbose -Message 'Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366'
-      Write-Verbose -Message 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher' -Verbose
+      Write-Information 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher'
       Write-Error -Message 'Module missing. Please install MicrosoftTeams or SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
     }
     elseif ( $TeamsModule.Version -lt '1.1.6' -and -not $SkypeModule ) {
       try {
-        Write-Verbose -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6' -Verbose
+        Write-Warning -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6'
         Update-Module MicrosoftTeams -Force -ErrorAction Stop
         $TeamsModule = Get-NewestModule MicrosoftTeams
-        Import-Module MicrosoftTeams -MinimumVersion 1.1.6 -Force -Global
+        Assert-Module MicrosoftTeams
       }
       catch {
-        Write-Verbose -Message 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher' -Verbose
+        Write-Information 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher'
         Write-Error -Message 'Module outdated. Please update Module MicrosoftTeams or install SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
       }
     }
     elseif ( $TeamsModule.Version -ge '1.1.6' -and -not $SkypeModule ) {
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
-      if (-not (Get-Module MicrosoftTeams)) {
-        Import-Module MicrosoftTeams -Verbose:$false #-Force -Global
-      }
+      Assert-Module MicrosoftTeams
     }
     elseif ( $SkypeModule ) {
       if ($SkypeModule.Version.Major -ne 7) {
@@ -200,7 +198,7 @@ function Connect-Me {
         Write-Warning -Message 'Module SkypeOnlineConnector is deprecated. Please switch to using MicrosoftTeams soon'
         Remove-Module MicrosoftTeams -ErrorAction SilentlyContinue -Verbose:$false
         if (-not (Get-Module SkypeOnlineConnector)) {
-          Import-Module SkypeOnlineConnector -Verbose:$false #-Force -Global
+          Import-Module SkypeOnlineConnector -Verbose:$false -ErrorAction Stop
         }
       }
     }
@@ -327,12 +325,12 @@ function Connect-Me {
           Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
         }
         catch {
-          Write-Verbose -Message 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+          Write-Information 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM'
           $PIMavailable = $false
         }
       }
       else {
-        Write-Verbose -Message 'Enable-AzureAdAdminrole - Module AzureAdPreview not installed. Privileged Identity Management functions not available'
+        Write-Information 'Enable-AzureAdAdminrole - Module AzureAdPreview not installed. Privileged Identity Management functions not available'
       }
       #endregion
     }
@@ -401,7 +399,7 @@ function Connect-Me {
         Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
       }
       catch {
-        Write-Verbose -Message 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+        Write-Information 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM'
         $PIMavailable = $false
       }
     }

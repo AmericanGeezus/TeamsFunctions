@@ -64,6 +64,7 @@ function Remove-TeamsCallQueue {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
   } #begin
 
@@ -75,7 +76,7 @@ function Remove-TeamsCallQueue {
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
       $DNCounter++
       try {
-        Write-Verbose -Message 'The listed Queues are being removed:' -Verbose
+        Write-Information 'INFO: The listed Queues are being removed:'
         $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
         $QueueToRemove = $QueueToRemove | Where-Object Name -EQ "$DN"
 
@@ -84,7 +85,7 @@ function Remove-TeamsCallQueue {
           $Queues = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
           foreach ($Q in $QueueToRemove) {
             Write-Progress -Id 1 -Status "Removing Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $Queues * 100)
-            Write-Verbose -Message "Removing: '$($Q.Name)'" -Verbose
+            Write-Information "Removing Queue: '$($Q.Name)'"
             $QueueCounter++
             if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
               Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP

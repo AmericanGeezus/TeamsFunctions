@@ -76,6 +76,7 @@ function Find-TeamsUserVoiceRoute {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #region Defining Output Object
     class TFVoiceRouting {
@@ -165,7 +166,7 @@ function Find-TeamsUserVoiceRoute {
       if ($DialedNumber) {
         # Gently harmonising the Number if entered with unwanted characters (deliberately not using any of the Format-CmdLets)
         if ($DialedNumber.contains(' ') -or $DialedNumber.contains('(') -or $DialedNumber.contains(')') -or $DialedNumber.contains('-')) {
-          Write-Verbose -Message "User '$Id' - Number was normalised to remove special characters (parenthesis, dash and space) to allow correct translation" -Verbose
+          Write-Information "User '$Id' - Number was normalised to remove special characters (parenthesis, dash and space) to allow correct translation"
           $DialedNumber = $DialedNumber.replace('(', '').replace(')', '').replace('-', '').replace(' ', '')
         }
         elseif ($DialedNumber.contains('+')) {

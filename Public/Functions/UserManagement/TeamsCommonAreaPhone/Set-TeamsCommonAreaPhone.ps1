@@ -147,6 +147,7 @@ function Set-TeamsCommonAreaPhone {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -295,7 +296,7 @@ function Set-TeamsCommonAreaPhone {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
               $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-              Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+              Write-Information "'$Name' License assignment - '$License' SUCCESS"
             }
           }
           catch {
@@ -307,7 +308,7 @@ function Set-TeamsCommonAreaPhone {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
             $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-            Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'" -Verbose
+            Write-Information "'$Name' License assignment - '$License' SUCCESS"
           }
         }
         catch {

@@ -106,6 +106,7 @@ function New-TeamsCallableEntity {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
   } #begin
 
@@ -118,7 +119,7 @@ function New-TeamsCallableEntity {
     # Normalising TelephoneNumber
     If ($Identity -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
       $Identity = Format-StringForUse $Identity -As E164 | Format-StringForUse -As LineURI
-      Write-Verbose -Message "Callable Entity Type matches Phone Number - Number normalised to '$Identity'" -Verbose
+      Write-Verbose -Message "Callable Entity Type matches Phone Number - Number normalised to '$Identity'"
     }
 
     # Determining Callable Entity
@@ -159,7 +160,7 @@ function New-TeamsCallableEntity {
     # EnableTranscription
     if ( $EnableTranscription ) {
       if ($CEObject.Type -eq 'SharedVoicemail') {
-        Write-Verbose -Message 'EnableTranscription - Transcription is activated for SharedVoicemail'
+        Write-Information 'EnableTranscription - Transcription is activated for SharedVoicemail'
         $Parameters += @{'EnableTranscription' = $true }
       }
       else {
@@ -177,6 +178,7 @@ function New-TeamsCallableEntity {
 
     if ($PSCmdlet.ShouldProcess("$Identity", 'New-CsAutoAttendantCallableEntity')) {
       New-CsAutoAttendantCallableEntity @Parameters
+      Write-Verbose -Message "$($MyInvocation.MyCommand) - created."
     }
   }
 

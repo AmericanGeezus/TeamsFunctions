@@ -67,6 +67,11 @@ function Get-PublicHolidayList {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     # Handling Year
     if (-not $PSBoundParameters.ContainsKey('Year')) {
       $Today = Get-Date
@@ -75,7 +80,7 @@ function Get-PublicHolidayList {
       If ($Today.Month -eq 12) {
         $Year++
       }
-      Write-Verbose -Message "Parameter Year not provided, as it is $($matches[1]), using year: $Year" -Verbose
+      Write-Information "Parameter Year not provided, as it is $($matches[1]), using year: $Year"
     }
 
   } #begin

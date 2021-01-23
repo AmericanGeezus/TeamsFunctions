@@ -135,6 +135,7 @@ function Connect-SkypeOnline {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     $Parameters = $null
     $Parameters += @{'ErrorAction' = 'Stop' }
@@ -146,18 +147,18 @@ function Connect-SkypeOnline {
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
       Write-Verbose -Message 'Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366'
-      Write-Verbose -Message 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher' -Verbose
+      Write-Information 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher'
       Write-Error -Message 'Module missing. Please install MicrosoftTeams or SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
     }
     elseif ( $TeamsModule.Version -lt '1.1.6' -and -not $SkypeModule ) {
       try {
-        Write-Verbose -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6' -Verbose
+        Write-Warning -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6'
         Update-Module MicrosoftTeams -Force -ErrorAction Stop
         $TeamsModule = Get-NewestModule MicrosoftTeams
         Assert-Module MicrosoftTeams
       }
       catch {
-        Write-Verbose -Message 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher' -Verbose
+        Write-Information 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher'
         Write-Error -Message 'Module outdated. Please update Module MicrosoftTeams or install SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
       }
     }

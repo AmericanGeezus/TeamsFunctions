@@ -182,6 +182,7 @@ function New-TeamsAutoAttendantMenu {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Preparing Splatting Object
     $Parameters = $null
@@ -239,7 +240,7 @@ function New-TeamsAutoAttendantMenu {
                 Write-Error -Message "Menu Option - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenuOption or New-CsAutoAttendantMenuOption" -ErrorAction Stop
               }
             }
-             #>
+            #>
           }
 
           'MenuOptions2' {
@@ -266,16 +267,16 @@ function New-TeamsAutoAttendantMenu {
                     }
 
                     if ($MenuOptionToAdd) {
-                      Write-Verbose -Message "Menu Option 'Press $Option' to '$Target' - OK" -Verbose
+                      Write-Information "MenuOptions - Creating Option 'Press $Option' to '$Target' - OK"
                       [void]$CreatedMenuOptions.Add($MenuOptionToAdd)
                     }
                   }
                   catch {
-                    Write-Warning -Message "Menu Option 'Press $Option' to '$Target' - Creation unsuccessful! Omitting Call Target"
+                    Write-Warning -Message "MenuOptions - Creating Option 'Press $Option' to '$Target' - Creation unsuccessful! Omitting Call Target"
                   }
                 }
                 else {
-                  Write-Verbose -Message "Menu Option 'Press $Option' not provided, empty or NULL - omitted" -Verbose
+                  Write-Verbose -Message "MenuOptions - Creating Option 'Press $Option' not provided, is empty or NULL - OK (omitted)" -Verbose
                 }
 
                 $Option++

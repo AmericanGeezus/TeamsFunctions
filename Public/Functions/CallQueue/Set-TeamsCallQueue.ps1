@@ -339,6 +339,7 @@ function Set-TeamsCallQueue {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -358,10 +359,10 @@ function Set-TeamsCallQueue {
       $Language = $($LanguageId.Split('-')[0]).ToLower() + '-' + $($LanguageId.Split('-')[1]).ToUpper()
       Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
       if ((Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported) {
-        Write-Verbose "LanguageId '$Language' - Voice Responses supported"
+        Write-Information "LanguageId '$Language' - Voice Responses supported"
       }
       else {
-        Write-Warning "LanguageId '$Language' - Voice Responses are not supported"
+        Write-Information "LanguageId '$Language' - Voice Responses are not supported"
       }
     }
 
@@ -1074,7 +1075,7 @@ function Set-TeamsCallQueue {
           # Asserting Object - Validation of Type
           $Assertion = Assert-TeamsCallableEntity -Identity "$User" -ErrorAction SilentlyContinue
           if ( $Assertion ) {
-            Write-Verbose -Message "User '$User' will be added to CallQueue" -Verbose
+            Write-Information "User '$User' will be added to CallQueue"
             [void]$UserIdList.Add($CallTarget.Identity)
           }
           else {
@@ -1089,9 +1090,8 @@ function Set-TeamsCallQueue {
         }
       }
 
-      # NEW: Processing always / SET: Processing only when specified
-      Write-Verbose -Message "'$NameNormalised' Users: Adding $($UserIdList.Count) Users as Agents to the Queue" -Verbose
       if ($UserIdList.Count -gt 0) {
+        Write-Verbose -Message "'$NameNormalised' Users: Adding $($UserIdList.Count) Users as Agents to the Queue" -Verbose
         $Parameters += @{'Users' = @($UserIdList) }
       }
     }
@@ -1110,7 +1110,7 @@ function Set-TeamsCallQueue {
         $DLObject = $null
         $DLObject = Get-TeamsCallableEntity -Identity "$DL"
         if ($DLObject) {
-          Write-Verbose -Message "Group '$DL' will be added to the Call Queue" -Verbose
+          Write-Information "Group '$DL' will be added to the Call Queue"
           # Test whether Users in DL are enabled for EV and/or licensed?
 
           # Add to List
@@ -1120,12 +1120,11 @@ function Set-TeamsCallQueue {
           Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
         }
       }
-      # NEW: Processing always / SET: Processing only when specified
-      Write-Verbose -Message "'$NameNormalised' Groups: Adding $($DLIdList.Count) Groups to the Queue" -Verbose
+
       if ($DLIdList.Count -gt 0) {
+        Write-Verbose -Message "'$NameNormalised' Groups: Adding $($DLIdList.Count) Groups to the Queue" -Verbose
         $Parameters += @{'DistributionLists' = @($DLIdList) }
-        Write-Verbose -Message 'NOTE: Group members are parsed by the subsystem' -Verbose
-        Write-Verbose -Message 'Currently no verification steps are taken against Licensing or EV-Enablement of Members' -Verbose
+        Write-Information 'INFO: Group members are parsed by the subsystem and are not validated regarding Licensing or EV-Enablement'
       }
     }
     #endregion

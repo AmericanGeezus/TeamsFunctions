@@ -101,6 +101,7 @@ function Get-TeamsCallQueue {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
   } #begin
 
@@ -109,7 +110,7 @@ function Get-TeamsCallQueue {
 
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
-      Write-Verbose -Message 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString' -Verbose
+      Write-Information 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString'
       Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object Name
       return
     }

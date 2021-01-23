@@ -36,7 +36,7 @@ function Assert-AzureADConnection {
       #$TenantDomain = $((Get-AzureADCurrentSessionInfo -WarningAction SilentlyContinue).TenantDomain)
       #Write-Verbose -Message "[ASSERT] AzureAD(v2): Valid session found - Tenant: $TenantDomain"
       if ($stack.length -lt 3) {
-        Write-Verbose -Message '[ASSERT] AzureAD(v2): Connected'
+        Write-Verbose -Message '[ASSERT] AzureAD(v2) Session Connected'
       }
       return $(if ($Called) { $true })
     }

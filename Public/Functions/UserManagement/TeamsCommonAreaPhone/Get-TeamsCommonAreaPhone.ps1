@@ -101,9 +101,8 @@ function Get-TeamsCommonAreaPhone {
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -202,7 +201,7 @@ function Get-TeamsCommonAreaPhone {
           Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy is not set. The Global policy does not have the Sign-in mode set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please assign a TeamsIpPhonePolicy or change the Global Policy!"
         }
         else {
-          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy is not set, but Global policy has set the Sign-in mode set to 'CommonAreaPhoneSignIn'." -Verbose
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy is not set, but Global policy has set the Sign-in mode set to 'CommonAreaPhoneSignIn'."
         }
       }
       else {
@@ -224,7 +223,7 @@ function Get-TeamsCommonAreaPhone {
           Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy is not set. The Global policy does not Allow Private Calling. To enable ANY calling functionality for this phone, please assign a TeamsCallingPolicy or change the Global Policy!"
         }
         else {
-          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy is not set, but Global policy does Allow Private Calling." -Verbose
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy is not set, but Global policy does Allow Private Calling."
         }
       }
       else {
@@ -246,7 +245,7 @@ function Get-TeamsCommonAreaPhone {
           Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy is not set. The Global policy does not allow Call Parking. To enable Call Parking for Common Area phones, please assign a TeamsCallParkPolicy or change the Global Policy!"
         }
         else {
-          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy is not set, but Global policy does allow Call Parking." -Verbose
+          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy is not set, but Global policy does allow Call Parking."
         }
       }
       else {

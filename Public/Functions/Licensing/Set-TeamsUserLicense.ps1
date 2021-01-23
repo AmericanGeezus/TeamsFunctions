@@ -169,6 +169,7 @@ function Set-TeamsUserLicense {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Loading License Array
     if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
@@ -211,7 +212,7 @@ function Set-TeamsUserLicense {
               -or 'CommonAreaPhone' -in $Add -or 'PhoneSystemVirtualUser' -in $Add`
               -or 'PhoneSystem' -in $Add -or 'AudioConferencing' -in $Add)) {
           Write-Warning -Message 'License combination not verified. Errors due to incompatibilities may occur!'
-          Write-Verbose -Message 'Please check yourself which Licenses may not be assigned together' -Verbose
+          Write-Information 'TODO: Please check yourself which Licenses may not be assigned together'
         }
         #endregion
 

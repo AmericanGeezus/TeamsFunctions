@@ -116,6 +116,11 @@ function Enable-AzureAdAdminRole {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     # Importing Module
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
     try {
@@ -185,7 +190,7 @@ function Enable-AzureAdAdminRole {
     # Identity is not mandatory, using connected Session
     if ( -not $PSBoundParameters.ContainsKey('Identity') ) {
       $Identity = (Get-AzureADCurrentSessionInfo).Account.Id
-      Write-Verbose -Message "No Identity Provided, using user currently connected to AzureAd: '$Identity'" -Verbose
+      Write-Information "No Identity Provided, using user currently connected to AzureAd: '$Identity'"
     }
 
   } #begin
@@ -236,7 +241,7 @@ function Enable-AzureAdAdminRole {
           Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
         }
         else {
-          Write-Verbose -Message "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles" -Verbose
+          Write-Information "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles"
         }
 
         Continue

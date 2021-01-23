@@ -156,6 +156,7 @@ function New-TeamsCommonAreaPhone {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -266,7 +267,7 @@ function New-TeamsCommonAreaPhone {
 
         $i = 0
         $iMax = 20
-        Write-Verbose -Message "Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)" -Verbose
+        Write-Information "Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
@@ -289,7 +290,7 @@ function New-TeamsCommonAreaPhone {
     }
     catch {
       # Catching anything
-      Write-Host "ERROR:   Creation failed: $($_.Exception.Message)" -ForegroundColor Red
+      Write-Error "Common Area Phone '$Name' - Creation failed: $($_.Exception.Message)" -ForegroundColor Red
       return
     }
     #endregion
@@ -323,7 +324,7 @@ function New-TeamsCommonAreaPhone {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
             $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-            Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'"
+            Write-Information "'$Name' License assignment - '$License' SUCCESS"
           }
         }
         catch {
@@ -335,7 +336,7 @@ function New-TeamsCommonAreaPhone {
       try {
         if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
           $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-          Write-Verbose -Message "'$Name' SUCCESS - License Assigned: '$License'" -Verbose
+          Write-Information "'$Name' License assignment - '$License' SUCCESS"
         }
       }
       catch {
@@ -354,21 +355,21 @@ function New-TeamsCommonAreaPhone {
       Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
     }
     else {
-      Write-Verbose -Message 'No IP Phone Policy supplied - Global Policy is in effect!' -Verbose
+      Write-Verbose -Message 'No IP Phone Policy supplied - Global Policy is in effect!'
     }
 
     if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
       Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
     }
     else {
-      Write-Verbose -Message 'No Calling Policy supplied - Global Policy is in effect!' -Verbose
+      Write-Verbose -Message 'No Calling Policy supplied - Global Policy is in effect!'
     }
 
     if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
       Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
     }
     else {
-      Write-Verbose -Message 'No Call Park Policy supplied - Global Policy is in effect!' -Verbose
+      Write-Verbose -Message 'No Call Park Policy supplied - Global Policy is in effect!'
     }
     #endregion
 

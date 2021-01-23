@@ -47,6 +47,11 @@ function Enable-TeamsUserForEnterpriseVoice {
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
@@ -115,7 +120,7 @@ function Enable-TeamsUserForEnterpriseVoice {
         }
       }
       else {
-        Write-Verbose -Message "User '$Id' Enterprise Voice Status: Not enabled, trying to enable" -Verbose
+        Write-Information "User '$Id' Enterprise Voice Status: Not enabled, trying to enable"
         try {
           if ($Force -or $PSCmdlet.ShouldProcess("$Id", 'Enabling User for EnterpriseVoice')) {
             $null = Set-CsUser $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
@@ -145,7 +150,6 @@ function Enable-TeamsUserForEnterpriseVoice {
           }
         }
         catch {
-          Write-Verbose -Message "User '$Id' Enterprise Voice Status: ERROR" -Verbose
           $Message = "User '$Id' - Error enabling user for Enterprise Voice: $($_.Exception.Message)"
           if ($Called) {
             Write-Warning -Message $Message

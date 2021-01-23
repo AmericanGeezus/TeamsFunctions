@@ -5,7 +5,7 @@
 # Status:   PreLive
 
 
-
+#FIXME Check application. PhoneSystem on E5 should be found but returns "not present!" Add Warning if it should be there (baseline)
 
 function Set-AzureAdUserLicenseServicePlan {
   <#
@@ -111,6 +111,7 @@ function Set-AzureAdUserLicenseServicePlan {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
 
     # Validating input
@@ -204,7 +205,8 @@ function Set-AzureAdUserLicenseServicePlan {
               }
 
               if ( -not $ServicePlanToEnable) {
-                Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' not present" -Verbose
+                #FIXME Add baseline and warning if it should be present!
+                Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
 
@@ -234,7 +236,7 @@ function Set-AzureAdUserLicenseServicePlan {
             }
 
             if ( $EnabledPlans -eq 0 ) {
-              Write-Verbose -Message "User '$Identity' - License '$LicenseName' - No Service Plans to enable"
+              Write-Information "User '$Identity' - License '$LicenseName' - No Service Plans to enable"
               #continue
             }
           }
@@ -253,7 +255,8 @@ function Set-AzureAdUserLicenseServicePlan {
               }
 
               if ( -not $ServicePlanToDisable) {
-                Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' not present" -Verbose
+                #FIXME - Not correct
+                Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
 
@@ -273,7 +276,7 @@ function Set-AzureAdUserLicenseServicePlan {
             }
 
             if ( $DisabledPlans -eq 0 ) {
-              Write-Verbose -Message "User '$Identity' - License '$LicenseName' - No Service Plans to disable"
+              Write-Information "User '$Identity' - License '$LicenseName' - No Service Plans to disable"
               #continue
             }
 
@@ -302,6 +305,8 @@ function Set-AzureAdUserLicenseServicePlan {
           Write-Verbose -Message "'$ID' - Setting Licenses"
           Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $License
           Write-Verbose -Message "'$ID' - Setting Licenses: Done"
+
+          #TODO Add PassThru!
         }
       }
       #endregion

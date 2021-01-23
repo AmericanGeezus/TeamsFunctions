@@ -129,6 +129,7 @@ function New-TeamsAutoAttendantSchedule {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
   } #begin
 
@@ -163,7 +164,7 @@ function New-TeamsAutoAttendantSchedule {
     #region Defining $TimeFrame
     if ($PSBoundParameters.ContainsKey('DateTimeRanges')) {
       Write-Verbose -Message '[PROCESS] Processing DateTimeRanges'
-      Write-Verbose -Message 'Please note, the DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care' -Verbose
+      Write-Information 'INFO: The DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care'
       $TimeFrame = @($DateTimeRanges)
     }
     else {
