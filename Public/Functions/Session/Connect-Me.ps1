@@ -144,7 +144,7 @@ function Connect-Me {
     $Operation = 'Loading Modules'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation" -Verbose
+    Write-Verbose -Message "$Status - $Operation"
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
 
     # Modules
@@ -167,11 +167,11 @@ function Connect-Me {
     $Operation = 'Determining Capabilities'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation" -Verbose
+    Write-Verbose -Message "$Status - $Operation"
 
     if ( -not $TeamsModule -and -not $SkypeModule ) {
       Write-Verbose -Message 'Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366'
-      Write-Information 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher'
+      Write-Information 'INFO: Module MicrosoftTeams not installed. Please install v1.1.6 or higher'
       Write-Error -Message 'Module missing. Please install MicrosoftTeams or SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
     }
     elseif ( $TeamsModule.Version -lt '1.1.6' -and -not $SkypeModule ) {
@@ -182,7 +182,7 @@ function Connect-Me {
         Assert-Module MicrosoftTeams
       }
       catch {
-        Write-Information 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher'
+        Write-Information 'INFO: Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher'
         Write-Error -Message 'Module outdated. Please update Module MicrosoftTeams or install SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
       }
     }
@@ -269,7 +269,7 @@ function Connect-Me {
       $step++
       $Operation = $Service
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation" -Verbose
+      Write-Information "$Status - $Operation"
 
       $MeToTheO365ServiceParams.Service = $Service
       try {
@@ -325,12 +325,12 @@ function Connect-Me {
           Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
         }
         catch {
-          Write-Information 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM'
+          Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
           $PIMavailable = $false
         }
       }
       else {
-        Write-Information 'Enable-AzureAdAdminrole - Module AzureAdPreview not installed. Privileged Identity Management functions not available'
+        Write-Verbose 'Enable-AzureAdAdminrole - Module AzureAdPreview not installed. Privileged Identity Management functions not available' -Verbose
       }
       #endregion
     }
@@ -344,8 +344,7 @@ function Connect-Me {
           $step++
           $Operation = 'SkypeOnline - Retrying Connection'
           Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message "$Status - $Operation" -Verbose
-
+          Write-Information "$Status - $Operation"
           try {
             $MeToTheO365ServiceParams.Service = $Service
             if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
