@@ -151,6 +151,7 @@ function Set-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
 
     # Initialising $ErrorLog
@@ -205,13 +206,14 @@ function Set-TeamsUserVoiceConfig {
         Write-Verbose -Message "User '$User' PhoneSystem License is assigned - Validating PhoneSystemStatus"
         if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
           try {
+            Write-Information "User '$User' PhoneSystem License is assigned - ServicePlan PhoneSystem disabled - Trying to activate"
             Set-AzureAdLicenseServicePlan -Identity $CsUser.UserPrincipalName -Enable MCOEV -ErrorAction Stop
             if (-not (Get-TeamsUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
               throw
             }
           }
           catch {
-            throw "User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status  must be 'Success'"
+            throw "User '$User' is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status must be 'Success'"
           }
         }
 

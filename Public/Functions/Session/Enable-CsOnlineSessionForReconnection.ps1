@@ -28,6 +28,12 @@ function Enable-CsOnlineSessionForReconnection {
     Session Reconnection
   .FUNCTIONALITY
     Enables the Skype Online Session to reconnect
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Enable-CsOnlineSessionForReconnection
+  .LINK
+    Connect-SkypeOnline
   #>
 
   [CmdletBinding()]
@@ -126,4 +132,8 @@ function Enable-CsOnlineSessionForReconnection {
     }
 
   }
-}#Enable-CsOnlineSessionForReconnection
+
+  end {
+    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
+  } #end
+} # Enable-CsOnlineSessionForReconnection

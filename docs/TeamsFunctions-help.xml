@@ -102,6 +102,141 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Assert-Module</command:name>
+      <command:verb>Assert</command:verb>
+      <command:noun>Module</command:noun>
+      <maml:description>
+        <maml:para>Tests whether a Module is loaded</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Tests whether a specific Module is loaded</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Assert-Module</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>Module</maml:name>
+          <maml:description>
+            <maml:para>Names of one or more Modules to assert</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>UpToDate</maml:name>
+          <maml:description>
+            <maml:para>Verifies Version installed is equal to the latest found online</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PreRelease</maml:name>
+          <maml:description>
+            <maml:para>Verifies Version installed is equal to the latest prerelease version found online</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>Module</maml:name>
+        <maml:description>
+          <maml:para>Names of one or more Modules to assert</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>UpToDate</maml:name>
+        <maml:description>
+          <maml:para>Verifies Version installed is equal to the latest found online</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PreRelease</maml:name>
+        <maml:description>
+          <maml:para>Verifies Version installed is equal to the latest prerelease version found online</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Boolean</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Assert-Module -Module ModuleName</dev:code>
+        <dev:remarks>
+          <maml:para>Will Return $TRUE if the Module 'ModuleName' is installed and loaded</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Assert-Module -Module ModuleName -UpToDate</dev:code>
+        <dev:remarks>
+          <maml:para>Will Return $TRUE if the Module 'ModuleName' is installed in the latest release version and loaded</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Assert-Module -Module ModuleName -UpToDate -PreRelease</dev:code>
+        <dev:remarks>
+          <maml:para>Will Return $TRUE if the Module 'ModuleName' is installed in the latest pre-release version and loaded</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Assert-SkypeOnlineConnection</command:name>
       <command:verb>Assert</command:verb>
       <command:noun>SkypeOnlineConnection</command:noun>
@@ -395,7 +530,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>One function to connect them all.   This function solves the requirement for individual authentication prompts for   AzureAD and MicrosoftTeams, SkypeOnline (and optionally also to ExchangeOnline) when multiple connections are required. For AzureAD, no particular role is needed as GET-commands are available without a role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Service Administrator or Teams Communication Admin) For SkypeOnline, the Skype for Business Legacy Administrator Roles is required Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.   By default SkypeOnline and AzureAD are selected (without parameters).   Combine as desired, if Parameters are specified, only connections to these services are established.   Available: AzureAD, MicrosoftTeams, SkypeOnline and ExchangeOnline   Without parameters, connections are established to AzureAd and SkypeOnline/MicrosoftTeams</maml:para>
+      <maml:para>One function to connect them all.   This CmdLet solves the requirement for individual authentication prompts for AzureAD, MicrosoftTeams, SkypeOnline   (and optionally also to ExchangeOnline) when multiple connections are required.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -412,39 +547,6 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="AAD">
-          <maml:name>AzureAD</maml:name>
-          <maml:description>
-            <maml:para>Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)</maml:para>
-          </maml:description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Teams">
-          <maml:name>MicrosoftTeams</maml:name>
-          <maml:description>
-            <maml:para>Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator</maml:para>
-          </maml:description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="SfBO">
-          <maml:name>SkypeOnline</maml:name>
-          <maml:description>
-            <maml:para>Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator</maml:para>
-          </maml:description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Exchange">
           <maml:name>ExchangeOnline</maml:name>
           <maml:description>
@@ -459,7 +561,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>OverrideAdminDomain</maml:name>
           <maml:description>
-            <maml:para>Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.   NOTE: The OverrideAdminDomain is handled by Connect-SkypeOnline (prompts if no connection can be established)   Using the Parameter here is using it explicitly</maml:para>
+            <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -494,42 +596,6 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="AAD">
-        <maml:name>AzureAD</maml:name>
-        <maml:description>
-          <maml:para>Optional. Connects to Azure Active Directory (AAD). Requires no Office 365 Admin roles (Read-only access to AzureAD)</maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Teams">
-        <maml:name>MicrosoftTeams</maml:name>
-        <maml:description>
-          <maml:para>Optional. Connects to MicrosoftTeams. Requires Office 365 Admin role for Teams, e.g. Microsoft Teams Service Administrator</maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="SfBO">
-        <maml:name>SkypeOnline</maml:name>
-        <maml:description>
-          <maml:para>Optional. Connects to SkypeOnline. Requires Office 365 Admin role Skype for Business Legacy Administrator</maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Exchange">
         <maml:name>ExchangeOnline</maml:name>
         <maml:description>
@@ -545,7 +611,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>OverrideAdminDomain</maml:name>
         <maml:description>
-          <maml:para>Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.   NOTE: The OverrideAdminDomain is handled by Connect-SkypeOnline (prompts if no connection can be established)   Using the Parameter here is using it explicitly</maml:para>
+          <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -571,36 +637,36 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>The base command (without any )</maml:para>
+        <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams, SkypeOnline and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) For SkypeOnline, the Skype for Business Legacy Administrator Roles is required to connect, a Teams Admin role to action. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Connect-Me admin@domain.com</dev:code>
+        <dev:code>Connect-Me [-AccountId] admin@domain.com</dev:code>
         <dev:remarks>
-          <maml:para>Connects to AzureAD and Teams (SkypeOnline) prompting ONCE for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams</maml:para>
+          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Connect-Me -AccountId admin@domain.com -SkypeOnline -AzureAD -MicrosoftTeams</dev:code>
+        <dev:code>Connect-Me -AccountId admin@domain.com -NoFeedBack</dev:code>
         <dev:remarks>
-          <maml:para>Connects to AzureAD and Teams (SkypeOnline) &amp; MicrosoftTeams prompting ONCE for a Password for 'admin@domain.com'</maml:para>
+          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   Does not display Session Information Object at the end - This is useful if called by other functions.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Connect-Me -AccountId admin@domain.com -SkypeOnline -ExchangeOnline</dev:code>
+        <dev:code>Connect-Me -AccountId admin@domain.com -ExchangeOnline</dev:code>
         <dev:remarks>
-          <maml:para>Connects to Teams (SkypeOnline) and ExchangeOnline prompting ONCE for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams</maml:para>
+          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   Also connects to ExchangeOnline</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
-        <dev:code>Connect-Me -AccountId admin@domain.com -SkypeOnline -OverrideAdminDomain domain.co.uk</dev:code>
+        <dev:code>Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicrosoft.com</dev:code>
         <dev:remarks>
-          <maml:para>Connects to Teams (SkypeOnline) prompting ONCE for a Password for 'admin@domain.com' using the explicit OverrideAdminDomain domain.co.uk   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams</maml:para>
+          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   The OverrideAdminDomin is queried from the AzureAd Tenant once the connection has been established.   If used explicitly, this will use the provided OverrideAdminDomain</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -653,7 +719,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>The Connect-SkypeOnline cmdlet connects an authenticated account to use for Microsoft Teams (SkypeOnline) cmdlet requests. Establishing a remote PowerShell session to Microsoft Teams (SkypeOnline) A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect To execute commands against Teams, one of the Teams Admin roles is required.</maml:para>
+      <maml:para>The Connect-SkypeOnline cmdlet connects an account to use for Microsoft Teams (SkypeOnline) cmdlet requests. Establishing a remote PowerShell session to Microsoft Teams (SkypeOnline) A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect and execute GET-commands. To execute other commands against Teams, a Teams Admin roles with appropriate rights is required.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -661,7 +727,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
           <maml:name>AccountId</maml:name>
           <maml:description>
-            <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.</maml:para>
+            <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.   If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.   Please see Notes for a detailed example</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -673,7 +739,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>OverrideAdminDomain</maml:name>
           <maml:description>
-            <maml:para>Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.</maml:para>
+            <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records. If an AccountId is provided, the Domain is constructed from the domain part and only queried from the User if needed.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -685,7 +751,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
           <maml:name>IdleTimeout</maml:name>
           <maml:description>
-            <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs. Note, by default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!</maml:para>
+            <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.   By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!   Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -700,7 +766,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
         <maml:name>AccountId</maml:name>
         <maml:description>
-          <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.</maml:para>
+          <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.   If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.   Please see Notes for a detailed example</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -712,7 +778,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
         <maml:name>OverrideAdminDomain</maml:name>
         <maml:description>
-          <maml:para>Optional. Only used if managing multiple Tenants or SkypeOnPrem Hybrid configuration uses DNS records.</maml:para>
+          <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records. If an AccountId is provided, the Domain is constructed from the domain part and only queried from the User if needed.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -724,7 +790,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
         <maml:name>IdleTimeout</maml:name>
         <maml:description>
-          <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs. Note, by default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!</maml:para>
+          <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.   By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!   Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -738,15 +804,16 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Requires that the Module Microoft Teams (v1.1.6) or Skype Online Connector PowerShell module (v7.0.0.0 or higher) to be installed. If the SkypeOnlineConnector is used, the Username can be passed to along and the Session can be reconnected (Enable-CsOnlineSessionForReconnection is run). The following Tasks are preformed by this cmdlet: - Verifying Module MicrosoftTeams or SkypeOnlineConnector are installed and imported</maml:para>
+        <maml:para>Connection to SkypeOnline is done by creating a Session with New-CsOnlineSession, which later needs to be imported. A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E. SkypeOnline)</maml:para>
+        <maml:para>New-CsOnlineSession is available in the Module MicrosoftTeams or the MSI-Installer SkypeOnlineConnector which is now deprecated and no longer actively supported. When using the SkypeOnlineConnector, a separate connection to MicrosoftTeams must be established to also manage Teams and Channels use Connect-MicrosoftTeams to connect. When using the Module MicrosoftTeams, a connection is always established to both!</maml:para>
+        <maml:para>Background: In order to retire the SkypeOnlineConnector, the CmdLet New-CsOnlineSession was ported to MicrosoftTeams (in v1.1.6) However, not all functionality was made available: The Parameter Username has been retired, resulting in seamless single-sign-on currently not being available. Multiple connection prompts will be displayed, but already signed-in accounts can be used (Password required only once) Enable-CsOnlineSessionForReconnection is not available in MicrosoftTeams either, but thanks to the original author Andrés Gorzelany, the command is now offered with this module and is available consistently. Established Sessions will now always be enabled for reconnection. The ability to reconnect a session depends on the settings in the Tenant. Re-Authentication may be required.</maml:para>
+        <maml:para>OverrideAdminDomain Handling and Example: AccountId John@domain.com - Domain.com is first used as the OverrideAdminDomain If unsuccessful, "domain.onmicrosoft.com" is tried. If this too is unsuccessful, the OverrideAdminDomain is queried from the User for input.</maml:para>
+        <maml:para>Session Timeout &amp; Reconnection: The session timeout is currently not adhered to correctly and does not work as intended! It has therefore been disabled. The parameter IdleTimeout is without effect.</maml:para>
+        <maml:para>To help reconnect sessions, Assert-SkypeOnlineConnection is integrated into every CmdLet in the module. It can be triggered manually as well, with the alias 'pol' (Ping-of-life) to trigger the reconnection. This will require re-authentication and its success is dependent on the Tenant settings. Sometimes even the reconnection fails, if so, please disconnect the current session (Disconnect-SkypeOnline) and re-run Connect-SkypeOnline to recreate the session cleanly. Please note that hanging sessions can cause lockout (session exhaustion)</maml:para>
+        <maml:para>This CmdLet is preforming the following Tasks: - Verifying Module MicrosoftTeams or SkypeOnlineConnector are installed and imported</maml:para>
         <maml:para>- Prompting for Username and password to establish the session</maml:para>
         <maml:para>- Prompting for MFA if required</maml:para>
-        <maml:para>- Prompting for OverrideAdminDomain if connection fails to establish and retries connection attempt</maml:para>
-        <maml:para>- Extending the session time-out limit beyond 60mins (SkypeOnlineConnector only!)</maml:para>
-        <maml:para></maml:para>
-        <maml:para>Download v7 here: https://www.microsoft.com/download/details.aspx?id=39366 The SkypeOnline Session allows you to administer SkypeOnline and Teams respectively. Note: A separate connection to MicrosoftTeams must be established when using SkypeOnlineConnector.</maml:para>
-        <maml:para>To manage Teams, Channels, etc. within Microsoft Teams, use Connect-MicrosoftTeams Connect-MicrosoftTeams requires a Teams Admin role and is part of the PowerShell Module MicrosoftTeams https://www.powershellgallery.com/packages/MicrosoftTeams</maml:para>
-        <maml:para>Please note, that the session timeout is broken and does currently not work as intended To help reconnect sessions, Assert-SkypeOnlineConnection can be used (Alias: pol) which runs Get-CsTenant to trigger the reconnect This will require re-authentication and its success is dependent on the Tenant settings. To reconnect fully, please re-run Connect-SkypeOnline to recreate the session cleanly. Please note that hanging sessions can cause lockout (session exhaustion)</maml:para>
+        <maml:para>- Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -761,7 +828,14 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com</dev:code>
         <dev:remarks>
-          <maml:para>If supported, will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account   to connect out to Microsoft Teams (SkypeOnline). Additional prompts for Multi Factor Authentication are displayed as required.</maml:para>
+          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com   and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).   When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.   The OverrideAdminDomain is not provided, so it is constructed from the domain part. Please see Notes for details.   Additional prompts for Multi Factor Authentication are displayed as required.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com</dev:code>
+        <dev:remarks>
+          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com   and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).   When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.   The provided OverrideAdminDomain will be used to establish the connection. If not provided, it is constructed.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -5254,39 +5328,12 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
-      <command:syntaxItem>
-        <maml:name>Get-TeamsTDP</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Filter</maml:name>
-          <maml:description>
-            <maml:para>Searches for all Tenant Dial Plans that contains the string.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
     </command:syntax>
     <command:parameters>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:description>
           <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing one Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Filter</maml:name>
-        <maml:description>
-          <maml:para>Searches for all Tenant Dial Plans that contains the string.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -6019,39 +6066,12 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
-      <command:syntaxItem>
-        <maml:name>Get-TeamsVNR</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Filter</maml:name>
-          <maml:description>
-            <maml:para>Searches for all Tenant Dial Plans that contains the string in the Name.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
     </command:syntax>
     <command:parameters>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:description>
           <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing Normalisation Rules for this Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Filter</maml:name>
-        <maml:description>
-          <maml:para>Searches for all Tenant Dial Plans that contains the string in the Name.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -15610,81 +15630,6 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Test-Module</command:name>
-      <command:verb>Test</command:verb>
-      <command:noun>Module</command:noun>
-      <maml:description>
-        <maml:para>Tests whether a Module is loaded</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>Tests whether a specific Module is loaded</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Test-Module</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
-          <maml:name>Module</maml:name>
-          <maml:description>
-            <maml:para>Module to test.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
-        <maml:name>Module</maml:name>
-        <maml:description>
-          <maml:para>Module to test.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-    </command:parameters>
-    <command:inputTypes />
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>System.Boolean</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para></maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Test-Module -Module ModuleName</dev:code>
-        <dev:remarks>
-          <maml:para>Will Return $TRUE if the Module 'ModuleName' is loaded</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
       <command:name>Test-SkypeOnlineConnection</command:name>
       <command:verb>Test</command:verb>
       <command:noun>SkypeOnlineConnection</command:noun>
@@ -15917,10 +15862,6 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Find-TeamsResourceAccount</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Find-AzureAdUser</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
