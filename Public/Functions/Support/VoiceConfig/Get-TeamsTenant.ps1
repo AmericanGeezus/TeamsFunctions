@@ -29,7 +29,7 @@ function Get-TeamsTenant {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
-    if (-not $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Asserting SkypeOnline Connection
     if (-not (Assert-SkypeOnlineConnection)) { break }
@@ -38,7 +38,7 @@ function Get-TeamsTenant {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    Write-Information 'INFO: This is abbreviated output of Get-CsTenant. For full information, please run Get-CsTenant' -InformationAction Continue
+    Write-Information 'INFO: This is abbreviated output of Get-CsTenant. For full information, please run Get-CsTenant'
 
     $T = Get-CsTenant -WarningAction SilentlyContinue # This should trigger a reconnect as well.
 

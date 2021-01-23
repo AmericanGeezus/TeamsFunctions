@@ -113,7 +113,7 @@ function Connect-Me {
 
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
-    if (-not $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -211,7 +211,7 @@ function Connect-Me {
       $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
       $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
       if ( $CsOnlineUsername ) {
-        Write-Information 'Command '$Command' - Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first' -InformationAction Continue
+        Write-Information 'Command '$Command' - Sessions are established with Module SkypeOnlineConnector: Single-Sign-on is available with Connection to Skype established first'
       }
       else {
         Write-Information 'Command '$Command' - Sessions are established with Module MicrosoftTeams: Seamless Single-Sign-on is not (yet) available.'
@@ -229,7 +229,7 @@ function Connect-Me {
       if ( $PIMavailable ) { $sMax++ }
     }
     catch {
-      Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command" -InformationAction Continue
+      Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
       Write-Verbose -Message 'AzureAd & MicrosoftTeams: Establishing a connection will work, though only GET-commands will be able to be executed'
       Write-Verbose -Message "SkypeOnline: Establishing a connection will fail if the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
     }
@@ -254,7 +254,7 @@ function Connect-Me {
 
     #region Connections
     $Status = 'Establishing Connection'
-    Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])" -InformationAction Continue
+    Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     if (-not $CsOnlineUsername) {
       # Employing new method - Connecting to AzureAd first, then validating Admin Roles, then to all other Services
       $ConnectionOrder = @('AzureAd', 'SkypeOnline') # , 'MicrosoftTeams')

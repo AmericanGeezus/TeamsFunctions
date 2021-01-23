@@ -228,7 +228,7 @@ function Set-AzureAdUserLicenseServicePlan {
                 }
               }
               else {
-                Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - Service Plan '$S' is already enabled" -InformationAction Continue
+                Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - Service Plan '$S' is already enabled"
                 continue
               }
             }
@@ -267,7 +267,7 @@ function Set-AzureAdUserLicenseServicePlan {
                 }
               }
               else {
-                Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - Service Plan '$S' is already disabled" -InformationAction Continue
+                Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - Service Plan '$S' is already disabled"
                 continue
               }
             }
@@ -287,7 +287,7 @@ function Set-AzureAdUserLicenseServicePlan {
 
         # Catching non-assignments
         if ( $EnabledPlans -eq 0 -and $DisabledPlans -eq 0 ) {
-          Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - No Service Plans to toggle. Validate License Assignments with Get-TeamsUserLicense or use PassThru" -InformationAction Continue
+          Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - No Service Plans to toggle. Validate License Assignments with Get-TeamsUserLicense or use PassThru"
           continue
         }
 
