@@ -43,3 +43,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 With special thanks to Andres for providing the code for this wonderful command
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Enable-CsOnlineSessionForReconnection]()
+
+[Connect-SkypeOnline]()
+

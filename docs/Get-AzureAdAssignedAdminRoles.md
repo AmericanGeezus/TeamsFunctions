@@ -5,53 +5,44 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsOPU
+# Get-AzureAdAssignedAdminRoles
 
 ## SYNOPSIS
-Lists all Online PSTN Usages by Name
+Queries Admin Roles assigned to an Object
 
 ## SYNTAX
 
 ```
-Get-TeamsOPU [[-Usage] <String>] [<CommonParameters>]
+Get-AzureAdAssignedAdminRoles [-Identity] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-To quickly find Online PSTN Usages, an Alias-Function to Get-CsOnlinePstnUsage
+Azure Active Directory Admin Roles assigned to an Object
+Requires a Connection to AzureAd
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsOPU
+Get-AzureAdAssignedAdminRoles user@domain.com
 ```
 
-Lists Identities (Names) of all Online Pstn Usages
-
-### EXAMPLE 2
-```
-Get-TeamsOPU "PstnUsageName"
-```
-
-Lists all PstnUsages with the String 'PstnUsageName' in the name of the Online Pstn Usage
+Returns an Object for all Admin Roles assigned
 
 ## PARAMETERS
 
-### -Usage
-String.
-Name or part of the Online Pstn Usage.
-Can be omitted to list Names of all Usages.
-Searches for Usages with Get-CsOnlinePstnUsage, listing all that match.
+### -Identity
+Enter the identity of the User to Query
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UPN, UserPrincipalName, Username
 
-Required: False
+Required: True
 Position: 1
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -60,26 +51,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
+### PSCustomObject
 ## NOTES
-This script is indulging the lazy admin.
-It behaves like (Get-CsOnlinePstnUsage).Usage
-This CmdLet behaves slightly different than the others, due to the nature of Pstn Usages.
+Returns an Object containing all Admin Roles assigned to a User.
+This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
+The Output can be used as baseline for other functions (-contains "Teams Service Admin")
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[Get-TeamsOVP]()
+[Enable-AzureAdAdminRole]()
 
-[Get-TeamsOPU]()
-
-[Get-TeamsOVR]()
-
-[Get-TeamsMGW]()
-
-[Get-TeamsTDP]()
-
-[Get-TeamsVNR]()
+[Get-AzureAdAssignedAdminRoles]()
 

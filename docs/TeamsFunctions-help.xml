@@ -1407,8 +1407,16 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>Online Version:</maml:linkText>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-CsOnlineSessionForReconnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Connect-SkypeOnline</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -4665,7 +4673,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
           <maml:name>Usage</maml:name>
           <maml:description>
-            <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Voice Routing Policies (except "Global")</maml:para>
+            <maml:para>String. Name or part of the Online Pstn Usage. Can be omitted to list Names of all Usages. Searches for Usages with Get-CsOnlinePstnUsage, listing all that match.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -4680,7 +4688,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
         <maml:name>Usage</maml:name>
         <maml:description>
-          <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Voice Routing Policies (except "Global")</maml:para>
+          <maml:para>String. Name or part of the Online Pstn Usage. Can be omitted to list Names of all Usages. Searches for Usages with Get-CsOnlinePstnUsage, listing all that match.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -4694,7 +4702,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>It executes the following string: Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like (Get-CsOnlinePstnUsage).Usage This CmdLet behaves slightly different than the others, due to the nature of Pstn Usages.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4709,7 +4717,7 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-TeamsOPU "PstnUsageName"</dev:code>
         <dev:remarks>
-          <maml:para>Lists all PstnUsages with the String PstnUsageName of all Online Pstn Usages</maml:para>
+          <maml:para>Lists all PstnUsages with the String 'PstnUsageName' in the name of the Online Pstn Usage</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
