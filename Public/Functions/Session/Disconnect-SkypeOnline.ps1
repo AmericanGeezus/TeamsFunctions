@@ -65,6 +65,15 @@ function Disconnect-SkypeOnline {
     foreach ($session in $PSSessions) {
       if ($session.ComputerName -like '*.online.lync.com' -or $session.ComputerName -eq 'api.interfaces.records.teams.microsoft.com') {
         $sessionFound = $true
+        <# try {
+          Write-Verbose -Message "Disconnecting Session to: $($session.ComputerName)"
+          Disconnect-PSSession $session -ErrorAction Stop
+        }
+        catch {
+          Write-Verbose -Message "Session failed to disconnect: $($_.Exception.Message)"
+        }
+        Write-Verbose -Message "Removing Session to: $($session.ComputerName)"
+        #>
         Remove-PSSession $session
       }
     }

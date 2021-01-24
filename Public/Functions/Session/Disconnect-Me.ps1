@@ -60,7 +60,7 @@ function Disconnect-Me {
     $ErrorActionPreference = 'SilentlyContinue'
 
     <# Assuming Modules are already imported
-    Import-Module SkypeOnlineConnector
+    Import-Module SkypeOnlineConnector -Global
     Import-Module MicrosoftTeams -Force -Global # Must import Forcefully as the command otherwise fails (not available)
     Import-Module AzureAD
     #>

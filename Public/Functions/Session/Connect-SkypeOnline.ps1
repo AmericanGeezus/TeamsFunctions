@@ -174,7 +174,7 @@ function Connect-SkypeOnline {
         Write-Warning -Message 'Module SkypeOnlineConnector is deprecated. Please switch to using MicrosoftTeams soon'
         Remove-Module MicrosoftTeams -ErrorAction SilentlyContinue -Verbose:$false
         if (-not (Get-Module SkypeOnlineConnector)) {
-          Import-Module SkypeOnlineConnector -Verbose:$false -ErrorAction Stop
+          Import-Module SkypeOnlineConnector -Global -Verbose:$false -ErrorAction Stop
         }
       }
     }
@@ -182,7 +182,7 @@ function Connect-SkypeOnline {
     # Verifying Module is loaded correctly
     if ( $TeamsModule.Version -ge '1.1.6' -and -not (Get-Module MicrosoftTeams)) {
       Write-Verbose "Module 'MicrosoftTeams' - import failed. Trying to import again (forcefully)!"
-      Import-Module MicrosoftTeams -Force -Global
+      Import-Module MicrosoftTeams -Global -Force
     }
     #endregion
 
@@ -210,7 +210,7 @@ function Connect-SkypeOnline {
 
     # Existing Session
     if (Test-SkypeOnlineConnection) {
-      Write-Warning -Message '$($MyInvocation.MyCommand) - A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again.'
+      Write-Warning -Message "$($MyInvocation.MyCommand) - A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
       break
     }
     else {
@@ -318,7 +318,7 @@ function Connect-SkypeOnline {
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global -Verbose:$false
         $null = Enable-CsOnlineSessionForReconnection
         Write-Information 'Session is enabled for reconnection, allowing it to be re-used! You are prompted to reconnect if possible.'
-        Write-Information 'The success of reconnection attempts depends on a few factors, including the Tenants Security settings'
+        Write-Verbose -Message 'The success of reconnection attempts depends on a few factors, including the Tenants Security settings' -Verbose
       }
       catch {
         Write-Error -Message "EXCEPTION: $($.Exception.Message)"

@@ -124,7 +124,7 @@ function Enable-AzureAdAdminRole {
     # Importing Module
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
     try {
-      Import-Module AzureAdPreview -Force -ErrorAction Stop
+      Import-Module AzureAdPreview -Global -Force -ErrorAction Stop
     }
     catch {
       Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'
