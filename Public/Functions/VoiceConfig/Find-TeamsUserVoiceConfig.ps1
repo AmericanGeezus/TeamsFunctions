@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
+#TODO Add Parameter EnabledOnly? Change filter (where appropriate to search only Enabled) - or rather, All (incl. DisabledUsers)
 #TODO Check for SupportsPaging for OVP and TDP (result size is not managable!)
 
 function Find-TeamsUserVoiceConfig {
@@ -194,10 +194,17 @@ function Find-TeamsUserVoiceConfig {
 
     switch ($PsCmdlet.ParameterSetName) {
       'ID' {
-        Write-Information "Finding Users with SipAddress '$Identity' (partial or full)"
+        Write-Information "Finding Users with SipAddress '$Identity'"
         #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-        $Filter = 'SipAddress -like "*{0}*"' -f $Number
+        $Filter = 'SipAddress -like "*{0}*"' -f $Identity
         $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
+        if (-not $Users) {
+          $MailNickName = $Identity.split('@') | Select-Object -First 1
+          Write-Information "Finding Users with MailNickName '$MailNickName'"
+          $Filter = 'MailNickName -like "*{0}*"' -f $MailNickName
+          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
+        }
+
         if ($Users) {
           if ($Users.Count -gt 3) {
             Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
@@ -215,8 +222,8 @@ function Find-TeamsUserVoiceConfig {
       } #ID
 
       'Tel' {
-        Write-Information "Finding all Users with Phone Number '$PhoneNumber': Searching... This will take some time!"
         foreach ($PhoneNr in $PhoneNumber) {
+          Write-Verbose -Message "Normalising Input for Phone Number '$PhoneNr'"
           if ($PhoneNr -match '@') {
             Find-TeamsUserVoiceConfig -Identity "$PhoneNr"
             continue
@@ -228,7 +235,7 @@ function Find-TeamsUserVoiceConfig {
             #BODGE Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
             $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep 'tel:+;x'
           }
-          Write-Verbose -Message "Finding Users with PhoneNumber '$Number' (partial or full)" -Verbose
+          Write-Information "Finding all Users enabled for Teams with Phone Number '$PhoneNr': Searching... This will take some time!"
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -254,15 +261,15 @@ function Find-TeamsUserVoiceConfig {
       } #Tel
 
       'Ext' {
-        Write-Information "Finding all Users with Extension '$Ext': Searching... This will take some time!"
         foreach ($Ext in $Extension) {
+          Write-Verbose -Message "Normalising Input for Extension '$Ext'"
           if ($ext -match '(\d+);ext=(\d+)') {
             $ExtN = 'ext=' + $matches[2]
           }
           else {
             $ExtN = 'ext=' + $ext
           }
-          Write-Verbose -Message "Finding Users with Extension '$ExtN' (partial or full)" -Verbose
+          Write-Information "Finding all Users enabled for Teams with Extension '$ExtN': Searching... This will take some time!"
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f "$ExtN"
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -288,15 +295,15 @@ function Find-TeamsUserVoiceConfig {
       } #Ext
 
       'CT' {
-        Write-Information 'Finding all Users enabled for Teams: Searching... This will take quite some time!'
+        Write-Verbose -Message 'Searching for all Users enabled for Teams: Searching... This will take quite some time!'
         $Filter = 'Enabled -eq $TRUE'
         $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction Stop
         Write-Verbose -Message "Sifting through Information for $($CsUsers.Count) Users: Parsing..."
-        Write-Information "Returning all Users that are correctly configured for $ConfigurationType..."
+        Write-Information "Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching... This will take quite some time!"
         switch ($ConfigurationType) {
           'DirectRouting' {
             if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license are displayed!' -Verbose
+              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
             }
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
@@ -314,7 +321,7 @@ function Find-TeamsUserVoiceConfig {
           }
           'SkypeHybridPSTN' {
             if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license are displayed!' -Verbose
+              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
             }
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.OnlineVoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.VoiceRoutingPolicy)) {
@@ -353,17 +360,17 @@ function Find-TeamsUserVoiceConfig {
       } #CT
 
       'VP' {
-        Write-Information "Finding Users with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!"
+        Write-Information "Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!"
         $Filter = 'Enabled -eq $TRUE -and  VoicePolicy -EQ "{0}"' -f $VoicePolicy
         Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         break
       } #VP
 
       'OVP' {
-        Write-Information "Finding OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!"
+        Write-Verbose -Message "Finding OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy'..."
         $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
         if ($null -ne $OVP) {
-          Write-Verbose -Message "Finding Users with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..." -Verbose
+          Write-Information "Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!"
           $Filter = 'Enabled -eq $TRUE -and  OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy
           Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
@@ -374,10 +381,10 @@ function Find-TeamsUserVoiceConfig {
       } #OVP
 
       'TDP' {
-        Write-Information "Finding TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!"
+        Write-Verbose -Message "Finding TenantDialPlan '$TenantDialPlan'..."
         $TDP = Get-CsTenantDialPlan $TenantDialPlan -WarningAction SilentlyContinue
         if ($null -ne $TDP) {
-          Write-Verbose -Message "Finding Users with TenantDialPlan '$TenantDialPlan': Searching..." -Verbose
+          Write-Information "Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!"
           $Filter = 'Enabled -eq $TRUE -and  TenantDialPlan -EQ "{0}"' -f $TenantDialPlan
           Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }

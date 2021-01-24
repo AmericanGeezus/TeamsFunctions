@@ -251,7 +251,7 @@ function Connect-SkypeOnline {
     }
     else {
       if ($AzureAdConnection) {
-        Write-Information "$($MyInvocation.MyCommand) - OverrideAdminDomain from AzureAd. Using Domain  '$TenantDomain'"
+        Write-Information "$($MyInvocation.MyCommand) - OverrideAdminDomain from AzureAd. Using Domain '$TenantDomain'"
         $Parameters += @{ 'OverrideAdminDomain' = $TenantDomain }
       }
       else {

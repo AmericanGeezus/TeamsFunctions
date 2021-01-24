@@ -1,11 +1,11 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Lookup
 # Author:     David Eberhardt
-# Updated:    14-NOV-2020
-# Status:     PreLive
+# Updated:    24-JAN-2021
+# Status:     Live
 
 
-#TODO - Develop better - but adhere to use (or change that)
+
 
 function Find-AzureAdUser {
   <#
@@ -16,9 +16,9 @@ function Find-AzureAdUser {
     CmdLet can find uses by either query, if nothing is found with the Searchstring, another search is done via the ObjectId
     This simplifies the query without having to rely multiple queries with Get-AzureAdUser
 	.PARAMETER SearchString
-		Required for ParameterSet Search: A 3-255 digit string to be found on any Object.
-	.PARAMETER Identity
-		Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.
+    Required. A 3-255 digit string to be found on any Object.
+    Performs multiple searches against the Searches against this sting and parts thereof.
+    Uses Get-AzureAd-User -SearchString and Get-AzureAdUser -Filter and subsequently Get-AzureAdUser -ObjectType
 	.EXAMPLE
 		Find-AzureAdUser [-Search] "John"
     Will search for the string "John" and return all Azure AD Objects found
@@ -42,26 +42,26 @@ function Find-AzureAdUser {
     Get-AzureAdUser
   #>
 
-  [CmdletBinding(DefaultParameterSetName = 'Search')]
+  [CmdletBinding()]
   [OutputType([Microsoft.Open.AzureAD.Model.User])]
   param(
-    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Search', ValueFromPipeline, HelpMessage = 'Search string')]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'SearchString', ValueFromPipeline, HelpMessage = 'Search string')]
     [ValidateLength(3, 255)]
-    [string]$SearchString,
-
-    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Id', ValueFromPipelineByPropertyName, HelpMessage = 'This is the UserID (UPN)')]
-    [Alias('UserPrincipalName', 'Id')]
-    [string[]]$Identity
-
+    [string[]]$SearchString
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
+
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
@@ -72,52 +72,83 @@ function Find-AzureAdUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    [System.Collections.ArrayList]$Users = @()
+    foreach ($String in $SearchString) {
 
-    foreach ($Id in $Identity) {
-
-      switch ($PsCmdlet.ParameterSetName) {
-        'Search' {
-          $User = Get-AzureADUser -All:$true -SearchString "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          if ( $User ) {
-            return $User
-          }
-          else {
-            if ($Searchstring -contains ' ') {
-              $SearchString2 = $SearchString.split(' ') | Select-Object -Last 1
-              Get-AzureADUser -All:$true -SearchString "$SearchString2" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            }
-            elseif ($Searchstring -contains '.') {
-              $SearchString2 = $SearchString.split('.') | Select-Object -Last 1
-              Get-AzureADUser -All:$true -SearchString "$SearchString2" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            }
-            else {
-              Find-AzureAdUser -Identity "$SearchString"
-            }
-          }
+      try {
+        # ObjectId
+        Write-Verbose -Message "Searching for Objects with String '$String' in ObjectId"
+        $Result = Get-AzureADUser -All:$true -ObjectId "$String" -WarningAction SilentlyContinue -ErrorAction STOP
+        if ( $Result ) {
+          $Users += $Result
         }
-
-        'Id' {
-          foreach ($Id in $Identity) {
-            try {
-              $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction STOP
-              Write-Output $User
-            }
-            catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-              Write-Verbose -Message "User '$Id' not found"
-              continue
-            }
-            catch {
-              Write-Verbose -Message "User '$Id' not found"
-              continue
-            }
-          }
-
+        else {
+          throw
         }
       }
+      catch {
+        # SearchString as-is
+        $Result = $null
+        Write-Verbose -Message "Searching for Objects with String '$String' in SearchString"
+        $Result = Get-AzureADUser -All:$true -SearchString "$String" -WarningAction SilentlyContinue -ErrorAction STOP
+        if ( $Result ) { $Users += $Result }
+
+        # Filter Surname as-is
+        $Result = $null
+        Write-Verbose -Message "Searching for Objects with String '$String' in Filter (Surname)"
+        $Result = Get-AzureADUser -All:$true -Filter "Surname eq '$String'" -WarningAction SilentlyContinue -ErrorAction STOP
+        if ( $Result ) { $Users += $Result }
+
+        if ($String.Contains('@')) {
+          # SearchString SubString split after @
+          $Result = $null
+          $SubString = $String.split('@') | Select-Object -First 1
+          Write-Verbose -Message "Searching for Objects with SubString '$SubString' in Filter (MailNickName)"
+          $Result = Get-AzureADUser -All:$true -Filter "MailNickName eq '$SubString'" -WarningAction SilentlyContinue -ErrorAction STOP
+          if ( $Result ) { $Users += $Result }
+        }
+
+        if ($String.Contains(' ')) {
+          # SearchString SubString split after space
+          $Result = $null
+          $SubString = $String.split(' ') | Select-Object -Last 1
+          Write-Verbose -Message "Searching for Objects with SubString '$SubString' in SearchString"
+          $Result = Get-AzureADUser -All:$true -SearchString "$SubString" -WarningAction SilentlyContinue -ErrorAction STOP
+          if ( $Result ) { $Users += $Result }
+
+          # Filter Surname SubString split after space
+          $Result = $null
+          $SubString = $String.split(' ') | Select-Object -Last 1
+          Write-Verbose -Message "Searching for Objects with SubString '$SubString' in Filter (Surname)"
+          $Result = Get-AzureADUser -All:$true -Filter "Surname eq '$SubString'" -WarningAction SilentlyContinue -ErrorAction STOP
+          if ( $Result ) { $Users += $Result }
+        }
+
+        if ($String.Contains('.')) {
+          # SearchString SubString split after dot
+          $Result = $null
+          $SubString = $String.split('.') | Select-Object -Last 1
+          Write-Verbose -Message "Searching for Objects with SubString '$SubString' in SearchString"
+          $Result = Get-AzureADUser -All:$true -SearchString "$SubString" -WarningAction SilentlyContinue -ErrorAction STOP
+          if ( $Result ) { $Users += $Result }
+
+          # Filter Surname SubString split after dot
+          $Result = $null
+          $SubString = $String.split('.') | Select-Object -Last 1
+          Write-Verbose -Message "Searching for Objects with SubString '$SubString' in Filter (Surname)"
+          $Result = Get-AzureADUser -All:$true -Filter "Surname eq '$SubString'" -WarningAction SilentlyContinue -ErrorAction STOP
+          if ( $Result ) { $Users += $Result }
+        }
+      }
+    }
+
+    # Output - Filtering objects
+    if ( $Users ) {
+      $Users | Sort-Object -Unique -Property ObjectId | Get-Unique
     }
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Find-AzureAdUser
+} # Find-AzureAdUser
