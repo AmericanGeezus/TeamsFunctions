@@ -331,6 +331,7 @@ function Connect-Me {
           Write-Verbose -Message "$Status - $Operation" -Verbose
           try {
             $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+            Start-Sleep -Seconds 2
             Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
           }
           catch {

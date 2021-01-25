@@ -5,8 +5,8 @@
 # Status:   PreLive
 
 
-
-
+#CHECK ToString manipulation. Evaluate better display: , to Line feed ; Reordering of objects (Menu Option: DtmfResponse, VoiceResponse, Action, Call Target)
+# Add TimeZone to main output (UTC+/-) and detailed output
 function New-TeamsAutoAttendant {
   <#
 	.SYNOPSIS
