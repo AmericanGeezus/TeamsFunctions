@@ -91,13 +91,19 @@ function Find-AzureAdUser {
         $Result = $null
         Write-Verbose -Message "Searching for Objects with String '$String' in SearchString"
         $Result = Get-AzureADUser -All:$true -SearchString "$String" -WarningAction SilentlyContinue -ErrorAction STOP
-        if ( $Result ) { $Users += $Result }
+        if ( $Result ) {
+          Write-Verbose -Message "Found $($Result.Count) Objects with String '$String' in SearchString"
+          $Users += $Result
+        }
 
         # Filter Surname as-is
         $Result = $null
         Write-Verbose -Message "Searching for Objects with String '$String' in Filter (Surname)"
         $Result = Get-AzureADUser -All:$true -Filter "Surname eq '$String'" -WarningAction SilentlyContinue -ErrorAction STOP
-        if ( $Result ) { $Users += $Result }
+        if ( $Result ) {
+          Write-Verbose -Message "Found $($Result.Count) Objects with String '$String' in Filter (Surname)"
+          $Users += $Result
+        }
 
         if ($String.Contains('@')) {
           # SearchString SubString split after @
@@ -105,7 +111,10 @@ function Find-AzureAdUser {
           $SubString = $String.split('@') | Select-Object -First 1
           Write-Verbose -Message "Searching for Objects with SubString '$SubString' in Filter (MailNickName)"
           $Result = Get-AzureADUser -All:$true -Filter "MailNickName eq '$SubString'" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $Result ) { $Users += $Result }
+          if ( $Result ) {
+            Write-Verbose -Message "Found $($Result.Count) Objects with SubString '$SubString' in Filter (MailNickName)"
+            $Users += $Result
+          }
         }
 
         if ($String.Contains(' ')) {
@@ -114,30 +123,42 @@ function Find-AzureAdUser {
           $SubString = $String.split(' ') | Select-Object -Last 1
           Write-Verbose -Message "Searching for Objects with SubString '$SubString' in SearchString"
           $Result = Get-AzureADUser -All:$true -SearchString "$SubString" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $Result ) { $Users += $Result }
+          if ( $Result ) {
+            Write-Verbose -Message "Found $($Result.Count) Objects with SubString '$SubString' in SearchString"
+            $Users += $Result
+          }
 
           # Filter Surname SubString split after space
           $Result = $null
           $SubString = $String.split(' ') | Select-Object -Last 1
           Write-Verbose -Message "Searching for Objects with SubString '$SubString' in Filter (Surname)"
           $Result = Get-AzureADUser -All:$true -Filter "Surname eq '$SubString'" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $Result ) { $Users += $Result }
+          if ( $Result ) {
+            Write-Verbose -Message "Found $($Result.Count) Objects with SubString '$SubString' in Filter (Surname)"
+            $Users += $Result
+          }
         }
 
         if ($String.Contains('.')) {
           # SearchString SubString split after dot
           $Result = $null
-          $SubString = $String.split('.') | Select-Object -Last 1
+          $SubString = $($String.split('@') | Select-Object -First 1).split('.') | Select-Object -Last 1
           Write-Verbose -Message "Searching for Objects with SubString '$SubString' in SearchString"
           $Result = Get-AzureADUser -All:$true -SearchString "$SubString" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $Result ) { $Users += $Result }
+          if ( $Result ) {
+            Write-Verbose -Message "Found $($Result.Count) Objects with SubString '$SubString' in SearchString"
+            $Users += $Result
+          }
 
           # Filter Surname SubString split after dot
           $Result = $null
-          $SubString = $String.split('.') | Select-Object -Last 1
+          $SubString = $($String.split('@') | Select-Object -First 1).split('.') | Select-Object -Last 1
           Write-Verbose -Message "Searching for Objects with SubString '$SubString' in Filter (Surname)"
           $Result = Get-AzureADUser -All:$true -Filter "Surname eq '$SubString'" -WarningAction SilentlyContinue -ErrorAction STOP
-          if ( $Result ) { $Users += $Result }
+          if ( $Result ) {
+            Write-Verbose -Message "Found $($Result.Count) Objects with SubString '$SubString' in Filter (Surname)"
+            $Users += $Result
+          }
         }
       }
     }

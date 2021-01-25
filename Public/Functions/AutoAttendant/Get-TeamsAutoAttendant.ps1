@@ -107,7 +107,7 @@ function Get-TeamsAutoAttendant {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     if ($PSBoundParameters.ContainsKey('Detailed')) {
-      Write-Information "Parameter 'Detailed' - This may take a bit of time..."
+      Write-Verbose -Message "Parameter 'Detailed' - This may take a bit of time..." -Verbose
     }
   } #begin
 

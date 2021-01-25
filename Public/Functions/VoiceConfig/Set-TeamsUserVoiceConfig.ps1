@@ -89,13 +89,14 @@ function Set-TeamsUserVoiceConfig {
   [Alias('Set-TeamsUVC')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, Position = 0, HelpMessage = 'UserPrincipalName of the User')]
+    [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, HelpMessage = 'UserPrincipalName of the User')]
+    [Alias('UserPrincipalName')]
     [string]$Identity,
 
     [Parameter(ParameterSetName = 'DirectRouting', HelpMessage = 'Enables an Object for Direct Routing')]
     [switch]$DirectRouting,
 
-    [Parameter(ParameterSetName = 'DirectRouting', Mandatory, HelpMessage = 'Name of the Online Voice Routing Policy')]
+    [Parameter(ParameterSetName = 'DirectRouting', HelpMessage = 'Name of the Online Voice Routing Policy')]
     [Alias('OVP')]
     [string]$OnlineVoiceRoutingPolicy,
 
