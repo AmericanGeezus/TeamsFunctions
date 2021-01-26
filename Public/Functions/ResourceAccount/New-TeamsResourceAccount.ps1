@@ -412,7 +412,7 @@ function New-TeamsResourceAccount {
 
         if ($PhoneNumberIsMSNumber) {
           # Set in VoiceApplicationInstance
-          Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, assuming provisioning for: Microsoft Calling Plans"
+          Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"
           try {
             if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
               $null = (Set-CsOnlineVoiceApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -Telephonenumber $E164Number -ErrorAction STOP)
@@ -424,7 +424,7 @@ function New-TeamsResourceAccount {
         }
         else {
           # Set in ApplicationInstance
-          Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, assuming provisioning for: Direct Routing"
+          Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, provisioning for: Direct Routing"
           try {
             if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $PhoneNumber")) {
               $null = (Set-CsOnlineApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -OnPremPhoneNumber $E164Number -ErrorAction STOP)

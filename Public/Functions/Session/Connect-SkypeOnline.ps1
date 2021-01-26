@@ -317,7 +317,7 @@ function Connect-SkypeOnline {
       try {
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global -Verbose:$false
         $null = Enable-CsOnlineSessionForReconnection
-        Write-Information 'Session is enabled for reconnection, allowing it to be re-used! You are prompted to reconnect if possible.'
+        Write-Information "$($MyInvocation.MyCommand) - Session is enabled for reconnection! You are prompted to reconnect if possible."
         Write-Verbose -Message 'The success of reconnection attempts depends on a few factors, including the Tenants Security settings' -Verbose
       }
       catch {

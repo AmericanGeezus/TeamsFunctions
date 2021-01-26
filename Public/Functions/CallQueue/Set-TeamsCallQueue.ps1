@@ -821,7 +821,9 @@ function Set-TeamsCallQueue {
       [void]$Parameters.Remove('OverflowActionTarget')
     }
     else {
-      Write-Information "'$NameNormalised' OverflowActionTarget: '$OverflowActionTarget'"
+      if ($Parameters.ContainsKey('OverflowActionTarget')) {
+        Write-Information "'$NameNormalised' OverflowActionTarget: '$OverflowActionTarget'"
+      }
     }
 
     if ($Parameters.ContainsKey('OverflowAction') -and (-not $Parameters.ContainsKey('OverflowActionTarget')) -and ($OverflowAction -ne 'DisconnectWithBusy')) {
@@ -829,7 +831,9 @@ function Set-TeamsCallQueue {
       [void]$Parameters.Remove('OverflowAction')
     }
     else {
-      Write-Information "'$NameNormalised' OverflowAction used: '$OverflowAction'"
+      if ($Parameters.ContainsKey('OverflowAction')) {
+        Write-Information "'$NameNormalised' OverflowAction used: '$OverflowAction'"
+      }
     }
 
     #endregion
@@ -1055,7 +1059,9 @@ function Set-TeamsCallQueue {
       [void]$Parameters.Remove('TimeoutActionTarget')
     }
     else {
-      Write-Information "'$NameNormalised' TimeoutActionTarget: '$TimeoutActionTarget'"
+      if ($Parameters.ContainsKey('TimeoutActionTarget')) {
+        Write-Information "'$NameNormalised' TimeoutActionTarget: '$TimeoutActionTarget'"
+      }
     }
 
     if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'Disconnect')) {
@@ -1063,7 +1069,9 @@ function Set-TeamsCallQueue {
       [void]$Parameters.Remove('TimeoutAction')
     }
     else {
-      Write-Information "'$NameNormalised' TimeoutAction: '$TimeoutAction'"
+      if ($Parameters.ContainsKey('TimeoutAction')) {
+        Write-Information "'$NameNormalised' TimeoutAction: '$TimeoutAction'"
+      }
     }
     #endregion
     #endregion

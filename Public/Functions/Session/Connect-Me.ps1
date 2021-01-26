@@ -323,8 +323,8 @@ function Connect-Me {
       }
 
       #region Activating Admin Roles
-      if ( $PIMavailable ) {
-        if ( $Service = 'AzureAd' -and $(Test-AzureAdConnection)) {
+      if ( $Service = 'AzureAd' -and $(Test-AzureAdConnection)) {
+        if ( $PIMavailable ) {
           $step++
           $Operation = 'Enabling eligible Admin Roles'
           Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -340,11 +340,11 @@ function Connect-Me {
           }
         }
         else {
-          Write-Verbose 'Enable-AzureAdAdminrole - No connection to AzureAd ' -Verbose
+          Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available'
         }
       }
       else {
-        Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available'
+        Write-Verbose 'Enable-AzureAdAdminrole - No connection to AzureAd ' -Verbose
       }
       #endregion
     }

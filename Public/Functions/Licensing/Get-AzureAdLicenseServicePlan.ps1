@@ -59,6 +59,11 @@ function Get-AzureAdLicenseServicePlan {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     [System.Collections.ArrayList]$Plans = @()
     [System.Collections.ArrayList]$PlansNotAdded = @()
 
@@ -130,6 +135,7 @@ function Get-AzureAdLicenseServicePlan {
           }
 
           # reworking ProductName into TitleCase
+          $VerbosePreference = 'SilentlyContinue'
           $TextInfo = (Get-Culture).TextInfo
           $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
           $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep '()+ -'
@@ -140,7 +146,7 @@ function Get-AzureAdLicenseServicePlan {
               [void]$Plans.Add([TFTeamsServicePlan]::new($planProductName, "$($planServicePlanNames[$planServicePlanId])", "$planServicePlanId", $Relevant))
             }
             catch {
-              Write-Verbose "[TFTeamsServicePlan] Couldn't add entry for $planProductName"
+              Write-Debug "[TFTeamsServicePlan] Couldn't add entry for '$planProductName'"
               if ( $planProductName -ne 'Powerapps For Office 365 K1') {
                 $PlansNotAdded += $planProductName
               }
