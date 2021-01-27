@@ -323,7 +323,7 @@ function Connect-Me {
       }
 
       #region Activating Admin Roles
-      if ( $Service = 'AzureAd' -and $(Test-AzureAdConnection)) {
+      if ( $Service -eq 'AzureAd' -and $(Test-AzureAdConnection)) {
         if ( $PIMavailable ) {
           $step++
           $Operation = 'Enabling eligible Admin Roles'
