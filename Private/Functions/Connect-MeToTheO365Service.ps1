@@ -123,7 +123,10 @@ function Connect-MeToTheO365Service {
               Connect-MicrosoftTeams @ConnectionParameters
             }
           }
-          'SkypeOnline' { Connect-SkypeOnline @ConnectionParameters }
+          'SkypeOnline' {
+            [void]$ConnectionParameters.Remove('AccountId')
+            Connect-SkypeOnline @ConnectionParameters
+          }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }
         }
 
