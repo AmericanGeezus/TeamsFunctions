@@ -259,7 +259,8 @@ function Connect-Me {
     Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     if (-not $CsOnlineUsername) {
       # Employing new method - Connecting to AzureAd first, then validating Admin Roles, then to all other Services
-      $ConnectionOrder = @('AzureAd', 'MicrosoftTeams' , 'SkypeOnline')
+      $ConnectionOrder = @('AzureAd', 'MicrosoftTeams', 'SkypeOnline') # testing this order for more stability
+      #$ConnectionOrder = @('AzureAd', 'SkypeOnline') # , 'MicrosoftTeams')
       # Connection to MicrosoftTeams is disabled as it is established automatically with SkypeOnline
     }
     else {
