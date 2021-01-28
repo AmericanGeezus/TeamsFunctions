@@ -14,11 +14,11 @@ Though you can now also provide a UserPrincipalName for `CsOnlineApplicationInst
 
 | Function                                                              | Underlying Function                 | Description                                                                                                 |
 | --------------------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| [`New-TeamsResourceAccount`](/docs/New-TeamsResourceAccount.md)       | Creates a Resource Account in Teams |                                                                                                             |
-| [`Find-TeamsResourceAccount`](/docs/Find-TeamsResourceAccount.md)     | Find-CsOnlineApplicationInstance    | Finds Resource Accounts based on provided SearchString                                                      |
-| [`Get-TeamsResourceAccount`](/docs/Get-TeamsResourceAccount.md)       | Get-CsOnlineApplicationInstance     | Queries Resource Accounts based on input: SearchString, Identity (UserPrincipalName), PhoneNumber, Type     |
-| [`Set-TeamsResourceAccount`](/docs/Set-TeamsResourceAccount.md)       | Set-CsOnlineApplicationInstance     | Changes settings for a Resource Accounts, applying UsageLocation, Licenses and Phone Numbers, swapping Type |
-| [`Remove-TeamsResourceAccount`](/docs/Remove-TeamsResourceAccount.md) | Remove-AzureAdUser                  | Removes a Resource Account and optionally (with -Force) also the Associations this account has.             |
+| [`New-TeamsResourceAccount`](../docs/New-TeamsResourceAccount.md)       | Creates a Resource Account in Teams |                                                                                                             |
+| [`Find-TeamsResourceAccount`](../docs/Find-TeamsResourceAccount.md)     | Find-CsOnlineApplicationInstance    | Finds Resource Accounts based on provided SearchString                                                      |
+| [`Get-TeamsResourceAccount`](../docs/Get-TeamsResourceAccount.md)       | Get-CsOnlineApplicationInstance     | Queries Resource Accounts based on input: SearchString, Identity (UserPrincipalName), PhoneNumber, Type     |
+| [`Set-TeamsResourceAccount`](../docs/Set-TeamsResourceAccount.md)       | Set-CsOnlineApplicationInstance     | Changes settings for a Resource Accounts, applying UsageLocation, Licenses and Phone Numbers, swapping Type |
+| [`Remove-TeamsResourceAccount`](../docs/Remove-TeamsResourceAccount.md) | Remove-AzureAdUser                  | Removes a Resource Account and optionally (with -Force) also the Associations this account has.             |
 
 ## CmdLets for Association
 
@@ -26,15 +26,15 @@ Connecting these Resource Accounts to their Call Queues or Auto Attendants, whil
 
 | Function                                                                                    | Underlying Function                           | Description                                                                                          |
 | ------------------------------------------------------------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| [`New-TeamsResourceAccountAssociation`](/docs/New-TeamsResourceAccountAssociation.md)       | New-CsOnlineApplicationInstanceAssociation    | Links one or more Resource Accounts to a Call Queue or an Auto Attendant                             |
-| [`Get-TeamsResourceAccountAssociation`](/docs/Get-TeamsResourceAccountAssociation.md)       | Get-CsOnlineApplicationInstanceAssociation    | Queries links for one or more Resource Accounts to Call Queues or Auto Attendants. Also shows Status |
-| [`Remove-TeamsResourceAccountAssociation`](/docs/Remove-TeamsResourceAccountAssociation.md) | Remove-CsOnlineApplicationInstanceAssociation | Removes a link for one or more Resource Accounts                                                     |
+| [`New-TeamsResourceAccountAssociation`](../docs/New-TeamsResourceAccountAssociation.md)       | New-CsOnlineApplicationInstanceAssociation    | Links one or more Resource Accounts to a Call Queue or an Auto Attendant                             |
+| [`Get-TeamsResourceAccountAssociation`](../docs/Get-TeamsResourceAccountAssociation.md)       | Get-CsOnlineApplicationInstanceAssociation    | Queries links for one or more Resource Accounts to Call Queues or Auto Attendants. Also shows Status |
+| [`Remove-TeamsResourceAccountAssociation`](../docs/Remove-TeamsResourceAccountAssociation.md) | Remove-CsOnlineApplicationInstanceAssociation | Removes a link for one or more Resource Accounts                                                     |
 
 ### Support CmdLets
 
 | Function                                                          | Underlying Function | Description                                          |
 | ----------------------------------------------------------------- | ------------------- | ---------------------------------------------------- |
-| [`Test-TeamsResourceAccount`](/docs/Test-TeamsResourceAccount.md) |                     | Testing whether a Resource Account exists in AzureAd |
+| [`Test-TeamsResourceAccount`](../docs/Test-TeamsResourceAccount.md) |                     | Testing whether a Resource Account exists in AzureAd |
 
 ## EXAMPLES
 

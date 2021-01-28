@@ -16,10 +16,10 @@ The introduction of Privileged Identity Management and Privileged Access Groups 
 
 | Function                                                    | Description                                                                                                                                  |
 | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Connect-SkypeOnline`](/docs/Connect-SkypeOnline.md)       | Creates a Session to SkypeOnline                                                                            |
-| [`Connect-Me`](/docs/Connect-Me.md) (con)                   | Creates a Session to SkypeOnline and AzureAD in one go. Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt! Also tries to enable your Admin Roles in PIM. |
-| [`Disconnect-SkypeOnline`](/docs/Disconnect-SkypeOnline.md) | Disconnects from a Session to SkypeOnline. This helps preventing timeouts and hanging sessions                                                       |
-| [`Disconnect-Me`](/docs/Disconnect-Me.md) (dis)             | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD                                                                     |
+| [`Connect-SkypeOnline`](../docs/Connect-SkypeOnline.md)       | Creates a Session to SkypeOnline                                                                            |
+| [`Connect-Me`](../docs/Connect-Me.md) (con)                   | Creates a Session to SkypeOnline and AzureAD in one go. Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt! Also tries to enable your Admin Roles in PIM. |
+| [`Disconnect-SkypeOnline`](../docs/Disconnect-SkypeOnline.md) | Disconnects from a Session to SkypeOnline. This helps preventing timeouts and hanging sessions                                                       |
+| [`Disconnect-Me`](../docs/Disconnect-Me.md) (dis)             | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD                                                                     |
 
 Connect-Me aims to solve the issue of having and maintaining a connection to all Office 365 needed for Administration. In most cases, that will be AzureAd and SkypeOnline, but could also need ExchangeOnline and MicrosoftTeams (which is now being tethered to SkypeOnline if the CsOnlineSession is created with the Module MicrosoftTeams)
 
@@ -31,20 +31,20 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 
 | Function                                                      | Description                                                                                                                                     |
 | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Enable-AzureAdAdminRole`](/docs/Enable-AzureAdAdminRole.md) | Enables Admin Roles assigned directly to the AccountId provided. If no accountId is provided, the currently connected User to AzureAd is taken. |
-| [`Get-AzureAdAdminRole`](/docs/Get-AzureAdAdminRole.md)       | Displays all (active or eligible) Admin Roles assigned to an AzureAdUser                                                                        |
+| [`Enable-AzureAdAdminRole`](../docs/Enable-AzureAdAdminRole.md) | Enables Admin Roles assigned directly to the AccountId provided. If no accountId is provided, the currently connected User to AzureAd is taken. |
+| [`Get-AzureAdAdminRole`](../docs/Get-AzureAdAdminRole.md)       | Displays all (active or eligible) Admin Roles assigned to an AzureAdUser                                                                        |
 
 ### Support Functions
 
 | Function                                                                      | Description                                                                                   |
 | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| [`Assert-AzureAdConnection`](/docs/Assert-AzureAdConnection.md)               | Tests connection and visual feedback in the Verbose stream if called directly.                |
-| [`Assert-MicrosoftTeamsConnection`](/docs/Assert-MicrosoftTeamsConnection.md) | Tests connection and visual feedback in the Verbose stream if called directly.                |
-| [`Assert-SkypeOnlineConnection`](/docs/Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life* |
-| [`Test-AzureAdConnection`](/docs/Test-AzureAdConnection.md)                   | Verifying a Session to AzureAD exists                                                         |
-| [`Test-MicrosoftTeamsConnection`](/docs/Test-MicrosoftTeamsConnection.md)     | Verifying a Session to MicrosoftTeams exists                                                  |
-| [`Test-SkypeOnlineConnection`](/docs/Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                     |
-| [`Test-ExchangeOnlineConnection`](/docs/Test-ExchangeOnlineConnection.md)     | Verifying a Session to ExchangeOnline exists                                                  |
+| [`Assert-AzureAdConnection`](../docs/Assert-AzureAdConnection.md)               | Tests connection and visual feedback in the Verbose stream if called directly.                |
+| [`Assert-MicrosoftTeamsConnection`](../docs/Assert-MicrosoftTeamsConnection.md) | Tests connection and visual feedback in the Verbose stream if called directly.                |
+| [`Assert-SkypeOnlineConnection`](../docs/Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life* |
+| [`Test-AzureAdConnection`](../docs/Test-AzureAdConnection.md)                   | Verifying a Session to AzureAD exists                                                         |
+| [`Test-MicrosoftTeamsConnection`](../docs/Test-MicrosoftTeamsConnection.md)     | Verifying a Session to MicrosoftTeams exists                                                  |
+| [`Test-SkypeOnlineConnection`](../docs/Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                     |
+| [`Test-ExchangeOnlineConnection`](../docs/Test-ExchangeOnlineConnection.md)     | Verifying a Session to ExchangeOnline exists                                                  |
 
 The Assert cmdlets are nested in all Scripts to ensure sessions are created and available
 

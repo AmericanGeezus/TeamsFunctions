@@ -14,10 +14,10 @@ Common Area Phone being User Accounts could be managed with the normal Voice Con
 
 | Function                                                           | Underlying Function | Description                                                                                             |
 | ------------------------------------------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------- |
-| [`New-TeamsCommonAreaPhone`](/docs/New-TeamsCommonAreaPhone.md)       | New-AzureAdUser     | Creates a Common Area Phone and applies settings to it as provided.                                     |
-| [`Get-TeamsCommonAreaPhone`](/docs/Get-TeamsCommonAreaPhone.md)       | Get-CsOnlineUser    | Queries a Common Area Phone with friendly inputs (UPN) and output                                       |
-| [`Set-TeamsCommonAreaPhone`](/docs/Set-TeamsCommonAreaPhone.md)       | Set-CsUser          | Changes a Common Area Phone                                                                             |
-| [`Remove-TeamsCommonAreaPhone`](/docs/Remove-TeamsCommonAreaPhone.md) | Remove-AzureAdUser  | Removes configuration (with `Remove-TeamsUserVoiceConfig`), then removes the User (requires User Admin) |
+| [`New-TeamsCommonAreaPhone`](../docs/New-TeamsCommonAreaPhone.md)       | New-AzureAdUser     | Creates a Common Area Phone and applies settings to it as provided.                                     |
+| [`Get-TeamsCommonAreaPhone`](../docs/Get-TeamsCommonAreaPhone.md)       | Get-CsOnlineUser    | Queries a Common Area Phone with friendly inputs (UPN) and output                                       |
+| [`Set-TeamsCommonAreaPhone`](../docs/Set-TeamsCommonAreaPhone.md)       | Set-CsUser          | Changes a Common Area Phone                                                                             |
+| [`Remove-TeamsCommonAreaPhone`](../docs/Remove-TeamsCommonAreaPhone.md) | Remove-AzureAdUser  | Removes configuration (with `Remove-TeamsUserVoiceConfig`), then removes the User (requires User Admin) |
 
 ## EXAMPLES
 

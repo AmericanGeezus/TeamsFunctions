@@ -14,10 +14,10 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 
 | Function                                                          | Underlying Function    | Description                                                                                  |
 | ----------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------- |
-| [`Get-TeamsAutoAttendant`](/docs/Get-TeamsAutoAttendant.md)       | Get-CsAutoAttendant    | Queries an Auto Attendant                                                                    |
+| [`Get-TeamsAutoAttendant`](../docs/Get-TeamsAutoAttendant.md)       | Get-CsAutoAttendant    | Queries an Auto Attendant                                                                    |
 | Set-TeamsAutoAttendant                                            | Set-CsAutoAttendant    | Changes an Auto Attendant with friendly input. Alias to Set-CsAutoAttendant only!            |
-| [`New-TeamsAutoAttendant`](/docs/New-TeamsAutoAttendant.md)       | New-CsAutoAttendant    | Creates an Auto Attendant with defaults (Disconnect, Standard Business Hours schedule, etc.) |
-| [`Remove-TeamsAutoAttendant`](/docs/Remove-TeamsAutoAttendant.md) | Remove-CsAutoAttendant | Removes an Auto Attendant from the Tenant                                                    |
+| [`New-TeamsAutoAttendant`](../docs/New-TeamsAutoAttendant.md)       | New-CsAutoAttendant    | Creates an Auto Attendant with defaults (Disconnect, Standard Business Hours schedule, etc.) |
+| [`Remove-TeamsAutoAttendant`](../docs/Remove-TeamsAutoAttendant.md) | Remove-CsAutoAttendant | Removes an Auto Attendant from the Tenant                                                    |
 
 ## Support CmdLets
 
@@ -25,17 +25,17 @@ Creating a Menu or a Call Flow feels clunky to me, the commands require excessiv
 
 | Function                                                                     | Underlying Function                        | Description                                                                                                       |
 | ---------------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| [`Import-TeamsAudioFile`](/docs/Import-TeamsAudioFile)                       | Import-CsOnlineAudioFile                   | Imports an Audio File for use within Call Queues or Auto Attendants                                               |
-| [`Get-PublicHolidayCountry`](/docs/Get-PublicHolidayCountry)                 |                                            | Lists all supported Countries for Public Holidays (from Nager.Date)                                               |
-| [`Get-PublicHolidayList`](/docs/Get-PublicHolidayList)                       |                                            | Lists all Public Holidays for a specific Country (from Nager.Date)                                                |
-| [`New-TeamsAutoAttendantCallFlow`](/docs/New-TeamsAutoAttendantCallFlow)     | New-CsAutoAttendantCallFlow                | Creates a `CallFlow` Object with a Prompt and Menu and some default options.                                      |
+| [`Import-TeamsAudioFile`](../docs/Import-TeamsAudioFile)                       | Import-CsOnlineAudioFile                   | Imports an Audio File for use within Call Queues or Auto Attendants                                               |
+| [`Get-PublicHolidayCountry`](../docs/Get-PublicHolidayCountry)                 |                                            | Lists all supported Countries for Public Holidays (from Nager.Date)                                               |
+| [`Get-PublicHolidayList`](../docs/Get-PublicHolidayList)                       |                                            | Lists all Public Holidays for a specific Country (from Nager.Date)                                                |
+| [`New-TeamsAutoAttendantCallFlow`](../docs/New-TeamsAutoAttendantCallFlow)     | New-CsAutoAttendantCallFlow                | Creates a `CallFlow` Object with a Prompt and Menu and some default options.                                      |
 | New-TeamsAutoAttendantCallHandlingAssociation                                | New-CsAutoAttendantCallHandlingAssociation | This is only an alias, as a CallHandlingAssociation is only combining a `Schedule` object and a `CallFlow` object |
-| [`New-TeamsAutoAttendantDialScope`](/docs/New-TeamsAutoAttendantDialScope)   | New-CsAutoAttendantDialScope               | Creates a `DialScope` Object for provided Office 365 Group Names                                                  |
-| [`New-TeamsAutoAttendantMenu`](/docs/New-TeamsAutoAttendantMenu)             | New-CsAutoAttendantMenu                    | Creates a `Menu` Object for Menu Options in two possible inputs                                                   |
-| [`New-TeamsAutoAttendantMenuOption`](/docs/New-TeamsAutoAttendantMenuOption) | New-CsAutoAttendantMenuOption              | Creates a `MenuOption` Object for easier use                                                                      |
-| [`New-TeamsAutoAttendantPrompt`](/docs/New-TeamsAutoAttendantPrompt)         | New-CsAutoAttendantPrompt                  | Creates a `Prompt` Object and simplifies usage as it determines the type based on the input string.               |
-| [`New-TeamsAutoAttendantSchedule`](/docs/New-TeamsAutoAttendantSchedule)     | New-CsAutoAttendantSchedule                | Creates a `Schedule` Object and simplifies input for use in AA CHA. Multiple default options are available        |
-| [`New-TeamsCallableEntity`](/docs/New-TeamsCallableEntity)                   | New-CsAutoAttendantCallableEntity          | Creates a `CallableEntity` Object given a CallTarget (type is enumerated)                                         |
+| [`New-TeamsAutoAttendantDialScope`](../docs/New-TeamsAutoAttendantDialScope)   | New-CsAutoAttendantDialScope               | Creates a `DialScope` Object for provided Office 365 Group Names                                                  |
+| [`New-TeamsAutoAttendantMenu`](../docs/New-TeamsAutoAttendantMenu)             | New-CsAutoAttendantMenu                    | Creates a `Menu` Object for Menu Options in two possible inputs                                                   |
+| [`New-TeamsAutoAttendantMenuOption`](../docs/New-TeamsAutoAttendantMenuOption) | New-CsAutoAttendantMenuOption              | Creates a `MenuOption` Object for easier use                                                                      |
+| [`New-TeamsAutoAttendantPrompt`](../docs/New-TeamsAutoAttendantPrompt)         | New-CsAutoAttendantPrompt                  | Creates a `Prompt` Object and simplifies usage as it determines the type based on the input string.               |
+| [`New-TeamsAutoAttendantSchedule`](../docs/New-TeamsAutoAttendantSchedule)     | New-CsAutoAttendantSchedule                | Creates a `Schedule` Object and simplifies input for use in AA CHA. Multiple default options are available        |
+| [`New-TeamsCallableEntity`](../docs/New-TeamsCallableEntity)                   | New-CsAutoAttendantCallableEntity          | Creates a `CallableEntity` Object given a CallTarget (type is enumerated)                                         |
 
 ## EXAMPLES
 
