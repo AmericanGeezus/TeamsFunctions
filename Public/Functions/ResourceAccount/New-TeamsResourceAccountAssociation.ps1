@@ -176,6 +176,12 @@ function New-TeamsResourceAccountAssociation {
       }
     }
 
+    # Breaks the chain if no eligible accounts are found.
+    if ( -not $Accounts ) {
+      Write-Warning -Message "No Resource Accounts found eligible for Association. Stopping."
+      return
+    }
+
     $Operation = 'Processing found Resource Accounts'
     $step++
     Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)

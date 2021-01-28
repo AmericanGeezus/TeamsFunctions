@@ -226,7 +226,6 @@ function Find-TeamsUserVoiceRoute {
                 # Populating MatchedVoiceRoutes
                 $MatchedVoiceRoutesByPriority = $MatchedVoiceRoutes | Where-Object { $_.PSTNUsage -eq $UserVoiceRouting.OnlinePstnUsage } | Sort-Object Priority
                 $UserVoiceRouting.MatchedVoiceRoutes = $MatchedVoiceRoutesByPriority.Name -join (', ')
-                #if ( $MatchedVoiceRoutes.Count -gt 1 ) { #TEST This could be used to attach all with .ToString (like AA)  }
                 Write-Verbose "OVP '$($User.OnlineVoiceRoutingPolicy)' - OPU '$($UserVoiceRouting.OnlinePstnUsage)' - Matching Voice Route(s): $($UserVoiceRouting.MatchedVoiceRoutes)"
 
                 # Selecting Voice Route
