@@ -31,6 +31,7 @@ function Get-RandomQuote {
   #>
 
   param ()
+  #Show-FunctionStatus -Level Live
 
   $Quote = "Thank you for using my Module! (David Eberhardt)", `
     "Ready Player 1  |  Player 2, Insert Coin", "YOU MUST CONSTRUCT ADDITIONAL PYLONS!", "Houston, we have a problem.", `

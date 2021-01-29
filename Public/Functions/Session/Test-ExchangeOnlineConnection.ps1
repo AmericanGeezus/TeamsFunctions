@@ -2,7 +2,7 @@
 # Function: Testing
 # Author:		David Eberhardt
 # Updated:  01-JUN-2020
-# Status:   PreLive
+# Status:   Live
 
 function Test-ExchangeOnlineConnection {
   <#

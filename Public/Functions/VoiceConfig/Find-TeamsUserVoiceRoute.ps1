@@ -2,7 +2,7 @@
 # Function: VoiceRouting
 # Author:	  David Eberhardt
 # Updated:  28-DEC-2020
-# Status:   RC
+# Status:   Live
 
 
 #EXPAND: Make Number an Array?
@@ -64,7 +64,7 @@ function Find-TeamsUserVoiceRoute {
   )
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

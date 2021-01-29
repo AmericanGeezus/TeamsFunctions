@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  12-DEC-2020
-# Status:   RC
+# Status:   Live
 
 
 
@@ -167,7 +167,7 @@ function New-TeamsAutoAttendantMenu {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

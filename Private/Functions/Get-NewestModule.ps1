@@ -29,6 +29,7 @@ function Get-NewestModule {
   param (
     [string[]]$Module
   )
+  #Show-FunctionStatus -Level Live
 
   foreach ($M in $Module) {
     $MyModule = Get-Module "$M" -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1

@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   PreLive
+# Status:   Live
 
 
 #CHECK ToString manipulation. Evaluate better display: , to Line feed ; Reordering of objects (Menu Option: DtmfResponse, VoiceResponse, Action, Call Target)
@@ -241,7 +241,7 @@ function New-TeamsAutoAttendant {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

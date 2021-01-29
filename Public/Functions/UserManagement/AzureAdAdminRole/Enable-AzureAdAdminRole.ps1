@@ -2,7 +2,7 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    20-DEC-2020
-# Status:     RC
+# Status:     Live
 
 
 #TODO: Privileged Admin Groups buildout
@@ -25,7 +25,7 @@ function Enable-AzureAdAdminRole {
     Teams Communications Administrator, Teams Service Administrator
     This switch, when used, tries to enable all found admin role
   .PARAMETER Duration
-     Optional. Integer. By default, enables Roles for 4 hours.
+    Optional. Integer. By default, enables Roles for 4 hours.
     Depending on your Administrators settings, values between 1 and 24 hours can be specified
   .PARAMETER TicketNr
     Optional. Integer. Only used if provided
@@ -109,7 +109,7 @@ function Enable-AzureAdAdminRole {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

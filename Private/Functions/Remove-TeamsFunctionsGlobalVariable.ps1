@@ -26,6 +26,7 @@ function Remove-TeamsFunctionsGlobalVariable {
   #>
 
   param ()
+  #Show-FunctionStatus -Level Live
 
   $VariableNames = @(
     "TeamsFunctionsMSTelephoneNumbers", # Used for Microsoft TelephoneNumbers from the Tenant

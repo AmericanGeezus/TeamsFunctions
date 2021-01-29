@@ -65,9 +65,6 @@ function Show-FunctionStatus {
       "RC" {
         Write-Verbose -Message "$Function has [RC] Status: Testing still commences. Please report issues via GitHub" -Verbose
       }
-      "PreLive" {
-        Write-Verbose -Message "$Function has [PreLIVE] Status. Please report issues via GitHub or 'TeamsFunctions@outlook.com'"
-      }
       "Live" {
         Write-Verbose -Message "$Function is [LIVE]. Please report issues via GitHub or 'TeamsFunctions@outlook.com'"
       }

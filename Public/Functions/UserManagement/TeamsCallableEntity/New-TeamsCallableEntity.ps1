@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:		David Eberhardt
 # Updated:  01-OCT-2020
-# Status:   RC
+# Status:   Live
 
 
 
@@ -81,17 +81,13 @@ function New-TeamsCallableEntity {
     [ValidateSet('User', 'ExternalPstn', 'SharedVoicemail', 'ApplicationEndpoint')]
     [string]$Type,
 
-    <#
-    [Parameter(HelpMessage = "OutputType: Object or ObjectId")]
-    [switch]$ReturnObjectIdOnly,
- #>
     [Parameter(HelpMessage = 'Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified')]
     [switch]$Force
 
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
