@@ -205,7 +205,7 @@ function Connect-SkypeOnline {
 
     <# Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
     $IdleTimeoutMS = (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
-    $OperationTimeout = $IdleTimeoutMS - (New-TimeSpan -Minutes 15).TotalMilliseconds
+    $OperationTimeout = $IdleTimeoutMS - (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
     $CancelTimeout = (New-TimeSpan -Seconds 30).TotalMilliseconds
     $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutMS -CancelTimeout $CancelTimeout -OperationTimeout $OperationTimeout
     Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"

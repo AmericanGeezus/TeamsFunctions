@@ -134,13 +134,14 @@ function Connect-Me {
     Write-Verbose -Message "$Status - $Operation"
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
     if ( $SkypeModule ) {
+      Write-Warning -Message "Module 'SkypeOnlineConnector' detected. This module is deprecated and no longer required. If it remains on the system, it may interfere in execution of Connection Commands. Removing Module from Session - Please uninstall SkypeOnlineConnector (MSI)!"
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
     }
     Import-Module MicrosoftTeams -Global -Force -Verbose:$false
 
     if ( $AzureAdPreviewModule -and -not (Assert-Module AzureAdPreview )) {
       if ( -not (Assert-Module AzureAd) ) {
-        throw "Error importing Module: Neither AzureAd nor AzureAdPreview are available"
+        throw 'Error importing Module: Neither AzureAd nor AzureAdPreview are available'
       }
     }
 
