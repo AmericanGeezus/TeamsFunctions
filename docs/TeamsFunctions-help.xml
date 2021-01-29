@@ -666,7 +666,7 @@
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicrosoft.com</dev:code>
         <dev:remarks>
-          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   The OverrideAdminDomin is queried from the AzureAd Tenant once the connection has been established.   If used explicitly, this will use the provided OverrideAdminDomain</maml:para>
+          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   The OverrideAdminDomain is queried from the AzureAd Tenant once the connection has been established.   If used explicitly, this will use the provided OverrideAdminDomain</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -1678,21 +1678,6 @@
           <maml:description>
             <maml:para>Required for ParameterSet Search: A 3-255 digit string to be found on any Object.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-      <command:syntaxItem>
-        <maml:name>Find-AzureAdUser</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName, Id">
-          <maml:name>Identity</maml:name>
-          <maml:description>
-            <maml:para>Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.</maml:para>
-          </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
             <maml:name>String[]</maml:name>
@@ -1707,18 +1692,6 @@
         <maml:name>SearchString</maml:name>
         <maml:description>
           <maml:para>Required for ParameterSet Search: A 3-255 digit string to be found on any Object.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName, Id">
-        <maml:name>Identity</maml:name>
-        <maml:description>
-          <maml:para>Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -14808,7 +14781,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Set-TeamsUserVoiceConfig</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:description>
             <maml:para>UserPrincipalName (UPN) of the User to change the configuration for</maml:para>
@@ -14831,7 +14804,7 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
           <maml:name>OnlineVoiceRoutingPolicy</maml:name>
           <maml:description>
             <maml:para>Required for DirectRouting. Assigns an Online Voice Routing Policy to the User</maml:para>
@@ -14925,7 +14898,7 @@
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Set-TeamsUserVoiceConfig</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:description>
             <maml:para>UserPrincipalName (UPN) of the User to change the configuration for</maml:para>
@@ -15042,7 +15015,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName">
         <maml:name>Identity</maml:name>
         <maml:description>
           <maml:para>UserPrincipalName (UPN) of the User to change the configuration for</maml:para>
@@ -15066,7 +15039,7 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
         <maml:name>OnlineVoiceRoutingPolicy</maml:name>
         <maml:description>
           <maml:para>Required for DirectRouting. Assigns an Online Voice Routing Policy to the User</maml:para>

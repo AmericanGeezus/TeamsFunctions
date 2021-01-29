@@ -14,7 +14,7 @@ Enables a User to consume Voice services in Teams (Pstn breakout)
 
 ### DirectRouting (Default)
 ```
-Set-TeamsUserVoiceConfig [-Identity] <String> [-DirectRouting] -OnlineVoiceRoutingPolicy <String>
+Set-TeamsUserVoiceConfig [-Identity] <String> [-DirectRouting] [-OnlineVoiceRoutingPolicy <String>]
  [-TenantDialPlan <String>] -PhoneNumber <String> [-Force] [-PassThru] [-WriteErrorLog] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
@@ -76,12 +76,12 @@ UserPrincipalName (UPN) of the User to change the configuration for
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -110,7 +110,7 @@ Type: String
 Parameter Sets: DirectRouting
 Aliases: OVP
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

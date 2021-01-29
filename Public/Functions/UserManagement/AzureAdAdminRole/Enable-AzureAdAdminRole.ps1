@@ -123,7 +123,9 @@ function Enable-AzureAdAdminRole {
 
     # Importing Module
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
+    #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
     try {
+      Remove-Module AzureAd -Force -ErrorAction SilentlyContinue
       Import-Module AzureAdPreview -Global -Force -ErrorAction Stop
     }
     catch {

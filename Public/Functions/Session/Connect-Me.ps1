@@ -136,22 +136,12 @@ function Connect-Me {
     if ( $SkypeModule ) {
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
     }
-    try {
-      if ( -not (Assert-Module MicrosoftTeams) ) {
-        throw
-      }
-      if ( -not (Assert-Module AzureAdPreview) ) {
-        if ( -not (Assert-Module AzureAd) ) {
-          throw
-        }
-      }
-    }
-    catch {
-      throw "$Service - Error importing Module: $($_.Exception.Message)"
-    }
+    Import-Module MicrosoftTeams -Global -Force -Verbose:$false
 
-    if ($TeamsModule.Version -lt '1.1.6') {
-      throw 'Module MicrosoftTeams is outdated. Please update to at least v1.1.6'
+    if ( $AzureAdPreviewModule -and -not (Assert-Module AzureAdPreview )) {
+      if ( -not (Assert-Module AzureAd) ) {
+        throw "Error importing Module: Neither AzureAd nor AzureAdPreview are available"
+      }
     }
 
     # Privileged Identity Management

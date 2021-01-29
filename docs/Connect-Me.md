@@ -57,7 +57,7 @@ Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicro
 
 Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
-  The OverrideAdminDomin is queried from the AzureAd Tenant once the connection has been established.
+  The OverrideAdminDomain is queried from the AzureAd Tenant once the connection has been established.
   If used explicitly, this will use the provided OverrideAdminDomain
 
 ## PARAMETERS
