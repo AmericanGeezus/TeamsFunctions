@@ -8,6 +8,21 @@ Update Markdown files with Platypus does not automatically update .MD files...
 
 Pester tests do fail still - Test "doc" (Update-DocsAndPester)
 
+- [x] Create Docs
+- [x] Create Help
+- [x] Populate about-help
+- [ ] Add Examples to each About
+  - [x] Examples for Licensing
+  - [ ] Examples for SupportFunctions
+  - [ ] Examples for AutoAttendant
+  - [ ] Examples for CallableEntities
+  - [x] Examples for CallQueue
+  - [ ] Examples for CommonAreaPhone
+  - [ ] Examples for ResourceAccount
+  - [ ] Examples for Session
+  - [x] Examples for UserManagement
+  - [ ] Examples for VoiceConfiguration
+
 ## Auto Attendant
 
 ### New-TeamsAutoAttendant

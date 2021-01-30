@@ -13,7 +13,7 @@ Common Area Phone being User Accounts could be managed with the normal Voice Con
 ## CmdLets
 
 | Function                                                           | Underlying Function | Description                                                                                             |
-| ------------------------------------------------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------------------------------: | ------------------- | ------------------------------------------------------------------------------------------------------- |
 | [`New-TeamsCommonAreaPhone`](../docs/New-TeamsCommonAreaPhone.md)       | New-AzureAdUser     | Creates a Common Area Phone and applies settings to it as provided.                                     |
 | [`Get-TeamsCommonAreaPhone`](../docs/Get-TeamsCommonAreaPhone.md)       | Get-CsOnlineUser    | Queries a Common Area Phone with friendly inputs (UPN) and output                                       |
 | [`Set-TeamsCommonAreaPhone`](../docs/Set-TeamsCommonAreaPhone.md)       | Set-CsUser          | Changes a Common Area Phone                                                                             |
@@ -43,7 +43,7 @@ CmdLets are not tested yet.
 
 ## TROUBLESHOOTING NOTE
 
-CmdLets are in Beta still, please be patient with me on these and submit issues as you find them.
+CmdLets are fully built (RC), but not much testing time has yet been spent on them. Please be patient with me on these and submit issues as you find them.
 
 ## SEE ALSO
 

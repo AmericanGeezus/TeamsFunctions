@@ -15,7 +15,7 @@ The introduction of Privileged Identity Management and Privileged Access Groups 
 ## CmdLets
 
 | Function                                                    | Description                                                                                                                                  |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| -----------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`Connect-SkypeOnline`](../docs/Connect-SkypeOnline.md)       | Creates a Session to SkypeOnline                                                                            |
 | [`Connect-Me`](../docs/Connect-Me.md) (con)                   | Creates a Session to SkypeOnline and AzureAD in one go. Only displays **ONE** authentication prompt, and, if applicable, **ONE** MFA prompt! Also tries to enable your Admin Roles in PIM. |
 | [`Disconnect-SkypeOnline`](../docs/Disconnect-SkypeOnline.md) | Disconnects from a Session to SkypeOnline. This helps preventing timeouts and hanging sessions                                                       |
@@ -30,14 +30,14 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 > [!NOTE] Please **note**, that Privileged Admin Groups are currently not covered by these CmdLets. This will be added as soon as they have been fully documented and PowerShell CmdLets are available for them.
 
 | Function                                                      | Description                                                                                                                                     |
-| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| -------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`Enable-AzureAdAdminRole`](../docs/Enable-AzureAdAdminRole.md) | Enables Admin Roles assigned directly to the AccountId provided. If no accountId is provided, the currently connected User to AzureAd is taken. |
 | [`Get-AzureAdAdminRole`](../docs/Get-AzureAdAdminRole.md)       | Displays all (active or eligible) Admin Roles assigned to an AzureAdUser                                                                        |
 
 ### Support Functions
 
 | Function                                                                      | Description                                                                                   |
-| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| -----------------------------------------------------------------------------: | --------------------------------------------------------------------------------------------- |
 | [`Assert-AzureAdConnection`](../docs/Assert-AzureAdConnection.md)               | Tests connection and visual feedback in the Verbose stream if called directly.                |
 | [`Assert-MicrosoftTeamsConnection`](../docs/Assert-MicrosoftTeamsConnection.md) | Tests connection and visual feedback in the Verbose stream if called directly.                |
 | [`Assert-SkypeOnlineConnection`](../docs/Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life* |

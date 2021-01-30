@@ -13,7 +13,7 @@ Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bi
 ## CmdLets
 
 | Function                                                    | Underlying Function | Description                                                        |
-| ----------------------------------------------------------- | ------------------- | ------------------------------------------------------------------ |
+| -----------------------------------------------------------: | ------------------- | ------------------------------------------------------------------ |
 | [`Get-TeamsCallQueue`](../docs/Get-TeamsCallQueue.md)       | Get-CsCallQueue     | Queries a Call Queue with friendly inputs (UPN) and output         |
 | [`New-TeamsCallQueue`](../docs/New-TeamsCallQueue.md)       | New-CsCallQueue     | Creates a Call Queue with friendly inputs (File Names, UPNs, etc.) |
 | [`Set-TeamsCallQueue`](../docs/Set-TeamsCallQueue.md)       | Set-CsCallQueue     | Changes a Call Queue with friendly inputs (File Names, UPNs, etc.) |
@@ -44,6 +44,7 @@ New-TeamsCallQueue [-Name] "My Queue" -UseMicrosoftDefaults
 # Thresholds: Overflow 50, Timeout 1200s
 
 ```
+For more detailed examples, please see the Docs for the individual CmdLets
 
 ### Example 3 - Setting with the Pipeline
 

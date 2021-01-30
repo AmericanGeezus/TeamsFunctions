@@ -17,7 +17,7 @@ Functions that do not build the core of this module, but nevertheless are useful
 Taking a backup of every outputable CmdLet that Teams has to offer. Curtesy of Ken Lasko
 
 | Function                                            | Description                                                                                                         |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------- |
 | [`Backup-TeamsEV`](../docs/Backup-TeamsEV.md)         | Takes a backup of all EnterpriseVoice related features in Teams.                                                    |
 | [`Restore-TeamsEV`](../docs/Restore-TeamsEV.md)       | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!                       |
 | [`Backup-TeamsTenant`](../docs/Backup-TeamsTenant.md) | An adaptation of the above, backing up as much as can be gathered through available `Get`-Commands from the tenant. |
@@ -29,7 +29,7 @@ Taking a backup of every outputable CmdLet that Teams has to offer. Curtesy of K
 String reformatting is needed to normalise Numbers as E.164 numbers and allow a more diverse input (like: `'+1(555)-1234 567'`) it also serves to normalise DisplayNames and UPNs should characters be used that are not allowed.
 
 | Function                                                                              | Description                                                                                                                  |
-| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| -------------------------------------------------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------- |
 | [`Format-StringForUse`](../docs/Format-StringForUse.md)                                 | Prepares a string for use as DisplayName, UserPrincipalName, LineUri or E.164 Number, removing special characters as needed. |
 | [`Format-StringRemoveSpecialCharacter`](../docs/Format-StringRemoveSpecialCharacter.md) | Formats a String and removes special characters (harmonising Display Names)                                                  |
 | [`Get-RegionFromCountryCode`](../docs/Get-RegionFromCountryCode.md)                     | Just a little helper figuring out which geographical region (AMER, EMEA, APAC) a specific country is in.                     |
@@ -40,7 +40,7 @@ String reformatting is needed to normalise Numbers as E.164 numbers and allow a 
 These are helper functions for testing Connections and Modules. All Functions return boolean output. Asserting the Status of the SkypeOnline Connection however also tries to reconnect a broken session in the hope of reducing downtime.
 
 | Function                                                                      | Description                                                                                                 |
-| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| -----------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------- |
 | [`Assert-AzureAdConnection`](../docs/Assert-AzureAdConnection.md)               | Tests connection and visual feedback in the Verbose stream if called directly.                              |
 | [`Assert-MicrosoftTeamsConnection`](../docs/Assert-MicrosoftTeamsConnection.md) | Tests connection and visual feedback in the Verbose stream if called directly.                              |
 | [`Assert-SkypeOnlineConnection`](../docs/Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*               |
@@ -64,14 +64,14 @@ These are helper functions for testing Connections and Modules. All Functions re
 '+1(555)-1234 567' | Format-StringForUse -As E164
 ```
 
-This will return `+15551234567`
+This will format the String as an E.164 number and return `+15551234567`
 
 ```powershell
 # Example 2 will format numbers as a TEL URI
-'+1(555)-1234 567' | Format-StringForUse -As E164
+'+1(555)-1234 567' | Format-StringForUse -As LineUri
 ```
 
-This will return `tel:+15551234567`. This could also have an extension set.
+This will format the String as a TelUri or LineUri to be used in Teams and return `tel:+15551234567`. Note, that this could also have an extension set, but this example focuses on the Number normalisation aspect.
 
 ## NOTE
 

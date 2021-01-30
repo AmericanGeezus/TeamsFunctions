@@ -13,7 +13,7 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 ## CmdLets
 
 | Function                                                          | Underlying Function    | Description                                                                                  |
-| ----------------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------- |
+| -----------------------------------------------------------------: | ---------------------- | -------------------------------------------------------------------------------------------- |
 | [`Get-TeamsAutoAttendant`](../docs/Get-TeamsAutoAttendant.md)       | Get-CsAutoAttendant    | Queries an Auto Attendant                                                                    |
 | Set-TeamsAutoAttendant                                            | Set-CsAutoAttendant    | Changes an Auto Attendant with friendly input. Alias to Set-CsAutoAttendant only!            |
 | [`New-TeamsAutoAttendant`](../docs/New-TeamsAutoAttendant.md)       | New-CsAutoAttendant    | Creates an Auto Attendant with defaults (Disconnect, Standard Business Hours schedule, etc.) |
@@ -24,7 +24,7 @@ The complexity of the AutoAttendants and design principles of PowerShell ("one f
 Creating a Menu or a Call Flow feels clunky to me, the commands require excessive chaining in order to create a full Auto Attendant. The complexity of the AutoAttendants also has spawned a few support functions. Keeping in step with them and simplifying their use a bit is what my take on them represents.
 
 | Function                                                                     | Underlying Function                        | Description                                                                                                       |
-| ---------------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| ----------------------------------------------------------------------------: | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | [`Import-TeamsAudioFile`](../docs/Import-TeamsAudioFile)                       | Import-CsOnlineAudioFile                   | Imports an Audio File for use within Call Queues or Auto Attendants                                               |
 | [`Get-PublicHolidayCountry`](../docs/Get-PublicHolidayCountry)                 |                                            | Lists all supported Countries for Public Holidays (from Nager.Date)                                               |
 | [`Get-PublicHolidayList`](../docs/Get-PublicHolidayList)                       |                                            | Lists all Public Holidays for a specific Country (from Nager.Date)                                                |

@@ -15,7 +15,7 @@ These scripts aim to address all these requirements and validate them before all
 ## CmdLets
 
 | Function                                                  | Description                                                                                                                             |
-| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------- |
 | [`Find-TeamsCallableEntity`](../docs/Find-TeamsCallableEntity.md) | Searches all Call Queues and/or all Auto Attendants for a connected/targeted `Callable Entity` (TelURI, User, Group, Resource Account). |
 | [`Get-TeamsCallableEntity`](../docs/Get-TeamsCallableEntity.md)   | Creates a new Object emulating the output of a `Callable Entity`, validating the Object type and its usability for CQs or AAs.          |
 | [`New-TeamsCallableEntity`](../docs/New-TeamsCallableEntity.md)   | Used for Auto Attendants, creates a `Callable Entity` Object given a CallTarget (the type is enumerated through lookup)                 |
