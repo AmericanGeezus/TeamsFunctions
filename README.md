@@ -40,6 +40,8 @@ Teams evolves constantly, so does this Module: Released monthly, with weekly pre
 - Performance improvements, bug fixing and more testing
 - Adding Functional improvements to lookup
 - Adding individual Scripts to ease admin tasks
+- TeamsCommonAreaPhone CmdLets (Testing)
+- TeamsAnalogDevice CmdLets (Design & Build)
 
 ### Extension plans
 

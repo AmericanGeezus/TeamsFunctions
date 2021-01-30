@@ -79,7 +79,8 @@ Accept wildcard characters: False
 ### -OverrideAdminDomain
 Optional.
 Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.
-If an AccountId is provided, the Domain is constructed from the domain part and only queried from the User if needed.
+If a Session to AzureAd exists, the TenantDomain will be used as the OverrideAdminDomain.
+Please see notes for details
 
 ```yaml
 Type: String
@@ -127,9 +128,8 @@ SkypeOnline)
 
 New-CsOnlineSession is available in the Module MicrosoftTeams or the MSI-Installer SkypeOnlineConnector which is
 now deprecated and no longer actively supported.
-When using the SkypeOnlineConnector, a separate connection
-to MicrosoftTeams must be established to also manage Teams and Channels use Connect-MicrosoftTeams to connect.
-When using the Module MicrosoftTeams, a connection is always established to both!
+This CmdLet uses the Command from the Module MicrosoftTeams,
+which always establishes a connection to both Teams and SkypeOnline!
 
 Background:
 In order to retire the SkypeOnlineConnector, the CmdLet New-CsOnlineSession was ported to MicrosoftTeams (in v1.1.6)
@@ -143,8 +143,10 @@ The ability to reconnect a session depends on the settings in the Tenant.
 Re-Authentication may be required.
 
 OverrideAdminDomain Handling and Example:
-AccountId John@domain.com - Domain.com is first used as the OverrideAdminDomain
-If unsuccessful, "domain.onmicrosoft.com" is tried.
+AccountId John@domain.com -
+If a Session to AzureAd is already established, the TenantDomain from Get-AzureAdCurrentSessionInfo is used.
+If no Session to AzureAd exists, 'Domain.com' is tried first as the OverrideAdminDomain
+If unsuccessful, 'domain.onmicrosoft.com' is tried.
 If this too is unsuccessful, the OverrideAdminDomain is queried from the User for input.
 
 Session Timeout & Reconnection:
@@ -160,7 +162,6 @@ re-run Connect-SkypeOnline to recreate the session cleanly.
 Please note that hanging sessions can cause lockout (session exhaustion)
 
 This CmdLet is preforming the following Tasks:
-- Verifying Module MicrosoftTeams or SkypeOnlineConnector are installed and imported
 - Prompting for Username and password to establish the session
 - Prompting for MFA if required
 - Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)

@@ -49,7 +49,10 @@ Will search for the string "John@domain.com" and return all Azure AD Objects fou
 ## PARAMETERS
 
 ### -SearchString
-Required for ParameterSet Search: A 3-255 digit string to be found on any Object.
+Required.
+A 3-255 digit string to be found on any Object.
+Performs multiple searches against the Searches against this sting and parts thereof.
+Uses Get-AzureAd-User -SearchString and Get-AzureAdUser -Filter and subsequently Get-AzureAdUser -ObjectType
 
 ```yaml
 Type: String[]
