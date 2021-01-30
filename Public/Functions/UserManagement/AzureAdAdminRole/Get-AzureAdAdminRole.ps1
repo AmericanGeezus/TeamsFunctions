@@ -68,8 +68,12 @@ function Get-AzureAdAdminRole {
     if ($Type -eq 'Eligible') {
       #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
       try {
+        Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
+        $SaveVerbosePreference = $global:VerbosePreference;
+        $global:VerbosePreference = 'SilentlyContinue';
         Remove-Module AzureAd -Force -ErrorAction SilentlyContinue
         Import-Module AzureAdPreview -Global -Force -ErrorAction Stop
+        $global:VerbosePreference = $SaveVerbosePreference
       }
       catch {
         Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'

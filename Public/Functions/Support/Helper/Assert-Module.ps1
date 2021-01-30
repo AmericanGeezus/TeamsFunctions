@@ -89,12 +89,16 @@ function Assert-Module {
           return $true
         }
         else {
+          Write-Verbose -Message "Importing Module '$M'"
+          $SaveVerbosePreference = $global:VerbosePreference;
+          $global:VerbosePreference = 'SilentlyContinue';
           if ($M -eq 'MicrosoftTeams') {
             Import-Module -Name $M -Global -Force -Verbose:$false -ErrorAction SilentlyContinue
           }
           else {
             Import-Module -Name $M -Global -Verbose:$false -ErrorAction SilentlyContinue
           }
+          $global:VerbosePreference = $SaveVerbosePreference
           if (Get-Module -Name $M -WarningAction SilentlyContinue) {
             return $true
           }

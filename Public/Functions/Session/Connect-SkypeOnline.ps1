@@ -142,8 +142,12 @@ function Connect-SkypeOnline {
     $Parameters += @{ 'WarningAction' = 'Continue' }
 
     # Module Prerequisites
+    Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
+    $SaveVerbosePreference = $global:VerbosePreference;
+    $global:VerbosePreference = 'SilentlyContinue';
     Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
     Import-Module MicrosoftTeams -Global -Force -Verbose:$false
+    $global:VerbosePreference = $SaveVerbosePreference
 
     # Validating existing Connection to AzureAd
     $AzureAdConnection = Test-AzureADConnection
@@ -244,6 +248,7 @@ function Connect-SkypeOnline {
 
     if ( $SkypeOnlineSession ) {
       try {
+        Write-Verbose -Message "Importing temporary Module from Import-PSSession"
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global -Verbose:$false
         $null = Enable-CsOnlineSessionForReconnection
         Write-Information "$($MyInvocation.MyCommand) - Session is enabled for reconnection! You are prompted to reconnect, if possible."

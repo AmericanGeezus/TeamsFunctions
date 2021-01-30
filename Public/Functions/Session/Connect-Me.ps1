@@ -137,7 +137,11 @@ function Connect-Me {
       Write-Warning -Message "Module 'SkypeOnlineConnector' detected. This module is deprecated and no longer required. If it remains on the system, it may interfere in execution of Connection Commands. Removing Module from Session - Please uninstall SkypeOnlineConnector (MSI)!"
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
     }
+    Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
+    $SaveVerbosePreference = $global:VerbosePreference;
+    $global:VerbosePreference = 'SilentlyContinue';
     Import-Module MicrosoftTeams -Global -Force -Verbose:$false
+    $global:VerbosePreference = $SaveVerbosePreference
 
     if ( $AzureAdPreviewModule -and -not (Assert-Module AzureAdPreview )) {
       if ( -not (Assert-Module AzureAd) ) {
