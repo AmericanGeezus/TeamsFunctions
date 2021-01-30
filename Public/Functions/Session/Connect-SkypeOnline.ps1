@@ -190,7 +190,7 @@ function Connect-SkypeOnline {
         Write-Information "$($MyInvocation.MyCommand) - OverrideAdminDomain not used. If prompted, please provide."
       }
     }
-
+    <#CHECK Applying any session Options will result in 15mins timeouts - able to reconnect, but still, not good.
     # Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
     $IdleTimeoutMS = (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
     $CancelTimeout = (New-TimeSpan -Seconds 30).TotalMilliseconds
@@ -200,7 +200,7 @@ function Connect-SkypeOnline {
       "Function: $($MyInvocation.MyCommand.Name): Session Options:", ($SessionOption | Format-List | Out-String).Trim() | Write-Debug
     }
     $Parameters += @{ 'SessionOption' = $SessionOption }
-
+    #>
   } #begin
 
   process {
