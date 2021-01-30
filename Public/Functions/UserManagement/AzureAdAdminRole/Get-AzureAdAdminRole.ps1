@@ -2,7 +2,7 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    01-SEP-2020
-# Status:     PreLive
+# Status:     Live
 
 
 #TODO Add Eligible Groups
@@ -57,7 +57,7 @@ function Get-AzureAdAdminRole {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -66,8 +66,14 @@ function Get-AzureAdAdminRole {
 
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
     if ($Type -eq 'Eligible') {
+      #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
       try {
-        Import-Module AzureAdPreview -Force -ErrorAction Stop
+        Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
+        $SaveVerbosePreference = $global:VerbosePreference;
+        $global:VerbosePreference = 'SilentlyContinue';
+        Remove-Module AzureAd -Force -ErrorAction SilentlyContinue
+        Import-Module AzureAdPreview -Global -Force -ErrorAction Stop
+        $global:VerbosePreference = $SaveVerbosePreference
       }
       catch {
         Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'

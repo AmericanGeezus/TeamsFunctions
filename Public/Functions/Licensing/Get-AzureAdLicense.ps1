@@ -2,7 +2,7 @@
 # Function: Licensing
 # Author:		Philipp, Scripting.up-in-the.cloud
 # Updated:  01-DEC-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -55,7 +55,7 @@ function Get-AzureAdLicense {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -146,6 +146,7 @@ function Get-AzureAdLicense {
           }
 
           # reworking ProductName into TitleCase
+          $VerbosePreference = 'SilentlyContinue'
           $TextInfo = (Get-Culture).TextInfo
           $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
           $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep '()+ -'
@@ -241,6 +242,7 @@ function Get-AzureAdLicense {
       if ( $ProductName -match "$StringToCut" ) {
         $ProductName = $ProductName.Substring($StringToCut.Length, $ProductName.Length - $StringToCut.Length)
       }
+      $VerbosePreference = 'SilentlyContinue'
       $ProductName = Format-StringRemoveSpecialCharacter -String $ProductName -SpecialCharacterToKeep '()+ '
 
       # Building Object

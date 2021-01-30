@@ -2,7 +2,7 @@
 # Function: CallQueue
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -344,7 +344,7 @@ function New-TeamsCallQueue {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -811,7 +811,9 @@ function New-TeamsCallQueue {
       [void]$Parameters.Remove('OverflowAction')
     }
     else {
-      Write-Information "'$NameNormalised' OverflowAction used: '$OverflowAction'"
+      if ($Parameters.ContainsKey('OverflowAction')) {
+        Write-Information "'$NameNormalised' OverflowAction used: '$OverflowAction'"
+      }
     }
     # NOTE: This is only applicable to NEW, not to SET
     if (-not $Parameters.OverflowActionTarget) {
@@ -1025,21 +1027,22 @@ function New-TeamsCallQueue {
     if ($Parameters.TimeoutActionTarget -eq '') {
       [void]$Parameters.Remove('TimeoutActionTarget')
     }
-    else {
-      Write-Information "'$NameNormalised' TimeoutActionTarget: '$TimeoutActionTarget'"
-    }
-
     if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'DisconnectWithBusy')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
     }
     else {
-      Write-Information "'$NameNormalised' TimeoutAction: '$TimeoutAction'"
+      if ($Parameters.ContainsKey('TimeoutAction')) {
+        Write-Information "'$NameNormalised' TimeoutAction: '$TimeoutAction'"
+      }
     }
     # NOTE: This is only applicable to NEW, not to SET
     if (-not $Parameters.TimeoutActionTarget) {
       [void]$Parameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
       [void]$Parameters.Remove('TimeoutSharedVoicemailAudioFile')
+    }
+    else {
+      Write-Information "'$NameNormalised' TimeoutActionTarget: '$TimeoutActionTarget'"
     }
     #endregion
     #endregion

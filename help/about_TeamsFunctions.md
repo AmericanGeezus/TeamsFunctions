@@ -41,11 +41,13 @@ This seems to be a constant work-in progress so please bear with me with any iss
 
 ## REQUIREMENTS
 
-- PowerShell v5.1 is required, v7.1 works though is still being tested
+- PowerShell v5.1 is required,
+- PowerShell v7.1 throws an error [when connecting to AzureAd](https://github.com/PowerShell/PowerShell/issues/10473)<br />Currently no connection is possible!
+- Module `MicrosoftTeams`
 - Module `AzureAd` or `AzureAdPreview`
 Some functions are only available with the Preview module until they become generally available and move to the AzureAd Module
-- Module `MicrosoftTeams` or `SkypeOnlineConnector`
-The OnlineConnector is deprecated, but the replacement function (`New-CsOnlineSession`) does not replace all functionality. The Username parameter is gone and with it seamless single-sign on.
+
+> [!NOTE] The Module `SkypeOnlineConnector` is deprecated and has been removed as a dependency from this Module with v21.2 - Connection is now solely established with the MicrosoftTeams Module
 
 ## TROUBLESHOOTING NOTE
 
@@ -57,28 +59,22 @@ Please attach `Verbose` and/or `Debug` output of the Script in question and anon
 
 ## SEE ALSO
 
-[about_TeamsFunctionsAliases](about_TeamsFunctionsAliases.md)
-
-[about_TeamsSession](about_TeamsSession.md)
-
-[about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
-
-[about_TeamsCallQueue](about_TeamsCallQueue.md)
-
-[about_TeamsResourceAccount](about_TeamsResourceAccount.md)
-
-[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
-
-[about_Licensing](about_Licensing.md)
-
-[about_UserManagement](about_UserManagement.md)
-
-[about_VoiceConfiguration](about_VoiceConfiguration.md)
-
-[about_Supporting_Functions](about_Supporting_Functions.md)
+- [about_TeamsFunctionsAliases](about_TeamsFunctionsAliases.md)
+- [about_TeamsSession](about_TeamsSession.md)
+- [about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
+- [about_TeamsCallQueue](about_TeamsCallQueue.md)
+- [about_TeamsResourceAccount](about_TeamsResourceAccount.md)
+- [about_Licensing](about_Licensing.md)
+- [about_UserManagement](about_UserManagement.md)
+- [about_TeamsCallableEntity](about_TeamsCallableEntity.md)
+- [about_TeamsCommonAreaPhone](about_TeamsCommonAreaPhone.md)
+- [about_TeamsAnalogDevice](about_TeamsAnalogDevice.md)
+- [about_VoiceConfiguration](about_VoiceConfiguration.md)
+- [about_Supporting_Functions](about_Supporting_Functions.md)
 
 ## KEYWORDS
 
 - Functions
 - CmdLets
 - ReadMe
+- About

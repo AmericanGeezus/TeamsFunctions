@@ -105,7 +105,8 @@ function Enable-CsOnlineSessionForReconnection {
 
               #note - this magic string has to be same as above, search for this string above, it will become clear
               #because this will be in callback handler, I am not putting this into const variable
-              $sfbPsSessionPrefix = 'SfBPowerShellSession_'
+              #$sfbPsSessionPrefix = 'SfBPowerShellSession_'
+              $sfbPsSessionPrefix = 'SfBPowerShellSession' #Changed to allow capture of Session Name with MicrosoftTeams
               #sessions originally created will have the below one
               $sfbPsSessionRegEx1 = $sfbPsSessionPrefix + '*'
               #sessions created later will get their name changed by powershell during Set-PSImplicitRemotingSession

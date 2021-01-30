@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO Filter currently doesn't work - update lik OVP, examples like OVP and Documentation
+
 
 function Get-TeamsTDP {
   <#

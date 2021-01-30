@@ -57,7 +57,7 @@ function Connect-MeToTheO365Service {
   )
 
   begin {
-    Show-FunctionStatus -Level Live
+    #Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
@@ -123,7 +123,10 @@ function Connect-MeToTheO365Service {
               Connect-MicrosoftTeams @ConnectionParameters
             }
           }
-          'SkypeOnline' { Connect-SkypeOnline @ConnectionParameters }
+          'SkypeOnline' {
+            [void]$ConnectionParameters.Remove('AccountId')
+            Connect-SkypeOnline @ConnectionParameters
+          }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }
         }
 

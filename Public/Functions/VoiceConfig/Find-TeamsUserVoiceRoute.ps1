@@ -2,7 +2,7 @@
 # Function: VoiceRouting
 # Author:	  David Eberhardt
 # Updated:  28-DEC-2020
-# Status:   RC
+# Status:   Live
 
 
 #EXPAND: Make Number an Array?
@@ -64,7 +64,7 @@ function Find-TeamsUserVoiceRoute {
   )
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -226,7 +226,6 @@ function Find-TeamsUserVoiceRoute {
                 # Populating MatchedVoiceRoutes
                 $MatchedVoiceRoutesByPriority = $MatchedVoiceRoutes | Where-Object { $_.PSTNUsage -eq $UserVoiceRouting.OnlinePstnUsage } | Sort-Object Priority
                 $UserVoiceRouting.MatchedVoiceRoutes = $MatchedVoiceRoutesByPriority.Name -join (', ')
-                #if ( $MatchedVoiceRoutes.Count -gt 1 ) { #TEST This could be used to attach all with .ToString (like AA)  }
                 Write-Verbose "OVP '$($User.OnlineVoiceRoutingPolicy)' - OPU '$($UserVoiceRouting.OnlinePstnUsage)' - Matching Voice Route(s): $($UserVoiceRouting.MatchedVoiceRoutes)"
 
                 # Selecting Voice Route

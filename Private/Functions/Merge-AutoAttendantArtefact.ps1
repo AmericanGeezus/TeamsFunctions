@@ -72,6 +72,7 @@ function Merge-AutoAttendantArtefact {
     #Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
+    $OFS = ''
   } #begin
 
   process {
@@ -91,7 +92,7 @@ function Merge-AutoAttendantArtefact {
           }
 
           Add-Member -Force -InputObject $SingleObject -MemberType ScriptMethod -Name ToString -Value {
-            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
           }
 
           $MergedObject += Add-Member -InputObject $SingleObject -TypeName TeamsFunctions.AA.DisplayPrompt -PassThru
@@ -114,7 +115,8 @@ function Merge-AutoAttendantArtefact {
             }
 
             Add-Member -Force -InputObject $CallTarget -MemberType ScriptMethod -Name ToString -Value {
-              [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+              #[System.Environment]::NewLine +
+              (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
             }
           }
           else {
@@ -124,15 +126,15 @@ function Merge-AutoAttendantArtefact {
           # Creating Object
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
-            'Action'         = $O.Action
             'DtmfResponse'   = $O.DtmfResponse
             'VoiceResponses' = $O.VoiceResponses
-            'CallTarget'     = $CallTarget
             'Prompt'         = $O.Prompt
+            'Action'         = $O.Action
+            'CallTarget'     = $CallTarget
           }
 
           Add-Member -Force -InputObject $SingleObject -MemberType ScriptMethod -Name ToString -Value {
-            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            ([System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine).replace(',', [System.Environment]::NewLine)
           }
 
           $MergedObject += Add-Member -InputObject $SingleObject -TypeName TeamsFunctions.AA.MenuOption -PassThru
@@ -153,7 +155,7 @@ function Merge-AutoAttendantArtefact {
           }
 
           Add-Member -Force -InputObject $SingleObject -MemberType ScriptMethod -Name ToString -Value {
-            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
           }
 
           $MergedObject += Add-Member -InputObject $SingleObject -TypeName TeamsFunctions.AA.Menu -PassThru
@@ -173,7 +175,7 @@ function Merge-AutoAttendantArtefact {
           }
 
           Add-Member -Force -InputObject $SingleObject -MemberType ScriptMethod -Name ToString -Value {
-            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
           }
 
           $MergedObject += Add-Member -InputObject $SingleObject -TypeName TeamsFunctions.AA.CallFlow -PassThru
@@ -200,7 +202,7 @@ function Merge-AutoAttendantArtefact {
                 'SundayHours'       = $O.WeeklyRecurrentSchedule.DisplaySundayHours
               }
               Add-Member -Force -InputObject $WeeklyRecurrentSchedule -MemberType ScriptMethod -Name ToString -Value {
-                [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+                [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
               }
             }
 
@@ -221,7 +223,7 @@ function Merge-AutoAttendantArtefact {
           }
 
           Add-Member -Force -InputObject $SingleObject -MemberType ScriptMethod -Name ToString -Value {
-            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
           }
           $MergedObject += Add-Member -InputObject $SingleObject -TypeName TeamsFunctions.AA.Schedule -PassThru
         }
@@ -231,21 +233,6 @@ function Merge-AutoAttendantArtefact {
 
       'CallHandlingAssociation' {
         foreach ($O in $Object) {
-          <# INFO Alternatively, this Object can be drilled down further (but would be duplicate)
-          $AACallHandlingAssociationsSchedule = @()
-          foreach ($ScheduleId in $item.ScheduleId) {
-            $Schedule = Get-CsOnlineSchedule -Id $ScheduleId
-            $CHASchedule = [PsCustomObject][ordered]@{
-              'Name' = $Schedule.Name
-              'Type' = $Schedule.Type
-              'Id'   = $Schedule.Id
-            }
-            Add-Member -Force -InputObject $CHASchedule -MemberType ScriptMethod -Name ToString -Value {
-              [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
-            }
-            $AACallHandlingAssociationsSchedule += Add-Member -InputObject $CHASchedule -TypeName My.CallHandlingAssociation -PassThru
-          }
-          #>
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
             'Type'     = $O.Type
@@ -255,7 +242,7 @@ function Merge-AutoAttendantArtefact {
           }
 
           Add-Member -Force -InputObject $SingleObject -MemberType ScriptMethod -Name ToString -Value {
-            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$')
+            [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
           }
           $MergedObject += Add-Member -InputObject $SingleObject -TypeName TeamsFunctions.AA.CallHandlingAssociation -PassThru
         }

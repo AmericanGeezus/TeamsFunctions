@@ -80,4 +80,4 @@ function Disconnect-SkypeOnline {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Disconnect-SkypeOnline
+} # Disconnect-SkypeOnline

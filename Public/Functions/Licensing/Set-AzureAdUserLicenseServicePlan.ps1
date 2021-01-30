@@ -2,7 +2,7 @@
 # Function: VoiceConfig/Licensing
 # Author:		David Eberhardt
 # Updated:  10-JAN-2021
-# Status:   PreLive
+# Status:   Live
 
 
 #FIXME Check application. PhoneSystem on E5 should be found but returns "not present!" Add Warning if it should be there (baseline)
@@ -99,7 +99,7 @@ function Set-AzureAdUserLicenseServicePlan {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

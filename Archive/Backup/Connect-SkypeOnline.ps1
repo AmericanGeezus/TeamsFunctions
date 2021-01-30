@@ -22,7 +22,7 @@ function Connect-SkypeOnline {
     Please see Notes for a detailed example
 	.PARAMETER OverrideAdminDomain
     Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.
-    If a Session to AzureAd exists, the TenantDomain will be used as the OverrideAdminDomain. Please see notes for details
+    If an AccountId is provided, the Domain is constructed from the domain part and only queried from the User if needed.
 	.PARAMETER IdleTimeout
 		Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
     By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
@@ -49,8 +49,9 @@ function Connect-SkypeOnline {
     A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E. SkypeOnline)
 
     New-CsOnlineSession is available in the Module MicrosoftTeams or the MSI-Installer SkypeOnlineConnector which is
-    now deprecated and no longer actively supported. This CmdLet uses the Command from the Module MicrosoftTeams,
-    which always establishes a connection to both Teams and SkypeOnline!
+    now deprecated and no longer actively supported. When using the SkypeOnlineConnector, a separate connection
+    to MicrosoftTeams must be established to also manage Teams and Channels use Connect-MicrosoftTeams to connect.
+    When using the Module MicrosoftTeams, a connection is always established to both!
 
     Background:
     In order to retire the SkypeOnlineConnector, the CmdLet New-CsOnlineSession was ported to MicrosoftTeams (in v1.1.6)
@@ -63,10 +64,8 @@ function Connect-SkypeOnline {
     The ability to reconnect a session depends on the settings in the Tenant. Re-Authentication may be required.
 
     OverrideAdminDomain Handling and Example:
-    AccountId John@domain.com -
-    If a Session to AzureAd is already established, the TenantDomain from Get-AzureAdCurrentSessionInfo is used.
-    If no Session to AzureAd exists, 'Domain.com' is tried first as the OverrideAdminDomain
-    If unsuccessful, 'domain.onmicrosoft.com' is tried.
+    AccountId John@domain.com - Domain.com is first used as the OverrideAdminDomain
+    If unsuccessful, "domain.onmicrosoft.com" is tried.
     If this too is unsuccessful, the OverrideAdminDomain is queried from the User for input.
 
     Session Timeout & Reconnection:
@@ -81,6 +80,7 @@ function Connect-SkypeOnline {
     Please note that hanging sessions can cause lockout (session exhaustion)
 
     This CmdLet is preforming the following Tasks:
+    - Verifying Module MicrosoftTeams or SkypeOnlineConnector are installed and imported
     - Prompting for Username and password to establish the session
     - Prompting for MFA if required
     - Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)
@@ -122,7 +122,7 @@ function Connect-SkypeOnline {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level PreLive
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -138,52 +138,126 @@ function Connect-SkypeOnline {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     $Parameters = $null
-    $Parameters += @{ 'ErrorAction' = 'Stop' }
-    $Parameters += @{ 'WarningAction' = 'Continue' }
+    $Parameters += @{'ErrorAction' = 'Stop' }
+    $Parameters += @{'WarningAction' = 'Continue' }
 
-    # Module Prerequisites
-    Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
-    $SaveVerbosePreference = $global:VerbosePreference;
-    $global:VerbosePreference = 'SilentlyContinue';
-    Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
-    Import-Module MicrosoftTeams -Global -Force -Verbose:$false
-    $global:VerbosePreference = $SaveVerbosePreference
+    #region Module Prerequisites
+    # Loading modules and determining available options
+    $TeamsModule, $SkypeModule = Get-NewestModule MicrosoftTeams, SkypeOnlineConnector
+    if ( $SkypeModule ) {
+      Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
+    }
+    else {
+
+    }
+
+    if ( -not $TeamsModule -and -not $SkypeModule ) {
+      Write-Verbose -Message 'Module SkypeOnlineConnector not installed. Module is deprecated, but can be downloaded here: https://www.microsoft.com/en-us/download/details.aspx?id=39366'
+      Write-Information 'Module MicrosoftTeams not installed. Please install v1.1.6 or higher'
+      Write-Error -Message 'Module missing. Please install MicrosoftTeams or SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
+    }
+    elseif ( $TeamsModule.Version -lt '1.1.6' -and -not $SkypeModule ) {
+      try {
+        Write-Warning -Message 'Module MicrosoftTeams is outdated, trying to update to v1.1.6'
+        Update-Module MicrosoftTeams -Force -ErrorAction Stop
+        $TeamsModule = Get-NewestModule MicrosoftTeams
+        Assert-Module MicrosoftTeams
+      }
+      catch {
+        Write-Information 'Module MicrosoftTeams could not be updated. Please install v1.1.6 or higher'
+        Write-Error -Message 'Module outdated. Please update Module MicrosoftTeams or install SkypeOnlineConnector' -Category ObjectNotFound -ErrorAction Stop
+      }
+    }
+    elseif ( $TeamsModule.Version -ge '1.1.6' -and -not $SkypeModule ) {
+      Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
+      Assert-Module MicrosoftTeams
+    }
+    elseif ( $SkypeModule ) {
+      if ($SkypeModule.Version.Major -ne 7) {
+        Write-Error -Message 'Module SkypeOnlineConnector outdated. Version 7 is required. Please switch to Module MicrosoftTeams or update SkypeOnlineConnector to Version 7' -Category ObjectNotFound -ErrorAction Stop
+      }
+      else {
+        Write-Warning -Message 'Module SkypeOnlineConnector is deprecated. Please switch to using MicrosoftTeams soon'
+        Remove-Module MicrosoftTeams -ErrorAction SilentlyContinue -Verbose:$false
+        if (-not (Get-Module SkypeOnlineConnector)) {
+          Import-Module SkypeOnlineConnector -Global -Verbose:$false -ErrorAction Stop
+        }
+      }
+    }
+
+    # Verifying Module is loaded correctly
+    if ( $TeamsModule.Version -ge '1.1.6' -and -not (Get-Module MicrosoftTeams)) {
+      Write-Verbose "Module 'MicrosoftTeams' - import failed. Trying to import again (forcefully)!"
+      Import-Module MicrosoftTeams -Global -Force
+    }
+    #endregion
+
+    #region CsOnlineSession, CsOnlineSessionForReconnection, SessionOptions
+    # Determining capabilities of New-CsOnlineSession
+    $Command = 'New-CsOnlineSession'
+    try {
+      $CsOnlineSessionCommand = Get-Command -Name $Command -ErrorAction Stop
+      $CsOnlineUsername = $CsOnlineSessionCommand.Parameters.Keys.Contains('Username')
+    }
+    catch {
+      Write-Error -Message "Command '$Command' not available. Please validate Modules MicrosoftTeams or SkypeOnlineConnector" -Category ObjectNotFound -ErrorAction Stop
+    }
+
+    <# Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
+    $IdleTimeoutMS = (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
+    $OperationTimeout = $IdleTimeoutMS - (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
+    $CancelTimeout = (New-TimeSpan -Seconds 30).TotalMilliseconds
+    $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutMS -CancelTimeout $CancelTimeout -OperationTimeout $OperationTimeout
+    Write-Verbose -Message "Idle Timeout for session established: $IdleTimeout hours"
+
+    $Parameters += @{ 'SessionOption' = $SessionOption }
+    #>
+    #endregion
+
+    # Existing Session
+    if (Test-SkypeOnlineConnection) {
+      Write-Warning -Message "$($MyInvocation.MyCommand) - A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
+      break
+    }
+    else {
+      # Cleanup of global Variables set
+      Remove-TeamsFunctionsGlobalVariable
+    }
 
     # Validating existing Connection to AzureAd
     $AzureAdConnection = Test-AzureADConnection
     if ($AzureAdConnection) {
       $AzureSessionInfo = Get-AzureADCurrentSessionInfo
+      $AccountId = $AzureSessionInfo.Account
       $TenantDomain = $AzureSessionInfo.TenantDomain
-      if ( $AccountId -and $AccountId -ne $AzureSessionInfo.Account ) {
-        Write-Warning "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'. - '$AccountId' is ignored"
-        $AccountId = $AzureSessionInfo.Account
+      Write-Information "$($MyInvocation.MyCommand) - AzureAd: Connected. Using Account '$AccountId'"
+    }
+    else {
+      if ($CsOnlineUsername) {
+        if ( -not $PSBoundParameters.ContainsKey('AccountId')) {
+          $AccountId = Read-Host 'Enter the sign-in address of a Skype for Business Admin'
+        }
+        Write-Information "$($MyInvocation.MyCommand) - AzureAd: Not connected. Using Account '$AccountId'"
       }
       else {
-        Write-Information "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'"
-      }
-
-      # Existing Session
-      if (Test-SkypeOnlineConnection) {
-        Write-Warning -Message "$($MyInvocation.MyCommand) - A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
-        break
-      }
-      else {
+        if ( -not $PSBoundParameters.ContainsKey('AccountId')) {
+          Write-Information "$($MyInvocation.MyCommand) - AzureAd: Not connected. Not using AccountId. Please provide when prompted!"
+        }
       }
     }
-    elseif (Test-SkypeOnlineConnection) {
-      # Cleanup of global Variables set
-      Write-Verbose -Message 'Cleaning up Global Variables'
-      Remove-TeamsFunctionsGlobalVariable
+
+    # Parameters Username and OverrideAdminDomain
+    if ($CsOnlineUsername) {
+      $Parameters += @{ 'Username' = $AccountId }
     }
 
-    # OverrideAdminDomain
     if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
       Write-Information "$($MyInvocation.MyCommand) - OverrideAdminDomain provided. Using Domain '$OverrideAdminDomain'"
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
     }
     else {
       if ($AzureAdConnection) {
-        Write-Verbose -Message "$($MyInvocation.MyCommand) - OverrideAdminDomain from AzureAd. Using Domain '$TenantDomain'"
+        Write-Information "$($MyInvocation.MyCommand) - OverrideAdminDomain from AzureAd. Using Domain '$TenantDomain'"
         $Parameters += @{ 'OverrideAdminDomain' = $TenantDomain }
       }
       else {
@@ -191,15 +265,10 @@ function Connect-SkypeOnline {
       }
     }
 
-    # Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
-    $IdleTimeoutMS = (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
-    $CancelTimeout = (New-TimeSpan -Seconds 30).TotalMilliseconds
-    $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutMS -CancelTimeout $CancelTimeout -OperationTimeout $IdleTimeoutMS
-    Write-Information "$($MyInvocation.MyCommand) - Session Options: Idle Timeout set to: $IdleTimeout hours"
+    # Debug information on Parameters
     if ($PSBoundParameters.ContainsKey('Debug')) {
-      "Function: $($MyInvocation.MyCommand.Name): Session Options:", ($SessionOption | Format-List | Out-String).Trim() | Write-Debug
+      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
-    $Parameters += @{ 'SessionOption' = $SessionOption }
 
   } #begin
 
@@ -208,11 +277,7 @@ function Connect-SkypeOnline {
 
     # Creating Session
     try {
-      # Debug information on Parameters
-      if ($PSBoundParameters.ContainsKey('Debug')) {
-        "Function: $($MyInvocation.MyCommand.Name): Connection `#1: Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
-      Write-Host 'INFORMATION: AccountId cannot be pre-selected - Please select Account manually!' -ForegroundColor Magenta
+      Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
       $SkypeOnlineSession = New-CsOnlineSession @Parameters
     }
     catch [System.Net.WebException] {
@@ -228,13 +293,10 @@ function Connect-SkypeOnline {
           $Parameters.OverrideAdminDomain = $Domain
         }
         else {
-          $Parameters += @{ 'OverrideAdminDomain' = $Domain }
+          $Parameters += @{'OverrideAdminDomain' = $Domain }
         }
         # Creating Session (again)
-        # Debug information on Parameters
-        if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name): Connection `#2: Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
+        Write-Verbose -Message "Creating Session with New-CsOnlineSession and these parameters: $($Parameters.Keys)"
         $SkypeOnlineSession = New-CsOnlineSession @Parameters
       }
       catch {
@@ -259,10 +321,9 @@ function Connect-SkypeOnline {
 
     if ( $SkypeOnlineSession ) {
       try {
-        Write-Verbose -Message 'Importing temporary Module from Import-PSSession'
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global -Verbose:$false
         $null = Enable-CsOnlineSessionForReconnection
-        Write-Information "$($MyInvocation.MyCommand) - Session is enabled for reconnection! You are prompted to reconnect, if possible."
+        Write-Information "$($MyInvocation.MyCommand) - Session is enabled for reconnection! You are prompted to reconnect if possible."
         Write-Verbose -Message 'The success of reconnection attempts depends on a few factors, including the Tenants Security settings' -Verbose
       }
       catch {

@@ -2,7 +2,7 @@
 # Function:   Session
 # Author:     David Eberhardt
 # Updated:    01-OCT-2020
-# Status:     PreLive
+# Status:     Live
 
 
 
@@ -23,11 +23,12 @@ function Assert-SkypeOnlineConnection {
   #>
 
   [CmdletBinding()]
-  [Alias('PoL')]
+  [Alias('pol')]
   [OutputType([Boolean])]
   param() #param
 
   begin {
+    Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 

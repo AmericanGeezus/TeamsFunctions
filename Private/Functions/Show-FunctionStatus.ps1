@@ -60,16 +60,13 @@ function Show-FunctionStatus {
       "Beta" {
         $DebugPreference = "Continue"
         $VerbosePreference = "Continue"
-        Write-Debug -Message "$Function has [BETA] Status: Build is not completed, functionality missing or parts untested. Please report issues via GitHub"
+        Write-Debug -Message "$Function has [BETA] Status: Build is not completed, functionality may be missing. Please report issues via GitHub"
       }
       "RC" {
-          Write-Verbose -Message "$Function has [RC] Status: Functional, but still being tested. Please report issues via GitHub" -Verbose
-      }
-      "PreLive" {
-        Write-Verbose -Message "$Function has [PreLIVE] Status. Should you encounter issues, please get in touch via GitHub or 'TeamsFunctions@outlook.com'"
+        Write-Verbose -Message "$Function has [RC] Status: Testing still commences. Please report issues via GitHub" -Verbose
       }
       "Live" {
-        Write-Verbose -Message "$Function is [LIVE]. Should you encounter issues, please get in touch via GitHub or 'TeamsFunctions@outlook.com'"
+        Write-Verbose -Message "$Function is [LIVE]. Please report issues via GitHub or 'TeamsFunctions@outlook.com'"
       }
       "Unmanaged" {
         Write-Verbose -Message "$Function is [LIVE] but [UNMANAGED] and comes as-is."

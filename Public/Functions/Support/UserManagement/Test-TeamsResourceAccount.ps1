@@ -2,7 +2,7 @@
 # Function: Support
 # Author:	David Eberhardt
 # Updated:  01-JUL-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -51,7 +51,7 @@ function Test-TeamsResourceAccount {
 	) #param
 
 	begin {
-		Show-FunctionStatus -Level PreLive
+		Show-FunctionStatus -Level Live
 		Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
 		# Asserting SkypeOnline Connection
@@ -63,7 +63,7 @@ function Test-TeamsResourceAccount {
 		Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 		if ( $Quick ) {
 			Write-Verbose -Message 'Querying AzureAdUser (Quick search and fast, but may not be 100% accurate!)'
-			$User = Get-AzureAdUser -ObjectId $Identity
+			$User = Get-AzureADUser -ObjectId $Identity
 			if ( $User.Department -eq 'Microsoft Communication Application Instance') {
 				return $true
 			}

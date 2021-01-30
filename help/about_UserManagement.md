@@ -8,56 +8,56 @@ Managing AzureAdUsers, Groups, ResourceAccounts for use in CQs and AAs.
 
 ## LONG DESCRIPTION
 
+User Management CmdLets are covering a range of topics, from Analog Devices, Common Area Phones, Resource Accounts to Users and Groups. This page focuses on uncategorised CmdLets that supplement the User Management aspect. Please see section 'See Also' for links to related topics.
+
 Finding Users, Groups or other objects is sometimes too complex for my taste. Using `Get-AzureAdUser -Searchstring "$UPN"` is fine, but sometimes I just want to bash in the UserPrincipalName or Group Name and get a result. Some helper functions that simplify input a bit and expand on the functionality of Callable Entity:
 
 ## CmdLets
 
 | Function                                                  | Description                                                                                                                             |
-| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Find-AzureAdGroup`](Find-AzureAdGroup.md)               | Helper Function to find AzureAd Groups. Returns Objects if found. Simplifies Lookup and Search of Objects                               |
-| [`Find-AzureAdUser`](Find-AzureAdUser.md)                 | Helper Function to find AzureAd Users. Returns Objects if found. Simplifies Lookup and Search of Objects                                |
-| [`Find-TeamsCallableEntity`](Find-TeamsCallableEntity.md) | Searches all Call Queues and/or all Auto Attendants for a connected/targeted `Callable Entity` (TelURI, User, Group, Resource Account). |
-| [`Get-TeamsCallableEntity`](Get-TeamsCallableEntity.md)   | Creates a new Object emulating the output of a `Callable Entity`, validating the Object type and its usability for CQs or AAs.          |
-| [`New-TeamsCallableEntity`](New-TeamsCallableEntity.md)   | Used for Auto Attendants, creates a `Callable Entity` Object given a CallTarget (the type is enumerated through lookup)                 |
+| ---------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------- |
+| [`Find-AzureAdGroup`](../docs/Find-AzureAdGroup.md)               | Helper Function to find AzureAd Groups. Returns Objects if found. Simplifies Lookup and Search of Objects                               |
+| [`Find-AzureAdUser`](../docs/Find-AzureAdUser.md)                 | Helper Function to find AzureAd Users. Returns Objects if found. Simplifies Lookup and Search of Objects                                |
+
+> [!Note] On first run, Find-AzureAdGroup (and other CmdLets that are working with AzureAd Groups) will load all Groups available in the Tenant into a Global variable. This is done as searches against AzureAd Groups are somewhat clunky and overall performance is improved when validating and looking up information.
+> <br />All global variables will be removed when closing the PowerShell window or disconnecting from the Tenant with `Disconnect-Me`
 
 ## Support CmdLet
 
 | Function                                                    | Description                                                                                 |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| [`Test-AzureAdGroup`](Test-AzureAdGroup.md)                 | Testing whether the Group exists in AzureAd                                                 |
-| [`Test-AzureAdUser`](Test-AzureAdUser.md)                   | Testing whether the User exists in AzureAd (NOTE: Resource Accounts are AzureAd Users too!) |
-| [`Test-TeamsResourceAccount`](Test-TeamsResourceAccount.md) | Testing whether a Resource Account exists in AzureAd                                        |
-| [`Test-TeamsUser`](Test-TeamsUser.md)                       | Testing whether the User exists in SkypeOnline/Teams                                        |
+| -----------------------------------------------------------: | ------------------------------------------------------------------------------------------- |
+| [`Test-AzureAdGroup`](../docs/Test-AzureAdGroup.md)                 | Testing whether the Group exists in AzureAd                                                 |
+| [`Test-AzureAdUser`](../docs/Test-AzureAdUser.md)                   | Testing whether the User exists in AzureAd (NOTE: Resource Accounts are AzureAd Users too!) |
+| [`Test-TeamsResourceAccount`](../docs/Test-TeamsResourceAccount.md) | Testing whether a Resource Account exists in AzureAd                                        |
+| [`Test-TeamsUser`](../docs/Test-TeamsUser.md)                       | Testing whether the User exists in SkypeOnline/Teams                                        |
 
 ## EXAMPLES
 
-{{ Code or descriptive examples of how to leverage the functions described. }}
+These CmdLets do not require explicit use cases reflected here. Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
 
 ## NOTE
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+This page only lists the CmdLets that are not categorised further. See below for Callable Entities, Common Area Phones and Analog Devices, etc.
 
 ## TROUBLESHOOTING NOTE
 
-{{ Troubleshooting Placeholder - Warns users of bugs}}
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
-{{ Explains behavior that is likely to change with fixes }}
+There might be a few cases where the Output displays too much or too little. The Find-CmdLets took a while to properly be fine tuned. If you do not find something that you know is there, please let me know
 
 ## SEE ALSO
 
-[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
-
-[about_TeamsCommonAreaPhone](about_TeamsCommonAreaPhone.md)
+- [about_TeamsCallableEntity](about_TeamsCallableEntity.md)
+- [about_TeamsCommonAreaPhone](about_TeamsCommonAreaPhone.md)
+- [about_TeamsAnalogDevice](about_TeamsAnalogDevice.md)
+- [about_TeamsResourceAccount](about_TeamsResourceAccount.md)
+- [about_Licensing](about_Licensing.md)
 
 ## KEYWORDS
 
-{{List alternate names or titles for this topic that readers might use.}}
-
-- AzureAdUser
-- AzureAdGroup
-- CsOnlineUser
-- CsOnlineApplicationInstance
-- TeamsResourceAccount
-- TeamsCommonAreaPhone
-- TeamsIPPhone
-- TeamsAnalogDevice
+- User, AzureAdUser, CsOnlineUser
+- Group, AzureAdGroup
+- Resource, Resource Account, CsOnlineApplicationInstance
+- Common Area Phone
+- Analog Device
+- IP Phone

@@ -2,7 +2,7 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    20-DEC-2020
-# Status:     RC
+# Status:     Live
 
 
 #TODO: Privileged Admin Groups buildout
@@ -25,7 +25,7 @@ function Enable-AzureAdAdminRole {
     Teams Communications Administrator, Teams Service Administrator
     This switch, when used, tries to enable all found admin role
   .PARAMETER Duration
-     Optional. Integer. By default, enables Roles for 4 hours.
+    Optional. Integer. By default, enables Roles for 4 hours.
     Depending on your Administrators settings, values between 1 and 24 hours can be specified
   .PARAMETER TicketNr
     Optional. Integer. Only used if provided
@@ -109,7 +109,7 @@ function Enable-AzureAdAdminRole {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -123,8 +123,14 @@ function Enable-AzureAdAdminRole {
 
     # Importing Module
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
+    #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
     try {
-      Import-Module AzureAdPreview -Force -ErrorAction Stop
+      Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
+      $SaveVerbosePreference = $global:VerbosePreference;
+      $global:VerbosePreference = 'SilentlyContinue';
+      Remove-Module AzureAd -Force -ErrorAction SilentlyContinue -Verbose:$false
+      Import-Module AzureAdPreview -Global -Force -ErrorAction Stop -Verbose:$false
+      $global:VerbosePreference = $SaveVerbosePreference
     }
     catch {
       Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'

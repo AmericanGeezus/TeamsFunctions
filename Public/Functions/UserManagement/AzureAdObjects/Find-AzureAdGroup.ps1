@@ -1,11 +1,11 @@
-﻿# Module:   TeamsFunctions
-# Function: Support
-# Author:		David Eberhardt
-# Updated:  14-NOV-2020
-# Status:   PreLive
+﻿# Module:     TeamsFunctions
+# Function:   Lookup
+# Author:     David Eberhardt
+# Updated:    24-JAN-2021
+# Status:     Live
 
 
-#TODO Needs revision! Rework like AzureAdUser - Identity (Exact) and SearchString
+
 
 function Find-AzureAdGroup {
   <#
@@ -41,7 +41,7 @@ function Find-AzureAdGroup {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -65,25 +65,6 @@ function Find-AzureAdGroup {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    <# From Get-TeamsCallableEntity - would work
-    $CallTarget = $null
-    $CallTarget = Get-AzureADGroup -SearchString "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-    if (-not $CallTarget ) {
-      try {
-        $CallTarget = Get-AzureADGroup -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
-      }
-      catch {
-        Write-Verbose -Message 'Performing Search... finding ALL Groups'
-        if ($Id -match '@') {
-          $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        }
-        else {
-          $CallTarget = $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -EQ "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        }
-      }
-    }
-    #>
-
     [System.Collections.ArrayList]$Groups = @()
 
     $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -Like "*$Identity*"
@@ -96,11 +77,11 @@ function Find-AzureAdGroup {
 
     # Output - Filtering objects
     if ( $Groups ) {
-      $Groups | Get-Unique
+      $Groups | Sort-Object -Unique -Property ObjectId | Get-Unique
     }
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Find-AzureAdGroup
+} # Find-AzureAdGroup

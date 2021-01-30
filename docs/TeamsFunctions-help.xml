@@ -666,7 +666,7 @@
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicrosoft.com</dev:code>
         <dev:remarks>
-          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   The OverrideAdminDomin is queried from the AzureAd Tenant once the connection has been established.   If used explicitly, this will use the provided OverrideAdminDomain</maml:para>
+          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   The OverrideAdminDomain is queried from the AzureAd Tenant once the connection has been established.   If used explicitly, this will use the provided OverrideAdminDomain</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -1407,8 +1407,16 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>Online Version:</maml:linkText>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-CsOnlineSessionForReconnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Connect-SkypeOnline</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -1670,21 +1678,6 @@
           <maml:description>
             <maml:para>Required for ParameterSet Search: A 3-255 digit string to be found on any Object.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-      <command:syntaxItem>
-        <maml:name>Find-AzureAdUser</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName, Id">
-          <maml:name>Identity</maml:name>
-          <maml:description>
-            <maml:para>Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.</maml:para>
-          </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
             <maml:name>String[]</maml:name>
@@ -1699,18 +1692,6 @@
         <maml:name>SearchString</maml:name>
         <maml:description>
           <maml:para>Required for ParameterSet Search: A 3-255 digit string to be found on any Object.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName, Id">
-        <maml:name>Identity</maml:name>
-        <maml:description>
-          <maml:para>Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -3063,98 +3044,6 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
-      <command:name>Get-AzureAdAssignedAdminRoles</command:name>
-      <command:verb>Get</command:verb>
-      <command:noun>AzureAdAssignedAdminRoles</command:noun>
-      <maml:description>
-        <maml:para>Queries Admin Roles assigned to an Object</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>Azure Active Directory Admin Roles assigned to an Object Requires a Connection to AzureAd</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Get-AzureAdAssignedAdminRoles</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
-          <maml:name>Identity</maml:name>
-          <maml:description>
-            <maml:para>Enter the identity of the User to Query</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
-        <maml:name>Identity</maml:name>
-        <maml:description>
-          <maml:para>Enter the identity of the User to Query</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-    </command:parameters>
-    <command:inputTypes>
-      <command:inputType>
-        <dev:type>
-          <maml:name>System.String</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:inputType>
-    </command:inputTypes>
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>PSCustomObject</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>Returns an Object containing all Admin Roles assigned to a User. This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido) The Output can be used as baseline for other functions (-contains "Teams Service Admin")</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-AzureAdAssignedAdminRoles user@domain.com</dev:code>
-        <dev:remarks>
-          <maml:para>Returns an Object for all Admin Roles assigned</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Enable-AzureAdAdminRole</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Get-AzureAdAssignedAdminRoles</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -4665,7 +4554,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
           <maml:name>Usage</maml:name>
           <maml:description>
-            <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Voice Routing Policies (except "Global")</maml:para>
+            <maml:para>String. Name or part of the Online Pstn Usage. Can be omitted to list Names of all Usages. Searches for Usages with Get-CsOnlinePstnUsage, listing all that match.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -4680,7 +4569,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
         <maml:name>Usage</maml:name>
         <maml:description>
-          <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Voice Routing Policies (except "Global")</maml:para>
+          <maml:para>String. Name or part of the Online Pstn Usage. Can be omitted to list Names of all Usages. Searches for Usages with Get-CsOnlinePstnUsage, listing all that match.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -4694,7 +4583,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>It executes the following string: Get-CsOnlinePstnUsage Global | Select-Object Usage -ExpandProperty Usage</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like (Get-CsOnlinePstnUsage).Usage This CmdLet behaves slightly different than the others, due to the nature of Pstn Usages.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4709,7 +4598,7 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-TeamsOPU "PstnUsageName"</dev:code>
         <dev:remarks>
-          <maml:para>Lists all PstnUsages with the String PstnUsageName of all Online Pstn Usages</maml:para>
+          <maml:para>Lists all PstnUsages with the String 'PstnUsageName' in the name of the Online Pstn Usage</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -14800,7 +14689,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Set-TeamsUserVoiceConfig</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:description>
             <maml:para>UserPrincipalName (UPN) of the User to change the configuration for</maml:para>
@@ -14823,7 +14712,7 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
           <maml:name>OnlineVoiceRoutingPolicy</maml:name>
           <maml:description>
             <maml:para>Required for DirectRouting. Assigns an Online Voice Routing Policy to the User</maml:para>
@@ -14917,7 +14806,7 @@
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Set-TeamsUserVoiceConfig</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:description>
             <maml:para>UserPrincipalName (UPN) of the User to change the configuration for</maml:para>
@@ -15034,7 +14923,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="UserPrincipalName">
         <maml:name>Identity</maml:name>
         <maml:description>
           <maml:para>UserPrincipalName (UPN) of the User to change the configuration for</maml:para>
@@ -15058,7 +14947,7 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="OVP">
         <maml:name>OnlineVoiceRoutingPolicy</maml:name>
         <maml:description>
           <maml:para>Required for DirectRouting. Assigns an Online Voice Routing Policy to the User</maml:para>

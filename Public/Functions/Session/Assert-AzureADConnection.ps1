@@ -2,7 +2,7 @@
 # Function:   Session
 # Author:     David Eberhardt
 # Updated:    01-OCT-2020
-# Status:     PreLive
+# Status:     Live
 
 
 
@@ -26,6 +26,7 @@ function Assert-AzureADConnection {
   param() #param
 
   begin {
+    Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 

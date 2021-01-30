@@ -2,7 +2,7 @@
 # Function: VoiceConfig
 # Author:		David Eberhardt
 # Updated:  15-NOV-2020
-# Status:   RC
+# Status:   Live
 
 
 
@@ -93,7 +93,7 @@ function Remove-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

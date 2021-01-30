@@ -145,7 +145,7 @@ function Set-TeamsResourceAccount {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -564,14 +564,14 @@ function Set-TeamsResourceAccount {
             if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
               # Set in VoiceApplicationInstance
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
-                Write-Information "'$Name' Number '$Number' found in Tenant, assuming provisioning Microsoft for: Microsoft Calling Plans"
+                Write-Information "'$Name' Number '$Number' found in Tenant, provisioning Microsoft for: Microsoft Calling Plans"
                 $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -Telephonenumber $E164Number -ErrorAction STOP)
               }
             }
             else {
               # Set in ApplicationInstance
               if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
-                Write-Information "'$Name' Number '$E164Number' not found in Tenant, assuming provisioning for: Direct Routing"
+                Write-Information "'$Name' Number '$E164Number' not found in Tenant, provisioning for: Direct Routing"
                 $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnPremPhoneNumber $E164Number -ErrorAction STOP)
               }
             }

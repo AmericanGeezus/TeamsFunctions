@@ -37,6 +37,7 @@
   20.11       NOV 2020 Release - Restructuring, Bugfixes and general overhaul. Also more Pester-Testing
   20.12       DEC 2020 Release - Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes
   21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
+  21.02       FEB 2021 Release - Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector
 
 .LINK
   https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
@@ -44,14 +45,12 @@
 #>
 
 #Requires -Version 5.1
+#Requires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
 #Activate when released
 # AzureAdPreview 2.0.2.129
 #Re#quires -Modules @{ ModuleName="AzureAd"; ModuleVersion="2.0.2.129" }
 #Re#quires -Modules @{ ModuleName="AzureAdPreview"; ModuleVersion="2.0.2.24" }
-
-#Activate 01-FEB 2021
-#Re#quires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
 
 
 # Defining Help URL Base string:

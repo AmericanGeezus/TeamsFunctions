@@ -3,12 +3,74 @@
 Full Change Log for all major releases.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
-## v20.01 - January 2021 release
+## v21.02 - February 2021 release
 
 ### Component Status
 
-- Function Status: 86 Public CmdLets, 6 private CmdLets, 39 Live, 24 PreLive and  16 RC
-- Development Status: 0 in Beta, 4 in Alpha; 6 Unmanaged and 3 Deprecated
+|           |                                                                                                                                                                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-87-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
+| Status    | ![Live](https://img.shields.io/badge/Live-76-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1182-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
+| Focus | Bugfixing, TeamsCommonAreaPhone |
+
+### Focus for this month
+
+- Transition from Module SkypeOnlineConnector to MicrosoftTeams - Complete
+- Bugfixing
+
+### Requirements
+
+- PowerShell v5.1
+- Module `AzureAd` **or** `AzureAdPreview` (PIM Functions only available with AzureAdPreview)
+- Module MicrosoftTeams in Version 1.1.6
+
+### New
+
+- `Enable-CsOnlineSessionForReconnection`: Thanks to the original Author, [Andrés Gorzelany](https://github.com/get-itips), this function, originally shipped with the SkypeOnlineConnector Module, has made it into this module. We are able to reconnect sessions again, even when using the Module MicrosoftTeams
+- Added Markdown help for all Public Functions in [/docs](/docs)
+- external
+- Added Markdown about_-help for all major topics in this Module in [/help](/help)
+- Added Global Variables for some longer running Scripts (for example, Licenses, AzureAdGroups, etc.)
+- Information Output added to multiple CmdLets
+
+### Updated
+
+- `Connect-Me`:
+  - Complete rework to remove double-usability with SkypeOnlineConnector
+  - Removed Switches for individual connections. Sessions to AzureAd, MicrosoftTeams and SkypeOnline are always established
+  - Switch ExchangeOnline is still there should it be needed as well.
+  - Removed Module verification for MicrosoftTeams as it is now a requirement on the Module itself.
+  - Module AzureAdPreview is still optional. If available, Enablement for PIM Admin Roles is tried
+  - Improved feedback with Information Output instead of forced Verbosity
+- `Connect-SkypeOnline`:
+  - Complete rework to remove usability with SkypeOnlineConnector (module is now unloaded cleanly)
+  - If connection to AzureAd already exists, OverrideAdminDomain will be taken from there.
+  - `Enable-CsOnlineSessionForReconnection` is now always available and will be run
+  - Improved feedback with Information Output instead of forced Verbosity
+- `Assert-Module`: Reimagining Test-Module. Now also validates Latest Version and latest pre-release. Might add checking for specific version if needed, but not right now.
+- `Get-TeamsAutoAttant`: Fine-Tuned output
+- `New-TeamsCallQueue` and `Set-TeamsCallQueue`:
+- `Find-TeamsUserVoiceConfig`: Improved lookup for Phone Numbers
+- `Find-AzureAdUser`: Complete rework. Now properly extends Get-AzureAdUser -SearchString
+- Revamped all Get-Helpers for OVR,OPU,OVP, etc.
+- Bugfixes across the board!
+- Enabled Pipelining for multiple functions.
+- Updated help for all Functions and added Pester tests for Help files
+
+## v21.01 - January 2021 release
+
+### Component Status
+
+- Function Status:
+![Public](https://img.shields.io/badge/Public-86-blue.svg)
+![Private](https://img.shields.io/badge/Private-6-grey.svg)
+![Live](https://img.shields.io/badge/Live-43-blue.svg)
+![PreLive](https://img.shields.io/badge/PreLive-39-green.svg)
+![RC](https://img.shields.io/badge/RC-16-yellow.svg)
+![BETA](https://img.shields.io/badge/BETA-0-orange.svg)
+![ALPHA](https://img.shields.io/badge/ALPHA-4-red.svg)
+![Deprecated](https://img.shields.io/badge/Deprecated-3-grey.svg)
 - Pester Test Status: Tests Passed: 988, Failed: 0, Skipped: 0 NotRun: 0
 - `TeamsAutoAttendant` Scripts have advanced to RC status.
 - `TeamsCallableEntity` Scripts have been improved upon (GET, FIND, NEW and ASSERT)

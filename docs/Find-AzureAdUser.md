@@ -12,14 +12,8 @@ Returns User Objects from Azure AD based on a search string or UserPrincipalName
 
 ## SYNTAX
 
-### Search (Default)
 ```
-Find-AzureAdUser [-SearchString] <String> [<CommonParameters>]
-```
-
-### Id
-```
-Find-AzureAdUser [-Identity] <String[]> [<CommonParameters>]
+Find-AzureAdUser [-SearchString] <String[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -58,29 +52,14 @@ Will search for the string "John@domain.com" and return all Azure AD Objects fou
 Required for ParameterSet Search: A 3-255 digit string to be found on any Object.
 
 ```yaml
-Type: String
-Parameter Sets: Search
+Type: String[]
+Parameter Sets: (All)
 Aliases:
 
 Required: True
 Position: 1
 Default value: None
 Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -Identity
-Required for ParameterSet Id: The sign-in address or User Principal Name of the user account to query.
-
-```yaml
-Type: String[]
-Parameter Sets: Id
-Aliases: UserPrincipalName, Id
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 

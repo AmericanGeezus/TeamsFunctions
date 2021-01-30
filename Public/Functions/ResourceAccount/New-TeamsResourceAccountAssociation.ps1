@@ -2,7 +2,7 @@
 # Function: ResourceAccount
 # Author:		David Eberhardt
 # Updated:  01-DEC-2020
-# Status:   PreLive
+# Status:   Live
 
 
 #TODO: Doesn't stop if AA or RA are not found! - Check!
@@ -74,7 +74,7 @@ function New-TeamsResourceAccountAssociation {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level PreLive
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -174,6 +174,12 @@ function New-TeamsResourceAccountAssociation {
         Write-Error "Resource Account not found: '$UPN'" -Category ObjectNotFound
         continue
       }
+    }
+
+    # Breaks the chain if no eligible accounts are found.
+    if ( -not $Accounts ) {
+      Write-Warning -Message 'No Resource Accounts found eligible for Association. Stopping.'
+      return
     }
 
     $Operation = 'Processing found Resource Accounts'

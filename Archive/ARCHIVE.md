@@ -10,6 +10,7 @@ Here are some of these functions:
 | `Add-TeamsUserLicense`          | Adds one or more Licenses specified per Switch to the provided Identity                              | `Set-TeamsUserLicense` |
 | `Get-TeamsLicense`              | v1 of the Licensing Function for Licenses                                                            | `Get-AzureAdLicense`   |
 | `Get-TeamsLicenseServicePlan`   | v1 of the Licensing Function for Service Plans                                                       | `Get-AzureAdLicenseServicePlan` |
+| `Get-AzureAdAssignedAdminRoles`   | v1 of the Admin Role query Function                                                       | `Get-AzureAdAdminRole` |
 | `Get-SkuIdFromSkuPartNumber`    | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                         | `Get-AzureAdLicense`   |
 | `Get-SkuPartNumberFromSkuId`    | Helper function for Licensing. Returns a SkuPartNumber from a specific SkuID                         |  `Get-AzureAdLicense`  |
 | `Set-TeamsUserPolicy`           | Assigns specific Policies to a User. Currently only six policies available                           | None                   |
