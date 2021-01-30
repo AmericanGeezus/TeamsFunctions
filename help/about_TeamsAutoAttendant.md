@@ -8,7 +8,7 @@ My take on AutoAttendants with more integrated options and defaults.
 
 ## LONG DESCRIPTION
 
-The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that the `CsAutoAttendant` CmdLets are feeling to be all over the place. Multiple CmdLets have to be used in conjunction in order to create an Auto Attendant. No defaults are available. The `TeamsAutoAttendant` CmdLets try to address that. From the basic NEW-Command that - without providing *any* Parameters (except the name of course) can create an Auto Attendant entity. This simplifies things a bit and tries to get you 80% there without lifting much of a finger. Amending it afterwards in the Admin Center is my current mantra. See Support Functions for more versatility!
+The complexity of the AutoAttendants and design principles of PowerShell ("one function does one thing and one thing only") means that the `CsAutoAttendant` CmdLets are feeling to be all over the place. Multiple CmdLets have to be used in conjunction in order to create ONE Auto Attendant. No defaults are available. The `TeamsAutoAttendant` CmdLets try to address that. From the basic NEW-Command that - without providing *any* Parameters (except the name of course) can create an Auto Attendant entity. This simplifies things a bit and tries to get you 90% there without lifting much of a finger. Amending it afterwards in the Admin Center is my current mantra. See Support Functions for more versatility!
 
 ## CmdLets
 
@@ -39,21 +39,27 @@ Creating a Menu or a Call Flow feels clunky to me, the commands require excessiv
 
 ## EXAMPLES
 
-{{ Code or descriptive examples of how to leverage the functions described. }}
+Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
 
 ## NOTE
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+Removing complexity without sacrificing functionality is a hard thing and while writing these CmdLets I learned to appreciate and understand why they are how they are.
+
+That said, I think I have achieved my goal to provide some options to create AutoAttendants easier and faster with PowerShell. For any functionality not available yet, I usually supplement by selecting in the Admin Center (This also serves to double-check everything is set as desired)
 
 ## Development Status
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+The main functionality is built, tested and live.  The only big topic as yet to be integrated is HolidaySets
+
+Planned:
+
+- Creating a HolidaySet (Schedule) for Holidays of a specific country for a specific year
+- Adding, removing and replacing(!) HolidaySets from Auto Attendants.
+- Adding default options to New-TeamsAutoAttendant with a switch <br />NOTE: This functionality is already available as a CallFlow and CallHandlingAssociations-Object btw.
 
 ## TROUBLESHOOTING NOTE
 
-{{ Troubleshooting Placeholder - Warns users of bugs}}
-
-{{ Explains behavior that is likely to change with fixes }}
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
 ## SEE ALSO
 

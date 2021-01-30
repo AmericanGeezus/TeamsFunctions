@@ -72,7 +72,7 @@ Development is complete. As always, some gremlins might still lurk in my code, p
 
 ## TROUBLESHOOTING NOTE
 
-None.
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
 ## SEE ALSO
 

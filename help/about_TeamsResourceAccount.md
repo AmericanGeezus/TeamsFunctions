@@ -30,6 +30,10 @@ Connecting these Resource Accounts to their Call Queues or Auto Attendants, whil
 | [`Get-TeamsResourceAccountAssociation`](../docs/Get-TeamsResourceAccountAssociation.md)       | Get-CsOnlineApplicationInstanceAssociation    | Queries links for one or more Resource Accounts to Call Queues or Auto Attendants. Also shows Status |
 | [`Remove-TeamsResourceAccountAssociation`](../docs/Remove-TeamsResourceAccountAssociation.md) | Remove-CsOnlineApplicationInstanceAssociation | Removes a link for one or more Resource Accounts                                                     |
 
+> [!NOTE] Aliases for `TeamsResourceAccountAssociation` CmdLets are defined as `TeamsRAA`<br />
+> Aliases for `TeamsResourceAccount` CmdLets are only one Character off: `TeamsRA` --
+> Handle with care :)
+
 ### Support CmdLets
 
 | Function                                                          | Underlying Function | Description                                          |
@@ -38,37 +42,31 @@ Connecting these Resource Accounts to their Call Queues or Auto Attendants, whil
 
 ## EXAMPLES
 
-{{ Code or descriptive examples of how to leverage the functions described. }}
+Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
 
 ## NOTE
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+N/A
 
 ## Development Status
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+Development is complete. Fine-tuning might see some changes in the future, but nothing planned right now.
 
 ## TROUBLESHOOTING NOTE
 
-{{ Troubleshooting Placeholder - Warns users of bugs}}
-
-{{ Explains behavior that is likely to change with fixes }}
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
 ## SEE ALSO
 
-[about_TeamsCallQueue](about_TeamsCallQueue.md)
-
-[about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
-
-[about_TeamsCallableEntity](about_TeamsCallableEntity.md)
+- [about_TeamsCallQueue](about_TeamsCallQueue.md)
+- [about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
+- [about_TeamsCallableEntity](about_TeamsCallableEntity.md)
 
 ## KEYWORDS
 
 - Creation
 - Configuration
 - Management
-- AzureAdUser
-- AzureAdGroup
-- CsOnlineUser
-- CsOnlineApplicationInstance
-- TeamsResourceAccount
+- User, AzureAdUser, CsOnlineUser
+- Group, AzureAdGroup
+- Resource, Resource Account, CsOnlineApplicationInstance

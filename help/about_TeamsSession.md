@@ -40,7 +40,7 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 | -----------------------------------------------------------------------------: | --------------------------------------------------------------------------------------------- |
 | [`Assert-AzureAdConnection`](../docs/Assert-AzureAdConnection.md)               | Tests connection and visual feedback in the Verbose stream if called directly.                |
 | [`Assert-MicrosoftTeamsConnection`](../docs/Assert-MicrosoftTeamsConnection.md) | Tests connection and visual feedback in the Verbose stream if called directly.                |
-| [`Assert-SkypeOnlineConnection`](../docs/Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life* |
+| [`Assert-SkypeOnlineConnection`](../docs/Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a timed-out session. Alias `PoL` *Ping-of-life* |
 | [`Test-AzureAdConnection`](../docs/Test-AzureAdConnection.md)                   | Verifying a Session to AzureAD exists                                                         |
 | [`Test-MicrosoftTeamsConnection`](../docs/Test-MicrosoftTeamsConnection.md)     | Verifying a Session to MicrosoftTeams exists                                                  |
 | [`Test-SkypeOnlineConnection`](../docs/Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                     |
@@ -50,28 +50,45 @@ The Assert cmdlets are nested in all Scripts to ensure sessions are created and 
 
 ## EXAMPLES
 
+### Example 1 - Connecting to SkypeOnline
+
 ````powershell
-# Example 1 - Teams User Voice Route
-Connect-SkypeOnline -Identity John@domain.com [-OverrideAdminDomain domain.onmicrosoft.com]
+Connect-SkypeOnline [-AccountId] John@domain.com
+# Establishes a session to SkypeOnline (aka the Teams BackEnd).
+# If connected to AzureAd already, will read the TenantDomain and use it as an OverrideAdminDomain
+
+Connect-SkypeOnline [-AccountId] John@domain.com [-OverrideAdminDomain domain.onmicrosoft.com]
+# Establishes a session to SkypeOnline (aka the Teams BackEnd).
+# The Override Admin Domain is optional and only needed for Hybrid Scenarios where the DNS entries point to the Skype OnPrem Platform.
+# If connected to AzureAd already, the provided Domain will take precedence.
 ````
 
-Example 1 establishes a session to SkypeOnline (aka the Teams BackEnd). The Override Admin Domain is optional and only needed for Hybrid Scenarios where the DNS entries point to the Skype OnPrem Platform.
+### Example 2 - Connecting to AzureAd, MicrosoftTeams and SkypeOnline
 
-- If the SkypeOnlineConnector is used, enables the session for reconnection.
-- If the MicrosoftTeams Module is used, an authentication dialog is shown.
+````powershell
+Connect-Me [-AccountId] John@domain.com [-OverrideAdminDomain domain.onmicrosoft.com]
+# Establishes a session to AzureAd, enables Admin Roles, Connects to MicrosoftTeams and SkypeOnline
+# NOTE: The Override Admin Domain is usually not required as it can be read from AzureAd
+````
 
 ## NOTE
 
 To properly administer Teams, a connection to `AzureAd` is most likely needed. Privileged Identity Management and Role Activation are currently only available with the Module `AzureAdPreview` installed in Version `2.0.2.24` or higher, until the functions become generally available through the AzureAd Module.
 
-Initially, this module was built around the use of the `SkypeOnlineConnector`(v7). The Connector is now deprectated and will be replaced by end of FEB 2021.
-The command to establish a connection has been ported to `MicrosoftTeams` in `v1.1.6`. Starting with **TeamsFunctions v21.01**, the requirement for SkypeOnlineConnector is lifted. Either module can be used, with some drawbacks: Using MicrosoftTeams does currently not allow seamless Single-Sign-On as no Username can be passed on to the Session command and Session Reconnection is currently not possible as the Command `Enable-CsOnlineSessionForReconnection` was not ported over. Some further testing is required still.
+> [!NOTE] Most Functions and CmdLets in this module rely on a connection to AzureAd as well as SkypeOnline.
+
+Initially, this module was built around the use of the Module `SkypeOnlineConnector`(v7). The Connector is now deprectated and this Module does no longer require it to be installed.
+The command to establish a connection has been ported to the Module `MicrosoftTeams` (in v1.1.6) which is a requirement for this Module.
+
+The Connection CmdLet does behave slightly differently: Seamless Single-Sign-On is not available, the Account needs to be selected manually. Please see detailed notes in [`Connect-Me`](../docs/Connect-Me.md) and [`Connect-SkypeOnline`](../docs/Connect-SkypeOnline.md) for details.
 
 ## Development Status
 
-Mature, but a moving target - Continuously 'in Progress'. An update to the MicrosoftTeams Command and documentation is anticipated that would enable Single-sign-on with MFA enabled. Issues have been raised via Github to address.
+Mature, but a bit of a moving target - Continuously 'in Progress'. An update to the MicrosoftTeams Command and documentation is anticipated that would enable Single-sign-on with MFA enabled. Issues have been raised via Github to address.
 
 ## TROUBLESHOOTING NOTE
+
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
 Please disconnect your session cleanly, before reconnecting. I have found that, when using the MicrosoftTeams Module, the whole PowerShell Session needs to be recreated which is annoying. This is still evaluated and tested with every PreRelease.
 
@@ -79,11 +96,9 @@ The Session can also currently not be reconnected to, a credential Dialog is sho
 
 ## SEE ALSO
 
-[`New-CsOnlineSession`](https://docs.microsoft.com/en-us/powershell/module/skype/new-csonlinesession?view=skype-ps)
+- [`New-CsOnlineSession`](https://docs.microsoft.com/en-us/powershell/module/skype/new-csonlinesession?view=skype-ps)
 
 ## KEYWORDS
-
-{{List alternate names or titles for this topic that readers might use.}}
 
 - SkypeOnline
 - MicrosoftTeams

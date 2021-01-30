@@ -41,6 +41,8 @@ This page only lists the CmdLets that are not categorised further. See below for
 
 ## TROUBLESHOOTING NOTE
 
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
+
 There might be a few cases where the Output displays too much or too little. The Find-CmdLets took a while to properly be fine tuned. If you do not find something that you know is there, please let me know
 
 ## SEE ALSO

@@ -22,37 +22,38 @@ These scripts aim to address all these requirements and validate them before all
 
 ## EXAMPLES
 
-{{ Code or descriptive examples of how to leverage the functions described. }}
+Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
 
 ## NOTE
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+The Concept of a Callable Entity is introduced with Auto Attendants where Call Targets need to be created as a Callable Entity before they can be used for an Auto Attendant.
+
+The other two CmdLets expand on this concept:
+
+- `Get-TeamsCallableEntity` will identify and assert whether the Object is in a state to be used as a Call Target and is the backbone of the CallQueue and AutoAttendant improvements in this Module
+- `Find-TeamsCallableEntity` finds whether the Object provided is used on any Call Queue or Auto Attendant
 
 ## Development Status
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+Complete.
 
 ## TROUBLESHOOTING NOTE
 
-{{ Troubleshooting Placeholder - Warns users of bugs}}
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
-{{ Explains behavior that is likely to change with fixes }}
+As they are so integral to this Module, they should not throw any Errors, if they do they will be addressed swiftly.
 
 ## SEE ALSO
 
-[about_TeamsCallQueue](about_TeamsCallQueue.md)
-
-[about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
-
-[about_TeamsResourceAccount](about_TeamsResourceAccount.md)
+- [about_TeamsCallQueue](about_TeamsCallQueue.md)
+- [about_TeamsAutoAttendant](about_TeamsAutoAttendant.md)
+- [about_TeamsResourceAccount](about_TeamsResourceAccount.md)
 
 ## KEYWORDS
 
 - Creation
 - Configuration
 - Management
-- AzureAdUser
-- AzureAdGroup
-- CsOnlineUser
-- CsOnlineApplicationInstance
-- TeamsResourceAccount
+- User, AzureAdUser, CsOnlineUser
+- Group, AzureAdGroup
+- Resource, Resource Account, CsOnlineApplicationInstance

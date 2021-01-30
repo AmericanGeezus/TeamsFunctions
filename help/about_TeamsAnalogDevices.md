@@ -23,12 +23,7 @@ Analog Devices in Teams behave differently than they do in Skype for Business. T
 
 ## EXAMPLES
 
-````powershell
-# Example 1 - Querying an Analog Device
-Get-TeamsAnalogDevice -Name "Elevator Main Building"
-````
-
-Querying a Contact Object called "Elevator Main Building"
+Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
 
 ## NOTE
 

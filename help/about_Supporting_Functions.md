@@ -59,41 +59,38 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 ## EXAMPLES
 
+### Example 1 - Formatting
+
 ```powershell
-# Example 1 will format numbers as E.164 Number
 '+1(555)-1234 567' | Format-StringForUse -As E164
-```
+# This will format the String as an E.164 number and return `+15551234567`
 
-This will format the String as an E.164 number and return `+15551234567`
-
-```powershell
-# Example 2 will format numbers as a TEL URI
 '+1(555)-1234 567' | Format-StringForUse -As LineUri
+# Example 2 will format numbers as a TEL URI
+# This will format the String as a LineUri to be used in Teams and return `tel:+15551234567`.
 ```
 
-This will format the String as a TelUri or LineUri to be used in Teams and return `tel:+15551234567`. Note, that this could also have an extension set, but this example focuses on the Number normalisation aspect.
+Note, LineUris _could_ also have an extension set, but this example focuses on the Number normalisation aspect.  This CmdLet can also normalise DisplayNames and UserPrincipalNames and verifies their limitations.
 
 ## NOTE
 
-{{ Note Placeholder - Additional information that a user needs to know.}}
+None.
 
 ## Development Status
 
-Mature
+Mature. All of these CmdLets are pretty static and only receive minor updates.
 
-All of these CmdLets are pretty static and only receive minor updates. The String manipulation ones even have Pester tests defined already.
+The String manipulation ones even have Pester tests defined already.
 
 ## TROUBLESHOOTING NOTE
 
-{{ Troubleshooting Placeholder - Warns users of bugs}}
+Unit-tests are available for Format-CmdLets
 
-{{ Explains behavior that is likely to change with fixes }}
+All others, though thoroughly tested, have no Unit-tests yet available.
 
 ## SEE ALSO
 
-{{ See also placeholder }}
-
-{{ You can also list related articles, blogs, and video URLs. }}
+None.
 
 ## KEYWORDS
 

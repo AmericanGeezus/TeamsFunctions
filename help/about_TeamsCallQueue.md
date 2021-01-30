@@ -42,8 +42,8 @@ New-TeamsCallQueue [-Name] "My Queue"
 New-TeamsCallQueue [-Name] "My Queue" -UseMicrosoftDefaults
 # Creates a Call Queue with Microsoft defaults (thresholds)
 # Thresholds: Overflow 50, Timeout 1200s
-
 ```
+
 For more detailed examples, please see the Docs for the individual CmdLets
 
 ### Example 3 - Setting with the Pipeline
@@ -73,6 +73,8 @@ Pipelines are available, as they are bound to the Name, this name must be unique
 Developing and testing these is very time consuming. I learned a lot while doing them, but as hard as I try, they probably still contain a few bugs.
 
 ## TROUBLESHOOTING NOTE
+
+Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
 They are quite mature already, but if you do encounter issues, please capture verbose and debug output as they help me immensely when troubleshooting.
 
