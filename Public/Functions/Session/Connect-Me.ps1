@@ -134,7 +134,7 @@ function Connect-Me {
     Write-Verbose -Message "$Status - $Operation"
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
     if ( $SkypeModule ) {
-      Write-Warning -Message "Module 'SkypeOnlineConnector' detected. This module is deprecated and no longer required. If it remains on the system, it may interfere in execution of Connection Commands. Removing Module from Session - Please uninstall SkypeOnlineConnector (MSI)!"
+      Write-Warning -Message "Module 'SkypeOnlineConnector' detected. This module is deprecated and no longer required. If it remains on the system, it could interfere in execution of Connection Commands. Removing Module from Session - Please uninstall SkypeOnlineConnector (MSI)!"
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
     }
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
@@ -209,8 +209,8 @@ function Connect-Me {
               Write-Verbose -Message "$Status - $Operation" -Verbose
               try {
                 $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-                Start-Sleep -Seconds 2
-                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
+                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. -- Waiting for AzureAd to process request." -Verbose
+                Start-Sleep -Seconds 5
               }
               catch {
                 Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
@@ -226,7 +226,6 @@ function Connect-Me {
               if (-not $CsOnlineUsername) {
                 [void]$MeToTheO365ServiceParams.Remove('AccountId')
               }
-
               if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
                 $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
               }
@@ -263,37 +262,6 @@ function Connect-Me {
       }
     }
 
-    #region RetrySkypeConnection
-    if ($PIMavailable -and -not (Test-SkypeOnlineConnection)) {
-      if ($ActivatedRoles) {
-        Write-Host "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Retrying connection to SkypeOnline now." -ForegroundColor Cyan
-        if ($RetrySkypeConnection) {
-          $Service = 'SkypeOnline'
-          $step++
-          $Operation = 'SkypeOnline - Retrying Connection'
-          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Information "$Status - $Operation"
-          try {
-            $MeToTheO365ServiceParams.Service = $Service
-            if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-              $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
-            }
-            else {
-              $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
-            }
-          }
-          catch {
-            Write-Error -Message "Could not establish Connection to SkypeOnline, please verify Username, Password, OverrideAdminDomain and Session Exhaustion (2 max!). Exception: $($_.Exception.Message)"
-          }
-        }
-      }
-      else {
-        Write-Error -Message "Could not enable Admin Roles and therefore not establish Connection to SkypeOnline, ´
-        please enable them manually and try again. Exception: $($_.Exception.Message)"
-      }
-    }
-    #endregion
-
     #region Feedback
     if ( -not $NoFeedback ) {
       $Status = 'Providing Feedback'
@@ -318,13 +286,11 @@ function Connect-Me {
       if ( Test-AzureADConnection ) {
         $SessionInfo.ConnectedTo += 'AzureAd'
         $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-
         $SessionInfo.Tenant = $AccountId.split('@')[1]
         $SessionInfo.TenantDomain = $AzureAdFeedback.TenantDomain
         $SessionInfo.TenantId = $AzureAdFeedback.TenantId
         $SessionInfo.AzureEnvironment = $AzureAdFeedback.Environment
       }
-
       #MicrosoftTeams SessionInfo
       if ( Test-MicrosoftTeamsConnection ) {
         $SessionInfo.ConnectedTo += 'MicrosoftTeams'
@@ -335,7 +301,6 @@ function Connect-Me {
       #SkypeOnline SessionInfo
       if ( Test-SkypeOnlineConnection ) {
         $SessionInfo.ConnectedTo += 'SkypeOnline'
-
         if ( -not $SessionInfo.TenantDomain ) {
           $SessionInfo.TenantDomain = $SkypeOnlineFeedback.TenantDomain
         }

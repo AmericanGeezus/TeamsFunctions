@@ -191,6 +191,16 @@ function Connect-SkypeOnline {
       }
     }
 
+    # Generating Session Options (IdleTimeout, OperationTimeout and CancelTimeout; default is 4 hours)
+    $IdleTimeoutMS = (New-TimeSpan -Hours $IdleTimeout).TotalMilliseconds
+    $CancelTimeout = (New-TimeSpan -Seconds 30).TotalMilliseconds
+    $SessionOption = New-PSSessionOption -IdleTimeout $IdleTimeoutMS -CancelTimeout $CancelTimeout -OperationTimeout $IdleTimeoutMS
+    Write-Information "$($MyInvocation.MyCommand) - Session Options: Idle Timeout set to: $IdleTimeout hours"
+    if ($PSBoundParameters.ContainsKey('Debug')) {
+      "Function: $($MyInvocation.MyCommand.Name): Session Options:", ($SessionOption | Format-List | Out-String).Trim() | Write-Debug
+    }
+    $Parameters += @{ 'SessionOption' = $SessionOption }
+
   } #begin
 
   process {
@@ -202,6 +212,7 @@ function Connect-SkypeOnline {
       if ($PSBoundParameters.ContainsKey('Debug')) {
         "Function: $($MyInvocation.MyCommand.Name): Connection `#1: Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
+      Write-Host 'INFORMATION: AccountId cannot be pre-selected - Please select Account manually!' -ForegroundColor Magenta
       $SkypeOnlineSession = New-CsOnlineSession @Parameters
     }
     catch [System.Net.WebException] {
@@ -248,7 +259,7 @@ function Connect-SkypeOnline {
 
     if ( $SkypeOnlineSession ) {
       try {
-        Write-Verbose -Message "Importing temporary Module from Import-PSSession"
+        Write-Verbose -Message 'Importing temporary Module from Import-PSSession'
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global -Verbose:$false
         $null = Enable-CsOnlineSessionForReconnection
         Write-Information "$($MyInvocation.MyCommand) - Session is enabled for reconnection! You are prompted to reconnect, if possible."
