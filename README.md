@@ -13,12 +13,23 @@ This module exists as many of Microsofts Teams back-end (SkypeOnline) Cmdlets ar
 The goal is to make this easier for day-to-day use, to simplify the input and to feed back good information if not successful.
 Teams evolves constantly, so does this Module: Released monthly, with weekly pre-releases.
 
+### Installation
+
+```powershell
+# Release (Monthly)
+Install-Module TeamsFunctions
+
+# PreRelease (weekly)
+Install-Module TeamsFunctions -AllowPrerelease
+```
+
 ### Content
 
-- Consistently handling Session Connection to AzureAd, MicrosoftTeams and SkypeOnline
+- Consistently handling Sessions Connection to AzureAd, MicrosoftTeams and SkypeOnline
 - Improving Admin Authorisation with Privileged Identity Management Role Activation
 - Improving User Administration for Licensing, Direct Routing and Calling Plans
-- Enabling Administration for Common Area Phones, Analog Contact Objects, etc.
+- Enabling Administration for Common Area Phones, Analog Contact Objects, etc.(WIP)
+- Improving Migration and Enablement tasks for Teams Users' Voice Configuration
 - Improving Teams Resource Accounts, Call Queues and Auto Attendants
 - Improving Day-to-day Administration with little helpers
 
@@ -27,7 +38,7 @@ Teams evolves constantly, so does this Module: Released monthly, with weekly pre
 - General overview: [about_TeamsFunctions](/help/about_TeamsFunctions.md)
 - The aliases: [about_TeamsFunctionsAliases](/help/about_TeamsFunctionsAliases.md)
 - Individual about_-Files for each Topic have been created in [/help](/help)
-- External Help is available as XML in [/docs](/docs)
+- External Help is available as XML in [/docs](/docs) (not linked yet)
 - Markdown files for all CmdLets can be found in [/docs](/docs) automatically with PlatyPS and updated with each Version
 - [My blog](https://davideberhardt.wordpress.com/) will contain updates and explanations from time to time.
 - A breakdown of the Change log for Major Versions can be found in [VERSION.md](VERSION.md)
@@ -40,6 +51,8 @@ Teams evolves constantly, so does this Module: Released monthly, with weekly pre
 - Performance improvements, bug fixing and more testing
 - Adding Functional improvements to lookup
 - Adding individual Scripts to ease admin tasks
+- TeamsCommonAreaPhone CmdLets (Testing)
+- TeamsAnalogDevice CmdLets (Design & Build)
 
 ### Extension plans
 
