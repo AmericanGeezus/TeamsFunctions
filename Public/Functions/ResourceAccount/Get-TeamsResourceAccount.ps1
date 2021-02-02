@@ -278,6 +278,7 @@ function Get-TeamsResourceAccount {
         UserPrincipalName        = $ResourceAccount.UserPrincipalName
         DisplayName              = $ResourceAccount.DisplayName
         ApplicationType          = $ResourceAccountApplicationType
+        InterpretedUserType      = $CsOnlineUser.InterpretedUserType
         UsageLocation            = $ResourceAccountLicense.UsageLocation
         License                  = $ResourceAccountLicense.Licenses
         PhoneNumberType          = $ResourceAccountPhoneNumberType
