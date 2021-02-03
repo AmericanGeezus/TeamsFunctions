@@ -240,7 +240,7 @@ function Set-TeamsUserVoiceConfig {
     Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Enterprise Voice Enablement' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message 'Enterprise Voice Enablement'
     if ( -not $IsEVenabled) {
-      Write-Information "TRYING:  User '$Identity' - Enterprise Voice Status: Not enabled, trying to Enable"
+      Write-Verbose "User '$Identity' - Enterprise Voice Status: Not enabled, trying to Enable"
       if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
         $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
       }
@@ -349,7 +349,8 @@ function Set-TeamsUserVoiceConfig {
             $step++
             Write-Progress -Id 0 -Status 'Provisioning for Direct Routing' -CurrentOperation 'Applying Online Voice Routing Policy' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message 'Applying Online Voice Routing Policy'
-            if ( $Force -or -not $CsUser.OnlineVoiceRoutingPolicy ) {
+            #if ( $Force -or -not $CsUser.OnlineVoiceRoutingPolicy ) { # Only checks unassigned ones, not wrongly assigned ones!
+            if ( $Force -or ($CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) ) {
               try {
                 $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
                 Write-Information "SUCCESS: User '$Identity' - Applying Online Voice Routing Policy: OK - '$OnlineVoiceRoutingPolicy'"

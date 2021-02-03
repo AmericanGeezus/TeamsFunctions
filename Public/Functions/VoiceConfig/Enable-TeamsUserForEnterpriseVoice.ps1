@@ -120,7 +120,7 @@ function Enable-TeamsUserForEnterpriseVoice {
         }
       }
       else {
-        Write-Information "User '$Id' Enterprise Voice Status: Not enabled, trying to enable"
+        Write-Information "TRYING: User '$Id' - Enterprise Voice Status: Not enabled, trying to enable"
         try {
           if ($Force -or $PSCmdlet.ShouldProcess("$Id", 'Enabling User for EnterpriseVoice')) {
             $null = Set-CsUser $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
@@ -131,7 +131,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             Write-Verbose -Message "$Status - $Operation"
             while ( -not $(Get-CsOnlineUser $Id -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
               if ($i -gt $iMax) {
-                Write-Error -Message "User '$Id' Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
+                Write-Error -Message "User '$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false
               }
               Write-Progress -Id 0 -Activity 'Waiting for Azure Active Directory to return a result. Please wait' `
@@ -145,7 +145,7 @@ function Enable-TeamsUserForEnterpriseVoice {
               return $true
             }
             else {
-              Write-Verbose -Message "User '$Id' Enterprise Voice Status: SUCCESS" -Verbose
+              Write-Verbose -Message "User '$Id' - Enterprise Voice Status: SUCCESS" -Verbose
             }
           }
         }
