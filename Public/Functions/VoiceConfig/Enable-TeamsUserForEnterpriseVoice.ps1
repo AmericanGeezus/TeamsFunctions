@@ -120,7 +120,7 @@ function Enable-TeamsUserForEnterpriseVoice {
         }
       }
       else {
-        Write-Information "TRYING: User '$Id' - Enterprise Voice Status: Not enabled, trying to enable"
+        Write-Information "TRYING:  User '$Id' - Enterprise Voice Status: Not enabled, trying to enable"
         try {
           if ($Force -or $PSCmdlet.ShouldProcess("$Id", 'Enabling User for EnterpriseVoice')) {
             $null = Set-CsUser $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
