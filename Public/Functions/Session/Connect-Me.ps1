@@ -111,6 +111,13 @@ function Connect-Me {
     [int]$sMax = 6
 
     #region Preparation
+    # Preparing environment
+    #Persist Stored Credentials on local machine
+    if (!$PSDefaultParameterValues.'Parameters:Processed') {
+      $PSDefaultParameterValues.add('New-StoredCredential:Persist', 'LocalMachine')
+      $PSDefaultParameterValues.add('Parameters:Processed', $true)
+    }
+
     # Cleaning up existing sessions
     $Status = 'Preparation'
     $Operation = 'Verifying Parameters'
