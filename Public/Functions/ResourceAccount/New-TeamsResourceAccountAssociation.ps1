@@ -6,7 +6,7 @@
 
 
 #TODO: Doesn't stop if AA or RA are not found! - Check!
-
+#TODO: Displayname is not normalised - can lead to inconsistencies - it shouldn't need to, so needs a warning - if not found, try normalising!
 function New-TeamsResourceAccountAssociation {
   <#
 	.SYNOPSIS

@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-
+#FIXME: Set-TeamsRA -PhoneNumber $null didnt work. Set-CsOnlineApplicationInstance -OnpremPhoneNumber $null did!
 
 function Set-TeamsResourceAccount {
   <#

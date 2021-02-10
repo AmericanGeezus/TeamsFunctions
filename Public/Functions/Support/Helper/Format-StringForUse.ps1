@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#CHECK DisplayName allows for /, yet it is removed. Investigate and pot. remove!
 
 function Format-StringForUse {
   <#
