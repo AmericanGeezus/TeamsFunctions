@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
 # Author:		Philipp, Scripting.up-in-the.cloud
-# Updated:  01-DEC-2020
+# Updated:  14-FEB-2021
 # Status:   Live
 
 
@@ -149,7 +149,7 @@ function Get-AzureAdLicense {
           $VerbosePreference = 'SilentlyContinue'
           $TextInfo = (Get-Culture).TextInfo
           $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
-          $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep '-()+ '
+          $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep '()+ -'
 
           # Building Object
           if ($srcProductPlans.ServicePlanId -notcontains $planServicePlanId) {
@@ -224,6 +224,7 @@ function Get-AzureAdLicense {
       }
       else {
         $LicenseType = switch -Regex ( $srcProductPlans.ServicePlanName ) {
+          'MCOEV_VIRTUALUSER' { 'Standalone'; break }
           'MCOPSTN' { 'CallingPlan'; break }
           'MCOEV' { 'Add-On'; break }
           'MCOMEETADV' { 'Add-On'; break }
@@ -243,7 +244,7 @@ function Get-AzureAdLicense {
         $ProductName = $ProductName.Substring($StringToCut.Length, $ProductName.Length - $StringToCut.Length)
       }
       $VerbosePreference = 'SilentlyContinue'
-      $ProductName = Format-StringRemoveSpecialCharacter -String $ProductName -SpecialCharacterToKeep '(-)+ '
+      $ProductName = Format-StringRemoveSpecialCharacter -String $ProductName -SpecialCharacterToKeep '()+ -'
 
       # Building Object
       try {
@@ -254,27 +255,6 @@ function Get-AzureAdLicense {
         $ProductsNotAdded += $ProductName
       }
     }
-
-    <# Removed as Page was updated to deliver the data
-    # Add License Products not on Website
-    # Adding Common Area Phone
-    [System.Collections.ArrayList]$ServicePlanCAP = @()
-    [void]$ServicePlanCAP.Add([TFTeamsServicePlan]::new('Microsoft Teams', 'TEAMS1', '57ff2da0-773e-42df-b2af-ffb7a2317929', $true))
-    [void]$ServicePlanCAP.Add([TFTeamsServicePlan]::new('Microsoft 365 Phone System', 'MCOEV', '4828c8ec-dc2e-4779-b502-87ac9ce28ab7', $true))
-    [void]$ServicePlanCAP.Add([TFTeamsServicePlan]::new('Skype For Business Online (Plan 2)', 'MCOSTANDARD', '0feaeb32-d00e-4d66-bd5a-43b5b83db82c', $true))
-    [void]$Products.Add([TFTeamsLicense]::new( 'Common Area Phone', 'MCOCAP', 'Package', 'CommonAreaPhone', $true, $true, '295a8eb0-f78d-45c7-8b5b-1eed5ed02dff', $ServicePlanCAP))
-
-    # Adding Communication Credits
-    [System.Collections.ArrayList]$ServicePlanCC = @()
-    [void]$ServicePlanCC.Add([TFTeamsServicePlan]::new('Communications Credits', 'MCOPSTNC', '505e180f-f7e0-4b65-91d4-00d670bbd18c', $true))
-    [void]$Products.Add([TFTeamsLicense]::new( 'Communications Credits', 'MCOPSTNC', 'CallingPlan', 'CommunicationsCredits', $false, $false, '47794cd0-f0e5-45c5-9033-2eb6b5fc84e0', $ServicePlanCC))
-    #>
-
-    # Adding Microsoft 365 Phone System – Virtual User
-    [System.Collections.ArrayList]$ServicePlanPSVU = @()
-    [void]$ServicePlanPSVU.Add([TFTeamsServicePlan]::new('Phone System - Virtual User', 'MCOEV_VIRTUALUSER', 'f47330e9-c134-43b3-9993-e7f004506889', $true))
-    [void]$Products.Add([TFTeamsLicense]::new( 'Microsoft 365 Phone System Virtual User', 'PHONESYSTEM_VIRTUALUSER', 'Standalone', 'PhoneSystemVirtualUser', $false, $true, '440eaaa8-b3e0-484b-a8be-62870b9ba70a', $ServicePlanPSVU))
-
 
     # Output
     if ( $ProductsNotAdded.Count -gt 0 ) {
