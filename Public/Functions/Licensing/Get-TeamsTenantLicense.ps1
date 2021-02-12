@@ -142,6 +142,8 @@ function Get-TeamsTenantLicense {
       $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ "$($tenantSKU.SkuPartNumber)"
 
       if ($null -ne $Lic) {
+        #FIXME: Add check for 'The property 'Available' cannot be found on this object.' - Suppress errors
+        #only happens if Get-AzureAdLicense does return an empty license
         $Lic.Available = $($tenantSKU.PrepaidUnits.Enabled)
         $Lic.Consumed = $($tenantSKU.ConsumedUnits)
         $Lic.Remaining = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
