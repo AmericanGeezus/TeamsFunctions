@@ -374,7 +374,7 @@ function Set-TeamsUserVoiceConfig {
           }
 
           # Apply or Remove $PhoneNumber as OnPremLineUri
-          #TODO Add Override for PhoneNumber
+          #TODO Add Override for PhoneNumber for Hybrid (if Hybrid!) (return Warning and INFO output Cmd to run against Skype!)
           $step++
           Write-Progress -Id 0 -Status 'Provisioning for Direct Routing' -CurrentOperation 'Applying Phone Number' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message 'Applying Phone Number'
