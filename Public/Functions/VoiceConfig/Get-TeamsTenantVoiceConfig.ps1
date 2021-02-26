@@ -37,8 +37,6 @@ function Get-TeamsTenantVoiceConfig {
   .LINK
     Get-TeamsUserVoiceConfig
   .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
     Set-TeamsUserVoiceConfig
   .LINK
     Remove-TeamsUserVoiceConfig

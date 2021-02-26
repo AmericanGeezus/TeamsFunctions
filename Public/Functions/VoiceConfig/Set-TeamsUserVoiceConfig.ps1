@@ -78,8 +78,6 @@ function Set-TeamsUserVoiceConfig {
   .LINK
     Get-TeamsUserVoiceConfig
   .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
     Set-TeamsUserVoiceConfig
   .LINK
     Remove-TeamsUserVoiceConfig
@@ -376,6 +374,7 @@ function Set-TeamsUserVoiceConfig {
           }
 
           # Apply or Remove $PhoneNumber as OnPremLineUri
+          #TODO Add Override for PhoneNumber
           $step++
           Write-Progress -Id 0 -Status 'Provisioning for Direct Routing' -CurrentOperation 'Applying Phone Number' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message 'Applying Phone Number'

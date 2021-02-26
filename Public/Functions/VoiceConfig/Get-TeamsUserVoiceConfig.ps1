@@ -54,8 +54,6 @@ function Get-TeamsUserVoiceConfig {
   .LINK
     Get-TeamsUserVoiceConfig
   .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
     Set-TeamsUserVoiceConfig
   .LINK
     Set-TeamsUserVoiceConfig
