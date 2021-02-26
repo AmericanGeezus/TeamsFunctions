@@ -7,13 +7,14 @@
 
 
 
-function Set-TeamsUserVoiceConfig {
+function New-TeamsUserVoiceConfig {
   <#
 	.SYNOPSIS
 		Enables a User to consume Voice services in Teams (Pstn breakout)
 	.DESCRIPTION
     Enables a User for Direct Routing, Microsoft Callings or for use in Call Queues (EvOnly)
     User requires a Phone System License in any case.
+    Applies full configuration
   .PARAMETER Identity
     UserPrincipalName (UPN) of the User to change the configuration for
   .PARAMETER DirectRouting
@@ -88,7 +89,7 @@ function Set-TeamsUserVoiceConfig {
 	#>
 
   [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'DirectRouting', ConfirmImpact = 'Medium')]
-  [Alias('Set-TeamsUVC')]
+  [Alias('New-TeamsUVC')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, HelpMessage = 'UserPrincipalName of the User')]

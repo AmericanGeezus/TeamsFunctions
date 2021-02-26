@@ -46,6 +46,8 @@ function Find-TeamsUserVoiceRoute {
   .LINK
     Get-TeamsUserVoiceConfig
   .LINK
+    New-TeamsUserVoiceConfig
+  .LINK
     Set-TeamsUserVoiceConfig
   #>
 

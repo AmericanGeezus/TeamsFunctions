@@ -53,7 +53,7 @@ function Set-TeamsCommonAreaPhone {
 		Set-TeamsCommonAreaPhone -UserPrincipalName "MyLobbyPhone@TenantName.onmicrosoft.com" -IPPhonePolicy "My IPP" -TeamsCallingPolicy "CallP" -TeamsCallParkPolicy "CallPark" -PassThru
     Applies IPPhonePolicy, TeamsCallingPolicy and TeamsCallParkPolicy to the Common Area Phone
     Displays the Common Area Phone Object afterwards
- .INPUTS
+  .INPUTS
     System.String
   .OUTPUTS
     System.Object
@@ -127,7 +127,10 @@ function Set-TeamsCommonAreaPhone {
     [string]$TeamsCallingPolicy,
 
     [Parameter(HelpMessage = 'Teams Call Park Policy')]
-    [string]$TeamsCallParkPolicy
+    [string]$TeamsCallParkPolicy,
+
+    [Parameter(HelpMessage = 'No output is written by default, Switch PassThru will return changed object')]
+    [switch]$PassThru
 
   ) #param
 
