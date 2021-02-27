@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-#FIXME: Set-TeamsRA -PhoneNumber $null didnt work. Set-CsOnlineApplicationInstance -OnpremPhoneNumber $null did!
+
 
 function Set-TeamsResourceAccount {
   <#
@@ -522,6 +522,7 @@ function Set-TeamsResourceAccount {
       # Removing old Number (if $null or different to current)
       if ($null -eq $PhoneNumber -or $CurrentPhoneNumber -ne $PhoneNumber) {
         Write-Verbose -Message "'$Name' ACTION: Removing Phone Number"
+        #CHECK PhoneNumber may not be removed correctly. Needs investigation
         try {
           if ($null -ne ($Object.TelephoneNumber)) {
             # Remove from VoiceApplicationInstance
