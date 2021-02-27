@@ -56,6 +56,8 @@ function Get-TeamsUserVoiceConfig {
   .LINK
     Set-TeamsUserVoiceConfig
   .LINK
+    Set-TeamsUserVoiceConfig
+  .LINK
     Remove-TeamsUserVoiceConfig
   .LINK
     Test-TeamsUserVoiceConfig
@@ -238,6 +240,7 @@ function Get-TeamsUserVoiceConfig {
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
+            #CHECK All Parametername - CallingLineIdentity could be CallerIdPolicy? order better!
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallingPolicy -Value $CsUser.TeamsEmergencyCallingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsCallingPolicy -Value $CsUser.TeamsCallingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name CallingLineIdentity -Value $CsUser.CallingLineIdentity

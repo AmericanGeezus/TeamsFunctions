@@ -106,21 +106,28 @@ function New-TeamsResourceAccountAssociation {
     $Operation = 'Determining Entity'
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
-    switch ($PSCmdlet.ParameterSetName) {
-      'CallQueue' {
-        $DesiredType = 'CallQueue'
-        $Entity = $CallQueue
-        # Querying Call Queue by Name - need Unique Result
-        Write-Verbose -Message "Querying Call Queue '$CallQueue'"
-        $EntitySearch = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
+    try {
+      switch ($PSCmdlet.ParameterSetName) {
+        'CallQueue' {
+          $DesiredType = 'CallQueue'
+          $Entity = $CallQueue
+          # Querying Call Queue by Name - need Unique Result
+          Write-Verbose -Message "Querying Call Queue '$CallQueue'"
+          $EntitySearch = Get-CsCallQueue -NameFilter "$CallQueue" -WarningAction SilentlyContinue
+        }
+        'AutoAttendant' {
+          $DesiredType = 'AutoAttendant'
+          $Entity = $AutoAttendant
+          # Querying Auto Attendant by Name - need Unique Result
+          Write-Verbose -Message "Querying Auto Attendant '$AutoAttendant'"
+          $EntitySearch = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
+        }
       }
-      'AutoAttendant' {
-        $DesiredType = 'AutoAttendant'
-        $Entity = $AutoAttendant
-        # Querying Auto Attendant by Name - need Unique Result
-        Write-Verbose -Message "Querying Auto Attendant '$AutoAttendant'"
-        $EntitySearch = Get-CsAutoAttendant -NameFilter "$AutoAttendant" -WarningAction SilentlyContinue
-      }
+    }
+    catch {
+      #TEST this should address the issue with Script not stopping if Entity not found.
+      throw "Cannot determine $DesiredType '$Entity'"
+      #Write-Error -Message "Cannot determine $DesiredType '$Entity'" -ErrorAction Stop
     }
     if ($EntitySearch.Count -gt 1) {
       $EntityObject = $EntitySearch | Where-Object Name -EQ "$Entity"
@@ -323,7 +330,6 @@ function New-TeamsResourceAccountAssociation {
         Write-Verbose -Message "$Status - $Operation"
         Start-Sleep -Seconds 2
 
-
         $Operation = "Assigning to $DesiredType '$($EntityObject.Name)' - Verifying"
         $step3++
         Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step3 / $sMax3 * 100)
@@ -346,11 +352,9 @@ function New-TeamsResourceAccountAssociation {
           StatusCode        = $OperationStatus.Results.StatusCode
           StatusMessage     = $OperationStatus.Results.Message
           AssociatedTo      = $AssociationTarget.Name
-
         }
 
         Write-Progress -Id 1 -Status "'$($Account.UserPrincipalName)' - Complete" -Activity $MyInvocation.MyCommand -Completed
-
         Write-Output $ResourceAccountAssociationObject
 
         if ( $ErrorEncountered ) {
@@ -358,7 +362,6 @@ function New-TeamsResourceAccountAssociation {
         }
       }
     }
-
     Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
   } #process
