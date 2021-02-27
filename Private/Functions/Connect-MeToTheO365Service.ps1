@@ -125,7 +125,14 @@ function Connect-MeToTheO365Service {
           }
           'SkypeOnline' {
             [void]$ConnectionParameters.Remove('AccountId')
-            Connect-SkypeOnline @ConnectionParameters
+            #CHECK this errors sometimes... trying to address with try/catch
+            try {
+              Connect-SkypeOnline @ConnectionParameters
+            }
+            catch {
+              Start-Sleep -Seconds 3
+              Connect-SkypeOnline @ConnectionParameters
+            }
           }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }
         }
@@ -133,7 +140,7 @@ function Connect-MeToTheO365Service {
         return $ConnectionFeedback
       }
       else {
-        Write-Warning -Message "$Service - Connection already established. If reconnect is desired, please disconnect this seesion first!"
+        Write-Warning -Message "$Service - Connection already established. No action taken!"
       }
     }
     catch {

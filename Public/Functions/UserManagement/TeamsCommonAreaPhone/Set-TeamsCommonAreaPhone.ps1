@@ -175,7 +175,7 @@ function Set-TeamsCommonAreaPhone {
 
     try {
       #Trying to query the Resource Account
-      $CsOnlineUser = (Get-CsOnlineUser -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction STOP)
+      $CsOnlineUser = (Get-CsOnlineUser -Identity "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction STOP)
       $CurrentDisplayName = $CsOnlineUser.DisplayName
       Write-Verbose -Message "'$UserPrincipalName' Teams Object found: '$CurrentDisplayName'"
 

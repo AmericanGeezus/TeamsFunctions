@@ -95,7 +95,7 @@ function Test-TeamsUserVoiceConfig {
     foreach ($User in $Identity) {
       # Querying Identity
       try {
-        $CsUser = Get-CsOnlineUser $User -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop

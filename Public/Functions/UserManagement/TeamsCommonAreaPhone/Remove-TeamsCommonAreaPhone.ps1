@@ -109,7 +109,7 @@ function Remove-TeamsCommonAreaPhone {
       Write-Verbose -Message "Processing: $UPN"
       try {
         #Trying to query the Common Area Phone
-        $Object = (Get-CsOnlineUser $UPN -WarningAction SilentlyContinue -ErrorAction STOP)
+        $Object = (Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
         $DisplayName = $Object.DisplayName
       }
       catch {

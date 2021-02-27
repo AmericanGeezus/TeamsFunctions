@@ -111,6 +111,13 @@ function Connect-Me {
     [int]$sMax = 6
 
     #region Preparation
+    # Preparing environment
+    #Persist Stored Credentials on local machine
+    if (!$PSDefaultParameterValues.'Parameters:Processed') {
+      $PSDefaultParameterValues.add('New-StoredCredential:Persist', 'LocalMachine')
+      $PSDefaultParameterValues.add('Parameters:Processed', $true)
+    }
+
     # Cleaning up existing sessions
     $Status = 'Preparation'
     $Operation = 'Verifying Parameters'
@@ -211,7 +218,7 @@ function Connect-Me {
                 $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
                 if ( $ActivatedRoles.Count -gt 0 ) {
                   Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. -- Waiting for AzureAd to process request." -Verbose
-                  Start-Sleep -Seconds 5
+                  Start-Sleep -Seconds 5 # CHECK necessity of delay - may need more or may need to be scrapped - Catch error and try to reconnect?
                 }
               }
               catch {
@@ -228,6 +235,7 @@ function Connect-Me {
               if (-not $CsOnlineUsername) {
                 [void]$MeToTheO365ServiceParams.Remove('AccountId')
               }
+              Start-Sleep -Seconds 3
               if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
                 $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
               }

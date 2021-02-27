@@ -45,7 +45,7 @@
 #>
 
 #Requires -Version 5.1
-#Requires -Modules @{ ModuleName="MicrosoftTeams"; ModuleVersion="1.1.6" }
+#Requires -Modules @{ ModuleName='MicrosoftTeams'; ModuleVersion='1.1.6' }
 
 #Activate when released
 # AzureAdPreview 2.0.2.129

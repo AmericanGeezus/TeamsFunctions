@@ -233,9 +233,9 @@ function Find-TeamsUserVoiceConfig {
           }
           else {
             #BODGE Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
-            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep 'tel:+;x'
+            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep 'tel:+;x='
           }
-          Write-Information "Finding all Users enabled for Teams with Phone Number '$PhoneNr': Searching... This will take some time!"
+          Write-Information "Finding all Users enabled for Teams with Phone Number '$PhoneNr': Searching..."
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -269,7 +269,7 @@ function Find-TeamsUserVoiceConfig {
           else {
             $ExtN = 'ext=' + $ext
           }
-          Write-Information "Finding all Users enabled for Teams with Extension '$ExtN': Searching... This will take some time!"
+          Write-Information "Finding all Users enabled for Teams with Extension '$ExtN': Searching..."
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f "$ExtN"
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue

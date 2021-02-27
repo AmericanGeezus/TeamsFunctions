@@ -206,22 +206,13 @@ function Get-TeamsResourceAccount {
         $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId
       }
 
-      <# Commented out as not needed - Usage location comes from License (queried there) and ObjectId comes from Get-CsOnlineUser already
-       # Usage Location from Object
-      $Operation = "Parsing Usage Location"
-      $step++
-      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
-      $AzureAdUser = Get-AzureADUser -ObjectId "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue
-      #>
-
       # Parsing CsOnlineUser
       $Operation = 'Parsing Online Voice Routing Policy'
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
-        $CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object OnlineVoiceRoutingPolicy
+        $CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy FAILED. CsOnlineUser not found" -Verbose
@@ -278,6 +269,7 @@ function Get-TeamsResourceAccount {
         UserPrincipalName        = $ResourceAccount.UserPrincipalName
         DisplayName              = $ResourceAccount.DisplayName
         ApplicationType          = $ResourceAccountApplicationType
+        InterpretedUserType      = $CsOnlineUser.InterpretedUserType
         UsageLocation            = $ResourceAccountLicense.UsageLocation
         License                  = $ResourceAccountLicense.Licenses
         PhoneNumberType          = $ResourceAccountPhoneNumberType

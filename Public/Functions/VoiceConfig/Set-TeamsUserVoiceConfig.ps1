@@ -240,7 +240,7 @@ function Set-TeamsUserVoiceConfig {
     Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Enterprise Voice Enablement' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message 'Enterprise Voice Enablement'
     if ( -not $IsEVenabled) {
-      Write-Information "TRYING:  User '$Identity' - Enterprise Voice Status: Not enabled, trying to Enable"
+      Write-Verbose "User '$Identity' - Enterprise Voice Status: Not enabled, trying to Enable"
       if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
         $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
       }
@@ -349,7 +349,8 @@ function Set-TeamsUserVoiceConfig {
             $step++
             Write-Progress -Id 0 -Status 'Provisioning for Direct Routing' -CurrentOperation 'Applying Online Voice Routing Policy' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message 'Applying Online Voice Routing Policy'
-            if ( $Force -or -not $CsUser.OnlineVoiceRoutingPolicy ) {
+            #if ( $Force -or -not $CsUser.OnlineVoiceRoutingPolicy ) { # Only checks unassigned ones, not wrongly assigned ones!
+            if ( $Force -or ($CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) ) {
               try {
                 $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
                 Write-Information "SUCCESS: User '$Identity' - Applying Online Voice Routing Policy: OK - '$OnlineVoiceRoutingPolicy'"
@@ -374,7 +375,7 @@ function Set-TeamsUserVoiceConfig {
           }
 
           # Apply or Remove $PhoneNumber as OnPremLineUri
-          #TODO Add Override for PhoneNumber for Hybrid (if Hybrid!) (return Warning and INFO output Cmd to run against Skype!)
+          #TEST Override for PhoneNumber for Hybrid
           $step++
           Write-Progress -Id 0 -Status 'Provisioning for Direct Routing' -CurrentOperation 'Applying Phone Number' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message 'Applying Phone Number'
@@ -391,8 +392,14 @@ function Set-TeamsUserVoiceConfig {
                   Write-Information "SUCCESS: User '$Identity' - Applying Phone Number: OK - '$Number'"
                 }
                 catch {
-                  $ErrorLogMessage = "User '$Identity' - Applying Phone Number: Failed: '$($_.Exception.Message)'"
-                  Write-Error -Message $ErrorLogMessage
+                  if ($_.Exception.Message.Contains('dirsync')) {
+                    Write-Warning -Message "User '$Identity' - Applying Phone Number: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+                    Write-Host "Set-CsUser -Identity $Identity -LineUri '$Number'" -ForegroundColor Magenta
+                  }
+                  else {
+                    $ErrorLogMessage = "User '$Identity' - Applying Phone Number: Failed: '$($_.Exception.Message)'"
+                    Write-Error -Message $ErrorLogMessage
+                  }
                   $ErrorLog += $ErrorLogMessage
                 }
               }
@@ -402,9 +409,20 @@ function Set-TeamsUserVoiceConfig {
             }
           }
           else {
-            Write-Warning -Message "User '$Identity' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
-            $CsUser | Set-CsUser -OnPremLineUri $null
-            Write-Information "SUCCESS: User '$Identity' - Removing Phone Number: OK"
+            try {
+              Write-Warning -Message "User '$Identity' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
+              $CsUser | Set-CsUser -OnPremLineUri $null
+              Write-Information "SUCCESS: User '$Identity' - Removing Phone Number: OK"
+            }
+            catch {
+              if ($_.Exception.Message.Contains('dirsync')) {
+                Write-Warning -Message "User '$Identity' - Removing Phone Number: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+                Write-Host "Set-CsUser -Identity $Identity -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
+              }
+              else {
+                Write-Verbose -Message "User '$Identity' - Removing Phone Number: Failed: '$($_.Exception.Message)'" -Verbose
+              }
+            }
           }
         }
 
