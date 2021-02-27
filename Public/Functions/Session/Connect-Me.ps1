@@ -235,7 +235,7 @@ function Connect-Me {
               if (-not $CsOnlineUsername) {
                 [void]$MeToTheO365ServiceParams.Remove('AccountId')
               }
-              #CHECK this errors sometimes... trying to address within Connect-MeToTheO365Service
+              Start-Sleep -Seconds 3
               if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
                 $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
               }
