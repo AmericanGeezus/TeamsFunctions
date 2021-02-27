@@ -143,7 +143,7 @@ function Get-TeamsCommonAreaPhone {
         Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
           $CAP = $null
-          $CAP = Get-CsOnlineUser -Identity $I -ErrorAction Stop
+          $CAP = Get-CsOnlineUser -Identity "$I" -ErrorAction Stop
           [void]$CommonAreaPhones.Add($CAP)
         }
         catch {

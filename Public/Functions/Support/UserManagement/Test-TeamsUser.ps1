@@ -53,7 +53,7 @@ function Test-TeamsUser {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      $CsOnlineUser = Get-CsOnlineUser -Identity $Identity -WarningAction SilentlyContinue -ErrorAction STOP
+      $CsOnlineUser = Get-CsOnlineUser -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
       if ( $null -ne $CsOnlineUser ) {
         return $true
       }
