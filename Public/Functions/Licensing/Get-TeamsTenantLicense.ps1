@@ -141,10 +141,6 @@ function Get-TeamsTenantLicense {
       $Lic = $null
       $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ "$($tenantSKU.SkuPartNumber)"
 
-      if ($PSBoundParameters.ContainsKey('Debug')) {
-        "Function: $($MyInvocation.MyCommand.Name): Debug:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
-
       if ($null -ne $Lic) {
         $Lic.Available = $($tenantSKU.PrepaidUnits.Enabled)
         $Lic.Consumed = $($tenantSKU.ConsumedUnits)
