@@ -3,6 +3,39 @@
 Full Change Log for all major releases.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.03 - March 2021 release
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-87-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
+| Status    | ![Live](https://img.shields.io/badge/Live-76-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1181-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
+| Focus | Bugfixing, Licensing |
+
+### Focus for this month
+
+- Transition from Module SkypeOnlineConnector to MicrosoftTeams - Complete
+- Bugfixing
+
+### Changes
+
+- `Get-AzureAdLicense`: Corrected an issue with display of Licenses
+- `Set-AzureAdLicense` and `Set-AzureAdLicenseServicePlan` - Changed to reflect changes to Licensing website
+- `Get-TeamsResourceAccount`: Added `InterpretedUserType` to Output Object
+- `New-TeamsResourceAccount`: Addressed an issue with finding RA after creation
+- `New-TeamsResourceAccountAssociation`: Caught an error if the RA is not found. Script is now halting correctly and erroring only once.
+- `Set-TeamsCommonAreaPhone`: Added switch Passthru to parameter list
+- Corrected identity queries and added Identity switch and quotes around the Identity
+- `Get-TeamsTenantLicense`: Added debug output for counters
+- `Get-TeamsUserVoiceConfig`: Corrected parameternames of `TeamsCallingPolicy` and `CallerIdPolicy` (Level 2 lookup)
+- `Set-TeamsUserVoiceConfig`: Added a catch for dirsynced users.
+- `Connect-Me`:
+  - Added use of New-StoredCredentials:Persist to allow saving of Credentials in Credential Manager
+  - Addressed a time-out issue with connecting to SkypeOnline immediately after enabling admin roles. Both steps now wait a few seconds before continuing
+- Corrected an issue with Licensing
+
 ## v21.02 - February 2021 release
 
 ### Component Status
