@@ -46,15 +46,16 @@ function Connect-MeToTheO365Service {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateSet('AzureAd', 'MicrosoftTeams', 'SkypeOnline', 'ExchangeOnlineManagement')]
+    [ValidateSet('AzureAd', 'MicrosoftTeams', 'ExchangeOnlineManagement')]
     [string]$Service,
 
     [Parameter()]
-    [string]$AccountId,
-
+    [string]$AccountId
+<#
     [Parameter()]
     [string]$OverrideAdminDomain
-  )
+#>
+    )
 
   begin {
     #Show-FunctionStatus -Level Live
@@ -101,11 +102,6 @@ function Connect-MeToTheO365Service {
           }
         }
 
-        # Handling OverrideAdminDomain
-        if ( $OverrideAdminDomain ) {
-          $ConnectionParameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
-        }
-
         # DEBUG Information
         if ( $PSBoundParameters.ContainsKey('Debug') ) {
           "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($ConnectionParameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
@@ -121,17 +117,6 @@ function Connect-MeToTheO365Service {
             catch {
               [void]$ConnectionParameters.Remove('AccountId')
               Connect-MicrosoftTeams @ConnectionParameters
-            }
-          }
-          'SkypeOnline' {
-            [void]$ConnectionParameters.Remove('AccountId')
-            #CHECK this errors sometimes... trying to address with try/catch
-            try {
-              Connect-SkypeOnline @ConnectionParameters
-            }
-            catch {
-              Start-Sleep -Seconds 3
-              Connect-SkypeOnline @ConnectionParameters
             }
           }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }

@@ -148,7 +148,7 @@ function Get-RandomQuote {
     'To those of you who received honours, awards and distinctions, I say well done. And to the C students, I say you, too, can be president of the United States. (George W. Bush)', `
     "Whoever said money can't buy happiness didn't know where to shop. (Gertrude Stein)", `
     'A black cat crossing your path signifies that the animal is going somewhere. (Groucho Marx)', `
-    'Behind every successful man is a woman, behind her is his wife. (Groucho Marx)', `
+    #'Behind every successful man is a woman, behind her is his wife. (Groucho Marx)', `
     "Here's to our wives and girlfriends…may they never meet! (Groucho Marx)", `
     'I refuse to join any club that would have me as a member. (Groucho Marx)', `
     'I was married by a judge. I should have asked for a jury. (Groucho Marx)', `
@@ -237,7 +237,7 @@ function Get-RandomQuote {
     "As you get older three things happen. The first is your memory goes, and I can't remember the other two. (Norman Wisdom)", `
     "Ask me no questions, and I'll tell you no lies. (Oliver Goldsmith)", `
     'If you must make a noise, make it quietly. (Oliver Hardy)', `
-    "A woman's mind is cleaner than a man's: She changes it more often. (Oliver Herford)", `
+    #"A woman's mind is cleaner than a man's: She changes it more often. (Oliver Herford)", `
     'Man has his will, but woman has her way. (Oliver Wendell Holmes Sr.)', `
     "Roses are red, violets are blue, I'm schizophrenic, and so am I. (Oscar Levant)", `
     "There's a fine line between genius and insanity. I have erased this line. (Oscar Levant)", `
@@ -311,7 +311,7 @@ function Get-RandomQuote {
     'Happiness is an imaginary condition, formerly attributed by the living to the dead, now usually attributed by adults to children, and by children to adults. (Thomas Szasz)', `
     'I know that there are people who do not love their fellow man, and I hate people like that!  (Tom Lehrer)', `
     'Every man is guilty of all the good he did not do. (Voltaire)', `
-    'I hate women because they always know where things are. (Voltaire)', `
+    #'I hate women because they always know where things are. (Voltaire)', `
     'A rich man is nothing but a poor man with money. (W. C. Fields)', `
     'Always carry a flagon of whiskey in case of snakebite and furthermore always carry a small snake. (W. C. Fields)', `
     "If at first you don't succeed, try, try again. Then quit. There's no point in being a damn fool about it. (W. C. Fields)", `

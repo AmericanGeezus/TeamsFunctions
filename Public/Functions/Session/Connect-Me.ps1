@@ -5,15 +5,15 @@
 # Status:   Live
 
 
-
+#CHECK Documentation for Skype Online - Requirement for SfB Legacy admin is now gone?
 
 function Connect-Me {
   <#
 	.SYNOPSIS
-		Connect to AzureAd, Teams and SkypeOnline and optionally also to Exchange
+		Connect to AzureAd, Teams and optionally also to Exchange
 	.DESCRIPTION
 		One function to connect them all.
-    This CmdLet solves the requirement for individual authentication prompts for AzureAD, MicrosoftTeams, SkypeOnline
+    This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams
     (and optionally also to ExchangeOnline) when multiple connections are required.
 	.PARAMETER AccountId
 		Required. UserPrincipalName or LoginName of the Office365 Administrator
@@ -25,28 +25,28 @@ function Connect-Me {
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
 		Connect-Me [-AccountId] admin@domain.com
-    Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
+    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
     If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
 	.EXAMPLE
 		Connect-Me -AccountId admin@domain.com -NoFeedBack
-    Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
+    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
     If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
     Does not display Session Information Object at the end - This is useful if called by other functions.
 	.EXAMPLE
 		Connect-Me -AccountId admin@domain.com -ExchangeOnline
-    Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
+    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
     If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
     Also connects to ExchangeOnline
 	.EXAMPLE
 		Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicrosoft.com
-    Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'
+    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
     If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
     The OverrideAdminDomain is queried from the AzureAd Tenant once the connection has been established.
     If used explicitly, this will use the provided OverrideAdminDomain
   .FUNCTIONALITY
     Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
   .NOTES
-    This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams, SkypeOnline and ExchangeOnline
+    This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline
     Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets)
 		For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role.
 		For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator)
@@ -58,15 +58,11 @@ function Connect-Me {
   .LINK
     Connect-Me
 	.LINK
-    Connect-SkypeOnline
-	.LINK
     Connect-AzureAD
 	.LINK
     Connect-MicrosoftTeams
 	.LINK
     Disconnect-Me
-	.LINK
-    Disconnect-SkypeOnline
 	.LINK
     Disconnect-AzureAD
 	.LINK
@@ -83,10 +79,6 @@ function Connect-Me {
     [Parameter(HelpMessage = 'Establishes a connection to Exchange Online. Reuses credentials if authenticated already.')]
     [Alias('Exchange')]
     [switch]$ExchangeOnline,
-
-    [Parameter(HelpMessage = 'Domain used to connect to for SkypeOnline if DNS points to OnPrem Skype')]
-    [AllowNull()]
-    [string]$OverrideAdminDomain,
 
     [Parameter(HelpMessage = 'Suppresses Session Information output')]
     [switch]$NoFeedback
@@ -112,7 +104,7 @@ function Connect-Me {
 
     #region Preparation
     # Preparing environment
-    #Persist Stored Credentials on local machine
+    #Persist Stored Credentials on local machine - Value is unclear as they don't seem to be needed anymore now that New-CsOnlineSession is gone
     if (!$PSDefaultParameterValues.'Parameters:Processed') {
       $PSDefaultParameterValues.add('New-StoredCredential:Persist', 'LocalMachine')
       $PSDefaultParameterValues.add('Parameters:Processed', $true)
@@ -166,7 +158,7 @@ function Connect-Me {
     catch {
       Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
       Write-Verbose -Message 'AzureAd & MicrosoftTeams: Establishing a connection will work, though only GET-commands will be able to be executed'
-      Write-Verbose -Message "SkypeOnline: Establishing a connection will fail if the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
+      #Write-Verbose -Message "SkypeOnline: Establishing a connection will fail if the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
     }
     #endregion
 
@@ -191,7 +183,7 @@ function Connect-Me {
     $Status = 'Establishing Connection'
     Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     #$ConnectionOrder = @('AzureAd', 'MicrosoftTeams', 'SkypeOnline')
-    $ConnectionOrder = @('AzureAd', 'SkypeOnline') # testing this order for more stability
+    $ConnectionOrder = @('AzureAd', 'MicrosoftTeams') # Post FEB 2021 (with MicrosoftTeams v2)
 
     if ($ExchangeOnline) { $ConnectionOrder += 'ExchangeOnline' }
 
@@ -207,7 +199,6 @@ function Connect-Me {
         switch ($Connection) {
           'AzureAd' {
             $AzureAdFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
-
             #region Activating Admin Roles
             if ( $PIMavailable ) {
               $step++
@@ -218,7 +209,7 @@ function Connect-Me {
                 $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
                 if ( $ActivatedRoles.Count -gt 0 ) {
                   Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. -- Waiting for AzureAd to process request." -Verbose
-                  Start-Sleep -Seconds 5 # CHECK necessity of delay - may need more or may need to be scrapped - Catch error and try to reconnect?
+                  #Start-Sleep -Seconds 5 # CHECK necessity of delay. New method might not need it at all.
                 }
               }
               catch {
@@ -228,35 +219,6 @@ function Connect-Me {
             }
             else {
               Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available'
-            }
-          }
-          'SkypeOnline' {
-            try {
-              if (-not $CsOnlineUsername) {
-                [void]$MeToTheO365ServiceParams.Remove('AccountId')
-              }
-              Start-Sleep -Seconds 3
-              if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-                $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams -OverrideAdminDomain $OverrideAdminDomain
-              }
-              else {
-                $SkypeOnlineFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
-              }
-            }
-            catch {
-              if ( $_.Exception.Message.Contains('does not have permission to manage this tenant') ) {
-                if ( -not $_.Exception.Message.Contains("$AccountId") -and $_.Exception.Message -match "'(?<content>.*)'") {
-                  Write-Error -Message "Establishing Connection to SkypeOnline failed. Connection attempted with a Username that is not authorised for this Tenant: $($matches.content) "
-                  Write-Debug "This happens, if connections are established to different tenants and a session token is from the previous connection is still lingering in the session. This is a bug in the 'New-CsOnlineSession' CmdLet (The Session token from a previous session is not removed correctly). The only way to currently overcome this is to close your PowerShell Session and start a fresh session!" -Debug
-                }
-                else {
-                  Write-Error -Message 'User does not have permission to manage this tenant. If Privileged Identity Management is used please validate Admin Roles being activated'
-                }
-              }
-              else {
-                Write-Error -Message "Establishing Connection to SkypeOnline failed: $($_.Exception.Message)"
-                Write-Verbose -Message 'Please verify Username, Password, OverrideAdminDomain and Session Exhaustion (maximum two concurrent sessions)'
-              }
             }
           }
           'MicrosoftTeams' {
