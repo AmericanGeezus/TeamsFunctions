@@ -133,7 +133,7 @@ function New-TeamsAutoAttendantCallFlow {
           Write-Verbose -Message 'Call Flow - Greeting provided as a String'
           # Process Greeting
           try {
-            $GreetingObject = New-TeamsAutoAttendantPrompt -String $Greeting
+            $GreetingObject = New-TeamsAutoAttendantPrompt -String "$Greeting"
             if ($GreetingObject) {
               Write-Verbose -Message 'Prompts - Adding 1 Prompts created (Greeting)'
               $Parameters += @{'Greetings' = $GreetingObject }

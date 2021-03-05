@@ -138,7 +138,7 @@ function Get-AzureAdLicenseServicePlan {
           $VerbosePreference = 'SilentlyContinue'
           $TextInfo = (Get-Culture).TextInfo
           $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
-          $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep '()+ -'
+          $planProductName = Format-StringRemoveSpecialCharacter -String "$planProductName" -SpecialCharacterToKeep '()+ -'
 
           # Building Object
           if ($Plans.ServicePlanId -notcontains $planServicePlanId) {

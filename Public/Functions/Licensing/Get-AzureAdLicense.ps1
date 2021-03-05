@@ -149,7 +149,7 @@ function Get-AzureAdLicense {
           $VerbosePreference = 'SilentlyContinue'
           $TextInfo = (Get-Culture).TextInfo
           $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
-          $planProductName = Format-StringRemoveSpecialCharacter -String $planProductName -SpecialCharacterToKeep '()+ -'
+          $planProductName = Format-StringRemoveSpecialCharacter -String "$planProductName" -SpecialCharacterToKeep '()+ -'
 
           # Building Object
           if ($srcProductPlans.ServicePlanId -notcontains $planServicePlanId) {
@@ -244,7 +244,7 @@ function Get-AzureAdLicense {
         $ProductName = $ProductName.Substring($StringToCut.Length, $ProductName.Length - $StringToCut.Length)
       }
       $VerbosePreference = 'SilentlyContinue'
-      $ProductName = Format-StringRemoveSpecialCharacter -String $ProductName -SpecialCharacterToKeep '()+ -'
+      $ProductName = Format-StringRemoveSpecialCharacter -String "$ProductName" -SpecialCharacterToKeep '()+ -'
 
       # Building Object
       try {
