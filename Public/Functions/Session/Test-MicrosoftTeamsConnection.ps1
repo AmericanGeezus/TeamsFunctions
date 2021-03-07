@@ -33,12 +33,20 @@ function Test-MicrosoftTeamsConnection {
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    try {
-      #$null = Get-CsPolicyPackage -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object -First 1 -ErrorAction STOP
-      $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
-      return $true
+    $Sessions = Get-PSSession -WarningAction SilentlyContinue
+    $Sessions = $Sessions | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+    if ($Sessions.Count -ge 1) {
+      #Write-Verbose "Teams Session found"
+      $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
+      if ($Sessions.Count -ge 1) {
+        #Write-Verbose "Teams Session found, open and valid"
+        return $true
+      }
+      else {
+        return $false
+      }
     }
-    catch {
+    else {
       return $false
     }
 
