@@ -36,29 +36,42 @@ function Get-RandomQuote {
   $Quote = `
     #region Added David
     'Thank you for using my Module! (David Eberhardt)', `
-    'Ready Player 1  |  Player 2, Insert Coin', 'YOU MUST CONSTRUCT ADDITIONAL PYLONS!', 'Houston, we have a problem.', `
-    'I solemnly swear that I am up to no good', 'Loading Subtitles...', 'Installing Babelfish... Done. Downloading Vogon poetry 1/42', 'Would you like to know... more?', `
+    'Ready Player 1  |  Player 2, Insert Coin (Arcade)', `
+    'YOU MUST CONSTRUCT ADDITIONAL PYLONS! (Star Craft)', `
+    'Houston, we have a problem. (Apollo 13)', `
+    'Loading Subtitles...', `
+    'Installing Babelfish... Done. Downloading Vogon poetry 1/42', `
+    'Would you like to know... more? (Starship Troopers)', `
     'You cannot pass! I am a servant of the Secret Fire, wielder of the Flame of Anor. The Dark Flame will not avail you, Flame of Udun. Go back to the shadow. You shall not pass! (Gandalf)', `
-    'May you stand between your crew and harm as you lead them through the empty quarters of the stars (Mass Effect 2, based on an Ancient Egyptian Blessing)', 'Forward the Foundation!', `
+    'May you stand between your crew and harm as you lead them through the empty quarters of the stars (Mass Effect 2, based on an Ancient Egyptian Blessing)', `
+    'Forward the Foundation! (Isaac Asimov)', `
     "When live gives you lemons? Don't make lemonade. Make life take the lemons back! Get mad! Say: 'I don't want your damn lemons! What am I supposed to do with these?' Demand to see life's manager! (Portal 2, Cave Johnson)", `
-    "I love* when I need to download an update for the updater to install an update. (*I don't love that.) -- It's even more fun when your updater is so out of date you have to manually go get the newest avaliable updater in order to update the product.", `
+    "I love* when I need to download an update for the updater to install an update. (*I don't love that.) -- It's even more fun when your updater is so out of date you have to manually go get the newest avaliable updater in order to update the product. (unknown)", `
     "The two basic principles of Windows system administration: For minor problems, reboot; For major problems, reinstall (unknown)", `
-    "If you want to make an apple pie from scratch, you must first create the universe", `
-    "With insufficient data it is easy to go wrong",`
+    "If you want to make an apple pie from scratch, you must first create the universe (Carl Sagan)", `
+    'With insufficient data it is easy to go wrong (Carl Sagan)', `
     'We should therefore claim, in the name of tolerance, the right not to tolerate the intolerant. (Sir Charles Popper)', `
-    "Activating the Out-of-Office Assistant is the ninja-trick of the office employee", `
+    "Activating the Out-of-Office Assistant while being present is the ninja-trick of the office employee (unknown)", `
     "I'd love to be as tired in the evenings as I am in the mornings. My biorhythm is in a different time zone.", `
-    "I live in my own world. This is OK, I am known there.", `
-    'If you tell me early enough, I can be spontaneous.', `
+    "We are all flawed, my dear. Every one of us. And believe me, we've all made mistakes. You've just got to take a good hard look at yourself, change what needs to be changed, and move on, pet. (Lauren Myracle)", `
+    'I live in my own little world. But its ok, they know me here. (Lauren Myracle)', `
+    "Hey. What is it that famous person said? 'It'll all work out in the end, and if it doesn't, that means it's not the end yet'? (Lauren Myracle)", `
     'If you would be a real seeker after truth, it is necessary that at least once in your life you doubt, as far as possible, all things. (Rene Descartes)', `
-    "Plan A is always more effective when the device you are working on understands that Plan B involves either a large hammer or screwdriver....", `
-    "A programmer is just a tool which converts caffeine into code", `
-    "The database hates you right now. The entry might exist or it might not exist. We would clear this mystery up for you, if we could get to the database. We tried to look it up, but the database puked up an error:Lost connection to My SQL server at 'reading initial communication packet', system error: 0", `
+    "Plan A is always more effective when the device you are working on understands that Plan B involves either a large hammer or screwdriver... (unknown)", `
+    "A programmer is just a tool which converts caffeine into code (unknown)", `
+    "The database hates you right now. The entry might exist or it might not exist. We would clear this mystery up for you, if we could get to the database. We tried to look it up, but the database puked up an error:Lost connection to My SQL server at 'reading initial communication packet', system error: 0 (unknown)", `
     'May all things go according to the wishes of those who hear it (Stargate Universe/Cantonese Proverb)', `
     "people who say it cannot be done should not interrupt those who are doing it (George Bernard Shaw)", `
     'Passion is energy. Feel the power that comes from focusing on what excites you. (Oprah Winfrey)', `
     'Doing the best at this moment puts you in the best place for the next moment. (Oprah Winfrey)', `
     "Be thankful for what you have; you'll end up having more. If you concentrate on what you don't have, you will never, ever have enough. (Oprah Winfrey)", `
+    'The trouble with having an open mind, of course, is that people will insist on coming along and trying to put things in it. (Terry Pratchett)', `
+    "It is often said that before you die your life passes before your eyes. It is in fact true. It's called living. (Terry Pratchett)", `
+    "I'll be more enthusiastic about encouraging thinking outside the box when there's evidence of any thinking going on inside it. (Terry Pratchett)", `
+    "'Educational' refers to the process, not the object. Although, come to think of it, some of my teachers could easily have been replaced by a cheeseburger. (Terry Pratchett)", `
+    'Fantasy is an exercise bicycle for the mind. It might not take you anywhere, but it tones up the muscles that can. Of course, I could be wrong. (Terry Pratchett)', `
+    "What is normal? Normal was yesterday. If you lose a leg, one day you're hopping around on one leg, so you know the difference. (Terry Pratchett)", `
+    "Do you know that a man is not dead while his name is still spoken? (Terry Pratchett) -- GNU Sir Terry.", `
     #endregion Addded David
 
     #region Added Julia
@@ -105,21 +118,20 @@ function Get-RandomQuote {
     "He who laughs last didn't get the joke. (Charles de Gaulle)", `
     'I always arrive late at the office, but I make up for it by leaving early. (Charles Lamb)', `
     "Don't worry about the world coming to an end today. It is already tomorrow in Australia. (Charles M. Schulz)", `
-    #    "By the time a man realizes that his father was right, he has a son who thinks he's wrong. (Charles Wadsworth)", `
+    "By the time a man realizes that his father was right, he has a son who thinks he's wrong. (Charles Wadsworth)", `
     "If you love something set it free, but don't be surprised if it comes back with herpes. (Chuck Palahniuk)", `
     "When I was a boy I was told that anybody could become President. I'm beginning to believe it. (Clarence Darrow)", `
     "A stockbroker urged me to buy a stock that would triple its value every year. I told him, 'At my age, I don't even buy green bananas.' (Claude Pepper)", `
-    #    "A study in the Washington Post says that women have better verbal skills than men. I just want to say to the authors of that study: 'Duh.' (Conan O'Brien)", `
-    #    "Starbucks says they are going to start putting religious quotes on cups. The very first one will say, 'Jesus! This cup is expensive!' (Conan O'Brien)", `
+    "A study in the Washington Post says that women have better verbal skills than men. I just want to say to the authors of that study: 'Duh.' (Conan O'Brien)", `
+    "Starbucks says they are going to start putting religious quotes on cups. The very first one will say, 'Jesus! This cup is expensive!' (Conan O'Brien)", `
     "Laughing at our mistakes can lengthen our own life. Laughing at someone else's can shorten it. (Cullen Hightower)", `
     "If you can't live without me, why aren't you dead already? (Cynthia Heimel)", `
     'If you think you are too small to make a difference, try sleeping with a mosquito. (Dalai Lama)', `
     'Remember, today is the tomorrow you worried about yesterday. (Dale Carnegie)', `
     "Education is learning what you didn't even know you didn't know. (Daniel J. Boorstin)", `
     "It is a scientific fact that your body will not absorb cholesterol if you take it from another person's plate. (Dave Barry)", `
-    #    "Never under any circumstances take a sleeping pill and a laxative on the same night. (Dave Barry)", `
+    "Never under any circumstances take a sleeping pill and a laxative on the same night. (Dave Barry)", `
     'I used to jog but the ice cubes kept falling out of my glass. (David Lee Roth)', `
-    #    "Everyone has a purpose in life. Perhaps yours is watching television. (David Letterman)", `
     'The digital camera is a great invention because it allows us to reminisce. Instantly. (Demetri Martin)', `
     'A failure is like fertilizer; it stinks to be sure, but it makes things grow faster in the future. (Denis Waitley)', `
     'As long as people will accept crap, it will be financially profitable to dispense it. (Dick Cavett)', `
@@ -130,8 +142,6 @@ function Get-RandomQuote {
     'Human beings, who are almost unique in having the ability to learn from the experience of others, are also remarkable for their apparent disinclination to do so. (Douglas Adams)', `
     "I refuse to answer that question on the grounds that I don't know the answer. (Douglas Adams)", `
     'There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable.There is another theory which states that this has already happened. (Douglas Adams)', `
-    #    "Don't cry because it's over. Smile because it happened. (Dr. Seuss)", `
-    #    "I was born to make mistakes, not to fake perfection. (Drake)", `
     'Analyzing humor is like dissecting a frog. Few people are interested and the frog dies of it. (E. B. White)', `
     "If you think nobody cares if you're alive, try missing a couple of car payments. (Earl Wilson)", `
     'The duty of a patriot is to protect his country from its government. (Edward Abbey)', `
@@ -210,7 +220,7 @@ function Get-RandomQuote {
     'A committee is a group that keeps minutes and loses hours. (Milton Berle)', `
     'My doctor told me that jogging could add years to my life. I think he was right. I feel ten years older already. (Milton Berle)', `
     'I drank some boiling water because I wanted to whistle. (Mitch Hedberg)', `
-    #  "I prefer someone who burns the flag and then wraps themselves up in the Constitution over someone who burns the Constitution and then wraps themselves up in the flag. (Molly Ivins)", `
+    "I prefer someone who burns the flag and then wraps themselves up in the Constitution over someone who burns the Constitution and then wraps themselves up in the flag. (Molly Ivins)", `
     "It's just a job. Grass grows, birds fly, waves pound the sand. I beat people up. (Muhammad Ali)", `
     "It's always darkest before the dawn. So if you're going to steal your neighbor's newspaper, that's the time to do it. (Navjot Singh Sidhu)", `
     "When you go into court you are putting your fate into the hands of twelve people who weren't smart enough to get out of jury duty. (Norm Crosby)", `
@@ -231,7 +241,7 @@ function Get-RandomQuote {
     'Life is a sexually transmitted disease. (R. D. Laing)', `
     'I dream of a better tomorrow, where chickens can cross the road and not be questioned about their motives. (Ralph Waldo Emerson)', `
     'The less Holy Spirit we have, the more cake and coffee we need to keep the church going. (Reinhard Bonnke)', `
-    #    "If you lived with a roommate as unstable as this economic system, you would've moved out or demanded that your roommate get professional help. (Richard D. Wolff)", `
+    "If you lived with a roommate as unstable as this economic system, you would've moved out or demanded that your roommate get professional help. (Richard D. Wolff)", `
     'Lead me not into temptation; I can find the way myself. (Rita Mae Brown)', `
     "I love being married. It's so great to find that one special person you want to annoy for the rest of your life. (Rita Rudner)", `
     'If you have a secret, people will sit a little bit closer. (Rob Cordry)', `
