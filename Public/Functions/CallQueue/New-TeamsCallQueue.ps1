@@ -309,6 +309,7 @@ function New-TeamsCallQueue {
     [string]$WelcomeMusicAudioFile,
 
     #FIXME Evaluate Music files to not throw stopping error (for NEW and SET) - requires moving the below to BEGIN
+    #TODO Add Parameter to override default behaviour? - also needs adding in Spreadsheet then! (FORCE?)
     #CHECK other Music files too - Shared Voicemail files (some might be a hard requirement)
     [Parameter(HelpMessage = 'Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)')]
     [ValidateScript( {
@@ -353,8 +354,8 @@ function New-TeamsCallQueue {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { break }
+    # Asserting MicrosoftTeams Connection
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }

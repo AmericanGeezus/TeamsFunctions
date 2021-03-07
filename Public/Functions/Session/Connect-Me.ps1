@@ -10,7 +10,7 @@
 function Connect-Me {
   <#
 	.SYNOPSIS
-		Connect to AzureAd, Teams and optionally also to Exchange
+		Connect to AzureAd, MicrosoftTeams and optionally also to Exchange
 	.DESCRIPTION
 		One function to connect them all.
     This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams
@@ -19,30 +19,26 @@ function Connect-Me {
 		Required. UserPrincipalName or LoginName of the Office365 Administrator
 	.PARAMETER ExchangeOnline
 		Optional. Connects to Exchange Online Management. Requires Exchange Admin Role
-	.PARAMETER OverrideAdminDomain
-    Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.
 	.PARAMETER NoFeedback
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
 		Connect-Me [-AccountId] admin@domain.com
-    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
-    If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
+    Creates a session to AzureAD prompting for a Password for 'admin@domain.com'
+    If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
+    Creates a session to MicrosoftTeams with the AzureAd Session details
+    If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
 	.EXAMPLE
 		Connect-Me -AccountId admin@domain.com -NoFeedBack
-    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
-    If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
+    If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
+    Creates a session to MicrosoftTeams with the AzureAd Session details
+    If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
     Does not display Session Information Object at the end - This is useful if called by other functions.
 	.EXAMPLE
 		Connect-Me -AccountId admin@domain.com -ExchangeOnline
-    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
-    If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
+    If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
+    Creates a session to MicrosoftTeams with the AzureAd Session details
+    If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
     Also connects to ExchangeOnline
-	.EXAMPLE
-		Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicrosoft.com
-    Creates a session to AzureAD and Microsoft Teams prompting (once) for a Password for 'admin@domain.com'
-    If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams
-    The OverrideAdminDomain is queried from the AzureAd Tenant once the connection has been established.
-    If used explicitly, this will use the provided OverrideAdminDomain
   .FUNCTIONALITY
     Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
   .NOTES
@@ -50,7 +46,8 @@ function Connect-Me {
     Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets)
 		For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role.
 		For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator)
-		For SkypeOnline, the Skype for Business Legacy Administrator Roles is required to connect, a Teams Admin role to action.
+		Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline.
+    The Skype for Business Legacy Administrator Roles may still be required to connect.
 		Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
 		Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
   .LINK
@@ -139,7 +136,7 @@ function Connect-Me {
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
     $SaveVerbosePreference = $global:VerbosePreference;
     $global:VerbosePreference = 'SilentlyContinue';
-    Import-Module MicrosoftTeams -Global -Force -Verbose:$false
+    Import-Module MicrosoftTeams -RequiredVersion 2.0.0 -Force -Global -Verbose:$false
     $global:VerbosePreference = $SaveVerbosePreference
 
     if ( $AzureAdPreviewModule -and -not (Assert-Module AzureAdPreview )) {
@@ -158,7 +155,7 @@ function Connect-Me {
     catch {
       Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
       Write-Verbose -Message 'AzureAd & MicrosoftTeams: Establishing a connection will work, though only GET-commands will be able to be executed'
-      #Write-Verbose -Message "SkypeOnline: Establishing a connection will fail if the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
+      #Write-Verbose -Message "MicrosoftTeams: Executing NEW/SET/REMOVE CmdLets requires the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
     }
     #endregion
 
@@ -182,9 +179,7 @@ function Connect-Me {
     #region Connections
     $Status = 'Establishing Connection'
     Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
-    #$ConnectionOrder = @('AzureAd', 'MicrosoftTeams', 'SkypeOnline')
-    $ConnectionOrder = @('AzureAd', 'MicrosoftTeams') # Post FEB 2021 (with MicrosoftTeams v2)
-
+    $ConnectionOrder = @('AzureAd', 'MicrosoftTeams')
     if ($ExchangeOnline) { $ConnectionOrder += 'ExchangeOnline' }
 
     foreach ($Connection in $ConnectionOrder) {
@@ -208,8 +203,7 @@ function Connect-Me {
               try {
                 $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
                 if ( $ActivatedRoles.Count -gt 0 ) {
-                  Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. -- Waiting for AzureAd to process request." -Verbose
-                  #Start-Sleep -Seconds 5 # CHECK necessity of delay. New method might not need it at all.
+                  Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
                 }
               }
               catch {
@@ -268,21 +262,11 @@ function Connect-Me {
         $SessionInfo.ConnectedTo += 'MicrosoftTeams'
         $SessionInfo.Tenant = $MicrosoftTeamsFeedback.Tenant
         $SessionInfo.TenantId = $MicrosoftTeamsFeedback.TenantId
-      }
-
-      #SkypeOnline SessionInfo
-      if ( Test-SkypeOnlineConnection ) {
-        $SessionInfo.ConnectedTo += 'SkypeOnline'
-        if ( -not $SessionInfo.TenantDomain ) {
-          $SessionInfo.TenantDomain = $SkypeOnlineFeedback.TenantDomain
-        }
-        $SessionInfo.Tenant = $SkypeOnlineFeedback.Tenant
-        $SessionInfo.TenantId = $SkypeOnlineFeedback.TenantId
-        $SessionInfo.SkypeEnvironment = $SkypeOnlineFeedback.Environment
-        $SessionInfo | Add-Member -MemberType NoteProperty -Name ComputerName -Value $SkypeOnlineFeedback.ComputerName
+        <# Relic from SkypeOnline
+        #CHECK whether needed
         $SessionInfo | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $SkypeOnlineFeedback.TeamsUpgradeEffectiveMode
+        #>
       }
-
       #Exchange SessionInfo
       if ( Test-ExchangeOnlineConnection ) {
         $SessionInfo.ConnectedTo += 'ExchangeOnline'
@@ -291,7 +275,6 @@ function Connect-Me {
           "Function: $($MyInvocation.MyCommand.Name): ExchangeOnlineFeedback:", ($ExchangeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
       }
-
 
       #Querying Admin Roles
       if ( -not $SessionInfo.AdminRoles ) {

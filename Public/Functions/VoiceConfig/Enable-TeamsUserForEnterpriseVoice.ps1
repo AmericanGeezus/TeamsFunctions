@@ -44,8 +44,8 @@ function Enable-TeamsUserForEnterpriseVoice {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
-    # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { break }
+    # Asserting MicrosoftTeams Connection
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -62,9 +62,18 @@ function Enable-TeamsUserForEnterpriseVoice {
 
     foreach ($Id in $Identity) {
       Write-Verbose -Message "[PROCESS] $Id"
-      $UserObject = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue
-      $UserLicense = Get-TeamsUserLicense $Id
-      $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+      # Querying Identity
+      try {
+        Write-Verbose -Message "User '$Id' - Querying User Account"
+        $UserObject = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue
+        $UserLicense = Get-TeamsUserLicense "$Id"
+        $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+      }
+      catch {
+        Write-Error -Message "User '$Id' not found: $($_.Exception.Message)" -Category ObjectNotFound
+        continue
+      }
+
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
         if ($Called) {

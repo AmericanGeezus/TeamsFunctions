@@ -50,7 +50,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
   $PrivateFunctions = Get-ChildItem "$PSScriptRoot\Private" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
   $PublicDocs = Get-ChildItem "$PSScriptRoot\docs" -Include '*.md' -Recurse #| Select-Object -First 1
 
-  Context 'Testing Module ALL Functions' -ForEach $AllFunctions {
+  Context 'Testing Module ALL Functions' -Foreach $AllFunctions {
 
     It "'$($_.BaseName)' should exist" {
       "$($_.FullName)" | Should -Exist
@@ -77,7 +77,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
 
   } # Context "Testing Module ALL Functions"
 
-  Context 'Testing Module PUBLIC Functions' -Foreach $PublicFunctions {
+  Context 'Testing Module PUBLIC Functions' -ForEach $PublicFunctions {
 
     It "'$($_.BaseName)' should have a SYNOPSIS section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.SYNOPSIS'
@@ -119,7 +119,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
   } # Context "Testing Module PUBLIC Functions"
 
 
-  Context 'Testing Module PRIVATE Functions' -ForEach $PrivateFunctions {
+  Context 'Testing Module PRIVATE Functions' -Foreach $PrivateFunctions {
 
     # currently no special tests for private functions
 
@@ -136,7 +136,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
   }
   #>
 
-  Context 'Testing Module PUBLIC Documentation' -Foreach $PublicDocs {
+  Context 'Testing Module PUBLIC Documentation' -ForEach $PublicDocs {
 
     It "'$_' should NOT have empty documentation in the MD file" {
       "$($_.FullName)" | Should -Not -FileContentMatch ([regex]::Escape('{{'))

@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#CHECK "Karen wants to call the manager"^^
 
 function Get-TeamsResourceAccount {
   <#
@@ -110,8 +110,8 @@ function Get-TeamsResourceAccount {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { break }
+    # Asserting MicrosoftTeams Connection
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }

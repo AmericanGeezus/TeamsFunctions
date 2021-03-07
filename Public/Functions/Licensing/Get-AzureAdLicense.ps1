@@ -150,7 +150,6 @@ function Get-AzureAdLicense {
           $TextInfo = (Get-Culture).TextInfo
           $planProductName = $TextInfo.ToTitleCase($planProductName.ToLower())
           $planProductName = Format-StringRemoveSpecialCharacter -String "$planProductName" -SpecialCharacterToKeep '()+ -'
-
           # Building Object
           if ($srcProductPlans.ServicePlanId -notcontains $planServicePlanId) {
             try {
@@ -245,7 +244,6 @@ function Get-AzureAdLicense {
       }
       $VerbosePreference = 'SilentlyContinue'
       $ProductName = Format-StringRemoveSpecialCharacter -String "$ProductName" -SpecialCharacterToKeep '()+ -'
-
       # Building Object
       try {
         [void]$Products.Add([TFTeamsLicense]::new( "$ProductName", "$srcSkuPartNumber", "$LicenseType", "$ParameterName", $IncludesTeams, $IncludesPhoneSystem, "$srcSkuId", $srcProductPlans))

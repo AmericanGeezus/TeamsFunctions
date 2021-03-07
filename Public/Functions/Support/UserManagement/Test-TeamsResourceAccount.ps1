@@ -54,8 +54,8 @@ function Test-TeamsResourceAccount {
 		Show-FunctionStatus -Level Live
 		Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
-		# Asserting SkypeOnline Connection
-		if (-not (Assert-SkypeOnlineConnection)) { break }
+		# Asserting MicrosoftTeams Connection
+		if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
 	} #begin
 

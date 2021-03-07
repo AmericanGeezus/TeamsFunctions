@@ -38,7 +38,7 @@
   20.12       DEC 2020 Release - Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes
   21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
   21.02       FEB 2021 Release - Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector
-  21.03       MAR 2021 Release - Bugfixing and connection updates for MicrosoftTeams Module in v2
+  21.03       MAR 2021 Release - Switched to support for MicrosoftTeams v2.0.0.0 - Removed SkypeOnline, Bugfixes
 
 .LINK
   https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
@@ -161,6 +161,7 @@ Get-ChildItem -Filter *.ps1 -Path $PSScriptRoot\Public\Functions, $PSScriptRoot\
 Set-Alias -Name New-TeamsAutoAttendantCallHandlingAssociation -Value New-CsAutoAttendantCallHandlingAssociation
 Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
 Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
+Set-Alias -Name Connect-SkypeOnline -Value Connect-MicrosoftTeams
 
 # Dedication
 if ($env:username -eq 'Julia.Horvath') {
@@ -176,7 +177,7 @@ if ($env:username -eq 'Julia.Horvath') {
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, Enable-Ev, Set-ServicePlan, `
+Export-ModuleMember -Alias con, dis, Connect-SkypeOnline, Enable-Ev, Set-ServicePlan, `
   Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   #Test-TeamsTDP, `

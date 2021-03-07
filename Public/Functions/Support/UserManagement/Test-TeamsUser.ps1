@@ -18,7 +18,7 @@ function Test-TeamsUser {
 	.EXAMPLE
 		Test-TeamsUser -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
-		Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
+		Will Return $FALSE in any other case, including if there is no Connection to MicrosoftTeams!
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -45,8 +45,8 @@ function Test-TeamsUser {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
-    # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { break }
+    # Asserting MicrosoftTeams Connection
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
   } #begin
 
