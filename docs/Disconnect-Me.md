@@ -8,7 +8,7 @@ schema: 2.0.0
 # Disconnect-Me
 
 ## SYNOPSIS
-Disconnects all sessions for SkypeOnline, AzureAD & MicrosoftTeams
+Disconnects all sessions for AzureAD & MicrosoftTeams
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Disconnect-Me [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Helper function to disconnect from SkypeOnline, AzureAD & MicrosoftTeams
+Helper function to disconnect from AzureAD & MicrosoftTeams
 By default Office 365 allows two (!) concurrent sessions per User.
 Session exhaustion may occur if sessions hang or incorrectly closed.
 Avoid this by cleanly disconnecting the sessions with this function before timeout
@@ -29,7 +29,7 @@ Avoid this by cleanly disconnecting the sessions with this function before timeo
 Disconnect-Me
 ```
 
-Disconnects from SkypeOnline, AzureAD, MicrosoftTeams
+Disconnects from AzureAD, MicrosoftTeams
 Errors and Warnings are suppressed as no verification of existing sessions is undertaken
 
 ## PARAMETERS
@@ -42,7 +42,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
-Helper function to disconnect from SkypeOnline, AzureAD & MicrosoftTeams
+Helper function to disconnect from AzureAD & MicrosoftTeams
 To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
 By default Office 365 allows two (!) concurrent sessions per User.
 If sessions hang or are incorrectly closed (not properly disconnected),
@@ -57,15 +57,11 @@ An Alias is available for this function: dis
 
 [Connect-Me]()
 
-[Connect-SkypeOnline]()
-
 [Connect-AzureAD]()
 
 [Connect-MicrosoftTeams]()
 
 [Disconnect-Me]()
-
-[Disconnect-SkypeOnline]()
 
 [Disconnect-AzureAD]()
 

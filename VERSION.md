@@ -9,15 +9,27 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 |           |                                                                                                                                                                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-87-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-76-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1181-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | Bugfixing, Licensing |
+| Functions | ![Public](https://img.shields.io/badge/Public-82-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
+| Status    | ![Live](https://img.shields.io/badge/Live-71-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1118-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
+| Focus | MicrosoftTeams v2, Bugfixing, Licensing |
 
 ### Focus for this month
 
-- Transition from Module SkypeOnlineConnector to MicrosoftTeams - Complete
+- Transition to Module MicrosoftTeams (v2.0.0) - Connect-MicrosoftTeams now also connects to SkypeOnline by default
+-
 - Bugfixing
+
+### Requirements
+
+- PowerShell v5.1
+- Module `AzureAd` **or** `AzureAdPreview` (PIM Functions only available with AzureAdPreview)
+- Module MicrosoftTeams in Version 2.0.0 (new!)
+
+### Caveat
+
+Switching to a new way of connecting was easy, though due to lack of information I do not know what else may have changed (or whether all cmdlets have been imported as-is)
+"Here be dragons" until I could test all functions. If you find behaviour that is not consistent with the expected stated output in the documentation, please raise an issue.
 
 ### Changes
 
@@ -31,10 +43,15 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 - `Get-TeamsTenantLicense`: Added debug output for counters
 - `Get-TeamsUserVoiceConfig`: Corrected parameternames of `TeamsCallingPolicy` and `CallerIdPolicy` (Level 2 lookup)
 - `Set-TeamsUserVoiceConfig`: Added a catch for dirsynced users.
-- `Connect-Me`:
-  - Added use of New-StoredCredentials:Persist to allow saving of Credentials in Credential Manager
-  - Addressed a time-out issue with connecting to SkypeOnline immediately after enabling admin roles. Both steps now wait a few seconds before continuing
-- Corrected an issue with Licensing
+- `Connect-Me`: Removed SkypeOnline as an option. Cleaned up connection steps
+- `Test-MicrosoftTeamsConnection`: Replaced tests with (faster) tests by `Test-SkypeOnlineConnection`
+
+### Removed Functions
+
+- `Connect-SkypeOnline` - With the removal of New-CsOnlineSession and superceded by Connect-MicrosoftTeams, this CmdLet is now retired
+- `Enable-CsOnlineSessionForReconnection` - It has had a short life in this module, but it too is now no longer needed.
+- `Test-SkypeOnlineConnection` - The meat of the script lives on in `Test-MicrosoftTeamsConnection` as it does provide the same mechanics (PSSession)
+- `Disconnect-SkypeOnline` - This too does not need to be provided anymore
 
 ## v21.02 - February 2021 release
 

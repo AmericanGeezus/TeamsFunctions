@@ -124,6 +124,8 @@ For a full parameterset, please run:
 
 [Set-TeamsUserVoiceConfig]()
 
+[Set-TeamsUserVoiceConfig]()
+
 [Remove-TeamsUserVoiceConfig]()
 
 [Test-TeamsUserVoiceConfig]()

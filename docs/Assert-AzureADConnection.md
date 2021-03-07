@@ -17,7 +17,7 @@ Assert-AzureADConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Tests a connection to SkypeOnline is established.
+Tests a connection to AzureAd is established.
 
 ## EXAMPLES
 

@@ -10,7 +10,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Tests a connection to SkypeOnline is established.</maml:para>
+      <maml:para>Tests a connection to AzureAd is established.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -225,56 +225,6 @@
         <dev:code>Assert-Module -Module ModuleName -UpToDate -PreRelease</dev:code>
         <dev:remarks>
           <maml:para>Will Return $TRUE if the Module 'ModuleName' is installed in the latest pre-release version and loaded</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
-      <command:name>Assert-SkypeOnlineConnection</command:name>
-      <command:verb>Assert</command:verb>
-      <command:noun>SkypeOnlineConnection</command:noun>
-      <maml:description>
-        <maml:para>Asserts an established Connection to SkypeOnline</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>Tests and tries to reconnect to a SkypeOnline connection already established.</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Assert-SkypeOnlineConnection</maml:name>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters />
-    <command:inputTypes />
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>System.Boolean</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para></maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Assert-SkypeOnlineConnection</dev:code>
-        <dev:remarks>
-          <maml:para>Will run Test-SkypeOnlineConnection and, if successful, stops.   If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection.   If that too is unsuccessful, displays request to reconnect with Connect-Me.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -526,11 +476,11 @@
       <command:verb>Connect</command:verb>
       <command:noun>Me</command:noun>
       <maml:description>
-        <maml:para>Connect to AzureAd, Teams and SkypeOnline and optionally also to Exchange</maml:para>
+        <maml:para>Connect to AzureAd, MicrosoftTeams and optionally also to Exchange</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>One function to connect them all.   This CmdLet solves the requirement for individual authentication prompts for AzureAD, MicrosoftTeams, SkypeOnline   (and optionally also to ExchangeOnline) when multiple connections are required.</maml:para>
+      <maml:para>One function to connect them all.   This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams   (and optionally also to ExchangeOnline) when multiple connections are required.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -557,18 +507,6 @@
             <maml:uri />
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>OverrideAdminDomain</maml:name>
-          <maml:description>
-            <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoFeedback</maml:name>
@@ -609,18 +547,6 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>OverrideAdminDomain</maml:name>
-        <maml:description>
-          <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>NoFeedback</maml:name>
         <maml:description>
           <maml:para>Optional. Suppresses output session information about established sessions. Used for calls by other functions</maml:para>
@@ -637,7 +563,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams, SkypeOnline and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) For SkypeOnline, the Skype for Business Legacy Administrator Roles is required to connect, a Teams Admin role to action. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
+        <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline. The Skype for Business Legacy Administrator Roles may still be required to connect. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -645,28 +571,21 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Connect-Me [-AccountId] admin@domain.com</dev:code>
         <dev:remarks>
-          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams</maml:para>
+          <maml:para>Creates a session to AzureAD prompting for a Password for 'admin@domain.com'   If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management   Creates a session to MicrosoftTeams with the AzureAd Session details   If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Connect-Me -AccountId admin@domain.com -NoFeedBack</dev:code>
         <dev:remarks>
-          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   Does not display Session Information Object at the end - This is useful if called by other functions.</maml:para>
+          <maml:para>If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management   Creates a session to MicrosoftTeams with the AzureAd Session details   If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)   Does not display Session Information Object at the end - This is useful if called by other functions.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Connect-Me -AccountId admin@domain.com -ExchangeOnline</dev:code>
         <dev:remarks>
-          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   Also connects to ExchangeOnline</maml:para>
-        </dev:remarks>
-      </command:example>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
-        <dev:code>Connect-Me -AccountId admin@domain.com -OverrideAdminDomain tenantdomain.onmicrosoft.com</dev:code>
-        <dev:remarks>
-          <maml:para>Creates a session to AzureAD, SkypeOnline (Teams Backend) prompting (once) for a Password for 'admin@domain.com'   If using the Module MicrosoftTeams, this will also connect you to MicrosoftTeams   The OverrideAdminDomain is queried from the AzureAd Tenant once the connection has been established.   If used explicitly, this will use the provided OverrideAdminDomain</maml:para>
+          <maml:para>If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management   Creates a session to MicrosoftTeams with the AzureAd Session details   If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)   Also connects to ExchangeOnline</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -680,10 +599,6 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Connect-SkypeOnline</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
         <maml:linkText>Connect-AzureAD</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -693,10 +608,6 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Disconnect-Me</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-SkypeOnline</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -724,82 +635,9 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Connect-SkypeOnline</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
-          <maml:name>AccountId</maml:name>
-          <maml:description>
-            <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.   If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.   Please see Notes for a detailed example</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
-          <maml:name>OverrideAdminDomain</maml:name>
-          <maml:description>
-            <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records. If a Session to AzureAd exists, the TenantDomain will be used as the OverrideAdminDomain. Please see notes for details</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
-          <maml:name>IdleTimeout</maml:name>
-          <maml:description>
-            <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.   By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!   Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-          <dev:type>
-            <maml:name>Int32</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>4</dev:defaultValue>
-        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
-    <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
-        <maml:name>AccountId</maml:name>
-        <maml:description>
-          <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.   If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.   Please see Notes for a detailed example</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
-        <maml:name>OverrideAdminDomain</maml:name>
-        <maml:description>
-          <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records. If a Session to AzureAd exists, the TenantDomain will be used as the OverrideAdminDomain. Please see notes for details</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
-        <maml:name>IdleTimeout</maml:name>
-        <maml:description>
-          <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.   By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!   Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-        <dev:type>
-          <maml:name>Int32</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>4</dev:defaultValue>
-      </command:parameter>
-    </command:parameters>
+    <command:parameters />
     <command:inputTypes />
     <command:returnValues />
     <maml:alertSet>
@@ -887,11 +725,11 @@
       <command:verb>Disconnect</command:verb>
       <command:noun>Me</command:noun>
       <maml:description>
-        <maml:para>Disconnects all sessions for SkypeOnline, AzureAD &amp; MicrosoftTeams</maml:para>
+        <maml:para>Disconnects all sessions for AzureAD &amp; MicrosoftTeams</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Helper function to disconnect from SkypeOnline, AzureAD &amp; MicrosoftTeams By default Office 365 allows two (!) concurrent sessions per User. Session exhaustion may occur if sessions hang or incorrectly closed. Avoid this by cleanly disconnecting the sessions with this function before timeout</maml:para>
+      <maml:para>Helper function to disconnect from AzureAD &amp; MicrosoftTeams By default Office 365 allows two (!) concurrent sessions per User. Session exhaustion may occur if sessions hang or incorrectly closed. Avoid this by cleanly disconnecting the sessions with this function before timeout</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -903,7 +741,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Helper function to disconnect from SkypeOnline, AzureAD &amp; MicrosoftTeams To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline By default Office 365 allows two (!) concurrent sessions per User. If sessions hang or are incorrectly closed (not properly disconnected), this can lead to session exhaustion which results in not being able to connect again. An admin can sign-out this user from all Sessions through the Office 365 Admin Center This process may take up to 15 mins and is best avoided, through proper disconnect after use An Alias is available for this function: dis</maml:para>
+        <maml:para>Helper function to disconnect from AzureAD &amp; MicrosoftTeams To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline By default Office 365 allows two (!) concurrent sessions per User. If sessions hang or are incorrectly closed (not properly disconnected), this can lead to session exhaustion which results in not being able to connect again. An admin can sign-out this user from all Sessions through the Office 365 Admin Center This process may take up to 15 mins and is best avoided, through proper disconnect after use An Alias is available for this function: dis</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -911,7 +749,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Disconnect-Me</dev:code>
         <dev:remarks>
-          <maml:para>Disconnects from SkypeOnline, AzureAD, MicrosoftTeams Errors and Warnings are suppressed as no verification of existing sessions is undertaken</maml:para>
+          <maml:para>Disconnects from AzureAD, MicrosoftTeams Errors and Warnings are suppressed as no verification of existing sessions is undertaken</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -925,10 +763,6 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Connect-SkypeOnline</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
         <maml:linkText>Connect-AzureAD</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -938,83 +772,6 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Disconnect-Me</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-SkypeOnline</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-AzureAD</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-MicrosoftTeams</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
-      <command:name>Disconnect-SkypeOnline</command:name>
-      <command:verb>Disconnect</command:verb>
-      <command:noun>SkypeOnline</command:noun>
-      <maml:description>
-        <maml:para>Disconnects Sessions established to SkypeOnline</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>Disconnects any current Skype for Business Online remote PowerShell sessions and removes any imported modules. By default Office 365 allows two (!) concurrent sessions per User. Session exhaustion may occur if sessions hang or incorrectly closed. Avoid this by cleanly disconnecting the sessions with this function before timeout</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Disconnect-SkypeOnline</maml:name>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters />
-    <command:inputTypes />
-    <command:returnValues />
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>Helper function to disconnect from SkypeOnline By default Office 365 allows two (!) concurrent sessions per User. If sessions hang or are incorrectly closed (not properly disconnected), this can lead to session exhaustion which results in not being able to connect again. An admin can sign-out this user from all Sessions through the Office 365 Admin Center This process may take up to 15 mins and is best avoided, through proper disconnect after use</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Disconnect-SkypeOnline</dev:code>
-        <dev:remarks>
-          <maml:para>Removes any current Skype for Business Online remote PowerShell sessions and removes any imported modules.</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-Me</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-SkypeOnline</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-AzureAD</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-MicrosoftTeams</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-Me</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-SkypeOnline</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -1348,73 +1105,6 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
-      <command:name>Enable-CsOnlineSessionForReconnection</command:name>
-      <command:verb>Enable</command:verb>
-      <command:noun>CsOnlineSessionForReconnection</command:noun>
-      <maml:description>
-        <maml:para>Enables the Skype Online Session to reconnect</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>Enables the Skype Online Session to reconnect</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Enable-CsOnlineSessionForReconnection</maml:name>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters />
-    <command:inputTypes>
-      <command:inputType>
-        <dev:type>
-          <maml:name>None</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:inputType>
-    </command:inputTypes>
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>None</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>With special thanks to Andres for providing the code for this wonderful command</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Enable-CsOnlineSessionForReconnection</dev:code>
-        <dev:remarks>
-          <maml:para>Enables the Skype Online Session to reconnect</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Enable-CsOnlineSessionForReconnection</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-SkypeOnline</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -5910,6 +5600,10 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsUserVoiceConfig</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsUserVoiceConfig</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -13651,6 +13345,17 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:description>
+            <maml:para>Optional. Displays the Object after execution.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
           <maml:name>WhatIf</maml:name>
           <maml:description>
@@ -13759,6 +13464,18 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PassThru</maml:name>
+        <maml:description>
+          <maml:para>Optional. Displays the Object after execution.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
         <maml:name>WhatIf</maml:name>
@@ -15518,56 +15235,6 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Test-SkypeOnlineConnection</command:name>
-      <command:verb>Test</command:verb>
-      <command:noun>SkypeOnlineConnection</command:noun>
-      <maml:description>
-        <maml:para>Tests whether a valid PS Session exists for SkypeOnline (Teams)</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>A connection established via Connect-SkypeOnline is parsed. This connection must be valid (Available and Opened)</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Test-SkypeOnlineConnection</maml:name>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters />
-    <command:inputTypes />
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>System.Boolean</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>Added check for Open Session to err on the side of caution. Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Test-SkypeOnlineConnection</dev:code>
-        <dev:remarks>
-          <maml:para>Will Return $TRUE only if a valid and open session is found.</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
       <command:name>Test-TeamsExternalDNS</command:name>
       <command:verb>Test</command:verb>
       <command:noun>TeamsExternalDNS</command:noun>
@@ -15822,7 +15489,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Test-TeamsUser -Identity $UPN</dev:code>
         <dev:remarks>
-          <maml:para>Will Return $TRUE only if the object $UPN is found. Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!</maml:para>
+          <maml:para>Will Return $TRUE only if the object $UPN is found. Will Return $FALSE in any other case, including if there is no Connection to MicrosoftTeams!</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

@@ -27,7 +27,7 @@ Test-TeamsUser -Identity $UPN
 ```
 
 Will Return $TRUE only if the object $UPN is found.
-Will Return $FALSE in any other case, including if there is no Connection to SkypeOnline!
+Will Return $FALSE in any other case, including if there is no Connection to MicrosoftTeams!
 
 ## PARAMETERS
 

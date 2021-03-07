@@ -58,23 +58,22 @@ Describe -Tags ('Unit', 'Acceptance') "Function '$Function'" {
   }
 
   It 'Should return correct String manipulations for -As DisplayName' {
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -BeExactly ''
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '\'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '%'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '*'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '+'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '/'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '='
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '?'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '?'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '{'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '}'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '|'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '<'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '>'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '['
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain ']'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -As DisplayName | Should -Not -Contain '"'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -BeExactly ''
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '\'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '%'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '*'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '+'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '='
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '?'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '?'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '{'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '}'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '|'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '<'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '>'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '['
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain ']'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -As DisplayName | Should -Not -Contain '"'
 
   }
 
@@ -177,7 +176,7 @@ Describe -Tags ('Unit', 'Acceptance') "Function '$Function'" {
 
     Format-StringForUse -InputString '\%&*+/=?{}|<>();:,[]"' -Replacement '-' -As UserPrincipalName | Should -BeExactly '---------------------'
     Format-StringForUse -InputString "'´" -Replacement '-' -As UserPrincipalName | Should -BeExactly '--'
-    Format-StringForUse -InputString '\%*+/=?{}|<>[]"' -Replacement '-' -As DisplayName | Should -BeExactly '---------------'
+    Format-StringForUse -InputString '\%*+=?{}|<>[]"' -Replacement '-' -As DisplayName | Should -BeExactly '--------------'
 
     Format-StringForUse -InputString '\%*/@:=-()?{}|<>[]" abcdefghijklmnopqrstuvwxyz;' -As E164 | Should -BeExactly ''
     Format-StringForUse -InputString '\%*/-()?{}|<>[]" abcdfghijkmnopqrsuvwyz' -As LineUri | Should -BeExactly ''
