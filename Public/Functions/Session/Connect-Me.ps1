@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#CHECK Documentation for Skype Online - Requirement for SfB Legacy admin is now gone?
 
 function Connect-Me {
   <#
@@ -13,7 +13,7 @@ function Connect-Me {
 		Connect to AzureAd, MicrosoftTeams and optionally also to Exchange
 	.DESCRIPTION
 		One function to connect them all.
-    This CmdLet solves the requirement for individual authentication prompts for AzureAD, MicrosoftTeams
+    This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams
     (and optionally also to ExchangeOnline) when multiple connections are required.
 	.PARAMETER AccountId
 		Required. UserPrincipalName or LoginName of the Office365 Administrator
