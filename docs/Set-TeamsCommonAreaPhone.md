@@ -15,7 +15,7 @@ Creates a new Common Area Phone
 ```
 Set-TeamsCommonAreaPhone [-UserPrincipalName] <String> [-DisplayName <String>] [-UsageLocation <String>]
  [-License <String>] [-IPPhonePolicy <String>] [-TeamsCallingPolicy <String>] [-TeamsCallParkPolicy <String>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -178,6 +178,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PassThru
+Optional.
+Displays the Object after execution.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
