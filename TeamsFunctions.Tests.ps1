@@ -3,191 +3,240 @@
 # Author:		David Eberhardt
 # Updated:  11-OCT-2020
 
-$TestName = 'TeamsFunctions'
-
 Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
   BeforeAll {
+    $Module = @{
+      Name     = 'TeamsFunctions'
+      Path     = $PSScriptRoot
+      Manifest = "$PSScriptRoot\TeamsFunctions.psd1"
+      FileName = "$PSScriptRoot\TeamsFunctions.psm1"
+    }
+    Write-Host "Testing '$($Module.Name)' in path '$($module.path)'"
+  }
 
-    Describe -Tags ('Unit', 'Acceptance') "$TestName" {
+  #region Module Test
+  Context 'Module' {
+    It "has the root module '$PSScriptRoot\$($Module.Name).psm1'" {
+      "$PSScriptRoot\$($Module.Name).psm1" | Should -Exist
+    } -TestCases { Module = $module }
 
-      BeforeAll {
-        $Module = @{
-          Name     = 'TeamsFunctions'
-          Path     = $PSScriptRoot
-          Manifest = "$PSScriptRoot\TeamsFunctions.psd1"
-          FileName = "$PSScriptRoot\TeamsFunctions.psm1"
-        }
-        Write-Host "Testing '$($Module.Name)' in path '$($module.path)'"
-      }
+    It "has the a manifest file of '$PSScriptRoot\$($Module.Name).psd1'" {
+      "$PSScriptRoot\$($Module.Name).psd1" | Should -Exist
+      "$PSScriptRoot\$($Module.Name).psd1" | Should -FileContentMatch "$($Module.Name).psm1"
+    } -TestCases { Module = $module }
 
-      #region Module Test
-      Context 'Module' {
-        It "has the root module '$PSScriptRoot\$($Module.Name).psm1'" {
-          "$PSScriptRoot\$($Module.Name).psm1" | Should -Exist
-        } -TestCases { Module = $module }
+    It "$module has folder for Functions" {
+      "$PSScriptRoot\Public\Functions" | Should -Exist
+      "$PSScriptRoot\Private\Functions" | Should -Exist
+    }
 
-        It "Manifest file '$($Module.Manifest)'" {
-          "$($Module.Manifest)" | Should -Exist
-          "$($Module.Manifest)" | Should -FileContentMatch '$($Module.FileName)'
-        } -TestCases $Module
+    It "$module has folder for Tests" {
+      "$PSScriptRoot\Public\Functions" | Should -Exist
+      "$PSScriptRoot\Private\Functions" | Should -Exist
+    }
+    It "$module is valid PowerShell code" {
+      $psFile = Get-Content -Path "$PSScriptRoot\$($Module.Name).psm1" -ErrorAction Stop
+      $errors = $null
+      $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
+      $errors.Count | Should -Be 0
+    }
 
-        It 'Folders for FUNCTIONS' {
-          "$PSScriptRoot\Public\Functions" | Should -Exist
-          "$PSScriptRoot\Private\Functions" | Should -Exist
-        }
+  } # Context 'Module Setup'
+  #endregion
 
-        It 'Folders for TESTS' {
-          "$PSScriptRoot\Public\Tests" | Should -Exist
-          "$PSScriptRoot\Private\Tests" | Should -Exist
-        }
+  #region Function Testing
+  $Allfunctions = Get-ChildItem "$PSScriptRoot\Public", "$PSScriptRoot\Private" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
+  $PublicFunctions = Get-ChildItem "$PSScriptRoot\Public" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
+  $PrivateFunctions = Get-ChildItem "$PSScriptRoot\Private" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
+  $PublicDocs = Get-ChildItem "$PSScriptRoot\docs" -Include '*.md' -Recurse #| Select-Object -First 1
 
-        It "'$($Module.FileName)' is valid PowerShell code" {
-          $psFile = Get-Content -Path "$($Module.FileName)" -ErrorAction Stop
-          $errors = $null
-          $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
-          $errors.Count | Should -Be 0
-        } -TestCases $Module
+  Context 'Testing Module ALL Functions' -Foreach $AllFunctions {
 
-        It "'$($Module.Manifest)' is valid PowerShell code" {
-          $psFile = Get-Content -Path "$($Module.Manifest)" -ErrorAction Stop
-          $errors = $null
-          $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
-          $errors.Count | Should -Be 0
-        } -TestCases $Module
+    It "'$($_.BaseName)' should exist" {
+      "$($_.FullName)" | Should -Exist
+    }
 
-      } # Context 'Module Setup'
-      #endregion
+    It "'$_' should have a valid header" {
+      "$($_.FullName)" | Should -FileContentMatch 'Module:'
+      "$($_.FullName)" | Should -FileContentMatch 'Function:'
+      "$($_.FullName)" | Should -FileContentMatch 'Author:'
+      "$($_.FullName)" | Should -FileContentMatch 'Updated:'
+      "$($_.FullName)" | Should -FileContentMatch 'Status:'
+    }
 
-      #region Function Testing
-      $Allfunctions = Get-ChildItem "$PSScriptRoot\Public", "$PSScriptRoot\Private" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
-      $PublicFunctions = Get-ChildItem "$PSScriptRoot\Public" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
-      $PrivateFunctions = Get-ChildItem "$PSScriptRoot\Private" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
-      $PublicDocs = Get-ChildItem "$PSScriptRoot\docs" -Include '*.md' -Recurse #| Select-Object -First 1
+    It "'$($_.BaseName)' should have a function" {
+      "$($_.FullName)" | Should -FileContentMatch 'function'
+    }
 
-      Context 'Functions (ALL)' -Foreach $AllFunctions {
+    It "'$($_.BaseName)' is valid PowerShell code" {
+      $psFile = Get-Content -Path $_.FullName -ErrorAction Stop
+      $errors = $null
+      $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
+      $errors.Count | Should -Be 0
+    }
 
-        It "File '$($_.BaseName)' should exist" {
-          "$($_.FullName)" | Should -Exist
-        }
+  } # Context "Testing Module ALL Functions"
 
-        It "File '$($_.BaseName)' should have a valid header" {
-          "$($_.FullName)" | Should -FileContentMatch 'Module:'
-          "$($_.FullName)" | Should -FileContentMatch 'Function:'
-          "$($_.FullName)" | Should -FileContentMatch 'Author:'
-          "$($_.FullName)" | Should -FileContentMatch 'Updated:'
-          "$($_.FullName)" | Should -FileContentMatch 'Status:'
-        }
+  Context 'Testing Module PUBLIC Functions' -ForEach $PublicFunctions {
 
-        It "File '$($_.BaseName)' should have a function" {
-          "$($_.FullName)" | Should -FileContentMatch 'function'
-        }
+    It "'$($_.BaseName)' should have a SYNOPSIS section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.SYNOPSIS'
+    }
 
-        It "File '$($_.BaseName)' is valid PowerShell code" {
-          $psFile = Get-Content -Path $_.FullName -ErrorAction Stop
-          $errors = $null
-          $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
-          $errors.Count | Should -Be 0
-        }
+    It "'$($_.BaseName)' should have a DESCRIPTION section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.DESCRIPTION'
+    }
 
-      } # Context "Functions (ALL)"
+    It "'$_' should have a EXAMPLE section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.EXAMPLE'
+    }
 
-      Context 'Functions (PUBLIC)' -Foreach $PublicFunctions {
+    It "'$_' should have a LINK to the docs folder in the master branch" {
+      "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/'
+    }
 
-        It "Function '$($_.BaseName)' should have a SYNOPSIS section in the help block" {
-          "$($_.FullName)" | Should -FileContentMatch '.SYNOPSIS'
-        }
+    # not all will have the full begin, process, end model
+    It "'$($_.BaseName)' should have a BEGIN, PROCESS and END block" {
+      "$($_.FullName)" | Should -FileContentMatch 'begin {'
+      "$($_.FullName)" | Should -FileContentMatch 'process {'
+      "$($_.FullName)" | Should -FileContentMatch 'end {'
+    }
 
-        It "Function '$($_.BaseName)' should have a DESCRIPTION section in the help block" {
-          "$($_.FullName)" | Should -FileContentMatch '.DESCRIPTION'
-        }
+    # not all will have advanced functions
+    It "'$($_.BaseName)' should be an advanced function" {
+      "$($_.FullName)" | Should -FileContentMatch 'cmdletbinding'
+      "$($_.FullName)" | Should -FileContentMatch 'param'
+    }
 
-        It "Function '$($_.BaseName)' should have a EXAMPLE section in the help block" {
-          "$($_.FullName)" | Should -FileContentMatch '.EXAMPLE'
-        }
+    It "'$($_.BaseName)' should have an OUTPUTTYPE set" {
+      "$($_.FullName)" | Should -FileContentMatch '[OutputType([*)]'
+    }
 
-        It "'$_' should have a LINK to the docs folder in the master branch" {
-          "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/'
-        }
+    It "'$($_.BaseName)' should contain Write-Verbose blocks" {
+      "$($_.FullName)" | Should -FileContentMatch 'Write-Verbose'
+    }
 
-        # not all will have the full begin, process, end model
-        It "Function '$($_.BaseName)' should have BEGIN, PROCESS and END blocks" {
-          "$($_.FullName)" | Should -FileContentMatch 'begin {'
-          "$($_.FullName)" | Should -FileContentMatch 'process {'
-          "$($_.FullName)" | Should -FileContentMatch 'end {'
-        }
-
-        # not all will have advanced functions
-        It "'$($_.BaseName)' should be an advanced function" {
-          "$($_.FullName)" | Should -FileContentMatch 'cmdletbinding'
-          "$($_.FullName)" | Should -FileContentMatch 'param'
-        }
-
-        It "Function '$($_.BaseName)' should have an OUTPUTTYPE set" {
-          "$($_.FullName)" | Should -FileContentMatch '[OutputType([*)]'
-        }
-
-        It "Function '$($_.BaseName)' should contain 'Write-Verbose'" {
-          "$($_.FullName)" | Should -FileContentMatch 'Write-Verbose'
-        }
-
-      } # Context "Functions (PUBLIC)"
+  } # Context "Testing Module PUBLIC Functions"
 
 
-      Context 'Functions (PRIVATE)' -Foreach $PrivateFunctions {
+  Context 'Testing Module PRIVATE Functions' -Foreach $PrivateFunctions {
 
-        # currently no special tests for private functions
+    # currently no special tests for private functions
 
-      } # Context "Testing Module PRIVATE Functions"
-      #endregion
+  } # Context "Testing Module PRIVATE Functions"
+  #endregion
 
-      <# Commenting out as there aren't any tests files for individual files yet.
-  Context "Functions (PUBLIC) have tests" -Foreach $PublicFunctions {
+  <# Commenting out as there aren't any tests files for individual files yet.
+  Context "Testing FUNCTION has tests" -ForEach $AllFunctions {
+    #$functionTests = Get-ChildItem "$($_.BaseName).Tests.ps1" -Recurse
 
-    It "File '$($_.BaseName).Tests.ps1' should exist" {
-      "Public\Tests\$($_.BaseName).Tests.ps1" | Should -Exist
+    It "'$($_.BaseName).Tests.ps1' should exist" {
+      "$($_.BaseName).Tests.ps1" | Should -Exist
     }
   }
   #>
 
-      Context 'Testing Module PUBLIC Documentation' -Foreach $PublicDocs {
+  Context 'Testing Module PUBLIC Documentation' -ForEach $PublicDocs {
 
-        It "'$_' should NOT have empty documentation in the MD file" {
-          "$($_.FullName)" | Should -Not -FileContentMatch ([regex]::Escape('{{'))
+    It "'$_' should NOT have empty documentation in the MD file" {
+      "$($_.FullName)" | Should -Not -FileContentMatch ([regex]::Escape('{{'))
+    }
+  } # Context "Testing Module DOCS"
+
+}
+
+<#
+# Code from F-X Cat https://vexx32.github.io/2020/07/08/Verify-Module-Help-Pester/
+#region Discovery
+
+$ModuleName = 'TeamsFunctions'
+
+#endregion Discovery
+
+BeforeAll {
+  $ModuleName = 'TeamsFunctions'
+  #Import-Module $ModuleName
+  swop 1
+
+  #Add-Type -Name Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile # Doesn't work...
+}
+
+Describe "$ModuleName Sanity Tests - Help Content" -Tags 'Module' {
+
+  #region Discovery
+
+  # The module will need to be imported during Discovery since we're using it to generate test cases / Context blocks
+  #Import-Module $ModuleName
+  swop 1
+
+  $ShouldProcessParameters = 'WhatIf', 'Confirm'
+
+  # Generate command list for generating Context / TestCases
+  $Module = Get-Module $ModuleName
+  $CommandList = @(
+    $Module.ExportedFunctions.Keys
+    $Module.ExportedCmdlets.Keys
+  )
+
+  #endregion Discovery
+
+ r}ach ($Command in $CommandList) {
+}    Context "$Command - Help Content" {
+
+      #region Discovery
+
+      $Help = @{ Help = Get-Help -Name $Command -Full | Select-Object -Property * }
+      $Parameters = Get-Help -Name $Command -Parameter * -ErrorAction Ignore |
+      Where-Object { $_.Name -and $_.Name -notin $ShouldProcessParameters } |
+      ForEach-Object {
+        @{
+          Name        = $_.name
+          Description = $_.Description.Text
         }
-      } # Context "Testing Module DOCS"
+      }
+      $Ast = @{
+        # Ast will be $null if the command is a compiled cmdlet
+        Ast        = (Get-Content -Path "function:/$Command" -ErrorAction Ignore).Ast
+        Parameters = $Parameters
+      }
+      $Examples = $Help.Help.Examples.Example | ForEach-Object { @{ Example = $_ } }
 
+      #endregion Discovery
+
+      It "has help content for $Command" -TestCases $Help {
+        $Help | Should -Not -BeNullOrEmpty
+      }
+
+      It "contains a synopsis for $Command" -TestCases $Help {
+        $Help.Synopsis | Should -Not -BeNullOrEmpty
+      }
+
+      It "contains a description for $Command" -TestCases $Help {
+        $Help.Description | Should -Not -BeNullOrEmpty
+      }
+
+      It "lists the function author in the Notes section for $Command" -TestCases $Help {
+        $Notes = $Help.AlertSet.Alert.Text -split '\n'
+        $Notes[0].Trim() | Should -BeLike "Author: *"
+      }
+
+      # This will be skipped for compiled commands ($Ast.Ast will be $null)
+      It "has a help entry for all parameters of $Command" -TestCases $Ast -Skip:(-not ($Parameters -and $Ast.Ast)) {
+        @($Parameters).Count | Should -Be $Ast.Body.ParamBlock.Parameters.Count -Because 'the number of parameters in the help should match the number in the function script'
+      }
+
+      It "has a description for $Command parameter -<Name>" -TestCases $Parameters -Skip:(-not $Parameters) {
+        $Description | Should -Not -BeNullOrEmpty -Because "parameter $Name should have a description"
+      }
+
+      It "has at least one usage example for $Command" -TestCases $Help {
+        $Help.Examples.Example.Code.Count | Should -BeGreaterOrEqual 1
+      }
+
+      It "lists a description for $Command example: <Title>" -TestCases $Examples {
+        $Example.Remarks | Should -Not -BeNullOrEmpty -Because "example $($Example.Title) should have a description!"
+      }
     }
-
-    It "File '$($_.BaseName).Tests.ps1' is valid PowerShell code" {
-      $psFile = Get-Content -Path "Public\Tests\$($_.BaseName).Tests.ps1" -ErrorAction Stop
-      $errors = $null
-      $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
-      $errors.Count | Should -Be 0
-    }
-
-    BeforeAll {
-      #$ModuleName = 'TeamsFunctions'
-      #Import-Module $ModuleName
-      swop 1
-
-      #Add-Type -Name Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile # Doesn't work...
-    }
-
-    It "File '$($_.BaseName).Tests.ps1' should exist" {
-      "Private\Tests\$($_.BaseName).Tests.ps1" | Should -Exist
-    }
-
-    It "File '$($_.BaseName).Tests.ps1' is valid PowerShell code" {
-      $psFile = Get-Content -Path "Private\Tests\$($_.BaseName).Tests.ps1" -ErrorAction Stop
-      $errors = $null
-      $null = [System.Management.Automation.PSParser]::Tokenize($psFile, [ref]$errors)
-      $errors.Count | Should -Be 0
-    }
-
-    # The module will need to be imported during Discovery since we're using it to generate test cases / Context blocks
-    #Import-Module $ModuleName
-    swop 1
-
   }
 }
 #>

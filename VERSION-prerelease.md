@@ -2,7 +2,7 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v21.02.x pre-release
+## v21.03.x pre-release
 
 [![Passed Tests](https://img.shields.io/badge/Tests%20Passed-1181-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 

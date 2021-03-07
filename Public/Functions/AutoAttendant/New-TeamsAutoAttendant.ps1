@@ -619,7 +619,7 @@ function New-TeamsAutoAttendant {
         Write-Verbose -Message "$Status - $Operation"
 
         try {
-          $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $BusinessHoursGreeting
+          $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$BusinessHoursGreeting"
           if ($BusinessHoursGreetingObject) {
             Write-Information "'$NameNormalised' Business Hours Call Flow - Greeting created"
             $BusinessHoursCallFlowParameters.Greetings = @($BusinessHoursGreetingObject)
@@ -730,7 +730,7 @@ function New-TeamsAutoAttendant {
         Write-Verbose -Message "$Status - $Operation"
 
         try {
-          $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String $AfterHoursGreeting
+          $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$AfterHoursGreeting"
           if ($AfterHoursGreetingObject) {
             Write-Information "'$NameNormalised' After Hours Call Flow - Greeting created"
             $AfterHoursCallFlowParameters.Greetings = @($AfterHoursGreetingObject)

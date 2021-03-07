@@ -308,6 +308,9 @@ function New-TeamsCallQueue {
     [AllowNull()]
     [string]$WelcomeMusicAudioFile,
 
+    #FIXME Evaluate Music files to not throw stopping error (for NEW and SET) - requires moving the below to BEGIN
+    #TODO Add Parameter to override default behaviour? - also needs adding in Spreadsheet then! (FORCE?)
+    #CHECK other Music files too - Shared Voicemail files (some might be a hard requirement)
     [Parameter(HelpMessage = 'Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)')]
     [ValidateScript( {
         If (Test-Path $_) {

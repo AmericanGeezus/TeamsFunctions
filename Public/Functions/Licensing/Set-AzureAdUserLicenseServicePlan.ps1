@@ -288,7 +288,7 @@ function Set-AzureAdUserLicenseServicePlan {
           Write-Verbose -Message "'$ID' - Setting Licenses"
           Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $License
           Write-Verbose -Message "'$ID' - Setting Licenses: Done"
-          #TODO Add PassThru!
+          #TODO Add PassThru! - There is no GET-CmdLet yet!
         }
       }
       #endregion

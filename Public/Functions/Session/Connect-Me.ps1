@@ -101,7 +101,7 @@ function Connect-Me {
 
     #region Preparation
     # Preparing environment
-    #Persist Stored Credentials on local machine
+    #Persist Stored Credentials on local machine - Value is unclear as they don't seem to be needed anymore now that New-CsOnlineSession is gone
     if (!$PSDefaultParameterValues.'Parameters:Processed') {
       $PSDefaultParameterValues.add('New-StoredCredential:Persist', 'LocalMachine')
       $PSDefaultParameterValues.add('Parameters:Processed', $true)
