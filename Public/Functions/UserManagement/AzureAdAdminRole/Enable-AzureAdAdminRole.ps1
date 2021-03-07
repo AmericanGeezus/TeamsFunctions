@@ -302,13 +302,9 @@ function Enable-AzureAdAdminRole {
 
             # Determining Activation Type (UserAdd VS UserRenew)
             <#
-            The value for the Request type can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
-            #CHECK whether more options can be provided than UserExtend (Request) and UserAdd
-            value is suitable to a) enable  b) extend  c) deactivate the respective role!
-            #EVAL If renew works, the duration may be able to be scrapped (hardcoded) alltogether
-            Role could be renewed with Assert-SkypeOnlineConnection (PoL) every time it is run (for another 4 hour period).
+            NOTE The value for the Request type can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
+            more options can be provided than UserExtend (Request) and UserAdd
             #>
-            # Deactivated as UserAdd will automatically create a new assignment - Extend will leave a Pending request!
             if ( $PSBoundParameters.ContainsKey('Extend') -and $R.RoleDefinitionId -in $MyActiveRoles.RoleDefinitionId ) {
               Write-Verbose -Message "User '$Id' - '$RoleName' is already active and will be extended"
               $ActivatedRole.Type = 'UserExtend'

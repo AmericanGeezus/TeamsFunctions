@@ -60,8 +60,8 @@ function Get-TeamsOVR {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
-    # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { break }
+    # Asserting MicrosoftTeams Connection
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
   } #begin
 

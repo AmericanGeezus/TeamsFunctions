@@ -61,8 +61,8 @@ function Get-TeamsTenantVoiceConfig {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { break }
+    # Asserting MicrosoftTeams Connection
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
     # Initialising counters for Progress bars
     [int]$step = 0

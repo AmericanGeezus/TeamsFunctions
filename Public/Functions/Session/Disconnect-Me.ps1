@@ -8,18 +8,18 @@
 function Disconnect-Me {
   <#
 	.SYNOPSIS
-		Disconnects all sessions for SkypeOnline, AzureAD & MicrosoftTeams
+		Disconnects all sessions for AzureAD & MicrosoftTeams
 	.DESCRIPTION
-    Helper function to disconnect from SkypeOnline, AzureAD & MicrosoftTeams
+    Helper function to disconnect from AzureAD & MicrosoftTeams
     By default Office 365 allows two (!) concurrent sessions per User.
     Session exhaustion may occur if sessions hang or incorrectly closed.
     Avoid this by cleanly disconnecting the sessions with this function before timeout
   .EXAMPLE
     Disconnect-Me
-    Disconnects from SkypeOnline, AzureAD, MicrosoftTeams
+    Disconnects from AzureAD, MicrosoftTeams
     Errors and Warnings are suppressed as no verification of existing sessions is undertaken
 	.NOTES
-    Helper function to disconnect from SkypeOnline, AzureAD & MicrosoftTeams
+    Helper function to disconnect from AzureAD & MicrosoftTeams
     To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
     By default Office 365 allows two (!) concurrent sessions per User.
     If sessions hang or are incorrectly closed (not properly disconnected),
@@ -32,15 +32,11 @@ function Disconnect-Me {
   .LINK
     Connect-Me
 	.LINK
-    Connect-SkypeOnline
-	.LINK
     Connect-AzureAD
 	.LINK
     Connect-MicrosoftTeams
 	.LINK
     Disconnect-Me
-	.LINK
-    Disconnect-SkypeOnline
 	.LINK
     Disconnect-AzureAD
 	.LINK
@@ -70,8 +66,6 @@ function Disconnect-Me {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
-      Write-Verbose -Message 'Disconnecting Session from SkypeOnline'
-      $null = (Disconnect-SkypeOnline)
       Write-Verbose -Message 'Disconnecting Session from MicrosoftTeams'
       $null = (Disconnect-MicrosoftTeams)
       Write-Verbose -Message 'Disconnecting Session from AzureAd'

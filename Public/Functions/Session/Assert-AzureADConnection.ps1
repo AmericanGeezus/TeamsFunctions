@@ -12,7 +12,7 @@ function Assert-AzureADConnection {
 	.SYNOPSIS
 		Asserts an established Connection to AzureAD
 	.DESCRIPTION
-		Tests a connection to SkypeOnline is established.
+		Tests a connection to AzureAd is established.
 	.EXAMPLE
 		Assert-AzureADConnection
     Will run Test-AzureADConnection and, if successful, stops.

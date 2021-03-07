@@ -1,7 +1,7 @@
 # Module:   TeamsFunctions
 # Function: Session
 # Author:		David Eberhardt
-# Updated:  01-JAN-2021
+# Updated:  01-MAR-2021
 # Status:   Live
 
 
@@ -14,11 +14,9 @@ function Connect-MeToTheO365Service {
   .DESCRIPTION
     Long description
   .PARAMETER Service
-
+    Required. Service to connect to.
   .PARAMETER AccountId
     Optional String. Instructs connecting with this Account
-  .PARAMETER OverrideAdminDomain
-    Situational String. For connection to Skype Online in Hybrid Scenarios only
   .EXAMPLE
     Connect-MeToTheO365Service -Service AzureAd - AccountId John@domain.com
     Connects to the AzureAd Service of the Domain.com Tenant with John@domain.com
@@ -26,7 +24,7 @@ function Connect-MeToTheO365Service {
     Connect-MeToTheO365Service -MicrosoftTeams AzureAd - AccountId John@domain.com
     Connects to the Teams (FrontEnd) Service of the Domain.com Tenant with John@domain.com
   .EXAMPLE
-    Connect-MeToTheO365Service -Service AzureAd - AccountId John@domain.com [-OverrideAdminDomain domain.onmicrosoft.com]
+    Connect-MeToTheO365Service -Service AzureAd - AccountId John@domain.com
     Connects to the Teams (Backend) Service of the Domain.com Tenant with John@domain.com
     Optionally, in Hybrid Scenarios, the OverrideAdminDomain can be used to connect
   .INPUTS
@@ -46,14 +44,11 @@ function Connect-MeToTheO365Service {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateSet('AzureAd', 'MicrosoftTeams', 'SkypeOnline', 'ExchangeOnlineManagement')]
+    [ValidateSet('AzureAd', 'MicrosoftTeams', 'ExchangeOnlineManagement')]
     [string]$Service,
 
     [Parameter()]
-    [string]$AccountId,
-
-    [Parameter()]
-    [string]$OverrideAdminDomain
+    [string]$AccountId
   )
 
   begin {
@@ -83,7 +78,6 @@ function Connect-MeToTheO365Service {
       $ServiceConnected = switch ($Service) {
         'AzureAd' { Test-AzureAdConnection }
         'MicrosoftTeams' { Test-MicrosoftTeamsConnection }
-        'SkypeOnline' { Test-SkypeOnlineConnection }
         'ExchangeOnlineManagement' { Test-ExchangeOnlineConnection }
       }
 
@@ -101,11 +95,6 @@ function Connect-MeToTheO365Service {
           }
         }
 
-        # Handling OverrideAdminDomain
-        if ( $OverrideAdminDomain ) {
-          $ConnectionParameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
-        }
-
         # DEBUG Information
         if ( $PSBoundParameters.ContainsKey('Debug') ) {
           "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($ConnectionParameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
@@ -121,17 +110,6 @@ function Connect-MeToTheO365Service {
             catch {
               [void]$ConnectionParameters.Remove('AccountId')
               Connect-MicrosoftTeams @ConnectionParameters
-            }
-          }
-          'SkypeOnline' {
-            [void]$ConnectionParameters.Remove('AccountId')
-            #CHECK this errors sometimes... trying to address with try/catch
-            try {
-              Connect-SkypeOnline @ConnectionParameters
-            }
-            catch {
-              Start-Sleep -Seconds 3
-              Connect-SkypeOnline @ConnectionParameters
             }
           }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }

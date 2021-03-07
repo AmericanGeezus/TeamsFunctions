@@ -34,7 +34,8 @@ function Test-MicrosoftTeamsConnection {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
-      $null = Get-CsPolicyPackage -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object -First 1 -ErrorAction STOP
+      #$null = Get-CsPolicyPackage -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object -First 1 -ErrorAction STOP
+      $null = Get-CsTenant -ErrorAction STOP -WarningAction SilentlyContinue
       return $true
     }
     catch {
