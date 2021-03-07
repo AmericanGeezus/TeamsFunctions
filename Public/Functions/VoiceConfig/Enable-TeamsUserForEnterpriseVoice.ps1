@@ -62,9 +62,18 @@ function Enable-TeamsUserForEnterpriseVoice {
 
     foreach ($Id in $Identity) {
       Write-Verbose -Message "[PROCESS] $Id"
-      $UserObject = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue
-      $UserLicense = Get-TeamsUserLicense $Id
-      $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+      # Querying Identity
+      try {
+        Write-Verbose -Message "User '$Id' - Querying User Account"
+        $UserObject = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue
+        $UserLicense = Get-TeamsUserLicense "$Id"
+        $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
+      }
+      catch {
+        Write-Error -Message "User '$Id' not found: $($_.Exception.Message)" -Category ObjectNotFound
+        continue
+      }
+
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
         if ($Called) {

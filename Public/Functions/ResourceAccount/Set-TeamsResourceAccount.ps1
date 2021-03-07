@@ -4,8 +4,8 @@
 # Updated:  01-OCT-2020
 # Status:   RC
 
-
-#FIXME: Set-TeamsRA -PhoneNumber $null didnt work. Set-CsOnlineApplicationInstance -OnpremPhoneNumber $null did!
+#CHECK "Karen wants to call the manager"^^
+#VALIDATE: Set-TeamsRA -PhoneNumber $null didnt work. Set-CsOnlineApplicationInstance -OnpremPhoneNumber $null did! - Changes made, just need to test.
 
 function Set-TeamsResourceAccount {
   <#
@@ -260,6 +260,7 @@ function Set-TeamsResourceAccount {
 
     if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
       #Validating Phone Number
+      #CHECK application of empty or Null does indeed remove the phonenumber!
       if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
         if ($CurrentPhoneNumber) {
           Write-Warning -Message "PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
@@ -520,6 +521,7 @@ function Set-TeamsResourceAccount {
       Write-Verbose -Message "$Status - $Operation"
 
       # Removing old Number (if $null or different to current)
+      #CHECK application of empty or Null does indeed remove the phonenumber!
       if ($null -eq $PhoneNumber -or $CurrentPhoneNumber -ne $PhoneNumber) {
         Write-Verbose -Message "'$Name' ACTION: Removing Phone Number"
         try {

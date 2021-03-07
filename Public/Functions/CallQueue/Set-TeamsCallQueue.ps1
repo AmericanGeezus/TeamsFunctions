@@ -618,10 +618,11 @@ function Set-TeamsCallQueue {
         Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction' not set! Parameter OverflowActionTarget missing"
       }
       elseif ($OverflowAction -eq 'DisconnectWithBusy') {
-        Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget will be removed." -Verbose
-        # Remove OverflowActionTarget if set
-        [void]$PSBoundParameters.Remove('OverflowActionTarget')
-        #$Parameters += @{'OverflowActionTarget' = $null }
+        if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
+          Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction': OverflowActionTarget will be removed." -Verbose
+          # Remove OverflowActionTarget if set
+          [void]$PSBoundParameters.Remove('OverflowActionTarget')
+        }
       }
       # NEW: Adding Action only with a Target | SET: Adding Action if specified
       $Parameters += @{'OverflowAction' = $OverflowAction }
@@ -866,10 +867,11 @@ function Set-TeamsCallQueue {
         Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' not set! Parameter TimeoutActionTarget missing"
       }
       elseif ($TimeoutAction -eq 'Disconnect') {
-        Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget will be removed." -Verbose
-        # Remove TimeoutActionTarget if set
-        [void]$PSBoundParameters.Remove('TimeoutActionTarget')
-        #$Parameters += @{'TimeoutActionTarget' = $null }
+        if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
+          Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget will be removed." -Verbose
+          # Remove TimeoutActionTarget if set
+          [void]$PSBoundParameters.Remove('TimeoutActionTarget')
+        }
       }
       # NEW: Adding Action only with a Target | SET: Adding Action if specified
       $Parameters += @{'TimeoutAction' = $TimeoutAction }

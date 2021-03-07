@@ -342,6 +342,7 @@ function Set-TeamsUserVoiceConfig {
 
       #region Specific Configuration
       switch ($PSCmdlet.ParameterSetName) {
+        #CHECK prepare for OperatorConnect - how?
         'DirectRouting' {
           Write-Verbose -Message '[PROCESS] DirectRouting'
           # Apply $OnlineVoiceRoutingPolicy
