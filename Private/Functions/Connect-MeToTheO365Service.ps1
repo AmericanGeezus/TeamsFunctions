@@ -105,6 +105,16 @@ function Connect-MeToTheO365Service {
         $ConnectionFeedback = switch ($Service) {
           'AzureAd' { Connect-AzureAD @ConnectionParameters }
           'MicrosoftTeams' {
+            <# # Removed as IWA Integrated Windows Auth is not supported for managed users. See https://aka.ms/msal-net-iwa for details.
+            #CHECK if iWA is suitable or whether I could re-use the below. If so, this should improve popup experience
+            try {
+              Connect-MicrosoftTeams @ConnectionParameters
+            }
+            catch {
+              [void]$ConnectionParameters.Remove('AccountId')
+              Connect-MicrosoftTeams @ConnectionParameters
+            }
+            #>
             [void]$ConnectionParameters.Remove('AccountId')
             Connect-MicrosoftTeams @ConnectionParameters
           }
