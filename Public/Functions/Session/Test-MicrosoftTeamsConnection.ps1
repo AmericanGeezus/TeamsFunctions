@@ -34,6 +34,10 @@ function Test-MicrosoftTeamsConnection {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     $Sessions = Get-PSSession -WarningAction SilentlyContinue
+    if ($null -eq $Sessions) {
+      $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -Confirm:$false
+      $Sessions = Get-PSSession -WarningAction SilentlyContinue
+    }
     $Sessions = $Sessions | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
     if ($Sessions.Count -ge 1) {
       #Write-Verbose "Teams Session found"

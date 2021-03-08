@@ -388,6 +388,8 @@ function Set-TeamsUserVoiceConfig {
             else {
               $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI
               if ( $Force -or $CsUser.OnPremLineURI -ne $Number) {
+                #TODO Add Catch that uses FORCE to remove PhoneNumber first
+                #Error Message: Filter failed to return unique result"
                 try {
                   $CsUser | Set-CsUser -OnPremLineUri $Number -ErrorAction Stop
                   Write-Information "SUCCESS: User '$Identity' - Applying Phone Number: OK - '$Number'"

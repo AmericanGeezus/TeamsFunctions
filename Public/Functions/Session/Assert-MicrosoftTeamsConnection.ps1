@@ -22,6 +22,7 @@ function Assert-MicrosoftTeamsConnection {
   #>
 
   [CmdletBinding()]
+  [Alias('pol')]
   [OutputType([Boolean])]
   param() #param
 

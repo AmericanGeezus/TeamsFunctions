@@ -75,12 +75,13 @@ function Connect-MeToTheO365Service {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
       $ServiceConnected = $null
-      $ServiceConnected = switch ($Service) {
-        'AzureAd' { Test-AzureAdConnection }
+      <# Removed as Connection is now always desired
+        $ServiceConnected = switch ($Service) {
+        'AzureAd' { Test-AzureADConnection }
         'MicrosoftTeams' { Test-MicrosoftTeamsConnection }
         'ExchangeOnlineManagement' { Test-ExchangeOnlineConnection }
       }
-
+      #>
       if ( -not $ServiceConnected ) {
         if ( $Service -eq 'ExchangeOnlineManagement' ) {
           if ($PSBoundParameters.ContainsKey('AccountId')) {
@@ -104,17 +105,11 @@ function Connect-MeToTheO365Service {
         $ConnectionFeedback = switch ($Service) {
           'AzureAd' { Connect-AzureAD @ConnectionParameters }
           'MicrosoftTeams' {
-            try {
-              Connect-MicrosoftTeams @ConnectionParameters
-            }
-            catch {
-              [void]$ConnectionParameters.Remove('AccountId')
-              Connect-MicrosoftTeams @ConnectionParameters
-            }
+            [void]$ConnectionParameters.Remove('AccountId')
+            Connect-MicrosoftTeams @ConnectionParameters
           }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }
         }
-
         return $ConnectionFeedback
       }
       else {
