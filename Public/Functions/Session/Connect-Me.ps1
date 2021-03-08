@@ -229,6 +229,7 @@ function Connect-Me {
     }
 
     #region Feedback
+    $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
     if ( -not $NoFeedback ) {
       $Status = 'Providing Feedback'
       $step++
@@ -238,21 +239,21 @@ function Connect-Me {
 
       # Preparing Output Object
       $SessionInfo = [PSCustomObject][ordered]@{
-        Account          = $AccountId
-        AdminRoles       = $ActivatedRoles.RoleName -join ', '
-        Tenant           = ''
-        TenantDomain     = ''
-        TenantId         = ''
-        ConnectedTo      = [System.Collections.ArrayList]@()
-        AzureEnvironment = ''
-        SkypeEnvironment = ''
+        Account                   = $AccountId
+        AdminRoles                = $ActivatedRoles.RoleName -join ', '
+        Tenant                    = ''
+        TenantDomain              = ''
+        TenantId                  = ''
+        ConnectedTo               = [System.Collections.ArrayList]@()
+        AzureEnvironment          = ''
+        TeamsUpgradeEffectiveMode = ''
       }
 
       #AzureAd SessionInfo
       if ( Test-AzureADConnection ) {
         $SessionInfo.ConnectedTo += 'AzureAd'
         $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-        $SessionInfo.Tenant = $AccountId.split('@')[1]
+        $SessionInfo.Tenant = "$($AccountId.split('@')[1]) - $($CsTenant.DisplayName)"
         $SessionInfo.TenantDomain = $AzureAdFeedback.TenantDomain
         $SessionInfo.TenantId = $AzureAdFeedback.TenantId
         $SessionInfo.AzureEnvironment = $AzureAdFeedback.Environment
@@ -260,12 +261,7 @@ function Connect-Me {
       #MicrosoftTeams SessionInfo
       if ( Test-MicrosoftTeamsConnection ) {
         $SessionInfo.ConnectedTo += 'MicrosoftTeams'
-        $SessionInfo.Tenant = $MicrosoftTeamsFeedback.Tenant
-        $SessionInfo.TenantId = $MicrosoftTeamsFeedback.TenantId
-        <# Relic from SkypeOnline
-        #CHECK whether needed
-        $SessionInfo | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $SkypeOnlineFeedback.TeamsUpgradeEffectiveMode
-        #>
+        $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
       }
       #Exchange SessionInfo
       if ( Test-ExchangeOnlineConnection ) {

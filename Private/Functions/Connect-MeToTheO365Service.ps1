@@ -75,12 +75,13 @@ function Connect-MeToTheO365Service {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
       $ServiceConnected = $null
-      $ServiceConnected = switch ($Service) {
-        'AzureAd' { Test-AzureAdConnection }
+      <# Removed as Connection is now always desired
+        $ServiceConnected = switch ($Service) {
+        'AzureAd' { Test-AzureADConnection }
         'MicrosoftTeams' { Test-MicrosoftTeamsConnection }
         'ExchangeOnlineManagement' { Test-ExchangeOnlineConnection }
       }
-
+      #>
       if ( -not $ServiceConnected ) {
         if ( $Service -eq 'ExchangeOnlineManagement' ) {
           if ($PSBoundParameters.ContainsKey('AccountId')) {
@@ -104,6 +105,8 @@ function Connect-MeToTheO365Service {
         $ConnectionFeedback = switch ($Service) {
           'AzureAd' { Connect-AzureAD @ConnectionParameters }
           'MicrosoftTeams' {
+            <# # Removed as IWA Integrated Windows Auth is not supported for managed users. See https://aka.ms/msal-net-iwa for details.
+            #CHECK if iWA is suitable or whether I could re-use the below. If so, this should improve popup experience
             try {
               Connect-MicrosoftTeams @ConnectionParameters
             }
@@ -111,10 +114,12 @@ function Connect-MeToTheO365Service {
               [void]$ConnectionParameters.Remove('AccountId')
               Connect-MicrosoftTeams @ConnectionParameters
             }
+            #>
+            [void]$ConnectionParameters.Remove('AccountId')
+            Connect-MicrosoftTeams @ConnectionParameters
           }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }
         }
-
         return $ConnectionFeedback
       }
       else {

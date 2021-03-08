@@ -60,6 +60,8 @@ function Disconnect-Me {
     # Cleanup of global Variables set
     Remove-TeamsFunctionsGlobalVariable
 
+    [bool]$sessionFound = $false
+
   } #begin
 
   process {
@@ -79,6 +81,25 @@ function Disconnect-Me {
     catch {
       throw $_
     }
+
+
+    Write-Verbose -Message 'Cleaning up PowerShell Sessions'
+    $PSSessions = Get-PSSession -WarningAction SilentlyContinue
+
+    foreach ($session in $PSSessions) {
+      if ($session.ComputerName -like '*.online.lync.com' -or $session.ComputerName -eq 'api.interfaces.records.teams.microsoft.com') {
+        $sessionFound = $true
+        Remove-PSSession $session
+      }
+    }
+
+    if ( $sessionFound ) {
+      Get-Module | Where-Object { $_.Description -like '*.online.lync.com*' } | Remove-Module
+    }
+    else {
+      Write-Verbose -Message 'No remote PowerShell sessions currently exist'
+    }
+
   } #process
 
   end {
