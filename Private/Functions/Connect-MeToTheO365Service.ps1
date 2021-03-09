@@ -105,18 +105,21 @@ function Connect-MeToTheO365Service {
         $ConnectionFeedback = switch ($Service) {
           'AzureAd' { Connect-AzureAD @ConnectionParameters }
           'MicrosoftTeams' {
-            <# # Removed as IWA Integrated Windows Auth is not supported for managed users. See https://aka.ms/msal-net-iwa for details.
-            #CHECK if iWA is suitable or whether I could re-use the below. If so, this should improve popup experience
+            # This catches two errors:
+            # The browser based authentication dialog failed to complete. Reason: The download has failed (the connection was interrupted).
+            # Integrated Windows Auth is not supported for managed users. See https://aka.ms/msal-net-iwa for details.
             try {
               Connect-MicrosoftTeams @ConnectionParameters
             }
             catch {
-              [void]$ConnectionParameters.Remove('AccountId')
-              Connect-MicrosoftTeams @ConnectionParameters
+              try {
+                [void]$ConnectionParameters.Remove('AccountId')
+                Connect-MicrosoftTeams @ConnectionParameters
+              }
+              catch {
+                Connect-MicrosoftTeams @ConnectionParameters
+              }
             }
-            #>
-            [void]$ConnectionParameters.Remove('AccountId')
-            Connect-MicrosoftTeams @ConnectionParameters
           }
           'ExchangeOnlineManagement' { Connect-ExchangeOnline @ConnectionParameters }
         }

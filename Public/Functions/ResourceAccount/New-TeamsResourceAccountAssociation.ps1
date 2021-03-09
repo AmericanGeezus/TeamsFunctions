@@ -362,11 +362,11 @@ function New-TeamsResourceAccountAssociation {
         }
       }
     }
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
   } #process
 
   end {
+    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #New-TeamsResourceAccountAssociation

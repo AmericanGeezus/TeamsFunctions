@@ -238,6 +238,7 @@ function Connect-Me {
       Write-Verbose -Message "$Status - $Operation"
 
       # Preparing Output Object
+      #CHECK Output Object - Write new Script `Get-ConnectMeConnection` publish as `cur`? (see profile!) Attach output to Assert with new switch?
       $SessionInfo = [PSCustomObject][ordered]@{
         Account                   = $AccountId
         AdminRoles                = $ActivatedRoles.RoleName -join ', '

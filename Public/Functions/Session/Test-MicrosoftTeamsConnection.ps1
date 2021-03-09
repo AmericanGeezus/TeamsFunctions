@@ -32,28 +32,38 @@ function Test-MicrosoftTeamsConnection {
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-
-    $Sessions = Get-PSSession -WarningAction SilentlyContinue
-    if ($null -eq $Sessions) {
-      $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -Confirm:$false
-      $Sessions = Get-PSSession -WarningAction SilentlyContinue
-    }
-    $Sessions = $Sessions | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
-    if ($Sessions.Count -ge 1) {
-      #Write-Verbose "Teams Session found"
-      $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
+    try {
+      $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+      if ($Sessions.Count -lt 1) {
+        $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
+        $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+      }
       if ($Sessions.Count -ge 1) {
-        #Write-Verbose "Teams Session found, open and valid"
-        return $true
+        #Write-Verbose "Teams Session found"
+        $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
+        if ($Sessions.Count -lt 1) {
+          #Write-Verbose "Teams Session found, but not open and valid - trying to reconnect"
+          $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
+          $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
+        }
+        if ($PSBoundParameters.ContainsKey('Debug')) {
+          "Function: $($MyInvocation.MyCommand.Name) - Sessions", ( $Sessions | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
+        if ($Sessions.Count -ge 1) {
+          #Write-Verbose "Teams Session found, open and valid"
+          return $true
+        }
+        else {
+          return $false
+        }
       }
       else {
         return $false
       }
     }
-    else {
+    catch {
       return $false
     }
-
   } #process
 
   end {

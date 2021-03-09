@@ -283,13 +283,12 @@ function Get-TeamsResourceAccount {
       Write-Progress -Id 1 -Status "Processing '$($ResourceAccount.UserPrincipalName)'" -Activity $MyInvocation.MyCommand -Completed
       Write-Output $ResourceAccountObject
     }
-
     #endregion
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
   } #process
 
   end {
+    Write-Progress -Id 0 -Status 'Information Gathering' -Activity $MyInvocation.MyCommand -Completed
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
   } #end

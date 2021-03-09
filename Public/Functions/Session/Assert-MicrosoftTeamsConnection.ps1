@@ -42,8 +42,30 @@ function Assert-MicrosoftTeamsConnection {
       return $(if ($Called) { $true })
     }
     else {
-      Write-Host '[ASSERT] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) ' -ForegroundColor Red
-      return $(if ($Called) { $false })
+      try {
+        $null = Connect-MicrosoftTeams -ErrorAction Stop
+      }
+      catch {
+        if ($PSBoundParameters.ContainsKey('Debug')) {
+          "Function: $($MyInvocation.MyCommand.Name) - Exception message", ( $_.Exception.Message | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
+        if ($_.Exception.Message -contains 'The WinRM client received an HTTP status code of 403 from the remote WS-Management service') {
+          Write-Host '[ASSERT] ERROR: Connect-MicrosoftTeams failed. Please disconnect, validate your Admin roles and reconnect' -ForegroundColor Red
+        }
+        else {
+          $null = Connect-MicrosoftTeams -ErrorAction SilentlyContinue
+        }
+      }
+      if (Test-MicrosoftTeamsConnection) {
+        if ($stack.length -lt 3) {
+          Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Connected'
+        }
+        return $(if ($Called) { $true })
+      }
+      else {
+        Write-Host '[ASSERT] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) ' -ForegroundColor Red
+        return $(if ($Called) { $false })
+      }
     }
 
   } #process
