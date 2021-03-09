@@ -50,7 +50,7 @@ function Assert-MicrosoftTeamsConnection {
           "Function: $($MyInvocation.MyCommand.Name) - Exception message", ( $_.Exception.Message | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         if ($_.Exception.Message -contains 'The WinRM client received an HTTP status code of 403 from the remote WS-Management service') {
-          Write-Host '[ASSERT] ERROR: Connect-MicrosoftTeams failed. Please disconnect, validate your Admin roles and reconnect' -ForegroundColor Red
+          Write-Host '[ASSERT] ERROR: Connect-MicrosoftTeams failed. Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
         }
         else {
           $null = Connect-MicrosoftTeams -ErrorAction SilentlyContinue
