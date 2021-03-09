@@ -288,6 +288,7 @@ function Get-TeamsResourceAccount {
   } #process
 
   end {
+    #CHECK Write-Progress not removing last ID 0 correctly (VsCode only!)
     Write-Progress -Id 0 -Status 'Information Gathering' -Activity $MyInvocation.MyCommand -Completed
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
 
