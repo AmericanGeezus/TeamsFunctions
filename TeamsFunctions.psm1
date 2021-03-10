@@ -54,8 +54,8 @@
 #Re#quires -Modules @{ ModuleName="AzureAdPreview"; ModuleVersion="2.0.2.24" }
 
 # Addressing Limitations
-Write-Host "TeamsFunctions: Deactivating Strict Mode - Please refer to https://github.com/DEberhardt/TeamsFunctions/issues/64 for details"
-Set-Strict-Mode -Off
+Write-Host 'TeamsFunctions: Deactivating Strict Mode - Please refer to https://github.com/DEberhardt/TeamsFunctions/issues/64 for details'
+Set-StrictMode -Off
 
 # Defining Help URL Base string:
 $global:TeamsFunctionsHelpURLBase = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/docs/'

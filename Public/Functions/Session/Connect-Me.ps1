@@ -286,8 +286,8 @@ function Connect-Me {
             $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account).RoleName -join ', '
           }
           else {
-            $Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
-
+            #$Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
+            Write-Warning -Message "Module AzureAdPreview not present. Admin Roles cannot be enumerated."
           }
           $SessionInfo.AdminRoles = $Roles
         }
