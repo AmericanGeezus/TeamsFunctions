@@ -54,8 +54,29 @@
 #Re#quires -Modules @{ ModuleName="AzureAdPreview"; ModuleVersion="2.0.2.24" }
 
 # Addressing Limitations
-Write-Host 'TeamsFunctions: Deactivating Strict Mode - Please refer to https://github.com/DEberhardt/TeamsFunctions/issues/64 for details'
-Set-StrictMode -Off
+function Get-StrictMode {
+  # returns the currently set StrictMode version 1, 2, 3
+  # or 0 if StrictMode is off.
+  try { $xyz = @(1); $null = ($null -eq $xyz[2]) }
+  catch { return 3 }
+
+  try { 'Not-a-Date'.Year }
+  catch { return 2 }
+
+  try { $null = ($undefined -gt 1) }
+  catch { return 1 }
+
+  return 0
+}
+
+if ((Get-StrictMode) -gt 0) {
+  <#
+  Write-Host "TeamsFunctions: Strict Mode interferes with Script execution. Switching Version to 'Latest'! - Please refer to https://github.com/DEberhardt/TeamsFunctions/issues/64 for details"
+  Set-StrictMode -Version Latest
+  #>
+  Write-Host 'TeamsFunctions: Strict Mode interferes with Script execution. Switching Strict Mode off - Please refer to https://github.com/DEberhardt/TeamsFunctions/issues/64 for details'
+  Set-StrictMode -Off
+}
 
 # Defining Help URL Base string:
 $global:TeamsFunctionsHelpURLBase = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/docs/'

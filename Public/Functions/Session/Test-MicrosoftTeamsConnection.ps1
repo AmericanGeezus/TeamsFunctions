@@ -35,22 +35,22 @@ function Test-MicrosoftTeamsConnection {
     try {
       $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
       if ($Sessions.Count -lt 1) {
+        Write-Verbose 'No Teams Session found, assuming connection to MicrosoftTeams. Trying to Run Get-CsTenant to create'
+        #IMPROVE Performance by using any other get-command that does the same thing and does take less than 1.5s to run
         $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
+        Start-Sleep -Seconds 1
         $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
       }
       if ($Sessions.Count -ge 1) {
-        #Write-Verbose "Teams Session found"
+        Write-Verbose "Teams Session found"
         $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
         if ($Sessions.Count -lt 1) {
-          #Write-Verbose "Teams Session found, but not open and valid - trying to reconnect"
+          Write-Verbose "Teams Session found, but not open and valid - trying to reconnect"
           $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
           $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
         }
-        if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name) - Sessions", ( $Sessions | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
         if ($Sessions.Count -ge 1) {
-          #Write-Verbose "Teams Session found, open and valid"
+          Write-Verbose "Teams Session found, open and valid"
           return $true
         }
         else {
@@ -60,14 +60,16 @@ function Test-MicrosoftTeamsConnection {
       else {
         return $false
       }
+      #<#
     }
     catch {
       return $false
     }
+    #>
   } #process
 
   end {
     #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 
-} #Test-MicrosoftTeamsConnection
+} #

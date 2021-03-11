@@ -44,13 +44,30 @@ function Assert-MicrosoftTeamsConnection {
     else {
       try {
         $null = Connect-MicrosoftTeams -ErrorAction Stop
+        Start-Sleep -Seconds 2
+        if (Test-MicrosoftTeamsConnection) {
+          if ($stack.length -lt 3) {
+            Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Reconnected!'
+          }
+          return $(if ($Called) { $true })
+        }
+        else {
+          Write-Host '[ASSERT] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) ' -ForegroundColor Red
+          return $(if ($Called) { $false })
+        }
       }
       catch {
         if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name) - Exception message", ( $_.Exception.Message | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
-        if ($_.Exception.Message -contains 'The WinRM client received an HTTP status code of 403 from the remote WS-Management service') {
-          Write-Host '[ASSERT] ERROR: Connect-MicrosoftTeams failed. Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
+        if (Test-AzureADConnection) {
+          $AzureAdFeedback = Get-AzureADCurrentSessionInfo
+          Write-Host '[ASSERT] ERROR: Reconnect unsuccessful. Trying to disconnect and reconnect you. Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
+          Disconnect-Me
+          Connect-Me -AccountId $($AzureAdFeedback.Account) -NoFeedback
+        }
+        else {
+          Write-Host '[ASSERT] ERROR: Reconnect unsuccessful. Connect-MicrosoftTeams failed and no Session to AzureAd exists. Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
         }
         <# Commented out to avoid having two authentication popups
         else {
@@ -58,23 +75,10 @@ function Assert-MicrosoftTeamsConnection {
         }
         #>
       }
-      if (Test-MicrosoftTeamsConnection) {
-        if ($stack.length -lt 3) {
-          Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Connected'
-        }
-        return $(if ($Called) { $true })
-      }
-      else {
-        Write-Host '[ASSERT] ERROR: You must call the Connect-MicrosoftTeams cmdlet before calling any other cmdlets. (Connect-Me can be used for multiple connections) ' -ForegroundColor Red
-        return $(if ($Called) { $false })
-      }
     }
-
   } #process
 
   end {
 
   } #end
-
-
 } #Assert-MicrosoftTeamsConnection
