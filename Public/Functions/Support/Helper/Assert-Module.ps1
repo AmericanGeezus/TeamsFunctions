@@ -101,11 +101,13 @@ function Assert-Module {
         Write-Verbose -Message "$($MyInvocation.MyCommand) - Verifying Module '$M' - Checking Import"
         $CurrentlyLoaded = Get-Module -Name $M -Verbose:$false -WarningAction SilentlyContinue
         if ($null -ne $CurrentlyLoaded) {
-          $CurrentlyLoadedVersion = [Version] ($CurrentlyLoaded.Version.ToString() -replace '^(\d+(\.\d+){0,3})(\.\d+?)*$' , '$1')
+          if ($CurrentlyLoaded.Count -eq 1) {
+            $CurrentlyLoadedVersion = [Version] ($CurrentlyLoaded.Version.ToString() -replace '^(\d+(\.\d+){0,3})(\.\d+?)*$' , '$1')
+          }
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             "Function: $($MyInvocation.MyCommand.Name): CurrentlyLoadedVersion:", ($CurrentlyLoadedVersion | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
-          if ($CurrentlyLoadedVersion -ne $CurrentVersion ) {
+          if ($CurrentlyLoadedVersion -ne $CurrentVersion -or $CurrentlyLoaded.IsArray) {
             Write-Verbose -Message "Removing Module '$M' - Version $CurrentlyLoadedVersion"
             Remove-Module -Name $M -Force -Verbose:$false -ErrorAction SilentlyContinue
           }
