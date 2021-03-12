@@ -36,8 +36,7 @@ function Test-MicrosoftTeamsConnection {
       $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
       if ($Sessions.Count -lt 1) {
         Write-Verbose 'No Teams Session found, assuming connection to MicrosoftTeams. Trying to Run Get-CsTenant to create'
-        #IMPROVE Performance by using any other get-command that does the same thing and does take less than 1.5s to run
-        $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
+        $null = Get-CsTeamsUpgradeConfiguration -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
         Start-Sleep -Seconds 1
         $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
       }
@@ -46,7 +45,8 @@ function Test-MicrosoftTeamsConnection {
         $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
         if ($Sessions.Count -lt 1) {
           Write-Verbose "Teams Session found, but not open and valid - trying to reconnect"
-          $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
+          $null = Get-CsTeamsUpgradeConfiguration -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
+          Start-Sleep -Seconds 1
           $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
         }
         if ($Sessions.Count -ge 1) {

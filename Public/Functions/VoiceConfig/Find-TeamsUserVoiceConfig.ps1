@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add Parameter EnabledOnly? Change filter (where appropriate to search only Enabled) - or rather, All (incl. DisabledUsers)
+#TODO Add Parameter ALL? - if path is found to search for ALL Objects in Ad (time!)
 #TODO Check for SupportsPaging for OVP and TDP (result size is not managable!)
 
 function Find-TeamsUserVoiceConfig {

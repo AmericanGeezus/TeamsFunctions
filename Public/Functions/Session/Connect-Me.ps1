@@ -245,6 +245,7 @@ function Connect-Me {
     }
 
     #region Feedback
+    #NOTE Loading this here to 'initialise' the SkypeOnline part of MicrosoftTeams
     $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
     if ( -not $NoFeedback ) {
       $Status = 'Providing Feedback'
