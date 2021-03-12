@@ -131,7 +131,7 @@ function Connect-Me {
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule, $SkypeModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams, SkypeOnlineConnector
     if ( $SkypeModule ) {
       Write-Warning -Message "Module 'SkypeOnlineConnector' detected. This module is deprecated and no longer required. If it remains on the system, it could interfere in execution of Connection Commands. Removing Module from Session - Please uninstall SkypeOnlineConnector (MSI)!"
-      Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
+      Remove-Module SkypeOnlineConnector -Verbose:$false -Force -ErrorAction SilentlyContinue
     }
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
     $SaveVerbosePreference = $global:VerbosePreference;
@@ -141,7 +141,7 @@ function Connect-Me {
 
     if ( $AzureAdPreviewModule ) {
       Remove-Module AzureAd -Verbose:$false -ErrorAction SilentlyContinue
-      Import-Module AzureAdPreview -Force -Global -AllowClobber -Verbose:$false
+      Import-Module AzureAdPreview -Force -Global -Verbose:$false
 
       if ( -not (Assert-Module AzureAdPreview )) {
         if ( -not (Assert-Module AzureAd) ) {
@@ -164,6 +164,7 @@ function Connect-Me {
     }
     #endregion
 
+    # Defining Connection Parameters (baseline)
     $ConnectionParameters = $null
     $ConnectionParameters += @{ 'ErrorAction' = 'Stop' }
 
@@ -192,15 +193,12 @@ function Connect-Me {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation" -Verbose
 
-      $MeToTheO365ServiceParams.Service = $Service
       try {
         switch ($Connection) {
           'AzureAd' {
             $AzureAdParameters = $ConnectionParameters
             $AzureAdParameters += @{ 'AccountId' = $AccountId }
             $AzureAdFeedback = Connect-AzureAD @AzureAdParameters
-            #$AzureAdFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
-
             #region Activating Admin Roles
             if ( $PIMavailable ) {
               $step++
@@ -221,15 +219,14 @@ function Connect-Me {
             else {
               Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available'
             }
+            #endregion
           }
           'MicrosoftTeams' {
             $MicrosoftTeamsParameters = $ConnectionParameters
-
             try {
               $MicrosoftTeamsFeedback = Connect-MicrosoftTeams @MicrosoftTeamsParameters
             }
             catch {
-              #$MicrosoftTeamsFeedback = Connect-MeToTheO365Service @MeToTheO365ServiceParams
               $MicrosoftTeamsFeedback = Connect-MicrosoftTeams
             }
           }
@@ -238,9 +235,7 @@ function Connect-Me {
             $ExchangeOnlineParameters += @{ 'UserPrincipalName' = $AccountId }
             $ExchangeOnlineParameters += @{ 'ShowProgress' = $true }
             $ExchangeOnlineParameters += @{ 'ShowBanner' = $false }
-
             $ExchangeOnlineFeedback = Connect-ExchangeOnline @ExchangeOnlineParameters
-            #$ExchangeOnlineFeedback = Connect-MeToTheO365Service -AccountId $AccountId -Service $Service -ErrorAction Stop
           }
         }
       }
@@ -301,7 +296,6 @@ function Connect-Me {
         $Operation = 'Querying assigned Admin Roles'
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
-
         if ( Test-AzureADConnection) {
           if ( $AzureAdPreviewModule ) {
             $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account).RoleName -join ', '
