@@ -35,25 +35,18 @@ function Test-MicrosoftTeamsConnection {
     try {
       $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
       if ($Sessions.Count -lt 1) {
-        Write-Verbose 'No Teams Session found, assuming connection to MicrosoftTeams. Trying to Run Get-CsTenant to create'
-        $null = Get-CsTeamsUpgradeConfiguration -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
-        Start-Sleep -Seconds 1
-        $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+        Write-Verbose 'No Teams Session found, not assuming a connection to MicrosoftTeams has been established.'
+        return $false
       }
       if ($Sessions.Count -ge 1) {
-        Write-Verbose "Teams Session found"
+        Write-Verbose 'Teams Session found'
         $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
-        if ($Sessions.Count -lt 1) {
-          Write-Verbose "Teams Session found, but not open and valid - trying to reconnect"
-          $null = Get-CsTeamsUpgradeConfiguration -WarningAction SilentlyContinue -ErrorAction Stop -Confirm:$false
-          Start-Sleep -Seconds 1
-          $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
-        }
         if ($Sessions.Count -ge 1) {
-          Write-Verbose "Teams Session found, open and valid"
+          Write-Verbose 'Teams Session found, open and valid'
           return $true
         }
         else {
+          Write-Verbose 'Teams Session found, but not open and valid'
           return $false
         }
       }
@@ -71,5 +64,4 @@ function Test-MicrosoftTeamsConnection {
   end {
     #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-
-} #
+} # Test-MicrosoftTeamsConnection

@@ -37,49 +37,71 @@ function Assert-MicrosoftTeamsConnection {
 
     if (Test-MicrosoftTeamsConnection) {
       if ($stack.length -lt 3) {
-        Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Connected'
+        Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Connected!'
       }
       return $(if ($Called) { $true })
     }
     else {
-      try {
-        $null = Connect-MicrosoftTeams -ErrorAction Stop
-        Start-Sleep -Seconds 2
-        if (Test-MicrosoftTeamsConnection) {
+      $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+      if ($Sessions.Count -ge 1) {
+        if (Use-MicrosoftTeamsConnection) {
           if ($stack.length -lt 3) {
-            Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Reconnected!'
+            Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!'
           }
           return $(if ($Called) { $true })
         }
-        else {
-          throw "Reconnect failed"
-        }
       }
-      catch {
-        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name) - Exception message", ( $_.Exception.Message | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
-        if (Test-AzureADConnection) {
-          $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-          Write-Host '[ASSERT] ERROR: Reconnect unsuccessful. Trying to disconnect and reconnect you. Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
-          try {
-            Disconnect-Me
-            Connect-Me -AccountId $($AzureAdFeedback.Account) -NoFeedback
+      else {
+        Write-Host '[ASSERT] ERROR: Seemless reconnect unsuccessful (Admin Roles are maybe timed out) - trying to re-enable' -ForegroundColor Red
+        if (Enable-MyAzureAdAdminRole) {
+          if (Use-MicrosoftTeamsConnection) {
+            if ($stack.length -lt 3) {
+              Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Reconnected!'
+            }
             return $(if ($Called) { $true })
           }
-          catch {
+        }
+
+        # Assuming Connection is bugged - trying to reconnect
+        Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - Reconnect unsuccessful - Trying to re-connect' -ForegroundColor Red
+        try {
+          $null = Connect-MicrosoftTeams -ErrorAction Stop
+          Start-Sleep -Seconds 2
+          $SessionStatus = Connect-MicrosoftTeamsSession
+          if ($SessionStatus) {
+            if ($stack.length -lt 3) {
+              Write-Verbose -Message '[ASSERT] MicrosoftTeams Session Reconnected!'
+            }
+            return $(if ($Called) { $true })
+          }
+          elseif ($false -eq $Sessionstatus) {
+            #not reconnected
+            return $(if ($Called) { $false })
+          }
+          else {
+            #doesn't exist
             return $(if ($Called) { $false })
           }
         }
-        else {
-          Write-Host '[ASSERT] ERROR: Reconnect unsuccessful. Connect-MicrosoftTeams failed and no Session to AzureAd exists. Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
-          return $(if ($Called) { $false })
+        catch {
+          $AzureAdFeedback = Get-AzureADCurrentSessionInfo
+          if ($AzureAdFeedback) {
+            Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - Reconnect unsuccessful - Trying to disconnect and reconnect you (Connect-Me)' -ForegroundColor Red
+            $ConnectionOutput = Connect-Me -AccountId $AzureAdFeedback.Account -NoFeedback
+            if ($ConnectionOutput.ConnectedTo -contains 'MicrosoftTeams') {
+              return $(if ($Called) { $true })
+            }
+            else {
+              return $(if ($Called) { $false } else {
+                  Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - Reconnect unsuccessful. Connect-Me could not connect you. Please investigate and try again' -ForegroundColor Red
+                })
+            }
+          }
+          else {
+            Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - Reconnect unsuccessful. Connect-MicrosoftTeams failed and no Session to AzureAd exists. Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
+            return $(if ($Called) { $false })
+          }
         }
-        <# Commented out to avoid having two authentication popups
-        else {
-          $null = Connect-MicrosoftTeams -ErrorAction SilentlyContinue
-        }
-        #>
       }
     }
   } #process

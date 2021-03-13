@@ -87,6 +87,9 @@ function Connect-Me {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
+
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -247,48 +250,50 @@ function Connect-Me {
     #region Feedback
     #NOTE Loading this here to 'initialise' the SkypeOnline part of MicrosoftTeams
     $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+
+    #region Preparing Output Object
+    #CHECK Output Object - Write new Script `Get-ConnectMeConnection` publish as `cur`? (see profile!) Attach output to Assert with new switch?
+    $SessionInfo = [PSCustomObject][ordered]@{
+      Account                   = $AccountId
+      AdminRoles                = $ActivatedRoles.RoleName -join ', '
+      Tenant                    = ''
+      TenantDomain              = ''
+      TenantId                  = ''
+      ConnectedTo               = [System.Collections.ArrayList]@()
+      AzureEnvironment          = ''
+      TeamsUpgradeEffectiveMode = ''
+    }
+
+    #AzureAd SessionInfo
+    if ( Test-AzureADConnection ) {
+      $SessionInfo.ConnectedTo += 'AzureAd'
+      $AzureAdFeedback = Get-AzureADCurrentSessionInfo
+      $SessionInfo.Tenant = "$($AccountId.split('@')[1]) - $($CsTenant.DisplayName)"
+      $SessionInfo.TenantDomain = $AzureAdFeedback.TenantDomain
+      $SessionInfo.TenantId = $AzureAdFeedback.TenantId
+      $SessionInfo.AzureEnvironment = $AzureAdFeedback.Environment
+    }
+    #MicrosoftTeams SessionInfo
+    if ( Test-MicrosoftTeamsConnection ) {
+      $SessionInfo.ConnectedTo += 'MicrosoftTeams'
+      $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
+    }
+    #Exchange SessionInfo
+    if ( Test-ExchangeOnlineConnection ) {
+      $SessionInfo.ConnectedTo += 'ExchangeOnline'
+      #What to add?
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "Function: $($MyInvocation.MyCommand.Name): ExchangeOnlineFeedback:", ($ExchangeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+    }
+    #endregion
+
     if ( -not $NoFeedback ) {
       $Status = 'Providing Feedback'
       $step++
       $Operation = 'Querying information about established sessions'
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-
-      # Preparing Output Object
-      #CHECK Output Object - Write new Script `Get-ConnectMeConnection` publish as `cur`? (see profile!) Attach output to Assert with new switch?
-      $SessionInfo = [PSCustomObject][ordered]@{
-        Account                   = $AccountId
-        AdminRoles                = $ActivatedRoles.RoleName -join ', '
-        Tenant                    = ''
-        TenantDomain              = ''
-        TenantId                  = ''
-        ConnectedTo               = [System.Collections.ArrayList]@()
-        AzureEnvironment          = ''
-        TeamsUpgradeEffectiveMode = ''
-      }
-
-      #AzureAd SessionInfo
-      if ( Test-AzureADConnection ) {
-        $SessionInfo.ConnectedTo += 'AzureAd'
-        $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-        $SessionInfo.Tenant = "$($AccountId.split('@')[1]) - $($CsTenant.DisplayName)"
-        $SessionInfo.TenantDomain = $AzureAdFeedback.TenantDomain
-        $SessionInfo.TenantId = $AzureAdFeedback.TenantId
-        $SessionInfo.AzureEnvironment = $AzureAdFeedback.Environment
-      }
-      #MicrosoftTeams SessionInfo
-      if ( Test-MicrosoftTeamsConnection ) {
-        $SessionInfo.ConnectedTo += 'MicrosoftTeams'
-        $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
-      }
-      #Exchange SessionInfo
-      if ( Test-ExchangeOnlineConnection ) {
-        $SessionInfo.ConnectedTo += 'ExchangeOnline'
-        #What to add?
-        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): ExchangeOnlineFeedback:", ($ExchangeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-        }
-      }
 
       #Querying Admin Roles
       if ( -not $SessionInfo.AdminRoles ) {
@@ -315,6 +320,13 @@ function Connect-Me {
 
       Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Ready" -ForegroundColor Green
       Get-RandomQuote
+    }
+    else {
+      return $(if ($Called) {
+          # Returning basic connection information
+          Write-Output $SessionInfo | Select-Object Account, ConnectedTo
+        })
+
     }
 
     Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
