@@ -44,6 +44,7 @@ function Assert-MicrosoftTeamsConnection {
     else {
       $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
       if ($Sessions.Count -ge 1) {
+        #FIXME Doesn't work
         if (Use-MicrosoftTeamsConnection) {
           if ($stack.length -lt 3) {
             Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!'
