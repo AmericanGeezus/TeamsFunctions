@@ -334,7 +334,6 @@ function Connect-Me {
           # Returning basic connection information
           Write-Output $SessionInfo | Select-Object Account, ConnectedTo, TeamsUpgradeEffectiveMode
         })
-
     }
 
     Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed

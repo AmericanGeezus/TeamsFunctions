@@ -8,9 +8,18 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
+- Module: Handling of Strict Mode (if activated) and switching it off.
+- `Enable-MyAzureAdAdminRole`: Wrap for `Enable-AzureAdAdminRole` which works on its own too, but makes it available to be called in other functions
+
 ### Updated
 
 - `Get-TeamsUserLicense`: Now allows for piping the output to other CmdLets (Added AzureAdUser Identity)
+- `Use-MicrosoftTeamsConnection`: New private function to reconnect a broken PS-Session by running a GET-Command before `Test-MicrosoftTeamsConnection`
+- `Test-MicrosoftTeamsConnection`: Updated (reduced) to actual testing (extracted trigger into `Use-MicrosoftTeamsConnection`)
+- `Assert-MicrosoftTeamsConnection`: Updated to use and test the Connection properly and run Connect-MicrosoftTeams or Connect-Me dependent on Status
+- `Connect-Me`: Reworked data gathering at the end and output for `-NoFeedback` (now returns a barebones Account, Connection and TeamsUpgradeEffectiveMode) for use in `Assert-MicrosoftTeamsConnection`.
+- `Enable-AzureAdAdminRole`: Added Debug function & Call Stack
+- `Get-AzureAdAdminRole`: Added Debug function, Corrected ActiveUntil and Added ActiveSince
 
 ---------------------------------------------
 
