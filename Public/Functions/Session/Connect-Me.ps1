@@ -248,8 +248,16 @@ function Connect-Me {
     }
 
     #region Feedback
-    #NOTE Loading this here to 'initialise' the SkypeOnline part of MicrosoftTeams
-    $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    try {
+      #NOTE Loading this here to 'initialise' the SkypeOnline part of MicrosoftTeams and to test Admin roles
+      $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
+    }
+    catch {
+      Write-Warning -Message 'Connection to MicrosoftTeams established, but Skype Admin Roles not activated. Please enable Admin Roles before continuing'
+      if ( -not $NoFeedback ) {
+        Write-Verbose -Message 'The TeamsUpgradeEffectiveMode is not shown as it cannot be queried from the Tenant'
+      }
+    }
 
     #region Preparing Output Object
     #CHECK Output Object - Write new Script `Get-ConnectMeConnection` publish as `cur`? (see profile!) Attach output to Assert with new switch?
@@ -324,7 +332,7 @@ function Connect-Me {
     else {
       return $(if ($Called) {
           # Returning basic connection information
-          Write-Output $SessionInfo | Select-Object Account, ConnectedTo
+          Write-Output $SessionInfo | Select-Object Account, ConnectedTo, TeamsUpgradeEffectiveMode
         })
 
     }

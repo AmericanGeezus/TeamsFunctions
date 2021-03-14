@@ -113,6 +113,10 @@ function Get-AzureAdAdminRole {
           $MyMemberships = Get-AzureADUserMembership -ObjectId $AzureAdUser.ObjectId #-All $true #CHECK Test Performance and reliability without "all!"
           $ActiveRoles = $MyMemberships | Where-Object ObjectType -EQ Role
 
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name) - ActiveRoles", ( $ActiveRoles | Format-List | Out-String).Trim() | Write-Debug
+          }
+
           #Output
           if ( -not $ActiveRoles ) {
             Write-Warning -Message 'No active, direct assignments found. This user may be eligible for activating Admin Role access through Group assignment or Privileged Admin Groups'
@@ -126,6 +130,7 @@ function Get-AzureAdAdminRole {
               'User'            = $Id
               'Rolename'        = $R.DisplayName
               'Type'            = 'Direct' # This may be different once we incorporate Groups too!
+              'ActiveSince'     = ''
               'ActiveUntil'     = ''
               'AssignmentState' = 'Active'
             }
@@ -138,6 +143,9 @@ function Get-AzureAdAdminRole {
           $SubjectId = $AzureAdUser.ObjectId
           $MyPrivilegedRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
 
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name) - MyPrivilegedRoles", ( $MyPrivilegedRoles | Format-List | Out-String).Trim() | Write-Debug
+          }
 
           foreach ($R in $MyPrivilegedRoles) {
             # Querying Role Display Name
@@ -148,7 +156,8 @@ function Get-AzureAdAdminRole {
               'User'            = $Id
               'Rolename'        = $RoleObject.DisplayName
               'Type'            = $R.MemberType
-              'ActiveUntil'     = $R.EndDateType
+              'ActiveSince'     = $R.StartDateTime
+              'ActiveUntil'     = $R.EndDateTime
               'AssignmentState' = $R.AssignmentState
             }
 

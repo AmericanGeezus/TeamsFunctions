@@ -62,6 +62,9 @@ function Enable-MyAzureAdAdminRole {
                 Write-Output $ActivatedRoles
               })
           }
+          else {
+            #TODO Query active roles with GET and feed these back! (Direct Assignments)
+          }
         }
         catch {
           return $(if ($Called) { $false } else {

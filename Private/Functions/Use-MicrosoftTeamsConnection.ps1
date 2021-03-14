@@ -15,6 +15,7 @@ function Use-MicrosoftTeamsConnection {
 		A connection established via Connect-MicrosoftTeams is parsed and if it exists will be attempted to reconnected to.
 	.EXAMPLE
 		Use-MicrosoftTeamsConnection
+    Runs Get-CsTeamsUpgradeConfiguration to open or reconnect the established PowerShell Session for SkypeOnline commands
 		Will Return $TRUE only if a valid session is found.
   .INPUTS
     None
@@ -35,16 +36,17 @@ function Use-MicrosoftTeamsConnection {
   param() #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    #Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      $null = Get-CsTeamsUpgradeConfiguration -WarningAction SilentlyContinue -ErrorAction Stop
+      # NOTE This currently takes about half a second (486ms on average)
+      $null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
       #Write-Verbose -Message "$($MyInvocation.MyCommand) - No Teams session found"
-      Start-Sleep -Seconds 1
+      #Start-Sleep -Seconds 1
       if (Test-MicrosoftTeamsConnection) {
         return $true
       }
