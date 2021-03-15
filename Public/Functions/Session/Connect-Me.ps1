@@ -311,14 +311,13 @@ function Connect-Me {
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
         if ( Test-AzureADConnection) {
-          if ( $AzureAdPreviewModule ) {
-            $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account).RoleName -join ', '
+          try {
+            $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account -ErrorAction Stop).RoleName -join ', '
+            $SessionInfo.AdminRoles = $Roles
           }
-          else {
-            #$Roles = $(Get-AzureAdAssignedAdminRoles (Get-AzureADCurrentSessionInfo).Account).DisplayName -join ', '
+          catch {
             Write-Warning -Message 'Module AzureAdPreview not present. Admin Roles cannot be enumerated.'
           }
-          $SessionInfo.AdminRoles = $Roles
         }
       }
 
