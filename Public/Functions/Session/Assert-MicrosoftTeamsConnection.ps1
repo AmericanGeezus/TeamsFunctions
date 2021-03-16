@@ -43,7 +43,7 @@ function Assert-MicrosoftTeamsConnection {
     }
     elseif (Use-MicrosoftTeamsConnection) {
       if ($stack.length -lt 3) {
-        Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!'
+        Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!' -Verbose
       }
       return $(if ($Called) { $true })
     }
