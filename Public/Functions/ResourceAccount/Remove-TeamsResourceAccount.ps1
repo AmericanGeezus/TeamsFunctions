@@ -15,11 +15,11 @@ function Remove-TeamsResourceAccount {
 		This function allows you to remove Resource Accounts (Application Instances) from AzureAD
 	.PARAMETER UserPrincipalName
 		Required. Identifies the Object being changed
+	.PARAMETER PassThru
+		Optional. Displays UserPrincipalName of removed objects.
 	.PARAMETER Force
 		Optional. Will also sever all associations this account has in order to remove it
 		If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
-	.PARAMETER PassThru
-		Optional. Displays UserPrincipalName of removed objects.
 	.EXAMPLE
 		Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
 		Removes a ResourceAccount
@@ -76,11 +76,11 @@ function Remove-TeamsResourceAccount {
     [Alias('Identity', 'ObjectId')]
     [string[]]$UserPrincipalName,
 
-    [Parameter(Mandatory = $false)]
-    [switch]$Force,
+    [Parameter(HelpMessage = 'By default, no output is generated, PassThru will display the Object changed')]
+    [switch]$PassThru,
 
     [Parameter(Mandatory = $false)]
-    [switch]$PassThru
+    [switch]$Force
   ) #param
 
   begin {

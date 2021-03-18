@@ -41,6 +41,9 @@ function Set-TeamsResourceAccount {
 		Required format is E.164, starting with a '+' and 10-15 digits long.
   .PARAMETER PassThru
     By default, no output is generated, PassThru will display the Object changed
+	.PARAMETER Force
+		Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object
+    If PhoneNumber is not Null or Empty, will reapply the PhoneNumber
   .EXAMPLE
 		Set-TeamsResourceAccount -UserPrincipalName ResourceAccount@TenantName.onmicrosoft.com -Displayname "My {ResourceAccount}"
 		Will normalize the Display Name (i.E. remove special characters), then set it as "My ResourceAccount"
@@ -141,7 +144,10 @@ function Set-TeamsResourceAccount {
     [string]$PhoneNumber,
 
     [Parameter(HelpMessage = 'By default, no output is generated, PassThru will display the Object changed')]
-    [switch]$PassThru
+    [switch]$PassThru,
+
+    [Parameter(Mandatory = $false)]
+    [switch]$Force
   ) #param
 
   begin {
@@ -260,7 +266,6 @@ function Set-TeamsResourceAccount {
 
     if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
       #Validating Phone Number
-      #VALIDATE application of empty or Null does indeed remove the phonenumber!
       if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
         if ($CurrentPhoneNumber) {
           Write-Warning -Message "PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
@@ -275,8 +280,8 @@ function Set-TeamsResourceAccount {
           Write-Warning -Message "PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
         }
         $E164Number = Format-StringForUse $PhoneNumber -As E164
-        #TEST Application of already assigned number
-        if ($CurrentPhoneNumber -eq $E164Number) {
+        #TEST Application of already assigned number (and FORCE)
+        if ($CurrentPhoneNumber -eq $E164Number -and -not $force) {
           Write-Verbose -Message "PhoneNumber '$E164Number' is already applied"
         }
         else {
@@ -528,17 +533,17 @@ function Set-TeamsResourceAccount {
 
       # Removing old Number (if $null or different to current)
       #VALIDATE application of empty or Null does indeed remove the phonenumber!
-      if ($force -or $null -eq $PhoneNumber -or $CurrentPhoneNumber -ne $PhoneNumber) {
+      if ($null -eq $PhoneNumber -or $force -or $CurrentPhoneNumber -ne $PhoneNumber) {
         Write-Verbose -Message "'$Name ($UserPrincipalName )' ACTION: Removing Phone Number"
-        #CHECK PhoneNumber may not be removed correctly. Needs investigation
         try {
-          if ($null -ne ($Object.TelephoneNumber)) {
+          $UVCObject = Get-TeamsUserVoiceConfig -Identity $UserPrincipalName -ErrorVariable Stop
+          if ($null -ne ($UVCObject.TelephoneNumber)) {
             # Remove from VoiceApplicationInstance
             Write-Verbose -Message "'$Name ($UserPrincipalName )' Removing Microsoft Number"
             $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -TelephoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
             Write-Verbose -Message 'SUCCESS'
           }
-          if ($null -ne ($Object.OnPremLineURI)) {
+          if ($null -ne ($UVCObject.OnPremLineURI)) {
             # Remove from ApplicationInstance
             Write-Verbose -Message "'$Name ($UserPrincipalName )' Removing Direct Routing Number"
             $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
@@ -572,17 +577,16 @@ function Set-TeamsResourceAccount {
               $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
             }
             $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
-
             if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
               # Set in VoiceApplicationInstance
-              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
+              if ($force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
                 Write-Information "'$Name ($UserPrincipalName )' Number '$Number' found in Tenant, provisioning Microsoft for: Microsoft Calling Plans"
                 $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -TelephoneNumber $E164Number -ErrorAction STOP)
               }
             }
             else {
               # Set in ApplicationInstance
-              if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
+              if ($force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
                 Write-Information "'$Name ($UserPrincipalName )' Number '$E164Number' not found in Tenant, provisioning for: Direct Routing"
                 $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $E164Number -ErrorAction STOP)
               }
@@ -592,7 +596,6 @@ function Set-TeamsResourceAccount {
             Write-Error -Message "'$Name ($UserPrincipalName )' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction 'Please run Set-TeamsResourceAccount manually'
             Write-Debug $_
           }
-
         }
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name)", (Get-CsOnlineApplicationInstance -Identity $UserPrincipalName | Select-Object UserPrincipalName, DisplayName, PhoneNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
