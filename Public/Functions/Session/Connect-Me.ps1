@@ -163,7 +163,7 @@ function Connect-Me {
     catch {
       Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
       Write-Verbose -Message 'AzureAd & MicrosoftTeams: Establishing a connection will work, though only GET-commands will be able to be executed'
-      #Write-Verbose -Message "MicrosoftTeams: Executing NEW/SET/REMOVE CmdLets requires the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
+      Write-Verbose -Message "MicrosoftTeams: Executing SkypeOnline CmdLets requires the 'Lync Administrator' ('Skype for Busines Legacy Administrator' in the Admin Center) role is not activated"
     }
     #endregion
 
@@ -193,7 +193,7 @@ function Connect-Me {
       $Service = $Connection
       $step++
       $Operation = $Service
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation "$Operation - Please see Authentication dialog" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation" -Verbose
 
       try {
@@ -247,55 +247,6 @@ function Connect-Me {
       }
     }
 
-    #region Feedback
-    try {
-      #NOTE Loading this here to 'initialise' the SkypeOnline part of MicrosoftTeams and to test Admin roles
-      $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
-    }
-    catch {
-      Write-Warning -Message 'Connection to MicrosoftTeams established, but Skype Admin Roles not activated. Please enable Admin Roles before continuing'
-      if ( -not $NoFeedback ) {
-        Write-Verbose -Message 'The TeamsUpgradeEffectiveMode is not shown as it cannot be queried from the Tenant'
-      }
-    }
-
-    #region Preparing Output Object
-    #CHECK Output Object - Write new Script `Get-ConnectMeConnection` publish as `cur`? (see profile!) Attach output to Assert with new switch?
-    $SessionInfo = [PSCustomObject][ordered]@{
-      Account                   = $AccountId
-      AdminRoles                = $ActivatedRoles.RoleName -join ', '
-      Tenant                    = ''
-      TenantDomain              = ''
-      TenantId                  = ''
-      ConnectedTo               = [System.Collections.ArrayList]@()
-      AzureEnvironment          = ''
-      TeamsUpgradeEffectiveMode = ''
-    }
-
-    #AzureAd SessionInfo
-    if ( Test-AzureADConnection ) {
-      $SessionInfo.ConnectedTo += 'AzureAd'
-      $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-      $SessionInfo.Tenant = "$($AccountId.split('@')[1]) - $($CsTenant.DisplayName)"
-      $SessionInfo.TenantDomain = $AzureAdFeedback.TenantDomain
-      $SessionInfo.TenantId = $AzureAdFeedback.TenantId
-      $SessionInfo.AzureEnvironment = $AzureAdFeedback.Environment
-    }
-    #MicrosoftTeams SessionInfo
-    if ( Test-MicrosoftTeamsConnection ) {
-      $SessionInfo.ConnectedTo += 'MicrosoftTeams'
-      $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
-    }
-    #Exchange SessionInfo
-    if ( Test-ExchangeOnlineConnection ) {
-      $SessionInfo.ConnectedTo += 'ExchangeOnline'
-      #What to add?
-      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name): ExchangeOnlineFeedback:", ($ExchangeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
-    }
-    #endregion
-
     if ( -not $NoFeedback ) {
       $Status = 'Providing Feedback'
       $step++
@@ -303,8 +254,14 @@ function Connect-Me {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
+      $SessionInfo = Get-CurrentConnectionInfo
+      $SessionInfo | Add-Member -MemberType NoteProperty -Name AdminRoles -Value ''
+
       #Querying Admin Roles
-      if ( -not $SessionInfo.AdminRoles ) {
+      if ( $ActivatedRoles ) {
+        $SessionInfo.AdminRoles = $($ActivatedRoles.RoleName -join ', ')
+      }
+      else {
         #AdminRoles is already populated if they have been activated with PIM (though only with eligible ones) this overwrites the previous set of roles
         $step++
         $Operation = 'Querying assigned Admin Roles'
@@ -331,6 +288,7 @@ function Connect-Me {
     else {
       return $(if ($Called) {
           # Returning basic connection information
+          $SessionInfo = Get-CurrentConnectionInfo
           Write-Output $SessionInfo | Select-Object Account, ConnectedTo, TeamsUpgradeEffectiveMode
         })
     }

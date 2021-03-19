@@ -14,12 +14,18 @@ function Get-AzureAdAdminRole {
 	.DESCRIPTION
 		Azure Active Directory Admin Roles assigned to an Object
 		Requires a Connection to AzureAd
+    Querying '-Type Elibile' requires the Module AzureAdPreview installed
+	.PARAMETER Identity
+		Required. One or more UserPrincipalNames of the Office365 Administrator
+	.PARAMETER Type
+		Optional. Switches query to Active (Default) or Eligible Admin Roles
+    Eligibility can only be queried with Module AzureAdPreview installed
 	.EXAMPLE
-		Get-AzureAdAdminRole user@domain.com [-Type Active]
-		Returns Diplaynames for all active Admin Roles
+		Get-AzureAdAdminRole [-Identity] user@domain.com [-Type Active]
+		Returns all active Admin Roles for the provided Identity
 	.EXAMPLE
-		Get-AzureAdAdminRole user@domain.com -Type Eligible
-		Returns  an Object for all Admin Roles assigned
+		Get-AzureAdAdminRole [-Identity] user@domain.com -Type Eligible
+		Returns all eligible Admin Roles for the provided Identity
 	.INPUTS
 		System.String
 	.OUTPUTS
@@ -33,13 +39,17 @@ function Get-AzureAdAdminRole {
   .ROLE
     Activating Admin Roles
   .FUNCTIONALITY
-    Enables eligible Privileged Identity roles for Administration of Teams
+    Queries active or eligible Privileged Identity roles for Administration of Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     Enable-AzureAdAdminRole
   .LINK
+    Enable-MyAzureAdAdminRole
+  .LINK
     Get-AzureAdAdminRole
+  .LINK
+    Get-MyAzureAdAdminRole
   #>
 
   [CmdletBinding()]

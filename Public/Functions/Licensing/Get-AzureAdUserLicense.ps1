@@ -1,33 +1,37 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   Live
+# Updated:  01-APR-2020
+# Status:   RC
 
 
 #TODO Add Identity? Enable to pipe? Enable to find it with Get-TeamsUserVoiceConfig?
 
-function Get-TeamsUserLicense {
+function Get-AzureAdUserLicense {
   <#
 	.SYNOPSIS
     Returns License information for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all Teams related Licenses found for a specific Object
-		Returns lists the UPN, Name, License, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
+		Returns UPN, Name, License, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
 	.PARAMETER Identity
 		The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
     Aliases include: "UPN","UserPrincipalName","Username"
-  .PARAMETER DisplayAll
-    Displays all ServicePlans, not only relevant Teams Plans
-    Also displays AllLicenses and AllServicePlans object for further processing
-	.EXAMPLE
-		Get-TeamsUserLicense -Identity John@domain.com
+  .PARAMETER FilterRelevantForTeams
+    Filters the output and displays only Licenses relevant Teams Plans
+  .PARAMETER IncludeLicenseObjects
+    Displays License and ServicePlan Object for further investigation
+  .EXAMPLE
+		Get-AzureAdUserLicense -Identity John@domain.com
 		Displays all licenses assigned to User John@domain.com
 	.EXAMPLE
-		Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
+		Get-AzureAdUserLicense -Identity John@domain.com,Jane@domain.com
 		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 	.EXAMPLE
-		Import-Csv User.csv | Get-TeamsUserLicense
+		Get-AzureAdUserLicense -Identity Jane@domain.com -FilterRelevantForTeams
+		Displays all relevant Teams licenses assigned to Jane@domain.com
+	.EXAMPLE
+		Import-Csv User.csv | Get-AzureAdUserLicense
     Displays all licenses assigned to Users from User.csv, Column Identity.
     The input file must have a single column heading of "Identity" with properly formatted UPNs.
 	.NOTES
@@ -67,8 +71,11 @@ function Get-TeamsUserLicense {
     [Alias('UPN', 'UserPrincipalName', 'Username')]
     [string[]]$Identity,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Displays all ServicePlans')]
-    [switch]$DisplayAll
+    [Parameter(HelpMessage = 'Displays only Licenses relevant to Teams')]
+    [switch]$FilterRelevantForTeams,
+
+    [Parameter(HelpMessage = 'Displays License and ServicePlan Object for further investigation')]
+    [switch]$IncludeLicenseObjects
   ) #param
 
   begin {
@@ -132,11 +139,11 @@ function Get-TeamsUserLicense {
         }
       }
       $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, ProductName
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$LicensesProductNames = $UserLicensesSorted.ProductName
+      if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams')) {
+        [string]$LicensesProductNames = ($UserLicensesSorted | Where-Object { $_.IncludesTeams -or $_.IncludesPhoneSystem } ).ProductName
       }
       else {
-        [string]$LicensesProductNames = ($UserLicensesSorted | Where-Object { $_.IncludesTeams -or $_.IncludesPhoneSystem } ).ProductName
+        [string]$LicensesProductNames = $UserLicensesSorted.ProductName
       }
 
       # Querying Service Plans
@@ -156,12 +163,13 @@ function Get-TeamsUserLicense {
         }
       }
       $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$ServicePlansProductNames = $UserServicePlansSorted.ProductName
-      }
-      else {
+
+      if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams')) {
         #[string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object { $_.RelevantForTeams }).ProductName
         [string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName
+      }
+      else {
+        [string]$ServicePlansProductNames = $UserServicePlansSorted.ProductName
       }
 
       $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
@@ -228,8 +236,8 @@ function Get-TeamsUserLicense {
         CallingPlan              = $currentCallingPlan
       }
 
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        $output | Add-Member -MemberType NoteProperty -Name AllLicenses -Value $($UserLicensesSorted | Select-Object *)
+      if ($PSBoundParameters.ContainsKey('IncludeLicenseObjects')) {
+        $output | Add-Member -MemberType NoteProperty -Name AllLicenses -Value $($UserLicensesSorted | Select-Object * )
         $output | Add-Member -MemberType NoteProperty -Name AllServicePlans -Value $UserServicePlansSorted
       }
 

@@ -38,9 +38,15 @@ function Get-AzureAdLicense {
   .LINK
     Get-TeamsUserLicense
   .LINK
+    Get-TeamsUserLicenseServicePlan
+  .LINK
     Set-TeamsUserLicense
   .LINK
     Test-TeamsUserLicense
+  .LINK
+    Get-AzureAdUserLicense
+  .LINK
+    Get-AzureAdUserLicenseServicePlan
   .LINK
     Get-AzureAdLicense
   .LINK

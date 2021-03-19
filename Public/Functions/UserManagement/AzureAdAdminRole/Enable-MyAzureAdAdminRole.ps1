@@ -29,9 +29,16 @@ function Enable-MyAzureAdAdminRole {
     Assert-MicrosoftTeamsConnection
   .LINK
     Enable-AzureAdAdminRole
+  .LINK
+    Enable-MyAzureAdAdminRole
+  .LINK
+    Get-AzureAdAdminRole
+  .LINK
+    Get-MyAzureAdAdminRole
 	#>
 
   [CmdletBinding()]
+  [Alias('ear')]
   [OutputType([Boolean])]
   param() #param
 

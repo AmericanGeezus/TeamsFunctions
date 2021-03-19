@@ -52,6 +52,8 @@ function Set-AzureAdUserLicenseServicePlan {
   .LINK
     Get-TeamsUserLicense
   .LINK
+    Get-TeamsUserLicenseServicePlan
+  .LINK
     Set-TeamsUserLicense
   .LINK
     Get-AzureAdLicense

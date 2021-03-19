@@ -9,7 +9,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### New
 
 - Module: Handling of Strict Mode (if activated) and switching it off.
-- `Enable-MyAzureAdAdminRole`: Wrap for `Enable-AzureAdAdminRole` which works on its own too, but makes it available to be called in other functions
+- `Enable-MyAzureAdAdminRole` (`ear`): Wrap for `Enable-AzureAdAdminRole` which works on its own too, but makes it available to be called in other functions
+- `Get-MyAzureAdAdminRole`: Wrap for `Get-AzureAdAdminRole` to query Admin Roles for the currently connected User
+- `Get-CurrentConnection` (`cur`): Helper Function for Connect-Me. Queries connections to AzureAd, MicrosoftTeams and Exchange and returns an Object with Information
 
 ### Updated
 

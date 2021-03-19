@@ -19,6 +19,10 @@ function Assert-MicrosoftTeamsConnection {
     If unsuccessful, displays request to create a new session and stops.
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    Assert-AzureAdConnection
+  .LINK
+    Get-CurrentConnectionInfo
   #>
 
   [CmdletBinding()]
@@ -94,6 +98,8 @@ function Assert-MicrosoftTeamsConnection {
   } #process
 
   end {
-
+    if (-not $Called) {
+      Get-CurrentConnectionInfo
+    }
   } #end
 } #Assert-MicrosoftTeamsConnection

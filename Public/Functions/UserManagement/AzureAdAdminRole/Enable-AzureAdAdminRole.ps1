@@ -73,7 +73,11 @@ function Enable-AzureAdAdminRole {
   .LINK
     Enable-AzureAdAdminRole
   .LINK
+    Enable-MyAzureAdAdminRole
+  .LINK
     Get-AzureAdAdminRole
+  .LINK
+    Get-MyAzureAdAdminRole
   #>
 
   [CmdletBinding(SupportsShouldProcess)]

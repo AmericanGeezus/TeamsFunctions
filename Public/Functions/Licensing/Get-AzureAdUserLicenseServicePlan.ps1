@@ -1,34 +1,41 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   Live
+# Updated:  01-APR-2020
+# Status:   RC
 
 
 #TODO Add Identity? Enable to pipe? Enable to find it with Get-TeamsUserVoiceConfig?
 
-function Get-TeamsUserLicense {
+function Get-AzureAdUserLicenseServicePlan {
   <#
 	.SYNOPSIS
-    Returns License information for an Object in AzureAD
+    Returns License information (ServicePlans) for an Object in AzureAD
   .DESCRIPTION
-    Returns an Object containing all Teams related Licenses found for a specific Object
-		Returns lists the UPN, Name, License, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
+    Returns an Object containing all ServicePlans (for Licenses assigned) for a specific Object
+		Returns UPN, Name, License, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
 	.PARAMETER Identity
 		The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
     Aliases include: "UPN","UserPrincipalName","Username"
-  .PARAMETER DisplayAll
-    Displays all ServicePlans, not only relevant Teams Plans
-    Also displays AllLicenses and AllServicePlans object for further processing
+  .PARAMETER FilterRelevantForTeams
+    Filters the output and displays only Licenses relevant Teams Plans
+  .PARAMETER FilterUnsuccessful
+    Filters the output and displays only ServicePlans that don't have the ProvisioningStatus "Success"
 	.EXAMPLE
-		Get-TeamsUserLicense -Identity John@domain.com
-		Displays all licenses assigned to User John@domain.com
+		Get-AzureAdUserLicenseServicePlan -Identity John@domain.com
+		Displays all Service Plans assigned through Licenses to User John@domain.com
 	.EXAMPLE
-		Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
-		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
+		Get-AzureAdUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
+		Displays all Service Plans assigned through Licenses to Users John@domain.com and Jane@domain.com
 	.EXAMPLE
-		Import-Csv User.csv | Get-TeamsUserLicense
-    Displays all licenses assigned to Users from User.csv, Column Identity.
+		Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterRelevantForTeams
+		Displays all relevant Teams Service Plans assigned through Licenses to Jane@domain.com
+	.EXAMPLE
+		Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterUnsuccessful
+		Displays all Service Plans assigned through Licenses to Jane@domain.com that are not provisioned successfully
+	.EXAMPLE
+		Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan
+    Displays all Service Plans assigned through Licenses to Users from User.csv, Column Identity.
     The input file must have a single column heading of "Identity" with properly formatted UPNs.
 	.NOTES
 		Requires a connection to Azure Active Directory
@@ -72,7 +79,7 @@ function Get-TeamsUserLicense {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level BETA
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -103,6 +110,13 @@ function Get-TeamsUserLicense {
 
     $AllServicePlans = $null
     $AllServicePlans = $global:TeamsFunctionsMSAzureAdLicenseServicePlans
+
+
+    #Idea: Get-TeamsUserLicenseServicePlan
+    # Input: UPN, ServicePlan to filter (optional)
+    # Output: Object (as table?) List of assigned Service Plans (license, Plan, status)
+
+    (get-TeamsUserLicense -Identity x -DisplayAll).allserviceplans | Where-Object { $_.provisioningstatus -NE 'success' -and $_.RelevantForTeams -eq $true } | Select-Object ServicePlanName
 
   } #begin
 
@@ -156,56 +170,20 @@ function Get-TeamsUserLicense {
         }
       }
       $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "Function: $($MyInvocation.MyCommand.Name): UserServicePlans:", ($UserServicePlans | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "Function: $($MyInvocation.MyCommand.Name): UserServicePlansSorted:", ($UserServicePlansSorted | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+
+      #TODO Keep but output relevant stuff
       if ($PSBoundParameters.ContainsKey('DisplayAll')) {
         [string]$ServicePlansProductNames = $UserServicePlansSorted.ProductName
       }
       else {
         #[string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object { $_.RelevantForTeams }).ProductName
         [string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName
-      }
-
-      $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
-      $AudioConfLicense = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
-      $PhoneSystemVirtual = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
-      $CommonAreaPhoneLic = ('MCOCAP' -in $UserServicePlans.ServicePlanName)
-      $CommunicationCredits = ('MCOPSTNC' -in $UserServicePlans.ServicePlanName)
-      $CallingPlanDom = ('MCOPSTN1' -in $UserServicePlans.ServicePlanName)
-      $CallingPlanInt = ('MCOPSTN2' -in $UserServicePlans.ServicePlanName)
-      $CallingPlanDom120 = ('MCOPSTN5' -in $UserServicePlans.ServicePlanName)
-
-      # Phone System
-      if ( $PhoneSystemLicense ) {
-        $PhoneSystemProvisioningStatus = $UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV'
-        if ( $PhoneSystemProvisioningStatus.Count -gt 1 ) {
-          # PhoneSystem assigned more than once!
-          Write-Warning -Message "User '$User' Multiple assignments found for PhoneSystem. Please verify License assignment."
-          $PhoneSystemStatus = ($PhoneSystemProvisioningStatus | Select-Object -ExpandProperty ProvisioningStatus) -join ', '
-
-        }
-        else {
-          $PhoneSystemStatus = $PhoneSystemProvisioningStatus.ProvisioningStatus
-        }
-
-      }
-      elseif ( $PhoneSystemVirtual ) {
-        $PhoneSystemStatus = ($UserServicePlans | Where-Object ServicePlanName -EQ 'MCOEV_VIRTUALUSER').ProvisioningStatus
-      }
-      else {
-        $PhoneSystemStatus = 'Unassigned'
-      }
-
-      # Calling Plans
-      if ($CallingPlanDom120) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN5').ProductName
-      }
-      elseif ($CallingPlanDom) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN1').ProductName
-      }
-      elseif ($CallingPlanInt) {
-        $currentCallingPlan = ($AllLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN2').ProductName
-      }
-      else {
-        [string]$currentCallingPlan = $null
       }
 
 
@@ -228,11 +206,7 @@ function Get-TeamsUserLicense {
         CallingPlan              = $currentCallingPlan
       }
 
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        $output | Add-Member -MemberType NoteProperty -Name AllLicenses -Value $($UserLicensesSorted | Select-Object *)
-        $output | Add-Member -MemberType NoteProperty -Name AllServicePlans -Value $UserServicePlansSorted
-      }
-
+      Write-Information "Service Plans for User '$User':"
       Write-Output $output
     }
   } #process
@@ -240,4 +214,4 @@ function Get-TeamsUserLicense {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsUserLicense
+} #Get-TeamsUserLicenseServicePlan

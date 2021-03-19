@@ -16,25 +16,20 @@ function Test-TeamsUserVoiceConfig {
     For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
 	.PARAMETER Identity
     Required. UserPrincipalName of the User to be tested
-	.PARAMETER Scope
-    Required. Value to focus the Script on. Allowed Values are DirectRouting,CallingPlans,SkypeHybridPSTN
-    Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
-    Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
-    Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
   .PARAMETER Partial
     Optional. By default, returns TRUE only if all required Parameters for the Scope are configured (User is fully provisioned)
     Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope DirectRouting
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting [-Scope Full]
     Tests for Direct Routing and returns TRUE if FULL configuration is found
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope DirectRouting -Partial
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting -Scope Partial
     Tests for Direct Routing and returns TRUE if ANY configuration is found
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope CallPlans
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans [-Scope Full]
     Tests for Call Plans and returns TRUE if FULL configuration is found
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope CallPlans -Partial
+    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans -Scope Partial
     Tests for Call Plans but returns TRUE if ANY configuration is found
   .INPUTS
     System.String
@@ -42,12 +37,14 @@ function Test-TeamsUserVoiceConfig {
     Boolean
   .NOTES
     All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
-    Partial configuration provides insight for incorrectly de-provisioned configuration that could block configuration for the other.
-    For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI
-      This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.
-      "Remove-TeamsUserVoiceConfig -Force" can help
+    Partial configuration provides insight for incorrectly provisioned configuration.
+    Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
+    Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
+    Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
 	.LINK
     Find-TeamsUserVoiceConfig
 	.LINK
@@ -67,19 +64,18 @@ function Test-TeamsUserVoiceConfig {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [Alias('UserPrincipalName')]
     [string[]]$Identity,
-
-    [Parameter(Mandatory, HelpMessage = 'Defines Type of Voice Configuration to test this user against')]
-    [ValidateSet('DirectRouting', 'CallingPlans', 'SkypeHybridPSTN')]
-    [string]$Scope,
 
     [Parameter(Helpmessage = 'Queries a partial implementation')]
     [switch]$Partial
-
   ) #param
 
   begin {
     Show-FunctionStatus -Level RC
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
+
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -89,80 +85,119 @@ function Test-TeamsUserVoiceConfig {
     # Asserting MicrosoftTeams Connection
     if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
-      # Querying Identity
+      Write-Verbose -Message "[PROCESS] Processing '$User'"
       try {
         $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error "User '$User' not found" -Category ObjectNotFound -ErrorAction Stop
+        Write-Error "User '$User' not found" -Category ObjectNotFound
+        continue
       }
 
-      switch ($Scope) {
-        'DirectRouting' {
-          if ($PSBoundParameters.ContainsKey('Partial')) {
-            if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $null -eq $CsUser.VoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.OnlineVoiceRoutingPolicy)) {
-              return $true
-            }
-            else {
-              return $false
-            }
-          }
-          else {
-            if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
-              return $true
-            }
-            else {
-              return $false
-            }
-          }
+      # Testing EV Enablement as hard requirement
+      $EVenabled = $CsUser.EnterpriseVoiceEnabled
+      if ( $Verbose -or -not $Called ) {
+        if ($EVenabled) {
+          Write-Verbose -Message "User '$User' - Enterprise Voice - OK"
         }
-
-        'SkypeHybridPSTN' {
-          if ($PSBoundParameters.ContainsKey('Partial')) {
-            if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and ($null -ne $CsUser.OnPremLineURI -or $null -ne $CsUser.VoiceRoutingPolicy)) {
-              return $true
-            }
-            else {
-              return $false
-            }
-            else {
-              if ($CsUser.VoicePolicy -eq 'HybridVoice' -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -eq $CsUser.OnlineVoiceRoutingPolicy -and $null -ne $CsUser.VoiceRoutingPolicy -and $null -ne $CsUser.OnPremLineURI) {
-                return $true
-              }
-              else {
-                return $false
-              }
-            }
-          }
-        }
-
-        'CallingPlans' {
-          if ($PSBoundParameters.ContainsKey('Partial')) {
-            if ($CsUser.VoicePolicy -eq 'BusinessVoice' -or (Test-TeamsUserHasCallPlan $User) -or $null -ne $CsUser.TelephoneNumber) {
-              return $true
-            }
-            else {
-              return $false
-            }
-          }
-          else {
-            if ($CsUser.VoicePolicy -eq 'BusinessVoice' -and (Test-TeamsUserHasCallPlan $User) -and $true -eq $CsUser.EnterpriseVoiceEnabled -and $null -ne $CsUser.TelephoneNumber) {
-              return $true
-            }
-            else {
-              return $false
-            }
-          }
-          else {
-            return $false
-          }
+        else {
+          Write-Warning -Message "User '$User'- Enterprise Voice - Not enabled"
         }
       }
+
+      if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
+        Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
+        $CallPlanPresent = Test-TeamsUserHasCallPlan $User
+        if ( $Verbose -or -not $Called ) {
+          if ($CallPlanPresent) {
+            Write-Verbose -Message "User '$User' - Calling Plan - OK"
+          }
+          else {
+            Write-Warning -Message "User '$User' - Calling Plan - Not assigned"
+          }
+        }
+
+        $TelPresent = ('' -ne $CsUser.TelephoneNumber)
+        if ( $Verbose -or -not $Called ) {
+          if ($TelPresent) {
+            Write-Verbose -Message "User '$User' - Phone Number - OK"
+          }
+          else {
+            Write-Warning -Message "User '$User' - Phone Number - Not assigned"
+          }
+        }
+
+        $FullyConfigured = ($CallPlanPresent -and $EVenabled -and $TelPresent)
+        if ($PSBoundParameters.ContainsKey('Partial')) {
+          $PartiallyConfigured = (($CallPlanPresent -or $EVenabled -or $TelPresent) -and -not $FullyConfigured)
+          return $PartiallyConfigured
+        }
+        else {
+          return $FullyConfigured
+        }
+      }
+      elseif ($CsUser.VoicePolicy -eq 'HybridVoice') {
+        Write-Verbose -Message "VoicePolicy found as 'HybridVoice'"
+
+        $VRPPresent = ($null -ne $CsUser.VoiceRoutingPolicy)
+        $OVPPresent = ($null -ne $CsUser.OnlineVoiceRoutingPolicy)
+        if ( $Verbose -or -not $Called ) {
+          if ($VRPPresent) {
+            Write-Verbose -Message "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
+            Write-Verbose -Message "User '$User' - Voice Routing - Voice Routing Policy - Assigned"
+          }
+          else {
+            Write-Verbose -Message "User '$User' - Voice Routing - Voice Routing Policy - Not assigned"
+          }
+          if ($OVPPresent) {
+            Write-Verbose -Message "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
+            Write-Verbose -Message "User '$User' - Voice Routing - Online Voice Routing Policy - Assigned"
+          }
+          else {
+            Write-Verbose -Message "User '$User' - Voice Routing - Online Voice Routing Policy - Not Assigned"
+          }
+          if (-not $VRPPresent -and -not $OVPPresent) {
+            Write-Warning -Message "User '$User' - Voice Routing - Neither VoiceRoutingPolicy nor OnlineVoiceRoutingPolicy assigned"
+          }
+        }
+        $Routing = ($VRPPresent -or $OVPPresent)
+        $TelPresent = ('' -ne $CsUser.OnPremLineURI)
+        if ( $Verbose -or -not $Called ) {
+          if ($TelPresent) {
+            Write-Verbose -Message "User '$User' - Phone Number - OK"
+          }
+          else {
+            Write-Warning -Message "User '$User' - Phone Number - Not assigned"
+          }
+        }
+
+        $FullyConfigured = ($Routing -and $EVenabled -and $TelPresent)
+        if ($PSBoundParameters.ContainsKey('Partial')) {
+          $PartiallyConfigured = (($Routing -or $EVenabled -or $TelPresent) -and -not $FullyConfigured)
+          return $PartiallyConfigured
+        }
+        else {
+          return $FullyConfigured
+        }
+      }
+      else {
+        Write-Verbose -Message "InterpretedVoiceConfigType is 'Unknown' (undetermined)"
+        return $false
+      }
+
     }
   } #process
 

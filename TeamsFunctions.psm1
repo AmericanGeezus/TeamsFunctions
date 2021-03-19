@@ -201,8 +201,8 @@ if ($env:username -eq 'Julia.Horvath') {
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, Connect-SkypeOnline, Enable-Ev, Set-ServicePlan, `
-  Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, `
+Export-ModuleMember -Alias con, dis, pol, ear, cur, Connect-SkypeOnline, Enable-Ev, Set-ServicePlan, `
+  Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   #Test-TeamsTDP, `
   Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, `
