@@ -12,6 +12,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Enable-MyAzureAdAdminRole` (`ear`): Wrap for `Enable-AzureAdAdminRole` which works on its own too, but makes it available to be called in other functions
 - `Get-MyAzureAdAdminRole`: Wrap for `Get-AzureAdAdminRole` to query Admin Roles for the currently connected User
 - `Get-CurrentConnection` (`cur`): Helper Function for Connect-Me. Queries connections to AzureAd, MicrosoftTeams and Exchange and returns an Object with Information
+- `Assert-TeamsUserVoiceConfig`: New Script to validate Configuration for TDR and Calling Plans
 
 ### Updated
 
@@ -22,6 +23,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Connect-Me`: Reworked data gathering at the end and output for `-NoFeedback` (now returns a barebones Account, Connection and TeamsUpgradeEffectiveMode) for use in `Assert-MicrosoftTeamsConnection`.
 - `Enable-AzureAdAdminRole`: Added Debug function & Call Stack
 - `Get-AzureAdAdminRole`: Added Debug function, Corrected ActiveUntil and Added ActiveSince
+- `Test-TeamsUserVoiceConfig`: Finally lifting this one out of RC - Complete revamp based on Microsoft Configuration Guidelines. Simplified usage (removed Scope(TDR/CallingPlans)).
 
 ---------------------------------------------
 
