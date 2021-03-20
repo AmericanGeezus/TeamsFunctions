@@ -24,6 +24,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Enable-AzureAdAdminRole`: Added Debug function & Call Stack
 - `Get-AzureAdAdminRole`: Added Debug function, Corrected ActiveUntil and Added ActiveSince
 - `Test-TeamsUserVoiceConfig`: Finally lifting this one out of RC - Complete revamp based on Microsoft Configuration Guidelines. Simplified usage (removed Scope(TDR/CallingPlans)).
+- All internal license queries are now performed by `Get-AzureAdUserLicense` because the default output for `Get-TeamsUserLicense` is now reduced to Teams only Licenses.
+NOTE: The Output Object is the same, just the default behaviour between the two CmdLets is different
 
 ---------------------------------------------
 
