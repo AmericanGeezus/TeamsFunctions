@@ -155,7 +155,7 @@ function Remove-TeamsUserVoiceConfig {
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
-        $CsUserLicense = Get-TeamsUserLicense $User
+        $CsUserLicense = Get-AzureAdUserLicense $User
 
         if ($null -ne $CsUserLicense.Licenses) {
           # Determine Call Plan Licenses - Building Scope

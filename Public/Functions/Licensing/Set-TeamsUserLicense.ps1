@@ -510,7 +510,7 @@ function Set-TeamsUserLicense {
 
       # Output
       if ($PassThru) {
-        Get-TeamsUserLicense -Identity $Identity
+        Get-TeamsUserLicense -Identity $Identity -DisplayAll
       }
 
     }

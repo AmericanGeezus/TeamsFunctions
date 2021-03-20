@@ -249,4 +249,4 @@ function Get-AzureAdUserLicense {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsUserLicense
+} #Get-AzureAdUserLicense

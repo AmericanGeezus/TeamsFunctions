@@ -296,7 +296,7 @@ function Set-AzureAdUserLicenseServicePlan {
 
       # Output
       if ($PassThru) {
-        Get-TeamsUserLicense -Identity $Identity
+        Get-AzureAdUserLicenseServicePlan -Identity $Identity
       }
     }
   } #process

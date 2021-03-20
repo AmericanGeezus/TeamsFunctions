@@ -163,4 +163,4 @@ function Get-AzureAdUserLicenseServicePlan {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsUserLicenseServicePlan
+} #Get-AzureAdUserLicenseServicePlan

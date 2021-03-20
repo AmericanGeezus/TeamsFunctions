@@ -186,7 +186,7 @@ function Set-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message 'Querying User Account'
       $CsUser = Get-TeamsUserVoiceConfig "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
-      $UserLic = Get-TeamsUserLicense -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
+      $UserLic = Get-AzureAdUserLicense -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
     catch {
@@ -207,7 +207,7 @@ function Set-TeamsUserVoiceConfig {
           try {
             Write-Information "TRYING:  User '$Identity' - PhoneSystem License is assigned - ServicePlan PhoneSystem disabled - Trying to activate"
             Set-AzureAdLicenseServicePlan -Identity $CsUser.UserPrincipalName -Enable MCOEV -ErrorAction Stop
-            if (-not (Get-TeamsUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
+            if (-not (Get-AzureAdUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
               throw
             }
           }

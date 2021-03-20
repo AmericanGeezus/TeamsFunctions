@@ -100,7 +100,7 @@ function Assert-TeamsCallableEntity {
         try {
           Write-Information "Target '$Identity' found and licensed, but PhoneSystem is disabled. Trying to Enable"
           Set-AzureAdLicenseServicePlan -Identity "$Identity" -Enable MCOEV
-          $UserLicense = Get-TeamsUserLicense $Identity
+          $UserLicense = Get-AzureAdUserLicense $Identity
           if ( $UserLicense.PhoneSystemStatus -ne "Success" -or $UserLicense.PhoneSystemStatus -ne "PendingInput") {
             throw
           }

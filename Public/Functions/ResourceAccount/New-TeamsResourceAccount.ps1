@@ -477,7 +477,7 @@ function New-TeamsResourceAccount {
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $ResourceAccountLicense = Get-TeamsUserLicense -Identity $UPN
+      $ResourceAccountLicense = Get-AzureAdUserLicense -Identity $UPN
 
       # readable Application type
       $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId

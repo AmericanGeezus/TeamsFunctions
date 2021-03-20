@@ -266,7 +266,7 @@ function Get-TeamsCommonAreaPhone {
       $step++
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $CommonAreaPhoneLicense = Get-TeamsUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
+      $CommonAreaPhoneLicense = Get-AzureAdUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
 
       # Phone Number Type
       $Operation = 'Parsing PhoneNumber'
