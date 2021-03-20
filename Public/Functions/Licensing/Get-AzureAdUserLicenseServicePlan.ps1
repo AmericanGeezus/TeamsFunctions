@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-#TODO Add Identity? Enable to pipe? Enable to find it with Get-TeamsUserVoiceConfig?
+#CHECK whether to add Identity? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
 
 function Get-AzureAdUserLicenseServicePlan {
   <#
@@ -13,16 +13,14 @@ function Get-AzureAdUserLicenseServicePlan {
     Returns License information (ServicePlans) for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all ServicePlans (for Licenses assigned) for a specific Object
-		Returns UPN, Name, License, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
 	.PARAMETER Identity
-		The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
-    Aliases include: "UPN","UserPrincipalName","Username"
+		The Identity, UserPrincipalname or UserName for the user.
   .PARAMETER FilterRelevantForTeams
-    Filters the output and displays only Licenses relevant Teams Plans
+    Filters the output and displays only Licenses relevant Teams Service Plans
   .PARAMETER FilterUnsuccessful
     Filters the output and displays only ServicePlans that don't have the ProvisioningStatus "Success"
 	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan -Identity John@domain.com
+		Get-AzureAdUserLicenseServicePlan [-Identity] John@domain.com
 		Displays all Service Plans assigned through Licenses to User John@domain.com
 	.EXAMPLE
 		Get-AzureAdUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
@@ -71,15 +69,18 @@ function Get-AzureAdUserLicenseServicePlan {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
-    [Alias('UPN', 'UserPrincipalName', 'Username')]
+    [Alias('UserPrincipalName', 'Username', 'UPN')]
     [string[]]$Identity,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Displays all ServicePlans')]
-    [switch]$DisplayAll
+    [Parameter(HelpMessage = 'Displays only Service Plans relevant to Teams')]
+    [switch]$FilterRelevantForTeams,
+
+    [Parameter(HelpMessage = 'Displays only Service Plans that are not successfully provisioned')]
+    [switch]$FilterUnsuccessful
   ) #param
 
   begin {
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -97,26 +98,12 @@ function Get-AzureAdUserLicenseServicePlan {
     $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
 
     # Loading License Array
-    if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
-      $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
-    }
-
-    $AllLicenses = $null
-    $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
-
     if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) {
       $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue
     }
 
     $AllServicePlans = $null
     $AllServicePlans = $global:TeamsFunctionsMSAzureAdLicenseServicePlans
-
-
-    #Idea: Get-TeamsUserLicenseServicePlan
-    # Input: UPN, ServicePlan to filter (optional)
-    # Output: Object (as table?) List of assigned Service Plans (license, Plan, status)
-
-    (get-TeamsUserLicense -Identity x -DisplayAll).allserviceplans | Where-Object { $_.provisioningstatus -NE 'success' -and $_.RelevantForTeams -eq $true } | Select-Object ServicePlanName
 
   } #begin
 
@@ -135,79 +122,41 @@ function Get-AzureAdUserLicenseServicePlan {
 
       [string]$DisplayName = $UserObject.DisplayName
 
-      # Querying Licenses
-      $assignedSkuPartNumbers = $UserLicenseDetail.SkuPartNumber
-      [System.Collections.ArrayList]$UserLicenses = @()
-      foreach ($PartNumber in $assignedSkuPartNumbers) {
-        $Lic = $null
-        $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ $Partnumber
-        if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
-          [void]$UserLicenses.Add($Lic)
-        }
-      }
-      $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, ProductName
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$LicensesProductNames = $UserLicensesSorted.ProductName
-      }
-      else {
-        [string]$LicensesProductNames = ($UserLicensesSorted | Where-Object { $_.IncludesTeams -or $_.IncludesPhoneSystem } ).ProductName
-      }
-
       # Querying Service Plans
       $assignedServicePlans = $UserLicenseDetail.ServicePlans | Sort-Object ServicePlanName
       [System.Collections.ArrayList]$UserServicePlans = @()
       foreach ($ServicePlan in $assignedServicePlans) {
         $Lic = $null
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
-        if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
-          $LicObj = [PSCustomObject][ordered]@{
-            ProductName        = if ($Lic.ProductName) { $Lic.ProductName } else { $ServicePlan.ServicePlanName }
-            ServicePlanName    = $ServicePlan.ServicePlanName
-            ProvisioningStatus = $ServicePlan.ProvisioningStatus
-            RelevantForTeams   = $Lic.RelevantForTeams
+        if ($null -ne $Lic) {
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
-          [void]$UserServicePlans.Add($LicObj)
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name): ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          }
+
+          if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not $Lic.RelevantForTeams) {
+            Write-Verbose -Message "Switch FilterRelevantForTeams: ServicePlan marked not relevant for Teams: '$($ServicePlan.ServicePlanName)'"
+          }
+          elseif ($PSBoundParameters.ContainsKey('FilterUnsuccessful') -and $ServicePlan.ProvisioningStatus -eq 'Success') {
+            Write-Verbose -Message "Switch FilterUnsuccessful: ServicePlan successfully provisioned: '$($ServicePlan.ServicePlanName)'"
+          }
+          else {
+            $LicObj = [PSCustomObject][ordered]@{
+              ProductName        = if ($Lic.ProductName) { $Lic.ProductName } else { $ServicePlan.ServicePlanName }
+              ServicePlanName    = $ServicePlan.ServicePlanName
+              ProvisioningStatus = $ServicePlan.ProvisioningStatus
+              RelevantForTeams   = $Lic.RelevantForTeams
+            }
+            [void]$UserServicePlans.Add($LicObj)
+          }
         }
       }
       $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
-      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name): UserServicePlans:", ($UserServicePlans | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
-      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name): UserServicePlansSorted:", ($UserServicePlansSorted | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
 
-      #TODO Keep but output relevant stuff
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$ServicePlansProductNames = $UserServicePlansSorted.ProductName
-      }
-      else {
-        #[string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object { $_.RelevantForTeams }).ProductName
-        [string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName
-      }
-
-
-      $output = [PSCustomObject][ordered]@{
-        UserPrincipalName        = $User
-        DisplayName              = $DisplayName
-        ObjectId                 = $UserObject.ObjectId
-        UsageLocation            = $UserObject.UsageLocation
-        Licenses                 = $LicensesProductNames
-        ServicePlans             = $ServicePlansProductNames
-        AudioConferencing        = $AudioConfLicense
-        CommoneAreaPhoneLicense  = $CommonAreaPhoneLic
-        PhoneSystemVirtualUser   = $PhoneSystemVirtual
-        PhoneSystem              = $PhoneSystemLicense
-        PhoneSystemStatus        = $PhoneSystemStatus
-        CallingPlanDomestic120   = $CallingPlanDom120
-        CallingPlanDomestic      = $CallingPlanDom
-        CallingPlanInternational = $CallingPlanInt
-        CommunicationsCredits    = $CommunicationCredits
-        CallingPlan              = $currentCallingPlan
-      }
-
-      Write-Information "Service Plans for User '$User':"
-      Write-Output $output
+      Write-Information "'$User' - Service Plans for User '$DisplayName':"
+      Write-Output $UserServicePlansSorted
     }
   } #process
 
