@@ -5,52 +5,52 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsOVP
+# Get-TeamsIPP
 
 ## SYNOPSIS
-Lists all Online Voice Routing Policies by Name
+Lists all IP Phone Policies by Name
 
 ## SYNTAX
 
 ```
-Get-TeamsOVP [[-Identity] <String>] [<CommonParameters>]
+Get-TeamsIPP [[-Identity] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-To quickly find Online Voice Routing Policies to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
+To quickly find IP Phone Policies to assign, an Alias-Function to Get-CsTeamsIPPhonePolicy
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsOVP
+Get-TeamsIPP
 ```
 
-Returns the Object for all Online Voice Routing Policies (except "Global")
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy, if more than 3 results are found, only names are returned
+Returns the Object for all IP Phone Policies (including "Global")
+Behaviour like: Get-CsTeamsIPPhonePolicy, showing only a few Parameters
 
 ### EXAMPLE 2
 ```
-Get-TeamsOVP -Identity OVP-EMEA-National
+Get-TeamsIPP -Identity CommonAreaPhone
 ```
 
-Returns the Object for the Online Voice Routing Policy "OVP-EMEA-National" (provided it exists).
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"
+Returns the Object for the Online Voice Route "CommonAreaPhone" (provided it exists).
+Behaviour like: Get-CsTeamsIPPhonePolicy -Identity "CommonAreaPhone"
 
 ### EXAMPLE 3
 ```
-Get-TeamsOVP -Identity OVP-EMEA-*
+Get-TeamsIPP -Identity CommonAreaPhone-*
 ```
 
-Lists Online Voice Routes with "OVP-EMEA-" in the Name
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
+Lists Online Voice Routes with "CommonAreaPhone" in the Name
+Behaviour like: Get-CsTeamsIPPhonePolicy -Filter "*CommonAreaPhone*"
 
 ## PARAMETERS
 
 ### -Identity
 String.
-Name or part of the Voice Routing Policy.
-Can be omitted to list Names of all Policies (except "Global").
+Name or part of the IP Phone Policy.
+Can be omitted to list Names of all Policies (including "Global").
 If provided without a '*' in the name, an exact match is sought.
 
 ```yaml
@@ -74,9 +74,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## NOTES
 This script is indulging the lazy admin.
-It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
+It behaves like Get-CsOnlineVoiceRoute with a twist:
 If more than three results are found, a reduced set of Parameters are shown for better visibility:
-Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages
+Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
 
 ## RELATED LINKS
 

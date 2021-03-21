@@ -5,52 +5,52 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsOVP
+# Get-TeamsCP
 
 ## SYNOPSIS
-Lists all Online Voice Routing Policies by Name
+Lists all Teams Calling Policies by Name
 
 ## SYNTAX
 
 ```
-Get-TeamsOVP [[-Identity] <String>] [<CommonParameters>]
+Get-TeamsCP [[-Identity] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-To quickly find Online Voice Routing Policies to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
+To quickly find Teams Calling Policies to assign, an Alias-Function to Get-CsTeamsCallingPolicy
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsOVP
+Get-TeamsCP
 ```
 
-Returns the Object for all Online Voice Routing Policies (except "Global")
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy, if more than 3 results are found, only names are returned
+Returns the Object for all Teams Calling Policies (including "Global")
+Behaviour like: Get-CsTeamsCallingPolicy, showing only a few Parameters
 
 ### EXAMPLE 2
 ```
-Get-TeamsOVP -Identity OVP-EMEA-National
+Get-TeamsCP -Identity AllowCallingPreventTollBypass
 ```
 
-Returns the Object for the Online Voice Routing Policy "OVP-EMEA-National" (provided it exists).
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"
+Returns the Object for the Teams Calling Policy "AllowCallingPreventTollBypass" (provided it exists).
+Behaviour like: Get-CsTeamsCallingPolicy -Identity "AllowCallingPreventTollBypass"
 
 ### EXAMPLE 3
 ```
-Get-TeamsOVP -Identity OVP-EMEA-*
+Get-TeamsCP -Identity Allow*
 ```
 
-Lists Online Voice Routes with "OVP-EMEA-" in the Name
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
+Lists Online Voice Routes with "Allow" in the Name
+Behaviour like: Get-CsTeamsCallingPolicy -Filter "*Allow*"
 
 ## PARAMETERS
 
 ### -Identity
 String.
-Name or part of the Voice Routing Policy.
-Can be omitted to list Names of all Policies (except "Global").
+Name or part of the Teams Calling Policy.
+Can be omitted to list Names of all Policies (including "Global").
 If provided without a '*' in the name, an exact match is sought.
 
 ```yaml
@@ -74,9 +74,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## NOTES
 This script is indulging the lazy admin.
-It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
+It behaves like Get-CsOnlineVoiceRoute with a twist:
 If more than three results are found, a reduced set of Parameters are shown for better visibility:
-Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages
+Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType
 
 ## RELATED LINKS
 

@@ -39,6 +39,7 @@
   21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
   21.02       FEB 2021 Release - Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector
   21.03       MAR 2021 Release - Switched to support for MicrosoftTeams v2.0.0.0 - Removed SkypeOnline, Bugfixes
+  21.04       APR 2021 Release - Improved stability to Connect Scripts, Added more query scripts (Licensing, Policies), Script improvements, Bugfixes
 
 .LINK
   https://github.com/DEberhardt/TeamsFunctions/tree/master/docs

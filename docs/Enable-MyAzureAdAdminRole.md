@@ -5,29 +5,27 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Assert-MicrosoftTeamsConnection
+# Enable-MyAzureAdAdminRole
 
 ## SYNOPSIS
-Asserts an established Connection to MicrosoftTeams
+Activates Azure Ad Admin Roles for currently connected User
 
 ## SYNTAX
 
 ```
-Assert-MicrosoftTeamsConnection [<CommonParameters>]
+Enable-MyAzureAdAdminRole [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Tests a connection to MicrosoftTeams is established.
+Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
+  Requires a Connection to AzureAd
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Assert-MicrosoftTeamsConnection
+Enable-MyAzureAdAdminRole
 ```
-
-Will run Test-MicrosoftTeamsConnection and, if successful, stops.
-  If unsuccessful, displays request to create a new session and stops.
 
 ## PARAMETERS
 
@@ -36,16 +34,26 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
 ## OUTPUTS
 
-### System.Boolean
+### Boolean if called
+### None if executed from shell
 ## NOTES
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[Assert-AzureAdConnection]()
+[Connect-Me]()
 
-[Get-CurrentConnectionInfo]()
+[Assert-MicrosoftTeamsConnection]()
+
+[Enable-AzureAdAdminRole]()
+
+[Enable-MyAzureAdAdminRole]()
+
+[Get-AzureAdAdminRole]()
+
+[Get-MyAzureAdAdminRole]()
 

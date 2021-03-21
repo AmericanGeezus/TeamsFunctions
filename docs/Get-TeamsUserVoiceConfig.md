@@ -109,7 +109,7 @@ Parameters are additive, meaning with each DiagnosticLevel more information is d
 This script takes a select set of Parameters from AzureAD, Teams & Licensing.
 For a full parameterset, please run:
 - for AzureAD:    "Find-AzureAdUser $Identity | FL"
-- for Licensing:  "Get-TeamsUserLicense $Identity"
+- for Licensing:  "Get-AzureAdUserLicense $Identity"
 - for Teams:      "Get-CsOnlineUser $Identity"
 
 ## RELATED LINKS

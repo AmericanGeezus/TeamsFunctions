@@ -118,5 +118,7 @@ This Script is indiscriminate against the User Type, all AzureAD User Objects ca
 
 [Get-TeamsUserLicense]()
 
+[Get-TeamsUserLicenseServicePlan]()
+
 [Set-TeamsUserLicense]()
 

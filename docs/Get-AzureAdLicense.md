@@ -70,9 +70,15 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 
 [Get-TeamsUserLicense]()
 
+[Get-TeamsUserLicenseServicePlan]()
+
 [Set-TeamsUserLicense]()
 
 [Test-TeamsUserLicense]()
+
+[Get-AzureAdUserLicense]()
+
+[Get-AzureAdUserLicenseServicePlan]()
 
 [Get-AzureAdLicense]()
 

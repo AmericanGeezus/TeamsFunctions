@@ -83,3 +83,11 @@ This CmdLet behaves slightly different than the others, due to the nature of Pst
 
 [Get-TeamsVNR]()
 
+[Get-TeamsIPP]()
+
+[Get-TeamsCP]()
+
+[Get-TeamsECP]()
+
+[Get-TeamsECRP]()
+

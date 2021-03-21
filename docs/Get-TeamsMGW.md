@@ -27,6 +27,7 @@ Get-TeamsMGW
 ```
 
 Lists Identities (Names) of all Online Pstn Gateways
+Behaviour like: Get-CsOnlineVoiceRoute
 
 ### EXAMPLE 2
 ```
@@ -34,12 +35,23 @@ Get-TeamsMGW -Identity PstnGateway1.domain.com
 ```
 
 Lists Online Pstn Gateway as Get-CsOnlinePstnGateway does (provided it exists).
+Behaviour like: Get-CsOnlineVoiceRoute -Identity "PstnGateway1.domain.com"
+
+### EXAMPLE 3
+```
+Get-TeamsOVR -Identity EMEA*
+```
+
+Lists Online Voice Routes with "EMEA" in the Name
+Behaviour like: Get-CsOnlineVoiceRoute -Filter "*EMEA*"
 
 ## PARAMETERS
 
 ### -Identity
-If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
-If not provided, lists Identities of all Online Pstn Gateways
+String.
+FQDN or part of the FQDN for a Pstn Gateway.
+Can be omitted to list Names of all Gateways
+If provided without a '*' in the name, an exact match is sought.
 
 ```yaml
 Type: String
@@ -61,8 +73,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
-Without parameters, it executes the following string:
-Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
+This script is indulging the lazy admin.
+It behaves like Get-CsTeamsCallingPolicy with a twist:
+If more than three results are found, a reduced set of Parameters are shown for better visibility:
+Get-CsOnlinePSTNGateway | Select-Object Identity, SipSignalingPort, Enabled, MediaByPass
 
 ## RELATED LINKS
 
@@ -79,4 +93,12 @@ Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
 [Get-TeamsTDP]()
 
 [Get-TeamsVNR]()
+
+[Get-TeamsIPP]()
+
+[Get-TeamsCP]()
+
+[Get-TeamsECP]()
+
+[Get-TeamsECRP]()
 

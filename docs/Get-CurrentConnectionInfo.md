@@ -5,29 +5,28 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Assert-MicrosoftTeamsConnection
+# Get-CurrentConnectionInfo
 
 ## SYNOPSIS
-Asserts an established Connection to MicrosoftTeams
+Queries AzureAd, MicrosoftTeams and ExchangeOnline for currently established Sessions
 
 ## SYNTAX
 
 ```
-Assert-MicrosoftTeamsConnection [<CommonParameters>]
+Get-CurrentConnectionInfo [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Tests a connection to MicrosoftTeams is established.
+Returns an object displaying all currently connected PowerShell Sessions and basic output about the Tenant.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Assert-MicrosoftTeamsConnection
+Get-CurrentConnectionInfo
 ```
 
-Will run Test-MicrosoftTeamsConnection and, if successful, stops.
-  If unsuccessful, displays request to create a new session and stops.
+Will Test current connection to AzureAd, MicrosoftTeams and ExchangeOnline and displays simple output object.
 
 ## PARAMETERS
 
@@ -45,7 +44,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[Assert-AzureAdConnection]()
+[Connect-Me]()
 
 [Get-CurrentConnectionInfo]()
 

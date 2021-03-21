@@ -5,40 +5,39 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsUserLicense
+# Get-TeamsUserLicenseServicePlan
 
 ## SYNOPSIS
-Returns Teams License information for an Object in AzureAD
+Returns License information (ServicePlans) for an Object in AzureAD
 
 ## SYNTAX
 
 ```
-Get-TeamsUserLicense [-Identity] <String[]> [-DisplayAll] [<CommonParameters>]
+Get-TeamsUserLicenseServicePlan [-Identity] <String[]> [-DisplayAll] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Returns an Object containing all Teams related Licenses found for a specific Object
-Licenses and ServicePlans are nested in the respective parameters for further investigation
+Returns an Object containing all Teams related ServicePlans (for Licenses assigned) for a specific Object
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsUserLicense [-Identity] John@domain.com
+Get-TeamsUserLicenseServicePlan [-Identity] John@domain.com
 ```
 
 Displays all licenses assigned to User John@domain.com
 
 ### EXAMPLE 2
 ```
-Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
+Get-TeamsUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
 ```
 
 Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 
 ### EXAMPLE 3
 ```
-Import-Csv User.csv | Get-TeamsUserLicense
+Import-Csv User.csv | Get-TeamsUserLicenseServicePlan
 ```
 
 Displays all licenses assigned to Users from User.csv, Column Identity.
@@ -47,7 +46,8 @@ Displays all licenses assigned to Users from User.csv, Column Identity.
 ## PARAMETERS
 
 ### -Identity
-The Identity, UserPrincipalname or UserName for the user.
+The Identity/UPN/sign-in address for the user entered in the format \<name\>@\<domain\>.
+  Aliases include: "UPN","UserPrincipalName","Username"
 
 ```yaml
 Type: String[]
@@ -62,7 +62,8 @@ Accept wildcard characters: False
 ```
 
 ### -DisplayAll
-Displays all Licenses, not only identified or relevant Teams Licenses
+Displays all ServicePlans, not only relevant Teams Service Plans
+Also displays AllLicenses and AllServicePlans object for further processing
 
 ```yaml
 Type: SwitchParameter

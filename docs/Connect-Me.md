@@ -119,7 +119,7 @@ For AzureAD, no particular role is needed for connection and query.
 Get-CmdLets are available without an Admin-role.
 For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator)
 Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline.
-The Skype for Business Legacy Administrator Roles may still be required to connect.
+The Skype for Business Legacy Administrator Roles are still required to create the PsSession.
 Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
 Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
 

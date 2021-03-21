@@ -5,40 +5,47 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsUserLicense
+# Get-AzureAdUserLicense
 
 ## SYNOPSIS
-Returns Teams License information for an Object in AzureAD
+Returns License information for an Object in AzureAD
 
 ## SYNTAX
 
 ```
-Get-TeamsUserLicense [-Identity] <String[]> [-DisplayAll] [<CommonParameters>]
+Get-AzureAdUserLicense [-Identity] <String[]> [-FilterRelevantForTeams] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Returns an Object containing all Teams related Licenses found for a specific Object
+Returns an Object containing all Licenses found for a specific Object
 Licenses and ServicePlans are nested in the respective parameters for further investigation
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsUserLicense [-Identity] John@domain.com
+Get-AzureAdUserLicense [-Identity] John@domain.com
 ```
 
 Displays all licenses assigned to User John@domain.com
 
 ### EXAMPLE 2
 ```
-Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
+Get-AzureAdUserLicense -Identity John@domain.com,Jane@domain.com
 ```
 
 Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 
 ### EXAMPLE 3
 ```
-Import-Csv User.csv | Get-TeamsUserLicense
+Get-AzureAdUserLicense -Identity Jane@domain.com -FilterRelevantForTeams
+```
+
+Displays all relevant Teams licenses assigned to Jane@domain.com
+
+### EXAMPLE 4
+```
+Import-Csv User.csv | Get-AzureAdUserLicense
 ```
 
 Displays all licenses assigned to Users from User.csv, Column Identity.
@@ -61,8 +68,8 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -DisplayAll
-Displays all Licenses, not only identified or relevant Teams Licenses
+### -FilterRelevantForTeams
+Filters the output and displays only Licenses relevant to Teams
 
 ```yaml
 Type: SwitchParameter

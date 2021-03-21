@@ -5,52 +5,52 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsOVP
+# Get-TeamsECRP
 
 ## SYNOPSIS
-Lists all Online Voice Routing Policies by Name
+Lists all Emergency Voice Routing Policies by Name
 
 ## SYNTAX
 
 ```
-Get-TeamsOVP [[-Identity] <String>] [<CommonParameters>]
+Get-TeamsECRP [[-Identity] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-To quickly find Online Voice Routing Policies to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
+To quickly find Emergency Voice Routing Policies to assign, an Alias-Function to Get-CsTeamsEmergencyCallRoutingPolicy
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsOVP
+Get-TeamsECRP
 ```
 
-Returns the Object for all Online Voice Routing Policies (except "Global")
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy, if more than 3 results are found, only names are returned
+Returns the Object for all Emergency Voice Routing Policies (including "Global")
+Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy
 
 ### EXAMPLE 2
 ```
-Get-TeamsOVP -Identity OVP-EMEA-National
+Get-TeamsECRP -Identity ECRP-US
 ```
 
-Returns the Object for the Online Voice Routing Policy "OVP-EMEA-National" (provided it exists).
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"
+Returns the Object for the Emergency Voice Route "ECRP-US" (provided it exists).
+Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy -Identity "ECRP-US"
 
 ### EXAMPLE 3
 ```
-Get-TeamsOVP -Identity OVP-EMEA-*
+Get-TeamsECRP -Identity ECRP-US-*
 ```
 
-Lists Online Voice Routes with "OVP-EMEA-" in the Name
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
+Lists Emergency Voice Routes with "ECRP-US-" in the Name
+Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy -Filter "*ECRP-US-*"
 
 ## PARAMETERS
 
 ### -Identity
 String.
 Name or part of the Voice Routing Policy.
-Can be omitted to list Names of all Policies (except "Global").
+Can be omitted to list Names of all Policies (including "Global").
 If provided without a '*' in the name, an exact match is sought.
 
 ```yaml
@@ -73,10 +73,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
-This script is indulging the lazy admin.
-It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
-If more than three results are found, a reduced set of Parameters are shown for better visibility:
-Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages
+If more than three results are found, a reordered set of Parameters are shown for better visibility:
+Get-CsTeamsEmergencyCallRoutingPolicy | Select-Object Identity, Description, AllowEnhancedEmergencyServices, EmergencyNumbers
 
 ## RELATED LINKS
 
@@ -98,7 +96,7 @@ Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Obj
 
 [Get-TeamsCP]()
 
-[Get-TeamsECP]()
+[Get-TeamsECRP]()
 
 [Get-TeamsECRP]()
 

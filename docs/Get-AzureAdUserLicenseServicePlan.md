@@ -5,43 +5,57 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Get-TeamsUserLicense
+# Get-AzureAdUserLicenseServicePlan
 
 ## SYNOPSIS
-Returns Teams License information for an Object in AzureAD
+Returns License information (ServicePlans) for an Object in AzureAD
 
 ## SYNTAX
 
 ```
-Get-TeamsUserLicense [-Identity] <String[]> [-DisplayAll] [<CommonParameters>]
+Get-AzureAdUserLicenseServicePlan [-Identity] <String[]> [-FilterRelevantForTeams] [-FilterUnsuccessful]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Returns an Object containing all Teams related Licenses found for a specific Object
-Licenses and ServicePlans are nested in the respective parameters for further investigation
+Returns an Object containing all ServicePlans (for Licenses assigned) for a specific Object
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsUserLicense [-Identity] John@domain.com
+Get-AzureAdUserLicenseServicePlan [-Identity] John@domain.com
 ```
 
-Displays all licenses assigned to User John@domain.com
+Displays all Service Plans assigned through Licenses to User John@domain.com
 
 ### EXAMPLE 2
 ```
-Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
+Get-AzureAdUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
 ```
 
-Displays all licenses assigned to Users John@domain.com and Jane@domain.com
+Displays all Service Plans assigned through Licenses to Users John@domain.com and Jane@domain.com
 
 ### EXAMPLE 3
 ```
-Import-Csv User.csv | Get-TeamsUserLicense
+Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterRelevantForTeams
 ```
 
-Displays all licenses assigned to Users from User.csv, Column Identity.
+Displays all relevant Teams Service Plans assigned through Licenses to Jane@domain.com
+
+### EXAMPLE 4
+```
+Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterUnsuccessful
+```
+
+Displays all Service Plans assigned through Licenses to Jane@domain.com that are not provisioned successfully
+
+### EXAMPLE 5
+```
+Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan
+```
+
+Displays all Service Plans assigned through Licenses to Users from User.csv, Column Identity.
   The input file must have a single column heading of "Identity" with properly formatted UPNs.
 
 ## PARAMETERS
@@ -61,8 +75,23 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -DisplayAll
-Displays all Licenses, not only identified or relevant Teams Licenses
+### -FilterRelevantForTeams
+Filters the output and displays only Licenses relevant Teams Service Plans
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FilterUnsuccessful
+Filters the output and displays only ServicePlans that don't have the ProvisioningStatus "Success"
 
 ```yaml
 Type: SwitchParameter

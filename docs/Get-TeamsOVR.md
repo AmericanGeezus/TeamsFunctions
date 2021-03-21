@@ -43,7 +43,7 @@ Get-TeamsOVR -Identity OVR-EMEA-*
 ```
 
 Lists Online Voice Routes with "OVR-EMEA-" in the Name
-Behaviour like: Get-CsOnlineVoiceRoute -Filter "OVR-EMEA-"
+Behaviour like: Get-CsOnlineVoiceRoute -Filter "*OVR-EMEA-*"
 
 ## PARAMETERS
 
@@ -75,9 +75,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 This script is indulging the lazy admin.
 It behaves like Get-CsOnlineVoiceRoute with a twist:
-If more than 3 results are found, behaves like Get-CsOnlineVoiceRoute | Select Identity
-Without any parameters, it lists names only:
-Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute"  | Select-Object Name
+If more than three results are found, a reduced set of Parameters are shown for better visibility:
+Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList
 
 ## RELATED LINKS
 
@@ -94,4 +93,12 @@ Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute"  | Select-Object
 [Get-TeamsTDP]()
 
 [Get-TeamsVNR]()
+
+[Get-TeamsIPP]()
+
+[Get-TeamsCP]()
+
+[Get-TeamsECP]()
+
+[Get-TeamsECRP]()
 
