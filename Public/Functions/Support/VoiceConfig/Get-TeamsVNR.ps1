@@ -14,28 +14,41 @@ function Get-TeamsVNR {
   .DESCRIPTION
     To quickly find Tenant Dial Plans to assign, an Alias-Function to Get-CsTenantDialPlan
   .PARAMETER Identity
-    If provided, acts as an Alias to Get-CsTenantDialPlan, listing Normalisation Rules for this Dial Plan
+    String. Name or part of the Teams Dial Plan.
     If not provided, lists Identities of all Tenant Dial Plans (except "Global")
-  .PARAMETER Filter
-    Searches for all Tenant Dial Plans that contains the string in the Name.
+    If provided without a '*' in the name, an exact match is sought.
   .EXAMPLE
     Get-TeamsVNR
-    Lists Identities (Names) of all Tenant Dial Plans (except "Global")
+    Returns the Object for all Tenant Dial Plans (except "Global")
+    Behaviour like: Get-CsTenantDialPlan, showing only a few Parameters (no Normalization Rules)
   .EXAMPLE
     Get-TeamsVNR -Identity DP-HUN
-    Lists Tenant Dial Plan DP-HUN as Get-CsTenantDialPlan does.
-  .EXAMPLE
+    Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists).
+    Behaviour like: (Get-CsTenantDialPlan -Identity "DP-HUN").NormalizationRules
+    .EXAMPLE
     Get-TeamsVNR -Filter DP-HUN
-    Lists all Tenant Dials that contain the strign "DP-HUN" in the Name.
+    Filters all Tenant Dial Plans that contain the string "DP-HUN" in the Name.
+    Returns Tenant Dial Plans if more than 3 results are found.
+    Behaviour like: Get-CsTenantDialPlan -Identity "*DP-HUN*"
+    Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists).
+    Behaviour like: (Get-CsTenantDialPlan -Identity "*DP-HUN*").NormalizationRules
   .NOTES
     Without parameters, it executes the following string:
-    Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+    Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, Pattern, Translation, Description
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     Get-TeamsTDP
   .LINK
     Get-TeamsVNR
+  .LINK
+    Get-TeamsIPP
+  .LINK
+    Get-TeamsCP
+  .LINK
+    Get-TeamsECP
+  .LINK
+    Get-TeamsECRP
   .LINK
     Get-TeamsOVP
   .LINK
@@ -79,7 +92,8 @@ function Get-TeamsVNR {
     }
 
     if ( $Filtered.Count -gt 3) {
-      $Filtered = $Filtered | Select-Object Identity
+      Write-Warning -Message "More than 3 Tenant Dial Plans found. Displaying Tenant Dial Plan Names only."
+      $Filtered = $Filtered | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description
       return $Filtered
     }
     else {

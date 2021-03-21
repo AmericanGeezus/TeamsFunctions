@@ -22,17 +22,16 @@ function Get-TeamsOVP {
     Behaviour like: Get-CsOnlineVoiceRoutingPolicy, if more than 3 results are found, only names are returned
   .EXAMPLE
     Get-TeamsOVP -Identity OVP-EMEA-National
-    Returns the Object for the Online Voice Route "OVP-EMEA-National" (provided it exists).
+    Returns the Object for the Online Voice Routing Policy "OVP-EMEA-National" (provided it exists).
     Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"
   .EXAMPLE
     Get-TeamsOVP -Identity OVP-EMEA-*
     Lists Online Voice Routes with "OVP-EMEA-" in the Name
-    Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "OVP-EMEA-"
+    Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
-    If more than 3 results are found, behaves like Get-CsOnlineVoiceRoutingPolicy | Select Identity
-    Without any parameters, it lists names only:
-    Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity
+    If more than three results are found, a reduced set of Parameters are shown for better visibility:
+    Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -47,7 +46,14 @@ function Get-TeamsOVP {
     Get-TeamsTDP
   .LINK
     Get-TeamsVNR
-  #>
+  .LINK
+    Get-TeamsIPP
+  .LINK
+    Get-TeamsCP
+  .LINK
+    Get-TeamsECP
+  .LINK
+    Get-TeamsECRP  #>
 
   [CmdletBinding()]
   param (

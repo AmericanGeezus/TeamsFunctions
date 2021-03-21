@@ -47,12 +47,13 @@
   - [ ] Default forward to CQ (wrapper for New-AA, with Menu to Forward to CallTarget Queue)
   - [ ] Construct of 1 AA and 1 CQ, 2 RA, 2 RAA?
 - [ ] Continue to test Scripts
+- [ ] Add Argument Completer for all AudioFiles to expect them in C:\Temp: [ArgumentCompleter(C:\Temp\)]
 
 ## Licenses
 
 - [x] Figure out how to enable disabled plans
 - [ ] Evaluate Enable/Disable CmdLet rather (or in addition to) Set-AzureAdUserLicenseServicePlan
-- [ ] TBC
+- [x] Figure out ScriptMethod ToString
 
 ## Code Improvements
 
@@ -66,7 +67,7 @@
 - [ ] Add Supports Paging (First, Last) for Get Commands Get-TeamsCallQueue and Get-TeamsAutoAttendant at least!
 - [ ] Add Timestamp to Verbose steps when Processing multiple elements (just inside the ForEach)
 - [ ] Add Argument Completer to some functions, where appropriate: [ArgumentCompleter({(Get-Eventlog -List).log})]
-- [ ] Test for PowerShell 7
+- [ ] Add ScriptMethod ToString Method to other Get-CmdLets
 - [ ] TBC
 
 ## Pester

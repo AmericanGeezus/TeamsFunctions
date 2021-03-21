@@ -16,26 +16,35 @@ function Get-TeamsTDP {
   .PARAMETER Identity
     If provided, acts as an Alias to Get-CsTenantDialPlan, listing one Dial Plan
     If not provided, lists Identities of all Tenant Dial Plans (except "Global")
-  .PARAMETER Filter
-    Searches for all Tenant Dial Plans that contains the string.
   .EXAMPLE
     Get-TeamsTDP
-    Lists Identities (Names) of all Tenant Dial Plans (except "Global")
+    Returns the Object for all Tenant Dial Plans (except "Global")
+    Behaviour like: Get-CsTenantDialPlan, showing only a few Parameters (no Normalization Rules)
   .EXAMPLE
     Get-TeamsTDP -Identity DP-HUN
     Lists Tenant Dial Plan DP-HUN as Get-CsTenantDialPlan does.
   .EXAMPLE
     Get-TeamsTDP -Filter DP-HUN
-    Lists all Tenant Dials that contain the strign "DP-HUN" in the Name.
+    Lists all Tenant Dials that contain the strign "*DP-HUN*" in the Name.
   .NOTES
+    This script is indulging the lazy admin. It behaves like Get-CsTenantDialPlan with a twist:
+    If used without Parameter, a reduced set of Parameters are shown for better visibility:
     Without parameters, it executes the following string:
-    Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+    Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     Get-TeamsTDP
   .LINK
     Get-TeamsVNR
+  .LINK
+    Get-TeamsIPP
+  .LINK
+    Get-TeamsCP
+  .LINK
+    Get-TeamsECP
+  .LINK
+    Get-TeamsECRP
   .LINK
     Get-TeamsOVP
   .LINK
@@ -79,13 +88,9 @@ function Get-TeamsTDP {
     }
 
     if ( $Filtered.Count -gt 3) {
-      $Filtered = $Filtered | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description
-      return $Filtered | Sort-Object Identity
+      $Filtered = $Filtered | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList
     }
-    else {
-      return $Filtered | Sort-Object Identity
-    }
-
+    return $Filtered | Sort-Object Identity
   } #process
 
   end {

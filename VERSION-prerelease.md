@@ -13,6 +13,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Get-MyAzureAdAdminRole`: Wrap for `Get-AzureAdAdminRole` to query Admin Roles for the currently connected User
 - `Get-CurrentConnection` (`cur`): Helper Function for Connect-Me. Queries connections to AzureAd, MicrosoftTeams and Exchange and returns an Object with Information
 - `Assert-TeamsUserVoiceConfig`: New Script to validate Configuration for TDR and Calling Plans
+- `Get-TeamsCP`: Get-CsTeamsCallingPolicy in a new form
+- `Get-TeamsIPP`: Get-CsTeamsIpPhonePolicy in a new form
+- `Get-TeamsECP`: Get-CsTeamsEmergencyCallingPolicy in a new form
+- `Get-TeamsECRP`: Get-CsTeamsEmergencyCallRoutingPolicy in a new form
 
 ### Updated
 
@@ -26,6 +30,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Test-TeamsUserVoiceConfig`: Finally lifting this one out of RC - Complete revamp based on Microsoft Configuration Guidelines. Simplified usage (removed Scope(TDR/CallingPlans)).
 - All internal license queries are now performed by `Get-AzureAdUserLicense` because the default output for `Get-TeamsUserLicense` is now reduced to Teams only Licenses.
 NOTE: The Output Object is the same, just the default behaviour between the two CmdLets is different
+- Get-Helpers updated for OPU, OVP, OVR, MGW, TDP, VNR
+- `Get-TeamsTenant`: Reworked output and updated (Domains) with ScriptMethod ToString
 
 ---------------------------------------------
 

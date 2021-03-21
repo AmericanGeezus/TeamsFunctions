@@ -1,37 +1,37 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-JAN-2021
+# Updated:  01-APR-2021
 # Status:   Live
 
 
 
 
-function Get-TeamsOVR {
+function Get-TeamsIPP {
   <#
   .SYNOPSIS
-    Lists all Online Voice Routes by Name
+    Lists all IP Phone Policies by Name
   .DESCRIPTION
-    To quickly find Online Voice Routes to troubleshoot, an Alias-Function to Get-CsOnlineVoiceRoute
+    To quickly find IP Phone Policies to assign, an Alias-Function to Get-CsTeamsIPPhonePolicy
   .PARAMETER Identity
-    String. Name or part of the Voice Route. Can be omitted to list Names of all Routes (except "Global").
+    String. Name or part of the IP Phone Policy. Can be omitted to list Names of all Policies (including "Global").
     If provided without a '*' in the name, an exact match is sought.
   .EXAMPLE
-    Get-TeamsOVR
-    Returns the Object for all Online Voice Routes (except "LocalRoute")
-    Behaviour like: Get-CsOnlineVoiceRoute, if more than 3 results are found, only names are returned
+    Get-TeamsIPP
+    Returns the Object for all IP Phone Policies (including "Global")
+    Behaviour like: Get-CsTeamsIPPhonePolicy, showing only a few Parameters
   .EXAMPLE
-    Get-TeamsOVR -Identity OVR-EMEA-National
-    Returns the Object for the Online Voice Route "OVR-EMEA-National" (provided it exists).
-    Behaviour like: Get-CsOnlineVoiceRoute -Identity "OVR-EMEA-National"
+    Get-TeamsIPP -Identity CommonAreaPhone
+    Returns the Object for the Online Voice Route "CommonAreaPhone" (provided it exists).
+    Behaviour like: Get-CsTeamsIPPhonePolicy -Identity "CommonAreaPhone"
   .EXAMPLE
-    Get-TeamsOVR -Identity OVR-EMEA-*
-    Lists Online Voice Routes with "OVR-EMEA-" in the Name
-    Behaviour like: Get-CsOnlineVoiceRoute -Filter "*OVR-EMEA-*"
+    Get-TeamsIPP -Identity CommonAreaPhone-*
+    Lists Online Voice Routes with "CommonAreaPhone" in the Name
+    Behaviour like: Get-CsTeamsIPPhonePolicy -Filter "*CommonAreaPhone*"
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
     If more than three results are found, a reduced set of Parameters are shown for better visibility:
-    Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList
+    Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -58,7 +58,7 @@ function Get-TeamsOVR {
 
   [CmdletBinding()]
   param (
-    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Route')]
+    [Parameter(Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Name of the IP Phone Policy')]
     [string]$Identity
   )
 
@@ -76,27 +76,26 @@ function Get-TeamsOVR {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($PSBoundParameters.ContainsKey('Identity')) {
-      Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
+      Write-Verbose -Message "Finding IP Phone Policy with Identity '$Identity'"
       if ($Identity -match [regex]::Escape('*')) {
-        $Filtered = Get-CsOnlineVoiceRoute -Filter "*$Identity*"
+        $Filtered = Get-CsTeamsIPPhonePolicy -Filter "*$Identity*"
       }
       else {
-        $Filtered = Get-CsOnlineVoiceRoute -Identity "$Identity"
+        $Filtered = Get-CsTeamsIPPhonePolicy -Identity "$Identity"
       }
     }
     else {
-      Write-Verbose -Message 'Finding Online Voice Route Names'
-      $Filtered = Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute'
+      Write-Verbose -Message 'Finding IP Phone Policy Names'
+      $Filtered = Get-CsTeamsIPPhonePolicy #| Where-Object Identity -NE 'Global'
     }
 
     if ( $Filtered.Count -gt 3) {
-      $Filtered = $Filtered | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList
+      $Filtered = $Filtered | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
     }
     return $Filtered | Sort-Object Identity
-
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} # Get-TeamsOVR
+} # Get-TeamsIPP

@@ -39,6 +39,14 @@ function Get-TeamsOPU {
     Get-TeamsTDP
   .LINK
     Get-TeamsVNR
+  .LINK
+    Get-TeamsIPP
+  .LINK
+    Get-TeamsCP
+  .LINK
+    Get-TeamsECP
+  .LINK
+    Get-TeamsECRP
   #>
 
   [CmdletBinding()]
