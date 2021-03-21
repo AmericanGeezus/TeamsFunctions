@@ -34,7 +34,7 @@ Behaviour like: Get-CsOnlineVoiceRoutingPolicy, if more than 3 results are found
 Get-TeamsOVP -Identity OVP-EMEA-National
 ```
 
-Returns the Object for the Online Voice Route "OVP-EMEA-National" (provided it exists).
+Returns the Object for the Online Voice Routing Policy "OVP-EMEA-National" (provided it exists).
 Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"
 
 ### EXAMPLE 3
@@ -43,7 +43,7 @@ Get-TeamsOVP -Identity OVP-EMEA-*
 ```
 
 Lists Online Voice Routes with "OVP-EMEA-" in the Name
-Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "OVP-EMEA-"
+Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
 
 ## PARAMETERS
 
@@ -75,9 +75,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 This script is indulging the lazy admin.
 It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
-If more than 3 results are found, behaves like Get-CsOnlineVoiceRoutingPolicy | Select Identity
-Without any parameters, it lists names only:
-Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity
+If more than three results are found, a reduced set of Parameters are shown for better visibility:
+Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages
 
 ## RELATED LINKS
 
@@ -94,4 +93,12 @@ Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Obj
 [Get-TeamsTDP]()
 
 [Get-TeamsVNR]()
+
+[Get-TeamsIPP]()
+
+[Get-TeamsCP]()
+
+[Get-TeamsECP]()
+
+[Get-TeamsECRP]()
 

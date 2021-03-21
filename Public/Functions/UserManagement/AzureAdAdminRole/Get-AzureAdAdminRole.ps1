@@ -14,12 +14,18 @@ function Get-AzureAdAdminRole {
 	.DESCRIPTION
 		Azure Active Directory Admin Roles assigned to an Object
 		Requires a Connection to AzureAd
+    Querying '-Type Elibile' requires the Module AzureAdPreview installed
+	.PARAMETER Identity
+		Required. One or more UserPrincipalNames of the Office365 Administrator
+	.PARAMETER Type
+		Optional. Switches query to Active (Default) or Eligible Admin Roles
+    Eligibility can only be queried with Module AzureAdPreview installed
 	.EXAMPLE
-		Get-AzureAdAdminRole user@domain.com [-Type Active]
-		Returns Diplaynames for all active Admin Roles
+		Get-AzureAdAdminRole [-Identity] user@domain.com [-Type Active]
+		Returns all active Admin Roles for the provided Identity
 	.EXAMPLE
-		Get-AzureAdAdminRole user@domain.com -Type Eligible
-		Returns  an Object for all Admin Roles assigned
+		Get-AzureAdAdminRole [-Identity] user@domain.com -Type Eligible
+		Returns all eligible Admin Roles for the provided Identity
 	.INPUTS
 		System.String
 	.OUTPUTS
@@ -33,13 +39,17 @@ function Get-AzureAdAdminRole {
   .ROLE
     Activating Admin Roles
   .FUNCTIONALITY
-    Enables eligible Privileged Identity roles for Administration of Teams
+    Queries active or eligible Privileged Identity roles for Administration of Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     Enable-AzureAdAdminRole
   .LINK
+    Enable-MyAzureAdAdminRole
+  .LINK
     Get-AzureAdAdminRole
+  .LINK
+    Get-MyAzureAdAdminRole
   #>
 
   [CmdletBinding()]
@@ -113,6 +123,10 @@ function Get-AzureAdAdminRole {
           $MyMemberships = Get-AzureADUserMembership -ObjectId $AzureAdUser.ObjectId #-All $true #CHECK Test Performance and reliability without "all!"
           $ActiveRoles = $MyMemberships | Where-Object ObjectType -EQ Role
 
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name) - ActiveRoles", ( $ActiveRoles | Format-List | Out-String).Trim() | Write-Debug
+          }
+
           #Output
           if ( -not $ActiveRoles ) {
             Write-Warning -Message 'No active, direct assignments found. This user may be eligible for activating Admin Role access through Group assignment or Privileged Admin Groups'
@@ -126,6 +140,7 @@ function Get-AzureAdAdminRole {
               'User'            = $Id
               'Rolename'        = $R.DisplayName
               'Type'            = 'Direct' # This may be different once we incorporate Groups too!
+              'ActiveSince'     = ''
               'ActiveUntil'     = ''
               'AssignmentState' = 'Active'
             }
@@ -138,6 +153,9 @@ function Get-AzureAdAdminRole {
           $SubjectId = $AzureAdUser.ObjectId
           $MyPrivilegedRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
 
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name) - MyPrivilegedRoles", ( $MyPrivilegedRoles | Format-List | Out-String).Trim() | Write-Debug
+          }
 
           foreach ($R in $MyPrivilegedRoles) {
             # Querying Role Display Name
@@ -148,7 +166,8 @@ function Get-AzureAdAdminRole {
               'User'            = $Id
               'Rolename'        = $RoleObject.DisplayName
               'Type'            = $R.MemberType
-              'ActiveUntil'     = $R.EndDateType
+              'ActiveSince'     = $R.StartDateTime
+              'ActiveUntil'     = $R.EndDateTime
               'AssignmentState' = $R.AssignmentState
             }
 

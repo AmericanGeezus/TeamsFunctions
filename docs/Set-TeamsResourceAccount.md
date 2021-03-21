@@ -14,8 +14,8 @@ Changes a new Resource Account
 
 ```
 Set-TeamsResourceAccount [-UserPrincipalName] <String> [-DisplayName <String>] [-ApplicationType <String>]
- [-UsageLocation <String>] [-License <String>] [-PhoneNumber <String>] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-UsageLocation <String>] [-License <String>] [-PhoneNumber <String>] [-PassThru] [-Force] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -153,7 +153,7 @@ Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
 If not provided, will default to PhoneSystem_VirtualUser
 Unlicensed Objects can exist, but cannot be assigned a phone number
 If a license already exists, it will try to swap the license to the specified one.
-NOTE: PhoneSystem is an add-on license and cannot be assigned on its own.
+  NOTE: PhoneSystem is an add-on license and cannot be assigned on its own.
 it has therefore been deactivated for now.
 
 ```yaml
@@ -188,6 +188,23 @@ Accept wildcard characters: False
 
 ### -PassThru
 By default, no output is generated, PassThru will display the Object changed
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Optional.
+If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object
+  If PhoneNumber is not Null or Empty, will reapply the PhoneNumber
 
 ```yaml
 Type: SwitchParameter

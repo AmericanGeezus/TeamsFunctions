@@ -13,7 +13,7 @@ Removes a Resource Account from AzureAD
 ## SYNTAX
 
 ```
-Remove-TeamsResourceAccount [-UserPrincipalName] <String[]> [-Force] [-PassThru] [-WhatIf] [-Confirm]
+Remove-TeamsResourceAccount [-UserPrincipalName] <String[]> [-PassThru] [-Force] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -56,10 +56,9 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -Force
+### -PassThru
 Optional.
-Will also sever all associations this account has in order to remove it
-If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
+Displays UserPrincipalName of removed objects.
 
 ```yaml
 Type: SwitchParameter
@@ -73,9 +72,10 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PassThru
+### -Force
 Optional.
-Displays UserPrincipalName of removed objects.
+Will also sever all associations this account has in order to remove it
+If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
 
 ```yaml
 Type: SwitchParameter

@@ -186,7 +186,7 @@ function Set-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message 'Querying User Account'
       $CsUser = Get-TeamsUserVoiceConfig "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
-      $UserLic = Get-TeamsUserLicense -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
+      $UserLic = Get-AzureAdUserLicense -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
     catch {
@@ -196,7 +196,7 @@ function Set-TeamsUserVoiceConfig {
     }
 
     # Querying User Licenses
-    #TODO Check whether to replace this with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
+    #TODO This works (don't change?) - But could be replaced with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
     try {
       $step++
       Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Querying User License' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -207,7 +207,7 @@ function Set-TeamsUserVoiceConfig {
           try {
             Write-Information "TRYING:  User '$Identity' - PhoneSystem License is assigned - ServicePlan PhoneSystem disabled - Trying to activate"
             Set-AzureAdLicenseServicePlan -Identity $CsUser.UserPrincipalName -Enable MCOEV -ErrorAction Stop
-            if (-not (Get-TeamsUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
+            if (-not (Get-AzureAdUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
               throw
             }
           }
@@ -389,6 +389,7 @@ function Set-TeamsUserVoiceConfig {
               $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI
               if ( $Force -or $CsUser.OnPremLineURI -ne $Number) {
                 #TODO Add Catch that uses FORCE to remove PhoneNumber first
+                #CHECK this: Set-TeamsRA removes first (if Force or Empty), then applies anew (if force or not empty) - replicate?
                 #Error Message: Filter failed to return unique result"
                 try {
                   $CsUser | Set-CsUser -OnPremLineUri $Number -ErrorAction Stop

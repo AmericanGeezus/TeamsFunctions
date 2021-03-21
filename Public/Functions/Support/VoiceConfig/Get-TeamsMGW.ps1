@@ -14,17 +14,24 @@ function Get-TeamsMGW {
   .DESCRIPTION
     To quickly find Online Pstn Gateways to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy
   .PARAMETER Identity
-    If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy
-    If not provided, lists Identities of all Online Pstn Gateways
+    String. FQDN or part of the FQDN for a Pstn Gateway. Can be omitted to list Names of all Gateways
+    If provided without a '*' in the name, an exact match is sought.
   .EXAMPLE
     Get-TeamsMGW
     Lists Identities (Names) of all Online Pstn Gateways
+    Behaviour like: Get-CsOnlineVoiceRoute
   .EXAMPLE
     Get-TeamsMGW -Identity PstnGateway1.domain.com
     Lists Online Pstn Gateway as Get-CsOnlinePstnGateway does (provided it exists).
+    Behaviour like: Get-CsOnlineVoiceRoute -Identity "PstnGateway1.domain.com"
+  .EXAMPLE
+    Get-TeamsOVR -Identity EMEA*
+    Lists Online Voice Routes with "EMEA" in the Name
+    Behaviour like: Get-CsOnlineVoiceRoute -Filter "*EMEA*"
   .NOTES
-    Without parameters, it executes the following string:
-    Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity
+    This script is indulging the lazy admin. It behaves like Get-CsTeamsCallingPolicy with a twist:
+    If more than three results are found, a reduced set of Parameters are shown for better visibility:
+    Get-CsOnlinePSTNGateway | Select-Object Identity, SipSignalingPort, Enabled, MediaByPass
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -39,6 +46,14 @@ function Get-TeamsMGW {
     Get-TeamsTDP
   .LINK
     Get-TeamsVNR
+  .LINK
+    Get-TeamsIPP
+  .LINK
+    Get-TeamsCP
+  .LINK
+    Get-TeamsECP
+  .LINK
+    Get-TeamsECRP
   #>
 
   [CmdletBinding()]
@@ -63,15 +78,15 @@ function Get-TeamsMGW {
     if ($PSBoundParameters.ContainsKey('Identity')) {
       Write-Verbose -Message "Finding Online Voice Routes with Identity '$Identity'"
       if ($Identity -match [regex]::Escape('*')) {
-        $Filtered = Get-CsOnlinePstnGateway -Filter "*$Identity*"
+        $Filtered = Get-CsOnlinePSTNGateway -Filter "*$Identity*"
       }
       else {
-        $Filtered = Get-CsOnlinePstnGateway -Identity "$Identity"
+        $Filtered = Get-CsOnlinePSTNGateway -Identity "$Identity"
       }
     }
     else {
       Write-Verbose -Message 'Finding Online Pstn Gateway Names'
-      $Filtered = Get-CsOnlinePstnGateway
+      $Filtered = Get-CsOnlinePSTNGateway
     }
 
     if ( $Filtered.Count -gt 3) {

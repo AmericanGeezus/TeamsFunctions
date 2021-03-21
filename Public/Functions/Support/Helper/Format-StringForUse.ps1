@@ -89,7 +89,6 @@ function Format-StringForUse {
             $CharactersToRemove += "'´"
           }
           'DisplayName' {
-            #VALIDATE DisplayName allows for /, yet it is removed. Investigate and pot. remove!
             #$CharactersToRemove = '\%*+/=?{}|<>[]"'
             $CharactersToRemove = '\%*+=?{}|<>[]"'
           }

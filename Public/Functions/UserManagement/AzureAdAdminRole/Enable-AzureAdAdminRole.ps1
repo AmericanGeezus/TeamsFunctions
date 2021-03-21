@@ -73,7 +73,11 @@ function Enable-AzureAdAdminRole {
   .LINK
     Enable-AzureAdAdminRole
   .LINK
+    Enable-MyAzureAdAdminRole
+  .LINK
     Get-AzureAdAdminRole
+  .LINK
+    Get-MyAzureAdAdminRole
   #>
 
   [CmdletBinding(SupportsShouldProcess)]
@@ -115,6 +119,9 @@ function Enable-AzureAdAdminRole {
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
+
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -248,6 +255,8 @@ function Enable-AzureAdAdminRole {
         }
         else {
           Write-Information "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles"
+          #VALIDATE use of Enable-AzureAdAdminRole - this needs to catch $true correctly.
+          return $(if ($Called) { $true })
         }
 
         Continue
@@ -327,7 +336,7 @@ function Enable-AzureAdAdminRole {
             }
 
             #Activating the Role
-            if ($PSBoundParameters.ContainsKey('Debug')) {
+            if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
               "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
 

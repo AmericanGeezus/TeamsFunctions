@@ -94,6 +94,8 @@ function Set-TeamsUserLicense {
   .LINK
     Get-TeamsUserLicense
   .LINK
+    Get-TeamsUserLicenseServicePlan
+  .LINK
     Set-TeamsUserLicense
   .LINK
     Test-TeamsUserLicense
@@ -508,7 +510,7 @@ function Set-TeamsUserLicense {
 
       # Output
       if ($PassThru) {
-        Get-TeamsUserLicense -Identity $Identity
+        Get-TeamsUserLicense -Identity $Identity -DisplayAll
       }
 
     }

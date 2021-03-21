@@ -32,32 +32,36 @@ function Test-MicrosoftTeamsConnection {
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-
-    $Sessions = Get-PSSession -WarningAction SilentlyContinue
-    if ($null -eq $Sessions) {
-      $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue -Confirm:$false
-      $Sessions = Get-PSSession -WarningAction SilentlyContinue
-    }
-    $Sessions = $Sessions | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
-    if ($Sessions.Count -ge 1) {
-      #Write-Verbose "Teams Session found"
-      $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
+    try {
+      $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+      if ($Sessions.Count -lt 1) {
+        Write-Verbose 'No Teams Session found, not assuming a connection to MicrosoftTeams has been established.'
+        return $false
+      }
       if ($Sessions.Count -ge 1) {
-        #Write-Verbose "Teams Session found, open and valid"
-        return $true
+        Write-Verbose 'Teams Session found'
+        $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
+        if ($Sessions.Count -ge 1) {
+          Write-Verbose 'Teams Session found, open and valid'
+          return $true
+        }
+        else {
+          Write-Verbose 'Teams Session found, but not open and valid'
+          return $false
+        }
       }
       else {
         return $false
       }
+      #<#
     }
-    else {
+    catch {
       return $false
     }
-
+    #>
   } #process
 
   end {
     #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-
-} #Test-MicrosoftTeamsConnection
+} # Test-MicrosoftTeamsConnection

@@ -18,7 +18,7 @@ function Get-TeamsTenant {
     Lists basic tenant information relevant for working on this Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
- #>
+  #>
 
   [CmdletBinding()]
   param (
@@ -34,16 +34,19 @@ function Get-TeamsTenant {
     # Asserting MicrosoftTeams Connection
     if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
+    # preparing Output Field Separator
+    $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     Write-Information 'INFO: This is abbreviated output of Get-CsTenant. For full information, please run Get-CsTenant'
 
-    $T = Get-CsTenant -WarningAction SilentlyContinue # This should trigger a reconnect as well.
+    $TenantObject = Get-CsTenant -WarningAction SilentlyContinue # This should trigger a reconnect as well.
 
     #Determining OverrideURL
-    $TenantId = $T | Select-Object -ExpandProperty identity
+    $TenantId = $TenantObject | Select-Object -ExpandProperty identity
 
     if ($TenantId -match '.*DC\=lync(.*)001\,DC=local') {
       $Id = $TenantId.Substring($TenantId.IndexOf('lync') + 4, 2)
@@ -54,34 +57,30 @@ function Get-TeamsTenant {
       $OverrideURL = $null
     }
 
-    $TenantObject = [PSCustomObject][ordered]@{
-      TenantId                         = $T.TenantId
-      DisplayName                      = $T.DisplayName
-      CountryAbbreviation              = $T.CountryAbbreviation
-      PreferredLanguage                = $T.PreferredLanguage
-      TeamsUpgradeEffectiveMode        = $T.TeamsUpgradeEffectiveMode
-      TeamsUpgradeNotificationsEnabled = $T.TeamsUpgradeNotificationsEnabled
-      TeamsUpgradePolicyIsReadOnly     = $T.TeamsUpgradePolicyIsReadOnly
-      TeamsUpgradeOverridePolicy       = $T.TeamsUpgradeOverridePolicy
-      ExperiencePolicy                 = $T.ExperiencePolicy
-      Domains                          = $T.Domains
-      DirSyncEnabled                   = $T.DirSyncEnabled
-      LastSyncTimeStamp                = $T.LastSyncTimeStamp
-      #AllowedDataLocation              = $T.AllowedDataLocation
-      IsValid                          = $T.IsValid
-      #PendingDeletion                  = $T.PendingDeletion
-      WhenCreated                      = $T.WhenCreated
-      WhenChanged                      = $T.WhenChanged
-      TenantPoolExtension              = $T.TenantPoolExtension
-      HostedMigrationOverrideURL       = $OverrideURL
+    # Adding OverrideURL
+    $TenantObject | Add-Member -MemberType NoteProperty -Name HostedMigrationOverrideURL -Value $OverrideURL -Force
 
+    #Filtering Object
+    $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
+      TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
+      ExperiencePolicy, DirSyncEnabled, LastSyncTimeStamp, IsValid, WhenCreated, WhenChanged, TenantPoolExtension, HostedMigrationOverrideURL
+
+    #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
+    $Domains = $TenantObject.Domains.Split(',') #| Select-Object -First 10
+    [psCustomObject]$DomainsOnMicrosoft = @()
+    foreach ($D in $Domains) {
+      if ($D.EndsWith('.onmicrosoft.com')) {
+        $DomainsOnMicrosoft += "$D"
+      }
     }
+    $Object | Add-Member -MemberType NoteProperty -Name DomainsOnMicrosoft -Value $DomainsOnMicrosoft -Force
+    $Object | Add-Member -MemberType NoteProperty -Name Domains -Value $Domains -Force
+    $Object.Domains | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Domains } -Force
 
-    return $TenantObject
-
+    return $Object
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Get-TeamsTDP
+} #Get-TeamsTenant

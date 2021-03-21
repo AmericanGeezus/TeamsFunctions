@@ -26,7 +26,8 @@ To quickly find Tenant Dial Plans to assign, an Alias-Function to Get-CsTenantDi
 Get-TeamsTDP
 ```
 
-Lists Identities (Names) of all Tenant Dial Plans (except "Global")
+Returns the Object for all Tenant Dial Plans (except "Global")
+Behaviour like: Get-CsTenantDialPlan, showing only a few Parameters (no Normalization Rules)
 
 ### EXAMPLE 2
 ```
@@ -40,7 +41,7 @@ Lists Tenant Dial Plan DP-HUN as Get-CsTenantDialPlan does.
 Get-TeamsTDP -Filter DP-HUN
 ```
 
-Lists all Tenant Dials that contain the strign "DP-HUN" in the Name.
+Lists all Tenant Dials that contain the strign "*DP-HUN*" in the Name.
 
 ## PARAMETERS
 
@@ -68,8 +69,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
+This script is indulging the lazy admin.
+It behaves like Get-CsTenantDialPlan with a twist:
+If used without Parameter, a reduced set of Parameters are shown for better visibility:
 Without parameters, it executes the following string:
-Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description
 
 ## RELATED LINKS
 
@@ -78,6 +82,14 @@ Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identi
 [Get-TeamsTDP]()
 
 [Get-TeamsVNR]()
+
+[Get-TeamsIPP]()
+
+[Get-TeamsCP]()
+
+[Get-TeamsECP]()
+
+[Get-TeamsECRP]()
 
 [Get-TeamsOVP]()
 

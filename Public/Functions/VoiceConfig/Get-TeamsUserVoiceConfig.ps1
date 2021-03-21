@@ -41,7 +41,7 @@ function Get-TeamsUserVoiceConfig {
 
     This script takes a select set of Parameters from AzureAD, Teams & Licensing. For a full parameterset, please run:
     - for AzureAD:    "Find-AzureAdUser $Identity | FL"
-    - for Licensing:  "Get-TeamsUserLicense $Identity"
+    - for Licensing:  "Get-AzureAdUserLicense $Identity"
     - for Teams:      "Get-CsOnlineUser $Identity"
 	.FUNCTIONALITY
 		The functionality that best describes this cmdlet
@@ -189,7 +189,7 @@ function Get-TeamsUserVoiceConfig {
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
-        $CsUserLicense = Get-TeamsUserLicense -Identity "$($CsUser.UserPrincipalName)"
+        $CsUserLicense = Get-AzureAdUserLicense -Identity "$($CsUser.UserPrincipalName)"
 
         # Adding Parameters
         $Operation = 'Adding Parameters: Licensing Configuration'

@@ -98,6 +98,14 @@
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-CurrentConnectionInfo</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
@@ -335,6 +343,94 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Assert-TeamsUserVoiceConfig</command:name>
+      <command:verb>Assert</command:verb>
+      <command:noun>TeamsUserVoiceConfig</command:noun>
+      <maml:description>
+        <maml:para>Short description</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Long description</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Assert-TeamsUserVoiceConfig</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, UPN">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>x</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, UPN">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>x</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>xx</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Verb-Noun -Identity John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>xx</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Backup-TeamsEV</command:name>
       <command:verb>Backup</command:verb>
       <command:noun>TeamsEV</command:noun>
@@ -563,7 +659,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline. The Skype for Business Legacy Administrator Roles may still be required to connect. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
+        <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline. The Skype for Business Legacy Administrator Roles are still required to create the PsSession. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -608,105 +704,6 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Disconnect-Me</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-AzureAD</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-MicrosoftTeams</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
-      <command:name>Connect-SkypeOnline</command:name>
-      <command:verb>Connect</command:verb>
-      <command:noun>SkypeOnline</command:noun>
-      <maml:description>
-        <maml:para>Creates a remote PowerShell session to Teams (SkypeOnline)</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>The Connect-SkypeOnline cmdlet connects an account to use for Microsoft Teams (SkypeOnline) cmdlet requests. Establishing a remote PowerShell session to Microsoft Teams (SkypeOnline) A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect and execute GET-commands. To execute other commands against Teams, a Teams Admin roles with appropriate rights is required.</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Connect-SkypeOnline</maml:name>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters />
-    <command:inputTypes />
-    <command:returnValues />
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>Connection to SkypeOnline is done by creating a Session with New-CsOnlineSession, which later needs to be imported. A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E. SkypeOnline)</maml:para>
-        <maml:para>New-CsOnlineSession is available in the Module MicrosoftTeams or the MSI-Installer SkypeOnlineConnector which is now deprecated and no longer actively supported. This CmdLet uses the Command from the Module MicrosoftTeams, which always establishes a connection to both Teams and SkypeOnline!</maml:para>
-        <maml:para>Background: In order to retire the SkypeOnlineConnector, the CmdLet New-CsOnlineSession was ported to MicrosoftTeams (in v1.1.6) However, not all functionality was made available: The Parameter Username has been retired, resulting in seamless single-sign-on currently not being available. Multiple connection prompts will be displayed, but already signed-in accounts can be used (Password required only once) Enable-CsOnlineSessionForReconnection is not available in MicrosoftTeams either, but thanks to the original author Andrés Gorzelany, the command is now offered with this module and is available consistently. Established Sessions will now always be enabled for reconnection. The ability to reconnect a session depends on the settings in the Tenant. Re-Authentication may be required.</maml:para>
-        <maml:para>OverrideAdminDomain Handling and Example: AccountId John@domain.com - If a Session to AzureAd is already established, the TenantDomain from Get-AzureAdCurrentSessionInfo is used. If no Session to AzureAd exists, 'Domain.com' is tried first as the OverrideAdminDomain If unsuccessful, 'domain.onmicrosoft.com' is tried. If this too is unsuccessful, the OverrideAdminDomain is queried from the User for input.</maml:para>
-        <maml:para>Session Timeout &amp; Reconnection: The session timeout is currently not adhered to correctly and does not work as intended! It has therefore been disabled. The parameter IdleTimeout is without effect.</maml:para>
-        <maml:para>To help reconnect sessions, Assert-SkypeOnlineConnection is integrated into every CmdLet in the module. It can be triggered manually as well, with the alias 'pol' (Ping-of-life) to trigger the reconnection. This will require re-authentication and its success is dependent on the Tenant settings. Sometimes even the reconnection fails, if so, please disconnect the current session (Disconnect-SkypeOnline) and re-run Connect-SkypeOnline to recreate the session cleanly. Please note that hanging sessions can cause lockout (session exhaustion)</maml:para>
-        <maml:para>This CmdLet is preforming the following Tasks: - Prompting for Username and password to establish the session</maml:para>
-        <maml:para>- Prompting for MFA if required</maml:para>
-        <maml:para>- Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Connect-SkypeOnline</dev:code>
-        <dev:remarks>
-          <maml:para>Prompt for the Username and password of an administrator with permissions to connect to Microsoft Teams (SkypeOnline).   Additional prompts for Multi Factor Authentication are displayed as required</maml:para>
-        </dev:remarks>
-      </command:example>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com</dev:code>
-        <dev:remarks>
-          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com   and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).   When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.   The OverrideAdminDomain is not provided, so it is constructed from the domain part. Please see Notes for details.   Additional prompts for Multi Factor Authentication are displayed as required.</maml:para>
-        </dev:remarks>
-      </command:example>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com</dev:code>
-        <dev:remarks>
-          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com   and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).   When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.   The provided OverrideAdminDomain will be used to establish the connection. If not provided, it is constructed.</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-Me</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-SkypeOnline</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-AzureAD</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Connect-MicrosoftTeams</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Assert-SkypeOnlineConnection</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-Me</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Disconnect-SkypeOnline</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -1104,7 +1101,106 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Enable-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Enable-MyAzureAdAdminRole</command:name>
+      <command:verb>Enable</command:verb>
+      <command:noun>MyAzureAdAdminRole</command:noun>
+      <maml:description>
+        <maml:para>Activates Azure Ad Admin Roles for currently connected User</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.   Requires a Connection to AzureAd</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Enable-MyAzureAdAdminRole</maml:name>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean if called</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>None if executed from shell</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Enable-MyAzureAdAdminRole</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Connect-Me</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-MyAzureAdAdminRole</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -2624,7 +2720,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Azure Active Directory Admin Roles assigned to an Object Requires a Connection to AzureAd</maml:para>
+      <maml:para>Azure Active Directory Admin Roles assigned to an Object Requires a Connection to AzureAd   Querying '-Type Elibile' requires the Module AzureAdPreview installed</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -2632,7 +2728,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
           <maml:name>Identity</maml:name>
           <maml:description>
-            <maml:para>Enter the identity of the User to Query</maml:para>
+            <maml:para>Required. One or more UserPrincipalNames of the Office365 Administrator</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -2644,7 +2740,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>[ValidateSet('Active', 'Eligible','Group')]</maml:para>
+            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -2659,7 +2755,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
         <maml:name>Identity</maml:name>
         <maml:description>
-          <maml:para>Enter the identity of the User to Query</maml:para>
+          <maml:para>Required. One or more UserPrincipalNames of the Office365 Administrator</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -2671,7 +2767,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>[ValidateSet('Active', 'Eligible','Group')]</maml:para>
+          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -2709,16 +2805,16 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-AzureAdAdminRole user@domain.com [-Type Active]</dev:code>
+        <dev:code>Get-AzureAdAdminRole [-Identity] user@domain.com [-Type Active]</dev:code>
         <dev:remarks>
-          <maml:para>Returns Diplaynames for all active Admin Roles</maml:para>
+          <maml:para>Returns all active Admin Roles for the provided Identity</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Get-AzureAdAdminRole user@domain.com -Type Eligible</dev:code>
+        <dev:code>Get-AzureAdAdminRole [-Identity] user@domain.com -Type Eligible</dev:code>
         <dev:remarks>
-          <maml:para>Returns  an Object for all Admin Roles assigned</maml:para>
+          <maml:para>Returns all eligible Admin Roles for the provided Identity</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -2732,7 +2828,15 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Enable-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-MyAzureAdAdminRole</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -2818,11 +2922,23 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Set-TeamsUserLicense</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicenseServicePlan</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -2916,6 +3032,10 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Set-TeamsUserLicense</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -2929,6 +3049,511 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-AzureAdLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-AzureAdUserLicense</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>AzureAdUserLicense</command:noun>
+      <maml:description>
+        <maml:para>Returns License information for an Object in AzureAD</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Returns an Object containing all Licenses found for a specific Object Licenses and ServicePlans are nested in the respective parameters for further investigation</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-AzureAdUserLicense</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FilterRelevantForTeams</maml:name>
+          <maml:description>
+            <maml:para>Filters the output and displays only Licenses relevant to Teams</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>FilterRelevantForTeams</maml:name>
+        <maml:description>
+          <maml:para>Filters the output and displays only Licenses relevant to Teams</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Requires a connection to Azure Active Directory</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-AzureAdUserLicense [-Identity] John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all licenses assigned to User John@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-AzureAdUserLicense -Identity John@domain.com,Jane@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all licenses assigned to Users John@domain.com and Jane@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-AzureAdUserLicense -Identity Jane@domain.com -FilterRelevantForTeams</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all relevant Teams licenses assigned to Jane@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Import-Csv User.csv | Get-AzureAdUserLicense</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all licenses assigned to Users from User.csv, Column Identity.   The input file must have a single column heading of "Identity" with properly formatted UPNs.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-AzureAdUserLicenseServicePlan</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>AzureAdUserLicenseServicePlan</command:noun>
+      <maml:description>
+        <maml:para>Returns License information (ServicePlans) for an Object in AzureAD</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Returns an Object containing all ServicePlans (for Licenses assigned) for a specific Object</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-AzureAdUserLicenseServicePlan</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FilterRelevantForTeams</maml:name>
+          <maml:description>
+            <maml:para>Filters the output and displays only Licenses relevant Teams Service Plans</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>FilterUnsuccessful</maml:name>
+          <maml:description>
+            <maml:para>Filters the output and displays only ServicePlans that don't have the ProvisioningStatus "Success"</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>FilterRelevantForTeams</maml:name>
+        <maml:description>
+          <maml:para>Filters the output and displays only Licenses relevant Teams Service Plans</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>FilterUnsuccessful</maml:name>
+        <maml:description>
+          <maml:para>Filters the output and displays only ServicePlans that don't have the ProvisioningStatus "Success"</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Requires a connection to Azure Active Directory</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-AzureAdUserLicenseServicePlan [-Identity] John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all Service Plans assigned through Licenses to User John@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-AzureAdUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all Service Plans assigned through Licenses to Users John@domain.com and Jane@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterRelevantForTeams</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all relevant Teams Service Plans assigned through Licenses to Jane@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterUnsuccessful</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all Service Plans assigned through Licenses to Jane@domain.com that are not provisioned successfully</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <dev:code>Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all Service Plans assigned through Licenses to Users from User.csv, Column Identity.   The input file must have a single column heading of "Identity" with properly formatted UPNs.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-CurrentConnectionInfo</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>CurrentConnectionInfo</command:noun>
+      <maml:description>
+        <maml:para>Queries AzureAd, MicrosoftTeams and ExchangeOnline for currently established Sessions</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Returns an object displaying all currently connected PowerShell Sessions and basic output about the Tenant.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-CurrentConnectionInfo</maml:name>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters />
+    <command:inputTypes />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Boolean</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para></maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-CurrentConnectionInfo</dev:code>
+        <dev:remarks>
+          <maml:para>Will Test current connection to AzureAd, MicrosoftTeams and ExchangeOnline and displays simple output object.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Connect-Me</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-CurrentConnectionInfo</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-MyAzureAdAdminRole</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>MyAzureAdAdminRole</command:noun>
+      <maml:description>
+        <maml:para>Queries Admin Roles assigned to the currently connected User</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Azure Active Directory Admin Roles assigned to the currently connected User Requires a Connection to AzureAd   Querying '-Type Elibile' requires the Module AzureAdPreview installed</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-MyAzureAdAdminRole</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>Active</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>Type</maml:name>
+        <maml:description>
+          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>Active</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>PSCustomObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This is a wrapper for Get-AzureAdAdminRole targeting the currently connected User</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-AzureAdAdminRole [-Type Active]</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all active Admin Roles for the currently connected User</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-AzureAdAdminRole -Type Eligible</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all eligible Admin Roles for the currently connected User</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-MyAzureAdAdminRole</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -4000,23 +4625,23 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Get-TeamsMGW</command:name>
+      <command:name>Get-TeamsCP</command:name>
       <command:verb>Get</command:verb>
-      <command:noun>TeamsMGW</command:noun>
+      <command:noun>TeamsCP</command:noun>
       <maml:description>
-        <maml:para>Lists all Online Pstn Gateways by Name</maml:para>
+        <maml:para>Lists all Teams Calling Policies by Name</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>To quickly find Online Pstn Gateways to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy</maml:para>
+      <maml:para>To quickly find Teams Calling Policies to assign, an Alias-Function to Get-CsTeamsCallingPolicy</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
-        <maml:name>Get-TeamsMGW</maml:name>
+        <maml:name>Get-TeamsCP</maml:name>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
-            <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Pstn Gateways</maml:para>
+            <maml:para>String. Name or part of the Teams Calling Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -4031,7 +4656,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:description>
-          <maml:para>If provided, acts as an Alias to Get-CsOnlineVoiceRoutingPolicy, listing one Policy If not provided, lists Identities of all Online Pstn Gateways</maml:para>
+          <maml:para>String. Name or part of the Teams Calling Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -4045,22 +4670,29 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Without parameters, it executes the following string: Get-CsOnlinePstnGateway | Select-Object Identity -ExpandProperty Identity</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-TeamsMGW</dev:code>
+        <dev:code>Get-TeamsCP</dev:code>
         <dev:remarks>
-          <maml:para>Lists Identities (Names) of all Online Pstn Gateways</maml:para>
+          <maml:para>Returns the Object for all Teams Calling Policies (including "Global") Behaviour like: Get-CsTeamsCallingPolicy, showing only a few Parameters</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Get-TeamsMGW -Identity PstnGateway1.domain.com</dev:code>
+        <dev:code>Get-TeamsCP -Identity AllowCallingPreventTollBypass</dev:code>
         <dev:remarks>
-          <maml:para>Lists Online Pstn Gateway as Get-CsOnlinePstnGateway does (provided it exists).</maml:para>
+          <maml:para>Returns the Object for the Teams Calling Policy "AllowCallingPreventTollBypass" (provided it exists). Behaviour like: Get-CsTeamsCallingPolicy -Identity "AllowCallingPreventTollBypass"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsCP -Identity Allow*</dev:code>
+        <dev:remarks>
+          <maml:para>Lists Online Voice Routes with "Allow" in the Name Behaviour like: Get-CsTeamsCallingPolicy -Filter " Allow "</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -4091,6 +4723,502 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-TeamsECP</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsECP</command:noun>
+      <maml:description>
+        <maml:para>Lists all Online Emergency Calling Policies by Name</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>To quickly find Emergency Calling Policies to assign, an Alias-Function to Get-CsTeamsEmergencyCallingPolicy</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsECP</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>String. Name or part of the Emergency Calling Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>String. Name or part of the Emergency Calling Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reordered set of Parameters are shown for better visibility: Get-CsTeamsEmergencyCallingPolicy | Select-Object Identity, Description, NotificationMode, NotificationGroup</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsECP</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the Object for all Emergency Calling Policies (including "Global") Behaviour like: Get-CsTeamsEmergencyCallingPolicy</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsECP -Identity ECP-US</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the Object for the Online Voice Route "ECP-US" (provided it exists). Behaviour like: Get-CsTeamsEmergencyCallingPolicy -Identity "ECP-US"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsECP -Identity ECP-US-*</dev:code>
+        <dev:remarks>
+          <maml:para>Lists Online Voice Routes with "ECP-US-" in the Name Behaviour like: Get-CsTeamsEmergencyCallingPolicy -Filter " ECP-US- "</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOPU</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsMGW</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTDP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-TeamsECRP</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsECRP</command:noun>
+      <maml:description>
+        <maml:para>Lists all Emergency Voice Routing Policies by Name</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>To quickly find Emergency Voice Routing Policies to assign, an Alias-Function to Get-CsTeamsEmergencyCallRoutingPolicy</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsECRP</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>String. Name or part of the Voice Routing Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>String. Name or part of the Voice Routing Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>If more than three results are found, a reordered set of Parameters are shown for better visibility: Get-CsTeamsEmergencyCallRoutingPolicy | Select-Object Identity, Description, AllowEnhancedEmergencyServices, EmergencyNumbers</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsECRP</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the Object for all Emergency Voice Routing Policies (including "Global") Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsECRP -Identity ECRP-US</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the Object for the Emergency Voice Route "ECRP-US" (provided it exists). Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy -Identity "ECRP-US"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsECRP -Identity ECRP-US-*</dev:code>
+        <dev:remarks>
+          <maml:para>Lists Emergency Voice Routes with "ECRP-US-" in the Name Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy -Filter " ECRP-US- "</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOPU</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsMGW</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTDP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-TeamsIPP</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsIPP</command:noun>
+      <maml:description>
+        <maml:para>Lists all IP Phone Policies by Name</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>To quickly find IP Phone Policies to assign, an Alias-Function to Get-CsTeamsIPPhonePolicy</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsIPP</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>String. Name or part of the IP Phone Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>String. Name or part of the IP Phone Policy. Can be omitted to list Names of all Policies (including "Global"). If provided without a '*' in the name, an exact match is sought.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsIPP</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the Object for all IP Phone Policies (including "Global") Behaviour like: Get-CsTeamsIPPhonePolicy, showing only a few Parameters</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsIPP -Identity CommonAreaPhone</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the Object for the Online Voice Route "CommonAreaPhone" (provided it exists). Behaviour like: Get-CsTeamsIPPhonePolicy -Identity "CommonAreaPhone"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsIPP -Identity CommonAreaPhone-*</dev:code>
+        <dev:remarks>
+          <maml:para>Lists Online Voice Routes with "CommonAreaPhone" in the Name Behaviour like: Get-CsTeamsIPPhonePolicy -Filter " CommonAreaPhone "</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOPU</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsMGW</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTDP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-TeamsMGW</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsMGW</command:noun>
+      <maml:description>
+        <maml:para>Lists all Online Pstn Gateways by Name</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>To quickly find Online Pstn Gateways to assign, an Alias-Function to Get-CsOnlineVoiceRoutingPolicy</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsMGW</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>String. FQDN or part of the FQDN for a Pstn Gateway. Can be omitted to list Names of all Gateways If provided without a '*' in the name, an exact match is sought.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>String. FQDN or part of the FQDN for a Pstn Gateway. Can be omitted to list Names of all Gateways If provided without a '*' in the name, an exact match is sought.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues />
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsTeamsCallingPolicy with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsOnlinePSTNGateway | Select-Object Identity, SipSignalingPort, Enabled, MediaByPass</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsMGW</dev:code>
+        <dev:remarks>
+          <maml:para>Lists Identities (Names) of all Online Pstn Gateways Behaviour like: Get-CsOnlineVoiceRoute</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsMGW -Identity PstnGateway1.domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Lists Online Pstn Gateway as Get-CsOnlinePstnGateway does (provided it exists). Behaviour like: Get-CsOnlineVoiceRoute -Identity "PstnGateway1.domain.com"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsOVR -Identity EMEA*</dev:code>
+        <dev:remarks>
+          <maml:para>Lists Online Voice Routes with "EMEA" in the Name Behaviour like: Get-CsOnlineVoiceRoute -Filter " EMEA "</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOPU</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsOVR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsMGW</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTDP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -4320,6 +5448,22 @@
         <maml:linkText>Get-TeamsVNR</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
@@ -4369,7 +5513,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist: If more than 3 results are found, behaves like Get-CsOnlineVoiceRoutingPolicy | Select Identity Without any parameters, it lists names only: Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE "Global" | Select-Object Identity</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4384,14 +5528,14 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-TeamsOVP -Identity OVP-EMEA-National</dev:code>
         <dev:remarks>
-          <maml:para>Returns the Object for the Online Voice Route "OVP-EMEA-National" (provided it exists). Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"</maml:para>
+          <maml:para>Returns the Object for the Online Voice Routing Policy "OVP-EMEA-National" (provided it exists). Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Identity "OVP-EMEA-National"</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsOVP -Identity OVP-EMEA-*</dev:code>
         <dev:remarks>
-          <maml:para>Lists Online Voice Routes with "OVP-EMEA-" in the Name Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "OVP-EMEA-"</maml:para>
+          <maml:para>Lists Online Voice Routes with "OVP-EMEA-" in the Name Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter " OVP-EMEA- "</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -4422,6 +5566,22 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -4473,7 +5633,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than 3 results are found, behaves like Get-CsOnlineVoiceRoute | Select Identity Without any parameters, it lists names only: Get-CsOnlineVoiceRoute | Where-Object Identity -NE "LocalRoute"  | Select-Object Name</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4495,7 +5655,7 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsOVR -Identity OVR-EMEA-*</dev:code>
         <dev:remarks>
-          <maml:para>Lists Online Voice Routes with "OVR-EMEA-" in the Name Behaviour like: Get-CsOnlineVoiceRoute -Filter "OVR-EMEA-"</maml:para>
+          <maml:para>Lists Online Voice Routes with "OVR-EMEA-" in the Name Behaviour like: Get-CsOnlineVoiceRoute -Filter " OVR-EMEA- "</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -4526,6 +5686,22 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -4925,7 +6101,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Without parameters, it executes the following string: Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsTenantDialPlan with a twist: If used without Parameter, a reduced set of Parameters are shown for better visibility: Without parameters, it executes the following string: Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4933,7 +6109,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-TeamsTDP</dev:code>
         <dev:remarks>
-          <maml:para>Lists Identities (Names) of all Tenant Dial Plans (except "Global")</maml:para>
+          <maml:para>Returns the Object for all Tenant Dial Plans (except "Global") Behaviour like: Get-CsTenantDialPlan, showing only a few Parameters (no Normalization Rules)</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -4947,7 +6123,7 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsTDP -Filter DP-HUN</dev:code>
         <dev:remarks>
-          <maml:para>Lists all Tenant Dials that contain the strign "DP-HUN" in the Name.</maml:para>
+          <maml:para>Lists all Tenant Dials that contain the strign " DP-HUN " in the Name.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -4962,6 +6138,22 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -5179,6 +6371,10 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Set-TeamsUserLicense</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -5321,19 +6517,19 @@
       <command:verb>Get</command:verb>
       <command:noun>TeamsUserLicense</command:noun>
       <maml:description>
-        <maml:para>Returns License information for an Object in AzureAD</maml:para>
+        <maml:para>Returns Teams License information for an Object in AzureAD</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Returns an Object containing all Teams related Licenses found for a specific Object This script lists the UPN, Name, currently O365 Plan, Calling Plan, Communication Credit, and Audio Conferencing Add-On License</maml:para>
+      <maml:para>Returns an Object containing all Teams related Licenses found for a specific Object Licenses and ServicePlans are nested in the respective parameters for further investigation</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsUserLicense</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
           <maml:name>Identity</maml:name>
           <maml:description>
-            <maml:para>The Identity/UPN/sign-in address for the user entered in the format &lt;name&gt;@&lt;domain&gt;.   Aliases include: "UPN","UserPrincipalName","Username"</maml:para>
+            <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -5345,7 +6541,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>DisplayAll</maml:name>
           <maml:description>
-            <maml:para>Displays all ServicePlans, not only relevant Teams Plans Also displays AllLicenses and AllServicePlans object for further processing</maml:para>
+            <maml:para>Displays all Licenses, not only identified or relevant Teams Licenses</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -5356,10 +6552,10 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UPN, UserPrincipalName, Username">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
         <maml:name>Identity</maml:name>
         <maml:description>
-          <maml:para>The Identity/UPN/sign-in address for the user entered in the format &lt;name&gt;@&lt;domain&gt;.   Aliases include: "UPN","UserPrincipalName","Username"</maml:para>
+          <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -5371,7 +6567,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>DisplayAll</maml:name>
         <maml:description>
-          <maml:para>Displays all ServicePlans, not only relevant Teams Plans Also displays AllLicenses and AllServicePlans object for further processing</maml:para>
+          <maml:para>Displays all Licenses, not only identified or relevant Teams Licenses</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -5400,7 +6596,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-TeamsUserLicense -Identity John@domain.com</dev:code>
+        <dev:code>Get-TeamsUserLicense [-Identity] John@domain.com</dev:code>
         <dev:remarks>
           <maml:para>Displays all licenses assigned to User John@domain.com</maml:para>
         </dev:remarks>
@@ -5434,11 +6630,171 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Set-TeamsUserLicense</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Test-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-TeamsUserLicenseServicePlan</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsUserLicenseServicePlan</command:noun>
+      <maml:description>
+        <maml:para>Returns License information (ServicePlans) for an Object in AzureAD</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Returns an Object containing all Teams related ServicePlans (for Licenses assigned) for a specific Object</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsUserLicenseServicePlan</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>The Identity/UPN/sign-in address for the user entered in the format &lt;name&gt;@&lt;domain&gt;.   Aliases include: "UPN","UserPrincipalName","Username"</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DisplayAll</maml:name>
+          <maml:description>
+            <maml:para>Displays all ServicePlans, not only relevant Teams Service Plans Also displays AllLicenses and AllServicePlans object for further processing</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, Username, UPN">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>The Identity/UPN/sign-in address for the user entered in the format &lt;name&gt;@&lt;domain&gt;.   Aliases include: "UPN","UserPrincipalName","Username"</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>DisplayAll</maml:name>
+        <maml:description>
+          <maml:para>Displays all ServicePlans, not only relevant Teams Service Plans Also displays AllLicenses and AllServicePlans object for further processing</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes />
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Management.Automation.PSObject</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Requires a connection to Azure Active Directory</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsUserLicenseServicePlan [-Identity] John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all licenses assigned to User John@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all licenses assigned to Users John@domain.com and Jane@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Import-Csv User.csv | Get-TeamsUserLicenseServicePlan</dev:code>
+        <dev:remarks>
+          <maml:para>Displays all licenses assigned to Users from User.csv, Column Identity.   The input file must have a single column heading of "Identity" with properly formatted UPNs.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdUserLicenseServicePlan</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -5565,7 +6921,7 @@
       <maml:alert>
         <maml:para>DiagnosticLevel details: 1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype 2 Extended diagnostics displaying additional Voice-related Policies 3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc. 4 Extended troubleshooting parameters from AzureAD like LastDirSyncTime Parameters are additive, meaning with each DiagnosticLevel more information is displayed</maml:para>
         <maml:para>This script takes a select set of Parameters from AzureAD, Teams &amp; Licensing. For a full parameterset, please run: - for AzureAD:    "Find-AzureAdUser $Identity | FL"</maml:para>
-        <maml:para>- for Licensing:  "Get-TeamsUserLicense $Identity"</maml:para>
+        <maml:para>- for Licensing:  "Get-AzureAdUserLicense $Identity"</maml:para>
         <maml:para>- for Teams:      "Get-CsOnlineUser $Identity"</maml:para>
       </maml:alert>
     </maml:alertSet>
@@ -5638,7 +6994,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
-            <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing Normalisation Rules for this Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
+            <maml:para>String. Name or part of the Teams Dial Plan. If not provided, lists Identities of all Tenant Dial Plans (except "Global") If provided without a '*' in the name, an exact match is sought.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -5653,7 +7009,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:description>
-          <maml:para>If provided, acts as an Alias to Get-CsTenantDialPlan, listing Normalisation Rules for this Dial Plan If not provided, lists Identities of all Tenant Dial Plans (except "Global")</maml:para>
+          <maml:para>String. Name or part of the Teams Dial Plan. If not provided, lists Identities of all Tenant Dial Plans (except "Global") If provided without a '*' in the name, an exact match is sought.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -5667,7 +7023,7 @@
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Without parameters, it executes the following string: Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity</maml:para>
+        <maml:para>Without parameters, it executes the following string: Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, Pattern, Translation, Description</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -5675,21 +7031,21 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-TeamsVNR</dev:code>
         <dev:remarks>
-          <maml:para>Lists Identities (Names) of all Tenant Dial Plans (except "Global")</maml:para>
+          <maml:para>Returns the Object for all Tenant Dial Plans (except "Global") Behaviour like: Get-CsTenantDialPlan, showing only a few Parameters (no Normalization Rules)</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-TeamsVNR -Identity DP-HUN</dev:code>
         <dev:remarks>
-          <maml:para>Lists Tenant Dial Plan DP-HUN as Get-CsTenantDialPlan does.</maml:para>
+          <maml:para>Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists). Behaviour like: (Get-CsTenantDialPlan -Identity "DP-HUN").NormalizationRules</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsVNR -Filter DP-HUN</dev:code>
         <dev:remarks>
-          <maml:para>Lists all Tenant Dials that contain the strign "DP-HUN" in the Name.</maml:para>
+          <maml:para>Filters all Tenant Dial Plans that contain the string "DP-HUN" in the Name. Returns Tenant Dial Plans if more than 3 results are found. Behaviour like: Get-CsTenantDialPlan -Identity " DP-HUN " Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists). Behaviour like: (Get-CsTenantDialPlan -Identity " DP-HUN ").NormalizationRules</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -5704,6 +7060,22 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsVNR</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsIPP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsECRP</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -11290,9 +12662,9 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
+          <maml:name>PassThru</maml:name>
           <maml:description>
-            <maml:para>Optional. Will also sever all associations this account has in order to remove it If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed</maml:para>
+            <maml:para>Optional. Displays UserPrincipalName of removed objects.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -11301,9 +12673,9 @@
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>PassThru</maml:name>
+          <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>Optional. Displays UserPrincipalName of removed objects.</maml:para>
+            <maml:para>Optional. Will also sever all associations this account has in order to remove it If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -11349,9 +12721,9 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Force</maml:name>
+        <maml:name>PassThru</maml:name>
         <maml:description>
-          <maml:para>Optional. Will also sever all associations this account has in order to remove it If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed</maml:para>
+          <maml:para>Optional. Displays UserPrincipalName of removed objects.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -11361,9 +12733,9 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>PassThru</maml:name>
+        <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>Optional. Displays UserPrincipalName of removed objects.</maml:para>
+          <maml:para>Optional. Will also sever all associations this account has in order to remove it If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -12423,6 +13795,10 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -13658,7 +15034,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>License</maml:name>
           <maml:description>
-            <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+            <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one.   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -13683,6 +15059,17 @@
           <maml:name>PassThru</maml:name>
           <maml:description>
             <maml:para>By default, no output is generated, PassThru will display the Object changed</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object   If PhoneNumber is not Null or Empty, will reapply the PhoneNumber</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -13766,7 +15153,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>License</maml:name>
         <maml:description>
-          <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+          <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one.   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -13791,6 +15178,18 @@
         <maml:name>PassThru</maml:name>
         <maml:description>
           <maml:para>By default, no output is generated, PassThru will display the Object changed</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:description>
+          <maml:para>Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object   If PhoneNumber is not Null or Empty, will reapply the PhoneNumber</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -14362,6 +15761,10 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -15758,6 +17161,10 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Get-TeamsUserLicenseServicePlan</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Set-TeamsUserLicense</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -15778,7 +17185,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-TeamsUserVoiceConfig</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:description>
             <maml:para>Required. UserPrincipalName of the User to be tested</maml:para>
@@ -15786,18 +17193,6 @@
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
             <maml:name>String[]</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Scope</maml:name>
-          <maml:description>
-            <maml:para>Required. Value to focus the Script on. Allowed Values are DirectRouting,CallingPlans,SkypeHybridPSTN Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -15816,7 +17211,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName">
         <maml:name>Identity</maml:name>
         <maml:description>
           <maml:para>Required. UserPrincipalName of the User to be tested</maml:para>
@@ -15824,18 +17219,6 @@
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
           <maml:name>String[]</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Scope</maml:name>
-        <maml:description>
-          <maml:para>Required. Value to focus the Script on. Allowed Values are DirectRouting,CallingPlans,SkypeHybridPSTN Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -15875,34 +17258,34 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE) Partial configuration provides insight for incorrectly de-provisioned configuration that could block configuration for the other. For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI   This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.   "Remove-TeamsUserVoiceConfig -Force" can help</maml:para>
+        <maml:para>All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE) Partial configuration provides insight for incorrectly provisioned configuration. Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope DirectRouting</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting [-Scope Full]</dev:code>
         <dev:remarks>
           <maml:para>Tests for Direct Routing and returns TRUE if FULL configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope DirectRouting -Partial</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting -Scope Partial</dev:code>
         <dev:remarks>
           <maml:para>Tests for Direct Routing and returns TRUE if ANY configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope CallPlans</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans [-Scope Full]</dev:code>
         <dev:remarks>
           <maml:para>Tests for Call Plans and returns TRUE if FULL configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope CallPlans -Partial</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans -Scope Partial</dev:code>
         <dev:remarks>
           <maml:para>Tests for Call Plans but returns TRUE if ANY configuration is found</maml:para>
         </dev:remarks>
@@ -15912,6 +17295,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:linkText>
+        <maml:uri>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Find-TeamsUserVoiceConfig</maml:linkText>

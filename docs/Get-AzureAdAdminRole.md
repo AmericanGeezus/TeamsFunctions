@@ -19,27 +19,29 @@ Get-AzureAdAdminRole [-Identity] <String[]> [-Type <String>] [<CommonParameters>
 ## DESCRIPTION
 Azure Active Directory Admin Roles assigned to an Object
 Requires a Connection to AzureAd
+  Querying '-Type Elibile' requires the Module AzureAdPreview installed
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-AzureAdAdminRole user@domain.com [-Type Active]
+Get-AzureAdAdminRole [-Identity] user@domain.com [-Type Active]
 ```
 
-Returns Diplaynames for all active Admin Roles
+Returns all active Admin Roles for the provided Identity
 
 ### EXAMPLE 2
 ```
-Get-AzureAdAdminRole user@domain.com -Type Eligible
+Get-AzureAdAdminRole [-Identity] user@domain.com -Type Eligible
 ```
 
-Returns  an Object for all Admin Roles assigned
+Returns all eligible Admin Roles for the provided Identity
 
 ## PARAMETERS
 
 ### -Identity
-Enter the identity of the User to Query
+Required.
+One or more UserPrincipalNames of the Office365 Administrator
 
 ```yaml
 Type: String[]
@@ -54,7 +56,9 @@ Accept wildcard characters: False
 ```
 
 ### -Type
-\[ValidateSet('Active', 'Eligible','Group')\]
+Optional.
+Switches query to Active (Default) or Eligible Admin Roles
+  Eligibility can only be queried with Module AzureAdPreview installed
 
 ```yaml
 Type: String
@@ -88,5 +92,9 @@ The Output can be used as baseline for other functions (-contains "Teams Service
 
 [Enable-AzureAdAdminRole]()
 
+[Enable-MyAzureAdAdminRole]()
+
 [Get-AzureAdAdminRole]()
+
+[Get-MyAzureAdAdminRole]()
 

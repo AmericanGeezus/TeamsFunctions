@@ -39,6 +39,7 @@
   21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
   21.02       FEB 2021 Release - Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector
   21.03       MAR 2021 Release - Switched to support for MicrosoftTeams v2.0.0.0 - Removed SkypeOnline, Bugfixes
+  21.04       APR 2021 Release - Improved stability to Connect Scripts, Added more query scripts (Licensing, Policies), Script improvements, Bugfixes
 
 .LINK
   https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
@@ -53,6 +54,30 @@
 #Re#quires -Modules @{ ModuleName="AzureAd"; ModuleVersion="2.0.2.129" }
 #Re#quires -Modules @{ ModuleName="AzureAdPreview"; ModuleVersion="2.0.2.24" }
 
+# Addressing Limitations
+function Get-StrictMode {
+  # returns the currently set StrictMode version 1, 2, 3
+  # or 0 if StrictMode is off.
+  try { $xyz = @(1); $null = ($null -eq $xyz[2]) }
+  catch { return 3 }
+
+  try { 'Not-a-Date'.Year }
+  catch { return 2 }
+
+  try { $null = ($undefined -gt 1) }
+  catch { return 1 }
+
+  return 0
+}
+
+if ((Get-StrictMode) -gt 0) {
+  <#
+  Write-Host "TeamsFunctions: Strict Mode interferes with Script execution. Switching Version to 'Latest'! - Please refer to https://github.com/DEberhardt/TeamsFunctions/issues/64 for details"
+  Set-StrictMode -Version Latest
+  #>
+  Write-Verbose 'TeamsFunctions: Strict Mode interferes with Script execution. Switching Strict Mode off - Please refer to https://github.com/DEberhardt/TeamsFunctions/issues/64 for details'
+  Set-StrictMode -Off
+}
 
 # Defining Help URL Base string:
 $global:TeamsFunctionsHelpURLBase = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/docs/'
@@ -177,8 +202,8 @@ if ($env:username -eq 'Julia.Horvath') {
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, Connect-SkypeOnline, Enable-Ev, Set-ServicePlan, `
-  Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, `
+Export-ModuleMember -Alias con, dis, pol, ear, cur, Connect-SkypeOnline, Enable-Ev, Set-ServicePlan, `
+  Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   #Test-TeamsTDP, `
   Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, `

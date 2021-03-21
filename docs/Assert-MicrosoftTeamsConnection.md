@@ -45,3 +45,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[Assert-AzureAdConnection]()
+
+[Get-CurrentConnectionInfo]()
+

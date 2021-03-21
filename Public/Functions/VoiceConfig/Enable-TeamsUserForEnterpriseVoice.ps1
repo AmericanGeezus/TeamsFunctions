@@ -66,7 +66,7 @@ function Enable-TeamsUserForEnterpriseVoice {
       try {
         Write-Verbose -Message "User '$Id' - Querying User Account"
         $UserObject = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue
-        $UserLicense = Get-TeamsUserLicense "$Id"
+        $UserLicense = Get-AzureAdUserLicense "$Id"
         $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
       }
       catch {

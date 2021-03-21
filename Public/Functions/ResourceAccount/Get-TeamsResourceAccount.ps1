@@ -224,7 +224,7 @@ function Get-TeamsResourceAccount {
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $ResourceAccountLicense = Get-TeamsUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
+      $ResourceAccountLicense = Get-AzureAdUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
 
       # Phone Number Type
       $Operation = 'Parsing PhoneNumber'
@@ -282,10 +282,9 @@ function Get-TeamsResourceAccount {
 
       Write-Progress -Id 1 -Status "Processing '$($ResourceAccount.UserPrincipalName)'" -Activity $MyInvocation.MyCommand -Completed
       Write-Output $ResourceAccountObject
+      Write-Progress -Id 0 -Status 'Information Gathering' -Activity $MyInvocation.MyCommand -Completed
     }
-
     #endregion
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
   } #process
 

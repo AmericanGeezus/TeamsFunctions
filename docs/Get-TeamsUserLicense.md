@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-TeamsUserLicense
 
 ## SYNOPSIS
-Returns License information for an Object in AzureAD
+Returns Teams License information for an Object in AzureAD
 
 ## SYNTAX
 
@@ -18,13 +18,13 @@ Get-TeamsUserLicense [-Identity] <String[]> [-DisplayAll] [<CommonParameters>]
 
 ## DESCRIPTION
 Returns an Object containing all Teams related Licenses found for a specific Object
-This script lists the UPN, Name, currently O365 Plan, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
+Licenses and ServicePlans are nested in the respective parameters for further investigation
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsUserLicense -Identity John@domain.com
+Get-TeamsUserLicense [-Identity] John@domain.com
 ```
 
 Displays all licenses assigned to User John@domain.com
@@ -47,13 +47,12 @@ Displays all licenses assigned to Users from User.csv, Column Identity.
 ## PARAMETERS
 
 ### -Identity
-The Identity/UPN/sign-in address for the user entered in the format \<name\>@\<domain\>.
-  Aliases include: "UPN","UserPrincipalName","Username"
+The Identity, UserPrincipalname or UserName for the user.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UPN, UserPrincipalName, Username
+Aliases: UserPrincipalName, Username, UPN
 
 Required: True
 Position: 1
@@ -63,8 +62,7 @@ Accept wildcard characters: False
 ```
 
 ### -DisplayAll
-Displays all ServicePlans, not only relevant Teams Plans
-Also displays AllLicenses and AllServicePlans object for further processing
+Displays all Licenses, not only identified or relevant Teams Licenses
 
 ```yaml
 Type: SwitchParameter
@@ -97,9 +95,15 @@ Requires a connection to Azure Active Directory
 
 [Get-TeamsUserLicense]()
 
+[Get-TeamsUserLicenseServicePlan]()
+
 [Set-TeamsUserLicense]()
 
 [Test-TeamsUserLicense]()
+
+[Get-AzureAdUserLicense]()
+
+[Get-AzureAdUserLicenseServicePlan]()
 
 [Get-AzureAdLicense]()
 

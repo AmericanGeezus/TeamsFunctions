@@ -129,6 +129,8 @@ Requires a connection to Azure Active Directory
 
 [Get-TeamsUserLicense]()
 
+[Get-TeamsUserLicenseServicePlan]()
+
 [Set-TeamsUserLicense]()
 
 [Test-TeamsUserLicense]()

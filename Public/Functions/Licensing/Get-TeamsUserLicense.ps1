@@ -1,27 +1,25 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
+# Updated:  01-APR-2020
 # Status:   Live
 
 
-#TODO Add Identity? Enable to pipe? Enable to find it with Get-TeamsUserVoiceConfig?
+#CHECK whether to add Identity? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
 
 function Get-TeamsUserLicense {
   <#
 	.SYNOPSIS
-    Returns License information for an Object in AzureAD
+    Returns Teams License information for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all Teams related Licenses found for a specific Object
-		This script lists the UPN, Name, currently O365 Plan, Calling Plan, Communication Credit, and Audio Conferencing Add-On License
+    Licenses and ServicePlans are nested in the respective parameters for further investigation
 	.PARAMETER Identity
-		The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
-    Aliases include: "UPN","UserPrincipalName","Username"
+		The Identity, UserPrincipalname or UserName for the user.
   .PARAMETER DisplayAll
-    Displays all ServicePlans, not only relevant Teams Plans
-    Also displays AllLicenses and AllServicePlans object for further processing
+    Displays all Licenses, not only identified or relevant Teams Licenses
 	.EXAMPLE
-		Get-TeamsUserLicense -Identity John@domain.com
+		Get-TeamsUserLicense [-Identity] John@domain.com
 		Displays all licenses assigned to User John@domain.com
 	.EXAMPLE
 		Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
@@ -45,9 +43,15 @@ function Get-TeamsUserLicense {
   .LINK
     Get-TeamsUserLicense
   .LINK
+    Get-TeamsUserLicenseServicePlan
+  .LINK
     Set-TeamsUserLicense
   .LINK
     Test-TeamsUserLicense
+  .LINK
+    Get-AzureAdUserLicense
+  .LINK
+    Get-AzureAdUserLicenseServicePlan
   .LINK
     Get-AzureAdLicense
   .LINK
@@ -58,10 +62,10 @@ function Get-TeamsUserLicense {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
-    [Alias('UPN', 'UserPrincipalName', 'Username')]
+    [Alias('UserPrincipalName', 'Username', 'UPN')]
     [string[]]$Identity,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Displays all ServicePlans')]
+    [Parameter(HelpMessage = 'Displays all Licenses, not only Teams relevant')]
     [switch]$DisplayAll
   ) #param
 
@@ -98,13 +102,17 @@ function Get-TeamsUserLicense {
     $AllServicePlans = $null
     $AllServicePlans = $global:TeamsFunctionsMSAzureAdLicenseServicePlans
 
+    if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+      $previousFEL = $global:FormatEnumerationLimit
+      $global:FormatEnumerationLimit = -1
+    }
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
       try {
-        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP | Select-Object UsageLocation, DisplayName
+        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
@@ -121,17 +129,16 @@ function Get-TeamsUserLicense {
       foreach ($PartNumber in $assignedSkuPartNumbers) {
         $Lic = $null
         $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ $Partnumber
-        if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
+        #VALIDATE filter RelevantForTeams directly here since Get-AzureAdUserLicense will do "all" anyway
+        if ($null -ne $Lic -or $Lic.IncludesTeams -or $Lic.IncludesPhoneSystem -or $PSBoundParameters.ContainsKey('DisplayAll')) {
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          }
+
           [void]$UserLicenses.Add($Lic)
         }
       }
       $UserLicensesSorted = $UserLicenses | Sort-Object IncludesTeams, IncludesPhoneSystem, ProductName
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$LicensesProductNames = $UserLicensesSorted.ProductName
-      }
-      else {
-        [string]$LicensesProductNames = ($UserLicensesSorted | Where-Object { $_.IncludesTeams -or $_.IncludesPhoneSystem } ).ProductName
-      }
 
       # Querying Service Plans
       $assignedServicePlans = $UserLicenseDetail.ServicePlans | Sort-Object ServicePlanName
@@ -139,7 +146,16 @@ function Get-TeamsUserLicense {
       foreach ($ServicePlan in $assignedServicePlans) {
         $Lic = $null
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
-        if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
+        #VALIDATE filter RelevantForTeams directly here since Get-AzureAdUserLicense will do "all" anyway
+        #if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
+        if (($null -ne $Lic -and $Lic.RelevantForTeams) -or $PSBoundParameters.ContainsKey('DisplayAll')) {
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          }
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name): ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          }
+
           $LicObj = [PSCustomObject][ordered]@{
             ProductName        = if ($Lic.ProductName) { $Lic.ProductName } else { $ServicePlan.ServicePlanName }
             ServicePlanName    = $ServicePlan.ServicePlanName
@@ -150,14 +166,8 @@ function Get-TeamsUserLicense {
         }
       }
       $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        [string]$ServicePlansProductNames = $UserServicePlansSorted.ProductName
-      }
-      else {
-        #[string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object { $_.RelevantForTeams }).ProductName
-        [string]$ServicePlansProductNames = ($UserServicePlansSorted | Where-Object RelevantForTeams).ProductName
-      }
 
+      # Adding Boolean results
       $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
       $AudioConfLicense = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
       $PhoneSystemVirtual = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
@@ -206,9 +216,10 @@ function Get-TeamsUserLicense {
       $output = [PSCustomObject][ordered]@{
         UserPrincipalName        = $User
         DisplayName              = $DisplayName
+        ObjectId                 = $UserObject.ObjectId
         UsageLocation            = $UserObject.UsageLocation
-        Licenses                 = $LicensesProductNames
-        ServicePlans             = $ServicePlansProductNames
+        Licenses                 = $UserLicensesSorted
+        ServicePlans             = $UserServicePlansSorted
         AudioConferencing        = $AudioConfLicense
         CommoneAreaPhoneLicense  = $CommonAreaPhoneLic
         PhoneSystemVirtualUser   = $PhoneSystemVirtual
@@ -221,16 +232,19 @@ function Get-TeamsUserLicense {
         CallingPlan              = $currentCallingPlan
       }
 
-      if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-        $output | Add-Member -MemberType NoteProperty -Name AllLicenses -Value $($UserLicensesSorted | Select-Object *)
-        $output | Add-Member -MemberType NoteProperty -Name AllServicePlans -Value $UserServicePlansSorted
-      }
+      #Adding Script Method to Licenses and ServicePlans
+      $output.Licenses | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
+      $output.ServicePlans | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
 
       Write-Output $output
     }
   } #process
 
   end {
+    if ($PSBoundParameters.ContainsKey('DisplayAll')) {
+      $global:FormatEnumerationLimit = $previousFEL
+    }
+
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-TeamsUserLicense

@@ -13,7 +13,7 @@ Tests whether any Voice Configuration has been applied to one or more Users
 ## SYNTAX
 
 ```
-Test-TeamsUserVoiceConfig [-Identity] <String[]> -Scope <String> [-Partial] [<CommonParameters>]
+Test-TeamsUserVoiceConfig [-Identity] <String[]> [-Partial] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,28 +24,28 @@ For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing P
 
 ### EXAMPLE 1
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope DirectRouting
+Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting [-Scope Full]
 ```
 
 Tests for Direct Routing and returns TRUE if FULL configuration is found
 
 ### EXAMPLE 2
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope DirectRouting -Partial
+Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting -Scope Partial
 ```
 
 Tests for Direct Routing and returns TRUE if ANY configuration is found
 
 ### EXAMPLE 3
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope CallPlans
+Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans [-Scope Full]
 ```
 
 Tests for Call Plans and returns TRUE if FULL configuration is found
 
 ### EXAMPLE 4
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Scope CallPlans -Partial
+Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans -Scope Partial
 ```
 
 Tests for Call Plans but returns TRUE if ANY configuration is found
@@ -59,32 +59,12 @@ UserPrincipalName of the User to be tested
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName
 
 Required: True
 Position: 1
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Scope
-Required.
-Value to focus the Script on.
-Allowed Values are DirectRouting,CallingPlans,SkypeHybridPSTN
-Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
-Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
-Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -116,14 +96,16 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Boolean
 ## NOTES
 All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
-Partial configuration provides insight for incorrectly de-provisioned configuration that could block configuration for the other.
-For Example: Set-CsUser -Identity $UserPrincipalName -OnPremLineURI
-  This will fail if a Domestic Call Plan is assigned OR a TelephoneNumber is remaining assigned to the Object.
-  "Remove-TeamsUserVoiceConfig -Force" can help
+Partial configuration provides insight for incorrectly provisioned configuration.
+Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
+Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
+Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
 
 [Find-TeamsUserVoiceConfig]()
 

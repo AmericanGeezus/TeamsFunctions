@@ -54,14 +54,17 @@ function Verb-Noun {
 
   begin {
     Show-FunctionStatus -Level Alpha
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
+
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    # Asserting SkypeOnline Connection
-    if (-not (Assert-SkypeOnlineConnection)) { break }
+    # Asserting MicrosoftTeams Connection
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -90,14 +93,20 @@ function Verb-Noun {
       #FIXIT  Same as Fixme
       #FIX    Same as Fixme
       #CHECK  White on BLUE, text only, TBD, gutter
-      #TEST   White on PURPLE, text only, TBD, gutter
+      #TEST   White on CYAN, text only, TBD, gutter
       #VALIDATE   Same as Test
       #IMPROVE  Check performance
       #DOC    White on GREY?, text only, SHEET?
       #WRITE  Same as DOC
       #NOTE   Same as DOC?
+      [ ] Open task
+      [x] Closed task
 
     } #foreach Identity
+
+    if ($stack.length -lt 3) {
+      Write-Verbose -Message ''
+    }
 
   } #process
 

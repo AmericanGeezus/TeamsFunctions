@@ -26,27 +26,35 @@ To quickly find Tenant Dial Plans to assign, an Alias-Function to Get-CsTenantDi
 Get-TeamsVNR
 ```
 
-Lists Identities (Names) of all Tenant Dial Plans (except "Global")
+Returns the Object for all Tenant Dial Plans (except "Global")
+Behaviour like: Get-CsTenantDialPlan, showing only a few Parameters (no Normalization Rules)
 
 ### EXAMPLE 2
 ```
 Get-TeamsVNR -Identity DP-HUN
 ```
 
-Lists Tenant Dial Plan DP-HUN as Get-CsTenantDialPlan does.
+Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists).
+Behaviour like: (Get-CsTenantDialPlan -Identity "DP-HUN").NormalizationRules
 
 ### EXAMPLE 3
 ```
 Get-TeamsVNR -Filter DP-HUN
 ```
 
-Lists all Tenant Dials that contain the strign "DP-HUN" in the Name.
+Filters all Tenant Dial Plans that contain the string "DP-HUN" in the Name.
+Returns Tenant Dial Plans if more than 3 results are found.
+Behaviour like: Get-CsTenantDialPlan -Identity "*DP-HUN*"
+Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists).
+Behaviour like: (Get-CsTenantDialPlan -Identity "*DP-HUN*").NormalizationRules
 
 ## PARAMETERS
 
 ### -Identity
-If provided, acts as an Alias to Get-CsTenantDialPlan, listing Normalisation Rules for this Dial Plan
+String.
+Name or part of the Teams Dial Plan.
 If not provided, lists Identities of all Tenant Dial Plans (except "Global")
+If provided without a '*' in the name, an exact match is sought.
 
 ```yaml
 Type: String
@@ -69,7 +77,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## NOTES
 Without parameters, it executes the following string:
-Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity -ExpandProperty Identity
+Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, Pattern, Translation, Description
 
 ## RELATED LINKS
 
@@ -78,6 +86,14 @@ Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identi
 [Get-TeamsTDP]()
 
 [Get-TeamsVNR]()
+
+[Get-TeamsIPP]()
+
+[Get-TeamsCP]()
+
+[Get-TeamsECP]()
+
+[Get-TeamsECRP]()
 
 [Get-TeamsOVP]()
 

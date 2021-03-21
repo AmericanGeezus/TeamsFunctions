@@ -274,7 +274,7 @@ function New-TeamsResourceAccount {
         Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
 
         $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue
-        if ($PSBoundParameters.ContainsKey('Debug')) {
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name)", ($ResourceAccountCreated | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
       }
@@ -477,7 +477,7 @@ function New-TeamsResourceAccount {
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $ResourceAccountLicense = Get-TeamsUserLicense -Identity $UPN
+      $ResourceAccountLicense = Get-AzureAdUserLicense -Identity $UPN
 
       # readable Application type
       $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId

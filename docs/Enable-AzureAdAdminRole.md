@@ -244,5 +244,9 @@ Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this scrip
 
 [Enable-AzureAdAdminRole]()
 
+[Enable-MyAzureAdAdminRole]()
+
 [Get-AzureAdAdminRole]()
+
+[Get-MyAzureAdAdminRole]()
 
