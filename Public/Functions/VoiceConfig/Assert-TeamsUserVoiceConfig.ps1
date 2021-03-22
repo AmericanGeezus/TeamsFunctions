@@ -83,7 +83,7 @@ function Assert-TeamsUserVoiceConfig {
         $User = $CsOnlineUser.UserPrincipalName
       }
       catch {
-        Write-Error -Message "User '$User' not found"
+        Write-Error -Message "User '$Id' not found"
         continue
       }
       if ($CsOnlineUser.InterpretedUserType -notlike '*User*') {

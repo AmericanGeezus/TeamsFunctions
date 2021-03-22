@@ -25,8 +25,10 @@ function Test-MicrosoftTeamsConnection {
   param() #param
 
   begin {
-    Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Show-FunctionStatus -Level Live
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
 
   } #begin
 
@@ -39,10 +41,14 @@ function Test-MicrosoftTeamsConnection {
         return $false
       }
       if ($Sessions.Count -ge 1) {
-        Write-Verbose 'Teams Session found'
+        if (-not $Called) {
+          Write-Verbose 'Teams Session found'
+        }
         $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
         if ($Sessions.Count -ge 1) {
-          Write-Verbose 'Teams Session found, open and valid'
+          if (-not $Called) {
+            Write-Verbose 'Teams Session found, open and valid'
+          }
           return $true
         }
         else {

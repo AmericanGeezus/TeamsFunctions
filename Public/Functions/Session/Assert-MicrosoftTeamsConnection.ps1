@@ -31,6 +31,7 @@ function Assert-MicrosoftTeamsConnection {
   param() #param
 
   begin {
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
@@ -38,6 +39,7 @@ function Assert-MicrosoftTeamsConnection {
   } #begin
 
   process {
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if (Test-MicrosoftTeamsConnection) {
       if ($stack.length -lt 3) {
@@ -98,6 +100,7 @@ function Assert-MicrosoftTeamsConnection {
   } #process
 
   end {
+    #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
     if (-not $Called) {
       Get-CurrentConnectionInfo
     }
