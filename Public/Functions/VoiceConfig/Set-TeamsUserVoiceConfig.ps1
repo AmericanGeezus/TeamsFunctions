@@ -243,11 +243,17 @@ function Set-TeamsUserVoiceConfig {
       Write-Verbose "User '$Identity' - Enterprise Voice Status: Not enabled, trying to Enable"
       if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
         $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+        if ($IsEVenabled) {
+          Write-Information "SUCCESS: User '$Identity' - Enabling user for Enterprise Voice: OK"
+        }
       }
+    }
+    else {
+      Write-Verbose -Message "User '$Identity' - Enabling user for Enterprise Voice: Already enabled" -Verbose
     }
 
     if ( -not $IsEVenabled) {
-      Write-Error -Message 'Enterprise Voice Status: Not enabled - Could not enable Object. Please investigate'
+      Write-Error -Message 'User '$Identity' - Enabling user for Enterprise Voice - Could not enable Object. Please investigate'
       return
     }
 
@@ -302,7 +308,7 @@ function Set-TeamsUserVoiceConfig {
       Write-Verbose -Message 'Enabling user for Hosted Voicemail'
       if ( $Force -or -not $CsUser.HostedVoicemail) {
         try {
-          $CsUser | Set-CsUser -HostedVoicemail $TRUE -ErrorAction Stop
+          $CsUser | Set-CsUser -HostedVoiceMail $TRUE -ErrorAction Stop
           Write-Information "SUCCESS: User '$Identity' - Enabling user for Hosted Voicemail: OK"
         }
         catch {
@@ -392,7 +398,7 @@ function Set-TeamsUserVoiceConfig {
                 #CHECK this: Set-TeamsRA removes first (if Force or Empty), then applies anew (if force or not empty) - replicate?
                 #Error Message: Filter failed to return unique result"
                 try {
-                  $CsUser | Set-CsUser -OnPremLineUri $Number -ErrorAction Stop
+                  $CsUser | Set-CsUser -OnPremLineURI $Number -ErrorAction Stop
                   Write-Information "SUCCESS: User '$Identity' - Applying Phone Number: OK - '$Number'"
                 }
                 catch {
@@ -415,7 +421,7 @@ function Set-TeamsUserVoiceConfig {
           else {
             try {
               Write-Warning -Message "User '$Identity' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
-              $CsUser | Set-CsUser -OnPremLineUri $null
+              $CsUser | Set-CsUser -OnPremLineURI $null
               Write-Information "SUCCESS: User '$Identity' - Removing Phone Number: OK"
             }
             catch {
@@ -479,7 +485,7 @@ function Set-TeamsUserVoiceConfig {
           }
           else {
             Write-Warning -Message "User '$Identity' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
-            $CsUser | Set-CsUser -OnPremLineUri $null
+            $CsUser | Set-CsUser -OnPremLineURI $null
             Write-Verbose -Message "User '$Identity' - Removing Phone Number: OK" -Verbose
           }
         }
