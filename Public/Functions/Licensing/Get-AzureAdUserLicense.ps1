@@ -4,7 +4,7 @@
 # Updated:  01-APR-2020
 # Status:   RC
 
-
+#DOC Update documentation!
 #CHECK whether to add Identity? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
 
 function Get-AzureAdUserLicense {

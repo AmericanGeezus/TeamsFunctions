@@ -165,7 +165,7 @@ function Find-AzureAdUser {
 
     # Output - Filtering objects
     if ( $Users ) {
-      $Users | Sort-Object -Unique -Property ObjectId | Get-Unique
+      $Users | Sort-Object -Unique -Property ObjectId | Get-Unique | Sort-Object DisplayName
     }
   } #process
 
