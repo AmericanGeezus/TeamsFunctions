@@ -42,7 +42,7 @@ Install-Module TeamsFunctions -AllowPrerelease
 - Markdown files for all CmdLets can be found in [/docs](/docs) automatically with PlatyPS and updated with each Version
 - [My blog](https://davideberhardt.wordpress.com/) will contain updates and explanations from time to time.
 - A breakdown of the Change log for Major Versions can be found in [VERSION.md](VERSION.md)
-- A detailed breakdown of changes for Pre-Release Versions is recorded in [VERSION-PreRelease.md](VERSION-PreRelease.md)
+- A detailed breakdown of changes for Pre-Release Versions is recorded in [VERSION-prerelease.md](VERSION-prerelease.md)
 
 ## Development
 

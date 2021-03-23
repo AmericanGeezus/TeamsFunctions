@@ -2,7 +2,17 @@
 
 Pre-releases are documented here and will be transferred to VERSION.md monthly in cadence with the release cycle
 
-## v21.03.x pre-release
+## unreleased/vNext
+
+### New
+
+- Module: Handling of Strict Mode (if activated) and switching it off.
+### Updated
+
+- `Connect-Me`: Catching non-activation of MFA for better feedback
+- `Enable-MyAzureAdAdminRole`: Catching non-activation of MFA for better feedback
+
+## v21.03.21 pre-release
 
 [![Passed Tests](https://img.shields.io/badge/Tests%20Passed-1181-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 

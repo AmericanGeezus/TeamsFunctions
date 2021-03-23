@@ -75,7 +75,12 @@ function Enable-MyAzureAdAdminRole {
         }
         catch {
           return $(if ($Called) { $false } else {
-              Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management is not enabled for this tenant' -InformationAction Continue
+              if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"]') {
+                Write-Information 'Enable-MyAzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry' -InformationAction Continue
+              }
+              else {
+                Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management is not enabled for this tenant' -InformationAction Continue
+              }
             })
         }
       }

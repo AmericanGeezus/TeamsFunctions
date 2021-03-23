@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#CHECK whether to remove -DisableEV (and merge it with Force) - there might be a reason for it
 
 function Remove-TeamsUserVoiceConfig {
   <#

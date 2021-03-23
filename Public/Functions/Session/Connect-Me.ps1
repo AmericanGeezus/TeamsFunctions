@@ -215,7 +215,12 @@ function Connect-Me {
                 }
               }
               catch {
-                Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+                if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"') {
+                  Write-Warning 'Enable-AzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry'
+                }
+                else {
+                  Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+                }
                 $PIMavailable = $false
               }
             }

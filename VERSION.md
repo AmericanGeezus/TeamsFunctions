@@ -17,7 +17,6 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 ### Focus for this month
 
 - Transition to Module MicrosoftTeams (v2.0.0) - Connect-MicrosoftTeams now also connects to SkypeOnline by default
--
 - Bugfixing
 
 ### Requirements
