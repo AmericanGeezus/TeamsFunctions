@@ -7,10 +7,14 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### New
 
 - Module: Handling of Strict Mode (if activated) and switching it off.
+
 ### Updated
 
 - `Connect-Me`: Catching non-activation of MFA for better feedback
 - `Enable-MyAzureAdAdminRole`: Catching non-activation of MFA for better feedback
+- `Set-TeamsUserVoiceConfig`: Tweaks for handling PhoneSystemStatus of PendingInput
+- `Get-TeamsUserVoiceConfig`: Added nested Object for Licensing
+- `Find-AzureAdUser`: Improved output by Sorting by DisplayName
 
 ## v21.03.21 pre-release
 

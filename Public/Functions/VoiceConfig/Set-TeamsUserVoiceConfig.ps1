@@ -205,10 +205,15 @@ function Set-TeamsUserVoiceConfig {
         Write-Verbose -Message "User '$Identity' - PhoneSystem License is assigned - Validating PhoneSystemStatus"
         if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
           try {
-            Write-Information "TRYING:  User '$Identity' - PhoneSystem License is assigned - ServicePlan PhoneSystem disabled - Trying to activate"
-            Set-AzureAdLicenseServicePlan -Identity $CsUser.UserPrincipalName -Enable MCOEV -ErrorAction Stop
-            if (-not (Get-AzureAdUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
-              throw
+            if ( $CsUser.PhoneSystemStatus.Contains('Disabled')) {
+              Write-Information "TRYING:  User '$Identity' - PhoneSystem License is assigned - ServicePlan PhoneSystem is Disabled - Trying to activate"
+              Set-AzureAdLicenseServicePlan -Identity $CsUser.UserPrincipalName -Enable MCOEV -ErrorAction Stop
+              if (-not (Get-AzureAdUserLicense -Identity "$Identity").PhoneSystemStatus.Contains('Success')) {
+                throw
+              }
+            }
+            else {
+              Write-Information "TRYING:  User '$Identity' - PhoneSystem License is assigned - ServicePlan is: $($CsUser.PhoneSystemStatus)"
             }
           }
           catch {
@@ -228,11 +233,19 @@ function Set-TeamsUserVoiceConfig {
     }
     catch {
       # Unlicensed
-      Write-Warning -Message "User '$Identity' - PhoneSystem License is not assigned. User is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status must be 'Success'. Assignment will continue, though be only partially successful."
-      Write-Verbose -Message 'License Status:' -Verbose
-      $UserLic.Licenses
-      $ErrorLog += $_.Exception.Message
-      return
+      if ($force) {
+        Write-Warning -Message "User '$Identity' - PhoneSystem License is not correctly licensed. PhoneSystem Service Plan status must be 'Success'. Assignment will continue, though will be only partially successful."
+      }
+      else {
+        Write-Verbose -Message 'License Status:' -Verbose
+        $UserLic.Licenses
+        Write-Verbose -Message 'Service Plan Status (PhoneSystem):' -Verbose
+        $UserLic.ServicePlans | Where-Object ServicePlanName -eq "MCOEV"
+        $ErrorLog += $_.Exception.Message
+        Write-Error -Message "User '$Identity' - PhoneSystem License is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
+        return
+        #throw "User '$Identity' - PhoneSystem License is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
+      }
     }
 
     # Enable if not Enabled for EnterpriseVoice
