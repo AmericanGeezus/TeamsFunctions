@@ -29,9 +29,6 @@ function Set-TeamsCommonAreaPhone {
 		If not provided, will default to PhoneSystem_VirtualUser
 		Unlicensed Objects can exist, but cannot be assigned a phone number
     NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
-  .PARAMETER Password
-    Optional. String. 8 to 16 characters, at least one uppercase letter, one lowercase letter and one number.
-    If not provided a random Password is chosen and displayed in the Output
 	.PARAMETER IPPhonePolicy
 		Optional. Adds an IP Phone Policy to the User
 	.PARAMETER TeamsCallingPolicy

@@ -94,6 +94,9 @@ function Assert-TeamsCallableEntity {
       if ( $Object.PhoneSystemStatus.Contains('Success')) {
         Write-Verbose -Message "Target '$Identity' found and licensed"
       }
+      elseif ( $Object.PhoneSystemStatus.Contains('PendingInput')) {
+        Write-Verbose -Message "Target '$Identity' found and licensed (Pending Input)"
+      }
       else {
         #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet
         <#

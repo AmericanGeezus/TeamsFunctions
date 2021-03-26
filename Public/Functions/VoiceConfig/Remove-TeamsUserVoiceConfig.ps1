@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK whether to remove -DisableEV (and merge it with Force) - there might be a reason for it
+
 
 function Remove-TeamsUserVoiceConfig {
   <#
@@ -304,6 +304,7 @@ function Remove-TeamsUserVoiceConfig {
       #endregion
 
       #region Disabling EnterpriseVoice
+      #CHECK whether to remove -DisableEV (and merge it with Force) - there might be a reason for it
       if ( $Force -or $CsUser.EnterpriseVoiceEnabled ) {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
           $Operation = 'Generic - Disabling Enterprise Voice'

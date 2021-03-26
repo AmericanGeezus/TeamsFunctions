@@ -70,7 +70,11 @@ function Enable-MyAzureAdAdminRole {
               })
           }
           else {
-            #TODO Query active roles with GET and feed these back! (Direct Assignments)
+            #TEST Query active roles with GET and feed these back! (Direct Assignments)
+            return $(if ($Called) { $ActivatedRoles } else {
+                Write-Information 'Enable-MyAzureAdAdminrole - No Roles activated, the following roles are active' -InformationAction Continue
+                Get-MyAzureAdAdminRole
+              })
           }
         }
         catch {
