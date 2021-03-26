@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   RC
 
-#CHECK "Karen wants to call the manager"^^
+#CHECK "Karen wants to call the manager"^^ - Evaluate Management of RA/CQ/AA once available.
 
 
 function Set-TeamsResourceAccount {
@@ -179,6 +179,10 @@ function Set-TeamsResourceAccount {
     if ( $PhoneNumber ) { $sMax++ }
     if ( $PassThru ) { $sMax++ }
 
+    # Enabling $Confirm to work with $Force
+    if ($Force -and -not $Confirm) {
+      $ConfirmPreference = 'None'
+    }
   } #begin
 
   process {
@@ -232,17 +236,17 @@ function Set-TeamsResourceAccount {
       # Does the ApplicationType differ? Does it have to be changed?
       if ($AppId -eq $CurrentAppId) {
         # Application IDs match - Type does not need to be changed
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' Application Type already set to: $ApplicationType"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' Application Type already set to: $ApplicationType"
       }
       else {
         # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
         $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UserPrincipalName -WarningAction SilentlyContinue -ErrorAction Ignore
         if ($Associations.count -gt 0) {
           # Associations found. Aborting
-          Write-Error -Message "'$Name ($UserPrincipalName )' ApplicationType cannot be changed! Object is associated with Call Queue or AutoAttendant." -Category OperationStopped -RecommendedAction 'Remove Associations with Remove-CsOnlineApplicationInstanceAssociation manually' -ErrorAction Stop
+          Write-Error -Message "'$Name ($UserPrincipalName)' ApplicationType cannot be changed! Object is associated with Call Queue or AutoAttendant." -Category OperationStopped -RecommendedAction 'Remove Associations with Remove-CsOnlineApplicationInstanceAssociation manually' -ErrorAction Stop
         }
         else {
-          Write-Verbose -Message "'$Name ($UserPrincipalName )' Application Type will be changed to: $ApplicationType"
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' Application Type will be changed to: $ApplicationType"
         }
       }
     }
@@ -257,45 +261,56 @@ function Set-TeamsResourceAccount {
     # Querying CurrentPhoneNumber
     try {
       $CurrentPhoneNumber = $Object.PhoneNumber.Replace('tel:', '')
-      Write-Verbose -Message "'$Name ($UserPrincipalName )' Phone Number assigned currently: $CurrentPhoneNumber"
+      Write-Verbose -Message "'$Name ($UserPrincipalName)' Phone Number assigned currently: '$CurrentPhoneNumber'"
     }
     catch {
       $CurrentPhoneNumber = $null
-      Write-Verbose -Message "'$Name ($UserPrincipalName )' Phone Number assigned currently: NONE"
+      Write-Verbose -Message "'$Name ($UserPrincipalName)' Phone Number assigned currently: NONE"
     }
 
     if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
       #Validating Phone Number
-      if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
+      if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
+        #TEST this. Was prior: if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
         if ($CurrentPhoneNumber) {
-          Write-Warning -Message "PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
+          Write-Warning -Message "'$Name ($UserPrincipalName)' PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
         }
         else {
-          Write-Verbose -Message 'PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken'
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken"
         }
         $PhoneNumber = $null
       }
       elseif ($PhoneNumber -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
         if ( $PhoneNumber -match 'ext' ) {
-          Write-Warning -Message "PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
+          Write-Warning -Message "'$Name ($UserPrincipalName)' PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
         }
         $E164Number = Format-StringForUse $PhoneNumber -As E164
-        #TEST Application of already assigned number (and FORCE)
         if ($CurrentPhoneNumber -eq $E164Number -and -not $force) {
-          Write-Verbose -Message "PhoneNumber '$E164Number' is already applied"
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' PhoneNumber '$E164Number' is already applied"
         }
         else {
-          Write-Verbose -Message "PhoneNumber '$E164Number' is in a usable format and will be applied"
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' PhoneNumber '$E164Number' is in a usable format and will be applied"
           # Checking number is free
-          Write-Verbose -Message 'PhoneNumber - Finding Number assignments'
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' PhoneNumber - Finding Number assignments"
           $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
           if ($UserWithThisNumber) {
-            Write-Error -Message "'$Name ($UserPrincipalName )' Number '$E164Number' is already assigned to another User" -Category NotImplemented -RecommendedAction 'Please specify a different Number ' -ErrorAction Stop
+            if ($Force) {
+              Write-Warning -Message "'$Name ($UserPrincipalName)' Number '$E164Number' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
+            }
+            else {
+              Write-Error -Message "'$Name ($UserPrincipalName)' Number '$E164Number' is already assigned to another Object" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
+            }
           }
         }
       }
       else {
         Write-Error -Message "PhoneNumber '$PhoneNumber' - Not a valid Phone number. Please provide a number starting with a + and 10 to 15 digits long" -ErrorAction Stop
+      }
+    }
+    else {
+      #PhoneNumber is not provided
+      if ( -not $CurrentPhoneNumber ) {
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' Phone Number not provided or present. Resource Account will only be able to be called internally"
       }
     }
     #endregion
@@ -309,24 +324,24 @@ function Set-TeamsResourceAccount {
     $CurrentUsageLocation = (Get-AzureADUser -ObjectId "$UserPrincipalName" -WarningAction SilentlyContinue).UsageLocation
     if ($PSBoundParameters.ContainsKey('UsageLocation')) {
       if ($Usagelocation -eq $CurrentUsageLocation) {
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' Usage Location already set to: $CurrentUsageLocation"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' Usage Location already set to: $CurrentUsageLocation"
       }
       else {
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' Usage Location will be set to: $Usagelocation"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' Usage Location will be set to: $Usagelocation"
       }
     }
     else {
       if ($null -ne $CurrentUsageLocation) {
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' Usage Location currently set to: $CurrentUsageLocation"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' Usage Location currently set to: $CurrentUsageLocation"
         $UsageLocation = $CurrentUsageLocation
       }
       else {
         if (($PSBoundParameters.ContainsKey('License')) -or ($PSBoundParameters.ContainsKey('PhoneNumber'))) {
-          Write-Error -Message "'$Name ($UserPrincipalName )' Usage Location not set!" -Category ObjectNotFound -RecommendedAction 'Please run command again and specify -UsageLocation'# -ErrorAction Stop
+          Write-Error -Message "'$Name ($UserPrincipalName)' Usage Location not set!" -Category ObjectNotFound -RecommendedAction 'Please run command again and specify -UsageLocation'# -ErrorAction Stop
           return
         }
         else {
-          Write-Warning -Message "'$Name ($UserPrincipalName )' Usage Location not set! This is a requirement for License assignment and Phone Number"
+          Write-Warning -Message "'$Name ($UserPrincipalName)' Usage Location not set! This is a requirement for License assignment and Phone Number"
         }
       }
     }
@@ -348,10 +363,10 @@ function Set-TeamsResourceAccount {
         $CurrentLicense = 'PhoneSystemVirtualUser'
       }
       if ($null -ne $CurrentLicense) {
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' Current License assigned: $CurrentLicense"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' Current License assigned: $CurrentLicense"
       }
       else {
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' Current License assigned: NONE"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' Current License assigned: NONE"
       }
     }
     #endregion
@@ -394,7 +409,7 @@ function Set-TeamsResourceAccount {
       if ($AppId -ne $CurrentAppId) {
         try {
           if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -ApplicationId $AppId")) {
-            Write-Verbose -Message "'$Name ($UserPrincipalName )' Setting Application Type to: $ApplicationType"
+            Write-Verbose -Message "'$Name ($UserPrincipalName)' Setting Application Type to: $ApplicationType"
             $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -ApplicationId $AppId -ErrorAction STOP)
             Write-Verbose -Message 'SUCCESS'
           }
@@ -417,14 +432,14 @@ function Set-TeamsResourceAccount {
       if ($PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-AzureADUser -UsageLocation $UsageLocation")) {
         try {
           Set-AzureADUser -ObjectId $UserPrincipalName -UsageLocation $UsageLocation -ErrorAction STOP
-          Write-Verbose -Message "'$Name ($UserPrincipalName )' SUCCESS - Usage Location set to: $UsageLocation"
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' SUCCESS - Usage Location set to: $UsageLocation"
         }
         catch {
           if ($PSBoundParameters.ContainsKey('License')) {
-            Write-Error -Message "'$Name ($UserPrincipalName )' Usage Location could not be set. Please apply manually before applying license" -Category NotSpecified -RecommendedAction 'Apply manually, then run Set-TeamsResourceAccount to apply license and phone number'
+            Write-Error -Message "'$Name ($UserPrincipalName)' Usage Location could not be set. Please apply manually before applying license" -Category NotSpecified -RecommendedAction 'Apply manually, then run Set-TeamsResourceAccount to apply license and phone number'
           }
           else {
-            Write-Warning -Message "'$Name ($UserPrincipalName )' Usage Location cannot be set. If a license is needed, please assign UsageLocation manually beforehand"
+            Write-Warning -Message "'$Name ($UserPrincipalName)' Usage Location cannot be set. If a license is needed, please assign UsageLocation manually beforehand"
           }
         }
       }
@@ -449,7 +464,7 @@ function Set-TeamsResourceAccount {
 
       if ($License -eq $CurrentLicense) {
         # No action required
-        Write-Information "'$Name ($UserPrincipalName )' License '$License' already assigned."
+        Write-Information "'$Name ($UserPrincipalName)' License '$License' already assigned."
         $IsLicensed = $true
       }
       # Verifying License is available
@@ -463,12 +478,12 @@ function Set-TeamsResourceAccount {
           try {
             if ($PSCmdlet.ShouldProcess("$UserPrincipalName", 'Set-TeamsUserLicense -Add PhoneSystemVirtualUser')) {
               $null = (Set-TeamsUserLicense -Identity $UserPrincipalName -Add $License -ErrorAction STOP)
-              Write-Information "'$Name ($UserPrincipalName )' License assignment - '$License' SUCCESS"
+              Write-Information "'$Name ($UserPrincipalName)' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
           }
           catch {
-            Write-Error -Message "'$Name ($UserPrincipalName )' License assignment failed for '$License'"
+            Write-Error -Message "'$Name ($UserPrincipalName)' License assignment failed for '$License'"
             Write-Debug $_
           }
         }
@@ -477,12 +492,12 @@ function Set-TeamsResourceAccount {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
             $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
-            Write-Information "'$Name ($UserPrincipalName )' License assignment - '$License' SUCCESS"
+            Write-Information "'$Name ($UserPrincipalName)' License assignment - '$License' SUCCESS"
             $IsLicensed = $true
           }
         }
         catch {
-          Write-Error -Message "'$Name ($UserPrincipalName )' License assignment failed for '$License'"
+          Write-Error -Message "'$Name ($UserPrincipalName)' License assignment failed for '$License'"
           Write-Debug $_
         }
       }
@@ -531,21 +546,47 @@ function Set-TeamsResourceAccount {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
+      #TEST Application of entire section!
+      if ( $Force -and $PhoneNumber -and $UserWithThisNumber ) {
+        # Removing number from previous Object
+        try {
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' ACTION: Scavenging Phone Number FROM '$($UserWithThisNumber.UserPrincipalName)'"
+          if ('ApplicationInstance' -in $UserWithThisNumber.InterpretedUserType) {
+            if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
+              Set-TeamsResourceAccount -UserPrincipalName $($UserWithThisNumber.UserPrincipalName) -PhoneNumber $Null
+              Write-Information "Resource Account '$($UserWithThisNumber.UserPrincipalName)' - Phone Number removed: OK"
+            }
+          }
+          elseif ('User' -in $UserWithThisNumber.InterpretedUserType) {
+            if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
+              $UserWithThisNumber | Set-TeamsUserVoiceConfig -PhoneNumber $Null
+              Write-Information "User '$($UserWithThisNumber.UserPrincipalName)' - Phone Number removed: OK"
+            }
+          }
+          else {
+            Write-Error -Message "Scavenging Phone Number from $($UserWithThisNumber.UserPrincipalName) failed. Object is not a User or a ResourceAccount"
+          }
+        }
+        catch {
+          Write-Error -Message "Scavenging Phone Number from $($UserWithThisNumber.UserPrincipalName) failed with Exception: $($_.Exception.Message)"
+        }
+      }
+
       # Removing old Number (if $null or different to current)
       #VALIDATE application of empty or Null does indeed remove the phonenumber!
       if ($null -eq $PhoneNumber -or $force -or $CurrentPhoneNumber -ne $PhoneNumber) {
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' ACTION: Removing Phone Number"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' ACTION: Removing Phone Number"
         try {
           $UVCObject = Get-TeamsUserVoiceConfig -Identity $UserPrincipalName -ErrorVariable Stop
           if ($null -ne ($UVCObject.TelephoneNumber)) {
             # Remove from VoiceApplicationInstance
-            Write-Verbose -Message "'$Name ($UserPrincipalName )' Removing Microsoft Number"
+            Write-Verbose -Message "'$Name ($UserPrincipalName)' Removing Microsoft Number"
             $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -TelephoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
             Write-Verbose -Message 'SUCCESS'
           }
           if ($null -ne ($UVCObject.OnPremLineURI)) {
             # Remove from ApplicationInstance
-            Write-Verbose -Message "'$Name ($UserPrincipalName )' Removing Direct Routing Number"
+            Write-Verbose -Message "'$Name ($UserPrincipalName)' Removing Direct Routing Number"
             $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
             Write-Verbose -Message 'SUCCESS'
           }
@@ -559,7 +600,7 @@ function Set-TeamsResourceAccount {
         }
       }
       else {
-        Write-Verbose -Message "'$Name ($UserPrincipalName )' No Number assigned"
+        Write-Verbose -Message "'$Name ($UserPrincipalName)' No Number assigned"
       }
 
       # Assigning Telephone Number
@@ -568,7 +609,7 @@ function Set-TeamsResourceAccount {
           Write-Error -Message 'A Phone Number can only be assigned to licensed objects.' -Category ResourceUnavailable -RecommendedAction 'Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
         }
         else {
-          Write-Verbose -Message "'$Name ($UserPrincipalName )' ACTION: Assigning Phone Number"
+          Write-Verbose -Message "'$Name ($UserPrincipalName)' ACTION: Assigning Phone Number"
           # Assigning new Number
           # Processing paths for Telephone Numbers depending on Type
           try {
@@ -577,23 +618,24 @@ function Set-TeamsResourceAccount {
               $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
             }
             $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
-            if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
+            $PhoneNumberIsMSNumber = ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id)
+            if ($PhoneNumberIsMSNumber) {
               # Set in VoiceApplicationInstance
               if ($force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
-                Write-Information "'$Name ($UserPrincipalName )' Number '$Number' found in Tenant, provisioning Microsoft for: Microsoft Calling Plans"
+                Write-Information "'$Name ($UserPrincipalName)' Number '$Number' found in Tenant, provisioning Microsoft for: Microsoft Calling Plans"
                 $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -TelephoneNumber $E164Number -ErrorAction STOP)
               }
             }
             else {
               # Set in ApplicationInstance
               if ($force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
-                Write-Information "'$Name ($UserPrincipalName )' Number '$E164Number' not found in Tenant, provisioning for: Direct Routing"
+                Write-Information "'$Name ($UserPrincipalName)' Number '$E164Number' not found in Tenant, provisioning for: Direct Routing"
                 $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $E164Number -ErrorAction STOP)
               }
             }
           }
           catch {
-            Write-Error -Message "'$Name ($UserPrincipalName )' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction 'Please run Set-TeamsResourceAccount manually'
+            Write-Error -Message "'$Name ($UserPrincipalName)' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction 'Please run Set-TeamsResourceAccount manually'
             Write-Debug $_
           }
         }
