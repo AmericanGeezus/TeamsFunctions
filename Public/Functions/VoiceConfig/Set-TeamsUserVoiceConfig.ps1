@@ -21,9 +21,11 @@ function Set-TeamsUserVoiceConfig {
   .PARAMETER CallingPlans
     Required for CallingPlans. Limits the Scope to enable an Object for CallingPlans
   .PARAMETER PhoneNumber
-    Required. Phone Number in E.164 format to be assigned to the User.
+    Optional. Phone Number in E.164 format to be assigned to the User.
     For DirectRouting, will populate the OnPremLineUri
     For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
+    NOTE: Without a Phone Number, the User will not be able to make or receive calls.
+    NOTE: This script cannot apply PhoneNumbers for OperatorConnect yet!
   .PARAMETER OnlineVoiceRoutingPolicy
     Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
   .PARAMETER TenantDialPlan
@@ -89,7 +91,7 @@ function Set-TeamsUserVoiceConfig {
   [Alias('Set-TeamsUVC')]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, HelpMessage = 'UserPrincipalName of the User')]
+    [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ValueFromPipeline, HelpMessage = 'UserPrincipalName of the User')]
     [Alias('UserPrincipalName')]
     [string]$Identity,
 
@@ -104,7 +106,7 @@ function Set-TeamsUserVoiceConfig {
     [Alias('TDP')]
     [string]$TenantDialPlan,
 
-    [Parameter(Mandatory, HelpMessage = 'E.164 Number to assign to the Object')]
+    [Parameter(HelpMessage = 'E.164 Number to assign to the Object')]
     [AllowNull()]
     [AllowEmptyString()]
     [Alias('Number', 'LineURI')]
@@ -158,11 +160,24 @@ function Set-TeamsUserVoiceConfig {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = switch ($PsCmdlet.ParameterSetName) {
-      'DirectRouting' { 8 }
-      'CallingPlans' { if ( -not $CallingPlanLicense ) { 10 } else { 9 } }
+    [int]$sMax = 5
+    switch ($PsCmdlet.ParameterSetName) {
+      'DirectRouting' {
+        $sMax++
+      }
+      'OperatorConnect' {
+        #$sMax++
+      }
+      'CallingPlans' {
+        $sMax++
+        if ( $PhoneNumber ) { $sMax++ }
+        if ( -not $CallingPlanLicense ) { $sMax++ }
+      }
     }
     if ( $TenantDialPlan ) { $sMax++ }
+    if ( $Force ) { $sMax = $sMax + 2 }
+    if ( $PhoneNumber ) { $sMax = $sMax + 2 }
+
     if ( $WriteErrorLog ) { $sMax++ }
     if ( $PassThru ) { $sMax++ }
   } #begin
@@ -171,20 +186,25 @@ function Set-TeamsUserVoiceConfig {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "[PROCESS] Processing '$Identity'"
     #region Information Gathering and Verification
-    # Excluding Resource Accounts
-    Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Querying Account Type is not a Resource Account' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message 'Querying Account Type'
+    $Status = 'Information Gathering and Verification'
+    Write-Verbose -Message "[PROCESS] $Status"
+    #region Excluding Resource Accounts
+    $Operation = 'Querying Account Type is not a Resource Account'
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
     $ResourceAccounts = (Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue).UserPrincipalName
     if ( $Identity -in $ResourceAccounts) {
       Write-Error -Message 'Resource Account specified! Please use Set-TeamsResourceAccount to provision Resource Accounts' -Category InvalidType -RecommendedAction 'Please use Set-TeamsResourceAccount to provision Resource Accounts'
       return
     }
+    #endregion
 
-    # Querying Identity
+    #region Querying Identity
     try {
+      $Operation = 'Querying User Account'
       $step++
-      Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message 'Querying User Account'
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       $CsUser = Get-TeamsUserVoiceConfig "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       $UserLic = Get-AzureAdUserLicense -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
@@ -194,13 +214,15 @@ function Set-TeamsUserVoiceConfig {
       $ErrorLog += $_.Exception.Message
       return $ErrorLog
     }
+    #endregion
 
-    # Querying User Licenses
+    #region Querying User Licenses
     #TODO This works (don't change?) - But could be replaced with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
     try {
+      $Operation = 'Querying User License'
       $step++
-      Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Querying User License' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message 'Querying User License'
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       if ( $CsUser.PhoneSystem ) {
         Write-Verbose -Message "User '$Identity' - PhoneSystem License is assigned - Validating PhoneSystemStatus"
         if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
@@ -240,44 +262,24 @@ function Set-TeamsUserVoiceConfig {
         Write-Verbose -Message 'License Status:' -Verbose
         $UserLic.Licenses
         Write-Verbose -Message 'Service Plan Status (PhoneSystem):' -Verbose
-        $UserLic.ServicePlans | Where-Object ServicePlanName -eq "MCOEV"
+        $UserLic.ServicePlans | Where-Object ServicePlanName -EQ 'MCOEV'
         $ErrorLog += $_.Exception.Message
         Write-Error -Message "User '$Identity' - PhoneSystem License is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
         return
         #throw "User '$Identity' - PhoneSystem License is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
       }
     }
+    #endregion
 
-    # Enable if not Enabled for EnterpriseVoice
-    $step++
-    Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Enterprise Voice Enablement' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message 'Enterprise Voice Enablement'
-    if ( -not $IsEVenabled) {
-      Write-Verbose "User '$Identity' - Enterprise Voice Status: Not enabled, trying to Enable"
-      if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
-        if ($IsEVenabled) {
-          Write-Information "SUCCESS: User '$Identity' - Enabling user for Enterprise Voice: OK"
-        }
-      }
-    }
-    else {
-      Write-Verbose -Message "User '$Identity' - Enabling user for Enterprise Voice: Already enabled" -Verbose
-    }
-
-    if ( -not $IsEVenabled) {
-      Write-Error -Message 'User '$Identity' - Enabling user for Enterprise Voice - Could not enable Object. Please investigate'
-      return
-    }
-
-    # Calling Plans - Number verification
+    #region Calling Plans - Number verification
     if ( $PSCmdlet.ParameterSetName -eq 'CallingPlans' ) {
       # Validating License assignment
       try {
         if ( -not $CallingPlanLicense ) {
+          $Operation = 'Testing Object for Calling Plan License'
           $step++
-          Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Testing Calling Plan License' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message 'Parameter CallingPlanLicense not specified. Testing for existing licenses'
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
           if ( -not $CsUser.LicensesAssigned.Contains('Calling')) {
             throw "User '$Identity' - User is not licensed correctly. Please check License assignment. A Calling Plan License is required"
           }
@@ -292,220 +294,378 @@ function Set-TeamsUserVoiceConfig {
         return $ErrorLog
       }
 
-      # Validating Number
-      $step++
-      Write-Progress -Id 0 -Status 'Verifying Object' -CurrentOperation 'Querying Microsoft Phone Numbers from Tenant' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message 'Querying Microsoft Phone Numbers from Tenant'
-      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      }
-      $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
-      if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
-        Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
-      }
-      else {
-        $ErrorLogMessage = "Phone Number '$PhoneNumber' is not found in the Tenant. Please provide an available number"
-        Write-Error -Message $ErrorLogMessage
-        $ErrorLog += $ErrorLogMessage
+      if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
+        # Validating Microsoft Number
+        $Operation = 'Querying Microsoft Phone Numbers from Tenant'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+
+        if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
+          $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+        }
+        $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
+        $PhoneNumberIsMSNumber = ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id)
+        if ($PhoneNumberIsMSNumber) {
+          Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
+        }
+        else {
+          $ErrorLogMessage = "Phone Number '$PhoneNumber' is not found in the Tenant. Please provide an available number"
+          Write-Error -Message $ErrorLogMessage
+          $ErrorLog += $ErrorLogMessage
+        }
       }
     }
+    #endregion
+
+    #region Validating Phone Number Format
+    $Operation = 'Querying current Phone Number'
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    # Querying CurrentPhoneNumber
+    try {
+      $CurrentPhoneNumber = $CsUser.LineUri
+      Write-Verbose -Message "User '$Identity' - Phone Number assigned currently: $CurrentPhoneNumber"
+    }
+    catch {
+      $CurrentPhoneNumber = $null
+      Write-Verbose -Message "User '$Identity' - Phone Number assigned currently: NONE"
+    }
+
+    if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
+      $Operation = 'Validating Phone Number format'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
+      if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
+        #TEST this. Was prior: if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
+        if ($CurrentPhoneNumber) {
+          Write-Warning -Message "User '$Identity' - PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
+        }
+        else {
+          Write-Verbose -Message "User '$Identity' - PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken"
+        }
+        $PhoneNumber = $null
+      }
+      else {
+        if ($PhoneNumber -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
+          $E164Number = Format-StringForUse $PhoneNumber -As E164
+          $LineUri = Format-StringForUse $PhoneNumber -As LineUri
+          if ($CurrentPhoneNumber -eq $LineUri -and -not $force) {
+            Write-Verbose -Message "User '$Identity' - PhoneNumber '$LineUri' is already applied"
+          }
+          else {
+            Write-Verbose -Message "User '$Identity' - PhoneNumber '$LineUri' is in a usable format and will be applied"
+            # Checking number is free
+            Write-Verbose -Message "User '$Identity' - PhoneNumber - Finding Number assignments"
+            $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
+            if ($UserWithThisNumber) {
+              if ($Force) {
+                Write-Warning -Message "User '$Identity' - Number '$LineUri' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
+              }
+              else {
+                Write-Error -Message "User '$Identity' - Number '$LineUri' is already assigned to another Object" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
+              }
+            }
+          }
+        }
+        else {
+          Write-Error -Message 'PhoneNumber '$LineUri' is not in an acceptable format. Multiple formats are expected, but preferred is E.164 or LineURI format, with a minimum of 8 digits.' -Category InvalidFormat
+        }
+      }
+    }
+    else {
+      #PhoneNumber is not provided
+      if ( -not $CurrentPhoneNumber -and -not $(Format-StringForUse $PhoneNumber -As LineUri) ) {
+        Write-Warning -Message "User '$Identity' - Phone Number not provided or present. User will not be able to use PhoneSystem"
+      }
+    }
+    #endregion
+
+    #region Enable if not Enabled for EnterpriseVoice
+    $Operation = 'Enabling user for Enterprise Voice'
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+    if ( -not $IsEVenabled) {
+      Write-Verbose "User '$Identity' - $Operation`: Not enabled, trying to Enable"
+      if ($Force -or $PSCmdlet.ShouldProcess("$Identity", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $Identity -Force
+        if ($IsEVenabled) {
+          Write-Information "SUCCESS: User '$Identity' - $Operation`: OK"
+        }
+      }
+    }
+    else {
+      Write-Verbose -Message "User '$Identity' - $Operation`: Already enabled" -Verbose
+    }
+
+    if ( -not $IsEVenabled) {
+      Write-Error -Message "User '$Identity' - $Operation`: Could not enable Object. Please investigate"
+      return
+    }
+    #endregion
+
     #endregion
 
 
     #region Apply Voice Config
     if ($Force -or $PSCmdlet.ShouldProcess("$Identity", 'Apply Voice Configuration')) {
       #region Generic Configuration
-      # Enable HostedVoicemail
+      $Status = 'Applying Voice Configuration: Generic'
+      #region Enable HostedVoicemail
+      $Operation = 'Enabling user for Hosted Voicemail'
       $step++
-      Write-Progress -Id 0 -Status 'Provisioning' -CurrentOperation 'Enabling user for Hosted Voicemail' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message 'Enabling user for Hosted Voicemail'
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       if ( $Force -or -not $CsUser.HostedVoicemail) {
         try {
           $CsUser | Set-CsUser -HostedVoiceMail $TRUE -ErrorAction Stop
-          Write-Information "SUCCESS: User '$Identity' - Enabling user for Hosted Voicemail: OK"
+          Write-Information "SUCCESS: User '$Identity' - $Operation`: OK"
         }
         catch {
-          $ErrorLogMessage = "User '$Identity' - Enabling user for Hosted Voicemail: Failed: '$($_.Exception.Message)'"
+          $ErrorLogMessage = "User '$Identity' - $Operation`: Failed: '$($_.Exception.Message)'"
           Write-Error -Message $ErrorLogMessage
           $ErrorLog += $ErrorLogMessage
         }
       }
       else {
-        Write-Verbose -Message "User '$Identity' - Enabling user for Hosted Voicemail: Already enabled" -Verbose
+        Write-Verbose -Message "User '$Identity' - $Operation`: Already enabled" -Verbose
       }
+      #endregion
 
-      # Apply $TenantDialPlan if provided
+      #region Tenant Dial Plan
       if ( $TenantDialPlan ) {
+        $Operation = 'Applying Tenant Dial Plan'
         $step++
-        Write-Progress -Id 0 -Status 'Provisioning' -CurrentOperation 'Applying Tenant Dial Plan' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message 'Applying Tenant Dial Plan'
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
         if ( $Force -or $CsUser.TenantDialPlan -ne $TenantDialPlan) {
           try {
             $CsUser | Grant-CsTenantDialPlan -PolicyName $TenantDialPlan -ErrorAction Stop
-            Write-Information "SUCCESS: User '$Identity' - Applying Tenant Dial Plan: OK - '$TenantDialPlan'"
+            Write-Information "SUCCESS: User '$Identity' - $Operation`: OK - '$TenantDialPlan'"
           }
           catch {
-            $ErrorLogMessage = "User '$Identity' - Applying Tenant Dial Plan: Failed: '$($_.Exception.Message)'"
+            $ErrorLogMessage = "User '$Identity' - $Operation`: Failed: '$($_.Exception.Message)'"
             Write-Error -Message $ErrorLogMessage
             $ErrorLog += $ErrorLogMessage
           }
         }
         else {
-          Write-Verbose -Message "User '$Identity' - Applying Tenant Dial Plan: Already assigned" -Verbose
+          Write-Verbose -Message "User '$Identity' - $Operation`: Already assigned" -Verbose
         }
       }
       else {
-        Write-Verbose -Message "User '$Identity' - Applying Tenant Dial Plan: Not provided"
+        if ($CsUser.TenantDialPlan) {
+          Write-Information "CURRENT:  User '$Identity' - $Operation`: '$($CsUser.TenantDialPlan)' assigned currently"
+        }
+        else {
+          Write-Verbose -Message "User '$Identity' - $Operation`: Not provided"
+        }
       }
       #endregion
+      #endregion
 
-      #region Specific Configuration
+      #region Specific Configuration 1
       switch ($PSCmdlet.ParameterSetName) {
-        #CHECK prepare for OperatorConnect - how?
         'DirectRouting' {
-          Write-Verbose -Message '[PROCESS] DirectRouting'
+          $Status = 'Applying Voice Configuration: Provisioning for Direct Routing'
+          Write-Verbose -Message "[PROCESS] $Status"
+          $Operation = 'Online Voice Routing Policy'
+          $step++
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
           # Apply $OnlineVoiceRoutingPolicy
           if ( $OnlineVoiceRoutingPolicy ) {
-            $step++
-            Write-Progress -Id 0 -Status 'Provisioning for Direct Routing' -CurrentOperation 'Applying Online Voice Routing Policy' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message 'Applying Online Voice Routing Policy'
-            #if ( $Force -or -not $CsUser.OnlineVoiceRoutingPolicy ) { # Only checks unassigned ones, not wrongly assigned ones!
             if ( $Force -or ($CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) ) {
               try {
                 $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
-                Write-Information "SUCCESS: User '$Identity' - Applying Online Voice Routing Policy: OK - '$OnlineVoiceRoutingPolicy'"
+                Write-Information "SUCCESS: User '$Identity' - $Operation`: OK - '$OnlineVoiceRoutingPolicy'"
               }
               catch {
-                $ErrorLogMessage = "User '$Identity' - Applying Online Voice Routing Policy: Failed: '$($_.Exception.Message)'"
+                $ErrorLogMessage = "User '$Identity' - $Operation`: Failed: '$($_.Exception.Message)'"
                 Write-Error -Message $ErrorLogMessage
                 $ErrorLog += $ErrorLogMessage
               }
             }
             else {
-              Write-Verbose -Message "User '$Identity' - Applying Online Voice Routing Policy: Already assigned" -Verbose
+              Write-Verbose -Message "User '$Identity' - $Operation`: Already assigned" -Verbose
             }
           }
           else {
             if ( $CsUser.OnlineVoiceRoutingPolicy ) {
-              Write-Information "CURRENT:  User '$Identity' - Online Voice Routing Policy '$($CsUser.OnlineVoiceRoutingPolicy)' assigned currently"
+              Write-Information "CURRENT:  User '$Identity' - $Operation`: $($CsUser.OnlineVoiceRoutingPolicy)' assigned currently"
             }
             else {
-              Write-Warning -Message "User '$Identity' - Online Voice Routing Policy not assigned. User will be able to receive inbound calls, but not place them!'"
-            }
-          }
-
-          # Apply or Remove $PhoneNumber as OnPremLineUri
-          #TEST Override for PhoneNumber for Hybrid
-          $step++
-          Write-Progress -Id 0 -Status 'Provisioning for Direct Routing' -CurrentOperation 'Applying Phone Number' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message 'Applying Phone Number'
-          if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
-            If ($PhoneNumber -notmatch '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
-              Write-Error -Message 'PhoneNumber is not in an acceptable format. Multiple formats are expected, but preferred is E.164, with a minimum of 8 digits. Extensions will be stripped' -Category InvalidFormat
-              return
-            }
-            else {
-              $Number = Format-StringForUse -InputString $PhoneNumber -As LineURI
-              if ( $Force -or $CsUser.OnPremLineURI -ne $Number) {
-                #TODO Add Catch that uses FORCE to remove PhoneNumber first
-                #CHECK this: Set-TeamsRA removes first (if Force or Empty), then applies anew (if force or not empty) - replicate?
-                #Error Message: Filter failed to return unique result"
-                try {
-                  $CsUser | Set-CsUser -OnPremLineURI $Number -ErrorAction Stop
-                  Write-Information "SUCCESS: User '$Identity' - Applying Phone Number: OK - '$Number'"
-                }
-                catch {
-                  if ($_.Exception.Message.Contains('dirsync')) {
-                    Write-Warning -Message "User '$Identity' - Applying Phone Number: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
-                    Write-Host "Set-CsUser -Identity $Identity -LineUri '$Number'" -ForegroundColor Magenta
-                  }
-                  else {
-                    $ErrorLogMessage = "User '$Identity' - Applying Phone Number: Failed: '$($_.Exception.Message)'"
-                    Write-Error -Message $ErrorLogMessage
-                  }
-                  $ErrorLog += $ErrorLogMessage
-                }
-              }
-              else {
-                Write-Verbose -Message "User '$Identity' - Applying Phone Number: Already assigned" -Verbose
-              }
-            }
-          }
-          else {
-            try {
-              Write-Warning -Message "User '$Identity' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
-              $CsUser | Set-CsUser -OnPremLineURI $null
-              Write-Information "SUCCESS: User '$Identity' - Removing Phone Number: OK"
-            }
-            catch {
-              if ($_.Exception.Message.Contains('dirsync')) {
-                Write-Warning -Message "User '$Identity' - Removing Phone Number: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
-                Write-Host "Set-CsUser -Identity $Identity -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
-              }
-              else {
-                Write-Verbose -Message "User '$Identity' - Removing Phone Number: Failed: '$($_.Exception.Message)'" -Verbose
-              }
+              Write-Warning -Message "User '$Identity' - $Operation`: Not assigned. User will be able to receive inbound calls, but not place them!'"
             }
           }
         }
-
+        'OperatorConnect' {
+          $Status = 'Applying Voice Configuration: Provisioning for Operator Connect'
+          Write-Verbose -Message "[PROCESS] $Status"
+          #TODO prepare for OperatorConnect - how?
+          <#
+          $Operation = 'TBC'
+          $step++
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
+          #>
+        }
         'CallingPlans' {
-          Write-Verbose -Message '[PROCESS] CallingPlans'
+          $Status = 'Applying Voice Configuration: Provisioning for Calling Plans'
+          Write-Verbose -Message "[PROCESS] $Status"
+          $Operation = 'Applying Calling Plan License'
+          $step++
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
           # Apply $CallingPlanLicense
           if ($CallingPlanLicense) {
             try {
-              $step++
-              Write-Progress -Id 0 -Status 'Provisioning for Calling Plans' -CurrentOperation 'Applying CallingPlan License' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-              Write-Verbose -Message "User '$Identity' - Applying CallingPlan License '$CallingPlanLicense'"
               $null = Set-TeamsUserLicense -Identity $Identity -Add $CallingPlanLicense -ErrorAction Stop
+              Write-Information "SUCCESS: User '$Identity' - $Operation`: OK - '$CallingPlanLicense'"
             }
             catch {
-              $ErrorLogMessage = "User '$Identity' - Applying CallingPlan License '$CallingPlanLicense' failed: '$($_.Exception.Message)'"
+              $ErrorLogMessage = "User '$Identity' - $Operation`: Failed for '$CallingPlanLicense' with Exception: '$($_.Exception.Message)'"
               Write-Error -Message $ErrorLogMessage
               $ErrorLog += $ErrorLogMessage
             }
             #CHECK Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
-            Write-Information 'No waiting period has been implemented yet after applying a license. Applying a Phone Number may fail. If so, please run command again after a few minutes.'
-          }
-
-          # Apply or Remove $PhoneNumber as TelephoneNumber
-          $step++
-          Write-Progress -Id 0 -Status 'Provisioning for Calling Plans' -CurrentOperation 'Applying Phone Number' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message 'Applying Phone Number'
-          if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
-            If ($PhoneNumber -notmatch '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
-              Write-Error -Message 'PhoneNumber is not in an acceptable format. Multiple formats are expected, but preferred is E.164, with a minimum of 8 digits. Extensions will be stripped' -Category InvalidFormat
-              return
-            }
-            else {
-              $Number = Format-StringForUse -InputString $PhoneNumber -As E164
-              if ( $Force -or $CsUser.TelephoneNumber -ne $Number) {
-                try {
-                  # Pipe should work but was not yet tested.
-                  #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
-                  $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $PhoneNumber -ErrorAction Stop
-                }
-                catch {
-                  $ErrorLogMessage = "User '$Identity' - Applying Phone Number failed: '$($_.Exception.Message)'"
-                  Write-Error -Message $ErrorLogMessage
-                  $ErrorLog += $ErrorLogMessage
-                }
-              }
-              else {
-                Write-Verbose -Message "User '$Identity' - Applying Phone Number: Already assigned" -Verbose
-              }
-            }
-          }
-          else {
-            Write-Warning -Message "User '$Identity' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
-            $CsUser | Set-CsUser -OnPremLineURI $null
-            Write-Verbose -Message "User '$Identity' - Removing Phone Number: OK" -Verbose
+            Write-Verbose -Message 'Calling Plan License has been applied, but replication time has not been factored in or tested. Applying a Phone Number may fail. If so, please run command again after a few minutes and feed back duration to TeamsFunctions@outlook.com or via GitHub!' -Verbose
           }
         }
       }
       #endregion
 
+      #region Specific Configuration 2 - Phone Number
+      #TEST entire Section! - Complete rework of how phone Number is applied
+
+      #region Removing number from OTHER Object
+      if ( $Force -and $PhoneNumber -and $UserWithThisNumber ) {
+        $Operation = 'Scavenging Phone Number'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+        try {
+          Write-Verbose -Message "User '$Identity' - Scavenging Phone Number FROM '$($UserWithThisNumber.UserPrincipalName)'"
+          if ('ApplicationInstance' -in $UserWithThisNumber.InterpretedUserType) {
+            if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
+              Set-TeamsResourceAccount -UserPrincipalName $($UserWithThisNumber.UserPrincipalName) -PhoneNumber $Null
+              Write-Information "Resource Account '$($UserWithThisNumber.UserPrincipalName)' - $Operation`: OK"
+            }
+          }
+          elseif ('User' -in $UserWithThisNumber.InterpretedUserType) {
+            if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
+              $UserWithThisNumber | Set-TeamsUserVoiceConfig -PhoneNumber $Null
+              Write-Information "User '$($UserWithThisNumber.UserPrincipalName)' - $Operation`: OK"
+            }
+          }
+          else {
+            Write-Error -Message "Scavenging Phone Number from $($UserWithThisNumber.UserPrincipalName) failed. Object is not a User or a ResourceAccount"
+          }
+        }
+        catch {
+          Write-Error -Message "Scavenging Phone Number from $($UserWithThisNumber.UserPrincipalName) failed with Exception: $($_.Exception.Message)"
+        }
+      }
+      #endregion
+
+      #region Remove Number from current Object
+      if ( $force -or [String]::IsNullOrEmpty($PhoneNumber) ) {
+        Write-Warning -Message "User '$Identity' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
+        $Operation = 'Removing Phone Number'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+        try {
+          if ($PhoneNumberIsMSNumber) {
+            # Remove MS Number
+            $CsUser | Set-CsUser -TelephoneNumber $null -ErrorAction Stop
+            Write-Information "SUCCESS: User '$Identity' - $Operation`: OK - Calling Plan number removed"
+          }
+          else {
+            # Remove Direct Routing Number
+            $CsUser | Set-CsUser -OnPremLineURI $null -ErrorAction Stop
+            Write-Information "SUCCESS: User '$Identity' - $Operation`: OK - Direct Routing number removed"
+          }
+        }
+        catch {
+          if ($_.Exception.Message.Contains('dirsync')) {
+            Write-Warning -Message "User '$Identity' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+            Write-Host "Set-CsUser -Identity $Identity -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
+          }
+          else {
+            Write-Verbose -Message "User '$Identity' - $Operation`: Failed: '$($_.Exception.Message)'" -Verbose
+          }
+        }
+      }
+      #endregion
+
+      #region Applying Phone Number
+      if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
+        $Operation = 'Applying Phone Number'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+        switch ($PSCmdlet.ParameterSetName) {
+          'DirectRouting' {
+            # Apply or Remove $PhoneNumber as OnPremLineUri
+            if ( $Force -or $CsUser.OnPremLineURI -ne $LineUri) {
+              #TODO Add Catch that uses FORCE to remove PhoneNumber first (from Object it is assigned to!)
+              #CHECK this: Set-TeamsRA removes first (if Force or Empty), then applies anew (if force or not empty) - replicate?
+              #Error Message: Filter failed to return unique result"
+              try {
+                $CsUser | Set-CsUser -OnPremLineURI $LineUri -ErrorAction Stop
+                Write-Information "SUCCESS: User '$Identity' - $Operation`: OK - '$LineUri'"
+              }
+              catch {
+                if ($_.Exception.Message.Contains('dirsync')) {
+                  Write-Warning -Message "User '$Identity' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+                  Write-Host "Set-CsUser -Identity $Identity -LineUri '$LineUri'" -ForegroundColor Magenta
+                }
+                else {
+                  $ErrorLogMessage = "User '$Identity' - $Operation`: Failed: '$($_.Exception.Message)'"
+                  Write-Error -Message $ErrorLogMessage
+                }
+                $ErrorLog += $ErrorLogMessage
+              }
+            }
+            else {
+              Write-Verbose -Message "User '$Identity' - $Operation`: Already assigned" -Verbose
+            }
+
+          }
+          'OperatorConnect' {
+            #TODO prepare for OperatorConnect - how?
+          }
+          'CallingPlans' {
+            # Apply or Remove $PhoneNumber as TelephoneNumber
+            if ( $Force -or $CsUser.TelephoneNumber -ne $E164Number) {
+              try {
+                # Pipe should work but was not yet tested.
+                #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
+                $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $E164Number -ErrorAction Stop
+                Write-Information "SUCCESS: User '$Identity' - $Operation`: OK - '$E164Number' (Calling Plan Number)"
+              }
+              catch {
+                $ErrorLogMessage = "User '$Identity' - Applying Phone Number failed: '$($_.Exception.Message)'"
+                Write-Error -Message $ErrorLogMessage
+                $ErrorLog += $ErrorLogMessage
+              }
+            }
+            else {
+              Write-Verbose -Message "User '$Identity' - Applying Phone Number: Already assigned" -Verbose
+            }
+
+          }
+        }
+      }
+      #endregion
+      #endregion
     }
+    #endregion
     #endregion
 
 
