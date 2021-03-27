@@ -178,6 +178,7 @@ function Set-TeamsResourceAccount {
     if ( $License ) { $sMax = $sMax + 2 }
     if ( $License -and $PhoneNumber ) { $sMax++ }
     if ( $PhoneNumber ) { $sMax++ }
+    if ( $Force ) { $sMax++ } #CHECK Count
     if ( $PassThru ) { $sMax++ }
 
     # Enabling $Confirm to work with $Force
@@ -357,7 +358,6 @@ function Set-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey('License') -or $PSBoundParameters.ContainsKey('PhoneNumber')) {
       $CurrentLicense = $null
       # Determining license Status of Object
-      #if (Test-TeamsUserLicense -Identity $UserPrincipalName -License PhoneSystem) {
       if (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan MCOEV) {
         $CurrentLicense = 'PhoneSystem'
       }
@@ -548,29 +548,40 @@ function Set-TeamsResourceAccount {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      #TEST Application of entire section!
+      #TEST ForEach Loop - for $UserWithThisNumber
       if ( $Force -and $PhoneNumber -and $UserWithThisNumber ) {
         # Removing number from previous Object
         try {
-          Write-Verbose -Message "'$Name ($UserPrincipalName)' ACTION: Scavenging Phone Number FROM '$($UserWithThisNumber.UserPrincipalName)'"
-          if ($UserWithThisNumber.InterpretedUserType.Contains('ApplicationInstance')) {
-            if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
-              Set-TeamsResourceAccount -UserPrincipalName $($UserWithThisNumber.UserPrincipalName) -PhoneNumber $Null -ErrorAction Stop
-              Write-Information "Resource Account '$($UserWithThisNumber.UserPrincipalName)' - Phone Number removed: OK"
+          foreach ($UserWTN in $UserWithThisNumber) {
+            if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+              "Function: $($MyInvocation.MyCommand.Name): InterpretedUserType:", ($($UserWTN.InterpretedUserType) | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
-          }
-          elseif ($UserWithThisNumber.InterpretedUserType.Contains('User')) {
-            if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
-              $UserWithThisNumber | Set-TeamsUserVoiceConfig -PhoneNumber $Null -ErrorAction Stop
-              Write-Information "User '$($UserWithThisNumber.UserPrincipalName)' - Phone Number removed: OK"
+            Write-Verbose -Message "'$Name ($UserPrincipalName)' ACTION: $Operation FROM '$($UserWTN.UserPrincipalName)'"
+            if ($UserWTN.InterpretedUserType.Contains('ApplicationInstance')) {
+              if ($PSCmdlet.ShouldProcess("$($UserWTN.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
+                if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                  "Running: 'Set-TeamsResourceAccount -UserPrincipalName $($UserWTN.UserPrincipalName) -PhoneNumber `$Null -ErrorAction Stop'" | Write-Debug
+                }
+                Set-TeamsResourceAccount -UserPrincipalName $($UserWTN.UserPrincipalName) -PhoneNumber $Null -WarningAction SilentlyContinue -ErrorAction Stop
+                Write-Information "SUCCESS: Resource Account '$($UserWTN.UserPrincipalName)' - Phone Number removed: OK"
+              }
             }
-          }
-          else {
-            Write-Error -Message "Scavenging Phone Number from $($UserWithThisNumber.UserPrincipalName) failed. Object is not a User or a ResourceAccount"
+            elseif ($UserWTN.InterpretedUserType.Contains('User')) {
+              if ($PSCmdlet.ShouldProcess("$($UserWTN.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
+                if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                  "Running: '$UserWTN | Set-TeamsUserVoiceConfig -PhoneNumber `$Null -ErrorAction Stop'" | Write-Debug
+                }
+                $UserWTN | Set-TeamsUserVoiceConfig -PhoneNumber $Null -WarningAction SilentlyContinue -ErrorAction Stop
+                Write-Information "SUCCESS: User '$($UserWTN.UserPrincipalName)' - Phone Number removed: OK"
+              }
+            }
+            else {
+              Write-Error -Message "$Operation from '$($UserWTN.UserPrincipalName)' failed. Object is not a User or a ResourceAccount" -ErrorAction Stop
+            }
           }
         }
         catch {
-          Write-Error -Message "Scavenging Phone Number from $($UserWithThisNumber.UserPrincipalName) failed with Exception: $($_.Exception.Message)"
+          Write-Error -Message "$Operation from '$($UserWTN.UserPrincipalName)' failed with Exception: $($_.Exception.Message)" -ErrorAction Stop
         }
       }
 
@@ -583,13 +594,16 @@ function Set-TeamsResourceAccount {
           if ($null -ne ($UVCObject.TelephoneNumber)) {
             # Remove from VoiceApplicationInstance
             Write-Verbose -Message "'$Name ($UserPrincipalName)' Removing Microsoft Number"
+            #CHECK Set-CsOnlineApplicationInstance returns an Object - This can be used to validate the outcome!
             $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UserPrincipalName -TelephoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
             Write-Verbose -Message 'SUCCESS'
           }
           if ($null -ne ($UVCObject.OnPremLineURI)) {
             # Remove from ApplicationInstance
             Write-Verbose -Message "'$Name ($UserPrincipalName)' Removing Direct Routing Number"
-            $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+            #CHECK Set-CsOnlineApplicationInstance returns an Object - This can be used to validate the outcome!
+            #CHECK why does -OnPremPhoneNumber require -Force?
+            $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
             Write-Verbose -Message 'SUCCESS'
           }
         }
@@ -632,7 +646,7 @@ function Set-TeamsResourceAccount {
               # Set in ApplicationInstance
               if ($force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
                 Write-Information "'$Name ($UserPrincipalName)' Number '$E164Number' not found in Tenant, provisioning for: Direct Routing"
-                $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $E164Number -ErrorAction STOP)
+                $null = (Set-CsOnlineApplicationInstance -Identity $UserPrincipalName -OnpremPhoneNumber $E164Number -Force -ErrorAction STOP)
               }
             }
           }

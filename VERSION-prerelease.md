@@ -12,9 +12,29 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 - `Connect-Me`: Catching non-activation of MFA for better feedback
 - `Enable-MyAzureAdAdminRole`: Catching non-activation of MFA for better feedback
-- `Set-TeamsUserVoiceConfig`: Tweaks for handling PhoneSystemStatus of PendingInput
+- `New-TeamsResourceAccount`: Adding `-Force` to the call of `Set-CsOnlineApplicationInstance` when removing Phone Numbers
+- `Remove-TeamsResourceAccount`: Adding `-Force` to the call of `Set-CsOnlineApplicationInstance` when removing Phone Numbers
+- `Set-TeamsResourceAccount`:
+  - Rework of Number assignment. Separation of Validation, Removal, Scavenging and Application
+    - Number validation happens first
+    - Number removal is triggered if assigned and different, with `-Force` or if PhoneNumber is provided and is not NULL or Empty
+    - Number scavenging (from other Users or Resource Accounts) can be performed with `-Force`
+    - Number assignment is triggered if PhoneNumber is provided and it is not NULL or Empty
+- `Set-TeamsUserVoiceConfig`:
+  - Complete Rework of Number assignment. Separation of Validation, Removal, Scavenging and Application
+    - Number validation happens first
+    - Number removal is triggered if assigned and different, with `-Force` or if PhoneNumber is provided and is not NULL or Empty
+    - Number scavenging (from other Users or Resource Accounts) can be performed with `-Force`
+    - Number assignment is triggered if PhoneNumber is provided and it is not NULL or Empty
+  - Tweaks for handling PhoneSystemStatus of PendingInput
 - `Get-TeamsUserVoiceConfig`: Added nested Object for Licensing
 - `Find-AzureAdUser`: Improved output by Sorting by DisplayName
+
+### ToDo
+
+- Evaluation of Pipeline Input by PropertyName - rebind Identity to UserPrincipalName
+- Test piping objects with UserprincipalName and Identity to GET-CmdLets and SET-CmdLets
+- Test output of objects with and without Identity against Microsoft CmdLets
 
 ## v21.03.21 pre-release
 

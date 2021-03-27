@@ -189,7 +189,7 @@ function Remove-TeamsResourceAccount {
         if ($null -ne ($Object.OnPremLineURI)) {
           # Remove from ApplicationInstance
           Write-Verbose -Message "'$Name' Removing Direct Routing Number"
-          $null = (Set-CsOnlineApplicationInstance -Identity $UPN -OnPremPhoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+          $null = (Set-CsOnlineApplicationInstance -Identity $UPN -OnPremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS'
         }
       }
