@@ -112,6 +112,7 @@ function Get-TeamsUserLicense {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
       try {
+        #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }

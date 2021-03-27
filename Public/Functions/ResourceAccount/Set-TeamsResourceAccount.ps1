@@ -100,6 +100,7 @@ function Set-TeamsResourceAccount {
   [Alias('Set-TeamsRA')]
   [OutputType([System.Void])]
   param (
+    #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
         If ($_ -match '@') {
@@ -298,7 +299,7 @@ function Set-TeamsResourceAccount {
               Write-Warning -Message "'$Name ($UserPrincipalName)' Number '$E164Number' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
             }
             else {
-              Write-Error -Message "'$Name ($UserPrincipalName)' Number '$E164Number' is already assigned to another Object" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
+              Write-Error -Message "'$Name ($UserPrincipalName)' Number '$E164Number' is already assigned to another Object: '$($UserWithThisNumber.UserPrincipalName)'" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
             }
           }
         }
@@ -356,10 +357,11 @@ function Set-TeamsResourceAccount {
     if ($PSBoundParameters.ContainsKey('License') -or $PSBoundParameters.ContainsKey('PhoneNumber')) {
       $CurrentLicense = $null
       # Determining license Status of Object
-      if (Test-TeamsUserLicense -Identity $UserPrincipalName -License PhoneSystem) {
+      #if (Test-TeamsUserLicense -Identity $UserPrincipalName -License PhoneSystem) {
+      if (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan MCOEV) {
         $CurrentLicense = 'PhoneSystem'
       }
-      elseif (Test-TeamsUserLicense -Identity $UserPrincipalName -License PhoneSystemVirtualUser) {
+      elseif (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan MCOEV_VIRTUALUSER) {
         $CurrentLicense = 'PhoneSystemVirtualUser'
       }
       if ($null -ne $CurrentLicense) {
@@ -551,15 +553,15 @@ function Set-TeamsResourceAccount {
         # Removing number from previous Object
         try {
           Write-Verbose -Message "'$Name ($UserPrincipalName)' ACTION: Scavenging Phone Number FROM '$($UserWithThisNumber.UserPrincipalName)'"
-          if ('ApplicationInstance' -in $UserWithThisNumber.InterpretedUserType) {
+          if ($UserWithThisNumber.InterpretedUserType.Contains('ApplicationInstance')) {
             if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
-              Set-TeamsResourceAccount -UserPrincipalName $($UserWithThisNumber.UserPrincipalName) -PhoneNumber $Null
+              Set-TeamsResourceAccount -UserPrincipalName $($UserWithThisNumber.UserPrincipalName) -PhoneNumber $Null -ErrorAction Stop
               Write-Information "Resource Account '$($UserWithThisNumber.UserPrincipalName)' - Phone Number removed: OK"
             }
           }
-          elseif ('User' -in $UserWithThisNumber.InterpretedUserType) {
+          elseif ($UserWithThisNumber.InterpretedUserType.Contains('User')) {
             if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
-              $UserWithThisNumber | Set-TeamsUserVoiceConfig -PhoneNumber $Null
+              $UserWithThisNumber | Set-TeamsUserVoiceConfig -PhoneNumber $Null -ErrorAction Stop
               Write-Information "User '$($UserWithThisNumber.UserPrincipalName)' - Phone Number removed: OK"
             }
           }

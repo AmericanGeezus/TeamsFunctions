@@ -146,6 +146,7 @@ function Get-TeamsResourceAccount {
       foreach ($I in $Identity) {
         Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
+          #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
           $RA = Get-CsOnlineApplicationInstance -Identity $I -ErrorAction Stop
           [void]$ResourceAccounts.Add($RA)
         }

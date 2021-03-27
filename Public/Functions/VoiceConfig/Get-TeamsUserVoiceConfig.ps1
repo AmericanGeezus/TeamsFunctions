@@ -68,6 +68,7 @@ function Get-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
     [string[]]$Identity,
 
     [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
@@ -119,6 +120,7 @@ function Get-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
+      #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
       try {
         Write-Verbose -Message "User '$User' - Querying User Account"
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop

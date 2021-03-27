@@ -97,6 +97,7 @@ function Get-TeamsResourceAccountAssociation {
       foreach ($UPN in $Identity) {
         Write-Verbose -Message "Querying Resource Account '$UPN'"
         try {
+          #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
           $AppInstance = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Stop
           [void]$Accounts.Add($AppInstance)
           Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"

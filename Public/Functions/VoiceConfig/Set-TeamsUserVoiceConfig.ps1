@@ -366,7 +366,7 @@ function Set-TeamsUserVoiceConfig {
                 Write-Warning -Message "User '$Identity' - Number '$LineUri' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
               }
               else {
-                Write-Error -Message "User '$Identity' - Number '$LineUri' is already assigned to another Object" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
+                Write-Error -Message "User '$Identity' - Number '$LineUri' is already assigned to another Object: '$($UserWithThisNumber.UserPrincipalName)'" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
               }
             }
           }
@@ -550,15 +550,15 @@ function Set-TeamsUserVoiceConfig {
         Write-Verbose -Message "$Status - $Operation"
         try {
           Write-Verbose -Message "User '$Identity' - Scavenging Phone Number FROM '$($UserWithThisNumber.UserPrincipalName)'"
-          if ('ApplicationInstance' -in $UserWithThisNumber.InterpretedUserType) {
+          if ($UserWithThisNumber.InterpretedUserType.Contains('ApplicationInstance')) {
             if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
-              Set-TeamsResourceAccount -UserPrincipalName $($UserWithThisNumber.UserPrincipalName) -PhoneNumber $Null
+              Set-TeamsResourceAccount -UserPrincipalName $($UserWithThisNumber.UserPrincipalName) -PhoneNumber $Null -ErrorAction Stop
               Write-Information "Resource Account '$($UserWithThisNumber.UserPrincipalName)' - $Operation`: OK"
             }
           }
-          elseif ('User' -in $UserWithThisNumber.InterpretedUserType) {
+          elseif ($UserWithThisNumber.InterpretedUserType.Contains('User')) {
             if ($PSCmdlet.ShouldProcess("$($UserWithThisNumber.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
-              $UserWithThisNumber | Set-TeamsUserVoiceConfig -PhoneNumber $Null
+              $UserWithThisNumber | Set-TeamsUserVoiceConfig -PhoneNumber $Null -ErrorAction Stop
               Write-Information "User '$($UserWithThisNumber.UserPrincipalName)' - $Operation`: OK"
             }
           }

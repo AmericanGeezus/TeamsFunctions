@@ -146,6 +146,7 @@ function Set-AzureAdUserLicenseServicePlan {
       #region Object Verification
       # Querying User
       try {
+        #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
         $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction STOP
         Write-Verbose -Message "[PROCESS] $($UserObject.UserPrincipalName)"
       }
