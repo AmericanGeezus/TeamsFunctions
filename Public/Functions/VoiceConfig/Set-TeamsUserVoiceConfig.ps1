@@ -577,7 +577,9 @@ function Set-TeamsUserVoiceConfig {
 
       #region Remove Number from current Object
       if ( $force -or [String]::IsNullOrEmpty($PhoneNumber) ) {
-        Write-Warning -Message "User '$UserPrincipalName' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
+        if ([String]::IsNullOrEmpty($PhoneNumber)) {
+          Write-Warning -Message "User '$UserPrincipalName' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
+        }
         $Operation = 'Removing Phone Number'
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
