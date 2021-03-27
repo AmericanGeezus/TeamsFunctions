@@ -6,7 +6,7 @@
 
 #CHECK Pipeline with UPN instead of Identity
 #TODO Write HELP
-#TODO Add Switch IncludeTenantDialPlan
+
 function Assert-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
@@ -44,8 +44,10 @@ function Assert-TeamsUserVoiceConfig {
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s)')]
     [Alias('UserPrincipalName', 'UPN')]
-    [string[]]$Identity
+    [string[]]$Identity,
 
+    [Parameter(HelpMessage = 'Extends requirements to include Tenant Dial Plan assignment')]
+    [switch]$IncludeTenantDialPlan
   )
 
   begin {
@@ -99,6 +101,10 @@ function Assert-TeamsUserVoiceConfig {
         $TestFull = Test-TeamsUserVoiceConfig -Identity "$User"
 
         if ($TestFull) {
+          if (-not $CsOnlineUser.TenantDialPlan -and $IncludeTenantDialPlan ) {
+            Write-Information "User '$User' does not have a Tenant Dial Plan assigned"
+            continue
+          }
           if ($Called) {
             Write-Output $TestFull
           }
@@ -109,7 +115,13 @@ function Assert-TeamsUserVoiceConfig {
         }
         else {
           Write-Verbose -Message "User '$User' - User Voice Configuration (Partial)"
-          $TestPart = Test-TeamsUserVoiceConfig -Identity "$User" -Partial
+          #TEST IncludeTenantDialPlan
+          if ($IncludeTenantDialPlan) {
+            $TestPart = Test-TeamsUserVoiceConfig -Identity "$User" -Partial -IncludeTenantDialPlan
+          }
+          else {
+            $TestPart = Test-TeamsUserVoiceConfig -Identity "$User" -Partial
+          }
           if ($TestPart) {
             if ($Called) {
               Write-Output $TestPart

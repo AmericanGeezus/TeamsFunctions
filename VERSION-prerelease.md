@@ -11,6 +11,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### Updated
 
 - `Connect-Me`: Catching non-activation of MFA for better feedback
+- `Assert-MicrosoftTeamsConnection`: #TODO Evaluate Reconnection with Connect-MicrosoftTeams if unsuccessful.
 - `Enable-MyAzureAdAdminRole`: Catching non-activation of MFA for better feedback
 - `New-TeamsResourceAccount`: Adding `-Force` to the call of `Set-CsOnlineApplicationInstance` when removing Phone Numbers
 - `Remove-TeamsResourceAccount`: Adding `-Force` to the call of `Set-CsOnlineApplicationInstance` when removing Phone Numbers
@@ -29,6 +30,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Tweaks for handling PhoneSystemStatus of PendingInput
 - `Get-TeamsUserVoiceConfig`: Added nested Object for Licensing
 - `Find-AzureAdUser`: Improved output by Sorting by DisplayName
+- `Assert-TeamsUserVoiceConfig`: Adding Switch `-IncludeTenantDialPlan` to also test for Tenant Dial Plans
+- `Test-TeamsUserVoiceConfig`: Adding Switch `-IncludeTenantDialPlan` to also test for Tenant Dial Plans
 
 ### ToDo
 
