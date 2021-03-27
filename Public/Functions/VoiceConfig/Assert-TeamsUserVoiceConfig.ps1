@@ -4,9 +4,9 @@
 # Updated:  01-APR-2020
 # Status:   RC
 
-
-
-
+#CHECK Pipeline with UPN instead of Identity
+#TODO Write HELP
+#TODO Add Switch IncludeTenantDialPlan
 function Assert-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
