@@ -107,16 +107,18 @@ function Find-TeamsUserVoiceConfig {
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   .LINK
+    Assert-TeamsUserVoiceConfig
+	.LINK
     Find-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsTenantVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Set-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Remove-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Test-TeamsUserVoiceConfig
   #>
 

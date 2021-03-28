@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#CHECK Pipeline with UPN instead of Identity
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -44,22 +44,22 @@ function Get-TeamsUserVoiceConfig {
     - for Licensing:  "Get-AzureAdUserLicense $Identity"
     - for Teams:      "Get-CsOnlineUser $Identity"
 	.FUNCTIONALITY
-		The functionality that best describes this cmdlet
+		Returns an Object to validate the Voice Configuration for an Object
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    Assert-TeamsUserVoiceConfig
+	.LINK
     Find-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsTenantVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Set-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Remove-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Test-TeamsUserVoiceConfig
   #>
 

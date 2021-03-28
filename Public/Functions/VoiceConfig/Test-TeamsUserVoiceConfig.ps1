@@ -17,7 +17,7 @@ function Test-TeamsUserVoiceConfig {
 	.PARAMETER Identity
     Required. UserPrincipalName of the User to be tested
   .PARAMETER Partial
-    Optional. By default, returns TRUE only if all required Parameters for the Scope are configured (User is fully provisioned)
+    Optional. By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
     Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
   .PARAMETER IncludeTenantDialPlan
     Optional. By default, only the core requirements for Voice Routing are verified.
@@ -51,6 +51,8 @@ function Test-TeamsUserVoiceConfig {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
+    Assert-TeamsUserVoiceConfig
 	.LINK
     Find-TeamsUserVoiceConfig
 	.LINK

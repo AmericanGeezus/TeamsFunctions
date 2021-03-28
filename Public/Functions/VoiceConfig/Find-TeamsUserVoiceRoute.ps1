@@ -4,7 +4,7 @@
 # Updated:  28-DEC-2020
 # Status:   Live
 
-
+#CHECK Pipeline with UPN instead of Identity
 #EXPAND: Make Number an Array?
 
 function Find-TeamsUserVoiceRoute {
@@ -42,11 +42,19 @@ function Find-TeamsUserVoiceRoute {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    Assert-TeamsUserVoiceConfig
+	.LINK
     Find-TeamsUserVoiceConfig
-  .LINK
+	.LINK
+    Get-TeamsTenantVoiceConfig
+	.LINK
     Get-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Set-TeamsUserVoiceConfig
+	.LINK
+    Remove-TeamsUserVoiceConfig
+	.LINK
+    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding()]

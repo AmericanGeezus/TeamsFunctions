@@ -5,37 +5,64 @@
 # Status:   RC
 
 #CHECK Pipeline with UPN instead of Identity
-#TODO Write HELP
+#TODO Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
 
 function Assert-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
-    Short description
+    Tests the validity of the Voice Configuration for one or more Users
   .DESCRIPTION
-    Long description
+    Validates Object Type, enablement for Enterprise Voice, and optionally also the Tenant Dial Plan
+    For Calling Plans, validates Calling Plan License and presence of Telephone Number
+    For Direct Routing, validates Online Voice Routing Policy and OnPremLineUri
+    For Skype Hybrid PSTN, validate Voice Routing Policy and OnPremLineUri
+    Configuration is always done on the assumption that a full configuration is desired.
+    Any partial configuration is fed back on screen.
   .PARAMETER Identity
-    x
-  .PARAMETER x
-    x
+    Required. UserPrincipalName of the User to be tested
+  .PARAMETER IncludeTenantDialPlan
+    Optional. By default, only the core requirements for Voice Routing are verified.
+    This extends the requirements to also include the Tenant Dial Plan.
   .EXAMPLE
-    Verb-Noun -Identity John@domain.com
-    xx
+    Assert-TeamsUserVoiceConfig -Identity John@domain.com
+    If incorrect/missing, writes information output about every tested parameter
+    Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
+  .EXAMPLE
+    Assert-TeamsUserVoiceConfig -Identity John@domain.com -IncludeTenantDialPlan
+    If incorrect/missing, writes information output about every tested parameter including the Tenant Dial Plan
+    Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
   .NOTES
-    xx
+    Verbose output is available, though all required information is fed back directly to the User.
+    If no objections are found, nothing is returned.
+    Piping the Output to Export-Csv can give the best result for investigation into misconfigured users.
   .COMPONENT
-    xx
+    VoiceConfig
   .ROLE
-    xx
+    Validation
   .FUNCTIONALITY
-    xx
+    Voice Configuration & Troubleshooting
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
     Assert-TeamsUserVoiceConfig
+	.LINK
+    Find-TeamsUserVoiceConfig
+	.LINK
+    Get-TeamsTenantVoiceConfig
+	.LINK
+    Get-TeamsUserVoiceConfig
+	.LINK
+    Set-TeamsUserVoiceConfig
+	.LINK
+    Remove-TeamsUserVoiceConfig
+	.LINK
+    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding()]

@@ -25,6 +25,10 @@ function Enable-TeamsUserForEnterpriseVoice {
     Returns boolean result and less communication if called by another function
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+	.LINK
+    Set-TeamsUserVoiceConfig
+	.LINK
+    Enable-TeamsUserForEnterpriseVoice
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
