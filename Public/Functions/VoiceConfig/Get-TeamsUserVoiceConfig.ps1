@@ -22,10 +22,10 @@ function Get-TeamsUserVoiceConfig {
   .PARAMETER SkipLicenseCheck
     Optional. Will not perform queries against User Licensing to improve performance
   .EXAMPLE
-    Get-TeamsUserVoiceConfig -Identity John@domain.com
+    Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     Shows Voice Configuration for John with a concise view of Parameters
 	.EXAMPLE
-    Get-TeamsUserVoiceConfig -Identity John@domain.com -DiagnosticLevel 2
+    Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DiagnosticLevel 2
     Shows Voice Configuration for John with a extended list of Parameters (see NOTES)
   .EXAMPLE
     "John@domain.com" | Get-TeamsUserVoiceConfig -SkipLicenseCheck
@@ -79,7 +79,7 @@ function Get-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('Identity', 'UPN')]
+    [Alias('Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]

@@ -590,7 +590,7 @@ function Set-TeamsResourceAccount {
       if ($null -eq $PhoneNumber -or $force -or $CurrentPhoneNumber -ne $PhoneNumber) {
         Write-Verbose -Message "'$Name ($UserPrincipalName)' ACTION: Removing Phone Number"
         try {
-          $UVCObject = Get-TeamsUserVoiceConfig -Identity $UserPrincipalName -ErrorVariable Stop
+          $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -ErrorVariable Stop
           if ($null -ne ($UVCObject.TelephoneNumber)) {
             # Remove from VoiceApplicationInstance
             Write-Verbose -Message "'$Name ($UserPrincipalName)' Removing Microsoft Number"

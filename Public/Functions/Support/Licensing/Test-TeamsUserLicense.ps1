@@ -52,10 +52,10 @@ function Test-TeamsUserLicense {
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'ServicePlan')]
-  [Alias('Test-TeamsUserLicence')]
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
+    [Alias('UserPrincipalName')]
     [string]$Identity,
 
     [Parameter(Mandatory, ParameterSetName = 'ServicePlan', HelpMessage = 'AzureAd Service Plan')]

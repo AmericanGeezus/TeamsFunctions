@@ -18,17 +18,17 @@ function Assert-TeamsUserVoiceConfig {
     For Skype Hybrid PSTN, validate Voice Routing Policy and OnPremLineUri
     Configuration is always done on the assumption that a full configuration is desired.
     Any partial configuration is fed back on screen.
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
     Required. UserPrincipalName of the User to be tested
   .PARAMETER IncludeTenantDialPlan
     Optional. By default, only the core requirements for Voice Routing are verified.
     This extends the requirements to also include the Tenant Dial Plan.
   .EXAMPLE
-    Assert-TeamsUserVoiceConfig -Identity John@domain.com
+    Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     If incorrect/missing, writes information output about every tested parameter
     Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
   .EXAMPLE
-    Assert-TeamsUserVoiceConfig -Identity John@domain.com -IncludeTenantDialPlan
+    Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -IncludeTenantDialPlan
     If incorrect/missing, writes information output about every tested parameter including the Tenant Dial Plan
     Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
   .INPUTS
@@ -70,8 +70,8 @@ function Assert-TeamsUserVoiceConfig {
   #[OutputType([Boolean])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s)')]
-    [Alias('UserPrincipalName', 'UPN')]
-    [string[]]$Identity,
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Extends requirements to include Tenant Dial Plan assignment')]
     [switch]$IncludeTenantDialPlan
@@ -104,7 +104,7 @@ function Assert-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    foreach ($Id in $Identity) {
+    foreach ($Id in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] Processing '$Id'"
 
       try {
@@ -125,7 +125,7 @@ function Assert-TeamsUserVoiceConfig {
       }
       else {
         Write-Verbose -Message "User '$User' - User Voice Configuration (Full)"
-        $TestFull = Test-TeamsUserVoiceConfig -Identity "$User"
+        $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
 
         if ($TestFull) {
           if (-not $CsOnlineUser.TenantDialPlan -and $IncludeTenantDialPlan ) {
@@ -144,10 +144,10 @@ function Assert-TeamsUserVoiceConfig {
           Write-Verbose -Message "User '$User' - User Voice Configuration (Partial)"
           #TEST IncludeTenantDialPlan
           if ($IncludeTenantDialPlan) {
-            $TestPart = Test-TeamsUserVoiceConfig -Identity "$User" -Partial -IncludeTenantDialPlan
+            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan
           }
           else {
-            $TestPart = Test-TeamsUserVoiceConfig -Identity "$User" -Partial
+            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial
           }
           if ($TestPart) {
             if ($Called) {
@@ -156,7 +156,7 @@ function Assert-TeamsUserVoiceConfig {
             else {
               Write-Warning "User '$User' is partially configured! Please investigate"
               # Output with Switch (faster with values already queried!)
-              Get-TeamsUserVoiceConfig "$User" -SkipLicenseCheck -DiagnosticLevel 1
+              Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1
               #$CsOnlineUser | Select-Object UserPrincipalName, InterpretedUserType, EnterpriseVoiceEnabled, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy, TelephoneNumber, LineUri, OnPremLineURI
             }
           }

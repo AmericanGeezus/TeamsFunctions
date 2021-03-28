@@ -124,7 +124,7 @@ function Remove-TeamsCommonAreaPhone {
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      Remove-TeamsUserVoiceConfig -Identity $UPN -PassThru
+      Remove-TeamsUserVoiceConfig -UserPrincipalName $UPN -PassThru
       #endregion
 
       #region Licensing

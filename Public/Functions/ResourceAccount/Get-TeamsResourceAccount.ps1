@@ -76,8 +76,8 @@ function Get-TeamsResourceAccount {
   [OutputType([System.Object])]
   param (
     [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'User Principal Name of the Object.')]
-    [Alias('UPN', 'UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DisplayName', ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
     [ValidateLength(3, 255)]
@@ -140,13 +140,12 @@ function Get-TeamsResourceAccount {
     $step++
     Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    if ($PSBoundParameters.ContainsKey('Identity')) {
+    if ($PSBoundParameters.ContainsKey('UserPrincipalName')) {
       # Default Parameterset
       [System.Collections.ArrayList]$ResourceAccounts = @()
-      foreach ($I in $Identity) {
+      foreach ($I in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
-          #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
           $RA = Get-CsOnlineApplicationInstance -Identity $I -ErrorAction Stop
           [void]$ResourceAccounts.Add($RA)
         }

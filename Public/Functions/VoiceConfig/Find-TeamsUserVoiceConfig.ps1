@@ -20,7 +20,7 @@ function Find-TeamsUserVoiceConfig {
     - VoicePolicy: 'BusinessVoice' (CallPlans) or 'HybridVoice' (DirectRouting or any other Hybrid PSTN configuration)
     - OnlineVoiceRoutingPolicy: Any string value (incl. $Null), but not empty ones.
     - TenantDialPlan: Any string value (incl. $Null), but not empty ones.
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
     Optional. UserPrincipalName (UPN) of the User
     Behaves like Get-TeamsUserVoiceConfig, displaying the Users Voice Configuration
 	.PARAMETER PhoneNumber
@@ -50,7 +50,7 @@ function Find-TeamsUserVoiceConfig {
     In addition to validation of Parameters, also validates License assignment for the found user.
     License Check is performed AFTER parameters are verified.
 	.EXAMPLE
-    Find-TeamsUserVoiceConfig -Identity John@domain.com
+    Find-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     Shows Voice Configuration for John, returning the full Object
 	.EXAMPLE
     Find-TeamsUserVoiceConfig -PhoneNumber "15551234567"
@@ -91,7 +91,7 @@ function Find-TeamsUserVoiceConfig {
     PhoneNumber has to do a full search with 'Where-Object' which will take time to complete
     Depending on the number of Users in the Tenant, this may take a few minutes!
 
-    All Parameters except Identity or PhoneNumber will only return UPNs
+    All Parameters except UserPrincipalName or PhoneNumber will only return UserPrincipalNames (UPNs)
     - PhoneNumber: Searches against the LineURI parameter. For best compatibility, provide in E.164 format (with or without the +)
     This script can find duplicate assignments if the Number was assigned with and without an extension.
     - ConfigurationType: This is determined with Test-TeamsUserVoiceConfig -Partial and will return all Accounts found
@@ -131,7 +131,8 @@ function Find-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(ParameterSetName = 'ID')]
-    [string]$Identity,
+    [Alias('Identity')]
+    [string]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'Tel', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]
     [ValidateScript( {
@@ -200,12 +201,12 @@ function Find-TeamsUserVoiceConfig {
 
     switch ($PsCmdlet.ParameterSetName) {
       'ID' {
-        Write-Information "Finding Users with SipAddress '$Identity'"
+        Write-Information "Finding Users with SipAddress '$UserPrincipalName'"
         #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-        $Filter = 'SipAddress -like "*{0}*"' -f $Identity
+        $Filter = 'SipAddress -like "*{0}*"' -f $UserPrincipalName
         $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
         if (-not $Users) {
-          $MailNickName = $Identity.split('@') | Select-Object -First 1
+          $MailNickName = $UserPrincipalName.split('@') | Select-Object -First 1
           Write-Information "Finding Users with MailNickName '$MailNickName'"
           $Filter = 'MailNickName -like "*{0}*"' -f $MailNickName
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
@@ -218,11 +219,11 @@ function Find-TeamsUserVoiceConfig {
           }
           else {
             Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
-            Get-TeamsUserVoiceConfig $($Users.UserPrincipalName)
+            Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
           }
         }
         else {
-          Write-Verbose -Message "User: '$Identity' - No records found (SipAddress)" -Verbose
+          Write-Verbose -Message "User: '$UserPrincipalName' - No records found (SipAddress)" -Verbose
         }
         break
       } #ID
@@ -231,7 +232,7 @@ function Find-TeamsUserVoiceConfig {
         foreach ($PhoneNr in $PhoneNumber) {
           Write-Verbose -Message "Normalising Input for Phone Number '$PhoneNr'"
           if ($PhoneNr -match '@') {
-            Find-TeamsUserVoiceConfig -Identity "$PhoneNr"
+            Find-TeamsUserVoiceConfig -UserPrincipalName "$PhoneNr"
             continue
           }
           elseif ($PhoneNr -match '(\d+);ext=(\d+)') {
@@ -256,7 +257,7 @@ function Find-TeamsUserVoiceConfig {
             }
             else {
               Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
-              Get-TeamsUserVoiceConfig $($Users.UserPrincipalName)
+              Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
             }
           }
           else {
@@ -290,7 +291,7 @@ function Find-TeamsUserVoiceConfig {
             }
             else {
               Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
-              Get-TeamsUserVoiceConfig $($Users.UserPrincipalName)
+              Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
             }
           }
           else {

@@ -85,7 +85,7 @@ function Enable-AzureAdAdminRole {
 
   param(
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the Admin Account')]
-    [Alias('UPN', 'UserPrincipalName', 'Username')]
+    [Alias('UserPrincipalName', 'ObjectId')]
     [string]$Identity,
 
     [Parameter(HelpMessage = 'Optional Reason for the request')]
@@ -140,7 +140,7 @@ function Enable-AzureAdAdminRole {
       $global:VerbosePreference = $SaveVerbosePreference
     }
     catch {
-      Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'
+      Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed and correctly loaded'
       return
     }
 

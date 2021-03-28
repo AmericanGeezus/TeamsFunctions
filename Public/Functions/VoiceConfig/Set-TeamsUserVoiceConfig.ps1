@@ -42,20 +42,20 @@ function Set-TeamsUserVoiceConfig {
 	.PARAMETER WriteErrorLog
     If Errors are encountered, writes log to C:\Temp
   .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
+		Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
     Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided
   .EXAMPLE
-		Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
+		Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
     Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
     If Errors are encountered, they are written to C:\Temp as well as on screen
   .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
+    Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
     Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided
 	.EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
+    Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
     Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
   .EXAMPLE
-    Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
+    Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
     Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
   .INPUTS
     System.String
@@ -69,7 +69,9 @@ function Set-TeamsUserVoiceConfig {
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
     Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
     Optionally can also assign a Calling Plan license prior.
-    This script cannot apply PhoneNumbers for OperatorConnect yet and only limited pipeline input is available
+    This script cannot apply PhoneNumbers for OperatorConnect yet
+    This script accepts pipeline input as Value (UserPrincipalName) or as Object (UPN, OVP, TDP, PhoneNumber)
+    This enables bulk provisioning
   .COMPONENT
     VoiceConfig
   .ROLE
@@ -101,21 +103,21 @@ function Set-TeamsUserVoiceConfig {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ValueFromPipeline, HelpMessage = 'UserPrincipalName of the User')]
-    [Alias('Identity', 'UPN')]
+    [Alias('Identity')]
     [string]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DirectRouting', HelpMessage = 'Enables an Object for Direct Routing')]
     [switch]$DirectRouting,
 
-    [Parameter(ParameterSetName = 'DirectRouting', HelpMessage = 'Name of the Online Voice Routing Policy')]
+    [Parameter(ParameterSetName = 'DirectRouting', ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Routing Policy')]
     [Alias('OVP')]
     [string]$OnlineVoiceRoutingPolicy,
 
-    [Parameter(HelpMessage = 'Name of the Tenant Dial Plan')]
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Tenant Dial Plan')]
     [Alias('TDP')]
     [string]$TenantDialPlan,
 
-    [Parameter(HelpMessage = 'E.164 Number to assign to the Object')]
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'E.164 Number to assign to the Object')]
     [AllowNull()]
     [AllowEmptyString()]
     [Alias('Number', 'LineURI')]
@@ -706,10 +708,10 @@ function Set-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status 'Output' -CurrentOperation 'Waiting for Office 365 to write the Object' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message 'Waiting 3-5s for Office 365 to write changes to User Object (Policies might not show up yet)'
       Start-Sleep -Seconds 3
-      $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $UserPrincipalName
+      $UserObjectPost = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
       if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
         Start-Sleep -Seconds 2
-        $UserObjectPost = Get-TeamsUserVoiceConfig -Identity $UserPrincipalName
+        $UserObjectPost = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
       }
 
       if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {

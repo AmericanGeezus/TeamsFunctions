@@ -24,17 +24,17 @@ function Test-TeamsUserVoiceConfig {
     This extends the requirements to also include the Tenant Dial Plan.
     Returns FALSE if no or only a TenantDialPlan is assigned
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Partial
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -IncludeTenantDialPlan
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDialPlan
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
     This requires a Tenant Dial Plan to be assigned as well.
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Partial -IncludeTenantDialPlan
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial -IncludeTenantDialPlan
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
     This will treat any Object that only has a Tenant Dial Plan also as partially configured
   .INPUTS

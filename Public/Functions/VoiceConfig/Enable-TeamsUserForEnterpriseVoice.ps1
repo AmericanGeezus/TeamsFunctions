@@ -13,7 +13,7 @@ function Enable-TeamsUserForEnterpriseVoice {
     Enables a User for Enterprise Voice
   .DESCRIPTION
 		Enables a User for Enterprise Voice and verifies its status
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
 		UserPrincipalName of the User to be enabled.
   .PARAMETER Force
 		Suppresses confirmation prompt unless -Confirm is used explicitly

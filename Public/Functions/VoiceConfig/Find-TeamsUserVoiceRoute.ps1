@@ -14,7 +14,7 @@ function Find-TeamsUserVoiceRoute {
   .DESCRIPTION
     Returns a custom object detailing voice routing information for a User
     If a Dialed Number is provided, also normalises the number and returns the effective Tenant Dial Plan
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
     Required. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan
     User must have a valid Voice Configuration applied for this script to return a valuable result
   .PARAMETER DialedNumber
@@ -62,7 +62,7 @@ function Find-TeamsUserVoiceRoute {
   [OutputType([PSCustomObject])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s) to query routing for')]
-    [Alias('Identity', 'UPN', 'Username')]
+    [Alias('Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Phone Number to be normalised with the Dial Plan')]

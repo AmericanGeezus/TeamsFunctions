@@ -66,7 +66,7 @@ function Set-AzureAdUserLicenseServicePlan {
   [OutputType([Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('UPN', 'UserPrincipalName', 'Username')]
+    [Alias('UserPrincipalName')]
     [string[]]$Identity,
 
     [Parameter(HelpMessage = 'Service Plan(s) to be enabled on this Object')]

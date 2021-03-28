@@ -43,6 +43,7 @@ function Test-TeamsResourceAccount {
 	[OutputType([Boolean])]
 	param(
 		[Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
+		[Alias('UserPrincipalName')]
 		[string]$Identity,
 
 		[Parameter(HelpMessage = 'Quick test against AzureAdUser Department')]

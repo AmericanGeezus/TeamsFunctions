@@ -2159,7 +2159,7 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Find-TeamsUserVoiceConfig -Identity John@domain.com</dev:code>
+        <dev:code>Find-TeamsUserVoiceConfig -UserPrincipalName John@domain.com</dev:code>
         <dev:remarks>
           <maml:para>Shows Voice Configuration for John, returning the full Object</maml:para>
         </dev:remarks>
@@ -6928,14 +6928,14 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-TeamsUserVoiceConfig -Identity John@domain.com</dev:code>
+        <dev:code>Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com</dev:code>
         <dev:remarks>
           <maml:para>Shows Voice Configuration for John with a concise view of Parameters</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Get-TeamsUserVoiceConfig -Identity John@domain.com -DiagnosticLevel 2</dev:code>
+        <dev:code>Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DiagnosticLevel 2</dev:code>
         <dev:remarks>
           <maml:para>Shows Voice Configuration for John with a extended list of Parameters (see NOTES)</maml:para>
         </dev:remarks>
@@ -13251,28 +13251,28 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Remove-TeamsUserVoiceConfig -Identity John@domain.com [-Scope All]</dev:code>
+        <dev:code>Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com [-Scope All]</dev:code>
         <dev:remarks>
           <maml:para>Disables John for Enterprise Voice, then removes all Phone Numbers, Voice Routing Policy, Tenant Dial Plan and Call Plan licenses</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope DirectRouting</dev:code>
+        <dev:code>Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope DirectRouting</dev:code>
         <dev:remarks>
           <maml:para>Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans [-Confirm]</dev:code>
+        <dev:code>Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans [-Confirm]</dev:code>
         <dev:remarks>
           <maml:para>Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned   Prompts for Confirmation before removing Call Plan licenses</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
-        <dev:code>Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans -Force</dev:code>
+        <dev:code>Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans -Force</dev:code>
         <dev:remarks>
           <maml:para>Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned   Does not prompt for Confirmation (unless -Confirm is specified explicitly)</maml:para>
         </dev:remarks>
@@ -16231,35 +16231,35 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan</dev:code>
+        <dev:code>Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan</dev:code>
         <dev:remarks>
           <maml:para>Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog</dev:code>
+        <dev:code>Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog</dev:code>
         <dev:remarks>
           <maml:para>Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)   If Errors are encountered, they are written to C:\Temp as well as on screen</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Set-TeamsUserVoiceConfig -Identity John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"</dev:code>
+        <dev:code>Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"</dev:code>
         <dev:remarks>
           <maml:para>Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
-        <dev:code>Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"</dev:code>
+        <dev:code>Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"</dev:code>
         <dev:remarks>
           <maml:para>Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
-        <dev:code>Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"</dev:code>
+        <dev:code>Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"</dev:code>
         <dev:remarks>
           <maml:para>Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.</maml:para>
         </dev:remarks>
@@ -17264,28 +17264,28 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting [-Scope Full]</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Config DirectRouting [-Scope Full]</dev:code>
         <dev:remarks>
           <maml:para>Tests for Direct Routing and returns TRUE if FULL configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting -Scope Partial</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Config DirectRouting -Scope Partial</dev:code>
         <dev:remarks>
           <maml:para>Tests for Direct Routing and returns TRUE if ANY configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans [-Scope Full]</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Config CallPlans [-Scope Full]</dev:code>
         <dev:remarks>
           <maml:para>Tests for Call Plans and returns TRUE if FULL configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
-        <dev:code>Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans -Scope Partial</dev:code>
+        <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Config CallPlans -Scope Partial</dev:code>
         <dev:remarks>
           <maml:para>Tests for Call Plans but returns TRUE if ANY configuration is found</maml:para>
         </dev:remarks>

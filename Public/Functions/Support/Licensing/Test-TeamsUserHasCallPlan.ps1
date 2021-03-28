@@ -35,6 +35,7 @@ function Test-TeamsUserHasCallPlan {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
+    [Alias('UserPrincipalName')]
     [string]$Identity
   ) #param
 

@@ -37,6 +37,7 @@ function Test-AzureAdGroup {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the Name or UserPrincipalName of the Group')]
+    [Alias('UserPrincipalName', 'GroupName')]
     [string]$Identity
   ) #param
 

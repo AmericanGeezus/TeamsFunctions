@@ -11,7 +11,6 @@ function Restore-TeamsEV {
   <#
 	.SYNOPSIS
 		A script to automatically restore a backed-up Teams Enterprise Voice configuration.
-
 	.DESCRIPTION
 		A script to automatically restore a backed-up Teams Enterprise Voice configuration. Requires a backup run using Backup-TeamsEV.ps1 in the same directory as the script. Will restore the following items:
 		- Dialplans and associated normalization rules
@@ -19,20 +18,15 @@ function Restore-TeamsEV {
 		- Voice routing policies
 		- PSTN usages
 		- Outbound translation rules
-
 	.PARAMETER File
 		REQUIRED. Path to the zip file containing the backed up Teams EV config to restore
-
 	.PARAMETER KeepExisting
 		OPTIONAL. Will not erase existing Enterprise Voice configuration before restoring.
-
 	.PARAMETER OverrideAdminDomain
 		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
-
   .EXAMPLE
     Restore-TeamsEV -File C:\Temp\Backup.ZIP
     Restores the Teams Enterprise Voice Configuration from Backup.ZIP file.
-
 	.NOTES
 		Version 1.10
 		Build: Feb 04, 2020

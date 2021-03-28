@@ -14,7 +14,7 @@ function Assert-TeamsCallableEntity {
   .DESCRIPTION
     Tests whether a the Object can be used as a Callable Entity in Call Queues or Auto Attendant
   .PARAMETER Identity
-    UserPrincipalName, Group Name or Tel URI
+    Required. UserPrincipalName, Group Name or Tel URI
   .PARAMETER Terminate
     Optional. By default, the Command will not throw terminating errors.
     Using this switch a terminating error is generated.
@@ -34,6 +34,7 @@ function Assert-TeamsCallableEntity {
   Param
   (
     [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'User Principal Name of the user')]
+    [Alias('UserPrincipalName','GroupName','TelUri')]
     [string]$Identity,
 
     [Parameter(HelpMessage = 'Switch to instruct to throw errors')]
@@ -51,7 +52,7 @@ function Assert-TeamsCallableEntity {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
-      $Object = Get-TeamsUserVoiceConfig $Identity
+      $Object = Get-TeamsUserVoiceConfig -UserPrincipalName $Identity
       Write-Verbose -Message "User '$Identity' found"
     }
     catch {

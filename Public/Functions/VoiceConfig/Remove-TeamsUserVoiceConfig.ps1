@@ -29,17 +29,17 @@ function Remove-TeamsUserVoiceConfig {
 	.PARAMETER Force
 		Optional. Suppresses Confirmation for license Removal unless -Confirm is specified explicitly.
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com [-Scope All]
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com [-Scope All]
 		Disables John for Enterprise Voice, then removes all Phone Numbers, Voice Routing Policy, Tenant Dial Plan and Call Plan licenses
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope DirectRouting
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope DirectRouting
 		Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans [-Confirm]
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans [-Confirm]
     Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
     Prompts for Confirmation before removing Call Plan licenses
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans -Force
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans -Force
     Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
     Does not prompt for Confirmation (unless -Confirm is specified explicitly)
   .INPUTS
@@ -342,7 +342,7 @@ function Remove-TeamsUserVoiceConfig {
 
       # Output
       if ( $PassThru ) {
-        Get-TeamsUserVoiceConfig "$User"
+        Get-TeamsUserVoiceConfig -UserPrincipalName "$User"
       }
 
     }

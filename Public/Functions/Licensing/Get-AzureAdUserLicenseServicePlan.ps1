@@ -69,7 +69,7 @@ function Get-AzureAdUserLicenseServicePlan {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
-    [Alias('UserPrincipalName', 'Username', 'UPN')]
+    [Alias('UserPrincipalName')]
     [string[]]$Identity,
 
     [Parameter(HelpMessage = 'Displays only Service Plans relevant to Teams')]

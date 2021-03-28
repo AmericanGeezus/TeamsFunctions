@@ -70,7 +70,7 @@ function Connect-Me {
   [Alias('con')]
   param(
     [Parameter(Mandatory, Position = 0, HelpMessage = 'UserPrincipalName, Administrative Account')]
-    [Alias('Username')]
+    [Alias('UserPrincipalName', 'Username')]
     [string]$AccountId,
 
     [Parameter(HelpMessage = 'Establishes a connection to Exchange Online. Reuses credentials if authenticated already.')]
