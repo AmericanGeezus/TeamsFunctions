@@ -3,6 +3,95 @@
 Full Change Log for all major releases.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.04 - April 2021 release
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-93-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-46-green.svg)                                                          |
+| Status    | ![Live](https://img.shields.io/badge/Live-79-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1200-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
+| Focus | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing |
+
+No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
+
+### Focus for this month
+
+- Stabilisation of the Connection CmdLets incl. Reconnection
+- Improved Pipelining (Switching from `Identity` to `UserPrincipalName` where the UPN is used primarily)
+NOTE: This will continue into Next Months release, see below
+- Quality of Life improvements (better feedback, fine tuning, etc.)
+- Bugfixing
+
+### New
+
+- Module: Handling of Strict Mode (if activated) and switching it off.
+- **New Functions**
+  - `Enable-MyAzureAdAdminRole` (`ear`): Wrap for `Enable-AzureAdAdminRole` which works on its own too, but makes it available to be called in other functions
+  - `Get-MyAzureAdAdminRole`: Wrap for `Get-AzureAdAdminRole` to query Admin Roles for the currently connected User
+  - `Get-CurrentConnection` (`cur`): Helper Function for Connect-Me. Queries connections to AzureAd, MicrosoftTeams and Exchange and returns an Object with Information
+  - `Assert-TeamsUserVoiceConfig`: New Script to validate Configuration for TDR and Calling Plans
+  - `Get-TeamsCP`: Get-CsTeamsCallingPolicy in a new form
+  - `Get-TeamsIPP`: Get-CsTeamsIpPhonePolicy in a new form
+  - `Get-TeamsECP`: Get-CsTeamsEmergencyCallingPolicy in a new form
+  - `Get-TeamsECRP`: Get-CsTeamsEmergencyCallRoutingPolicy in a new form
+  - `Use-MicrosoftTeamsConnection`: New private function to reconnect a broken PS-Session by running a GET-Command before `Test-MicrosoftTeamsConnection`
+
+### Updated
+
+- Multiple CmdLets: Change of main Parameter Name from `Identity` to `UserPrincipalName` to improve quality when using the pipeline.
+- **Session & Connection**
+  - `Connect-Me`:
+    - Reworked data gathering at the end and output for `-NoFeedback` (now returns a barebones Account, Connection and TeamsUpgradeEffectiveMode)
+    - Catching non-activation of MFA for better feedback
+  - `Test-MicrosoftTeamsConnection`: Updated (reduced) to actual testing (extracted trigger into `Use-MicrosoftTeamsConnection`)
+  - `Assert-MicrosoftTeamsConnection`: Updated to use and test the Connection properly and run Connect-MicrosoftTeams or Connect-Me dependent on Status
+- **Resource Accounts**
+  - Fixing an issue where Phone numbers were not correctly applied.
+  - Adding `-Force` to the call of `Set-CsOnlineApplicationInstance` when removing Phone Numbers (New, Remove, Set)
+  - `Set-TeamsResourceAccount`:
+    - Rework of Number assignment. Separation of Validation, Removal, Scavenging and Application
+      - Number validation happens first
+      - Number removal is triggered if assigned and different, with `-Force` or if PhoneNumber is provided and is not NULL or Empty
+      - Number scavenging (from other Users or Resource Accounts) can be performed with `-Force`
+      - Number assignment is triggered if PhoneNumber is provided and it is not NULL or Empty
+- **Voice Configuration**
+  - `Get-TeamsUserVoiceConfig`: Added nested Object for Licensing with ScriptMethod ToString
+  - `Set-TeamsUserVoiceConfig`:
+    - Complete Rework of Number assignment. Separation of Validation, Removal, Scavenging and Application
+      - Number validation happens first
+      - Number removal is triggered if assigned and different, with `-Force` or if PhoneNumber is provided and is not NULL or Empty
+      - Number scavenging (from other Users or Resource Accounts) can be performed with `-Force`
+      - Number assignment is triggered if PhoneNumber is provided and it is not NULL or Empty
+    - Tweaks for handling PhoneSystemStatus of PendingInput
+  - `Test-TeamsUserVoiceConfig`:
+    - Adding Switch `-IncludeTenantDialPlan` to also test for Tenant Dial Plans
+    - Complete revamp based on Microsoft Configuration Guidelines. Simplified usage (removed Scope(TDR/CallingPlans)).
+    - New Status: LIVE
+- **User Management**
+  - `Find-AzureAdUser`: Improved output by Sorting by DisplayName
+  - `Enable-AzureAdAdminRole`: Added Debug function & Call Stack
+  - `Get-AzureAdAdminRole`: Added Debug function, Corrected ActiveUntil and Added ActiveSince
+- **Licensing**
+  - All internal license queries are now performed by `Get-AzureAdUserLicense`
+  - The default output for `Get-TeamsUserLicense` is now reduced to Teams only Licenses.
+  - NOTE: The Output Object is the same, just the default behaviour between the two CmdLets is different
+  - `Get-TeamsUserLicense`: Now allows for piping the output to other CmdLets (Added AzureAdUser Identity)
+- **Helper Functions**
+  - Multiple Functions updated and tested: OPU, OVP, OVR, MGW, TDP, VNR
+  - `Get-TeamsTenant`: Reworked output and updated (Domains) with ScriptMethod ToString
+
+### ToDo
+
+Not in this release
+
+- Continuation of Pipeline tests:
+  - Test piping objects with UserprincipalName and Identity to GET-CmdLets and SET-CmdLets
+  - Test output of objects with and without Identity against Microsoft CmdLets
+- Rework Get-TeamsCallQueue and Get-TeamsAutoAttendant to also accept the ObjectId as input
+- `Assert-MicrosoftTeamsConnection`: Evaluate Reconnection with Connect-MicrosoftTeams if unsuccessful.
+
 ## v21.03 - March 2021 release
 
 ### Component Status
