@@ -4,8 +4,8 @@
 # Updated:  01-APR-2020
 # Status:   RC
 
-#CHECK Pipeline with UPN instead of Identity
 #TODO Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
+
 
 function Assert-TeamsUserVoiceConfig {
   <#
