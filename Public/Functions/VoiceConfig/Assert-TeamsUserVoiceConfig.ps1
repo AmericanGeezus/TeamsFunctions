@@ -42,9 +42,9 @@ function Assert-TeamsUserVoiceConfig {
   .COMPONENT
     VoiceConfig
   .ROLE
-    Validation
-  .FUNCTIONALITY
-    Voice Configuration & Troubleshooting
+    TeamsUserVoiceConfig
+	.FUNCTIONALITY
+    Finding Users with a incorrectly set up Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

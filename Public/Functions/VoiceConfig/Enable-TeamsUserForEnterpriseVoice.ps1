@@ -23,6 +23,12 @@ function Enable-TeamsUserForEnterpriseVoice {
   .NOTES
     Simple helper function to enable and verify a User is enabled for Enterprise Voice
     Returns boolean result and less communication if called by another function
+  .COMPONENT
+    VoiceConfig
+  .ROLE
+    TeamsUserVoiceConfig
+	.FUNCTIONALITY
+    Enables a User for Enterprise Voice in order to apply a valid Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 	.LINK
@@ -36,8 +42,8 @@ function Enable-TeamsUserForEnterpriseVoice {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Suppresses confirmation prompt unless -Confirm is used explicitly')]
     [switch]$Force
@@ -64,7 +70,7 @@ function Enable-TeamsUserForEnterpriseVoice {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    foreach ($Id in $Identity) {
+    foreach ($Id in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] $Id"
       # Querying Identity
       try {
@@ -80,14 +86,14 @@ function Enable-TeamsUserForEnterpriseVoice {
 
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
+        #CHECK Deactivated as Object is able to be used/enabled even if in Islands mode and Object in Skype!
         if ($Called) {
           Write-Warning -Message $Message
-          return $false
+          #return $false
         }
         else {
-          #CHECK Deactivated as Object is able to be used/enabled even if in Islands mode and Object in Skype!
-          #throw [System.InvalidOperationException]::New("$Message")
           Write-Warning -Message $Message
+          #throw [System.InvalidOperationException]::New("$Message")
         }
       }
 

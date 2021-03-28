@@ -13,7 +13,7 @@ function Remove-TeamsUserVoiceConfig {
 		Removes existing Voice Configuration for one or more Users
 	.DESCRIPTION
 		De-provisions a user from Enterprise Voice, removes the Telephone Number, Tenant Dial Plan and Voice Routing Policy
-	.PARAMETER Identity
+	.PARAMETER UserPrincipalName
 		Required. UserPrincipalName of the User.
 	.PARAMETER Scope
     Optional. Default is "All". Definition of Scope for removal of Voice Configuration.
@@ -76,7 +76,7 @@ function Remove-TeamsUserVoiceConfig {
   [OutputType([System.Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [string[]]$Identity,
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Defines Type of Voice Configuration to remove')]
     [ValidateSet('All', 'DirectRouting', 'CallingPlans')]
@@ -122,9 +122,9 @@ function Remove-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $UserCounter = 0
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
-      Write-Progress -Id 0 -Status "User '$User'" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
+      Write-Progress -Id 0 -Status "User '$User'" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
       $UserCounter++
       # Initialising counters for Progress bars
       [int]$step = 0

@@ -34,9 +34,9 @@ function Find-TeamsUserVoiceRoute {
     This is a slightly more intricate on Voice routing, enabling comparisons for multiple users.
     Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www.lee-ford.co.uk
   .COMPONENT
-    VoiceConfig
-  .ROLE
     VoiceRouting
+  .ROLE
+    TeamsUserVoiceConfig
   .FUNCTIONALITY
     Voice Routing and Troubleshooting
   .LINK
@@ -62,10 +62,10 @@ function Find-TeamsUserVoiceRoute {
   [OutputType([PSCustomObject])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s) to query routing for')]
-    [Alias('Username', 'UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('Identity', 'UPN', 'Username')]
+    [string[]]$UserPrincipalName,
 
-    [Parameter(HelpMessage = 'Phone Number to be normalised with the Dial Plan')]
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Phone Number to be normalised with the Dial Plan')]
     [Alias('Number')]
     [String]$DialedNumber
 
@@ -88,7 +88,7 @@ function Find-TeamsUserVoiceRoute {
 
     #region Defining Output Object
     class TFVoiceRouting {
-      [string]$Identity
+      [string]$UserPrincipalName
       [string]$TenantDialPlan
       [string]$DialedNumber
       [string]$EffectiveDialPlan
@@ -103,7 +103,7 @@ function Find-TeamsUserVoiceRoute {
       [string]$NumberPattern
 
       TFVoiceRouting(
-        [string]$Identity,
+        [string]$UserPrincipalName,
         [string]$TenantDialPlan,
         [string]$DialedNumber,
         [string]$EffectiveDialPlan,
@@ -117,7 +117,7 @@ function Find-TeamsUserVoiceRoute {
         [string]$OnlinePstnGateway,
         [string]$NumberPattern
       ) {
-        $this.Identity = $Identity
+        $this.UserPrincipalName = $UserPrincipalName
         $this.TenantDialPlan = $TenantDialPlan
         $this.DialedNumber = $DialedNumber
         $this.EffectiveDialPlan = $EffectiveDialPlan
@@ -143,7 +143,7 @@ function Find-TeamsUserVoiceRoute {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    foreach ($Id in $Identity) {
+    foreach ($Id in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] Processing '$Id'"
 
       # Query User and prepare object
@@ -162,7 +162,7 @@ function Find-TeamsUserVoiceRoute {
       # User
       $UserVoiceRouting = $null
       $UserVoiceRouting = [TFVoiceRouting]::new('', '', '', '', '', '', '', '', '', $null, '', '', '')
-      $UserVoiceRouting.Identity = $User.UserPrincipalName
+      $UserVoiceRouting.UserPrincipalName = $User.UserPrincipalName
       $UserVoiceRouting.TenantDialPlan = $User.TenantDialPlan
       $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
 

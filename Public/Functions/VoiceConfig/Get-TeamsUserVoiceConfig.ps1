@@ -14,7 +14,7 @@ function Get-TeamsUserVoiceConfig {
 	.DESCRIPTION
     Displays Voice Configuration Parameters with different Diagnostic Levels
     ranging from basic Voice Configuration up to Policies, Account Status & DirSync Information
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
     Required. UserPrincipalName (UPN) of the User
 	.PARAMETER DiagnosticLevel
     Optional. Value from 1 to 4. Higher values will display more parameters
@@ -27,6 +27,13 @@ function Get-TeamsUserVoiceConfig {
 	.EXAMPLE
     Get-TeamsUserVoiceConfig -Identity John@domain.com -DiagnosticLevel 2
     Shows Voice Configuration for John with a extended list of Parameters (see NOTES)
+  .EXAMPLE
+    "John@domain.com" | Get-TeamsUserVoiceConfig -SkipLicenseCheck
+    Shows Voice Configuration for John with a concise view of Parameters and skips validation of Licensing for this User.
+  .EXAMPLE
+    Get-CsOnlineUser | Where-Object UsageLocation -eq "BE" | Get-TeamsUserVoiceConfig
+    Shows Voice Configuration for all CsOnlineUsers with a UsageLocation set to Belgium. Returns concise view of Parameters
+    For best results, please filter the Users first and add Diagnostic Levels at your discretion
   .INPUTS
     System.String
   .OUTPUTS
@@ -40,9 +47,13 @@ function Get-TeamsUserVoiceConfig {
     Parameters are additive, meaning with each DiagnosticLevel more information is displayed
 
     This script takes a select set of Parameters from AzureAD, Teams & Licensing. For a full parameterset, please run:
-    - for AzureAD:    "Find-AzureAdUser $Identity | FL"
-    - for Licensing:  "Get-AzureAdUserLicense $Identity"
-    - for Teams:      "Get-CsOnlineUser $Identity"
+    - for AzureAD:    "Find-AzureAdUser $UserPrincipalName | FL"
+    - for Licensing:  "Get-AzureAdUserLicense $UserPrincipalName"
+    - for Teams:      "Get-CsOnlineUser $UserPrincipalName"
+  .COMPONENT
+    VoiceConfig
+  .ROLE
+    TeamsUserVoiceConfig
 	.FUNCTIONALITY
 		Returns an Object to validate the Voice Configuration for an Object
   .LINK
@@ -68,8 +79,8 @@ function Get-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
-    [string[]]$Identity,
+    [Alias('Identity', 'UPN')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
     [Alias('DiagLevel', 'Level', 'DL')]
@@ -108,7 +119,7 @@ function Get-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $UserCounter = 0
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       # Initialising counters for Progress bars
       [int]$step = 0
       [int]$sMax = 6
@@ -117,10 +128,9 @@ function Get-TeamsUserVoiceConfig {
       if ( -not $SkipLicenseCheck ) { $sMax++ }
 
       #region Information Gathering
-      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
+      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
-      #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
       try {
         Write-Verbose -Message "User '$User' - Querying User Account"
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop

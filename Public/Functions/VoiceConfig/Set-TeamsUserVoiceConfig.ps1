@@ -14,24 +14,25 @@ function Set-TeamsUserVoiceConfig {
 	.DESCRIPTION
     Enables a User for Direct Routing, Microsoft Callings or for use in Call Queues (EvOnly)
     User requires a Phone System License in any case.
-  .PARAMETER Identity
-    UserPrincipalName (UPN) of the User to change the configuration for
+  .PARAMETER UserPrincipalName
+    Required. UserPrincipalName (UPN) of the User to change the configuration for
   .PARAMETER DirectRouting
-    Optional (Default). Limits the Scope to enable an Object for DirectRouting
+    Optional (Default Parameter Set). Limits the Scope to enable an Object for DirectRouting
   .PARAMETER CallingPlans
     Required for CallingPlans. Limits the Scope to enable an Object for CallingPlans
   .PARAMETER PhoneNumber
     Optional. Phone Number in E.164 format to be assigned to the User.
+    For proper configuration a PhoneNumber is required. Without it, the User will not be able to make or receive calls.
+    This script does not enforce all Parameters and is intended to validate and configure one or all Parameters.
+    For enforced ParameterSet please call New-TeamsUserVoiceConfig (NOTE: This script does currently not yet exist)
     For DirectRouting, will populate the OnPremLineUri
     For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
-    NOTE: Without a Phone Number, the User will not be able to make or receive calls.
-    NOTE: This script cannot apply PhoneNumbers for OperatorConnect yet!
   .PARAMETER OnlineVoiceRoutingPolicy
-    Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
+    Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the User
   .PARAMETER TenantDialPlan
-    Optional for DirectRouting. Assigns a Tenant Dial Plan to the User
+    Optional. Optional for DirectRouting. Assigns a Tenant Dial Plan to the User
   .PARAMETER CallingPlanLicense
-    Optional for CallingPlans. Assigns a Calling Plan License to the User.
+    Optional. Optional for CallingPlans. Assigns a Calling Plan License to the User.
     Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
 	.PARAMETER PassThru
     Optional. Displays Object after action.
@@ -68,9 +69,13 @@ function Set-TeamsUserVoiceConfig {
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
     Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
     Optionally can also assign a Calling Plan license prior.
-    This script does not allow Pipeline input
+    This script cannot apply PhoneNumbers for OperatorConnect yet and only limited pipeline input is available
+  .COMPONENT
+    VoiceConfig
+  .ROLE
+    TeamsUserVoiceConfig
 	.FUNCTIONALITY
-		TeamsUserVoiceConfig
+    Applying Voice Configuration parameters to a User
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -96,7 +101,7 @@ function Set-TeamsUserVoiceConfig {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ValueFromPipeline, HelpMessage = 'UserPrincipalName of the User')]
-    #[Alias('Identity')]
+    [Alias('Identity', 'UPN')]
     [string]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DirectRouting', HelpMessage = 'Enables an Object for Direct Routing')]
@@ -210,8 +215,8 @@ function Set-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $CsUser = Get-TeamsUserVoiceConfig "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction Stop
-      $UserLic = Get-AzureAdUserLicense -Identity "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction Stop
+      $CsUser = Get-TeamsUserVoiceConfig -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction Stop
+      $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
     catch {
@@ -622,8 +627,6 @@ function Set-TeamsUserVoiceConfig {
           'DirectRouting' {
             # Apply or Remove $PhoneNumber as OnPremLineUri
             if ( $Force -or $CsUser.OnPremLineURI -ne $LineUri) {
-              #TODO Add Catch that uses FORCE to remove PhoneNumber first (from Object it is assigned to!)
-              #CHECK this: Set-TeamsRA removes first (if Force or Empty), then applies anew (if force or not empty) - replicate?
               #Error Message: Filter failed to return unique result"
               try {
                 $CsUser | Set-CsUser -OnPremLineURI $LineUri -ErrorAction Stop
@@ -644,7 +647,6 @@ function Set-TeamsUserVoiceConfig {
             else {
               Write-Verbose -Message "User '$UserPrincipalName' - $Operation`: Already assigned" -Verbose
             }
-
           }
           'OperatorConnect' {
             #TODO prepare for OperatorConnect - how?
@@ -667,7 +669,6 @@ function Set-TeamsUserVoiceConfig {
             else {
               Write-Verbose -Message "User '$UserPrincipalName' - Applying Phone Number: Already assigned" -Verbose
             }
-
           }
         }
       }

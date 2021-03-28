@@ -28,6 +28,12 @@ function Get-TeamsTenantVoiceConfig {
     Also displays diagnostic parameters for troubleshooting
 	.NOTES
 		General notes
+  .COMPONENT
+    VoiceConfig
+  .ROLE
+    TeamsUserVoiceConfig
+	.FUNCTIONALITY
+    Returns Object with information about the Voice Configuration in the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -105,7 +111,7 @@ function Get-TeamsTenantVoiceConfig {
     Write-Verbose -Message $Operation
     $TDP = Get-CsTenantDialPlan -WarningAction SilentlyContinue
     $OVP = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
-    $OPU = (Get-CsOnlinePSTNusage -WarningAction SilentlyContinue).Usage
+    $OPU = (Get-CsOnlinePstnUsage -WarningAction SilentlyContinue).Usage
     $OVR = Get-CsOnlineVoiceRoute -WarningAction SilentlyContinue
     $OGW = Get-CsOnlinePSTNGateway -WarningAction SilentlyContinue
     #endregion

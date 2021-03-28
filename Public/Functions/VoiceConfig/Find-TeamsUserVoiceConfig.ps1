@@ -100,6 +100,10 @@ function Find-TeamsUserVoiceConfig {
     - OnlineVoiceRoutingPolicy: Finds all users which have this particular Policy assigned
     - TenantDialPlan: Finds all users which have this particular DialPlan assigned.
     Please see Related Link for more information
+  .COMPONENT
+    VoiceConfig
+  .ROLE
+    TeamsUserVoiceConfig
 	.FUNCTIONALITY
     Finding Users with a specific values in their Voice Configuration
   .LINK
