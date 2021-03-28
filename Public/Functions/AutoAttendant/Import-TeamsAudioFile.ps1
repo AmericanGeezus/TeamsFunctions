@@ -41,10 +41,10 @@ function Import-TeamsAudioFile {
   [CmdletBinding()]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory)]
     [string]$File,
 
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory)]
     [ValidateSet('CallQueue', 'AutoAttendant')]
     [string]$ApplicationType
 
@@ -70,6 +70,7 @@ function Import-TeamsAudioFile {
     $FileName = Split-Path $File -Leaf
 
     # remodelling ApplicationType to ApplicationId
+    #CHECK errors with Import-TeamsAudioFile may be related to Type? Validate that command is well!
     $ApplicationId = switch ($ApplicationType) {
       'CallQueue' { 'HuntGroup' }
       'AutoAttendant' { 'OrgAutoAttendant' }
