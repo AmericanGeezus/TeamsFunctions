@@ -59,7 +59,7 @@ Username of the Admin Account to enable roles for
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: UPN, UserPrincipalName, Username
+Aliases: UserPrincipalName, ObjectId
 
 Required: False
 Position: 1

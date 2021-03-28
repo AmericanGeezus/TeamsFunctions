@@ -13,7 +13,7 @@ Tests whether any Voice Configuration has been applied to one or more Users
 ## SYNTAX
 
 ```
-Test-TeamsUserVoiceConfig [-Identity] <String[]> [-Partial] [<CommonParameters>]
+Test-TeamsUserVoiceConfig [-Identity] <String[]> [-Partial] [-IncludeTenantDialPlan] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,31 +24,33 @@ For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing P
 
 ### EXAMPLE 1
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting [-Scope Full]
+Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
 ```
 
-Tests for Direct Routing and returns TRUE if FULL configuration is found
+Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
 
 ### EXAMPLE 2
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting -Scope Partial
+Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial
 ```
 
-Tests for Direct Routing and returns TRUE if ANY configuration is found
+Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
 
 ### EXAMPLE 3
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans [-Scope Full]
+Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDialPlan
 ```
 
-Tests for Call Plans and returns TRUE if FULL configuration is found
+Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
+This requires a Tenant Dial Plan to be assigned as well.
 
 ### EXAMPLE 4
 ```
-Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans -Scope Partial
+Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial -IncludeTenantDialPlan
 ```
 
-Tests for Call Plans but returns TRUE if ANY configuration is found
+Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
+This will treat any Object that only has a Tenant Dial Plan also as partially configured
 
 ## PARAMETERS
 
@@ -70,8 +72,26 @@ Accept wildcard characters: False
 
 ### -Partial
 Optional.
-By default, returns TRUE only if all required Parameters for the Scope are configured (User is fully provisioned)
+By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
 Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeTenantDialPlan
+Optional.
+By default, only the core requirements for Voice Routing are verified.
+This extends the requirements to also include the Tenant Dial Plan.
+Returns FALSE if no or only a TenantDialPlan is assigned
 
 ```yaml
 Type: SwitchParameter
@@ -106,6 +126,8 @@ Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, Voic
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
+
+[Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()
 

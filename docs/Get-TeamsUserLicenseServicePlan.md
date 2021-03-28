@@ -52,7 +52,7 @@ The Identity/UPN/sign-in address for the user entered in the format \<name\>@\<d
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName, Username, UPN
+Aliases: UserPrincipalName
 
 Required: True
 Position: 1

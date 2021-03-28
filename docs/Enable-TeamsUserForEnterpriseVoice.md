@@ -13,7 +13,8 @@ Enables a User for Enterprise Voice
 ## SYNTAX
 
 ```
-Enable-TeamsUserForEnterpriseVoice [-Identity] <String[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Enable-TeamsUserForEnterpriseVoice [-UserPrincipalName] <String[]> [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,13 +31,13 @@ Enables John for Enterprise Voice
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 UserPrincipalName of the User to be enabled.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: Identity
 
 Required: True
 Position: 1
@@ -106,4 +107,8 @@ Returns boolean result and less communication if called by another function
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Set-TeamsUserVoiceConfig]()
+
+[Enable-TeamsUserForEnterpriseVoice]()
 

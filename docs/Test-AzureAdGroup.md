@@ -38,7 +38,7 @@ The Name or User Principal Name (MailNickName) of the Group to test.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName, GroupName
 
 Required: True
 Position: 1

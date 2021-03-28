@@ -87,6 +87,8 @@ General notes
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[Assert-TeamsUserVoiceConfig]()
+
 [Find-TeamsUserVoiceConfig]()
 
 [Get-TeamsTenantVoiceConfig]()

@@ -13,7 +13,7 @@ Queries Admin Roles assigned to an Object
 ## SYNTAX
 
 ```
-Get-AzureAdAdminRole [-Identity] <String[]> [-Type <String>] [<CommonParameters>]
+Get-AzureAdAdminRole [-Identity] <String> [-Type <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -44,9 +44,9 @@ Required.
 One or more UserPrincipalNames of the Office365 Administrator
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: (All)
-Aliases: UPN, UserPrincipalName, Username
+Aliases: UserPrincipalName, ObjectId
 
 Required: True
 Position: 1

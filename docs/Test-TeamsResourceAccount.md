@@ -46,7 +46,7 @@ The sign-in address or User Principal Name of the user account to test.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName
 
 Required: True
 Position: 1

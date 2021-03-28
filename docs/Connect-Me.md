@@ -62,7 +62,7 @@ UserPrincipalName or LoginName of the Office365 Administrator
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: Username
+Aliases: UserPrincipalName, Username
 
 Required: True
 Position: 1

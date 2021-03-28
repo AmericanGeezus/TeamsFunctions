@@ -14,15 +14,15 @@ Enables a User to consume Voice services in Teams (Pstn breakout)
 
 ### DirectRouting (Default)
 ```
-Set-TeamsUserVoiceConfig [-Identity] <String> [-DirectRouting] [-OnlineVoiceRoutingPolicy <String>]
- [-TenantDialPlan <String>] -PhoneNumber <String> [-Force] [-PassThru] [-WriteErrorLog] [-WhatIf] [-Confirm]
+Set-TeamsUserVoiceConfig [-UserPrincipalName] <String> [-DirectRouting] [-OnlineVoiceRoutingPolicy <String>]
+ [-TenantDialPlan <String>] [-PhoneNumber <String>] [-Force] [-PassThru] [-WriteErrorLog] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### CallingPlans
 ```
-Set-TeamsUserVoiceConfig [-Identity] <String> [-TenantDialPlan <String>] -PhoneNumber <String> [-CallingPlan]
- [-CallingPlanLicense <String[]>] [-Force] [-PassThru] [-WriteErrorLog] [-WhatIf] [-Confirm]
+Set-TeamsUserVoiceConfig [-UserPrincipalName] <String> [-TenantDialPlan <String>] [-PhoneNumber <String>]
+ [-CallingPlan] [-CallingPlanLicense <String[]>] [-Force] [-PassThru] [-WriteErrorLog] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -34,14 +34,14 @@ User requires a Phone System License in any case.
 
 ### EXAMPLE 1
 ```
-Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
+Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
 ```
 
 Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided
 
 ### EXAMPLE 2
 ```
-Set-TeamsUserVoiceConfig -Identity John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
+Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
 ```
 
 Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
@@ -49,44 +49,45 @@ Provisions John@domain.com for Calling Plans with the Phone Number provided (req
 
 ### EXAMPLE 3
 ```
-Set-TeamsUserVoiceConfig -Identity John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
+Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
 ```
 
 Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided
 
 ### EXAMPLE 4
 ```
-Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
+Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
 ```
 
 Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
 
 ### EXAMPLE 5
 ```
-Set-TeamsUserVoiceConfig -Identity John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
+Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
 ```
 
 Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided.
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
+Required.
 UserPrincipalName (UPN) of the User to change the configuration for
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: Identity
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
 ### -DirectRouting
-Optional (Default).
+Optional (Default Parameter Set).
 Limits the Scope to enable an Object for DirectRouting
 
 ```yaml
@@ -102,6 +103,7 @@ Accept wildcard characters: False
 ```
 
 ### -OnlineVoiceRoutingPolicy
+Optional.
 Required for DirectRouting.
 Assigns an Online Voice Routing Policy to the User
 
@@ -113,11 +115,12 @@ Aliases: OVP
 Required: False
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
 ### -TenantDialPlan
+Optional.
 Optional for DirectRouting.
 Assigns a Tenant Dial Plan to the User
 
@@ -129,13 +132,17 @@ Aliases: TDP
 Required: False
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
 ### -PhoneNumber
-Required.
+Optional.
 Phone Number in E.164 format to be assigned to the User.
+For proper configuration a PhoneNumber is required.
+Without it, the User will not be able to make or receive calls.
+This script does not enforce all Parameters and is intended to validate and configure one or all Parameters.
+For enforced ParameterSet please call New-TeamsUserVoiceConfig (NOTE: This script does currently not yet exist)
 For DirectRouting, will populate the OnPremLineUri
 For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
 
@@ -144,10 +151,10 @@ Type: String
 Parameter Sets: (All)
 Aliases: Number, LineURI
 
-Required: True
+Required: False
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -167,6 +174,7 @@ Accept wildcard characters: False
 ```
 
 ### -CallingPlanLicense
+Optional.
 Optional for CallingPlans.
 Assigns a Calling Plan License to the User.
 Must be one of the set: InternationalCallingPlan DomesticCallingPlan DomesticCallingPlan120 CommunicationCredits DomesticCallingPlan120b
@@ -281,11 +289,15 @@ This is the default.
 ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
 Enables User for Enterprise Voice and assigns a Microsoft Number (must be found in the Tenant!)
 Optionally can also assign a Calling Plan license prior.
-This script does not allow Pipeline input
+This script cannot apply PhoneNumbers for OperatorConnect yet
+This script accepts pipeline input as Value (UserPrincipalName) or as Object (UPN, OVP, TDP, PhoneNumber)
+This enables bulk provisioning
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()
 
@@ -298,4 +310,6 @@ This script does not allow Pipeline input
 [Remove-TeamsUserVoiceConfig]()
 
 [Test-TeamsUserVoiceConfig]()
+
+[Enable-TeamsUserForEnterpriseVoice]()
 

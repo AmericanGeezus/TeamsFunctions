@@ -13,7 +13,7 @@ Displays Voice Configuration Parameters for one or more Users
 ## SYNTAX
 
 ```
-Get-TeamsUserVoiceConfig [-Identity] <String[]> [-DiagnosticLevel <Int32>] [-SkipLicenseCheck]
+Get-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-DiagnosticLevel <Int32>] [-SkipLicenseCheck]
  [<CommonParameters>]
 ```
 
@@ -25,28 +25,44 @@ ranging from basic Voice Configuration up to Policies, Account Status & DirSync 
 
 ### EXAMPLE 1
 ```
-Get-TeamsUserVoiceConfig -Identity John@domain.com
+Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
 ```
 
 Shows Voice Configuration for John with a concise view of Parameters
 
 ### EXAMPLE 2
 ```
-Get-TeamsUserVoiceConfig -Identity John@domain.com -DiagnosticLevel 2
+Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DiagnosticLevel 2
 ```
 
 Shows Voice Configuration for John with a extended list of Parameters (see NOTES)
 
+### EXAMPLE 3
+```
+"John@domain.com" | Get-TeamsUserVoiceConfig -SkipLicenseCheck
+```
+
+Shows Voice Configuration for John with a concise view of Parameters and skips validation of Licensing for this User.
+
+### EXAMPLE 4
+```
+Get-CsOnlineUser | Where-Object UsageLocation -eq "BE" | Get-TeamsUserVoiceConfig
+```
+
+Shows Voice Configuration for all CsOnlineUsers with a UsageLocation set to Belgium.
+Returns concise view of Parameters
+For best results, please filter the Users first and add Diagnostic Levels at your discretion
+
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Required.
 UserPrincipalName (UPN) of the User
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases:
+Aliases: Identity
 
 Required: True
 Position: 1
@@ -108,21 +124,21 @@ Parameters are additive, meaning with each DiagnosticLevel more information is d
 
 This script takes a select set of Parameters from AzureAD, Teams & Licensing.
 For a full parameterset, please run:
-- for AzureAD:    "Find-AzureAdUser $Identity | FL"
-- for Licensing:  "Get-AzureAdUserLicense $Identity"
-- for Teams:      "Get-CsOnlineUser $Identity"
+- for AzureAD:    "Find-AzureAdUser $UserPrincipalName | FL"
+- for Licensing:  "Get-AzureAdUserLicense $UserPrincipalName"
+- for Teams:      "Get-CsOnlineUser $UserPrincipalName"
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()
 
 [Get-TeamsTenantVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

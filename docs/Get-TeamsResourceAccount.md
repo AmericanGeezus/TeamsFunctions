@@ -14,7 +14,7 @@ Returns Resource Accounts from AzureAD
 
 ### Identity (Default)
 ```
-Get-TeamsResourceAccount [[-Identity] <String[]>] [<CommonParameters>]
+Get-TeamsResourceAccount [[-UserPrincipalName] <String[]>] [<CommonParameters>]
 ```
 
 ### DisplayName
@@ -77,14 +77,13 @@ Returns the Resource Account with the Phone Number specified, if found.
 
 ## PARAMETERS
 
-### -Identity
-Default and positional.
-One or more UserPrincipalNames to be queried.
+### -UserPrincipalName
+User Principal Name of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: Identity
-Aliases: UPN, UserPrincipalName
+Aliases: Identity
 
 Required: False
 Position: 1

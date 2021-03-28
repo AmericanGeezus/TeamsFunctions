@@ -66,7 +66,7 @@ The Identity, UserPrincipalname or UserName for the user.
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName, Username, UPN
+Aliases: UserPrincipalName
 
 Required: True
 Position: 1

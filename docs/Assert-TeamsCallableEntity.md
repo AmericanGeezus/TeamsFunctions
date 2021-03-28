@@ -32,12 +32,13 @@ Enables Jane for Enterprise Voice if not yet done.
 ## PARAMETERS
 
 ### -Identity
+Required.
 UserPrincipalName, Group Name or Tel URI
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName, GroupName, TelUri
 
 Required: True
 Position: 1

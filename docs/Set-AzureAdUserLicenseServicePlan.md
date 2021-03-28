@@ -54,7 +54,7 @@ UserPrincipalName of the Object to be manipulated
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UPN, UserPrincipalName, Username
+Aliases: UserPrincipalName
 
 Required: True
 Position: 1

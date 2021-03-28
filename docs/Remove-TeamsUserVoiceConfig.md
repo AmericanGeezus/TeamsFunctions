@@ -13,7 +13,7 @@ Removes existing Voice Configuration for one or more Users
 ## SYNTAX
 
 ```
-Remove-TeamsUserVoiceConfig [-Identity] <String[]> [-Scope <String>] [-DisableEV] [-PassThru] [-Force]
+Remove-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-Scope <String>] [-DisableEV] [-PassThru] [-Force]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -24,21 +24,21 @@ De-provisions a user from Enterprise Voice, removes the Telephone Number, Tenant
 
 ### EXAMPLE 1
 ```
-Remove-TeamsUserVoiceConfig -Identity John@domain.com [-Scope All]
+Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com [-Scope All]
 ```
 
 Disables John for Enterprise Voice, then removes all Phone Numbers, Voice Routing Policy, Tenant Dial Plan and Call Plan licenses
 
 ### EXAMPLE 2
 ```
-Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope DirectRouting
+Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope DirectRouting
 ```
 
 Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned
 
 ### EXAMPLE 3
 ```
-Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans [-Confirm]
+Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans [-Confirm]
 ```
 
 Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
@@ -46,7 +46,7 @@ Disables John for Enterprise Voice, Removes Phone Number and subsequently remove
 
 ### EXAMPLE 4
 ```
-Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans -Force
+Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans -Force
 ```
 
 Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
@@ -54,7 +54,7 @@ Disables John for Enterprise Voice, Removes Phone Number and subsequently remove
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Required.
 UserPrincipalName of the User.
 
@@ -189,6 +189,8 @@ For CallingPlans it will prompt for Calling Plan licenses to be removed.
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()
 

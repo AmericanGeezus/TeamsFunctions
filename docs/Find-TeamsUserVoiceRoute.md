@@ -13,7 +13,7 @@ Returns Voice Route for a User and a dialed number
 ## SYNTAX
 
 ```
-Find-TeamsUserVoiceRoute [-Identity] <String[]> [-DialedNumber <String>] [<CommonParameters>]
+Find-TeamsUserVoiceRoute [-UserPrincipalName] <String[]> [-DialedNumber <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -40,7 +40,7 @@ The matching Voice Route will be returned
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Required.
 Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan
 User must have a valid Voice Configuration applied for this script to return a valuable result
@@ -48,7 +48,7 @@ User must have a valid Voice Configuration applied for this script to return a v
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Username, UserPrincipalName
+Aliases: Identity
 
 Required: True
 Position: 1
@@ -72,7 +72,7 @@ Aliases: Number
 Required: False
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -93,9 +93,17 @@ Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[Assert-TeamsUserVoiceConfig]()
+
 [Find-TeamsUserVoiceConfig]()
+
+[Get-TeamsTenantVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
+
+[Remove-TeamsUserVoiceConfig]()
+
+[Test-TeamsUserVoiceConfig]()
 
