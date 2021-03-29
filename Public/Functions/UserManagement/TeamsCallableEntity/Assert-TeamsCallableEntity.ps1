@@ -23,10 +23,32 @@ function Assert-TeamsCallableEntity {
     Assert-TeamsCallableEntity -Identity Jane@domain.com
     Verifies Jane has a valid PhoneSystem License (Provisioning Status: Success) and is enabled for Enterprise Voice
     Enables Jane for Enterprise Voice if not yet done.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Boolean
   .NOTES
     Returns Boolean Result
+  .COMPONENT
+    UserManagement
+    TeamsAutoAttendant
+    TeamsCallQueue
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_TeamsAutoAttendant
+  .LINK
+    about_TeamsCallQueue
+  .LINK
+    Assert-TeamsCallableEntity
+  .LINK
+    Find-TeamsCallableEntity
+  .LINK
+    Get-TeamsCallableEntity
+  .LINK
+    New-TeamsCallableEntity
   #>
 
   [CmdletBinding()]

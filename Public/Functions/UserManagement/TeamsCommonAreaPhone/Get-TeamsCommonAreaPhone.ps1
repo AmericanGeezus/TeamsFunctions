@@ -43,9 +43,15 @@ function Get-TeamsCommonAreaPhone {
 	.FUNCTIONALITY
 		Queries a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
-		TeamsUserVoiceConfig
+		UserManagement
+  .COMPONENT
+		VoiceConfiguration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsCommonAreaPhone
   .LINK

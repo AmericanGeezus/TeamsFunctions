@@ -29,19 +29,19 @@ function Get-AzureAdAdminRole {
 	.INPUTS
 		System.String
 	.OUTPUTS
-		PSCustomObject
+		System.Object
 	.NOTES
     Returns an Object containing all Admin Roles assigned to a User.
     This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
     The Output can be used as baseline for other functions (-contains "Teams Service Admin")
   .COMPONENT
-    UserAdmin
-  .ROLE
-    Activating Admin Roles
-  .FUNCTIONALITY
+    UserManagement
+	.FUNCTIONALITY
     Queries active or eligible Privileged Identity roles for Administration of Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Enable-AzureAdAdminRole
   .LINK

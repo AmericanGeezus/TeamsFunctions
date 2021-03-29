@@ -5,8 +5,17 @@
 - [x] TeamsFunctions-help.xml (now in DOCS!)
 - [x] Update Markdown files with Platypus does not automatically update .MD files...
 
-- [x] Create Docs
-- [x] Create Help
+- [x] Create Docs (MarkdownHelp)
+- [x] Create Help (about_)
+- [ ] Improve Comment Based help
+  - [ ] Apply correct Order: EXAMPLES, INPUTS, OUTPUT, NOTES, COMPONENT, FUNCTIONALITY, LINK
+  - [ ] .ROLE - Remove
+  - [ ] .INPUTS (incl. Pipeline)
+  - [ ] .OUTPUTS (all variants and how to get to them)
+  - [ ] .COMPONENT - Adding About_ Topic Name as Component
+  - [ ] .FUNCTIONALITY - Describe what the function does
+  - [ ] .LINK - Add ABOUT_ Topic
+  - [ ] .LINK - Verify linked function is correct across all of the same breed
 - [ ] Populate about-help
   - [x] Write Licensing
   - [x] Write SupportFunctions
@@ -19,6 +28,10 @@
   - [x] Write Session
   - [x] Write UserManagement
   - [x] Write VoiceConfiguration
+- [ ] Update About-help
+  - [ ] Verify all Functions are listed
+  - [ ] Remove retired functions
+  - [ ]
 - [ ] Add Examples to About
   - [x] Examples for Licensing
   - [x] Examples for SupportFunctions

@@ -54,7 +54,9 @@ function Enable-AzureAdAdminRole {
   .INPUTS
     System.String
   .OUTPUTS
-    None
+    System.Void - Default Behaviour
+    System.Object - With Switch PassThru
+    Boolean - If called by other CmdLets
   .NOTES
     Limitations: MFA must be authorised first
     Currently no way to trigger it via PowerShell. If the activation fails, please sign into Office.com
@@ -63,13 +65,13 @@ function Enable-AzureAdAdminRole {
 
     Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1
   .COMPONENT
-    UserAdmin
-  .ROLE
-    Activating Admin Roles
+    UserManagement
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Enable-AzureAdAdminRole
   .LINK

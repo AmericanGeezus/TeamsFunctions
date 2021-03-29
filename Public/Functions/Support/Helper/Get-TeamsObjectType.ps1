@@ -41,12 +41,21 @@ function Get-TeamsObjectType {
   .OUTPUTS
     System.String
   .COMPONENT
+    UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Determining the Object Type for the String
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+	.LINK
+    Get-TeamsObjectType
+  .LINK
+    Find-TeamsCallableEntity
   .LINK
     Get-TeamsCallableEntity
+  .LINK
+    New-TeamsCallableEntity
   #>
 
   [CmdletBinding(ConfirmImpact = 'Low')]

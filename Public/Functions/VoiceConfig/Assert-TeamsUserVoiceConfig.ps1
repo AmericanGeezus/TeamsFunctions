@@ -34,7 +34,9 @@ function Assert-TeamsUserVoiceConfig {
   .INPUTS
     System.String
   .OUTPUTS
-    System.Object
+    System.Void - If no errors are found - Information Text only
+    System.Object - If errors are found
+    Boolean - If called by other CmdLets
   .NOTES
     Verbose output is available, though all required information is fed back directly to the User.
     If no objections are found, nothing is returned.

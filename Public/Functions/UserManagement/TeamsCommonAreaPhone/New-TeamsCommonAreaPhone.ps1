@@ -67,12 +67,16 @@ function New-TeamsCommonAreaPhone {
     To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig
     This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
+  .COMPONENT
+		UserManagement
 	.FUNCTIONALITY
 		Creates a Common Area Phone in AzureAD for use in Teams
-  .COMPONENT
-    TeamsUserVoiceConfig
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_VoiceConfiguration
 	.LINK
     Get-TeamsCommonAreaPhone
 	.LINK

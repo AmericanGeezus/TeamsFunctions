@@ -34,29 +34,40 @@ function Get-TeamsCallableEntity {
     Get-TeamsCallableEntity -Identity "tel:+15551234567"
     No Queries performed, as the Tel URI is passed on as-is.
     Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     Queries the provided String against AzureAdUser, AzureAdGroup and CsOnlineApplicationInstance.
     Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
 
     This script does not support the Types for legacy Hunt Group or Organisational Auto Attendant
     If nothing can be found for the String, an Object is returned with the Entity being $null
-  .INPUTS
-    System.String
-  .OUTPUTS
-    System.Object
+
+    This Script is used to determine the eligibility of an Object as a Callable Entity in Call Queues and Auto Attendants
   .COMPONENT
+    UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Queries a Callable Entity attached to a Call Queues or Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_TeamsAutoAttendant
+  .LINK
+    about_TeamsCallQueue
+  .LINK
+    Assert-TeamsCallableEntity
   .LINK
     Find-TeamsCallableEntity
   .LINK
     Get-TeamsCallableEntity
   .LINK
     New-TeamsCallableEntity
-  .LINK
-    Get-TeamsObjectType
   .LINK
     Get-TeamsCallQueue
   .LINK
