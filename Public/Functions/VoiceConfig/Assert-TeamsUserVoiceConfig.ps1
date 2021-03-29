@@ -50,7 +50,7 @@ function Assert-TeamsUserVoiceConfig {
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   .LINK
-    Assert-TeamsUserVoiceConfig
+    [Assert-TeamsUserVoiceConfig](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-TeamsUserVoiceConfig.md)
 	.LINK
     Find-TeamsUserVoiceConfig
 	.LINK
