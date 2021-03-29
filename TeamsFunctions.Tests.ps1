@@ -91,8 +91,36 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
       "$($_.FullName)" | Should -FileContentMatch '.EXAMPLE'
     }
 
+    It "'$_' should have a NOTES section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.NOTES'
+    }
+
+    It "'$_' should have a INPUTS section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.INPUTS'
+    }
+
+    It "'$_' should have a OUTPUTS section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.OUTPUTS'
+    }
+
+    It "'$_' should have a COMPONENT section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.COMPONENT'
+    }
+
+    It "'$_' should have a FUNCTIONALITY section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.FUNCTIONALITY'
+    }
+
+    It "'$_' should have a LINK section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch '.LINK'
+    }
+
     It "'$_' should have a LINK to the docs folder in the master branch" {
       "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/'
+    }
+
+    It "'$_' should have a LINK to an ABOUT_ topic" {
+      "$($_.FullName)" | Should -FileContentMatch 'about_'
     }
 
     # not all will have the full begin, process, end model

@@ -48,15 +48,17 @@ function Test-TeamsUserVoiceConfig {
     Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
     Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
 	.FUNCTIONALITY
     Testing Users Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
 	.LINK

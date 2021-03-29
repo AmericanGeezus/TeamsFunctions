@@ -34,13 +34,13 @@ function Find-TeamsUserVoiceRoute {
     This is a slightly more intricate on Voice routing, enabling comparisons for multiple users.
     Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www.lee-ford.co.uk
   .COMPONENT
-    VoiceRouting
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
   .FUNCTIONALITY
     Voice Routing and Troubleshooting
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Assert-TeamsUserVoiceConfig
 	.LINK

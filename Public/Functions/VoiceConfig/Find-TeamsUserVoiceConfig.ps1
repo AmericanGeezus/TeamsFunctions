@@ -82,7 +82,7 @@ function Find-TeamsUserVoiceConfig {
   .INPUTS
     System.String
   .OUTPUTS
-    String (UPN)  - With any Parameter except Identity or PhoneNumber
+    System.String - UserPrincipalName - With any Parameter except Identity or PhoneNumber
     System.Object - With Parameter Identity or PhoneNumber
   .NOTES
     With the exception of Identity and PhoneNumber, all searches are filtering on Get-CsOnlineUser
@@ -101,15 +101,17 @@ function Find-TeamsUserVoiceConfig {
     - TenantDialPlan: Finds all users which have this particular DialPlan assigned.
     Please see Related Link for more information
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
 	.FUNCTIONALITY
     Finding Users with a specific values in their Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
 	.LINK

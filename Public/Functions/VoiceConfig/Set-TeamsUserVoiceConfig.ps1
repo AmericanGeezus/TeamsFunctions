@@ -60,9 +60,9 @@ function Set-TeamsUserVoiceConfig {
   .INPUTS
     System.String
   .OUTPUTS
-    System.Void (without Switch PassThru)
-    System.Object (with Switch PassThru)
-    System.File (with Switch WriteErrorLog)
+    System.Void - Default Behaviour
+    System.Object - With Switch PassThru
+    System.File - With Switch WriteErrorLog
 	.NOTES
     ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
     assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default.
@@ -73,13 +73,15 @@ function Set-TeamsUserVoiceConfig {
     This script accepts pipeline input as Value (UserPrincipalName) or as Object (UPN, OVP, TDP, PhoneNumber)
     This enables bulk provisioning
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
 	.FUNCTIONALITY
     Applying Voice Configuration parameters to a User
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
 	.LINK

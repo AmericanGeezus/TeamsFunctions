@@ -45,16 +45,25 @@ function Remove-TeamsUserVoiceConfig {
   .INPUTS
     System.String
   .OUTPUTS
-    None
+    System.Void - Default behaviour
+    System.Object - With Switch PassThru
   .NOTES
     Prompting for Confirmation for disabling of EnterpriseVoice
     For DirectRouting, this Script does not remove any licenses.
     For CallingPlans it will prompt for Calling Plan licenses to be removed.
+  .COMPONENT
+    VoiceConfiguration
 	.FUNCTIONALITY
     Removes a Users Voice Configuration (through Microsoft Call Plans or Direct Routing)
     This will leave the users in a clean and un-provisioned state and enables them to receive a new Configuration Set
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
 	.LINK

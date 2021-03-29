@@ -40,9 +40,7 @@ function Assert-TeamsUserVoiceConfig {
     If no objections are found, nothing is returned.
     Piping the Output to Export-Csv can give the best result for investigation into misconfigured users.
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
 	.FUNCTIONALITY
     Finding Users with a incorrectly set up Voice Configuration
   .LINK
@@ -50,7 +48,9 @@ function Assert-TeamsUserVoiceConfig {
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   .LINK
-    [Assert-TeamsUserVoiceConfig](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-TeamsUserVoiceConfig.md)
+    about_VoiceConfiguration
+  .LINK
+    Assert-TeamsUserVoiceConfig
 	.LINK
     Find-TeamsUserVoiceConfig
 	.LINK

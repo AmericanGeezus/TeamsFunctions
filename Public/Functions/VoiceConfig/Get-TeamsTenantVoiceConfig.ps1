@@ -26,16 +26,22 @@ function Get-TeamsTenantVoiceConfig {
 		Get-TeamsTenantVoiceConfig -Detailed
     Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways
     Also displays diagnostic parameters for troubleshooting
-	.NOTES
-		General notes
+  .INPUTS
+    None
+  .OUTPUTS
+    System.Object
+  .NOTES
+    General notes
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
 	.FUNCTIONALITY
     Returns Object with information about the Voice Configuration in the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
 	.LINK

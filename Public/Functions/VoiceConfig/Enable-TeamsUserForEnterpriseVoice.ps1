@@ -24,13 +24,15 @@ function Enable-TeamsUserForEnterpriseVoice {
     Simple helper function to enable and verify a User is enabled for Enterprise Voice
     Returns boolean result and less communication if called by another function
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
 	.FUNCTIONALITY
     Enables a User for Enterprise Voice in order to apply a valid Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
 	.LINK
     Set-TeamsUserVoiceConfig
 	.LINK

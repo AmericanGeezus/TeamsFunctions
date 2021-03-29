@@ -51,13 +51,15 @@ function Get-TeamsUserVoiceConfig {
     - for Licensing:  "Get-AzureAdUserLicense $UserPrincipalName"
     - for Teams:      "Get-CsOnlineUser $UserPrincipalName"
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    TeamsUserVoiceConfig
+    VoiceConfiguration
 	.FUNCTIONALITY
 		Returns an Object to validate the Voice Configuration for an Object
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
 	.LINK
