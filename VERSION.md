@@ -11,7 +11,7 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Functions | ![Public](https://img.shields.io/badge/Public-93-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-46-green.svg)                                                          |
 | Status    | ![Live](https://img.shields.io/badge/Live-79-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1200-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1925-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
 | Focus | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing |
 
 No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
