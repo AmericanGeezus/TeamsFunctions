@@ -458,8 +458,8 @@
         <maml:uri>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
-        <maml:uri></maml:uri>
+        <maml:linkText>[Assert-TeamsUserVoiceConfig</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-TeamsUserVoiceConfig.md)](</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Find-TeamsUserVoiceConfig</maml:linkText>

@@ -97,7 +97,7 @@ Piping the Output to Export-Csv can give the best result for investigation into 
 
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
 
-[Assert-TeamsUserVoiceConfig]()
+[[Assert-TeamsUserVoiceConfig](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-TeamsUserVoiceConfig.md)]()
 
 [Find-TeamsUserVoiceConfig]()
 
