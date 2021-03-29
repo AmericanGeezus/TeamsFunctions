@@ -166,9 +166,9 @@ Switching to a new way of connecting was easy, though due to lack of information
 ### New
 
 - `Enable-CsOnlineSessionForReconnection`: Thanks to the original Author, [Andrés Gorzelany](https://github.com/get-itips), this function, originally shipped with the SkypeOnlineConnector Module, has made it into this module. We are able to reconnect sessions again, even when using the Module MicrosoftTeams
-- Added Markdown help for all Public Functions in [/docs](/docs)
-- external
-- Added Markdown about_-help for all major topics in this Module in [/help](/help)
+- Added Markdown about_-help for all major topics in this Module
+- Added Markdown help for all Public Functions
+- Added External help (XML) file
 - Added Global Variables for some longer running Scripts (for example, Licenses, AzureAdGroups, etc.)
 - Information Output added to multiple CmdLets
 

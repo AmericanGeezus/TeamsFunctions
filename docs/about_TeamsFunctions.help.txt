@@ -52,8 +52,11 @@ REQUIREMENTS
     solely established with the MicrosoftTeams Module
 
 TROUBLESHOOTING NOTE
-    Help Files
-    for each exported function.
+    All Help Files are available in
+    docs
+    All Topics have been documented as
+    about_
+    Files Each exported function has automatically generated help files with PlatyPS.
     If you find bugs, please report them by raising an Issue on this repo or
     send me a message to
     TeamsFunctions@outlook.com

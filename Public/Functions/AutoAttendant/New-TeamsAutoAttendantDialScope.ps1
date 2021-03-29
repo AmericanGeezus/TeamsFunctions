@@ -27,8 +27,12 @@ function New-TeamsAutoAttendantDialScope {
     System.Object
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a DialScope Object to be used in Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     New-TeamsAutoAttendant
 	.LINK

@@ -42,16 +42,20 @@ function New-TeamsAutoAttendantCallFlow {
   .EXAMPLE
     New-TeamsAutoAttendantCallFlow -Disconnect
     Default. Creates Call Flow with a default Disconnect and no Greeting
-  .NOTES
-    Limitations: DialByName
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
+  .NOTES
+    Limitations: DialByName
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a CallFlow object to be used in Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     New-TeamsAutoAttendant
 	.LINK

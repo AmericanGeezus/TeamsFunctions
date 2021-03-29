@@ -35,11 +35,12 @@ Install-Module TeamsFunctions -AllowPrerelease
 
 ### Documentation
 
-- General overview: [about_TeamsFunctions](/help/about_TeamsFunctions.md)
-- The aliases: [about_TeamsFunctionsAliases](/help/about_TeamsFunctionsAliases.md)
-- Individual about_-Files for each Topic have been created in [/help](/help)
-- External Help is available as XML in [/docs](/docs) (not linked yet)
-- Markdown files for all CmdLets can be found in [/docs](/docs) automatically with PlatyPS and updated with each Version
+- All help is available in [/docs](/docs)
+- General overview: [about_TeamsFunctions](/doc/about_TeamsFunctions.md)
+- The aliases: [about_TeamsFunctionsAliases](/doc/about_TeamsFunctionsAliases.md)
+- Individual about_-Files for each Topic have been created
+- External Help is available as XML
+- Markdown files for all CmdLets created automatically with PlatyPS and updated with each Version
 - [My blog](https://davideberhardt.wordpress.com/) will contain updates and explanations from time to time.
 - A breakdown of the Change log for Major Versions can be found in [VERSION.md](VERSION.md)
 - A detailed breakdown of changes for Pre-Release Versions is recorded in [VERSION-prerelease.md](VERSION-prerelease.md)

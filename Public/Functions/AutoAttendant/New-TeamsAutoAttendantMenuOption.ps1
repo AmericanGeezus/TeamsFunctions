@@ -55,10 +55,16 @@ function New-TeamsAutoAttendantMenuOption {
     System.String
   .OUTPUTS
     System.Object
+  .NOTES
+    None
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a MenuOption Object to be used in Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     New-TeamsAutoAttendant
 	.LINK

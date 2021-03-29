@@ -93,17 +93,25 @@ Returns a custom Object mimiking a CallableEntity Object, returning Entity, Iden
 This script does not support the Types for legacy Hunt Group or Organisational Auto Attendant
 If nothing can be found for the String, an Object is returned with the Entity being $null
 
+This Script is used to determine the eligibility of an Object as a Callable Entity in Call Queues and Auto Attendants
+
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_UserManagement]()
+
+[about_TeamsAutoAttendant]()
+
+[about_TeamsCallQueue]()
+
+[Assert-TeamsCallableEntity]()
 
 [Find-TeamsCallableEntity]()
 
 [Get-TeamsCallableEntity]()
 
 [New-TeamsCallableEntity]()
-
-[Get-TeamsObjectType]()
 
 [Get-TeamsCallQueue]()
 

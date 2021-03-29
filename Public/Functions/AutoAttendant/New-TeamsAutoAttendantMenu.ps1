@@ -81,6 +81,10 @@ function New-TeamsAutoAttendantMenu {
     New-TeamsAutoAttendantMenu -Action TransferToCallTarget -CallTarget "John@domain.com"
     Creates a default Menu, transferring the Call to the Call target.
     Expected UserPrincipalName (User, ApplicationEndpoint), Group Name (Shared Voicemail), Tel Uri (ExternalPstn)
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     Limitations: CallTargetsInOrder are Menu Options integrated and their type is parsed with Get-TeamsCallableEntity
     This provides the following limitations:
@@ -94,14 +98,14 @@ function New-TeamsAutoAttendantMenu {
 
     Please see 'Set up an auto attendant' for details:
     https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH
-  .INPUTS
-    System.String
-  .OUTPUTS
-    System.Object
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a Menu Object to be used in Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     New-TeamsAutoAttendant
 	.LINK

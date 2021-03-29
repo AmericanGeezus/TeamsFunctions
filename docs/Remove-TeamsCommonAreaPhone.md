@@ -111,6 +111,10 @@ Execution requires User Admin Role in Azure AD
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_UserManagement]()
+
+[about_VoiceConfiguration]()
+
 [Get-TeamsCommonAreaPhone]()
 
 [New-TeamsCommonAreaPhone]()

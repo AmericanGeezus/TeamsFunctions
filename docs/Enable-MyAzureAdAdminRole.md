@@ -37,13 +37,15 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### None
 ## OUTPUTS
 
-### Boolean if called
-### None if executed from shell
+### System.Void - If executed from shell
+### Boolean - If called by other CmdLets
 ## NOTES
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_UserManagement]()
 
 [Connect-Me]()
 

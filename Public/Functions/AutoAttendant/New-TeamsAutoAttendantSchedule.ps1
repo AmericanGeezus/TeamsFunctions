@@ -45,18 +45,22 @@ function New-TeamsAutoAttendantSchedule {
   .EXAMPLE
     New-TeamsAutoAttendantSchedule -Fixed -DateTimeRange @($TR1, $TR2)
     Adds a fixed schedule for the TimeRange(s) provided with the Objects $TR1 and $TR2
-  .NOTES
-    Combinations of BusinesHours and BusinessDays are numerous but not exhaustive.
-    For example, all Business days will receive the same Business hours. For more granular options,
-    please define TimeRange manually and use the Switch -DateTimeRange to provide the Object instead.
   .INPUTS
     System.String, System.Object
   .OUTPUTS
     System.Object
+  .NOTES
+    Combinations of BusinesHours and BusinessDays are numerous but not exhaustive.
+    For example, all Business days will receive the same Business hours. For more granular options,
+    please define TimeRange manually and use the Switch -DateTimeRange to provide the Object instead.
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a Schedule Object for use in an AutoAttendant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     New-TeamsAutoAttendant
 	.LINK

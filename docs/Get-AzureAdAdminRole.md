@@ -80,7 +80,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### PSCustomObject
+### System.Object
 ## NOTES
 Returns an Object containing all Admin Roles assigned to a User.
 This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
@@ -89,6 +89,8 @@ The Output can be used as baseline for other functions (-contains "Teams Service
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_UserManagement]()
 
 [Enable-AzureAdAdminRole]()
 

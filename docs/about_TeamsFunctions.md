@@ -51,7 +51,9 @@ Some functions are only available with the Preview module until they become gene
 
 ## TROUBLESHOOTING NOTE
 
-[Help Files](/help) are available for all topics as well as automatically generated [docs](/docs) for each exported function.
+All Help Files are available in [docs](/docs)
+All Topics have been documented as *about_* Files
+Each exported function has automatically generated help files with PlatyPS.
 
 If you find bugs, please report them by raising an Issue on this repo or send me a message to [TeamsFunctions@outlook.com](mailto:TeamsFunctions@outlook.com)
 

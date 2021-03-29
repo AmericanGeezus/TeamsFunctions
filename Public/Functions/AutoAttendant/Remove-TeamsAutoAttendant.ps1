@@ -22,8 +22,16 @@ function Remove-TeamsAutoAttendant {
     System.String
   .OUTPUTS
     System.Object
+  .NOTES
+    None
+  .COMPONENT
+    TeamsAutoAttendant
+	.FUNCTIONALITY
+    Removes Auto Attendant Objects from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     Get-TeamsAutoAttendant
 	.LINK

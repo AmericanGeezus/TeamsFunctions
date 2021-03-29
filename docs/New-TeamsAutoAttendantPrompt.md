@@ -96,11 +96,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
-Warning: This will break if the String ends in a supported File extension (WAV, WMA or MP3)
+Warning: The Automatic detection of the String depends on the last 4 characters of the String.
+This will break if the String ends in a supported File extension (WAV, WMA or MP3), for example.
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsAutoAttendant]()
 
 [New-TeamsAutoAttendant]()
 

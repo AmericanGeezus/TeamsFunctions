@@ -228,7 +228,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### None
+### System.Void - Default Behaviour
+### System.Object - With Switch PassThru
+### Boolean - If called by other CmdLets
 ## NOTES
 Limitations: MFA must be authorised first
 Currently no way to trigger it via PowerShell.
@@ -241,6 +243,8 @@ Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this scrip
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_UserManagement]()
 
 [Enable-AzureAdAdminRole]()
 

@@ -85,7 +85,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### System.Object
+### System.Void - If called directly and no errors are found - Information Text only
+### System.Object - If called directly and errors are found (Get-TeamsUserVoiceConfig)
+### Boolean - If called by other CmdLets
 ## NOTES
 Verbose output is available, though all required information is fed back directly to the User.
 If no objections are found, nothing is returned.
