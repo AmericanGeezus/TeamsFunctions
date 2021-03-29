@@ -79,29 +79,47 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
 
   Context 'Testing Module PUBLIC Functions' -Foreach $PublicFunctions {
 
-    It "'$($_.BaseName)' should have a SYNOPSIS and DESCRIPTION section in the help block" {
+    It "'$($_.BaseName)' should have a SYNOPSIS section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.SYNOPSIS'
+    }
+
+    It "'$($_.BaseName)' should have a DESCRIPTION section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.DESCRIPTION'
     }
 
-    It "'$_' should have a EXAMPLE and NOTES section in the help block" {
+    It "'$($_.BaseName)' should have a EXAMPLE section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.EXAMPLE'
+    }
+
+    It "'$($_.BaseName)' should have a NOTES section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.NOTES'
     }
 
-    It "'$_' should have a INPUTS and OUTPUTS section in the help block" {
+    It "'$($_.BaseName)' should have a INPUTS section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.INPUTS'
+    }
+
+    It "'$($_.BaseName)' should have a OUTPUTS section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.OUTPUTS'
     }
 
-    It "'$_' should have a COMPONENT and FUNCTIONALITY section in the help block" {
+    It "'$($_.BaseName)' should have a COMPONENT section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.COMPONENT'
+    }
+
+    It "'$($_.BaseName)' should have a FUNCTIONALITY section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.FUNCTIONALITY'
     }
 
-    It "'$_' should have a proper LINK section set up in the help block" {
+    It "'$($_.BaseName)' should have a LINK section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.LINK'
+    }
+
+    It "'$($_.BaseName)' should have the HELP URL linked in the LINK section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/'
+    }
+
+    It "'$($_.BaseName)' should have an ABOUT topic linked in the LINK section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch 'about_'
     }
 
