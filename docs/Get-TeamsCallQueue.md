@@ -132,6 +132,8 @@ Output view more concise
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_TeamsCallQueue]()
+
 [New-TeamsCallQueue]()
 
 [Get-TeamsCallQueue]()

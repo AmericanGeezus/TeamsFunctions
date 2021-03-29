@@ -70,8 +70,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
+### System.String
 ## OUTPUTS
 
+### System.Object
 ## NOTES
 This script is indulging the lazy admin.
 It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
@@ -81,6 +84,10 @@ Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Obj
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_SupportingFunction]()
+
+[about_VoiceConfiguration]()
 
 [Get-TeamsOVP]()
 

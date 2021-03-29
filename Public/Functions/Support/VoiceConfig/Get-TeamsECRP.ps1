@@ -28,11 +28,25 @@ function Get-TeamsECRP {
     Get-TeamsECRP -Identity ECRP-US-*
     Lists Emergency Voice Routes with "ECRP-US-" in the Name
     Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy -Filter "*ECRP-US-*"
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     If more than three results are found, a reordered set of Parameters are shown for better visibility:
     Get-CsTeamsEmergencyCallRoutingPolicy | Select-Object Identity, Description, AllowEnhancedEmergencyServices, EmergencyNumbers
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries Emergency Call Routing Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsOVP
   .LINK

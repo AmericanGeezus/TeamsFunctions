@@ -79,16 +79,22 @@ function Set-TeamsUserLicense {
 
     Data in Get-AzureAdLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
     https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
-
+  .INPUTS
+    System.String
+  .OUTPUTS
+		System.Void - Default Behavior
+    System.Object - With Switch PassThru
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
     This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
     Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK

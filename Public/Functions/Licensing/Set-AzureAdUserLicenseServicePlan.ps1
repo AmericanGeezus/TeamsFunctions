@@ -36,17 +36,24 @@ function Set-AzureAdUserLicenseServicePlan {
     Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Enable MCOEV,TEAMS1 -PassThru
     Enables the Service Plans Phone System (MCOEV) and Teams (TEAMS1) on all Licenses assigned to Name@domain.com
     Displays User License Object after application
+  .INPUTS
+    System.String
+  .OUTPUTS
+		System.Void - Default Behavior
+    System.Object - With Switch PassThru
   .NOTES
     Data in Get-AzureAdLicenseServicePlan as per Microsoft Docs Article: Published Service Plan IDs for Licensing
     https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
-    This script changes the AzureAD Object provided by enabling or disabling Service Plans on all Licenses assigned to an AzureAd Object
+    Changes the AzureAD Object provided by enabling or disabling Service Plans on each License assigned (if present) to an AzureAd Object
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK

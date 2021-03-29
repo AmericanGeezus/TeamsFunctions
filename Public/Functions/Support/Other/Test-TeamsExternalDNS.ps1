@@ -17,8 +17,20 @@ function Test-TeamsExternalDNS {
 	.EXAMPLE
 		Test-TeamsExternalDNS -Domain contoso.com
 		Example 1 will test the contoso.com domain for the required external DNS records for Teams.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
+  .NOTES
+    None
+  .COMPONENT
+    None
+	.FUNCTIONALITY
+    Tests DNS Records for external communication
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Unmanaged
 	#>
 
   [CmdletBinding()]

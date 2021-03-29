@@ -147,17 +147,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
 ### System.String
 ## OUTPUTS
 
 ### System.Object
 ## NOTES
-Pipeline input possible, though untested.
-Requires figuring out :)
+Pipeline input possible
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsResourceAccount]()
 
 [Get-TeamsResourceAccountAssociation]()
 

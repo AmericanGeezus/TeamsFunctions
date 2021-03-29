@@ -90,7 +90,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 ## NOTES
-Francois-Xavier Cat
+Originally written by:
+  Francois-Xavier Cat
 @lazywinadmin
 lazywinadmin.com
 github.com/lazywinadmin
@@ -99,5 +100,9 @@ github.com/lazywinadmin
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_SupportingFunction]()
+
 [Format-StringForUse]()
+
+[Format-StringRemoveSpecialCharacter]()
 

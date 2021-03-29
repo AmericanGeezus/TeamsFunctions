@@ -39,8 +39,11 @@ function Connect-Me {
     Creates a session to MicrosoftTeams with the AzureAd Session details
     If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
     Also connects to ExchangeOnline
-  .FUNCTIONALITY
-    Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object - Default Behavior, incl. on-screen feedback about performed tasks
+    System.Object - Reduced information, no on-screen output
   .NOTES
     This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline
     Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets)
@@ -50,8 +53,14 @@ function Connect-Me {
     The Skype for Business Legacy Administrator Roles are still required to create the PsSession.
 		Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
 		Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
+  .COMPONENT
+    TeamsSession
+  .FUNCTIONALITY
+    Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
   .LINK
     Connect-Me
 	.LINK

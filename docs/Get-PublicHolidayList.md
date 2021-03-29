@@ -81,6 +81,10 @@ For Example: https://www.timeanddate.com/holidays/uk/2022?hol=9
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_SupportingFunction]()
+
+[about_TeamsAutoAttendant]()
+
 [Get-PublicHolidayList]()
 
 [Get-PublicHolidayCountry]()

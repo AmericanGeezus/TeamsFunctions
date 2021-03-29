@@ -16,8 +16,20 @@ function Get-CurrentConnectionInfo {
 	.EXAMPLE
 		Get-CurrentConnectionInfo
     Will Test current connection to AzureAd, MicrosoftTeams and ExchangeOnline and displays simple output object.
+  .INPUTS
+    None
+  .OUTPUTS
+    System.Object
+  .NOTES
+    Information about a Service is only displayed if an active connection can be found
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Queries Information about existing Sessions to AzureAd and MicrosoftTeams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
   .LINK
     Connect-Me
   .LINK

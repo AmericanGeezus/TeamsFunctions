@@ -20,6 +20,11 @@ function Enable-TeamsUserForEnterpriseVoice {
   .EXAMPLE
     Enable-TeamsUserForEnterpriseVoice John@domain.com
     Enables John for Enterprise Voice
+  .INPUTS
+		System.String
+  .OUTPUTS
+    System.Void - If called directly
+    Boolean - If called by another CmdLet
   .NOTES
     Simple helper function to enable and verify a User is enabled for Enterprise Voice
     Returns boolean result and less communication if called by another function

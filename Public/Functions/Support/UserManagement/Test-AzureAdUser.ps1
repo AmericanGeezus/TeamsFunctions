@@ -19,8 +19,23 @@ function Test-AzureAdUser {
 		Test-AzureADUser -Identity $UPN
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Boolean
+  .NOTES
+    x
+  .COMPONENT
+    SupportingFunction
+		UserManagement
+	.FUNCTIONALITY
+    Tests whether an Azure Ad User exists in AzureAd
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_UserManagement
   .LINK
     Find-AzureAdGroup
   .LINK

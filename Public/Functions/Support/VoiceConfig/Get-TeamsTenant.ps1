@@ -16,8 +16,20 @@ function Get-TeamsTenant {
   .EXAMPLE
     Get-TeamsTenant
     Lists basic tenant information relevant for working on this Tenant
+  .INPUTS
+    None
+  .OUTPUTS
+    System.Object
+  .NOTES
+    None
+  .COMPONENT
+    SupportingFunction
+	.FUNCTIONALITY
+    Queries abbreviated information about the Teams Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
   #>
 
   [CmdletBinding()]

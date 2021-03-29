@@ -23,13 +23,16 @@ function Get-PublicHolidayCountry {
   .NOTES
     The Nager.Date API currently supports a bit over 100 Countries.
   .COMPONENT
+    SupportingFunction
     TeamsAutoAttendant
-  .ROLE
-    Helper Function
   .FUNCTIONALITY
-    HolidaySet
+    Queries available Countries from the Nager.Date API to generate a Get-PublicHolidayList
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_TeamsAutoAttendant
   .LINK
     Get-PublicHolidayCountry
   .LINK

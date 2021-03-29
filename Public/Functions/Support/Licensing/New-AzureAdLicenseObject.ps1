@@ -32,8 +32,15 @@ function New-AzureAdLicenseObject {
     This function does not require any connections to AzureAD.
     However, applying the output of this Function does.
     Used in Set-TeamsUserLicense and Add-TeamsUserLicense
+  .COMPONENT
+    SupportingFunction
+    Licensing
+  .FUNCTIONALITY
+    Creates a new License Object to be applied with Set-AzureAdUserLicense
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
   .LINK
     Set-TeamsUserLicense
 	#>

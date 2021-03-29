@@ -128,7 +128,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### None
+### System.Void - Default Behavior
+###   System.Object - With Switch PassThru
 ## NOTES
 Execution requires User Admin Role in Azure AD
 
@@ -136,19 +137,21 @@ Execution requires User Admin Role in Azure AD
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[Get-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccountAssociation]()
-
-[Remove-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccount]()
+[about_TeamsResourceAccount]()
 
 [Get-TeamsResourceAccount]()
 
 [Find-TeamsResourceAccount]()
 
-[Set-TeamsResourceAccount]()
+[New-TeamsResourceAccount]()
 
 [Remove-TeamsResourceAccount]()
+
+[Set-TeamsResourceAccount]()
+
+[Get-TeamsResourceAccountAssociation]()
+
+[New-TeamsResourceAccountAssociation]()
+
+[Remove-TeamsResourceAccountAssociation]()
 

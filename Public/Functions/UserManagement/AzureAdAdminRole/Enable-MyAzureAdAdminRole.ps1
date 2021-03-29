@@ -21,6 +21,8 @@ function Enable-MyAzureAdAdminRole {
   .OUTPUTS
     System.Void - If executed from shell
     Boolean - If called by other CmdLets
+  .NOTES
+    None
   .COMPONENT
     UserManagement
 	.FUNCTIONALITY

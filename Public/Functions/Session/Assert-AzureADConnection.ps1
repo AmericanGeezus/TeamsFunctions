@@ -17,8 +17,27 @@ function Assert-AzureADConnection {
 		Assert-AzureADConnection
     Will run Test-AzureADConnection and, if successful, stops.
     If unsuccessful, displays request to create a new session and stops.
+  .INPUTS
+    None
+  .OUTPUTS
+		System.Void - If called directly; On-Screen output only
+    Boolean - If called by other CmdLets, On-Screen output for the first call only
+  .NOTES
+    None
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Verifies a Connection to AzureAd is established
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
+  .LINK
+    Assert-AzureAdConnection
+  .LINK
+    Assert-MicrosoftTeamsConnection
+  .LINK
+    Get-CurrentConnectionInfo
   #>
 
   [CmdletBinding()]

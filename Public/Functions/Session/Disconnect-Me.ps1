@@ -18,6 +18,10 @@ function Disconnect-Me {
     Disconnect-Me
     Disconnects from AzureAD, MicrosoftTeams
     Errors and Warnings are suppressed as no verification of existing sessions is undertaken
+  .INPUTS
+    None
+  .OUTPUTS
+		System.Void
 	.NOTES
     Helper function to disconnect from AzureAD & MicrosoftTeams
     To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
@@ -27,8 +31,14 @@ function Disconnect-Me {
     An admin can sign-out this user from all Sessions through the Office 365 Admin Center
     This process may take up to 15 mins and is best avoided, through proper disconnect after use
     An Alias is available for this function: dis
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Disconnects existing connections to AzureAd and MicrosoftTeams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
   .LINK
     Connect-Me
 	.LINK

@@ -40,6 +40,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Void - If executed from shell
 ### Boolean - If called by other CmdLets
 ## NOTES
+None
 
 ## RELATED LINKS
 

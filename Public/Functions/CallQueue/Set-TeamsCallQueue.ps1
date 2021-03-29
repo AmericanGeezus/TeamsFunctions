@@ -114,12 +114,16 @@ function Set-TeamsCallQueue {
     System.String
   .OUTPUTS
     System.Object or None
-	.NOTES
-		Currently in Testing
+  .NOTES
+    Changes settings of an existing Call Queue
+  .COMPONENT
+    TeamsCallQueue
 	.FUNCTIONALITY
 		Changes a Call Queue with friendly names as input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsCallQueue
 	.LINK
 		New-TeamsCallQueue
 	.LINK

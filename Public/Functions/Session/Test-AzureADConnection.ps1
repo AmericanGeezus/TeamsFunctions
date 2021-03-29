@@ -16,8 +16,30 @@ function Test-AzureADConnection {
 	.EXAMPLE
 		Test-AzureADConnection
 		Will Return $TRUE only if a session is found.
+  .INPUTS
+    None
+  .OUTPUTS
+    Boolean
+  .NOTES
+    Calls Get-AzureADCurrentSessionInfo to determine whether a Connection exists
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Tests the connection to AzureAd
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
+  .LINK
+    Test-AzureAdConnection
+  .LINK
+    Test-MicrosoftTeamsConnection
+  .LINK
+    Test-ExchangeOnlineConnection
+  .LINK
+    Assert-AzureAdConnection
+  .LINK
+    Assert-MicrosoftTeamsConnection
   #>
 
   [CmdletBinding()]

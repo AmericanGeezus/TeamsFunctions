@@ -22,8 +22,16 @@ function Remove-TeamsCallQueue {
     System.String
   .OUTPUTS
     System.Object
+  .NOTES
+    None
+  .COMPONENT
+    TeamsCallQueue
+	.FUNCTIONALITY
+    Removes a Call Queue Object from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsCallQueue
   .LINK
 		Get-TeamsCallQueue
 	.LINK

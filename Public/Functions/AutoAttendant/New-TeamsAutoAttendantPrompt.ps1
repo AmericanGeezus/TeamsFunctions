@@ -32,6 +32,8 @@ function New-TeamsAutoAttendantPrompt {
     This will break if the String ends in a supported File extension (WAV, WMA or MP3), for example.
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a Prompt object to be used in Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

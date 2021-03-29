@@ -118,7 +118,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### None
+### System.Void - Default Behavior
+###   System.Object - With Switch PassThru
 ## NOTES
 Does the same as Remove-CsOnlineApplicationInstanceAssociation, but with friendly Names
 General notes
@@ -126,6 +127,8 @@ General notes
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsResourceAccount]()
 
 [Get-TeamsResourceAccountAssociation]()
 

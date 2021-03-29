@@ -19,8 +19,23 @@ function Test-AzureAdGroup {
 		Test-AzureAdGroup -Identity "My Group"
 		Will Return $TRUE only if the object "My Group" is found.
     Will Return $FALSE in any other case
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Boolean
+  .NOTES
+    None
+  .COMPONENT
+    SupportingFunction
+		UserManagement
+	.FUNCTIONALITY
+    Tests whether an Azure Ad Group exists in AzureAd
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_UserManagement
   .LINK
     Find-AzureAdGroup
   .LINK

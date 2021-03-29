@@ -65,35 +65,42 @@ function Set-TeamsResourceAccount {
 	.EXAMPLE
 		Set-TeamsResourceAccount -UserPrincipalName MyRessourceAccount@TenantName.onmicrosoft.com -ApplicationType AutoAttendant
 		Switches MyResourceAccount to the Type AutoAttendant
-		NOTE: This is currently untested, errors might occur simply because not all caveats could be captured.
-		Handle with care!
+		Though working correctly in all tests, please handle with care
   .INPUTS
     System.String
   .OUTPUTS
-    None
-	.FUNCTIONALITY
-		Changes a resource Account in AzureAD for use in Teams
+		System.Void - Default Behavior
+    System.Object - With Switch PassThru
+  .NOTES
+    Though working correctly in all tests, please handle with care when changing Application Types
+    Existing Application Instance Objects may get corrupted when treated as a User.
+    If in doubt, please recreate the Resource Account and retire the old object.
   .COMPONENT
+    TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+		Changes a resource Account in AzureAD for use in Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
+	.LINK
+    Get-TeamsResourceAccount
+	.LINK
+    Find-TeamsResourceAccount
+	.LINK
+    New-TeamsResourceAccount
+	.LINK
+    Remove-TeamsResourceAccount
+	.LINK
+    Set-TeamsResourceAccount
 	.LINK
     Get-TeamsResourceAccountAssociation
 	.LINK
     New-TeamsResourceAccountAssociation
 	.LINK
 		Remove-TeamsResourceAccountAssociation
-	.LINK
-    New-TeamsResourceAccount
-	.LINK
-    Get-TeamsResourceAccount
-	.LINK
-    Find-TeamsResourceAccount
-	.LINK
-    Set-TeamsResourceAccount
-	.LINK
-    Remove-TeamsResourceAccount
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

@@ -26,13 +26,27 @@ function Get-TeamsTDP {
   .EXAMPLE
     Get-TeamsTDP -Filter DP-HUN
     Lists all Tenant Dials that contain the strign "*DP-HUN*" in the Name.
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsTenantDialPlan with a twist:
     If used without Parameter, a reduced set of Parameters are shown for better visibility:
     Without parameters, it executes the following string:
     Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries Tenant Dial Plans from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsTDP
   .LINK

@@ -18,11 +18,28 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>System.Void - If called directly; On-Screen output only</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean - If called by other CmdLets, On-Screen output for the first call only</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -31,7 +48,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -47,6 +64,22 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-CurrentConnectionInfo</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -68,11 +101,28 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>System.Void - If called directly; On-Screen output only</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean - If called by other CmdLets, On-Screen output for the first call only</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -81,7 +131,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -99,7 +149,15 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Assert-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-MicrosoftTeamsConnection</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -197,11 +255,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -210,7 +277,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -240,6 +307,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -587,8 +658,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.File</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>Version 1.10 Build: Feb 04, 2020</maml:para>
@@ -608,6 +705,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -654,8 +755,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.File</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>Version 1.10 Build: Feb 04, 2020</maml:para>
@@ -678,6 +805,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -770,8 +901,34 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - Default Behavior, incl. on-screen feedback about performed tasks</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - Reduced information, no on-screen output</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline. The Skype for Business Legacy Administrator Roles are still required to create the PsSession. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
@@ -804,6 +961,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Connect-Me</maml:linkText>
@@ -849,8 +1010,26 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Void</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>Helper function to disconnect from AzureAD &amp; MicrosoftTeams To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline By default Office 365 allows two (!) concurrent sessions per User. If sessions hang or are incorrectly closed (not properly disconnected), this can lead to session exhaustion which results in not being able to connect again. An admin can sign-out this user from all Sessions through the Office 365 Admin Center This process may take up to 15 mins and is best avoided, through proper disconnect after use An Alias is available for this function: dis</maml:para>
@@ -869,6 +1048,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Connect-Me</maml:linkText>
@@ -1297,7 +1480,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -1456,11 +1639,28 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>System.Void - If called directly</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean - If called by another CmdLet</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -2009,7 +2209,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -2039,6 +2239,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
@@ -2746,7 +2950,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -2797,6 +3001,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Format-StringForUse</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Format-StringRemoveSpecialCharacter</maml:linkText>
@@ -2893,7 +3105,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Francois-Xavier Cat @lazywinadmin lazywinadmin.com github.com/lazywinadmin</maml:para>
+        <maml:para>Originally written by:   Francois-Xavier Cat @lazywinadmin lazywinadmin.com github.com/lazywinadmin</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -2925,7 +3137,15 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Format-StringForUse</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Format-StringRemoveSpecialCharacter</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -3107,11 +3327,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Object[]</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -3120,7 +3349,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Source https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip Reads https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference</maml:para>
+        <maml:para>Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -3136,6 +3365,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -3217,11 +3454,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Object[]</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -3246,6 +3492,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -3343,11 +3597,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Management.Automation.PSObject</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -3393,6 +3656,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -3521,11 +3792,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Management.Automation.PSObject</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -3578,6 +3858,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -3635,11 +3923,20 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -3648,7 +3945,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Information about a Service is only displayed if an active connection can be found</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -3664,6 +3961,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Connect-Me</maml:linkText>
@@ -3844,6 +4145,14 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Get-PublicHolidayCountry</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -3960,6 +4269,14 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Get-PublicHolidayList</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -4036,7 +4353,16 @@
         <dev:defaultValue>Region</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
@@ -4072,6 +4398,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -4118,8 +4448,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Void - Default Behavior</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This function was taken 1:1 from SkypeFunctions and remains untested for Teams</maml:para>
@@ -4138,6 +4494,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Unmanaged</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -4652,6 +5012,10 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_TeamsCallQueue</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>New-TeamsCallQueue</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -4919,8 +5283,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType</maml:para>
@@ -4953,6 +5343,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -5039,8 +5437,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reordered set of Parameters are shown for better visibility: Get-CsTeamsEmergencyCallingPolicy | Select-Object Identity, Description, NotificationMode, NotificationGroup</maml:para>
@@ -5073,6 +5497,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -5159,8 +5591,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>If more than three results are found, a reordered set of Parameters are shown for better visibility: Get-CsTeamsEmergencyCallRoutingPolicy | Select-Object Identity, Description, AllowEnhancedEmergencyServices, EmergencyNumbers</maml:para>
@@ -5193,6 +5651,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -5279,8 +5745,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes</maml:para>
@@ -5313,6 +5805,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -5399,8 +5899,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like Get-CsTeamsCallingPolicy with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsOnlinePSTNGateway | Select-Object Identity, SipSignalingPort, Enabled, MediaByPass</maml:para>
@@ -5433,6 +5959,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -5541,7 +6075,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -5599,6 +6133,18 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsCallQueue</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsObjectType</maml:linkText>
@@ -5661,8 +6207,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like (Get-CsOnlinePstnUsage).Usage This CmdLet behaves slightly different than the others, due to the nature of Pstn Usages.</maml:para>
@@ -5688,6 +6260,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -5774,8 +6354,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages</maml:para>
@@ -5808,6 +6414,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -5894,8 +6508,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList</maml:para>
@@ -5928,6 +6568,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsOVP</maml:linkText>
@@ -6098,6 +6746,14 @@
     <command:inputTypes>
       <command:inputType>
         <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
           <maml:name>System.String</maml:name>
         </dev:type>
         <maml:description>
@@ -6117,7 +6773,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Pipeline input possible, though untested. Requires figuring out :)</maml:para>
+        <maml:para>Pipeline input possible</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -6161,6 +6817,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
@@ -6286,6 +6946,10 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -6298,10 +6962,6 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -6310,11 +6970,15 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Remove-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -6362,8 +7026,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>This script is indulging the lazy admin. It behaves like Get-CsTenantDialPlan with a twist: If used without Parameter, a reduced set of Parameters are shown for better visibility: Without parameters, it executes the following string: Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description</maml:para>
@@ -6396,6 +7086,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTDP</maml:linkText>
@@ -6457,11 +7155,29 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -6477,6 +7193,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -6569,11 +7289,20 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Object[]</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -6626,6 +7355,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -6872,11 +7609,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Management.Automation.PSObject</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -6915,6 +7661,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -7020,11 +7774,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Management.Automation.PSObject</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -7063,6 +7826,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -7336,8 +8107,34 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>Without parameters, it executes the following string: Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, Pattern, Translation, Description</maml:para>
@@ -7370,6 +8167,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTDP</maml:linkText>
@@ -7649,6 +8454,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Set-TeamsUserLicense</maml:linkText>
@@ -8870,7 +9679,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -11557,6 +12366,10 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_TeamsCallQueue</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>New-TeamsCallQueue</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -12204,19 +13017,7 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Remove-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -12228,11 +13029,27 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Remove-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsResourceAccountAssociation</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Remove-TeamsResourceAccountAssociation</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -12485,6 +13302,10 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -12497,19 +13318,23 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>Find-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Remove-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -12787,7 +13612,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -12803,6 +13628,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsCallQueue</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsCallQueue</maml:linkText>
@@ -13171,7 +14000,15 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None</maml:name>
+          <maml:name>System.Void - Default Behavior</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -13205,19 +14042,7 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Remove-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -13229,11 +14054,27 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Remove-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsResourceAccountAssociation</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Remove-TeamsResourceAccountAssociation</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -13386,7 +14227,15 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None</maml:name>
+          <maml:name>System.Void - Default Behavior</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -13411,6 +14260,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
@@ -13811,8 +14664,34 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Void - Default Behavior</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>The dial plan rules will display in format similar the example below: RuleIndex Name            Pattern    Translation --------- ----            -------    ----------- 0 Intl Dialing    ^011(\d+)$ +$1 1 Extension Rule  ^(\d{5})$  +155512$1 2 Long Distance   ^1(\d+)$   +1$1 3 Default         ^(\d+)$    +1$1</maml:para>
@@ -13831,6 +14710,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Unmanaged</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -13974,8 +14857,26 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.File</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>Version 1.10 Build: Feb 04, 2020</maml:para>
@@ -13995,6 +14896,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -14158,11 +15063,28 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Void</maml:name>
+          <maml:name>System.Void - Default Behavior</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -14201,6 +15123,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -14961,7 +15891,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Currently in Testing</maml:para>
+        <maml:para>Changes settings of an existing Call Queue</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -15012,6 +15942,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsCallQueue</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>New-TeamsCallQueue</maml:linkText>
@@ -15657,7 +16591,15 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None</maml:name>
+          <maml:name>System.Void - Default Behavior</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -15666,7 +16608,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Though working correctly in all tests, please handle with care when changing Application Types Existing Application Instance Objects may get corrupted when treated as a User. If in doubt, please recreate the Resource Account and retire the old object.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -15709,7 +16651,7 @@
         <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <dev:code>Set-TeamsResourceAccount -UserPrincipalName MyRessourceAccount@TenantName.onmicrosoft.com -ApplicationType AutoAttendant</dev:code>
         <dev:remarks>
-          <maml:para>Switches MyResourceAccount to the Type AutoAttendant NOTE: This is currently untested, errors might occur simply because not all caveats could be captured. Handle with care!</maml:para>
+          <maml:para>Switches MyResourceAccount to the Type AutoAttendant Though working correctly in all tests, please handle with care</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -15719,19 +16661,7 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>Remove-TeamsResourceAccountAssociation</maml:linkText>
-        <maml:uri></maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -15743,11 +16673,27 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:linkText>New-TeamsResourceAccount</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Remove-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsResourceAccountAssociation</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsResourceAccountAssociation</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Remove-TeamsResourceAccountAssociation</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -16103,11 +17049,28 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Void</maml:name>
+          <maml:name>System.Void - Default Behavior</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -16175,6 +17138,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Licensing</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>
@@ -16751,11 +17722,20 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -16764,7 +17744,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Calls Get-AzureADCurrentSessionInfo to determine whether a Connection exists</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -16780,6 +17760,30 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-ExchangeOnlineConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -16826,11 +17830,20 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -16839,7 +17852,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -16855,6 +17868,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Find-AzureAdGroup</maml:linkText>
@@ -16921,11 +17942,20 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -16934,7 +17964,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>x</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -16950,6 +17980,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Find-AzureAdGroup</maml:linkText>
@@ -16991,11 +18029,20 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -17004,7 +18051,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Calls Get-PsSession to determine whether a Connection to ExchangeOnline exists</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -17020,6 +18067,30 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-ExchangeOnlineConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -17041,11 +18112,20 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -17054,7 +18134,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOnline) exists</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -17070,6 +18150,30 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-ExchangeOnlineConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-AzureAdConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -17116,11 +18220,20 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>System.Object</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -17129,7 +18242,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -17145,6 +18258,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_Unmanaged</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -17214,11 +18331,20 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -17227,7 +18353,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -17250,6 +18376,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsResourceAccount</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsResourceAccount</maml:linkText>
@@ -17308,11 +18442,20 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -17321,7 +18464,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>None</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -17337,6 +18480,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Find-AzureAdGroup</maml:linkText>
@@ -17403,11 +18554,20 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -17441,7 +18601,15 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Test-TeamsUserLicense</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Test-TeamsUserHasCallPlan</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -17552,11 +18720,20 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Boolean</maml:name>
+          <maml:name>Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -17588,6 +18765,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsTenantLicense</maml:linkText>

@@ -151,9 +151,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
-### System.Void
+### System.Void - Default Behavior
+###   System.Object - With Switch PassThru
 ## NOTES
 Data in Get-AzureAdLicenseServicePlan as per Microsoft Docs Article: Published Service Plan IDs for Licensing
 https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
@@ -161,6 +163,10 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_Licensing]()
+
+[about_UserManagement]()
 
 [Get-TeamsTenantLicense]()
 

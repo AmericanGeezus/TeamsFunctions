@@ -50,10 +50,14 @@ function Get-TeamsCallQueue {
 		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
     Main difference to Get-CsCallQueue (apart from the friendly names) is that the
     Output view more concise
+  .COMPONENT
+    TeamsCallQueue
 	.FUNCTIONALITY
 		Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsCallQueue
 	.LINK
 		New-TeamsCallQueue
 	.LINK

@@ -27,6 +27,10 @@ function Restore-TeamsEV {
   .EXAMPLE
     Restore-TeamsEV -File C:\Temp\Backup.ZIP
     Restores the Teams Enterprise Voice Configuration from Backup.ZIP file.
+  .INPUTS
+    System.File
+  .OUTPUTS
+    None
 	.NOTES
 		Version 1.10
 		Build: Feb 04, 2020
@@ -34,8 +38,14 @@ function Restore-TeamsEV {
 		Copyright © 2020  Ken Lasko
 		klasko@ucdialplans.com
 		https://www.ucdialplans.com
+  .COMPONENT
+    SupportingFunction
+	.FUNCTIONALITY
+    Restoring a backup of the Configuration in the Teams Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
 	#>
 
   [CmdletBinding(ConfirmImpact = 'Medium', SupportsShouldProcess)]

@@ -61,9 +61,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
-### System.Boolean
+### Boolean
 ## NOTES
 This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
 
@@ -71,5 +72,9 @@ This Script is indiscriminate against the User Type, all AzureAD User Objects ca
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_SupportingFunction]()
+
 [Test-TeamsUserLicense]()
+
+[Test-TeamsUserHasCallPlan]()
 

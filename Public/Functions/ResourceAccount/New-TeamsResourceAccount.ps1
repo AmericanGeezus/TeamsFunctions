@@ -59,29 +59,31 @@ function New-TeamsResourceAccount {
     System.Object
 	.NOTES
 		Execution requires User Admin Role in Azure AD
-	.FUNCTIONALITY
-		Creates a resource Account in AzureAD for use in Teams
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+		Creates a resource Account in AzureAD for use in Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
+	.LINK
+    Get-TeamsResourceAccount
+	.LINK
+    Find-TeamsResourceAccount
+	.LINK
+    New-TeamsResourceAccount
+	.LINK
+    Remove-TeamsResourceAccount
+	.LINK
+    Set-TeamsResourceAccount
 	.LINK
     Get-TeamsResourceAccountAssociation
 	.LINK
     New-TeamsResourceAccountAssociation
 	.LINK
 		Remove-TeamsResourceAccountAssociation
-	.LINK
-    New-TeamsResourceAccount
-	.LINK
-    Get-TeamsResourceAccount
-	.LINK
-    Find-TeamsResourceAccount
-	.LINK
-    Set-TeamsResourceAccount
-	.LINK
-    Remove-TeamsResourceAccount
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

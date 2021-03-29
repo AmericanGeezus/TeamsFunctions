@@ -28,12 +28,26 @@ function Get-TeamsIPP {
     Get-TeamsIPP -Identity CommonAreaPhone-*
     Lists Online Voice Routes with "CommonAreaPhone" in the Name
     Behaviour like: Get-CsTeamsIPPhonePolicy -Filter "*CommonAreaPhone*"
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
     If more than three results are found, a reduced set of Parameters are shown for better visibility:
     Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries IP Phone Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsOVP
   .LINK

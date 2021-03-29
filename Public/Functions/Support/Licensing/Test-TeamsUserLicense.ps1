@@ -35,12 +35,21 @@ function Test-TeamsUserLicense {
 		Test-TeamsUserLicense -Identity User@domain.com -License Microsoft365E5
 		Will Return $TRUE only if the license Package is assigned.
 		Specific Names have been assigned to these Licenses
+  .INPUTS
+    System.String
+  .OUTPUTS
+		Boolean
 	.NOTES
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
-  .FUNCTIONALITY
+  .COMPONENT
+    SupportingFunction
+    Licensing
+	.FUNCTIONALITY
     Returns a boolean value for License or Serviceplan for a specific user.
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
   .LINK
     Get-TeamsTenantLicense
   .LINK

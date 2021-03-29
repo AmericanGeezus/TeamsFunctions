@@ -74,8 +74,7 @@ Set-TeamsResourceAccount -UserPrincipalName MyRessourceAccount@TenantName.onmicr
 ```
 
 Switches MyResourceAccount to the Type AutoAttendant
-NOTE: This is currently untested, errors might occur simply because not all caveats could be captured.
-Handle with care!
+Though working correctly in all tests, please handle with care
 
 ## PARAMETERS
 
@@ -257,26 +256,32 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### None
+### System.Void - Default Behavior
+###   System.Object - With Switch PassThru
 ## NOTES
+Though working correctly in all tests, please handle with care when changing Application Types
+Existing Application Instance Objects may get corrupted when treated as a User.
+If in doubt, please recreate the Resource Account and retire the old object.
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsResourceAccount]()
+
+[Get-TeamsResourceAccount]()
+
+[Find-TeamsResourceAccount]()
+
+[New-TeamsResourceAccount]()
+
+[Remove-TeamsResourceAccount]()
+
+[Set-TeamsResourceAccount]()
 
 [Get-TeamsResourceAccountAssociation]()
 
 [New-TeamsResourceAccountAssociation]()
 
 [Remove-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccount]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
 

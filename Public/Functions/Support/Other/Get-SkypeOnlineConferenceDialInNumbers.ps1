@@ -21,10 +21,21 @@ function Get-SkypeOnlineConferenceDialInNumbers {
 	.EXAMPLE
 		Get-SkypeOnlineConferenceDialInNumbers -Domain contoso.com
 		Example 1 will gather the conference dial-in numbers for contoso.com based on their conference dial-in number web page.
+  .INPUTS
+    System.String
+  .OUTPUTS
+		System.Void - Default Behavior
+    System.Object - With Switch PassThru
 	.NOTES
 		This function was taken 1:1 from SkypeFunctions and remains untested for Teams
+  .COMPONENT
+    None
+	.FUNCTIONALITY
+    Lists Dial-In Conferencing numbers
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Unmanaged
 	#>
 
   [CmdletBinding()]

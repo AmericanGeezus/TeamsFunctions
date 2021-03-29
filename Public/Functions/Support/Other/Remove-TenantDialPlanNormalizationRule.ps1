@@ -22,6 +22,11 @@ function Remove-TenantDialPlanNormalizationRule {
 	.EXAMPLE
 		Remove-TenantDialPlanNormalizationRule -DialPlan US-OK-OKC-DialPlan
 		Displays available normalization rules to remove from dial plan US-OK-OKC-DialPlan.
+  .INPUTS
+    System.String
+  .OUTPUTS
+		System.Void - Default Behavior
+    System.Object - With Switch PassThru
 	.NOTES
 		The dial plan rules will display in format similar the example below:
 		RuleIndex Name            Pattern    Translation
@@ -30,8 +35,14 @@ function Remove-TenantDialPlanNormalizationRule {
 		1 Extension Rule  ^(\d{5})$  +155512$1
 		2 Long Distance   ^1(\d+)$   +1$1
 		3 Default         ^(\d+)$    +1$1
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Removes a Normalisation Rule from a Tenant Dial Plan - This script is untested and unmanaged
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Unmanaged
 	#>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

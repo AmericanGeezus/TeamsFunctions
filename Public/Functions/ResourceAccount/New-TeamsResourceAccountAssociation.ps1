@@ -37,10 +37,15 @@ function New-TeamsResourceAccountAssociation {
     The Type of the Resource Account has to corellate to the entity connected.
     Parameter Force can be used to change the type of RA to align to the entity if possible.
   .COMPONENT
+    TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Creates a new Association between an unassociated Resource Account and an Auto Attendant or a Call Queue
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
   .LINK
     Get-TeamsResourceAccountAssociation
 	.LINK
@@ -48,13 +53,15 @@ function New-TeamsResourceAccountAssociation {
 	.LINK
 		Remove-TeamsResourceAccountAssociation
 	.LINK
-    New-TeamsResourceAccount
-	.LINK
     Get-TeamsResourceAccount
 	.LINK
-    Set-TeamsResourceAccount
+    Find-TeamsResourceAccount
+	.LINK
+    New-TeamsResourceAccount
 	.LINK
     Remove-TeamsResourceAccount
+	.LINK
+    Set-TeamsResourceAccount
   #>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'CallQueue')]
   [Alias('New-TeamsRAA')]

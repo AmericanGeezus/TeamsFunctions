@@ -41,18 +41,22 @@ function Get-TeamsResourceAccount {
 		Get-TeamsResourceAccount -PhoneNumber +1555123456
 		Returns the Resource Account with the Phone Number specified, if found.
   .INPUTS
+    None
     System.String
   .OUTPUTS
     System.Object
 	.NOTES
-		Pipeline input possible, though untested. Requires figuring out :)
-	.FUNCTIONALITY
-		Returns one or more Resource Accounts
+		Pipeline input possible
   .COMPONENT
+    TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+		Returns one or more Resource Accounts from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
 	.LINK
     Get-TeamsResourceAccountAssociation
 	.LINK

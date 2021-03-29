@@ -46,6 +46,10 @@ The Nager.Date API currently supports a bit over 100 Countries.
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_SupportingFunction]()
+
+[about_TeamsAutoAttendant]()
+
 [Get-PublicHolidayCountry]()
 
 [Get-PublicHolidayList]()

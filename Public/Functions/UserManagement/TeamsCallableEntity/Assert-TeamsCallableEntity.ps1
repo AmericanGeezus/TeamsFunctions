@@ -33,6 +33,8 @@ function Assert-TeamsCallableEntity {
     UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Verifies whether a User Object is correctly configured to be used for Auto Attendants or Call Queues
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -56,7 +58,7 @@ function Assert-TeamsCallableEntity {
   Param
   (
     [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'User Principal Name of the user')]
-    [Alias('UserPrincipalName','GroupName','TelUri')]
+    [Alias('UserPrincipalName', 'GroupName', 'TelUri')]
     [string]$Identity,
 
     [Parameter(HelpMessage = 'Switch to instruct to throw errors')]

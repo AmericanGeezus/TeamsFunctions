@@ -52,9 +52,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
-### System.Object[]
+### System.Object
 ## NOTES
 Source
 https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html
@@ -65,6 +66,10 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_Licensing]()
+
+[about_UserManagement]()
 
 [Get-TeamsTenantLicense]()
 

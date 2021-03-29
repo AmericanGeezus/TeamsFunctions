@@ -25,18 +25,32 @@ function Get-TeamsVNR {
     Get-TeamsVNR -Identity DP-HUN
     Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists).
     Behaviour like: (Get-CsTenantDialPlan -Identity "DP-HUN").NormalizationRules
-    .EXAMPLE
+  .EXAMPLE
     Get-TeamsVNR -Filter DP-HUN
     Filters all Tenant Dial Plans that contain the string "DP-HUN" in the Name.
     Returns Tenant Dial Plans if more than 3 results are found.
     Behaviour like: Get-CsTenantDialPlan -Identity "*DP-HUN*"
     Returns Voice Normalisation Rules from the Tenant Dial Plan DP-HUN (provided it exists).
     Behaviour like: (Get-CsTenantDialPlan -Identity "*DP-HUN*").NormalizationRules
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     Without parameters, it executes the following string:
     Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, Pattern, Translation, Description
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries Normalization Rules from a Tenant Dial Plan from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsTDP
   .LINK

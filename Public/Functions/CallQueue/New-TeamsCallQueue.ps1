@@ -133,10 +133,14 @@ function New-TeamsCallQueue {
     System.Object
   .NOTES
     Currently in Testing
+  .COMPONENT
+    TeamsCallQueue
   .FUNCTIONALITY
     Creates a Call Queue with custom settings and friendly names as input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsCallQueue
   .LINK
     New-TeamsCallQueue
   .LINK

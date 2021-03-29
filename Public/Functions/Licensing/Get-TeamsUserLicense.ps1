@@ -28,16 +28,22 @@ function Get-TeamsUserLicense {
 		Import-Csv User.csv | Get-TeamsUserLicense
     Displays all licenses assigned to Users from User.csv, Column Identity.
     The input file must have a single column heading of "Identity" with properly formatted UPNs.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		Requires a connection to Azure Active Directory
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses assigned to a specific User depending on input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK

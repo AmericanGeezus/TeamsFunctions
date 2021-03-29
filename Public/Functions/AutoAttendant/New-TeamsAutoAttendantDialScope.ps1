@@ -25,6 +25,8 @@ function New-TeamsAutoAttendantDialScope {
     System.String
   .OUTPUTS
     System.Object
+  .NOTES
+    None
   .COMPONENT
     TeamsAutoAttendant
 	.FUNCTIONALITY
