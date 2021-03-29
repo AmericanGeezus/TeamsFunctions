@@ -108,6 +108,10 @@ Returns boolean result and less communication if called by another function
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_VoiceConfiguration]()
+
+[about_UserManagement]()
+
 [Set-TeamsUserVoiceConfig]()
 
 [Enable-TeamsUserForEnterpriseVoice]()

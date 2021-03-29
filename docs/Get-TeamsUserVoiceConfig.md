@@ -132,6 +132,10 @@ For a full parameterset, please run:
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_VoiceConfiguration]()
+
+[about_UserManagement]()
+
 [Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()

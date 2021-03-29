@@ -93,6 +93,8 @@ Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_VoiceConfiguration]()
+
 [Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()

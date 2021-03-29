@@ -127,6 +127,10 @@ Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, Voic
 
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
 
+[about_VoiceConfiguration]()
+
+[about_UserManagement]()
+
 [Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()

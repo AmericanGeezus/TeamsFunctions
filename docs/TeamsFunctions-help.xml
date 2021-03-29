@@ -458,8 +458,12 @@
         <maml:uri>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
-        <maml:linkText>[Assert-TeamsUserVoiceConfig</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-TeamsUserVoiceConfig.md)](</maml:uri>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Find-TeamsUserVoiceConfig</maml:linkText>
@@ -1406,6 +1410,14 @@
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Set-TeamsUserVoiceConfig</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -2197,7 +2209,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>String (UPN)  - With any Parameter except Identity or PhoneNumber</maml:name>
+          <maml:name>System.String - UserPrincipalName - With any Parameter except Identity or PhoneNumber</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -2274,6 +2286,14 @@
       <maml:navigationLink>
         <maml:linkText>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:linkText>
         <maml:uri>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
@@ -2417,6 +2437,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
@@ -6543,8 +6567,26 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>General notes</maml:para>
@@ -6570,6 +6612,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
@@ -7049,6 +7099,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
@@ -13340,7 +13398,15 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None</maml:name>
+          <maml:name>System.Void - Default behaviour</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -13386,6 +13452,18 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:linkText>
+        <maml:uri>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
@@ -16308,7 +16386,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Void (without Switch PassThru)</maml:name>
+          <maml:name>System.Void - Default Behaviour</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -16316,7 +16394,7 @@
       </command:returnValue>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.Object (with Switch PassThru)</maml:name>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -16324,7 +16402,7 @@
       </command:returnValue>
       <command:returnValue>
         <dev:type>
-          <maml:name>System.File (with Switch WriteErrorLog)</maml:name>
+          <maml:name>System.File - With Switch WriteErrorLog</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -16377,6 +16455,14 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>
@@ -17438,6 +17524,14 @@
       <maml:navigationLink>
         <maml:linkText>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:linkText>
         <maml:uri>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_VoiceConfiguration</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Assert-TeamsUserVoiceConfig</maml:linkText>

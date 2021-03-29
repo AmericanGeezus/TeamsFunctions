@@ -278,9 +278,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### System.Void (without Switch PassThru)
-### System.Object (with Switch PassThru)
-### System.File (with Switch WriteErrorLog)
+### System.Void - Default Behaviour
+### System.Object - With Switch PassThru
+### System.File - With Switch WriteErrorLog
 ## NOTES
 ParameterSet 'DirectRouting' will provision a User to use DirectRouting.
 Enables User for Enterprise Voice,
@@ -296,6 +296,10 @@ This enables bulk provisioning
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_VoiceConfiguration]()
+
+[about_UserManagement]()
 
 [Assert-TeamsUserVoiceConfig]()
 

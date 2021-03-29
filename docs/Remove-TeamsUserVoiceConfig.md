@@ -180,7 +180,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### None
+### System.Void - Default behaviour
+### System.Object - With Switch PassThru
 ## NOTES
 Prompting for Confirmation for disabling of EnterpriseVoice
 For DirectRouting, this Script does not remove any licenses.
@@ -189,6 +190,12 @@ For CallingPlans it will prompt for Calling Plan licenses to be removed.
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
+
+[about_VoiceConfiguration]()
+
+[about_UserManagement]()
 
 [Assert-TeamsUserVoiceConfig]()
 

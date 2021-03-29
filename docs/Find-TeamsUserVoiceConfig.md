@@ -269,7 +269,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### String (UPN)  - With any Parameter except Identity or PhoneNumber
+### System.String - UserPrincipalName - With any Parameter except Identity or PhoneNumber
 ### System.Object - With Parameter Identity or PhoneNumber
 ## NOTES
 With the exception of Identity and PhoneNumber, all searches are filtering on Get-CsOnlineUser
@@ -294,6 +294,10 @@ Please see Related Link for more information
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
+
+[about_VoiceConfiguration]()
+
+[about_UserManagement]()
 
 [Assert-TeamsUserVoiceConfig]()
 
