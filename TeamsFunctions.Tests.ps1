@@ -50,7 +50,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
   $PrivateFunctions = Get-ChildItem "$PSScriptRoot\Private" -Include '*.ps1' -Exclude '*.Tests.ps1' -Recurse #| Select-Object -First 1
   $PublicDocs = Get-ChildItem "$PSScriptRoot\docs" -Include '*.md' -Recurse #| Select-Object -First 1
 
-  Context 'Testing Module ALL Functions' -Foreach $AllFunctions {
+  Context 'Testing Module ALL Functions' -ForEach $AllFunctions {
 
     It "'$($_.BaseName)' should exist" {
       "$($_.FullName)" | Should -Exist
@@ -77,49 +77,31 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
 
   } # Context "Testing Module ALL Functions"
 
-  Context 'Testing Module PUBLIC Functions' -ForEach $PublicFunctions {
+  Context 'Testing Module PUBLIC Functions' -Foreach $PublicFunctions {
 
-    It "'$($_.BaseName)' should have a SYNOPSIS section in the help block" {
+    It "'$($_.BaseName)' should have a SYNOPSIS and DESCRIPTION section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.SYNOPSIS'
-    }
-
-    It "'$($_.BaseName)' should have a DESCRIPTION section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.DESCRIPTION'
     }
 
-    It "'$_' should have a EXAMPLE section in the help block" {
+    It "'$_' should have a EXAMPLE and NOTES section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.EXAMPLE'
-    }
-
-    It "'$_' should have a NOTES section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.NOTES'
     }
 
-    It "'$_' should have a INPUTS section in the help block" {
+    It "'$_' should have a INPUTS and OUTPUTS section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.INPUTS'
-    }
-
-    It "'$_' should have a OUTPUTS section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.OUTPUTS'
     }
 
-    It "'$_' should have a COMPONENT section in the help block" {
+    It "'$_' should have a COMPONENT and FUNCTIONALITY section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.COMPONENT'
-    }
-
-    It "'$_' should have a FUNCTIONALITY section in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.FUNCTIONALITY'
     }
 
-    It "'$_' should have a LINK section in the help block" {
+    It "'$_' should have a proper LINK section set up in the help block" {
       "$($_.FullName)" | Should -FileContentMatch '.LINK'
-    }
-
-    It "'$_' should have a LINK to the docs folder in the master branch" {
       "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/'
-    }
-
-    It "'$_' should have a LINK to an ABOUT_ topic" {
       "$($_.FullName)" | Should -FileContentMatch 'about_'
     }
 
@@ -147,7 +129,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
   } # Context "Testing Module PUBLIC Functions"
 
 
-  Context 'Testing Module PRIVATE Functions' -Foreach $PrivateFunctions {
+  Context 'Testing Module PRIVATE Functions' -ForEach $PrivateFunctions {
 
     # currently no special tests for private functions
 
@@ -164,7 +146,7 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
   }
   #>
 
-  Context 'Testing Module PUBLIC Documentation' -ForEach $PublicDocs {
+  Context 'Testing Module PUBLIC Documentation' -Foreach $PublicDocs {
 
     It "'$_' should NOT have empty documentation in the MD file" {
       "$($_.FullName)" | Should -Not -FileContentMatch ([regex]::Escape('{{'))
