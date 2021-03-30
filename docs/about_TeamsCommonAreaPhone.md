@@ -8,20 +8,20 @@ There are currently no native commands for this, so I tried creating them.
 
 ## LONG DESCRIPTION
 
-Common Area Phone being User Accounts could be managed with the normal Voice Configuration CmdLets, though not very well. The object returned by GET is tailored more towards the needs of a Common ara Phone
+Common Area Phone being User Accounts could be managed with the normal Voice Configuration CmdLets, though not very well. The object returned by GET is tailored more towards the needs of a Common area Phone
 
 ## CmdLets
 
 | Function                                                           | Underlying Function | Description                                                                                             |
 | ------------------------------------------------------------------: | ------------------- | ------------------------------------------------------------------------------------------------------- |
-| [`New-TeamsCommonAreaPhone`](../docs/New-TeamsCommonAreaPhone.md)       | New-AzureAdUser     | Creates a Common Area Phone and applies settings to it as provided.                                     |
-| [`Get-TeamsCommonAreaPhone`](../docs/Get-TeamsCommonAreaPhone.md)       | Get-CsOnlineUser    | Queries a Common Area Phone with friendly inputs (UPN) and output                                       |
-| [`Set-TeamsCommonAreaPhone`](../docs/Set-TeamsCommonAreaPhone.md)       | Set-CsUser          | Changes a Common Area Phone                                                                             |
-| [`Remove-TeamsCommonAreaPhone`](../docs/Remove-TeamsCommonAreaPhone.md) | Remove-AzureAdUser  | Removes configuration (with `Remove-TeamsUserVoiceConfig`), then removes the User (requires User Admin) |
+| [`New-TeamsCommonAreaPhone`](New-TeamsCommonAreaPhone.md)       | New-AzureAdUser     | Creates a Common Area Phone and applies settings to it as provided.                                     |
+| [`Get-TeamsCommonAreaPhone`](Get-TeamsCommonAreaPhone.md)       | Get-CsOnlineUser    | Queries a Common Area Phone with friendly inputs (UPN) and output                                       |
+| [`Set-TeamsCommonAreaPhone`](Set-TeamsCommonAreaPhone.md)       | Set-CsUser          | Changes a Common Area Phone                                                                             |
+| [`Remove-TeamsCommonAreaPhone`](Remove-TeamsCommonAreaPhone.md) | Remove-AzureAdUser  | Removes configuration (with `Remove-TeamsUserVoiceConfig`), then removes the User (requires User Admin) |
 
 ## EXAMPLES
 
-Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
+Please see the Examples for the individual CmdLets in their respective help files
 
 ## NOTE
 

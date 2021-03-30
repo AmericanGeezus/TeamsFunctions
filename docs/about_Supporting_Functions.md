@@ -18,9 +18,9 @@ Taking a backup of every outputable CmdLet that Teams has to offer. Curtesy of K
 
 | Function                                            | Description                                                                                                         |
 | ---------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------- |
-| [`Backup-TeamsEV`](../docs/Backup-TeamsEV.md)         | Takes a backup of all EnterpriseVoice related features in Teams.                                                    |
-| [`Restore-TeamsEV`](../docs/Restore-TeamsEV.md)       | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!                       |
-| [`Backup-TeamsTenant`](../docs/Backup-TeamsTenant.md) | An adaptation of the above, backing up as much as can be gathered through available `Get`-Commands from the tenant. |
+| [`Backup-TeamsEV`](Backup-TeamsEV.md)         | Takes a backup of all EnterpriseVoice related features in Teams.                                                    |
+| [`Restore-TeamsEV`](Restore-TeamsEV.md)       | Makes a full authoritative restore of all EnterpriseVoice related features. Handle with care!                       |
+| [`Backup-TeamsTenant`](Backup-TeamsTenant.md) | An adaptation of the above, backing up as much as can be gathered through available `Get`-Commands from the tenant. |
 
 > [!NOTE] The Get-Commands in this function is currently static. While this is fine for Backup-TeamsEV, `Backup-TeamsTenant` may see drift as a result. If additional Get-Commands are added to Teams, this command will need an update. Please let me know. An Automatic mechanism to discover these is desired.
 
@@ -30,10 +30,13 @@ String reformatting is needed to normalise Numbers as E.164 numbers and allow a 
 
 | Function                                                                              | Description                                                                                                                  |
 | -------------------------------------------------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------- |
-| [`Format-StringForUse`](../docs/Format-StringForUse.md)                                 | Prepares a string for use as DisplayName, UserPrincipalName, LineUri or E.164 Number, removing special characters as needed. |
-| [`Format-StringRemoveSpecialCharacter`](../docs/Format-StringRemoveSpecialCharacter.md) | Formats a String and removes special characters (harmonising Display Names)                                                  |
-| [`Get-RegionFromCountryCode`](../docs/Get-RegionFromCountryCode.md)                     | Just a little helper figuring out which geographical region (AMER, EMEA, APAC) a specific country is in.                     |
-| [`Get-TeamsObjectType`](../docs/Get-TeamsObjectType.md)                                 | Little brother to `Get-TeamsCallableEntity` Returns the type of any given Object to identify its use in CQs and AAs.         |
+| [`Format-StringForUse`](Format-StringForUse.md)                                 | Prepares a string for use as DisplayName, UserPrincipalName, LineUri or E.164 Number, removing special characters as needed. |
+| [`Format-StringRemoveSpecialCharacter`](Format-StringRemoveSpecialCharacter.md) | Formats a String and removes special characters (harmonising Display Names)                                                  |
+| [`Get-PublicHolidayCountry`](Get-PublicHolidayCountry)                 |                                            | Lists all supported Countries for Public Holidays (from Nager.Date)                                               |
+| [`Get-PublicHolidayList`](Get-PublicHolidayList)                       |                                            | Lists all Public Holidays for a specific Country (from Nager.Date)                                                |
+| [`Get-RegionFromCountryCode`](Get-RegionFromCountryCode.md)                     | Just a little helper figuring out which geographical region (AMER, EMEA, APAC) a specific country is in.                     |
+| [`Get-TeamsObjectType`](Get-TeamsObjectType.md)                                 | Little brother to `Get-TeamsCallableEntity` Returns the type of any given Object to identify its use in CQs and AAs.         |
+| [`Import-TeamsAudioFile`](Import-TeamsAudioFile)                       | Import-CsOnlineAudioFile                   | Imports an Audio File for use within Call Queues or Auto Attendants                                               |
 
 ### Test & Assert Functions
 
@@ -41,21 +44,20 @@ These are helper functions for testing Connections and Modules. All Functions re
 
 | Function                                                                      | Description                                                                                                 |
 | -----------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------- |
-| [`Assert-AzureAdConnection`](../docs/Assert-AzureAdConnection.md)               | Tests connection and visual feedback in the Verbose stream if called directly.                              |
-| [`Assert-MicrosoftTeamsConnection`](../docs/Assert-MicrosoftTeamsConnection.md) | Tests connection and visual feedback in the Verbose stream if called directly.                              |
-| [`Assert-SkypeOnlineConnection`](../docs/Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*               |
-| [`Test-AzureAdConnection`](../docs/Test-AzureAdConnection.md)                   | Verifying a Session to AzureAD exists                                                                       |
-| [`Test-MicrosoftTeamsConnection`](../docs/Test-MicrosoftTeamsConnection.md)     | Verifying a Session to MicrosoftTeams exists                                                                |
-| [`Test-SkypeOnlineConnection`](../docs/Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                                   |
-| [`Test-ExchangeOnlineConnection`](../docs/Test-ExchangeOnlineConnection.md)     | Verifying a Session to ExchangeOnline exists                                                                |
-| [`Test-AzureAdGroup`](../docs/Test-AzureAdGroup.md)                             | Testing whether the Group exists in AzureAd                                                                 |
-| [`Test-AzureAdUser`](../docs/Test-AzureAdUser.md)                               | Testing whether the User exists in AzureAd (NOTE: Resource Accounts are AzureAd Users too!)                 |
-| [`Test-TeamsResourceAccount`](../docs/Test-TeamsResourceAccount.md)             | Testing whether a Resource Account exists in AzureAd                                                        |
-| [`Test-TeamsUser`](../docs/Test-TeamsUser.md)                                   | Testing whether the User exists in SkypeOnline/Teams                                                        |
-| [`Test-TeamsUserLicense`](../docs/Test-TeamsUserLicense.md)                     | Testing whether the User has a specific Teams License                                                       |
-| [`Test-TeamsUserHasCallPlan`](../docs/Test-TeamsUserHasCallPlan.md)             | Testing whether the User has any Call Plan License                                                          |
-| [`Test-Module`](../docs/Test-Module.md)                                         | Verifying the specified Module is loaded                                                                    |
-| [`Test-TeamsExternalDNS`](../docs/Test-TeamsExternalDNS.md)                     | Tests DNS Records for Skype for Business Online and Teams<br />NOTE: This command is evaluated for revival. |
+| [`Assert-Module`](Assert-Module.md)               | Verifies installation and import of a Module and optionally also verifies Version.                              |
+| [`Assert-AzureAdConnection`](Assert-AzureAdConnection.md)               | Tests connection and visual feedback in the Verbose stream if called directly.                              |
+| [`Assert-MicrosoftTeamsConnection`](Assert-MicrosoftTeamsConnection.md) | Tests connection and visual feedback in the Verbose stream if called directly.                              |
+| [`Assert-SkypeOnlineConnection`](Assert-SkypeOnlineConnection.md)       | Tests connection and **Attempts to reconnect** a *broken* session. Alias `PoL` *Ping-of-life*               |
+| [`Test-AzureAdConnection`](Test-AzureAdConnection.md)                   | Verifying a Session to AzureAD exists                                                                       |
+| [`Test-MicrosoftTeamsConnection`](Test-MicrosoftTeamsConnection.md)     | Verifying a Session to MicrosoftTeams exists                                                                |
+| [`Test-ExchangeOnlineConnection`](Test-ExchangeOnlineConnection.md)     | Verifying a Session to ExchangeOnline exists                                                                |
+| [`Test-AzureAdGroup`](Test-AzureAdGroup.md)                             | Testing whether the Group exists in AzureAd                                                                 |
+| [`Test-AzureAdUser`](Test-AzureAdUser.md)                               | Testing whether the User exists in AzureAd (NOTE: Resource Accounts are AzureAd Users too!)                 |
+| [`Test-TeamsResourceAccount`](Test-TeamsResourceAccount.md)             | Testing whether a Resource Account exists in AzureAd                                                        |
+| [`Test-TeamsUser`](Test-TeamsUser.md)                                   | Testing whether the User exists in SkypeOnline/Teams                                                        |
+| [`Test-TeamsUserLicense`](Test-TeamsUserLicense.md)                     | Testing whether the User has a specific Teams License                                                       |
+| [`Test-TeamsUserHasCallPlan`](Test-TeamsUserHasCallPlan.md)             | Testing whether the User has any Call Plan License                                                          |
+| [`Test-TeamsExternalDNS`](Test-TeamsExternalDNS.md)                     | Tests DNS Records for Skype for Business Online and Teams<br />NOTE: This command is evaluated for revival. |
 
 ## EXAMPLES
 

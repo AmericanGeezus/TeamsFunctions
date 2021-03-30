@@ -15,24 +15,29 @@ In particular assignment and enablement of the PhoneSystem Service Plan.
 
 | Function                                                                  | Description                                                                                                    |
 | -------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------- |
-| [`Get-AzureAdLicense`](/docs/Get-AzureAdLicense.md)                       | A Script to query all published Licenses and their Service Plans. Switch can filter for Teams related Licenses |
-| [`Get-AzureAdLicenseServicePlan`](/docs/Get-AzureAdLicenseServicePlan.md) | Same as above, but displaying Service Plans only. Switch can filter for Teams related ServicePlans             |
-| [`Get-TeamsTenantLicense`](/docs/Get-TeamsTenantLicense.md)               | Queries licenses present on the Tenant. Switches are available for better at-a-glance visibility               |
-| [`Get-TeamsUserLicense`](/docs/Get-TeamsUserLicense.md)                   | Queries licenses assigned to a User and displays visual output                                                 |
-| [`Set-AzureAdUserLicenseServicePlan`](/docs/Set-AzureAdUserLicenseServicePlan.md)                   | Enables or Disables a ServicePlan for assigned Licenses to a user.              |
-| [`Set-TeamsUserLicense`](/docs/Set-TeamsUserLicense.md)                   | Adds or removes one or more Licenses against the provided Identity. Also can remove all Licenses.              |
+| [`Get-AzureAdLicenseServicePlan`](Get-AzureAdLicenseServicePlan.md) | A Script to query all published Licenses, but displaying Service Plans only.<br />Displays all Licenses unless instructed to filter Teams relevant only             |
+| [`Get-AzureAdLicense`](Get-AzureAdLicense.md)                       | A Script to query all published Licenses and their Service Plans.<br />Displays all Licenses unless instructed to filter Teams relevant only |
+| [`Get-AzureAdUserLicenseServicePlan`](Get-AzureAdUserLicenseServicePlan.md) | Queries licenses assigned to a User and displays visual output<br />Displays all Licenses unless instructed to filter Teams relevant only                                                 |
+| [`Get-AzureAdUserLicense`](Get-AzureAdUserLicense.md)                   | Queries licenses assigned to a User and displays visual output<br />Displays all Licenses unless instructed to filter Teams relevant only                                                 |
+| [`Get-TeamsTenantLicense`](Get-TeamsTenantLicense.md)               | Queries licenses present on the Tenant. Switches are available for better at-a-glance visibility               |
+| [`Get-TeamsUserLicenseServicePlan`](Get-TeamsUserLicenseServicePlan.md)                   | Queries licenses assigned to a User and displays visual output<br />Displays only Teams relevant licenses unless instructed to display all                                                 |
+| [`Get-TeamsUserLicense`](Get-TeamsUserLicense.md)                   | Queries licenses assigned to a User and displays visual output<br />Displays only Teams relevant licenses unless instructed to display all                                                 |
+| [`Set-AzureAdUserLicenseServicePlan`](Set-AzureAdUserLicenseServicePlan.md)                   | Enables or Disables a ServicePlan for assigned Licenses to a user.              |
+| [`Set-TeamsUserLicense`](Set-TeamsUserLicense.md)                   | Adds or removes one or more Licenses against the provided Identity. Also can remove all Licenses.              |
 
-> [!NOTE] Get-AzureAdLicense forms the baseline of the Licensing functions, reading directly from [Microsoft Docs](https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference). This bears the risk that an update to the site may break all Licensing functions, but it also gives you the most up to date Licensing information available.
+> [!NOTE] Get-AzureAdLicense forms the baseline of the Licensing functions, reading directly from Microsoft Docs [Licensing & Service Plan reference](https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference). This bears the risk that an update to the site may break all Licensing functions, but it also gives you the most up to date Licensing information available.
 
 ### Support CmdLets
 
 | Function                                                          | Description                                                                         |
 | -----------------------------------------------------------------: | ----------------------------------------------------------------------------------- |
-| [`Test-TeamsUserLicense`](/docs/Test-TeamsUserLicense.md)         | Tests an individual Service Plan or a License Package against the provided Identity |
-| [`Test-TeamsUserHasCallPlan`](/docs/Test-TeamsUserHasCallPlan.md) | Tests an individual Calling Plains assigned against the provided Identity           |
-| [`New-AzureAdLicenseObject`](/docs/New-AzureAdLicenseObject.md)   | Creates a License Object for application. Generic helper function.                  |
+| [`Test-TeamsUserLicense`](Test-TeamsUserLicense.md)         | Tests an individual Service Plan or a License Package against the provided Identity |
+| [`Test-TeamsUserHasCallPlan`](Test-TeamsUserHasCallPlan.md) | Tests an individual Calling Plains assigned against the provided Identity           |
+| [`New-AzureAdLicenseObject`](New-AzureAdLicenseObject.md)   | Creates a License Object for application. Generic helper function.                  |
 
 ## EXAMPLES
+
+### Example 1
 
 ````powershell
 Get-TeamsUserLicense -Identity John@domain.com
@@ -40,17 +45,23 @@ Get-TeamsUserLicense -Identity John@domain.com
 
 Example 1 queries license related elements for a User and returns a custom Object incl.PhoneSystem and PhoneSystemStatus
 
+### Example 2
+
 ````powershell
 Set-TeamsUserLicense -Identity John@domain.com -Add Office365E3,PhoneSystem
 ````
 
 Example 2 assigns the Office 365 E3 License and the PhoneSystem License to the User
 
+### Example 3
+
 ````powershell
 Set-TeamsUserLicense -Identity John@domain.com -Add Office365E5 -Remove Office365E3
 ````
 
 Example 3 replaces the Office 365 E3 License for an E5 License.
+
+### Example 4
 
 ````powershell
 Set-TeamsUserLicense -Identity John@domain.com -Add PhoneSystemVirtualUser -RemoveAll
@@ -64,7 +75,7 @@ Example 4 replaces all assigned licenses with a PhoneSystem Virtual User License
 
 Replacing Licenses should be performed in one step to retain the functionality throughout the process.
 
-Resource Accounts can be set up with any License, but ideally utilise the free PhoneSystem Virtual User License available in the Tenant. Should those license become available later, Resource Accounts may become unusable if the PhoneSystem licenses are not replaced in one step.
+Resource Accounts can be set up with any License, but ideally utilises the free* PhoneSystem Virtual User License available in the Tenant. Should those license become available later, Resource Accounts may become unusable if the PhoneSystem licenses are not replaced in one step.
 
 ## Development Status
 
@@ -76,6 +87,7 @@ Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
 
 ## SEE ALSO
 
+- [about_UserManagement](about_UserManagement.md)
 - [about_TeamsResourceAccount](about_TeamsResourceAccount.md)
 - [about_TeamsCommonAreaPhone](about_TeamsCommonAreaPhone.md)
 

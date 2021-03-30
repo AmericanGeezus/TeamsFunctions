@@ -4,7 +4,7 @@
 
 ## SHORT DESCRIPTION
 
-There are currently no native commands for this, so I tried creating them.
+There are currently no native commands for this, so I am trying to create them.
 
 ## LONG DESCRIPTION
 
@@ -16,14 +16,14 @@ Analog Devices in Teams behave differently than they do in Skype for Business. T
 
 | Function                                                           | Underlying Function | Description                                                                                             |
 | ------------------------------------------------------------------: | ------------------- | ------------------------------------------------------------------------------------------------------- |
-| [`New-TeamsAnalogDevice`](../docs/New-TeamsAnalogDevice.md)       | New-AzureAdContact     | Creates Contact Objects for an Analog Device.                                     |
-| [`Get-TeamsAnalogDevice`](../docs/Get-TeamsAnalogDevice.md)       | Get-CsOnlineUser    | Queries Contact Objects for an Analog Device in the Tenant                                       |
-| [`Set-TeamsAnalogDevice`](../docs/Set-TeamsAnalogDevice.md)       | Set-CsUser          | Changes Contact Objects for an Analog Device in the Tenant                                                                             |
-| [`Remove-TeamsAnalogDevice`](../docs/Remove-TeamsAnalogDevice.md) | Remove-AzureAdUser  | Removes Contact Objects for an Analog Device in the Tenant |
+| [`New-TeamsAnalogDevice`](New-TeamsAnalogDevice.md)       | New-AzureAdContact     | Creates Contact Objects for an Analog Device.                                     |
+| [`Get-TeamsAnalogDevice`](Get-TeamsAnalogDevice.md)       | Get-CsOnlineUser    | Queries Contact Objects for an Analog Device in the Tenant                                       |
+| [`Set-TeamsAnalogDevice`](Set-TeamsAnalogDevice.md)       | Set-CsUser          | Changes Contact Objects for an Analog Device in the Tenant                                                                             |
+| [`Remove-TeamsAnalogDevice`](Remove-TeamsAnalogDevice.md) | Remove-AzureAdUser  | Removes Contact Objects for an Analog Device in the Tenant |
 
 ## EXAMPLES
 
-Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
+Please see the Examples for the individual CmdLets in their respective help files
 
 ## NOTE
 

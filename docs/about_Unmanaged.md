@@ -15,9 +15,9 @@ Handle with Care.
 
 | Function                                                                  | Description                                                                                                    |
 | -------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------- |
-| [`Get-SkypeOnlineConferencingDialInNumbers`](/docs/Get-SkypeOnlineConferencingDialInNumbers.md)                       | A Script to query all dial-in conferencing numbers on the Tenant |
-| [`Remove-TenantDialPlanNormalizationRule`](/docs/Remove-TenantDialPlanNormalizationRule.md) | Removing a Normalization Rule from a Tenant Dial Plan             |
-| [`Test-TeamsExternalDNS`](/docs/Test-TeamsExternalDNS.md)               | Test External DNS Entries for Teams               |
+| [`Get-SkypeOnlineConferencingDialInNumbers`](Get-SkypeOnlineConferencingDialInNumbers.md)                       | A Script to query all dial-in conferencing numbers on the Tenant |
+| [`Remove-TenantDialPlanNormalizationRule`](Remove-TenantDialPlanNormalizationRule.md) | Removing a Normalization Rule from a Tenant Dial Plan             |
+| [`Test-TeamsExternalDNS`](Test-TeamsExternalDNS.md)               | Test External DNS Entries for Teams               |
 
 ## EXAMPLES
 

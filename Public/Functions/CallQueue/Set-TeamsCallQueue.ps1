@@ -6,7 +6,7 @@
 
 
 #TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
-
+#CHECK Once ID Lookup is done, check in the ForEach (for Pipeline with Get) whether an Object is present and bind/relookup to the correct instance!
 function Set-TeamsCallQueue {
   <#
 	.SYNOPSIS
