@@ -138,6 +138,7 @@ function New-TeamsResourceAccountAssociation {
     }
     if ($EntitySearch.Count -gt 1) {
       #NOTE Displayname is not normalised - can lead to inconsistencies - it shouldn't need to, so needs a warning - if not found, try normalising!
+      #TEST for characters that are not supported?
       $EntityObject = $EntitySearch | Where-Object Name -EQ "$Entity"
     }
     else {

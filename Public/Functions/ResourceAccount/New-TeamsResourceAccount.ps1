@@ -25,7 +25,7 @@ function New-TeamsResourceAccount {
 		Required. CallQueue or AutoAttendant. Determines the association the account can have:
 		A resource Account of the type "CallQueue" can only be associated with to a Call Queue
 		A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
-		NOTE: The type can be switched later, though this is not recommended.
+		The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).
 	.PARAMETER UsageLocation
 		Required. Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
 		Before a License can be assigned, the account needs a Usage Location populated.
@@ -33,7 +33,7 @@ function New-TeamsResourceAccount {
 		Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
 		If not provided, will default to PhoneSystem_VirtualUser
 		Unlicensed Objects can exist, but cannot be assigned a phone number
-		NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
+		PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
 	.PARAMETER PhoneNumber
 		Optional. Adds a Microsoft or Direct Routing Number to the Resource Account.
 		Requires the Resource Account to be licensed (License Switch)
@@ -59,6 +59,7 @@ function New-TeamsResourceAccount {
     System.Object
 	.NOTES
 		Execution requires User Admin Role in Azure AD
+		Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue

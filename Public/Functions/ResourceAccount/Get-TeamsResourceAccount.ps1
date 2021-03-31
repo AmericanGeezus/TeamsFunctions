@@ -26,7 +26,7 @@ function Get-TeamsResourceAccount {
 	.EXAMPLE
 		Get-TeamsResourceAccount
 		Returns all Resource Accounts.
-		NOTE: Depending on size of the Tenant, this might take a while.
+		Depending on size of the Tenant, this might take a while.
 	.EXAMPLE
 		Get-TeamsResourceAccount -Identity ResourceAccount@TenantName.onmicrosoft.com
 		Returns the Resource Account with the Identity specified, if found.
@@ -47,6 +47,7 @@ function Get-TeamsResourceAccount {
     System.Object
 	.NOTES
 		Pipeline input possible
+    Running the CmdLet without any input might take a while, depending on size of the Tenant.
   .COMPONENT
     TeamsResourceAccount
     TeamsAutoAttendant
