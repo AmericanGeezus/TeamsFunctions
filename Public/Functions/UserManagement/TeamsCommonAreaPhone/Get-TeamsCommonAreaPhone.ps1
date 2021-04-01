@@ -24,7 +24,7 @@ function Get-TeamsCommonAreaPhone {
 	.EXAMPLE
 		Get-TeamsCommonAreaPhone
 		Returns all Common Area Phones.
-		NOTE: Depending on size of the Tenant, this might take a while.
+    Depending on size of the Tenant, this might take a while.
 	.EXAMPLE
 		Get-TeamsCommonAreaPhone -Identity MyCAP@TenantName.onmicrosoft.com
 		Returns the Common Area Phone with the Identity specified, if found.
@@ -40,6 +40,7 @@ function Get-TeamsCommonAreaPhone {
     System.Object
 	.NOTES
     Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones
+    Running the CmdLet without any input might take a while, depending on size of the Tenant.
 	.FUNCTIONALITY
 		Queries a Common Area Phone in AzureAD for use in Teams
   .COMPONENT

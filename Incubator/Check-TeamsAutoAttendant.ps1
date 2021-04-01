@@ -7,4 +7,8 @@ verify that Phone Number and OVP are assigned.
 
 License req. must be fulfilled, as a Number can only be assigned to the RA if Licensed.
 Check whether a Nr. and a License are there if ExternalPSTN objects are found.
- #>
+
+Feedback warning if no number is assigned ("internal only")
+Feedback error if no License is assigned (must be licensed)
+
+#>

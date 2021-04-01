@@ -19,8 +19,7 @@ No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
 ### Focus for this month
 
 - Stabilisation of the Connection CmdLets incl. Reconnection
-- Improved Pipelining (Switching from `Identity` to `UserPrincipalName` where the UPN is used primarily)
-NOTE: This will continue into Next Months release, see below
+- Improved Pipelining (Switching from `Identity` to `UserPrincipalName` where the UPN is used primarily)<br />This will continue into Next Months release, see below
 - Quality of Life improvements (better feedback, fine tuning, etc.)
 - Bugfixing
 
@@ -75,8 +74,7 @@ NOTE: This will continue into Next Months release, see below
   - `Get-AzureAdAdminRole`: Added Debug function, Corrected ActiveUntil and Added ActiveSince
 - **Licensing**
   - All internal license queries are now performed by `Get-AzureAdUserLicense`
-  - The default output for `Get-TeamsUserLicense` is now reduced to Teams only Licenses.
-  - NOTE: The Output Object is the same, just the default behaviour between the two CmdLets is different
+  - The default output for `Get-TeamsUserLicense` is now reduced to Teams only Licenses.<br />The Output Object is the same, just the default behaviour between the two CmdLets is different
   - `Get-TeamsUserLicense`: Now allows for piping the output to other CmdLets (Added AzureAdUser Identity)
 - **Helper Functions**
   - Multiple Functions updated and tested: OPU, OVP, OVR, MGW, TDP, VNR
@@ -243,8 +241,7 @@ Switching to a new way of connecting was easy, though due to lack of information
   - `Enable-AzureAdAdminRole`:
     - Simplifying Admin Role enablement for Users
     - Used in Connect-Me
-    - Can be used to enable individual Roles (with `-Confirm`) or all eligible
-    - NOTE: Currently does not support Privileged Admin Groups
+    - Can be used to enable individual Roles (with `-Confirm`) or all eligible<br />Currently does not support Privileged Admin Groups
 - **New Common Area Phone CmdLets:**
   - `Get-TeamsCommonAreaPhone`: Queries an AzureAdUser and displays parameters relevant to Common Area Phones
   - `New-TeamsCommonAreaPhone`: Creates an AzureAdUser for use as a Common Area Phone. Also applies CommonAreaPhone License if not specified differently
@@ -621,8 +618,7 @@ July was "quiet" because I only published pre-releases with bugfixes (mostly). H
 - **New**: `Import-TeamsAudioFile` - Generic helper function for Importing Audio Files. Returns ID of the File for processing. TeamsCallQueue CmdLets are using it.
 - **Changed: Default behaviour of Scripts that require a valid Session to SkypeOnline**
 - This now has changed from *REQUIRE VALID SESSION (ERROR)* to *TRYING TO RECONNECT (VERBOSE)*. This was made possible by the quality work of the Exchange-Team (publishing [Module ExchangeOnlineManagement](https://www.powershellgallery.com/packages/ExchangeOnlineManagement/1.0.1)) which inspired me to deploy the same for Scripts that require connections to SkypeOnline
-- All CmdLets that can try a reconnect (SkypeOnline and ExchangeOnline) will try. This is done with Get-CsTenant and Get-UnifiedGroup respectively.
-- NOTE: AzureAD and MicrosoftTeams should not time out and therefore do not need to be reconnected to.
+- All CmdLets that can try a reconnect (SkypeOnline and ExchangeOnline) will try. This is done with Get-CsTenant and Get-UnifiedGroup respectively. AzureAD and MicrosoftTeams should not time out and therefore do not need to be reconnected to.
 - `Connect-SkypeTeamsAndAAD` (`Connect-Me` for short) now supports a connection to Exchange, though manually to select with the Switch `-ExchangeOnline`.
 
 ### Improved

@@ -123,11 +123,13 @@ function Assert-TeamsCallableEntity {
         Write-Verbose -Message "Target '$Identity' found and licensed (Pending Input)"
       }
       else {
-        #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet
+        #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet?
         <#
         try {
           Write-Information "Target '$Identity' found and licensed, but PhoneSystem is disabled. Trying to Enable"
           Set-AzureAdLicenseServicePlan -Identity "$Identity" -Enable MCOEV
+          Write-Verbose -Message "Target '$Identity' found and PhoneSystem License applied. Waiting for AzureAd to complete provisioning"
+          Start-Sleep -Seconds 2
           $UserLicense = Get-AzureAdUserLicense $Identity
           if ( $UserLicense.PhoneSystemStatus -ne "Success" -or $UserLicense.PhoneSystemStatus -ne "PendingInput") {
             throw

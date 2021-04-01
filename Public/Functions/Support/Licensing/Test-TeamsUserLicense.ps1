@@ -21,8 +21,8 @@ function Test-TeamsUserLicense {
 	.PARAMETER ServicePlan
 		Defined and descriptive Name of the Service Plan to test.
 		Only ServicePlanNames pertaining to Teams are tested.
-		Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success"
-		NOTE: ServicePlans can be part of a license, for Example MCOEV (PhoneSystem) is part of an E5 license.
+		Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success" at least once.
+		ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license.
 		For Testing against a full License Package, please use Parameter License
 	.PARAMETER License
 		Defined and descriptive Name of the License Combination to test.
@@ -41,6 +41,7 @@ function Test-TeamsUserLicense {
 		Boolean
 	.NOTES
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
+		ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license.
   .COMPONENT
     SupportingFunction
     Licensing

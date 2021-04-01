@@ -28,7 +28,7 @@ function New-TeamsCommonAreaPhone {
 		Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
 		If not provided, will default to PhoneSystem_VirtualUser
 		Unlicensed Objects can exist, but cannot be assigned a phone number
-    NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
+		PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
   .PARAMETER Password
     Optional. String. 8 to 16 characters, at least one uppercase letter, one lowercase letter and one number.
     If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"
@@ -67,6 +67,7 @@ function New-TeamsCommonAreaPhone {
     To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig
     This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
+		Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
   .COMPONENT
 		UserManagement
 	.FUNCTIONALITY

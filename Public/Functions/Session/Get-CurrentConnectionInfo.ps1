@@ -75,7 +75,7 @@ function Get-CurrentConnectionInfo {
     $ConnectedToTeams = Test-MicrosoftTeamsConnection
     if ( $ConnectedToTeams ) {
       try {
-        #NOTE This will also initialise (or reconnect) the SkypeOnline part of MicrosoftTeams and test Admin roles
+        #This will also initialise (or reconnect) the SkypeOnline part of MicrosoftTeams and test Admin roles
         $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {

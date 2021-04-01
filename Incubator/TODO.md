@@ -8,14 +8,14 @@
 - [x] Create Docs (MarkdownHelp)
 - [x] Create Help (about_)
 - [ ] Improve Comment Based help
-  - [ ] Apply correct Order: EXAMPLES, INPUTS, OUTPUT, NOTES, COMPONENT, FUNCTIONALITY, LINK
-  - [ ] .ROLE - Remove
+  - [x] Apply correct Order: EXAMPLES, INPUTS, OUTPUT, NOTES, COMPONENT, FUNCTIONALITY, LINK
+  - [x] .ROLE - Remove
   - [ ] .INPUTS (incl. Pipeline)
-  - [ ] .OUTPUTS (all variants and how to get to them)
-  - [ ] .COMPONENT - Adding About_ Topic Name as Component
-  - [ ] .FUNCTIONALITY - Describe what the function does
-  - [ ] .LINK - Add ABOUT_ Topic
-  - [ ] .LINK - Verify linked function is correct across all of the same breed
+  - [x] .OUTPUTS (all variants and how to get to them)
+  - [x] .COMPONENT - Adding About_ Topic Name as Component
+  - [x] .FUNCTIONALITY - Describe what the function does
+  - [x] .LINK - Add ABOUT_ Topic
+  - [x] .LINK - Verify linked function is correct across all of the same breed
 - [ ] Populate about-help
   - [x] Write Licensing
   - [x] Write SupportFunctions
@@ -29,9 +29,8 @@
   - [x] Write UserManagement
   - [x] Write VoiceConfiguration
 - [ ] Update About-help
-  - [ ] Verify all Functions are listed
-  - [ ] Remove retired functions
-  - [ ]
+  - [x] Verify all Functions are listed
+  - [x] Remove retired functions
 - [ ] Add Examples to About
   - [x] Examples for Licensing
   - [x] Examples for SupportFunctions
@@ -91,6 +90,11 @@
 - [ ] MORE
 
 ## Other things
+
+### Aliases
+
+- [ ] Rethink shorthands following three letter model: GCQ, GAA, GRA, etc.
+- [ ] Aliases for Parameters (Identity, UserPrincipalName, UPN, Username, etc. - make uniform)
 
 ### Evaluate Export to CLIXML
 
