@@ -2,7 +2,8 @@
     about_teamscommonareaphone
 
 SHORT DESCRIPTION
-    There are currently no native commands for this, so I tried creating them.
+    There are currently no native commands for this, so I am trying to create
+    them.
 
 LONG DESCRIPTION
     Analog Devices in Teams behave differently than they do in Skype for
@@ -35,8 +36,8 @@ CmdLets
     Tenant |
 
 EXAMPLES
-    Please see the Examples for the individual CmdLets in the
-    DOCs
+    Please see the Examples for the individual CmdLets in their respective help
+    files
 
 NOTE
     Not built yet.

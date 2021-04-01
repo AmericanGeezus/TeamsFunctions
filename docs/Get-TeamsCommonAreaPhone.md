@@ -39,7 +39,7 @@ Get-TeamsCommonAreaPhone
 ```
 
 Returns all Common Area Phones.
-NOTE: Depending on size of the Tenant, this might take a while.
+  Depending on size of the Tenant, this might take a while.
 
 ### EXAMPLE 2
 ```
@@ -124,6 +124,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones
+Running the CmdLet without any input might take a while, depending on size of the Tenant.
 
 ## RELATED LINKS
 

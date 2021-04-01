@@ -36,6 +36,11 @@ CmdLets
     `Remove-TeamsAutoAttendant`
     | Remove-CsAutoAttendant | Removes an Auto Attendant from the Tenant        
                                                |
+    > [!NOTE] Currently `Set-TeamsAutoAttendant` and `Set-TeamsAA` are currently
+    only Aliases to `Set-CsOnlineAutoAttendant`. If I find a better use case to
+    write these, I will, but for now they have to stay as they are. I only added
+    the aliases to complete the set and provide a consistent look-and-feel in
+    case people are natively using them.
 
 Support CmdLets
     Creating a Menu or a Call Flow feels clunky to me, the commands require
@@ -89,8 +94,8 @@ Support CmdLets
     |
 
 EXAMPLES
-    Please see the Examples for the individual CmdLets in the
-    DOCs
+    Please see the Examples for the individual CmdLets in their respective help
+    files
 
 NOTE
     Removing complexity without sacrificing functionality is a hard thing and

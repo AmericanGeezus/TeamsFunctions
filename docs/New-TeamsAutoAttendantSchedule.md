@@ -24,6 +24,13 @@ New-TeamsAutoAttendantSchedule -Name <String> [-WeeklyRecurrentSchedule] -Busine
  -DateTimeRanges <Object[]> [-Complement] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### WeeklyBusinessHours2
+```
+New-TeamsAutoAttendantSchedule -Name <String> [-WeeklyRecurrentSchedule] -BusinessDays <String>
+ -BusinessHoursStart <String> -BusinessHoursEnd <String> [-Complement] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
+```
+
 ### FixedTimeRange
 ```
 New-TeamsAutoAttendantSchedule -Name <String> [-Fixed] -DateTimeRanges <Object[]> [-WhatIf] [-Confirm]
@@ -45,12 +52,19 @@ Creates a weekly recurring schedule for business hours Monday to Friday from 9am
 
 ### EXAMPLE 2
 ```
+New-TeamsAutoAttendantSchedule -WeeklyRecurrentSchedule -BusinessDays MonToSat -BusinessHoursStart 09:15 -BusinessHoursEnd 17:45
+```
+
+Creates a weekly recurring schedule for business hours Monday to Saturday from 09:15 to 17:45
+
+### EXAMPLE 3
+```
 New-TeamsAutoAttendantSchedule -WeeklyRecurrentSchedule -BusinessDays SunToThu -DateTimeRange @($TR1, $TR2)
 ```
 
 Creates a weekly recurring schedule for business hours Sunday to Thursday with custom TimeRange(s) provided with the Objects $TR1 and $TR2
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 New-TeamsAutoAttendantSchedule -Fixed -DateTimeRange @($TR1, $TR2)
 ```
@@ -80,11 +94,12 @@ This is suitable for an After Hours in an Auto Attendant.
 New-TeamsAutoAttendant will utilise a Default Schedule
 For simplicity, this command assumes the same hours of operation for each day that the business is open.
 For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center
-If desired via PowerShell, please use New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.
+If desired via PowerShell, please use BusinessHoursStart/BusinessHoursEnd or define manually with:
+New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: WeeklyBusinessHours, WeeklyTimeRange
+Parameter Sets: WeeklyBusinessHours, WeeklyTimeRange, WeeklyBusinessHours2
 Aliases:
 
 Required: True
@@ -110,12 +125,13 @@ Accept wildcard characters: False
 ```
 
 ### -BusinessDays
+Parameter for WeeklyReccurrentSchedule
 Days defined as Business days.
 Will be combined with BusinessHours to form a WeeklyReccurrentSchedule
 
 ```yaml
 Type: String
-Parameter Sets: WeeklyBusinessHours, WeeklyTimeRange
+Parameter Sets: WeeklyBusinessHours, WeeklyTimeRange, WeeklyBusinessHours2
 Aliases:
 
 Required: True
@@ -126,8 +142,10 @@ Accept wildcard characters: False
 ```
 
 ### -BusinessHours
+Parameter for WeeklyReccurrentSchedule - Option 1: Choose from a predefined Time Frame
 Predefined business hours.
 Combined with BusinessDays, forms the WeeklyRecurrentSchedule
+Covering most of regular working hour patterns to choose from.
 
 ```yaml
 Type: String
@@ -141,7 +159,44 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -BusinessHoursStart
+Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
+Predefined business hours.
+Combined with BusinessDays, forms the WeeklyRecurrentSchedule
+Manual start and end time to be provided in the format "09:00" - 15 minute increments only
+
+```yaml
+Type: String
+Parameter Sets: WeeklyBusinessHours2
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -BusinessHoursEnd
+Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
+Predefined business hours.
+Combined with BusinessDays, forms the WeeklyRecurrentSchedule
+Manual start and end time to be provided in the format "09:00" - 15 minute increments only
+
+```yaml
+Type: String
+Parameter Sets: WeeklyBusinessHours2
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -DateTimeRanges
+Parameter for WeeklyReccurrentSchedule - Option 3: Provide a DateTimeRange Object
 Object or Objects defined with New-CsOnlineTimeRange
 Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed
 
@@ -165,7 +220,7 @@ then the schedule is active at all times other than the specified time ranges.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: WeeklyBusinessHours, WeeklyTimeRange
+Parameter Sets: WeeklyBusinessHours, WeeklyTimeRange, WeeklyBusinessHours2
 Aliases:
 
 Required: False
@@ -217,9 +272,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 Combinations of BusinesHours and BusinessDays are numerous but not exhaustive.
-For example, all Business days will receive the same Business hours.
-For more granular options,
-please define TimeRange manually and use the Switch -DateTimeRange to provide the Object instead.
+For simplicity, this command assumes the same hours of operation for each day that the business is open.
+With the following Parameters, these three options are available:
+1.
+BusinessHours - Choose time range from a predefined list (amend in Admin Center afterwards, if needed)
+2.
+BusinessHoursStart and BusinessHoursEnd - Provide a Start and End Time for the Time Range (15 minute increments)
+3.
+DateTimeRange - Provide a DateTimeRange Object manually defined with New-CsOnlineTimeRange and New-CsOnlineSchedule
 
 ## RELATED LINKS
 

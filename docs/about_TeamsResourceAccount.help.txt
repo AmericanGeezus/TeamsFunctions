@@ -22,15 +22,15 @@ CmdLets
     ----------------------------------- |
     -----------------------------------------------------------------------------------------------------------
     | |
-    `New-TeamsResourceAccount`
-    | Creates a Resource Account in Teams |                                     
-                                                                           | |
     `Find-TeamsResourceAccount`
     | Find-CsOnlineApplicationInstance    | Finds Resource Accounts based on
     provided SearchString                                                      |
     |
     `Get-TeamsResourceAccount`
     , PhoneNumber, Type     | |
+    `New-TeamsResourceAccount`
+    | Creates a Resource Account in Teams |                                     
+                                                                           | |
     `Set-TeamsResourceAccount`
     | Set-CsOnlineApplicationInstance     | Changes settings for a Resource
     Accounts, applying UsageLocation, Licenses and Phone Numbers, swapping Type
@@ -53,14 +53,14 @@ CmdLets for Association
     | --------------------------------------------- |
     ----------------------------------------------------------------------------------------------------
     | |
-    `New-TeamsResourceAccountAssociation`
-    | New-CsOnlineApplicationInstanceAssociation    | Links one or more Resource
-    Accounts to a Call Queue or an Auto Attendant                             |
-    |
     `Get-TeamsResourceAccountAssociation`
     | Get-CsOnlineApplicationInstanceAssociation    | Queries links for one or
     more Resource Accounts to Call Queues or Auto Attendants. Also shows Status
     | |
+    `New-TeamsResourceAccountAssociation`
+    | New-CsOnlineApplicationInstanceAssociation    | Links one or more Resource
+    Accounts to a Call Queue or an Auto Attendant                             |
+    |
     `Remove-TeamsResourceAccountAssociation`
     | Remove-CsOnlineApplicationInstanceAssociation | Removes a link for one or
     more Resource Accounts                                                     |
@@ -79,8 +79,8 @@ CmdLets for Association
     |
 
 EXAMPLES
-    Please see the Examples for the individual CmdLets in the
-    DOCs
+    Please see the Examples for the individual CmdLets in their respective help
+    files
 
 NOTE
     N/A

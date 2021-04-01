@@ -10,13 +10,21 @@ LONG DESCRIPTION
 
 List of Aliases and their Functions
     | Alias                                         | Function                  
-                                                                       | |
+                                                                         | |
     --------------------------------------------- |
-    ---------------------------------------------------------------------------------------------
+    -----------------------------------------------------------------------------------------------
+    | | Assert-TeamsUVC                               |
+    `Assert-TeamsUserVoiceConfig`
     | | con                                           |
     `Connect-Me`
+    | | Connect-SkypeOnline                           |
+    `Connect-MicrosoftTeams`
+    | | cur                                           |
+    `Get-CurrentConnection`
     | | dis                                           |
     `Disconnect-Me`
+    | | ear                                           |
+    `Enable-MyAzureAdAdminRole`
     | | Enable-Ev                                     |
     `Enable-TeamsUserForEnterpriseVoice`
     | | Find-TeamsRA                                  |
@@ -40,24 +48,24 @@ List of Aliases and their Functions
     | | New-TeamsAA                                   |
     `New-TeamsAutoAttendant`
     | | New-TeamsAAEntity                             |
-    `New-TeamsAutoAttendantCallableEntity`
+    `New-TeamsCallableEntity`
     | | New-TeamsAAFlow                               |
-    `New-TeamsAutoAttendant`
+    `New-TeamsAutoAttendantCallFlow`
     | | New-TeamsAAMenu                               |
-    `New-TeamsAutoAttendant`
+    `New-TeamsAutoAttendantMenu`
     | | New-TeamsAAOption                             |
-    `New-TeamsAutoAttendant`
+    `New-TeamsAutoAttendantMenuOption`
     | | New-TeamsAAPrompt                             |
-    `New-TeamsAutoAttendant`
+    `New-TeamsAutoAttendantPrompt`
     | | New-TeamsAASchedule                           |
-    `New-TeamsAutoAttendant`
+    `New-TeamsAutoAttendantSchedule`
     | | New-TeamsAAScope                              |
-    `New-TeamsAutoAttendant`
+    `New-TeamsAutoAttendantDialScope`
     | | New-TeamsAutoAttendantCallableEntity          |
-    `New-TeamsAutoAttendantCallableEntity`
+    `New-TeamsCallableEntity`
     | | New-TeamsAutoAttendantCallHandlingAssociation |
     New-CsAutoAttendantCallHandlingAssociation (MS)                             
-                     | | New-TeamsCAP                                  |
+                       | | New-TeamsCAP                                  |
     `New-TeamsCommonAreaPhone`
     | | New-TeamsCQ                                   |
     `New-TeamsCallQueue`
@@ -66,7 +74,7 @@ List of Aliases and their Functions
     | | New-TeamsRAA                                  |
     `New-TeamsResourceAccountAssociation`
     | | PoL                                           |
-    `Assert-SkypeOnlineConnection`
+    `Assert-MicrosoftTeamsConnection`
     - think: "ping-of-life" | | Remove-CsOnlineApplicationInstance            |
     `Remove-TeamsResourceAccount`
     | | Remove-TeamsAA                                |
@@ -84,9 +92,9 @@ List of Aliases and their Functions
     | | Set-ServicePlan                               |
     `Set-AzureAdUserLicenseServicePlan`
     | | Set-TeamsAA                                   | Set-CsAutoAttendant (MS)
-                                                                         | |
+                                                                           | |
     Set-TeamsAutoAttendant                        | Set-CsAutoAttendant (MS)    
-                                                                     | |
+                                                                       | |
     Set-TeamsCAP                                  |
     `Set-TeamsCommonAreaPhone`
     | | Set-TeamsCQ                                   |

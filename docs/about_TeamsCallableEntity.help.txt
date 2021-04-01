@@ -21,6 +21,8 @@ CmdLets
     ---------------------------------------------------------: |
     ---------------------------------------------------------------------------------------------------------------------------------------
     | |
+    `Assert-TeamsCallableEntity`
+    . | |
     `Find-TeamsCallableEntity`
     . | |
     `Get-TeamsCallableEntity`
@@ -30,14 +32,16 @@ CmdLets
     |
 
 EXAMPLES
-    Please see the Examples for the individual CmdLets in the
-    DOCs
+    Please see the Examples for the individual CmdLets in their respective help
+    files
 
 NOTE
     The Concept of a Callable Entity is introduced with Auto Attendants where
     Call Targets need to be created as a Callable Entity before they can be used
     for an Auto Attendant.
-    The other two CmdLets expand on this concept:
+    The other CmdLets expand on this concept:
+    - `Assert-TeamsCallableEntity` was broken out of the Get-TeamsCallableEntity
+    and will assert whether the Object is in a state to be used as a Call Target
     - `Get-TeamsCallableEntity` will identify and assert whether the Object is
     in a state to be used as a Call Target and is the backbone of the CallQueue
     and AutoAttendant improvements in this Module

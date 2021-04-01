@@ -109,7 +109,7 @@ ChangedPARAMETER:      This Script   Microsoft    Reason:
 - OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful
 - TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful
 - UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed
-NOTE: This only affects parameters which are NOT specified when running the script.
+This only affects parameters which are NOT specified when running the script.
 
 ```yaml
 Type: SwitchParameter
@@ -127,7 +127,7 @@ Accept wildcard characters: False
 Optional.
 Time in Seconds to alert each agent.
 Works depending on Routing method
-NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
+Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
 
 ```yaml
 Type: Int16

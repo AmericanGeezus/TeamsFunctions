@@ -2,12 +2,15 @@
     about_teamssession
 
 SHORT DESCRIPTION
-    Connecting to the Teams Backend is, for now, still done through SkypeOnline
+    Creating a PowerShell Session to Teams/SkypeOnline  with MicrosoftTeams
+    v2.0.0
 
 LONG DESCRIPTION
     SkypeOnline and MSOnline (AzureADv1) are the two oldest Office 365 Services.
-    Creating a Session to them is not implemented very nicely. These CmdLets try
-    to address this.
+    Creating a Session to them was not implemented very nicely. The Modules
+    `MicrosoftTeams` (v2 and higher) and `AzureAd` alleviate most of the issues
+    the community had with the connection, but I think they can still use some
+    magic These CmdLets try to provide said magic and enhance the experience dramatically.
     The introduction of Privileged Identity Management and Privileged Access
     Groups further requires some manual steps that these are trying to make
     simpler and provide an easier way to connect and activate your roles
@@ -19,27 +22,18 @@ CmdLets
     -----------------------------------------------------------: |
     --------------------------------------------------------------------------------------------------------------------------------------------
     | |
-    `Connect-SkypeOnline`
-    | Creates a Session to SkypeOnline                                          
-                                     | |
     `Connect-Me`
-    | Creates a Session to SkypeOnline and AzureAD in one go. Only displays
+    in one go. Only displays
     ONE
     authentication prompt, and, if applicable,
     ONE
     MFA prompt! Also tries to enable your Admin Roles in PIM. | |
-    `Disconnect-SkypeOnline`
-    | Disconnects from a Session to SkypeOnline. This helps preventing timeouts
-    and hanging sessions                                                       |
-    |
     `Disconnect-Me`
     | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD  
                                                                       |
     Connect-Me aims to solve the issue of having and maintaining a connection to
     all Office 365 needed for Administration. In most cases, that will be
-    AzureAd and SkypeOnline, but could also need ExchangeOnline and
-    MicrosoftTeams (which is now being tethered to SkypeOnline if the
-    CsOnlineSession is created with the Module MicrosoftTeams)
+    AzureAd and MicrosoftTeams/SkypeOnline, but could also need ExchangeOnline
 
 Admin Roles
     Activating Admin Roles made easier. Please note that Privileged Access
@@ -81,6 +75,9 @@ Admin Roles
     a timed-out session. Alias `PoL`
     Ping-of-life
     | |
+    `Get-CurrentConnection`
+    | Returning information about existing Sessions to AzureAd and
+    MicrosoftTeams                     | |
     `Test-AzureAdConnection`
     | Verifying a Session to AzureAD exists                                     
                        | |
@@ -92,68 +89,74 @@ Admin Roles
                        |
     The Assert cmdlets are nested in all Scripts to ensure sessions are created
     and available
+    > [!NOTE] While Assert-MicrosoftTeamsConnection is powerful, I cannot
+    overload it. At a certain point I have to leave the decision to the
+    Administrator on how to proceed > This includes the infamous
+    `StepablePipelineError` which doesn't hint towards to PIM Admin roles to be
+    activated. Please run `Connect-Me` again to rectify.
 
 EXAMPLES
     EXAMPLE 1 - CONNECTING TO AZUREAD, MICROSOFTTEAMS
     `powershell
     Connect-Me [-AccountId] John@domain.com
-    # Establishes a session to AzureAd, enables Admin Roles (with AzureAdPreview), Connects to MicrosoftTeams
 
     `
+    Establishes a session to AzureAd, enables Admin Roles (with AzureAdPreview),
+    Connects to MicrosoftTeams
 
     EXAMPLE 2 - CONNECTING TO AZUREAD, MICROSOFTTEAMS AND EXCHANGEONLINE
     `powershell
     Connect-Me [-AccountId] John@domain.com -Exchange
-    # Establishes a session to AzureAd, enables Admin Roles (with AzureAdPreview), Connects to MicrosoftTeams and ExchangeOnline
 
     `
+    Establishes a session to AzureAd, enables Admin Roles (with AzureAdPreview),
+    Connects to MicrosoftTeams and ExchangeOnline
 
-NOTE
+Background
     To properly administer Teams, a connection to `AzureAd` is most likely
-    needed. Privileged Identity Management and Role Activation are currently
+    needed. This Module and all functions therefore tie closely to an existing
+    Azure-Ad Connection. Assertions are performed when the respective sessions
+    are required. For best performance, connections should start with running
+    `Connect-Me` which will connect to both.
+    > [!NOTE] Privileged Identity Management and Role Activation are currently
     only available with the Module `AzureAdPreview` installed in Version
     `2.0.2.24` or higher, until the functions become generally available through
-    the AzureAd Module.
-    > [!NOTE] Most Functions and CmdLets in this module rely on a connection to
-    AzureAd as well as SkypeOnline.
-    Initially, this module was built around the use of the Module
-    `SkypeOnlineConnector`(v7). The Connector is now deprectated and this Module
-    does no longer require it to be installed. The command to establish a
-    connection has been ported to the Module `MicrosoftTeams` (in v1.1.6) which
-    is a requirement for this Module.
-    The Connection CmdLet does behave slightly differently: Seamless
-    Single-Sign-On is not available, the Account needs to be selected manually.
-    Please see detailed notes in
-    `Connect-Me`
-    for details.
+    the AzureAd Module. > If the Module is not installed, a warning is displayed
+    that the functions are not available.
+
+NOTE
+    Cleanly disconnecting a session has many benefits. First, it removes the
+    Connections and prepares your PowerShell window to be able to be reused for
+    connections to other Tenants.
+    Second, it removes all Global Variables set during use (The name is starting
+    with "TF"). This ensures that customer data is cleared up. This includes all
+    Azure Ad Groups, Licenses, etc. queried and stored or better overall
+    performance!
 
 Development Status
-    Mature, but a bit of a moving target - Continuously 'in Progress'. An update
-    to the MicrosoftTeams Command and documentation is anticipated that would
-    enable Single-sign-on with MFA enabled. Issues have been raised via Github
-    to address.
+    Mature. Fine-tuning is still in progress. Privileged Identity Management
+    Roles may still an update.
 
 TROUBLESHOOTING NOTE
     Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
-    Please disconnect your session cleanly, before reconnecting. I have found
-    that, when using the MicrosoftTeams Module, the whole PowerShell Session
-    needs to be recreated which is annoying. This is still evaluated and tested
-    with every PreRelease.
-    The Session can also currently not be reconnected to, a credential Dialog is
-    shown with the Username "oAuth". Please cancel this and the following empty
-    credential dialog and run Connect-Me again. This will try to reconnect. I am
-    trying to write a script that can catch that and try to reconnect you more
-    cleanly.
+    To effectively manage multiple tenants, please disconnect your session
+    cleanly (with `dis`), before reconnecting.
+    Privileged Identity Management Role activation depend heavily on the
+    settings in the Tenant. If you find a scenario not working for you or
+    producing errors, please open an issue.
 
 SEE ALSO
     -
     `Connect-AzureAd`
     -
-    `Connect-microsoftteams`
+    `Connect-MicrosoftTeams`
 
 KEYWORDS
+    - AzureAd
+    - AzureAdPreview
+    - Privileged Identity Management
+    - MicrosoftTeams
     - SkypeOnline
-- MicrosoftTeams
-- Module
-- Requirements
+    - Module
+    - Requirements
 
