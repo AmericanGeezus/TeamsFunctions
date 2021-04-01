@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK whether to add Identity? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
+#CHECK whether to add Identity to output Object? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
 
 function Get-TeamsUserLicense {
   <#

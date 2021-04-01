@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK "Karen wants to call the manager"^^
+
 
 function Get-TeamsResourceAccount {
   <#

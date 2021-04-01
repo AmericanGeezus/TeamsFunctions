@@ -101,7 +101,7 @@ function Remove-TeamsCallQueue {
           }
         }
         else {
-          Write-Warning -Message "No Groups found matching '$DN'"
+          Write-Warning -Message "No Call Queue found matching '$DN'"
         }
       }
       catch {

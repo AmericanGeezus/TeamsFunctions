@@ -4,8 +4,8 @@
 # Updated:  01-APR-2020
 # Status:   RC
 
-#DOC Update documentation!
-#CHECK whether to add Identity? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
+
+
 
 function Get-AzureAdUserLicenseServicePlan {
   <#
@@ -116,7 +116,6 @@ function Get-AzureAdUserLicenseServicePlan {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
-      #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
       try {
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP

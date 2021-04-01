@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   RC
 
-#CHECK "Karen wants to call the manager"^^ - Evaluate Management of RA/CQ/AA once available.
+
 
 
 function Set-TeamsResourceAccount {
@@ -24,7 +24,7 @@ function Set-TeamsResourceAccount {
 		CallQueue or AutoAttendant. Determines the association the account can have:
 		A resource Account of the type "CallQueue" can only be associated with to a Call Queue
 		A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
-		NOTE: Though switching the account type is possible, this is currently untested: Handle with Care!
+		The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).
 	.PARAMETER UsageLocation
 		Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
 		Before a License can be assigned, the account needs a Usage Location populated.
@@ -33,7 +33,7 @@ function Set-TeamsResourceAccount {
 		If not provided, will default to PhoneSystem_VirtualUser
 		Unlicensed Objects can exist, but cannot be assigned a phone number
 		If a license already exists, it will try to swap the license to the specified one.
-    NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
+		PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
 	.PARAMETER PhoneNumber
 		Changes the Phone Number of the object.
 		Can either be a Microsoft Number or a Direct Routing Number.
@@ -53,8 +53,7 @@ function Set-TeamsResourceAccount {
 	.EXAMPLE
 		Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -License PhoneSystem_VirtualUser
 		Requires the Account to have a UsageLocation populated. Applies the License to Resource Account AA-Mainline.
-		If no license is assigned, will try to assign. If the license is already applied, no action is taken.
-		NOTE: Swapping licenses is currently not possible.
+		If no license is assigned, will try to assign. If the license is already applied, no action is currently taken.
 	.EXAMPLE
 		Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber +1555123456
 		Changes the Phone number of the Object. Will cleanly remove the Phone Number first before reapplying it.
@@ -75,6 +74,7 @@ function Set-TeamsResourceAccount {
     Though working correctly in all tests, please handle with care when changing Application Types
     Existing Application Instance Objects may get corrupted when treated as a User.
     If in doubt, please recreate the Resource Account and retire the old object.
+		At the moment, swapping licenses is not possible/implemented. Please address manually in the Admin Center
   .COMPONENT
     TeamsResourceAccount
     TeamsAutoAttendant

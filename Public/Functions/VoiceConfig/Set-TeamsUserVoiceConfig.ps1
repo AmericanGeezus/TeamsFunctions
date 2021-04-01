@@ -231,7 +231,7 @@ function Set-TeamsUserVoiceConfig {
     #endregion
 
     #region Querying User Licenses
-    #TODO This works (don't change?) - But could be replaced with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
+    #VALIDATE - This works, but could be replaced with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
     try {
       $Operation = 'Querying User License'
       $step++
@@ -546,7 +546,7 @@ function Set-TeamsUserVoiceConfig {
               Write-Error -Message $ErrorLogMessage
               $ErrorLog += $ErrorLogMessage
             }
-            #CHECK Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
+            #VALIDATE Waiting period after applying a Calling Plan license? Will Phone Number assignment succeed right away?
             Write-Verbose -Message 'Calling Plan License has been applied, but replication time has not been factored in or tested. Applying a Phone Number may fail. If so, please run command again after a few minutes and feed back duration to TeamsFunctions@outlook.com or via GitHub!' -Verbose
           }
         }

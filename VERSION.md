@@ -55,6 +55,10 @@ No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
       - Number removal is triggered if assigned and different, with `-Force` or if PhoneNumber is provided and is not NULL or Empty
       - Number scavenging (from other Users or Resource Accounts) can be performed with `-Force`
       - Number assignment is triggered if PhoneNumber is provided and it is not NULL or Empty
+- **Auto Attendants**
+  - `New-TeamsAutoAttendantSchedule`:
+    - Adding Parameters BusinessHoursStart and BusinessHoursEnd (New ParameterSet)
+    - This enables the definition of a more granular schedule without having to resort to defining TimeFrames and Schedule manually.
 - **Voice Configuration**
   - `Get-TeamsUserVoiceConfig`: Added nested Object for Licensing with ScriptMethod ToString
   - `Set-TeamsUserVoiceConfig`:

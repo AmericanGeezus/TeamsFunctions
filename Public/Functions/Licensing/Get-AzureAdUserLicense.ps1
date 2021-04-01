@@ -4,8 +4,8 @@
 # Updated:  01-APR-2020
 # Status:   RC
 
-#DOC Update documentation!
-#CHECK whether to add Identity? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
+
+#CHECK whether to add Identity to output Object? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
 
 function Get-AzureAdUserLicense {
   <#
@@ -15,7 +15,7 @@ function Get-AzureAdUserLicense {
     Returns an Object containing all Licenses found for a specific Object
     Licenses and ServicePlans are nested in the respective parameters for further investigation
   .PARAMETER Identity
-		The Identity, UserPrincipalname or UserName for the user.
+		The Identity or UserPrincipalname for the user.
   .PARAMETER FilterRelevantForTeams
     Filters the output and displays only Licenses relevant to Teams
   .EXAMPLE

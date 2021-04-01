@@ -61,6 +61,11 @@
 - [ ] Continue to test Scripts
 - [ ] Add Argument Completer for all AudioFiles to expect them in C:\Temp: [ArgumentCompleter(C:\Temp\)]
 
+## TeamsCallQueue
+
+- [ ] EVALUATE "Karen wants to call the manager" - Manager Attribute on CQs or RAs?
+- [ ] EVALUATE Refresh exposed Parameters with `CsOnlineCallQueue` scripts
+
 ## Licenses
 
 - [x] Figure out how to enable disabled plans

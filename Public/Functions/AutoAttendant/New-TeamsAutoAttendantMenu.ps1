@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO Add output for Menu Name - to separate multiple executions
+
 
 function New-TeamsAutoAttendantMenu {
   <#
@@ -38,8 +38,8 @@ function New-TeamsAutoAttendantMenu {
     Optional for Action MenuOptions when used with CallTargetsInOrder only.
     This switch is ignored if more than nine (9) CallTargetsInOrder are specified
     Adds one more menu option to Transfer the Call to the Operator on pressing 0.
-    NOTE: The AutoAttendant which will receive a Menu with this option, must have an Operator defined.
-    Errors may occur if no operator is present.
+    The AutoAttendant which will receive a Menu with this option, must have an Operator defined.
+    Creating or Updating an Auto Attendant with an Operator that is not defined will lead to errors.
   .PARAMETER EnableDialByName
     Required for Action "MenuOptions" only. Hashtable of Routing Targets.
     DTMF tones are assigned in order with 0 being TransferToOperator
@@ -62,7 +62,7 @@ function New-TeamsAutoAttendantMenu {
     Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively.
     Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn)
     Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
-    NOTE: This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
+    This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
   .EXAMPLE
     New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group"
     Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Text-to-voice string.
@@ -70,7 +70,7 @@ function New-TeamsAutoAttendantMenu {
     Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string),
     Option 3 is TransferToCallTarget (Shared Voicemail)
     Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
-    NOTE: This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
+    This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
   .EXAMPLE
     New-TeamsAutoAttendantMenu -Action Disconnect
     Creates a default Menu, disconnecting the Call
@@ -233,7 +233,8 @@ function New-TeamsAutoAttendantMenu {
         switch ($PSCmdlet.ParameterSetName) {
           'MenuOptions' {
             # Determine Type
-            <# This doesn't work - Type is Selected.System.Management.Automation.PSCustomObject
+            <# NOTE Commented out as this doesn't work - Type is Selected.System.Management.Automation.PSCustomObject
+            No Checks are performed for the Type. This relies for New-CsOnlineAutoAttendant to accept the Object as-is.
             foreach ($MenuOption in $MenuOptions) {
               $MenuOptionType = $null
               $MenuOptionType = ($MenuOption | Get-Member | Select-Object TypeName -First 1).TypeName
@@ -332,6 +333,7 @@ function New-TeamsAutoAttendantMenu {
       $Name = "Menu with $($Parameters.MenuOptions.Count) Options" + $(if ($Parameters.Prompts) { ' and Greeting' })
     }
     $Parameters += @{'Name' = "$Name" }
+    Write-Information "Menu Name selected: '$Name'"
 
     if ($EnableDialByName) {
       $Parameters += @{'EnableDialByName' = $true }

@@ -101,7 +101,7 @@ function Remove-TeamsAutoAttendant {
           }
         }
         else {
-          Write-Warning -Message "No Groups found matching '$DN'"
+          Write-Warning -Message "No Auto Attendant found matching '$DN'"
         }
       }
       catch {

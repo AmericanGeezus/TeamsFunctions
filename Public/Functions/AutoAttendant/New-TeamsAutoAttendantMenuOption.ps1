@@ -24,8 +24,8 @@ function New-TeamsAutoAttendantMenuOption {
     Voice Response to be used for this option. Expected: Single word
   .PARAMETER ToOperator
     Required for Option TransferToOperator. Switch. No other input necessary.
-    NOTE: The AutoAttendant which will receive a Menu with this option, must have an Operator defined.
-    Errors may occur if no operator is present.
+    The AutoAttendant which will receive a Menu with this option, must have an Operator defined.
+    Creating or Updating an Auto Attendant with an Operator that is not defined will lead to errors.
   .PARAMETER ToCallTarget
     Required for Option TransferToCallTarget. String identifying the Call Target:
     UserPrincipalName (User, ApplicationEndpoint), Group Name (Shared Voicemail), Tel Uri (ExternalPstn)

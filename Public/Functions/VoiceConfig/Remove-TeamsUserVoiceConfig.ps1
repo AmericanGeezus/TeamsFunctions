@@ -23,7 +23,7 @@ function Remove-TeamsUserVoiceConfig {
     By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice.
     This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad)
     EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed
-    NOTE: If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.
+    If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.
 	.PARAMETER PassThru
 		Optional. Displays Object after action.
 	.PARAMETER Force
@@ -51,6 +51,8 @@ function Remove-TeamsUserVoiceConfig {
     Prompting for Confirmation for disabling of EnterpriseVoice
     For DirectRouting, this Script does not remove any licenses.
     For CallingPlans it will prompt for Calling Plan licenses to be removed.
+    The EnterpriseVoice flag was deliberately left enabled and can be disabled with the Switch -DisableEv.
+    This is to enable a User to receive a new Voice Configuration without impacting their experience (dial pad).
   .COMPONENT
     VoiceConfiguration
 	.FUNCTIONALITY
@@ -315,7 +317,6 @@ function Remove-TeamsUserVoiceConfig {
       #endregion
 
       #region Disabling EnterpriseVoice
-      #CHECK whether to remove -DisableEV (and merge it with Force) - there might be a reason for it
       if ( $Force -or $CsUser.EnterpriseVoiceEnabled ) {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
           $Operation = 'Generic - Disabling Enterprise Voice'
