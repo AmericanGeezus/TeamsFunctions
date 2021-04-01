@@ -1,0 +1,27 @@
+﻿TOPIC
+    about_unmanaged
+
+SHORT DESCRIPTION
+    Functions listed here are not actively managed or maintained
+
+LONG DESCRIPTION
+    These functions have been taken from the existing Module SkypeOnline and
+    retained as they seemed useful. Handle with Care.
+
+CmdLets
+    | Function                                                                 
+    | Description                                                               
+                                        | |
+    -------------------------------------------------------------------------: |
+    --------------------------------------------------------------------------------------------------------------
+    | |
+    `Get-SkypeOnlineConferencingDialInNumbers`
+    | A Script to query all dial-in conferencing numbers on the Tenant | |
+    `Remove-TenantDialPlanNormalizationRule`
+    | Removing a Normalization Rule from a Tenant Dial Plan             | |
+    `Test-TeamsExternalDNS`
+    | Test External DNS Entries for Teams               |
+
+EXAMPLES
+    None
+

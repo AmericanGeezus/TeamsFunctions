@@ -33,13 +33,18 @@ function Find-TeamsResourceAccount {
     System.String
   .OUTPUTS
     System.Object
-	.FUNCTIONALITY
-		Returns one or more Resource Accounts
+  .NOTES
+    None
   .COMPONENT
+    TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Finds Resource Accounts by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
 	.LINK
     Get-TeamsResourceAccountAssociation
 	.LINK

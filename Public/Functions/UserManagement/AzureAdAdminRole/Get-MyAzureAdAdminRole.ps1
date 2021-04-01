@@ -32,12 +32,12 @@ function Get-MyAzureAdAdminRole {
     This is a wrapper for Get-AzureAdAdminRole targeting the currently connected User
   .COMPONENT
     UserAdmin
-  .ROLE
-    Activating Admin Roles
   .FUNCTIONALITY
     Queries active or eligible Privileged Identity roles for Administration of Teams for the currently connected User
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Enable-AzureAdAdminRole
   .LINK

@@ -62,7 +62,7 @@ UserPrincipalName or LoginName of the Office365 Administrator
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: Username
+Aliases: UserPrincipalName, Username
 
 Required: True
 Position: 1
@@ -110,8 +110,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
+### System.Object - Default Behavior, incl. on-screen feedback about performed tasks
+### System.Object - Reduced information, no on-screen output
 ## NOTES
 This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline
 Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets)
@@ -126,6 +129,8 @@ Disconnects current sessions (if found) in order to establish a clean new sessio
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsSession]()
 
 [Connect-Me]()
 

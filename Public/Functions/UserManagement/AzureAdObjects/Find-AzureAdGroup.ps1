@@ -22,8 +22,20 @@ function Find-AzureAdGroup {
 	.EXAMPLE
 		Find-AzureAdGroup -Identity "MyGroup@domain.com"
     Will return all Groups that match "MyGroup@domain.com" in the DisplayName, ObjectId or MailNickName
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Microsoft.Open.AzureAD.Model.Group
+  .NOTES
+    None
+  .COMPONENT
+    UserManagement
+	.FUNCTIONALITY
+    Queries Group Objects in Azure Ad with different mechanics
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Find-AzureAdUser
   .LINK

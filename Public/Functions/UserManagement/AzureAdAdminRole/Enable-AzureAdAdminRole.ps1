@@ -54,7 +54,9 @@ function Enable-AzureAdAdminRole {
   .INPUTS
     System.String
   .OUTPUTS
-    None
+    System.Void - Default Behaviour
+    System.Object - With Switch PassThru
+    Boolean - If called by other CmdLets
   .NOTES
     Limitations: MFA must be authorised first
     Currently no way to trigger it via PowerShell. If the activation fails, please sign into Office.com
@@ -63,13 +65,13 @@ function Enable-AzureAdAdminRole {
 
     Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1
   .COMPONENT
-    UserAdmin
-  .ROLE
-    Activating Admin Roles
+    UserManagement
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Enable-AzureAdAdminRole
   .LINK
@@ -85,7 +87,7 @@ function Enable-AzureAdAdminRole {
 
   param(
     [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the Admin Account')]
-    [Alias('UPN', 'UserPrincipalName', 'Username')]
+    [Alias('UserPrincipalName', 'ObjectId')]
     [string]$Identity,
 
     [Parameter(HelpMessage = 'Optional Reason for the request')]
@@ -140,7 +142,7 @@ function Enable-AzureAdAdminRole {
       $global:VerbosePreference = $SaveVerbosePreference
     }
     catch {
-      Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'
+      Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed and correctly loaded'
       return
     }
 
@@ -311,8 +313,8 @@ function Enable-AzureAdAdminRole {
 
             # Determining Activation Type (UserAdd VS UserRenew)
             <#
-            NOTE The value for the Request type can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
-            more options can be provided than UserExtend (Request) and UserAdd
+            The value for the Request type can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
+            more options could be provided than UserExtend (Request) and UserAdd. Bears investigation
             #>
             if ( $PSBoundParameters.ContainsKey('Extend') -and $R.RoleDefinitionId -in $MyActiveRoles.RoleDefinitionId ) {
               Write-Verbose -Message "User '$Id' - '$RoleName' is already active and will be extended"

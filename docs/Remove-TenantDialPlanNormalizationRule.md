@@ -88,8 +88,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
+### System.Void - Default Behavior
+###   System.Object - With Switch PassThru
 ## NOTES
 The dial plan rules will display in format similar the example below:
 RuleIndex Name            Pattern    Translation
@@ -102,4 +105,6 @@ RuleIndex Name            Pattern    Translation
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_Unmanaged]()
 

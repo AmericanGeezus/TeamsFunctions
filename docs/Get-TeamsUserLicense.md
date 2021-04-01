@@ -52,7 +52,7 @@ The Identity, UserPrincipalname or UserName for the user.
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName, Username, UPN
+Aliases: UserPrincipalName
 
 Required: True
 Position: 1
@@ -81,15 +81,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
+### System.Object
 ## NOTES
 Requires a connection to Azure Active Directory
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_Licensing]()
+
+[about_UserManagement]()
 
 [Get-TeamsTenantLicense]()
 

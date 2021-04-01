@@ -9,6 +9,8 @@ Here are some of these functions:
 | ------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------- |
 | `Add-TeamsUserLicense`          | Adds one or more Licenses specified per Switch to the provided Identity                        | `Set-TeamsUserLicense`            |
 | `Assert-SkypeOnlineConnection`  | Tests connection and **Attempts to reconnect** a timed-out session. Alias `PoL` _Ping-of-life_ | `Assert-MicrosoftTeamsConnection` |
+| `Connect-SkypeOnline`           | Creates a Session to SkypeOnline                                                               | `Connect-MicrosoftTeams`          |
+| `Disconnect-SkypeOnline`        | Disconnects from a Session to SkypeOnline. This helps preventing timeouts and hanging sessions | None                              |
 | `Get-AzureAdAssignedAdminRoles` | v1 of the Admin Role query Function                                                            | `Get-AzureAdAdminRole`            |
 | `Get-SkuIdFromSkuPartNumber`    | Helper function for Licensing. Returns a SkuID from a specific SkuPartNumber                   | `Get-AzureAdLicense`              |
 | `Get-SkuPartNumberFromSkuId`    | Helper function for Licensing. Returns a SkuPartNumber from a specific SkuID                   | `Get-AzureAdLicense`              |

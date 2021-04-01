@@ -155,10 +155,15 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 ## NOTES
+None
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_SupportingFunction]()
+
+[Format-StringForUse]()
 
 [Format-StringRemoveSpecialCharacter]()
 

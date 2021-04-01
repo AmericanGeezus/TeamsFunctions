@@ -19,10 +19,18 @@ function Enable-MyAzureAdAdminRole {
   .INPUTS
     None
   .OUTPUTS
-    Boolean if called
-    None if executed from shell
+    System.Void - If executed from shell
+    Boolean - If called by other CmdLets
+  .NOTES
+    None
+  .COMPONENT
+    UserManagement
+	.FUNCTIONALITY
+    Enables eligible Privileged Identity roles for Administration of Teams for the currently connected on User
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Connect-Me
   .LINK
@@ -70,12 +78,21 @@ function Enable-MyAzureAdAdminRole {
               })
           }
           else {
-            #TODO Query active roles with GET and feed these back! (Direct Assignments)
+            #TEST Query active roles with GET and feed these back! (Direct Assignments)
+            return $(if ($Called) { $ActivatedRoles } else {
+                Write-Information 'Enable-MyAzureAdAdminrole - No Roles activated, the following roles are active' -InformationAction Continue
+                Get-MyAzureAdAdminRole
+              })
           }
         }
         catch {
           return $(if ($Called) { $false } else {
-              Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management is not enabled for this tenant' -InformationAction Continue
+              if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"]') {
+                Write-Information 'Enable-MyAzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry' -InformationAction Continue
+              }
+              else {
+                Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management is not enabled for this tenant' -InformationAction Continue
+              }
             })
         }
       }

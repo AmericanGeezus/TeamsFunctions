@@ -581,11 +581,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object or None
 ## NOTES
-Currently in Testing
+Changes settings of an existing Call Queue
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsCallQueue]()
 
 [New-TeamsCallQueue]()
 

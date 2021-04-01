@@ -5,7 +5,7 @@
 # Status:   RC
 
 
-#CHECK whether to add Identity? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
+#CHECK whether to add Identity to output Object? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
 
 function Get-AzureAdUserLicense {
   <#
@@ -15,7 +15,7 @@ function Get-AzureAdUserLicense {
     Returns an Object containing all Licenses found for a specific Object
     Licenses and ServicePlans are nested in the respective parameters for further investigation
   .PARAMETER Identity
-		The Identity, UserPrincipalname or UserName for the user.
+		The Identity or UserPrincipalname for the user.
   .PARAMETER FilterRelevantForTeams
     Filters the output and displays only Licenses relevant to Teams
   .EXAMPLE
@@ -31,16 +31,22 @@ function Get-AzureAdUserLicense {
 		Import-Csv User.csv | Get-AzureAdUserLicense
     Displays all licenses assigned to Users from User.csv, Column Identity.
     The input file must have a single column heading of "Identity" with properly formatted UPNs.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.NOTES
 		Requires a connection to Azure Active Directory
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses assigned to a specific User depending on input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK
@@ -65,7 +71,7 @@ function Get-AzureAdUserLicense {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
-    [Alias('UserPrincipalName', 'Username', 'UPN')]
+    [Alias('UserPrincipalName')]
     [string[]]$Identity,
 
     [Parameter(HelpMessage = 'Displays only Licenses relevant to Teams')]
@@ -110,6 +116,7 @@ function Get-AzureAdUserLicense {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $Identity) {
+      #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
       try {
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP

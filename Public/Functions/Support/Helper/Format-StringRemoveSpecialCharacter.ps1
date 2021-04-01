@@ -36,14 +36,23 @@ function Format-StringRemoveSpecialCharacter {
   .OUTPUTS
     System.String
   .NOTES
-		Francois-Xavier Cat
+		Originally written by:
+    Francois-Xavier Cat
 		@lazywinadmin
 		lazywinadmin.com
 		github.com/lazywinadmin
+  .COMPONENT
+    SupportingFunction
+	.FUNCTIONALITY
+    Reformats a string to be used; Removes special Characters in the process
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    about_SupportingFunction
+  .LINK
     Format-StringForUse
+  .LINK
+    Format-StringRemoveSpecialCharacter
 	#>
 
   [CmdletBinding()]

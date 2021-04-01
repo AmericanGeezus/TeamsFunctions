@@ -144,7 +144,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### System.Object - (default)
+### System.Object - Default behaviour
 ## NOTES
 For Users, it will verify the Objects eligibility.
 Requires a valid license but can enable the User Object for Enterprise Voice if needed.
@@ -155,15 +155,23 @@ For ExternalPstn it will construct the Tel URI
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[New-TeamsAutoAttendant]()
+[about_UserManagement]()
 
-[Set-TeamsAutoAttendant]()
+[about_TeamsAutoAttendant]()
 
-[Get-TeamsCallableEntity]()
+[about_TeamsCallQueue]()
+
+[Assert-TeamsCallableEntity]()
 
 [Find-TeamsCallableEntity]()
 
+[Get-TeamsCallableEntity]()
+
 [New-TeamsCallableEntity]()
+
+[New-TeamsAutoAttendant]()
+
+[Set-TeamsAutoAttendant]()
 
 [New-TeamsAutoAttendantDialScope]()
 

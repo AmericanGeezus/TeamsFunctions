@@ -2,13 +2,13 @@
 # Function: Lookup
 # Author:	David Eberhardt
 # Updated:  11-NOV-2020
-# Status:   Beta
+# Status:   ARCHIVED
 
 
-#TODO - put better controls around it ($1/$2...!)
-# CHECK Get-CsOnlineEffectiveTenantDialPlan and Test-CsOnlineEffectiveTenantDialPlan
-# Change to Test-TeamsTenantDialPlan - Alias: Test-TeamsTDP
-#CHECK whether to break this out from Find-TeamsUserVoiceRoute
+# ARCHIVED - put better controls around it ($1/$2...!)
+# - CHECK Get-CsOnlineEffectiveTenantDialPlan and Test-CsOnlineEffectiveTenantDialPlan
+# - Change to Test-TeamsTenantDialPlan - Alias: Test-TeamsTDP
+# - CHECK whether to break this out from Find-TeamsUserVoiceRoute
 function Test-TeamsTDP {
     param(
         [string]$TDP,

@@ -14,8 +14,30 @@ function Test-ExchangeOnlineConnection {
 	.EXAMPLE
 		Test-ExchangeOnlineConnection
 		Will Return $TRUE only if a session is found.
+  .INPUTS
+    None
+  .OUTPUTS
+    Boolean
+  .NOTES
+    Calls Get-PsSession to determine whether a Connection to ExchangeOnline exists
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Tests the connection to ExchangeOnline
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
+  .LINK
+    Test-AzureAdConnection
+  .LINK
+    Test-MicrosoftTeamsConnection
+  .LINK
+    Test-ExchangeOnlineConnection
+  .LINK
+    Assert-AzureAdConnection
+  .LINK
+    Assert-MicrosoftTeamsConnection
   #>
 
   [CmdletBinding()]

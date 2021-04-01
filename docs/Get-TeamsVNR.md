@@ -73,8 +73,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
+### System.String
 ## OUTPUTS
 
+### System.Object
 ## NOTES
 Without parameters, it executes the following string:
 Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, Pattern, Translation, Description
@@ -82,6 +85,10 @@ Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_SupportingFunction]()
+
+[about_VoiceConfiguration]()
 
 [Get-TeamsTDP]()
 

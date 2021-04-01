@@ -8,16 +8,23 @@ Administering Call Queues with friendlier names.
 
 ## LONG DESCRIPTION
 
-Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bit cumbersome for the average admin. Though the Searchstring parameter is available, enabling me to utilise it as a basic input method for `TeamsCallQueue` CmdLets. They query by *DisplayName*, which comes with a drawback for the `Set`-command: It requires a unique result. Also uses Filenames instead of IDs when adding Audio Files. Microsoft is continuing to improve these scripts, so I hope these can stand the test of time and make managing Call Queues easier.
+Call Queues with friendly inputs! Use the DisplayName to find and address changes to Call Queues.
+Instead of having to manually input the File and provide an ID to the CallQueue CmdLet, this now also uses Friendly Filenames and performs the import for you.
+
+Call Targets ([`CallableEntities`](about_TeamsCallableEntity.md)) verified, Users are - if licensed - enabled for EnterpriseVoice too. All requirements and dependencies are processed with visual feedback.
+
+Microsoft is continuing to improve these scripts, so I hope these can stand the test of time and make managing Call Queues easier.
+
+> [!NOTE] Microsoft has selected a GUID as the Identity the `CsCallQueue` scripts are a bit cumbersome for the average admin. Though the Searchstring parameter is available, enabling me to utilise it as a basic input method for `TeamsCallQueue` CmdLets. They query by *DisplayName*, which comes with a drawback for the `Set`-command: It requires a unique result.
 
 ## CmdLets
 
 | Function                                                    | Underlying Function | Description                                                        |
 | -----------------------------------------------------------: | ------------------- | ------------------------------------------------------------------ |
-| [`Get-TeamsCallQueue`](../docs/Get-TeamsCallQueue.md)       | Get-CsCallQueue     | Queries a Call Queue with friendly inputs (UPN) and output         |
-| [`New-TeamsCallQueue`](../docs/New-TeamsCallQueue.md)       | New-CsCallQueue     | Creates a Call Queue with friendly inputs (File Names, UPNs, etc.) |
-| [`Set-TeamsCallQueue`](../docs/Set-TeamsCallQueue.md)       | Set-CsCallQueue     | Changes a Call Queue with friendly inputs (File Names, UPNs, etc.) |
-| [`Remove-TeamsCallQueue`](../docs/Remove-TeamsCallQueue.md) | Remove-CsCallQueue  | Removes a Call Queue from the Tenant                               |
+| [`Get-TeamsCallQueue`](Get-TeamsCallQueue.md)       | Get-CsCallQueue     | Queries a Call Queue with friendly inputs (UPN) and output         |
+| [`New-TeamsCallQueue`](New-TeamsCallQueue.md)       | New-CsCallQueue     | Creates a Call Queue with friendly inputs (File Names, UPNs, etc.) |
+| [`Set-TeamsCallQueue`](Set-TeamsCallQueue.md)       | Set-CsCallQueue     | Changes a Call Queue with friendly inputs (File Names, UPNs, etc.) |
+| [`Remove-TeamsCallQueue`](Remove-TeamsCallQueue.md) | Remove-CsCallQueue  | Removes a Call Queue from the Tenant                               |
 
 ## EXAMPLES
 
@@ -30,6 +37,8 @@ Get-TeamsCallQueue [-Name] "Test"
 Get-TeamsCallQueue -SearchString "Test"
 # Queries all Call Queues with the String 'Test' in the name (search)
 ```
+
+Where `-Name` targets the exact Name and can use the pipeline, `-SearchString` gives you an opportunity to find the Call Queues with similar names.
 
 ### Example 2 - Creating a new Call Queue with defaults
 
@@ -55,6 +64,8 @@ Get-TeamsCallQueue -Name "My Queue" | Set-TeamsCallQueue -OverflowThreshold 120
 # Good for changing one or more Queues to the same setting, though handle with care!
 ```
 
+Please note that the Name is not a unique criteria, you may have multiple that are called the same. Following Example #1, this can also be used to change multiple Call Queues at the same time with `-SearchString`
+
 ### Example 4 - Removing with the Pipeline
 
 ```powershell
@@ -66,7 +77,7 @@ Get-TeamsCallQueue -SearchString "Test" | Remove-TeamsCallQueue -Confirm
 
 ## NOTE
 
-Pipelines are available, as they are bound to the Name, this name must be unique. Bulk updating is available - see example above, but handle with care.  Best to capture the Queues to be changed in a variable and double-checking you got the correct ones (and only those) before running (-Confirm can help :))
+Pipelines are available, as they are bound to the Name, this name must be unique (unless queried with Get first and the result being piped, where I bind to the individual ID instead). Bulk updating is available - see example above, but handle with care.  Best to capture the Queues to be changed in a variable and double-checking you got the correct ones (and only those) before running. Additionally, `-Confirm` can help.
 
 ## Development Status
 

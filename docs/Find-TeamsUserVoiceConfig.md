@@ -19,7 +19,7 @@ Find-TeamsUserVoiceConfig [[-PhoneNumber] <String[]>] [<CommonParameters>]
 
 ### ID
 ```
-Find-TeamsUserVoiceConfig [-Identity <String>] [<CommonParameters>]
+Find-TeamsUserVoiceConfig [-UserPrincipalName <String>] [<CommonParameters>]
 ```
 
 ### Ext
@@ -65,7 +65,7 @@ $Null), but not empty ones.
 
 ### EXAMPLE 1
 ```
-Find-TeamsUserVoiceConfig -Identity John@domain.com
+Find-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
 ```
 
 Shows Voice Configuration for John, returning the full Object
@@ -119,7 +119,7 @@ Please see NOTES for details
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Optional.
 UserPrincipalName (UPN) of the User
 Behaves like Get-TeamsUserVoiceConfig, displaying the Users Voice Configuration
@@ -127,7 +127,7 @@ Behaves like Get-TeamsUserVoiceConfig, displaying the Users Voice Configuration
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases:
+Aliases: Identity
 
 Required: False
 Position: Named
@@ -269,7 +269,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## OUTPUTS
 
-### String (UPN)  - With any Parameter except Identity or PhoneNumber
+### System.String - UserPrincipalName - With any Parameter except Identity or PhoneNumber
 ### System.Object - With Parameter Identity or PhoneNumber
 ## NOTES
 With the exception of Identity and PhoneNumber, all searches are filtering on Get-CsOnlineUser
@@ -278,7 +278,7 @@ Identity is querying the provided UPN and only wraps Get-TeamsUserVoiceConfig
 PhoneNumber has to do a full search with 'Where-Object' which will take time to complete
 Depending on the number of Users in the Tenant, this may take a few minutes!
 
-All Parameters except Identity or PhoneNumber will only return UPNs
+All Parameters except UserPrincipalName or PhoneNumber will only return UserPrincipalNames (UPNs)
 - PhoneNumber: Searches against the LineURI parameter.
 For best compatibility, provide in E.164 format (with or without the +)
 This script can find duplicate assignments if the Number was assigned with and without an extension.
@@ -294,6 +294,12 @@ Please see Related Link for more information
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
+
+[about_VoiceConfiguration]()
+
+[about_UserManagement]()
+
+[Assert-TeamsUserVoiceConfig]()
 
 [Find-TeamsUserVoiceConfig]()
 

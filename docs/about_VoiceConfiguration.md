@@ -16,14 +16,15 @@ Applying the required elements to enable a User for Direct Routing or Calling Pl
 
 | Function                             | Description                                                                                                                                       |
 | ------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Enable-TeamsUserForEnterpriseVoice`](/docs/Enable-TeamsUserForEnterpriseVoice.md) | Validates User License requirements and enables a User for Enterprise Voice (I needed a shortcut)                                                 |
-| [`Find-TeamsUserVoiceRoute`](/docs/Find-TeamsUserVoiceRoute.md)           | Queries a users Voice Configuration chain to finding a route a call takes for a User (more granular with a `-DialedNumber`)                       |
-| [`Find-TeamsUserVoiceConfig`](/docs/Find-TeamsUserVoiceConfig.md)          | Queries Voice Configuration parameters against all Users on the tenant. Finding assignments of a number, usage of a specific OVP or TDP, etc.     |
-| [`Get-TeamsTenantVoiceConfig`](/docs/Get-TeamsTenantVoiceConfig.md)         | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                       |
-| [`Get-TeamsUserVoiceConfig`](/docs/Get-TeamsUserVoiceConfig.md)           | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output, extensible through `-DiagnosticLevel`      |
-| [`Remove-TeamsUserVoiceConfig`](/docs/Remove-TeamsUserVoiceConfig.md)        | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set |
-| [`Set-TeamsUserVoiceConfig`](/docs/Set-TeamsUserVoiceConfig.md)           | Applies a full Set of Voice Configuration (Number, Online Voice Routing Policy, Tenant Dial Plan, etc.) to the provided Identity                  |
-| [`Test-TeamsUserVoiceConfig`](/docs/Test-TeamsUserVoiceConfig.md)          | Tests an individual VoiceConfig Package against the provided Identity                                                                             |
+| [`Assert-TeamsUserVoiceConfig`](Assert-TeamsUserVoiceConfig.md) | Validates an Object for proper application of its Voice Configuration and returns Objects that are only partially or not correctly configured. |
+| [`Enable-TeamsUserForEnterpriseVoice`](Enable-TeamsUserForEnterpriseVoice.md) | Validates User License requirements and enables a User for Enterprise Voice (I needed a shortcut)                                                 |
+| [`Find-TeamsUserVoiceRoute`](Find-TeamsUserVoiceRoute.md)           | Queries a users Voice Configuration chain to finding a route a call takes for a User (more granular with a `-DialedNumber`)                       |
+| [`Find-TeamsUserVoiceConfig`](Find-TeamsUserVoiceConfig.md)          | Queries Voice Configuration parameters against all Users on the tenant. Finding assignments of a number, usage of a specific OVP or TDP, etc.     |
+| [`Get-TeamsTenantVoiceConfig`](Get-TeamsTenantVoiceConfig.md)         | Queries Voice Configuration present on the Tenant. Switches are available for better at-a-glance visibility                                       |
+| [`Get-TeamsUserVoiceConfig`](Get-TeamsUserVoiceConfig.md)           | Queries Voice Configuration assigned to a User and displays visual output. At-a-glance concise output, extensible through `-DiagnosticLevel`      |
+| [`Remove-TeamsUserVoiceConfig`](Remove-TeamsUserVoiceConfig.md)        | Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set |
+| [`Set-TeamsUserVoiceConfig`](Set-TeamsUserVoiceConfig.md)           | Applies a full Set of Voice Configuration (Number, Online Voice Routing Policy, Tenant Dial Plan, etc.) to the provided Identity                  |
+| [`Test-TeamsUserVoiceConfig`](Test-TeamsUserVoiceConfig.md)          | Tests an individual VoiceConfig Package against the provided Identity                                                                             |
 
 ### Support CmdLets
 
@@ -31,21 +32,25 @@ Diving more into Voice Configuration for the Tenant and defining Direct Routing 
 
 | Function          | Description                                                                         |
 | -----------------: | ----------------------------------------------------------------------------------- |
-| [`Get-TeamsTenant`](/docs/Get-TeamsTenant.md) | Get-CsTenant gives too much output? This can help.                                  |
-| [`Get-TeamsOVP`](/docs/Get-TeamsOVP.md)    | Get-CsOnlineVoiceRoutingPolicy is too long to type? Here is a shorter one :)        |
-| [`Get-TeamsOPU`](/docs/Get-TeamsOPU.md)    | Get-CsOnlinePstnUsage is too clunky. Here is a shorter one, with a search function! |
-| [`Get-TeamsOVR`](/docs/Get-TeamsOVR.md)    | Get-CsOnlineVoiceRoute, just more concise                                                              |
-| [`Get-TeamsMGW`](/docs/Get-TeamsMGW.md)    | Get-CsOnlinePstnGateway, but a bit nicer                                                             |
-| [`Get-TeamsTDP`](/docs/Get-TeamsTDP.md)    | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...        |
-| [`Get-TeamsVNR`](/docs/Get-TeamsVNR.md)    | Displays all Voice Normalization Rules (VNR) for a given Dial Plan                  |
+| [`Get-TeamsTenant`](Get-TeamsTenant.md) | Get-CsTenant gives too much output? This can help.                                  |
+| [`Get-TeamsCP`](Get-TeamsCP.md)    | Get-CsTeamsCallingPolicy is too long to type? Here is a shorter one.        |
+| [`Get-TeamsECP`](Get-TeamsECP.md)    | Get-CsTeamsEmergencyCallingPolicy is too long to type? Here is a shorter one.        |
+| [`Get-TeamsECRP`](Get-TeamsECRP.md)    | Get-CsTeamsEmergencyCallRoutingPolicy is too long to type? Here is a shorter one.        |
+| [`Get-TeamsIPP`](Get-TeamsIPP.md)    | Get-CsTeamsIpPhonePolicy is too long to type? Here is a shorter one.        |
+| [`Get-TeamsOVP`](Get-TeamsOVP.md)    | Get-CsOnlineVoiceRoutingPolicy is too long to type? Here is a shorter one.        |
+| [`Get-TeamsOPU`](Get-TeamsOPU.md)    | Get-CsOnlinePstnUsage is too clunky. Here is a shorter one, with a search function! |
+| [`Get-TeamsOVR`](Get-TeamsOVR.md)    | Get-CsOnlineVoiceRoute, just more concise                                                              |
+| [`Get-TeamsMGW`](Get-TeamsMGW.md)    | Get-CsOnlinePstnGateway, but a bit nicer                                                             |
+| [`Get-TeamsTDP`](Get-TeamsTDP.md)    | Get-TeamsTenantDialPlan is too long to type. Also, we only want the names...        |
+| [`Get-TeamsVNR`](Get-TeamsVNR.md)    | Displays all Voice Normalization Rules (VNR) for a given Dial Plan                  |
 
 ### Legacy support CmdLets
 
 These are the last remnants of the old SkypeFunctions module. Their functionality has been barely touched.
 | Function                                 | Description                                                                              |
 | ---------------------------------------: | ---------------------------------------------------------------------------------------- |
-| [`Get-SkypeOnlineConferenceDialInNumbers`](/docs/Get-SkypeOnlineConferenceDialInNumbers.md) | Gathers Dial-In Conferencing Numbers for a specific Domain                               |
-| [`Remove-TenantDialPlanNormalizationRule`](/docs/Remove-TenantDialPlanNormalizationRule.md) | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove |
+| [`Get-SkypeOnlineConferenceDialInNumbers`](Get-SkypeOnlineConferenceDialInNumbers.md) | Gathers Dial-In Conferencing Numbers for a specific Domain                               |
+| [`Remove-TenantDialPlanNormalizationRule`](Remove-TenantDialPlanNormalizationRule.md) | Displays all Normalisation Rules of a provided Tenant Dial Plan and asks which to remove |
 
 >[!NOTE] These commands are being evaluated for revival and re-integration.
 
@@ -127,11 +132,11 @@ OnPremLineURI              : tel:+15551234567;ext=4567
 
 Voice Config CmdLets started out just limiting the output of Get-CsOnlineUser to retain an overview and avoid unnecessary scrolling and find information faster and in a more consistent way.
 
+Now they are enriching administration in Teams and are a backbone to the Admin Experience.
+
 ## Development Status
 
-- Main CmdLets are complete, tough may find to be tweaked here and there.
-- Support CmdLets are complete
-- The Legacy CmdLets are in need or re-evaluation and come as-is.
+CmdLets are completely fleshed out and tested. Minor tweaks may still need to be done to round things.
 
 ## TROUBLESHOOTING NOTE
 

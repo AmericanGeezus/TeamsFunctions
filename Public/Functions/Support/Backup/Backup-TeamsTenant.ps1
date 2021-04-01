@@ -18,6 +18,11 @@ function Backup-TeamsTenant {
   .EXAMPLE
     Backup-TeamsTenant
     Takes a backup of the entire Teams Tenant configuration and stores it as a ZIP file with the Tenant Name and Current Date in the current directory.
+  .INPUTS
+    None
+    System.String
+  .OUTPUTS
+		System.File
   .NOTES
 		Version 1.10
 		Build: Feb 04, 2020
@@ -34,8 +39,14 @@ function Backup-TeamsTenant {
 		14-MAY 2020
 
 		The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
+  .COMPONENT
+    SupportingFunction
+	.FUNCTIONALITY
+    Creating a backup for all Configuration in the Teams Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
 	#>
 
   [CmdletBinding(ConfirmImpact = 'None')]

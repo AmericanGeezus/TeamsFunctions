@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#CHECK Pipeline with UPN instead of Identity
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -14,7 +14,7 @@ function Get-TeamsUserVoiceConfig {
 	.DESCRIPTION
     Displays Voice Configuration Parameters with different Diagnostic Levels
     ranging from basic Voice Configuration up to Policies, Account Status & DirSync Information
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
     Required. UserPrincipalName (UPN) of the User
 	.PARAMETER DiagnosticLevel
     Optional. Value from 1 to 4. Higher values will display more parameters
@@ -22,11 +22,18 @@ function Get-TeamsUserVoiceConfig {
   .PARAMETER SkipLicenseCheck
     Optional. Will not perform queries against User Licensing to improve performance
   .EXAMPLE
-    Get-TeamsUserVoiceConfig -Identity John@domain.com
+    Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     Shows Voice Configuration for John with a concise view of Parameters
 	.EXAMPLE
-    Get-TeamsUserVoiceConfig -Identity John@domain.com -DiagnosticLevel 2
+    Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DiagnosticLevel 2
     Shows Voice Configuration for John with a extended list of Parameters (see NOTES)
+  .EXAMPLE
+    "John@domain.com" | Get-TeamsUserVoiceConfig -SkipLicenseCheck
+    Shows Voice Configuration for John with a concise view of Parameters and skips validation of Licensing for this User.
+  .EXAMPLE
+    Get-CsOnlineUser | Where-Object UsageLocation -eq "BE" | Get-TeamsUserVoiceConfig
+    Shows Voice Configuration for all CsOnlineUsers with a UsageLocation set to Belgium. Returns concise view of Parameters
+    For best results, please filter the Users first and add Diagnostic Levels at your discretion
   .INPUTS
     System.String
   .OUTPUTS
@@ -40,26 +47,32 @@ function Get-TeamsUserVoiceConfig {
     Parameters are additive, meaning with each DiagnosticLevel more information is displayed
 
     This script takes a select set of Parameters from AzureAD, Teams & Licensing. For a full parameterset, please run:
-    - for AzureAD:    "Find-AzureAdUser $Identity | FL"
-    - for Licensing:  "Get-AzureAdUserLicense $Identity"
-    - for Teams:      "Get-CsOnlineUser $Identity"
+    - for AzureAD:    "Find-AzureAdUser $UserPrincipalName | FL"
+    - for Licensing:  "Get-AzureAdUserLicense $UserPrincipalName"
+    - for Teams:      "Get-CsOnlineUser $UserPrincipalName"
+  .COMPONENT
+    VoiceConfiguration
 	.FUNCTIONALITY
-		The functionality that best describes this cmdlet
+		Returns an Object to validate the Voice Configuration for an Object
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
+  .LINK
+    Assert-TeamsUserVoiceConfig
+	.LINK
     Find-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsTenantVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Set-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Remove-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Test-TeamsUserVoiceConfig
   #>
 
@@ -68,7 +81,8 @@ function Get-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [string[]]$Identity,
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
     [Alias('DiagLevel', 'Level', 'DL')]
@@ -99,12 +113,15 @@ function Get-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    # preparing Output Field Separator
+    $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $UserCounter = 0
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       # Initialising counters for Progress bars
       [int]$step = 0
       [int]$sMax = 6
@@ -113,7 +130,7 @@ function Get-TeamsUserVoiceConfig {
       if ( -not $SkipLicenseCheck ) { $sMax++ }
 
       #region Information Gathering
-      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
+      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
@@ -189,7 +206,7 @@ function Get-TeamsUserVoiceConfig {
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
-        $CsUserLicense = Get-AzureAdUserLicense -Identity "$($CsUser.UserPrincipalName)"
+        $CsUserLicense = Get-AzureAdUserLicense -Identity "$($CsUser.UserPrincipalName)" -FilterRelevantForTeams
 
         # Adding Parameters
         $Operation = 'Adding Parameters: Licensing Configuration'
@@ -197,9 +214,11 @@ function Get-TeamsUserVoiceConfig {
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
         $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
+        #$UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $CsUserLicense.PhoneSystemStatus
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
+        $UserObject.LicensesAssigned | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
       }
 
       # Adding Provisioning Parameters

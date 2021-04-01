@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 
 function Remove-TeamsAutoAttendant {
   <#
@@ -22,8 +22,16 @@ function Remove-TeamsAutoAttendant {
     System.String
   .OUTPUTS
     System.Object
+  .NOTES
+    None
+  .COMPONENT
+    TeamsAutoAttendant
+	.FUNCTIONALITY
+    Removes Auto Attendant Objects from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     Get-TeamsAutoAttendant
 	.LINK
@@ -93,7 +101,7 @@ function Remove-TeamsAutoAttendant {
           }
         }
         else {
-          Write-Warning -Message "No Groups found matching '$DN'"
+          Write-Warning -Message "No Auto Attendant found matching '$DN'"
         }
       }
       catch {

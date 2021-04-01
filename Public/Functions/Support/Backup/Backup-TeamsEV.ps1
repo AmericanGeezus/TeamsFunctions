@@ -11,17 +11,18 @@ function Backup-TeamsEV {
   <#
 	.SYNOPSIS
 		A script to automatically back-up a Microsoft Teams Enterprise Voice configuration.
-
 	.DESCRIPTION
 		Automates the backup of Microsoft Teams Enterprise Voice normalization rules, dialplans, voice policies, voice routes, PSTN usages and PSTN GW translation rules for various countries.
-
 	.PARAMETER OverrideAdminDomain
 		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
-
   .EXAMPLE
     Backup-TeamsEV
     Takes a backup of the Teams Enterprise Voice Configuration and stores it as a ZIP file with the Tenant Name and Current Date in the current directory.
-
+  .INPUTS
+    None
+    System.String
+  .OUTPUTS
+		System.File
 	.NOTES
 		Version 1.10
 		Build: Feb 04, 2020
@@ -29,8 +30,14 @@ function Backup-TeamsEV {
 		Copyright © 2020  Ken Lasko
 		klasko@ucdialplans.com
 		https://www.ucdialplans.com
+  .COMPONENT
+    SupportingFunction
+	.FUNCTIONALITY
+    Creating a backup for all Enterprise Voice Configuration in the Teams Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
 	#>
 
   [CmdletBinding(ConfirmImpact = 'None')]

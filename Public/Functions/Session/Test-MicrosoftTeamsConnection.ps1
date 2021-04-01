@@ -16,17 +16,41 @@ function Test-MicrosoftTeamsConnection {
 	.EXAMPLE
 		Test-MicrosoftTeamsConnection
 		Will Return $TRUE only if a session is found.
+  .INPUTS
+    None
+  .OUTPUTS
+    Boolean
+  .NOTES
+    Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOnline) exists
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Tests the connection to MicrosoftTeams (SkypeOnline)
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-	#>
+  .LINK
+    about_TeamsSession
+  .LINK
+    Test-AzureAdConnection
+  .LINK
+    Test-MicrosoftTeamsConnection
+  .LINK
+    Test-ExchangeOnlineConnection
+  .LINK
+    Assert-AzureAdConnection
+  .LINK
+    Assert-MicrosoftTeamsConnection
+  #>
 
   [CmdletBinding()]
   [OutputType([Boolean])]
   param() #param
 
   begin {
-    Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    Show-FunctionStatus -Level Live
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
 
   } #begin
 
@@ -39,10 +63,14 @@ function Test-MicrosoftTeamsConnection {
         return $false
       }
       if ($Sessions.Count -ge 1) {
-        Write-Verbose 'Teams Session found'
+        if (-not $Called) {
+          Write-Verbose 'Teams Session found'
+        }
         $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
         if ($Sessions.Count -ge 1) {
-          Write-Verbose 'Teams Session found, open and valid'
+          if (-not $Called) {
+            Write-Verbose 'Teams Session found, open and valid'
+          }
           return $true
         }
         else {

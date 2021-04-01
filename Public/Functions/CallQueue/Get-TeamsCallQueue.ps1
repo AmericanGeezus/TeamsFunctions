@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 
 function Get-TeamsCallQueue {
   <#
@@ -50,10 +50,14 @@ function Get-TeamsCallQueue {
 		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
     Main difference to Get-CsCallQueue (apart from the friendly names) is that the
     Output view more concise
+  .COMPONENT
+    TeamsCallQueue
 	.FUNCTIONALITY
 		Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsCallQueue
 	.LINK
 		New-TeamsCallQueue
 	.LINK

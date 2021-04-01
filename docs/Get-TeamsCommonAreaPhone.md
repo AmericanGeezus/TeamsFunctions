@@ -14,7 +14,7 @@ Returns Common Area Phones from AzureAD
 
 ### Identity (Default)
 ```
-Get-TeamsCommonAreaPhone [[-Identity] <String[]>] [<CommonParameters>]
+Get-TeamsCommonAreaPhone [[-UserPrincipalName] <String[]>] [<CommonParameters>]
 ```
 
 ### DisplayName
@@ -64,14 +64,14 @@ Returns the Resource Account with the Phone Number specified, if found.
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Default and positional.
 One or more UserPrincipalNames to be queried
 
 ```yaml
 Type: String[]
 Parameter Sets: Identity
-Aliases: UserPrincipalName
+Aliases: Identity
 
 Required: False
 Position: 1
@@ -128,6 +128,10 @@ Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_UserManagement]()
+
+[about_VoiceConfiguration]()
 
 [Get-TeamsCommonAreaPhone]()
 

@@ -14,7 +14,7 @@ Returns Resource Accounts from AzureAD
 
 ### Identity (Default)
 ```
-Get-TeamsResourceAccount [[-Identity] <String[]>] [<CommonParameters>]
+Get-TeamsResourceAccount [[-UserPrincipalName] <String[]>] [<CommonParameters>]
 ```
 
 ### DisplayName
@@ -77,14 +77,13 @@ Returns the Resource Account with the Phone Number specified, if found.
 
 ## PARAMETERS
 
-### -Identity
-Default and positional.
-One or more UserPrincipalNames to be queried.
+### -UserPrincipalName
+User Principal Name of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: Identity
-Aliases: UPN, UserPrincipalName
+Aliases: Identity
 
 Required: False
 Position: 1
@@ -148,17 +147,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
 ### System.String
 ## OUTPUTS
 
 ### System.Object
 ## NOTES
-Pipeline input possible, though untested.
-Requires figuring out :)
+Pipeline input possible
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsResourceAccount]()
 
 [Get-TeamsResourceAccountAssociation]()
 

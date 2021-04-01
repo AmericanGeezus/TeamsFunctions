@@ -4,7 +4,7 @@
 # Updated:  28-DEC-2020
 # Status:   Live
 
-
+#CHECK Pipeline with UPN instead of Identity
 #EXPAND: Make Number an Array?
 
 function Find-TeamsUserVoiceRoute {
@@ -14,7 +14,7 @@ function Find-TeamsUserVoiceRoute {
   .DESCRIPTION
     Returns a custom object detailing voice routing information for a User
     If a Dialed Number is provided, also normalises the number and returns the effective Tenant Dial Plan
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
     Required. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan
     User must have a valid Voice Configuration applied for this script to return a valuable result
   .PARAMETER DialedNumber
@@ -34,19 +34,27 @@ function Find-TeamsUserVoiceRoute {
     This is a slightly more intricate on Voice routing, enabling comparisons for multiple users.
     Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www.lee-ford.co.uk
   .COMPONENT
-    VoiceConfig
-  .ROLE
-    VoiceRouting
+    VoiceConfiguration
   .FUNCTIONALITY
     Voice Routing and Troubleshooting
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    about_VoiceConfiguration
+  .LINK
+    Assert-TeamsUserVoiceConfig
+	.LINK
     Find-TeamsUserVoiceConfig
-  .LINK
+	.LINK
+    Get-TeamsTenantVoiceConfig
+	.LINK
     Get-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Set-TeamsUserVoiceConfig
+	.LINK
+    Remove-TeamsUserVoiceConfig
+	.LINK
+    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding()]
@@ -54,10 +62,10 @@ function Find-TeamsUserVoiceRoute {
   [OutputType([PSCustomObject])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s) to query routing for')]
-    [Alias('Username', 'UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
-    [Parameter(HelpMessage = 'Phone Number to be normalised with the Dial Plan')]
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Phone Number to be normalised with the Dial Plan')]
     [Alias('Number')]
     [String]$DialedNumber
 
@@ -80,7 +88,7 @@ function Find-TeamsUserVoiceRoute {
 
     #region Defining Output Object
     class TFVoiceRouting {
-      [string]$Identity
+      [string]$UserPrincipalName
       [string]$TenantDialPlan
       [string]$DialedNumber
       [string]$EffectiveDialPlan
@@ -95,7 +103,7 @@ function Find-TeamsUserVoiceRoute {
       [string]$NumberPattern
 
       TFVoiceRouting(
-        [string]$Identity,
+        [string]$UserPrincipalName,
         [string]$TenantDialPlan,
         [string]$DialedNumber,
         [string]$EffectiveDialPlan,
@@ -109,7 +117,7 @@ function Find-TeamsUserVoiceRoute {
         [string]$OnlinePstnGateway,
         [string]$NumberPattern
       ) {
-        $this.Identity = $Identity
+        $this.UserPrincipalName = $UserPrincipalName
         $this.TenantDialPlan = $TenantDialPlan
         $this.DialedNumber = $DialedNumber
         $this.EffectiveDialPlan = $EffectiveDialPlan
@@ -135,7 +143,7 @@ function Find-TeamsUserVoiceRoute {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    foreach ($Id in $Identity) {
+    foreach ($Id in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] Processing '$Id'"
 
       # Query User and prepare object
@@ -154,7 +162,7 @@ function Find-TeamsUserVoiceRoute {
       # User
       $UserVoiceRouting = $null
       $UserVoiceRouting = [TFVoiceRouting]::new('', '', '', '', '', '', '', '', '', $null, '', '', '')
-      $UserVoiceRouting.Identity = $User.UserPrincipalName
+      $UserVoiceRouting.UserPrincipalName = $User.UserPrincipalName
       $UserVoiceRouting.TenantDialPlan = $User.TenantDialPlan
       $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
 

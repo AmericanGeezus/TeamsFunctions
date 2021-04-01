@@ -5,8 +5,17 @@
 - [x] TeamsFunctions-help.xml (now in DOCS!)
 - [x] Update Markdown files with Platypus does not automatically update .MD files...
 
-- [x] Create Docs
-- [x] Create Help
+- [x] Create Docs (MarkdownHelp)
+- [x] Create Help (about_)
+- [ ] Improve Comment Based help
+  - [x] Apply correct Order: EXAMPLES, INPUTS, OUTPUT, NOTES, COMPONENT, FUNCTIONALITY, LINK
+  - [x] .ROLE - Remove
+  - [ ] .INPUTS (incl. Pipeline)
+  - [x] .OUTPUTS (all variants and how to get to them)
+  - [x] .COMPONENT - Adding About_ Topic Name as Component
+  - [x] .FUNCTIONALITY - Describe what the function does
+  - [x] .LINK - Add ABOUT_ Topic
+  - [x] .LINK - Verify linked function is correct across all of the same breed
 - [ ] Populate about-help
   - [x] Write Licensing
   - [x] Write SupportFunctions
@@ -19,6 +28,9 @@
   - [x] Write Session
   - [x] Write UserManagement
   - [x] Write VoiceConfiguration
+- [ ] Update About-help
+  - [x] Verify all Functions are listed
+  - [x] Remove retired functions
 - [ ] Add Examples to About
   - [x] Examples for Licensing
   - [x] Examples for SupportFunctions
@@ -49,6 +61,11 @@
 - [ ] Continue to test Scripts
 - [ ] Add Argument Completer for all AudioFiles to expect them in C:\Temp: [ArgumentCompleter(C:\Temp\)]
 
+## TeamsCallQueue
+
+- [ ] EVALUATE "Karen wants to call the manager" - Manager Attribute on CQs or RAs?
+- [ ] EVALUATE Refresh exposed Parameters with `CsOnlineCallQueue` scripts
+
 ## Licenses
 
 - [x] Figure out how to enable disabled plans
@@ -78,6 +95,11 @@
 - [ ] MORE
 
 ## Other things
+
+### Aliases
+
+- [ ] Rethink shorthands following three letter model: GCQ, GAA, GRA, etc.
+- [ ] Aliases for Parameters (Identity, UserPrincipalName, UPN, Username, etc. - make uniform)
 
 ### Evaluate Export to CLIXML
 

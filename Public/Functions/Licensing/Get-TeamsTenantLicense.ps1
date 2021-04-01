@@ -39,16 +39,22 @@ function Get-TeamsTenantLicense {
   .EXAMPLE
 		Get-TeamsTenantLicense -ConciseView -DisplayAll
 		Displays a concise view of all licenses found on the tenant.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     Requires a connection to Azure Active Directory
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
 		Returns a list of Licenses on the Tenant depending on input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK

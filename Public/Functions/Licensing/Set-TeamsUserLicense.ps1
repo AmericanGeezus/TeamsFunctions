@@ -62,33 +62,39 @@ function Set-TeamsUserLicense {
     Many license packages are available, the following Licenses are most predominant:
     - Main License Packages
       - Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)
-      - Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+      - Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #For Teams EV this requires PhoneSystem as an add-on!
       - Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)
-      - Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
-      - Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!
-      - Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on!
+      - Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!
+      - Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #For Teams EV this requires PhoneSystem as an add-on!
+      - Skype for Business Online (Plan 2) (MCOSTANDARD)   #For Teams EV this requires PhoneSystem as an add-on!
     - Add-On Licenses (Require Main License Package from above)
       - Audio Conferencing License - AudioConferencing (MCOMEETADV)
       - Phone System - PhoneSystem (MCOEV)
     - Standalone Licenses (Special)
-      - Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)
-      - Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts!
+      - Common Area Phone License (MCOCAP)  #Cheaper, but limits the Object to a Common Area Phone (no mailbox)
+      - Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #Only use for Resource Accounts!
     - Microsoft Calling Plan Licenses
       - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)
       - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)
 
     Data in Get-AzureAdLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing
     https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time
-
+  .INPUTS
+    System.String
+  .OUTPUTS
+		System.Void - Default Behavior
+    System.Object - With Switch PassThru
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
     This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
     Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK
@@ -113,7 +119,7 @@ function Set-TeamsUserLicense {
   [OutputType([Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('UPN', 'UserPrincipalName', 'Username')]
+    [Alias('UserPrincipalName')]
     [string[]]$Identity,
 
     [Parameter(ParameterSetName = 'Add', Mandatory, HelpMessage = 'License(s) to be added to this Object')]
@@ -380,6 +386,7 @@ function Set-TeamsUserLicense {
       #region Object Verification
       # Querying User
       try {
+        #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
         $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction STOP
         Write-Verbose -Message "[PROCESS] $($UserObject.UserPrincipalName)"
       }

@@ -28,12 +28,26 @@ function Get-TeamsMGW {
     Get-TeamsOVR -Identity EMEA*
     Lists Online Voice Routes with "EMEA" in the Name
     Behaviour like: Get-CsOnlineVoiceRoute -Filter "*EMEA*"
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsTeamsCallingPolicy with a twist:
     If more than three results are found, a reduced set of Parameters are shown for better visibility:
     Get-CsOnlinePSTNGateway | Select-Object Identity, SipSignalingPort, Enabled, MediaByPass
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries MediaGateways by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsOVP
   .LINK

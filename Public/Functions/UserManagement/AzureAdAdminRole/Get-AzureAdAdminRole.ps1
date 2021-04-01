@@ -29,19 +29,19 @@ function Get-AzureAdAdminRole {
 	.INPUTS
 		System.String
 	.OUTPUTS
-		PSCustomObject
+		System.Object
 	.NOTES
     Returns an Object containing all Admin Roles assigned to a User.
     This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
     The Output can be used as baseline for other functions (-contains "Teams Service Admin")
   .COMPONENT
-    UserAdmin
-  .ROLE
-    Activating Admin Roles
-  .FUNCTIONALITY
+    UserManagement
+	.FUNCTIONALITY
     Queries active or eligible Privileged Identity roles for Administration of Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Enable-AzureAdAdminRole
   .LINK
@@ -56,8 +56,8 @@ function Get-AzureAdAdminRole {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the User to Query')]
-    [Alias('UPN', 'UserPrincipalName', 'Username')]
-    [string[]]$Identity,
+    [Alias('UserPrincipalName', 'ObjectId')]
+    [string]$Identity,
 
     [Parameter(HelpMessage = 'Active, Eligible')]
     [ValidateSet('Active', 'Eligible')]
@@ -114,6 +114,7 @@ function Get-AzureAdAdminRole {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     foreach ($Id in $Identity) {
+      #TODO replace Id with $AzureAdUser.UserPrincipalName and 'User' with 'UserPrincipalName' for more consistency.
       $AzureAdUser = Get-AzureADUser -ObjectId "$Id"
 
       [System.Collections.ArrayList]$MyRoles = @()

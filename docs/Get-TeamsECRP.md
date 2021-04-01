@@ -70,8 +70,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
+### System.String
 ## OUTPUTS
 
+### System.Object
 ## NOTES
 If more than three results are found, a reordered set of Parameters are shown for better visibility:
 Get-CsTeamsEmergencyCallRoutingPolicy | Select-Object Identity, Description, AllowEnhancedEmergencyServices, EmergencyNumbers
@@ -79,6 +82,10 @@ Get-CsTeamsEmergencyCallRoutingPolicy | Select-Object Identity, Description, All
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_SupportingFunction]()
+
+[about_VoiceConfiguration]()
 
 [Get-TeamsOVP]()
 

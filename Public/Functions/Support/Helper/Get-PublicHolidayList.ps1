@@ -31,13 +31,16 @@ function Get-PublicHolidayList {
     I am working on an extension to this by reading from https://www.timeanddate.com/holidays/
     For Example: https://www.timeanddate.com/holidays/uk/2022?hol=9
   .COMPONENT
+    SupportingFunction
     TeamsAutoAttendant
-  .ROLE
-    Helper Function
   .FUNCTIONALITY
-    HolidaySet
+    Queries available Holidays for a specific Country from the Nager.Date API
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_TeamsAutoAttendant
   .LINK
     Get-PublicHolidayList
   .LINK

@@ -32,8 +32,22 @@ function Get-TeamsCP {
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
     If more than three results are found, a reduced set of Parameters are shown for better visibility:
     Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries Calling Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsOVP
   .LINK

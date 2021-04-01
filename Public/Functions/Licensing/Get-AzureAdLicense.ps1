@@ -19,20 +19,24 @@ function Get-AzureAdLicense {
   .EXAMPLE
     Get-AzureAdLicense
     Returns 39 Azure AD Licenses that relate to Teams for use in other commands
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
   .NOTES
-    Source
-    https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html
+    Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
+    Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html
     With very special thanks to Philip
-    Reads
-    https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
-		Returns a list of Licenses
+		Returns a list of published Licenses
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK

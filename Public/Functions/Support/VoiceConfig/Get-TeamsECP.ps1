@@ -28,12 +28,26 @@ function Get-TeamsECP {
     Get-TeamsECP -Identity ECP-US-*
     Lists Online Voice Routes with "ECP-US-" in the Name
     Behaviour like: Get-CsTeamsEmergencyCallingPolicy -Filter "*ECP-US-*"
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
     If more than three results are found, a reordered set of Parameters are shown for better visibility:
     Get-CsTeamsEmergencyCallingPolicy | Select-Object Identity, Description, NotificationMode, NotificationGroup
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries Emergency Calling Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsOVP
   .LINK

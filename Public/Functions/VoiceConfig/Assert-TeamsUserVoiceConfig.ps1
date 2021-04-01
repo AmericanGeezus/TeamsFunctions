@@ -4,38 +4,67 @@
 # Updated:  01-APR-2020
 # Status:   RC
 
-
+#TODO Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
 
 
 function Assert-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
-    Short description
+    Tests the validity of the Voice Configuration for one or more Users
   .DESCRIPTION
-    Long description
-  .PARAMETER Identity
-    x
-  .PARAMETER x
-    x
+    Validates Object Type, enablement for Enterprise Voice, and optionally also the Tenant Dial Plan
+    For Calling Plans, validates Calling Plan License and presence of Telephone Number
+    For Direct Routing, validates Online Voice Routing Policy and OnPremLineUri
+    For Skype Hybrid PSTN, validate Voice Routing Policy and OnPremLineUri
+    Configuration is always done on the assumption that a full configuration is desired.
+    Any partial configuration is fed back on screen.
+  .PARAMETER UserPrincipalName
+    Required. UserPrincipalName of the User to be tested
+  .PARAMETER IncludeTenantDialPlan
+    Optional. By default, only the core requirements for Voice Routing are verified.
+    This extends the requirements to also include the Tenant Dial Plan.
   .EXAMPLE
-    Verb-Noun -Identity John@domain.com
-    xx
+    Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
+    If incorrect/missing, writes information output about every tested parameter
+    Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
+  .EXAMPLE
+    Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -IncludeTenantDialPlan
+    If incorrect/missing, writes information output about every tested parameter including the Tenant Dial Plan
+    Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
   .INPUTS
     System.String
   .OUTPUTS
-    System.Object
+    System.Void - If called directly and no errors are found - Information Text only
+    System.Object - If called directly and errors are found (Get-TeamsUserVoiceConfig)
+    Boolean - If called by other CmdLets
   .NOTES
-    xx
+    Verbose output is available, though all required information is fed back directly to the User.
+    If no objections are found, nothing is returned.
+    Piping the Output to Export-Csv can give the best result for investigation into misconfigured users.
   .COMPONENT
-    xx
-  .ROLE
-    xx
-  .FUNCTIONALITY
-    xx
+    VoiceConfiguration
+	.FUNCTIONALITY
+    Finding Users with a incorrectly set up Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
+    about_VoiceConfiguration
+  .LINK
     Assert-TeamsUserVoiceConfig
+	.LINK
+    Find-TeamsUserVoiceConfig
+	.LINK
+    Get-TeamsTenantVoiceConfig
+	.LINK
+    Get-TeamsUserVoiceConfig
+	.LINK
+    Set-TeamsUserVoiceConfig
+	.LINK
+    Remove-TeamsUserVoiceConfig
+	.LINK
+    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding()]
@@ -43,9 +72,11 @@ function Assert-TeamsUserVoiceConfig {
   #[OutputType([Boolean])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s)')]
-    [Alias('UserPrincipalName', 'UPN')]
-    [string[]]$Identity
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
+    [Parameter(HelpMessage = 'Extends requirements to include Tenant Dial Plan assignment')]
+    [switch]$IncludeTenantDialPlan
   )
 
   begin {
@@ -75,7 +106,7 @@ function Assert-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    foreach ($Id in $Identity) {
+    foreach ($Id in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] Processing '$Id'"
 
       try {
@@ -83,7 +114,7 @@ function Assert-TeamsUserVoiceConfig {
         $User = $CsOnlineUser.UserPrincipalName
       }
       catch {
-        Write-Error -Message "User '$User' not found"
+        Write-Error -Message "User '$Id' not found"
         continue
       }
       if ($CsOnlineUser.InterpretedUserType -notlike '*User*') {
@@ -96,9 +127,13 @@ function Assert-TeamsUserVoiceConfig {
       }
       else {
         Write-Verbose -Message "User '$User' - User Voice Configuration (Full)"
-        $TestFull = Test-TeamsUserVoiceConfig -Identity "$User"
+        $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
 
         if ($TestFull) {
+          if (-not $CsOnlineUser.TenantDialPlan -and $IncludeTenantDialPlan ) {
+            Write-Information "User '$User' does not have a Tenant Dial Plan assigned"
+            continue
+          }
           if ($Called) {
             Write-Output $TestFull
           }
@@ -109,7 +144,13 @@ function Assert-TeamsUserVoiceConfig {
         }
         else {
           Write-Verbose -Message "User '$User' - User Voice Configuration (Partial)"
-          $TestPart = Test-TeamsUserVoiceConfig -Identity "$User" -Partial
+          #TEST IncludeTenantDialPlan
+          if ($IncludeTenantDialPlan) {
+            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan
+          }
+          else {
+            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial
+          }
           if ($TestPart) {
             if ($Called) {
               Write-Output $TestPart
@@ -117,7 +158,7 @@ function Assert-TeamsUserVoiceConfig {
             else {
               Write-Warning "User '$User' is partially configured! Please investigate"
               # Output with Switch (faster with values already queried!)
-              Get-TeamsUserVoiceConfig "$User" -SkipLicenseCheck -DiagnosticLevel 1
+              Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1
               #$CsOnlineUser | Select-Object UserPrincipalName, InterpretedUserType, EnterpriseVoiceEnabled, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy, TelephoneNumber, LineUri, OnPremLineURI
             }
           }

@@ -35,14 +35,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
 ## OUTPUTS
 
-### System.Boolean
+### System.Object
 ## NOTES
+Information about a Service is only displayed if an active connection can be found
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsSession]()
 
 [Connect-Me]()
 

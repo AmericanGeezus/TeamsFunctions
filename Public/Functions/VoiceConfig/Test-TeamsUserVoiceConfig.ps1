@@ -17,20 +17,26 @@ function Test-TeamsUserVoiceConfig {
 	.PARAMETER Identity
     Required. UserPrincipalName of the User to be tested
   .PARAMETER Partial
-    Optional. By default, returns TRUE only if all required Parameters for the Scope are configured (User is fully provisioned)
+    Optional. By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
     Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
+  .PARAMETER IncludeTenantDialPlan
+    Optional. By default, only the core requirements for Voice Routing are verified.
+    This extends the requirements to also include the Tenant Dial Plan.
+    Returns FALSE if no or only a TenantDialPlan is assigned
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting [-Scope Full]
-    Tests for Direct Routing and returns TRUE if FULL configuration is found
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
+    Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config DirectRouting -Scope Partial
-    Tests for Direct Routing and returns TRUE if ANY configuration is found
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial
+    Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans [-Scope Full]
-    Tests for Call Plans and returns TRUE if FULL configuration is found
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDialPlan
+    Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
+    This requires a Tenant Dial Plan to be assigned as well.
 	.EXAMPLE
-    Test-TeamsUserVoiceConfig -Identity $UserPrincipalName -Config CallPlans -Scope Partial
-    Tests for Call Plans but returns TRUE if ANY configuration is found
+    Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial -IncludeTenantDialPlan
+    Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
+    This will treat any Object that only has a Tenant Dial Plan also as partially configured
   .INPUTS
     System.String
   .OUTPUTS
@@ -41,10 +47,20 @@ function Test-TeamsUserVoiceConfig {
     Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
     Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
     Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
+  .COMPONENT
+    VoiceConfiguration
+	.FUNCTIONALITY
+    Testing Users Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
+  .LINK
+    Assert-TeamsUserVoiceConfig
 	.LINK
     Find-TeamsUserVoiceConfig
 	.LINK
@@ -68,7 +84,10 @@ function Test-TeamsUserVoiceConfig {
     [string[]]$Identity,
 
     [Parameter(Helpmessage = 'Queries a partial implementation')]
-    [switch]$Partial
+    [switch]$Partial,
+
+    [Parameter(HelpMessage = 'Extends requirements to include Tenant Dial Plan assignment')]
+    [switch]$IncludeTenantDialPlan
   ) #param
 
   begin {
@@ -118,6 +137,21 @@ function Test-TeamsUserVoiceConfig {
         }
       }
 
+      # Testing Tenant Dial Plan Enablement
+      #TEST IncludeTenantDialPlan
+      if ($IncludeTenantDialPlan) {
+        $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
+        if ( $Verbose -or -not $Called ) {
+          if ($TDPPresent) {
+            Write-Verbose -Message "User '$User' - Tenant Dial Plan - OK"
+          }
+          else {
+            Write-Warning -Message "User '$User' - Tenant Dial Plan - Not assigned"
+          }
+        }
+      }
+
+      # Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
         $CallPlanPresent = Test-TeamsUserHasCallPlan $User
@@ -140,9 +174,10 @@ function Test-TeamsUserVoiceConfig {
           }
         }
 
-        $FullyConfigured = ($CallPlanPresent -and $EVenabled -and $TelPresent)
+        #Defining Fully Configured
+        $FullyConfigured = ($CallPlanPresent -and $EVenabled -and $TelPresent -and (if ($IncludeTenantDialPlan) { $TDPPresent } else { $true }))
         if ($PSBoundParameters.ContainsKey('Partial')) {
-          $PartiallyConfigured = (($CallPlanPresent -or $EVenabled -or $TelPresent) -and -not $FullyConfigured)
+          $PartiallyConfigured = (($CallPlanPresent -or $EVenabled -or $TelPresent -or $TDPPresent) -and -not $FullyConfigured)
           return $PartiallyConfigured
         }
         else {
@@ -184,9 +219,11 @@ function Test-TeamsUserVoiceConfig {
           }
         }
 
-        $FullyConfigured = ($Routing -and $EVenabled -and $TelPresent)
+
+        #Defining Fully Configured
+        $FullyConfigured = ($Routing -and $EVenabled -and $TelPresent -and (if ($IncludeTenantDialPlan) { $TDPPresent } else { $true }))
         if ($PSBoundParameters.ContainsKey('Partial')) {
-          $PartiallyConfigured = (($Routing -or $EVenabled -or $TelPresent) -and -not $FullyConfigured)
+          $PartiallyConfigured = (($Routing -or $EVenabled -or $TelPresent -or $TDPPresent) -and -not $FullyConfigured)
           return $PartiallyConfigured
         }
         else {

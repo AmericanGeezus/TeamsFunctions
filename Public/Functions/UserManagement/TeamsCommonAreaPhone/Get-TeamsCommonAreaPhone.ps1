@@ -14,7 +14,7 @@ function Get-TeamsCommonAreaPhone {
 	.DESCRIPTION
     Returns one or more AzureAdUser Accounts that are Common Area Phones
     Accounts returned are strictly limited to having to have the Common Area Phone License assigned.
-  .PARAMETER Identity
+  .PARAMETER UserPrincipalName
     Default and positional. One or more UserPrincipalNames to be queried
   .PARAMETER DisplayName
 		Optional. Search parameter.
@@ -24,7 +24,7 @@ function Get-TeamsCommonAreaPhone {
 	.EXAMPLE
 		Get-TeamsCommonAreaPhone
 		Returns all Common Area Phones.
-		NOTE: Depending on size of the Tenant, this might take a while.
+    Depending on size of the Tenant, this might take a while.
 	.EXAMPLE
 		Get-TeamsCommonAreaPhone -Identity MyCAP@TenantName.onmicrosoft.com
 		Returns the Common Area Phone with the Identity specified, if found.
@@ -40,12 +40,19 @@ function Get-TeamsCommonAreaPhone {
     System.Object
 	.NOTES
     Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones
+    Running the CmdLet without any input might take a while, depending on size of the Tenant.
 	.FUNCTIONALITY
 		Queries a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
-		TeamsUserVoiceConfig
+		UserManagement
+  .COMPONENT
+		VoiceConfiguration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsCommonAreaPhone
   .LINK
@@ -67,8 +74,8 @@ function Get-TeamsCommonAreaPhone {
   [OutputType([System.Object])]
   param(
     [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UserPrincipalName of the User')]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DisplayName', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
     [ValidateLength(3, 255)]
@@ -136,10 +143,10 @@ function Get-TeamsCommonAreaPhone {
     $step++
     Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    if ($PSBoundParameters.ContainsKey('Identity')) {
+    if ($PSBoundParameters.ContainsKey('UserPrincipalName')) {
       # Default Parameterset
       [System.Collections.ArrayList]$CommonAreaPhones = @()
-      foreach ($I in $Identity) {
+      foreach ($I in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
           $CAP = $null

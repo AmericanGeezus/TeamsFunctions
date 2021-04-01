@@ -5,8 +5,8 @@
 # Status:   Live
 
 
-
-
+#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
+#CHECK Once ID Lookup is done, check in the ForEach (for Pipeline with Get) whether an Object is present and bind/re-lookup to the correct instance!
 function Set-TeamsCallQueue {
   <#
 	.SYNOPSIS
@@ -22,7 +22,7 @@ function Set-TeamsCallQueue {
 		Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
 	.PARAMETER AgentAlertTime
 		Optional. Time in Seconds to alert each agent. Works depending on Routing method
-		NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
+		Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
 	.PARAMETER AllowOptOut
 		Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
 	.PARAMETER UseDefaultMusicOnHold
@@ -114,12 +114,16 @@ function Set-TeamsCallQueue {
     System.String
   .OUTPUTS
     System.Object or None
-	.NOTES
-		Currently in Testing
+  .NOTES
+    Changes settings of an existing Call Queue
+  .COMPONENT
+    TeamsCallQueue
 	.FUNCTIONALITY
 		Changes a Call Queue with friendly names as input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsCallQueue
 	.LINK
 		New-TeamsCallQueue
 	.LINK

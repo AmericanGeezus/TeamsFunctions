@@ -25,14 +25,20 @@ function Get-AzureAdLicenseServicePlan {
     With very special thanks to Philip
     Reads
     https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
   .COMPONENT
-    Teams Migration and Enablement. License Assignment
-  .ROLE
     Licensing
   .FUNCTIONALITY
-    Returns a list of License Service Plans
+    Returns a list of published License Service Plans
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_Licensing
+  .LINK
+    about_UserManagement
   .LINK
     Get-TeamsTenantLicense
   .LINK

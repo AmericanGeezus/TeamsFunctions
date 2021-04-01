@@ -1,0 +1,97 @@
+﻿TOPIC
+    about_teamsfunctions
+
+SHORT DESCRIPTION
+    Teams Voice CmdLets adding and improving on AzureAd and MicrosoftTeams
+    CmdLets
+
+LONG DESCRIPTION
+    All CmdLets are designed to help with Administration of Users, Common Area
+    Phones, Resource Accounts, Call Queues and Auto Attendants, incl. Licensing,
+    User Voice Configuration with Calling Plans and Direct Routing.
+
+TOPICS COVERED
+    This module currently contains over 85 Functions covering a broad area of
+    Teams Functions for Admins: From Session Connection and activating Admin
+    Roles in PIM to User Administration, Licensing and Voice Configuration all
+    the way to Resource Accounts, Call Queues, Auto Attendants
+    Each topic will get its own ABOUT file soon, diving deeper into the Scripts.
+    - SkypeOnline Session connection, reconnection and verification
+    - AzureAd Licensing: Tenant queries, User assignments and verification
+    - AzureAd Privileged Identity Management: Role Activation
+    - Object Preparation for EnterpriseVoice Configuration
+    - Teams Voice Configuration: Direct Routing and Calling Plans
+    - Teams Common Area Phone: New CmdLets (currently in testing!)
+    - Teams Analog Contact Object: New CmdLets (coming soon)
+    - Teams Resource Account: Improvements on existing CmdLets
+    - Teams Call Queue: Improvements on existing CmdLets
+    - Teams Auto Attendant: Improvements on existing CmdLets
+    - Support and Helper functions for Admin tasks
+
+EXAMPLES
+    Until proper maturity has been reached, updates are released monthly.
+    Bugfixes are added to as pre-releases in a weekly cadence.
+    - Monthly Cycle: `Update-Module TeamsFunctions`
+    - Weekly Cycle: `Update-Module TeamsFunctions -AllowPrerelease`
+
+NOTE
+    This seems to be a constant work-in progress so please bear with me with any
+    issues you may find. I am addressing them pretty rapidly, but I am doing
+    this alone and outside my day-job in my spare time. Cheers.
+
+REQUIREMENTS
+    - PowerShell v5.1 is required,
+- PowerShell v7.1 throws an error
+    when connecting to AzureAd
+    <br />Currently no connection is possible! - Module `MicrosoftTeams`
+    - Module `AzureAd` or `AzureAdPreview`
+    Some functions are only available with the Preview module until they become
+    generally available and move to the AzureAd Module
+    > [!NOTE] The Module `SkypeOnlineConnector` is deprecated and has been
+    removed as a dependency from this Module with v21.2 - Connection is now
+    solely established with the MicrosoftTeams Module
+
+TROUBLESHOOTING NOTE
+    All Help Files are available in
+    docs
+    All Topics have been documented as
+    about_
+    Files Each exported function has automatically generated help files with PlatyPS.
+    If you find bugs, please report them by raising an Issue on this repo or
+    send me a message to
+    TeamsFunctions@outlook.com
+    Please attach `Verbose` and/or `Debug` output of the Script in question and
+    anonymise the output to remove personally identifiable data.
+
+SEE ALSO
+    -
+    about_TeamsFunctionsAliases
+    -
+    about_TeamsSession
+    -
+    about_TeamsAutoAttendant
+    -
+    about_TeamsCallQueue
+    -
+    about_TeamsResourceAccount
+    -
+    about_Licensing
+    -
+    about_UserManagement
+    -
+    about_TeamsCallableEntity
+    -
+    about_TeamsCommonAreaPhone
+    -
+    about_TeamsAnalogDevice
+    -
+    about_VoiceConfiguration
+    -
+    about_Supporting_Functions
+
+KEYWORDS
+    - Functions
+- CmdLets
+- ReadMe
+- About
+

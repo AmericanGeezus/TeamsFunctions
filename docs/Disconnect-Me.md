@@ -39,8 +39,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
 ## OUTPUTS
 
+### System.Void
 ## NOTES
 Helper function to disconnect from AzureAD & MicrosoftTeams
 To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
@@ -54,6 +56,8 @@ An Alias is available for this function: dis
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsSession]()
 
 [Connect-Me]()
 

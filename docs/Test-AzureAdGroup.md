@@ -38,7 +38,7 @@ The Name or User Principal Name (MailNickName) of the Group to test.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName, GroupName
 
 Required: True
 Position: 1
@@ -52,14 +52,20 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
-### System.Boolean
+### Boolean
 ## NOTES
+None
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_SupportingFunction]()
+
+[about_UserManagement]()
 
 [Find-AzureAdGroup]()
 

@@ -123,8 +123,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.File
 ## OUTPUTS
 
+### None
 ## NOTES
 Version 1.10
 Build: Feb 04, 2020
@@ -136,4 +138,6 @@ https://www.ucdialplans.com
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_SupportingFunction]()
 

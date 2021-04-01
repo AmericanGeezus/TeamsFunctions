@@ -14,7 +14,7 @@ function Assert-TeamsCallableEntity {
   .DESCRIPTION
     Tests whether a the Object can be used as a Callable Entity in Call Queues or Auto Attendant
   .PARAMETER Identity
-    UserPrincipalName, Group Name or Tel URI
+    Required. UserPrincipalName, Group Name or Tel URI
   .PARAMETER Terminate
     Optional. By default, the Command will not throw terminating errors.
     Using this switch a terminating error is generated.
@@ -23,10 +23,34 @@ function Assert-TeamsCallableEntity {
     Assert-TeamsCallableEntity -Identity Jane@domain.com
     Verifies Jane has a valid PhoneSystem License (Provisioning Status: Success) and is enabled for Enterprise Voice
     Enables Jane for Enterprise Voice if not yet done.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    Boolean
   .NOTES
     Returns Boolean Result
+  .COMPONENT
+    UserManagement
+    TeamsAutoAttendant
+    TeamsCallQueue
+	.FUNCTIONALITY
+    Verifies whether a User Object is correctly configured to be used for Auto Attendants or Call Queues
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_TeamsAutoAttendant
+  .LINK
+    about_TeamsCallQueue
+  .LINK
+    Assert-TeamsCallableEntity
+  .LINK
+    Find-TeamsCallableEntity
+  .LINK
+    Get-TeamsCallableEntity
+  .LINK
+    New-TeamsCallableEntity
   #>
 
   [CmdletBinding()]
@@ -34,6 +58,7 @@ function Assert-TeamsCallableEntity {
   Param
   (
     [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'User Principal Name of the user')]
+    [Alias('UserPrincipalName', 'GroupName', 'TelUri')]
     [string]$Identity,
 
     [Parameter(HelpMessage = 'Switch to instruct to throw errors')]
@@ -51,7 +76,7 @@ function Assert-TeamsCallableEntity {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
-      $Object = Get-TeamsUserVoiceConfig $Identity
+      $Object = Get-TeamsUserVoiceConfig -UserPrincipalName $Identity
       Write-Verbose -Message "User '$Identity' found"
     }
     catch {
@@ -94,12 +119,17 @@ function Assert-TeamsCallableEntity {
       if ( $Object.PhoneSystemStatus.Contains('Success')) {
         Write-Verbose -Message "Target '$Identity' found and licensed"
       }
+      elseif ( $Object.PhoneSystemStatus.Contains('PendingInput')) {
+        Write-Verbose -Message "Target '$Identity' found and licensed (Pending Input)"
+      }
       else {
-        #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet
+        #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet?
         <#
         try {
           Write-Information "Target '$Identity' found and licensed, but PhoneSystem is disabled. Trying to Enable"
           Set-AzureAdLicenseServicePlan -Identity "$Identity" -Enable MCOEV
+          Write-Verbose -Message "Target '$Identity' found and PhoneSystem License applied. Waiting for AzureAd to complete provisioning"
+          Start-Sleep -Seconds 2
           $UserLicense = Get-AzureAdUserLicense $Identity
           if ( $UserLicense.PhoneSystemStatus -ne "Success" -or $UserLicense.PhoneSystemStatus -ne "PendingInput") {
             throw

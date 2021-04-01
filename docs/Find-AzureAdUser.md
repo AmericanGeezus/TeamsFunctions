@@ -76,10 +76,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### Microsoft.Open.AzureAD.Model.User
 ## NOTES
+None
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_UserManagement]()
 
 [Find-AzureAdGroup]()
 

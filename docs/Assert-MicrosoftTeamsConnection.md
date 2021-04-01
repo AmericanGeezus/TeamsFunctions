@@ -36,16 +36,23 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
 ## OUTPUTS
 
-### System.Boolean
+### System.Void - If called directly; On-Screen output only
+###   Boolean - If called by other CmdLets, On-Screen output for the first call only
 ## NOTES
+None
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_TeamsSession]()
+
 [Assert-AzureAdConnection]()
+
+[Assert-MicrosoftTeamsConnection]()
 
 [Get-CurrentConnectionInfo]()
 

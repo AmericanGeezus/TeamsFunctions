@@ -21,20 +21,34 @@ function Test-TeamsUserHasCallPlan {
 		Test-TeamsUserHasCallPlan -Identity User@domain.com
     Will Return $TRUE only if one of the following license Packages are assigned:
     InternationalCallingPlan, DomesticCallingPlan, DomesticCallingPlan120, DomesticCallingPlan120b
+  .INPUTS
+    System.String
+  .OUTPUTS
+		Boolean
 	.NOTES
 		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
   .FUNCTIONALITY
     Returns a boolean value for when any of the Calling Plan licenses are found assigned to a specific user.
+  .COMPONENT
+    SupportingFunction
+    Licensing
+	.FUNCTIONALITY
+    Tests whether the User has a Microsoft Calling Plan License
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    about_SupportingFunction
+  .LINK
     Test-TeamsUserLicense
+  .LINK
+    Test-TeamsUserHasCallPlan
   #>
 
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
+    [Alias('UserPrincipalName')]
     [string]$Identity
   ) #param
 

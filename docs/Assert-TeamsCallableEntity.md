@@ -32,12 +32,13 @@ Enables Jane for Enterprise Voice if not yet done.
 ## PARAMETERS
 
 ### -Identity
+Required.
 UserPrincipalName, Group Name or Tel URI
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName, GroupName, TelUri
 
 Required: True
 Position: 1
@@ -69,13 +70,28 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
-### System.Boolean
+### Boolean
 ## NOTES
 Returns Boolean Result
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_UserManagement]()
+
+[about_TeamsAutoAttendant]()
+
+[about_TeamsCallQueue]()
+
+[Assert-TeamsCallableEntity]()
+
+[Find-TeamsCallableEntity]()
+
+[Get-TeamsCallableEntity]()
+
+[New-TeamsCallableEntity]()
 

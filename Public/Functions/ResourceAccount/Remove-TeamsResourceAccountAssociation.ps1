@@ -28,12 +28,18 @@ function Remove-TeamsResourceAccountAssociation {
   .INPUTS
     System.String
   .OUTPUTS
-    None
+		System.Void - Default Behavior
+    System.Object - With Switch PassThru
   .COMPONENT
+    TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Removes an existing association between a Resource Account and an Auto Attendant or Call Queue
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
   .LINK
     Get-TeamsResourceAccountAssociation
 	.LINK

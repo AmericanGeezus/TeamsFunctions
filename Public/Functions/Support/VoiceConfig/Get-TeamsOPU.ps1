@@ -25,8 +25,22 @@ function Get-TeamsOPU {
   .NOTES
     This script is indulging the lazy admin. It behaves like (Get-CsOnlinePstnUsage).Usage
     This CmdLet behaves slightly different than the others, due to the nature of Pstn Usages.
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries Online Pstn Usages by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsOVP
   .LINK

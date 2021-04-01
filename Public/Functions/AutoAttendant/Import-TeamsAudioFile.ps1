@@ -28,10 +28,17 @@ function Import-TeamsAudioFile {
     Translation of Import-CsOnlineAudioFile to process with New/Set-TeamsResourceAccount
     Simplifies the ApplicationType input for friendly names
     Captures different behavior of Get-Content (ByteStream syntax) in PowerShell 6 and above VS PowerShell 5 and below
+  .COMPONENT
+    TeamsCallQueue
+    TeamsAutoAttendant
 	.FUNCTIONALITY
 		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
+  .LINK
+    about_TeamsCallQueue
 	.LINK
 		New-TeamsCallQueue
 	.LINK
@@ -41,10 +48,10 @@ function Import-TeamsAudioFile {
   [CmdletBinding()]
   [OutputType([System.Object])]
   param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory)]
     [string]$File,
 
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory)]
     [ValidateSet('CallQueue', 'AutoAttendant')]
     [string]$ApplicationType
 
@@ -70,6 +77,7 @@ function Import-TeamsAudioFile {
     $FileName = Split-Path $File -Leaf
 
     # remodelling ApplicationType to ApplicationId
+    #CHECK errors with Import-TeamsAudioFile may be related to Type? Validate that command is well!
     $ApplicationId = switch ($ApplicationType) {
       'CallQueue' { 'HuntGroup' }
       'AutoAttendant' { 'OrgAutoAttendant' }

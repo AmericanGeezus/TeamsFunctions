@@ -16,20 +16,22 @@ These scripts aim to address all these requirements and validate them before all
 
 | Function                                                  | Description                                                                                                                             |
 | ---------------------------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Find-TeamsCallableEntity`](../docs/Find-TeamsCallableEntity.md) | Searches all Call Queues and/or all Auto Attendants for a connected/targeted `Callable Entity` (TelURI, User, Group, Resource Account). |
-| [`Get-TeamsCallableEntity`](../docs/Get-TeamsCallableEntity.md)   | Creates a new Object emulating the output of a `Callable Entity`, validating the Object type and its usability for CQs or AAs.          |
-| [`New-TeamsCallableEntity`](../docs/New-TeamsCallableEntity.md)   | Used for Auto Attendants, creates a `Callable Entity` Object given a CallTarget (the type is enumerated through lookup)                 |
+| [`Assert-TeamsCallableEntity`](Assert-TeamsCallableEntity.md) | Validates an Object for readiness to apply Voice Configuration (License and Ev-Enablement). |
+| [`Find-TeamsCallableEntity`](Find-TeamsCallableEntity.md) | Searches all Call Queues and/or all Auto Attendants for a connected/targeted `Callable Entity` (TelURI, User, Group, Resource Account). |
+| [`Get-TeamsCallableEntity`](Get-TeamsCallableEntity.md)   | Creates a new Object emulating the output of a `Callable Entity`, validating the Object type and its usability for CQs or AAs.          |
+| [`New-TeamsCallableEntity`](New-TeamsCallableEntity.md)   | Used for Auto Attendants, creates a `Callable Entity` Object given a CallTarget (the type is enumerated through lookup)                 |
 
 ## EXAMPLES
 
-Please see the Examples for the individual CmdLets in the [DOCs](../docs/)
+Please see the Examples for the individual CmdLets in their respective help files
 
 ## NOTE
 
 The Concept of a Callable Entity is introduced with Auto Attendants where Call Targets need to be created as a Callable Entity before they can be used for an Auto Attendant.
 
-The other two CmdLets expand on this concept:
+The other CmdLets expand on this concept:
 
+- `Assert-TeamsCallableEntity` was broken out of the Get-TeamsCallableEntity and will assert whether the Object is in a state to be used as a Call Target
 - `Get-TeamsCallableEntity` will identify and assert whether the Object is in a state to be used as a Call Target and is the backbone of the CallQueue and AutoAttendant improvements in this Module
 - `Find-TeamsCallableEntity` finds whether the Object provided is used on any Call Queue or Auto Attendant
 

@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 
 function Get-TeamsAutoAttendant {
   <#
@@ -51,10 +51,14 @@ function Get-TeamsAutoAttendant {
     The connected Objects DefaultCallFlow, CallFlows, Schedules, CallHandlingAssociations and DirectoryLookups
     are all shown with Name only, but can be queried with .<ObjectName>
     This also works with Get-CsAutoAttendant, but with the help of "Display" Parameters.
+  .COMPONENT
+    TeamsAutoAttendant
 	.FUNCTIONALITY
 		Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
 		Get-TeamsCallQueue
 	.LINK

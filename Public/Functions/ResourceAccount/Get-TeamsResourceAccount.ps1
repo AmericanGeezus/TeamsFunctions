@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK "Karen wants to call the manager"^^
+
 
 function Get-TeamsResourceAccount {
   <#
@@ -26,7 +26,7 @@ function Get-TeamsResourceAccount {
 	.EXAMPLE
 		Get-TeamsResourceAccount
 		Returns all Resource Accounts.
-		NOTE: Depending on size of the Tenant, this might take a while.
+		Depending on size of the Tenant, this might take a while.
 	.EXAMPLE
 		Get-TeamsResourceAccount -Identity ResourceAccount@TenantName.onmicrosoft.com
 		Returns the Resource Account with the Identity specified, if found.
@@ -41,18 +41,23 @@ function Get-TeamsResourceAccount {
 		Get-TeamsResourceAccount -PhoneNumber +1555123456
 		Returns the Resource Account with the Phone Number specified, if found.
   .INPUTS
+    None
     System.String
   .OUTPUTS
     System.Object
 	.NOTES
-		Pipeline input possible, though untested. Requires figuring out :)
-	.FUNCTIONALITY
-		Returns one or more Resource Accounts
+		Pipeline input possible
+    Running the CmdLet without any input might take a while, depending on size of the Tenant.
   .COMPONENT
+    TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+		Returns one or more Resource Accounts from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
 	.LINK
     Get-TeamsResourceAccountAssociation
 	.LINK
@@ -76,8 +81,8 @@ function Get-TeamsResourceAccount {
   [OutputType([System.Object])]
   param (
     [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'User Principal Name of the Object.')]
-    [Alias('UPN', 'UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DisplayName', ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
     [ValidateLength(3, 255)]
@@ -140,10 +145,10 @@ function Get-TeamsResourceAccount {
     $step++
     Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    if ($PSBoundParameters.ContainsKey('Identity')) {
+    if ($PSBoundParameters.ContainsKey('UserPrincipalName')) {
       # Default Parameterset
       [System.Collections.ArrayList]$ResourceAccounts = @()
-      foreach ($I in $Identity) {
+      foreach ($I in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
           $RA = Get-CsOnlineApplicationInstance -Identity $I -ErrorAction Stop

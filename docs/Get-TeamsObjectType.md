@@ -99,10 +99,23 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.String
 ## NOTES
+None
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_UserManagement]()
+
+[about_TeamsAutoAttendant]()
+
+[about_TeamsCallQueue]()
+
+[Get-TeamsObjectType]()
+
+[Find-TeamsCallableEntity]()
+
 [Get-TeamsCallableEntity]()
+
+[New-TeamsCallableEntity]()
 

@@ -25,8 +25,20 @@ function Assert-Module {
   .EXAMPLE
 		Assert-Module -Module ModuleName -UpToDate -PreRelease
 		Will Return $TRUE if the Module 'ModuleName' is installed in the latest pre-release version and loaded
+  .INPUTS
+		System.String
+  .OUTPUTS
+    Boolean
+  .NOTES
+    None
+  .COMPONENT
+    SupportingFunction
+	.FUNCTIONALITY
+    Asserts whether the Module is installed, Loaded and optionally also whether it is up-to-date (incl. Prerelease)
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
   #>
 
   [CmdletBinding()]

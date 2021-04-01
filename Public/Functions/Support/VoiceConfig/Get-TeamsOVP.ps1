@@ -28,12 +28,26 @@ function Get-TeamsOVP {
     Get-TeamsOVP -Identity OVP-EMEA-*
     Lists Online Voice Routes with "OVP-EMEA-" in the Name
     Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
+  .INPUTS
+    None
+		System.String
+  .OUTPUTS
+    System.Object
   .NOTES
     This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoutingPolicy with a twist:
     If more than three results are found, a reduced set of Parameters are shown for better visibility:
     Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages
+  .COMPONENT
+    SupportingFunction
+		VoiceConfiguration
+	.FUNCTIONALITY
+    Queries Online Voice Routing Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
+  .LINK
+    about_VoiceConfiguration
   .LINK
     Get-TeamsOVP
   .LINK

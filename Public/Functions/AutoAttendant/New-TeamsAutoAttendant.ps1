@@ -127,11 +127,15 @@ function New-TeamsAutoAttendant {
   .OUTPUTS
     System.Object
 	.NOTES
-		Currently in Testing
+		None
+  .COMPONENT
+    TeamsAutoAttendant
 	.FUNCTIONALITY
 		Creates a Auto Attendant with custom settings and friendly names as input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
 		New-TeamsCallQueue
 	.LINK

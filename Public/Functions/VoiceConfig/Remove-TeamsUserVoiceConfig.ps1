@@ -13,7 +13,7 @@ function Remove-TeamsUserVoiceConfig {
 		Removes existing Voice Configuration for one or more Users
 	.DESCRIPTION
 		De-provisions a user from Enterprise Voice, removes the Telephone Number, Tenant Dial Plan and Voice Routing Policy
-	.PARAMETER Identity
+	.PARAMETER UserPrincipalName
 		Required. UserPrincipalName of the User.
 	.PARAMETER Scope
     Optional. Default is "All". Definition of Scope for removal of Voice Configuration.
@@ -23,49 +23,62 @@ function Remove-TeamsUserVoiceConfig {
     By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice.
     This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad)
     EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed
-    NOTE: If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.
+    If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.
 	.PARAMETER PassThru
 		Optional. Displays Object after action.
 	.PARAMETER Force
 		Optional. Suppresses Confirmation for license Removal unless -Confirm is specified explicitly.
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com [-Scope All]
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com [-Scope All]
 		Disables John for Enterprise Voice, then removes all Phone Numbers, Voice Routing Policy, Tenant Dial Plan and Call Plan licenses
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope DirectRouting
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope DirectRouting
 		Disables John for Enterprise Voice, Removes Phone Number, Voice Routing Policy and Tenant Dial Plan if assigned
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans [-Confirm]
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans [-Confirm]
     Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
     Prompts for Confirmation before removing Call Plan licenses
 	.EXAMPLE
-		Remove-TeamsUserVoiceConfig -Identity John@domain.com -Scope CallingPlans -Force
+		Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans -Force
     Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
     Does not prompt for Confirmation (unless -Confirm is specified explicitly)
   .INPUTS
     System.String
   .OUTPUTS
-    None
+    System.Void - Default behaviour
+    System.Object - With Switch PassThru
   .NOTES
     Prompting for Confirmation for disabling of EnterpriseVoice
     For DirectRouting, this Script does not remove any licenses.
     For CallingPlans it will prompt for Calling Plan licenses to be removed.
+    The EnterpriseVoice flag was deliberately left enabled and can be disabled with the Switch -DisableEv.
+    This is to enable a User to receive a new Voice Configuration without impacting their experience (dial pad).
+  .COMPONENT
+    VoiceConfiguration
 	.FUNCTIONALITY
     Removes a Users Voice Configuration (through Microsoft Call Plans or Direct Routing)
     This will leave the users in a clean and un-provisioned state and enables them to receive a new Configuration Set
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
+    https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
+  .LINK
+    about_VoiceConfiguration
+  .LINK
+    about_UserManagement
+  .LINK
+    Assert-TeamsUserVoiceConfig
+	.LINK
     Find-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsTenantVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Set-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Remove-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Test-TeamsUserVoiceConfig
 	#>
 
@@ -74,7 +87,7 @@ function Remove-TeamsUserVoiceConfig {
   [OutputType([System.Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [string[]]$Identity,
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Defines Type of Voice Configuration to remove')]
     [ValidateSet('All', 'DirectRouting', 'CallingPlans')]
@@ -120,9 +133,9 @@ function Remove-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $UserCounter = 0
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
-      Write-Progress -Id 0 -Status "User '$User'" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($Identity.Count) * 100)
+      Write-Progress -Id 0 -Status "User '$User'" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
       $UserCounter++
       # Initialising counters for Progress bars
       [int]$step = 0
@@ -339,7 +352,7 @@ function Remove-TeamsUserVoiceConfig {
 
       # Output
       if ( $PassThru ) {
-        Get-TeamsUserVoiceConfig "$User"
+        Get-TeamsUserVoiceConfig -UserPrincipalName "$User"
       }
 
     }

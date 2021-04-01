@@ -52,8 +52,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### None
+### System.String
 ## OUTPUTS
 
+### System.File
 ## NOTES
 Version 1.10
 Build: Feb 04, 2020
@@ -74,4 +77,6 @@ The list of command is not dynamic, meaning addded commandlets post publishing d
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_SupportingFunction]()
 

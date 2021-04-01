@@ -27,12 +27,16 @@ function Remove-TeamsCommonAreaPhone {
     None
 	.NOTES
 		Execution requires User Admin Role in Azure AD
+  .COMPONENT
+		UserManagement
 	.FUNCTIONALITY
 		Removes a Common Area Phone in AzureAD for use in Teams
-  .COMPONENT
-		TeamsUserVoiceConfig
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_VoiceConfiguration
 	.LINK
     Get-TeamsCommonAreaPhone
 	.LINK
@@ -124,7 +128,7 @@ function Remove-TeamsCommonAreaPhone {
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      Remove-TeamsUserVoiceConfig -Identity $UPN -PassThru
+      Remove-TeamsUserVoiceConfig -UserPrincipalName $UPN -PassThru
       #endregion
 
       #region Licensing

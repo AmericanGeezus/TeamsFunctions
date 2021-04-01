@@ -33,30 +33,41 @@ function New-TeamsCallableEntity {
   .EXAMPLE
     New-TeamsAutoAttendantEntity -Type User -Identity John@domain.com
     Creates a callable Entity for the User John@domain.com
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object - Default behaviour
   .NOTES
     For Users, it will verify the Objects eligibility.
     Requires a valid license but can enable the User Object for Enterprise Voice if needed.
     For Groups, it will verify that the Group exists in AzureAd (but not in Exchange)
     For ExternalPstn it will construct the Tel URI
-  .INPUTS
-    System.String
-  .OUTPUTS
-    System.Object - (default)
   .COMPONENT
+    UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Creates a new Callable Entity for use in Call Queues or Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
+  .LINK
+    about_TeamsAutoAttendant
+  .LINK
+    about_TeamsCallQueue
+  .LINK
+    Assert-TeamsCallableEntity
+  .LINK
+    Find-TeamsCallableEntity
+  .LINK
+    Get-TeamsCallableEntity
+  .LINK
+    New-TeamsCallableEntity
 	.LINK
     New-TeamsAutoAttendant
 	.LINK
     Set-TeamsAutoAttendant
-	.LINK
-    Get-TeamsCallableEntity
-	.LINK
-    Find-TeamsCallableEntity
-	.LINK
-    New-TeamsCallableEntity
 	.LINK
     New-TeamsAutoAttendantDialScope
 	.LINK

@@ -12,7 +12,7 @@ All CmdLets are designed to help with Administration of Users, Common Area Phone
 
 ## TOPICS COVERED
 
-This module currently contains over 85 Functions covering a broad area of Teams Functions for Admins: From Session Connection and activating Admin Roles in PIM to User Administration, Licensing and Voice Configuration all the way to Resource Accounts, Call Queues, Auto Attendants
+This module currently contains over 100 Functions covering a broad area of Teams Functions for Admins: From Session Connection and activating Admin Roles in PIM to User Administration, Licensing and Voice Configuration all the way to Resource Accounts, Call Queues, Auto Attendants
 
 Each topic will get its own ABOUT file soon, diving deeper into the Scripts.
 
@@ -28,16 +28,22 @@ Each topic will get its own ABOUT file soon, diving deeper into the Scripts.
 - Teams Auto Attendant: Improvements on existing CmdLets
 - Support and Helper functions for Admin tasks
 
-## EXAMPLES
+## SCHEDULE
 
-Until proper maturity has been reached, updates are released monthly. Bugfixes are added to as pre-releases in a weekly cadence.
+We have reached a level of maturity and stability that now lets me change the schedule from a Monthly/Weekly cadence to a more static one:
+I may still issue a mid-month pre-release in order to provide bugfixes and test functionality, but these should be rarer going forward.
 
-- Monthly Cycle: `Update-Module TeamsFunctions`
-- Weekly Cycle: `Update-Module TeamsFunctions -AllowPrerelease`
+- Stable Cycle: `Update-Module TeamsFunctions`
+- Testing Cycle: `Update-Module TeamsFunctions -AllowPrerelease`
+
+> [!NOTE] The Stable Cycle is released roughly beginning of the month and will have only one minor version, for Example: "v21.5" for May 2021
+> The Testing/Prerelease Cycle will have a third tier indicating the day it was published, for Example "v21.5.18-prerelease" for 18 May 2021
 
 ## NOTE
 
-This seems to be a constant work-in progress so please bear with me with any issues you may find. I am addressing them pretty rapidly, but I am doing this alone and outside my day-job in my spare time. Cheers.
+Due to the ever evolving nature of Teams, new features coming in, etc. this seems to be a constant work-in progress.
+Please bear with me as I try to keep in lock-step (or very close behind) Microsofts releases.
+Any issues found, please raise them against the repository. I am trying to address them pretty rapidly, but I am doing this alone and outside my day-job in my spare time. Cheers.
 
 ## REQUIREMENTS
 
@@ -47,11 +53,13 @@ This seems to be a constant work-in progress so please bear with me with any iss
 - Module `AzureAd` or `AzureAdPreview`
 Some functions are only available with the Preview module until they become generally available and move to the AzureAd Module
 
-> [!NOTE] The Module `SkypeOnlineConnector` is deprecated and has been removed as a dependency from this Module with v21.2 - Connection is now solely established with the MicrosoftTeams Module
+> [!NOTE] The Module `SkypeOnlineConnector` is deprecated and has been removed as a dependency from this Module with v21.2 - Connection is now solely established with the MicrosoftTeams Module. Please uninstall SkypeOnlineConnector and switch to MicrosoftTeams (v2.0 or higher). Connecting (and reconnecting) sessions has been vastly improved!
 
 ## TROUBLESHOOTING NOTE
 
-[Help Files](/help) are available for all topics as well as automatically generated [docs](/docs) for each exported function.
+All Help Files are available in [docs](/docs)
+All Topics have been documented as *about_* Files
+Each exported function has automatically generated help files with PlatyPS.
 
 If you find bugs, please report them by raising an Issue on this repo or send me a message to [TeamsFunctions@outlook.com](mailto:TeamsFunctions@outlook.com)
 

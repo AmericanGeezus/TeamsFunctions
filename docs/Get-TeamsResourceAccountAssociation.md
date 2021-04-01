@@ -13,7 +13,7 @@ Queries a Resource Account Association
 ## SYNTAX
 
 ```
-Get-TeamsResourceAccountAssociation [[-Identity] <String[]>] [<CommonParameters>]
+Get-TeamsResourceAccountAssociation [[-UserPrincipalName] <String[]>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,13 +37,14 @@ Queries the Association of the Account 'ResourceAccount@domain.com'
 
 ## PARAMETERS
 
-### -Identity
-UPN of the Object to manipulate.
+### -UserPrincipalName
+Optional.
+UPN(s) of the Resource Account(s) to be queried
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: Identity
 
 Required: False
 Position: 1
@@ -70,19 +71,21 @@ Without any Parameters, can be used to enumerate all Resource Accounts
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
+[about_TeamsResourceAccount]()
+
 [Get-TeamsResourceAccountAssociation]()
 
 [New-TeamsResourceAccountAssociation]()
 
 [Remove-TeamsResourceAccountAssociation]()
 
-[New-TeamsResourceAccount]()
-
 [Get-TeamsResourceAccount]()
 
 [Find-TeamsResourceAccount]()
 
-[Set-TeamsResourceAccount]()
+[New-TeamsResourceAccount]()
 
 [Remove-TeamsResourceAccount]()
+
+[Set-TeamsResourceAccount]()
 

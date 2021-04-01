@@ -34,16 +34,27 @@ function Find-TeamsCallableEntity {
     Finding linked agents is useful if the Call Queues are in an unusable state.
     This happens if a User is unlicensed, disabled for Enterprise Voice or disabled completely
     while still being targeted as an Agent or for Overflow or Timeout.
+  .COMPONENT
+    UserManagement
+    TeamsAutoAttendant
+    TeamsCallQueue
 	.FUNCTIONALITY
-    Call Queue Troubleshooting
-    Auto Attendant Troubleshooting
+    Finding Call Queues and/or Auto Attendants where specific Callable Entity is attached
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-	.LINK
+  .LINK
+    about_UserManagement
+  .LINK
+    about_TeamsAutoAttendant
+  .LINK
+    about_TeamsCallQueue
+  .LINK
+    Assert-TeamsCallableEntity
+  .LINK
     Find-TeamsCallableEntity
-	.LINK
+  .LINK
     Get-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsCallableEntity
 	.LINK
     Get-TeamsObjectType

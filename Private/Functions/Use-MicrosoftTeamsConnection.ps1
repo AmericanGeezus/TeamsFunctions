@@ -43,7 +43,7 @@ function Use-MicrosoftTeamsConnection {
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      # NOTE This currently takes about half a second (486ms on average)
+      # MEASUREMENTS This currently takes about half a second (486ms on average)
       $null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
       #Write-Verbose -Message "$($MyInvocation.MyCommand) - No Teams session found"
       #Start-Sleep -Seconds 1

@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO ADD Start and End Time instead of BusinessHours for even more flexibility!
+
 
 function New-TeamsAutoAttendantSchedule {
   <#
@@ -21,14 +21,27 @@ function New-TeamsAutoAttendantSchedule {
     This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule
     For simplicity, this command assumes the same hours of operation for each day that the business is open.
     For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center
-    If desired via PowerShell, please use New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.
+    If desired via PowerShell, please use BusinessHoursStart/BusinessHoursEnd or define manually with:
+    New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.
   .PARAMETER Fixed
     Defines a fixed schedule, suitable for Holiday Sets
   .PARAMETER BusinessDays
+    Parameter for WeeklyReccurrentSchedule
     Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule
   .PARAMETER BusinessHours
+    Parameter for WeeklyReccurrentSchedule - Option 1: Choose from a predefined Time Frame
     Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule
+    Covering most of regular working hour patterns to choose from.
+  .PARAMETER BusinessHoursStart
+    Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
+    Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule
+    Manual start and end time to be provided in the format "09:00" - 15 minute increments only
+  .PARAMETER BusinessHoursEnd
+    Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
+    Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule
+    Manual start and end time to be provided in the format "09:00" - 15 minute increments only
   .PARAMETER DateTimeRanges
+    Parameter for WeeklyReccurrentSchedule - Option 3: Provide a DateTimeRange Object
     Object or Objects defined with New-CsOnlineTimeRange
     Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed
   .PARAMETER Complement
@@ -40,23 +53,33 @@ function New-TeamsAutoAttendantSchedule {
     New-TeamsAutoAttendantSchedule -WeeklyRecurrentSchedule -BusinessDays MonToFri -BusinesHours 9to5
     Creates a weekly recurring schedule for business hours Monday to Friday from 9am to 5pm
   .EXAMPLE
+    New-TeamsAutoAttendantSchedule -WeeklyRecurrentSchedule -BusinessDays MonToSat -BusinessHoursStart 09:15 -BusinessHoursEnd 17:45
+    Creates a weekly recurring schedule for business hours Monday to Saturday from 09:15 to 17:45
+  .EXAMPLE
     New-TeamsAutoAttendantSchedule -WeeklyRecurrentSchedule -BusinessDays SunToThu -DateTimeRange @($TR1, $TR2)
     Creates a weekly recurring schedule for business hours Sunday to Thursday with custom TimeRange(s) provided with the Objects $TR1 and $TR2
   .EXAMPLE
     New-TeamsAutoAttendantSchedule -Fixed -DateTimeRange @($TR1, $TR2)
     Adds a fixed schedule for the TimeRange(s) provided with the Objects $TR1 and $TR2
-  .NOTES
-    Combinations of BusinesHours and BusinessDays are numerous but not exhaustive.
-    For example, all Business days will receive the same Business hours. For more granular options,
-    please define TimeRange manually and use the Switch -DateTimeRange to provide the Object instead.
   .INPUTS
     System.String, System.Object
   .OUTPUTS
     System.Object
+  .NOTES
+    Combinations of BusinesHours and BusinessDays are numerous but not exhaustive.
+    For simplicity, this command assumes the same hours of operation for each day that the business is open.
+    With the following Parameters, these three options are available:
+    1. BusinessHours - Choose time range from a predefined list (amend in Admin Center afterwards, if needed)
+    2. BusinessHoursStart and BusinessHoursEnd - Provide a Start and End Time for the Time Range (15 minute increments)
+    3. DateTimeRange - Provide a DateTimeRange Object manually defined with New-CsOnlineTimeRange and New-CsOnlineSchedule
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a Schedule Object for use in an AutoAttendant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     New-TeamsAutoAttendant
 	.LINK
@@ -88,6 +111,7 @@ function New-TeamsAutoAttendantSchedule {
     [Parameter(Mandatory)]
     [string]$Name,
 
+    [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours2')]
     [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours')]
     [Parameter(Mandatory, ParameterSetName = 'WeeklyTimeRange')]
     [switch]$WeeklyRecurrentSchedule,
@@ -95,6 +119,7 @@ function New-TeamsAutoAttendantSchedule {
     [Parameter(Mandatory, ParameterSetName = 'FixedTimeRange')]
     [switch]$Fixed,
 
+    [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours2')]
     [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours')]
     [Parameter(Mandatory, ParameterSetName = 'WeeklyTimeRange')]
     [ValidateSet('MonToFri', 'MonToSat', 'MonToSun', 'SunToThu')]
@@ -104,10 +129,19 @@ function New-TeamsAutoAttendantSchedule {
     [ValidateSet('9to6', '9to5', '9to4', '8to6', '8to5', '8to4', '7to6', '7to5', '7to4', '6to6', '10to6', '0830to1700', '0830to1730', '0800to1730', '0830to1800', '0900to1730', '0930to1730', '0930to1800', '8to12and13to17', '8to12and13to18', '9to12and13to17', '9to12and13to18', '9to13and14to18', '8to12and14to18', 'AllDay')]
     [string]$BusinessHours,
 
+    [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours2')]
+    [ValidatePattern( { '^(?:[01]?\d|2[0-3])(?::)(00|15|30|45)' })]
+    [string]$BusinessHoursStart,
+
+    [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours2')]
+    [ValidatePattern( { '^(?:[01]?\d|2[0-3])(?::)(00|15|30|45)' })]
+    [string]$BusinessHoursEnd,
+
     [Parameter(Mandatory, ParameterSetName = 'WeeklyTimeRange')]
     [Parameter(Mandatory, ParameterSetName = 'FixedTimeRange')]
     [system.Object[]]$DateTimeRanges,
 
+    [Parameter(ParameterSetName = 'WeeklyBusinessHours2')]
     [Parameter(ParameterSetName = 'WeeklyBusinessHours')]
     [Parameter(ParameterSetName = 'WeeklyTimeRange')]
     [switch]$Complement
@@ -168,59 +202,72 @@ function New-TeamsAutoAttendantSchedule {
       $TimeFrame = @($DateTimeRanges)
     }
     else {
-      Write-Verbose -Message "[PROCESS] Processing BusinessHours '$BusinessHours'"
-      switch ($BusinessHours) {
-        # Defining time of Day ($TimeFrame)
-        'AllDay' { $TimeFrame = New-CsOnlineTimeRange -Start 00:00 -End 1.00:00 }
-        '9to6' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 18:00 }
-        '9to5' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
-        '9to4' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 16:00 }
-        '8to6' { $TimeFrame = New-CsOnlineTimeRange -Start 08:00 -End 18:00 }
-        '8to5' { $TimeFrame = New-CsOnlineTimeRange -Start 08:00 -End 17:00 }
-        '8to4' { $TimeFrame = New-CsOnlineTimeRange -Start 08:00 -End 16:00 }
-        '7to6' { $TimeFrame = New-CsOnlineTimeRange -Start 07:00 -End 18:00 }
-        '7to5' { $TimeFrame = New-CsOnlineTimeRange -Start 07:00 -End 17:00 }
-        '7to4' { $TimeFrame = New-CsOnlineTimeRange -Start 07:00 -End 16:00 }
-        '6to6' { $TimeFrame = New-CsOnlineTimeRange -Start 06:00 -End 18:00 }
-        '10to6' { $TimeFrame = New-CsOnlineTimeRange -Start 10:00 -End 18:00 }
-        '0800to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
-        '0830to1700' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
-        '0830to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
-        '0830to1800' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
-        '0900to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:30 }
-        '0930to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:30 -End 17:30 }
-        '0930to1800' { $TimeFrame = New-CsOnlineTimeRange -Start 09:30 -End 18:00 }
-        '8to12and13to17' {
-          $Range1 = New-CsOnlineTimeRange -Start 08:00 -End 12:00
-          $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 17:00
-          $TimeFrame = @($Range1, $Range2)
+      # Differentiating between BusinessHours and BusinessHoursStart/End
+      #TEST Start and End Time as TimeFrame
+      if ($PSBoundParameters.ContainsKey('BusinessHoursStart') -and $PSBoundParameters.ContainsKey('BusinessHoursEnd')) {
+        Write-Verbose -Message "[PROCESS] Processing BusinessHoursStart '$BusinessHoursStart' and BusinessHoursEnd '$BusinessHoursEnd'"
+        if ($BusinessHoursStart -gt $BusinessHoursEnd) {
+          $TimeFrame = New-CsOnlineTimeRange -Start $BusinessHoursStart -End 1.$BusinessHoursEnd
         }
-        '8to12and13to18' {
-          $Range1 = New-CsOnlineTimeRange -Start 08:00 -End 12:00
-          $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 18:00
-          $TimeFrame = @($Range1, $Range2)
+        else {
+          $TimeFrame = New-CsOnlineTimeRange -Start $BusinessHoursStart -End $BusinessHoursEnd
         }
-        '9to12and13to17' {
-          $Range1 = New-CsOnlineTimeRange -Start 09:00 -End 12:00
-          $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 17:00
-          $TimeFrame = @($Range1, $Range2)
+      }
+      else {
+        Write-Verbose -Message "[PROCESS] Processing BusinessHours '$BusinessHours'"
+        switch ($BusinessHours) {
+          # Defining time of Day ($TimeFrame)
+          'AllDay' { $TimeFrame = New-CsOnlineTimeRange -Start 00:00 -End 1.00:00 }
+          '9to6' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 18:00 }
+          '9to5' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
+          '9to4' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 16:00 }
+          '8to6' { $TimeFrame = New-CsOnlineTimeRange -Start 08:00 -End 18:00 }
+          '8to5' { $TimeFrame = New-CsOnlineTimeRange -Start 08:00 -End 17:00 }
+          '8to4' { $TimeFrame = New-CsOnlineTimeRange -Start 08:00 -End 16:00 }
+          '7to6' { $TimeFrame = New-CsOnlineTimeRange -Start 07:00 -End 18:00 }
+          '7to5' { $TimeFrame = New-CsOnlineTimeRange -Start 07:00 -End 17:00 }
+          '7to4' { $TimeFrame = New-CsOnlineTimeRange -Start 07:00 -End 16:00 }
+          '6to6' { $TimeFrame = New-CsOnlineTimeRange -Start 06:00 -End 18:00 }
+          '10to6' { $TimeFrame = New-CsOnlineTimeRange -Start 10:00 -End 18:00 }
+          '0800to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
+          '0830to1700' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
+          '0830to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
+          '0830to1800' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:00 }
+          '0900to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:00 -End 17:30 }
+          '0930to1730' { $TimeFrame = New-CsOnlineTimeRange -Start 09:30 -End 17:30 }
+          '0930to1800' { $TimeFrame = New-CsOnlineTimeRange -Start 09:30 -End 18:00 }
+          '8to12and13to17' {
+            $Range1 = New-CsOnlineTimeRange -Start 08:00 -End 12:00
+            $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 17:00
+            $TimeFrame = @($Range1, $Range2)
+          }
+          '8to12and13to18' {
+            $Range1 = New-CsOnlineTimeRange -Start 08:00 -End 12:00
+            $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 18:00
+            $TimeFrame = @($Range1, $Range2)
+          }
+          '9to12and13to17' {
+            $Range1 = New-CsOnlineTimeRange -Start 09:00 -End 12:00
+            $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 17:00
+            $TimeFrame = @($Range1, $Range2)
+          }
+          '9to12and13to18' {
+            $Range1 = New-CsOnlineTimeRange -Start 09:00 -End 12:00
+            $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 18:00
+            $TimeFrame = @($Range1, $Range2)
+          }
+          '9to13and14to18' {
+            $Range1 = New-CsOnlineTimeRange -Start 09:00 -End 13:00
+            $Range2 = New-CsOnlineTimeRange -Start 14:00 -End 17:00
+            $TimeFrame = @($Range1, $Range2)
+          }
+          '8to12and14to18' {
+            $Range1 = New-CsOnlineTimeRange -Start 08:00 -End 12:00
+            $Range2 = New-CsOnlineTimeRange -Start 14:00 -End 18:00
+            $TimeFrame = @($Range1, $Range2)
+          }
+          default { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 17:00)) }
         }
-        '9to12and13to18' {
-          $Range1 = New-CsOnlineTimeRange -Start 09:00 -End 12:00
-          $Range2 = New-CsOnlineTimeRange -Start 13:00 -End 18:00
-          $TimeFrame = @($Range1, $Range2)
-        }
-        '9to13and14to18' {
-          $Range1 = New-CsOnlineTimeRange -Start 09:00 -End 13:00
-          $Range2 = New-CsOnlineTimeRange -Start 14:00 -End 17:00
-          $TimeFrame = @($Range1, $Range2)
-        }
-        '8to12and14to18' {
-          $Range1 = New-CsOnlineTimeRange -Start 08:00 -End 12:00
-          $Range2 = New-CsOnlineTimeRange -Start 14:00 -End 18:00
-          $TimeFrame = @($Range1, $Range2)
-        }
-        default { $TimeFrame = @($(New-CsOnlineTimeRange -Start 09:00 -End 17:00)) }
       }
     }
     #endregion

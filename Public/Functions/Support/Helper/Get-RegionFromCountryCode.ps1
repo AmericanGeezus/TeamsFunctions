@@ -24,11 +24,21 @@ function Get-RegionFromCountryCode {
 	.EXAMPLE
 		Get-RegionFromCountryCode AW -Output Country
 		Returns Country "Aruba" for CountryCode AW
+  .INPUTS
+		System.String
+  .OUTPUTS
+    System.String
 	.NOTES
 		CountryCode must be provided otherwise InvalidData Error will be thrown
 		FullyQualifiedErrorId: ParameterArgumentValidationErrorEmptyStringNotAllowed
+  .COMPONENT
+    SupportingFunction
+	.FUNCTIONALITY
+    Retruns the Region or Country for any given CountryCode
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_SupportingFunction
 	#>
 
   [CmdletBinding()]

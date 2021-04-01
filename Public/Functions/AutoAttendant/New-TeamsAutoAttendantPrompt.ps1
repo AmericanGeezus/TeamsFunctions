@@ -23,16 +23,21 @@ function New-TeamsAutoAttendantPrompt {
     New-TeamsAutoAttendantPrompt -String "myAudioFile.mp3"
     Verifies the file exists, then imports it (with Import-TeamsAudioFile)
     Creates a Audio File Prompt after import.
-  .NOTES
-    Warning: This will break if the String ends in a supported File extension (WAV, WMA or MP3)
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
+  .NOTES
+    Warning: The Automatic detection of the String depends on the last 4 characters of the String.
+    This will break if the String ends in a supported File extension (WAV, WMA or MP3), for example.
   .COMPONENT
     TeamsAutoAttendant
+	.FUNCTIONALITY
+    Creates a Prompt object to be used in Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsAutoAttendant
 	.LINK
     New-TeamsAutoAttendant
 	.LINK

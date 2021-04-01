@@ -30,10 +30,15 @@ function Get-TeamsResourceAccountAssociation {
 		Without any Parameters, can be used to enumerate all Resource Accounts
     This may take a while to calculate, depending on # of Accounts in the Tenant
   .COMPONENT
+    TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
+	.FUNCTIONALITY
+    Queries the Association Status of one or more Resource Accounts
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsResourceAccount
   .LINK
     Get-TeamsResourceAccountAssociation
 	.LINK
@@ -41,23 +46,24 @@ function Get-TeamsResourceAccountAssociation {
 	.LINK
 		Remove-TeamsResourceAccountAssociation
 	.LINK
-    New-TeamsResourceAccount
-	.LINK
     Get-TeamsResourceAccount
 	.LINK
     Find-TeamsResourceAccount
 	.LINK
-    Set-TeamsResourceAccount
+    New-TeamsResourceAccount
 	.LINK
     Remove-TeamsResourceAccount
+	.LINK
+    Set-TeamsResourceAccount
+
 	#>
   [CmdletBinding()]
   [Alias('Get-TeamsRAA')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to manipulate.')]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity
+    [Alias('Identity')]
+    [string[]]$UserPrincipalName
   ) #param
 
   begin {
@@ -93,8 +99,8 @@ function Get-TeamsResourceAccountAssociation {
       $Accounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue
     }
     else {
-      # Querying ObjectId from provided $Identity
-      foreach ($UPN in $Identity) {
+      # Querying ObjectId from provided $UserPrincipalName
+      foreach ($UPN in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account '$UPN'"
         try {
           $AppInstance = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Stop

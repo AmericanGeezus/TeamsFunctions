@@ -34,8 +34,16 @@ function Find-AzureAdUser {
     System.String
   .OUTPUTS
     Microsoft.Open.AzureAD.Model.User
+  .NOTES
+    None
+  .COMPONENT
+    UserManagement
+	.FUNCTIONALITY
+    Queries User Objects in Azure Ad with different mechanics
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_UserManagement
   .LINK
     Find-AzureAdGroup
   .LINK
@@ -165,7 +173,7 @@ function Find-AzureAdUser {
 
     # Output - Filtering objects
     if ( $Users ) {
-      $Users | Sort-Object -Unique -Property ObjectId | Get-Unique
+      $Users | Sort-Object -Unique -Property ObjectId | Get-Unique | Sort-Object DisplayName
     }
   } #process
 
