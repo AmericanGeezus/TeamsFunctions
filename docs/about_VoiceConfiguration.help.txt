@@ -21,6 +21,9 @@ CmdLets
                                      | | ------------------------------------: |
     -------------------------------------------------------------------------------------------------------------------------------------------------
     | |
+    `Assert-TeamsUserVoiceConfig`
+    | Validates an Object for proper application of its Voice Configuration and
+    returns Objects that are only partially or not correctly configured. | |
     `Enable-TeamsUserForEnterpriseVoice`
     | |
     `Find-TeamsUserVoiceRoute`
@@ -57,8 +60,21 @@ CmdLets
     `Get-TeamsTenant`
     | Get-CsTenant gives too much output? This can help.                        
              | |
+    `Get-TeamsCP`
+    | Get-CsTeamsCallingPolicy is too long to type? Here is a shorter one.      
+     | |
+    `Get-TeamsECP`
+    | Get-CsTeamsEmergencyCallingPolicy is too long to type? Here is a shorter
+    one.        | |
+    `Get-TeamsECRP`
+    | Get-CsTeamsEmergencyCallRoutingPolicy is too long to type? Here is a
+    shorter one.        | |
+    `Get-TeamsIPP`
+    | Get-CsTeamsIpPhonePolicy is too long to type? Here is a shorter one.      
+     | |
     `Get-TeamsOVP`
-    | |
+    | Get-CsOnlineVoiceRoutingPolicy is too long to type? Here is a shorter one.
+           | |
     `Get-TeamsOPU`
     | Get-CsOnlinePstnUsage is too clunky. Here is a shorter one, with a search
     function! | |
@@ -165,11 +181,12 @@ NOTE
     Voice Config CmdLets started out just limiting the output of
     Get-CsOnlineUser to retain an overview and avoid unnecessary scrolling and
     find information faster and in a more consistent way.
+    Now they are enriching administration in Teams and are a backbone to the
+    Admin Experience.
 
 Development Status
-    - Main CmdLets are complete, tough may find to be tweaked here and there.
-    - Support CmdLets are complete
-    - The Legacy CmdLets are in need or re-evaluation and come as-is.
+    CmdLets are completely fleshed out and tested. Minor tweaks may still need
+    to be done to round things.
 
 TROUBLESHOOTING NOTE
     Thoroughly tested, but Unit-tests for these CmdLets are not yet available.

@@ -116,7 +116,7 @@ Accept wildcard characters: False
 Optional.
 Time in Seconds to alert each agent.
 Works depending on Routing method
-NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
+Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
 
 ```yaml
 Type: Int16

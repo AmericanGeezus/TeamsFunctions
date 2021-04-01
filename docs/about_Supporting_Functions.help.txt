@@ -49,11 +49,19 @@ CmdLets
     E.164 Number, removing special characters as needed. | |
     `Format-StringRemoveSpecialCharacter`
     | |
+    `Get-PublicHolidayCountry`
+    | |
+    `Get-PublicHolidayList`
+    | |
     `Get-RegionFromCountryCode`
     a specific country is in.                     | |
     `Get-TeamsObjectType`
     | Little brother to `Get-TeamsCallableEntity` Returns the type of any given
-    Object to identify its use in CQs and AAs.         |
+    Object to identify its use in CQs and AAs.         | |
+    `Import-TeamsAudioFile`
+    | Import-CsOnlineAudioFile                   | Imports an Audio File for use
+    within Call Queues or Auto Attendants                                       
+           |
 
     TEST & ASSERT FUNCTIONS
     These are helper functions for testing Connections and Modules. All
@@ -67,6 +75,9 @@ CmdLets
     |
     -----------------------------------------------------------------------------------------------------------
     | |
+    `Assert-Module`
+    | Verifies installation and import of a Module and optionally also verifies
+    Version.                              | |
     `Assert-AzureAdConnection`
     | Tests connection and visual feedback in the Verbose stream if called
     directly.                              | |
@@ -87,9 +98,6 @@ CmdLets
     `Test-MicrosoftTeamsConnection`
     | Verifying a Session to MicrosoftTeams exists                              
                                      | |
-    `Test-SkypeOnlineConnection`
-    | Verifying a Session to SkypeOnline exists                                 
-                                     | |
     `Test-ExchangeOnlineConnection`
     | Verifying a Session to ExchangeOnline exists                              
                                      | |
@@ -109,9 +117,6 @@ CmdLets
                                      | |
     `Test-TeamsUserHasCallPlan`
     | Testing whether the User has any Call Plan License                        
-                                     | |
-    `Test-Module`
-    | Verifying the specified Module is loaded                                  
                                      | |
     `Test-TeamsExternalDNS`
     | Tests DNS Records for Skype for Business Online and Teams<br />NOTE: This

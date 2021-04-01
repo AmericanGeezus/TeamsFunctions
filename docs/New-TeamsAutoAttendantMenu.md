@@ -75,7 +75,7 @@ Creates a Menu Object with the Call Targets provided in order of application dep
 Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively.
 Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn)
 Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
-NOTE: This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
+This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
 
 ### EXAMPLE 4
 ```
@@ -88,7 +88,7 @@ Creates a Menu with MenuOptions Objects provided in order with the Parameter Cal
 Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string),
 Option 3 is TransferToCallTarget (Shared Voicemail)
 Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
-NOTE: This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
+This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
 
 ### EXAMPLE 5
 ```
@@ -225,8 +225,8 @@ Accept wildcard characters: False
 Optional for Action MenuOptions when used with CallTargetsInOrder only.
 This switch is ignored if more than nine (9) CallTargetsInOrder are specified
 Adds one more menu option to Transfer the Call to the Operator on pressing 0.
-NOTE: The AutoAttendant which will receive a Menu with this option, must have an Operator defined.
-Errors may occur if no operator is present.
+The AutoAttendant which will receive a Menu with this option, must have an Operator defined.
+Creating or Updating an Auto Attendant with an Operator that is not defined will lead to errors.
 
 ```yaml
 Type: SwitchParameter

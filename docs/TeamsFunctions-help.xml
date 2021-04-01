@@ -3549,7 +3549,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName">
           <maml:name>Identity</maml:name>
           <maml:description>
-            <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
+            <maml:para>The Identity or UserPrincipalname for the user.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -3575,7 +3575,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName">
         <maml:name>Identity</maml:name>
         <maml:description>
-          <maml:para>The Identity, UserPrincipalname or UserName for the user.</maml:para>
+          <maml:para>The Identity or UserPrincipalname for the user.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -5164,7 +5164,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones</maml:para>
+        <maml:para>Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones Running the CmdLet without any input might take a while, depending on size of the Tenant.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -5172,7 +5172,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-TeamsCommonAreaPhone</dev:code>
         <dev:remarks>
-          <maml:para>Returns all Common Area Phones. NOTE: Depending on size of the Tenant, this might take a while.</maml:para>
+          <maml:para>Returns all Common Area Phones.   Depending on size of the Tenant, this might take a while.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -6773,7 +6773,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Pipeline input possible</maml:para>
+        <maml:para>Pipeline input possible   Running the CmdLet without any input might take a while, depending on size of the Tenant.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -6781,7 +6781,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-TeamsResourceAccount</dev:code>
         <dev:remarks>
-          <maml:para>Returns all Resource Accounts. NOTE: Depending on size of the Tenant, this might take a while.</maml:para>
+          <maml:para>Returns all Resource Accounts. Depending on size of the Tenant, this might take a while.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -9819,7 +9819,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>AddOperatorOnZero</maml:name>
           <maml:description>
-            <maml:para>Optional for Action MenuOptions when used with CallTargetsInOrder only. This switch is ignored if more than nine (9) CallTargetsInOrder are specified Adds one more menu option to Transfer the Call to the Operator on pressing 0. NOTE: The AutoAttendant which will receive a Menu with this option, must have an Operator defined. Errors may occur if no operator is present.</maml:para>
+            <maml:para>Optional for Action MenuOptions when used with CallTargetsInOrder only. This switch is ignored if more than nine (9) CallTargetsInOrder are specified Adds one more menu option to Transfer the Call to the Operator on pressing 0. The AutoAttendant which will receive a Menu with this option, must have an Operator defined. Creating or Updating an Auto Attendant with an Operator that is not defined will lead to errors.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -10130,7 +10130,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>AddOperatorOnZero</maml:name>
         <maml:description>
-          <maml:para>Optional for Action MenuOptions when used with CallTargetsInOrder only. This switch is ignored if more than nine (9) CallTargetsInOrder are specified Adds one more menu option to Transfer the Call to the Operator on pressing 0. NOTE: The AutoAttendant which will receive a Menu with this option, must have an Operator defined. Errors may occur if no operator is present.</maml:para>
+          <maml:para>Optional for Action MenuOptions when used with CallTargetsInOrder only. This switch is ignored if more than nine (9) CallTargetsInOrder are specified Adds one more menu option to Transfer the Call to the Operator on pressing 0. The AutoAttendant which will receive a Menu with this option, must have an Operator defined. Creating or Updating an Auto Attendant with an Operator that is not defined will lead to errors.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -10234,14 +10234,14 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "C:\temp\Menu.wav" -CallTargetsInOrder "MyCQ@domain.com","MyAA@domain.com","$null","tel:+15551234567"</dev:code>
         <dev:remarks>
-          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Path to the Audio File. Creates a Menu Object with the Call Targets provided in order of application depending on identified ObjectType: Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively. Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn) Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. NOTE: This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
+          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Path to the Audio File. Creates a Menu Object with the Call Targets provided in order of application depending on identified ObjectType: Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively. Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn) Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group"</dev:code>
         <dev:remarks>
-          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Text-to-voice string. Creates a Menu with MenuOptions Objects provided in order with the Parameter CallTargetsInOrder depending on identified ObjectType: Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string), Option 3 is TransferToCallTarget (Shared Voicemail) Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. NOTE: This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
+          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Text-to-voice string. Creates a Menu with MenuOptions Objects provided in order with the Parameter CallTargetsInOrder depending on identified ObjectType: Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string), Option 3 is TransferToCallTarget (Shared Voicemail) Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -10916,7 +10916,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>WeeklyRecurrentSchedule</maml:name>
           <maml:description>
-            <maml:para>Defines a schedule that is recurring weekly with Business Hours for every day of the week. This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule For simplicity, this command assumes the same hours of operation for each day that the business is open. For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center If desired via PowerShell, please use New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.</maml:para>
+            <maml:para>Defines a schedule that is recurring weekly with Business Hours for every day of the week. This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule For simplicity, this command assumes the same hours of operation for each day that the business is open. For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center If desired via PowerShell, please use BusinessHoursStart/BusinessHoursEnd or define manually with: New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -10927,7 +10927,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BusinessDays</maml:name>
           <maml:description>
-            <maml:para>Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule</maml:para>
+            <maml:para>Parameter for WeeklyReccurrentSchedule Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -10939,7 +10939,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BusinessHours</maml:name>
           <maml:description>
-            <maml:para>Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule</maml:para>
+            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 1: Choose from a predefined Time Frame Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Covering most of regular working hour patterns to choose from.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -10999,7 +10999,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>WeeklyRecurrentSchedule</maml:name>
           <maml:description>
-            <maml:para>Defines a schedule that is recurring weekly with Business Hours for every day of the week. This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule For simplicity, this command assumes the same hours of operation for each day that the business is open. For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center If desired via PowerShell, please use New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.</maml:para>
+            <maml:para>Defines a schedule that is recurring weekly with Business Hours for every day of the week. This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule For simplicity, this command assumes the same hours of operation for each day that the business is open. For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center If desired via PowerShell, please use BusinessHoursStart/BusinessHoursEnd or define manually with: New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -11010,7 +11010,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BusinessDays</maml:name>
           <maml:description>
-            <maml:para>Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule</maml:para>
+            <maml:para>Parameter for WeeklyReccurrentSchedule Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -11022,11 +11022,106 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>DateTimeRanges</maml:name>
           <maml:description>
-            <maml:para>Object or Objects defined with New-CsOnlineTimeRange Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed</maml:para>
+            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 3: Provide a DateTimeRange Object Object or Objects defined with New-CsOnlineTimeRange Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
           <dev:type>
             <maml:name>Object[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Complement</maml:name>
+          <maml:description>
+            <maml:para>The Complement parameter indicates how the schedule is used. When Complement is enabled, the schedule is used as the inverse of the provided configuration For example, if Complement is enabled and the schedule only contains time ranges of Monday to Friday from 9AM to 5PM, then the schedule is active at all times other than the specified time ranges.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>New-TeamsAutoAttendantSchedule</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Provides a friendly Name to the Schedule (visible in the Auto Attendant Object)</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>WeeklyRecurrentSchedule</maml:name>
+          <maml:description>
+            <maml:para>Defines a schedule that is recurring weekly with Business Hours for every day of the week. This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule For simplicity, this command assumes the same hours of operation for each day that the business is open. For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center If desired via PowerShell, please use BusinessHoursStart/BusinessHoursEnd or define manually with: New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BusinessDays</maml:name>
+          <maml:description>
+            <maml:para>Parameter for WeeklyReccurrentSchedule Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BusinessHoursStart</maml:name>
+          <maml:description>
+            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BusinessHoursEnd</maml:name>
+          <maml:description>
+            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -11093,7 +11188,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>DateTimeRanges</maml:name>
           <maml:description>
-            <maml:para>Object or Objects defined with New-CsOnlineTimeRange Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed</maml:para>
+            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 3: Provide a DateTimeRange Object Object or Objects defined with New-CsOnlineTimeRange Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
           <dev:type>
@@ -11142,7 +11237,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>WeeklyRecurrentSchedule</maml:name>
         <maml:description>
-          <maml:para>Defines a schedule that is recurring weekly with Business Hours for every day of the week. This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule For simplicity, this command assumes the same hours of operation for each day that the business is open. For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center If desired via PowerShell, please use New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.</maml:para>
+          <maml:para>Defines a schedule that is recurring weekly with Business Hours for every day of the week. This is suitable for an After Hours in an Auto Attendant. New-TeamsAutoAttendant will utilise a Default Schedule For simplicity, this command assumes the same hours of operation for each day that the business is open. For a more granular approach, aim for a "best match", then amend the schedule afterwards in the Admin Center If desired via PowerShell, please use BusinessHoursStart/BusinessHoursEnd or define manually with: New-CsOnlineTimeRange and New-CsOnlineSchedule respectively.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -11166,7 +11261,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BusinessDays</maml:name>
         <maml:description>
-          <maml:para>Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule</maml:para>
+          <maml:para>Parameter for WeeklyReccurrentSchedule Days defined as Business days. Will be combined with BusinessHours to form a WeeklyReccurrentSchedule</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -11178,7 +11273,31 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BusinessHours</maml:name>
         <maml:description>
-          <maml:para>Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule</maml:para>
+          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 1: Choose from a predefined Time Frame Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Covering most of regular working hour patterns to choose from.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BusinessHoursStart</maml:name>
+        <maml:description>
+          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BusinessHoursEnd</maml:name>
+        <maml:description>
+          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -11190,7 +11309,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>DateTimeRanges</maml:name>
         <maml:description>
-          <maml:para>Object or Objects defined with New-CsOnlineTimeRange Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed</maml:para>
+          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 3: Provide a DateTimeRange Object Object or Objects defined with New-CsOnlineTimeRange Allows for more granular options then the provided BusinessHours examples or to provide Dates for Fixed</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
         <dev:type>
@@ -11258,7 +11377,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Combinations of BusinesHours and BusinessDays are numerous but not exhaustive. For example, all Business days will receive the same Business hours. For more granular options, please define TimeRange manually and use the Switch -DateTimeRange to provide the Object instead.</maml:para>
+        <maml:para>Combinations of BusinesHours and BusinessDays are numerous but not exhaustive. For simplicity, this command assumes the same hours of operation for each day that the business is open. With the following Parameters, these three options are available: 1. BusinessHours - Choose time range from a predefined list (amend in Admin Center afterwards, if needed) 2. BusinessHoursStart and BusinessHoursEnd - Provide a Start and End Time for the Time Range (15 minute increments) 3. DateTimeRange - Provide a DateTimeRange Object manually defined with New-CsOnlineTimeRange and New-CsOnlineSchedule</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -11271,13 +11390,20 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>New-TeamsAutoAttendantSchedule -WeeklyRecurrentSchedule -BusinessDays MonToSat -BusinessHoursStart 09:15 -BusinessHoursEnd 17:45</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a weekly recurring schedule for business hours Monday to Saturday from 09:15 to 17:45</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>New-TeamsAutoAttendantSchedule -WeeklyRecurrentSchedule -BusinessDays SunToThu -DateTimeRange @($TR1, $TR2)</dev:code>
         <dev:remarks>
           <maml:para>Creates a weekly recurring schedule for business hours Sunday to Thursday with custom TimeRange(s) provided with the Objects $TR1 and $TR2</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>New-TeamsAutoAttendantSchedule -Fixed -DateTimeRange @($TR1, $TR2)</dev:code>
         <dev:remarks>
           <maml:para>Adds a fixed schedule for the TimeRange(s) provided with the Objects $TR1 and $TR2</maml:para>
@@ -11748,7 +11874,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>AgentAlertTime</maml:name>
           <maml:description>
-            <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
+            <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int16</command:parameterValue>
           <dev:type>
@@ -11907,7 +12033,7 @@
             <maml:para>This script uses different default values for some parameters than New-CsCallQueue Using this switch will instruct the Script to adhere to Microsoft defaults. ChangedPARAMETER:      This Script   Microsoft    Reason: - OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful</maml:para>
             <maml:para>- TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful</maml:para>
             <maml:para>- UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed</maml:para>
-            <maml:para>NOTE: This only affects parameters which are NOT specified when running the script.</maml:para>
+            <maml:para>This only affects parameters which are NOT specified when running the script.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -11969,7 +12095,7 @@
           <maml:para>This script uses different default values for some parameters than New-CsCallQueue Using this switch will instruct the Script to adhere to Microsoft defaults. ChangedPARAMETER:      This Script   Microsoft    Reason: - OverflowThreshold:      10            50          Smaller Queue Size (Waiting Callers) more universally useful</maml:para>
           <maml:para>- TimeoutThreshold:       30s           1200s       Shorter Threshold for timeout more universally useful</maml:para>
           <maml:para>- UseDefaultMusicOnHold:  TRUE*         NONE        ONLY if neither UseDefaultMusicOnHold nor MusicOnHoldAudioFile are specificed</maml:para>
-          <maml:para>NOTE: This only affects parameters which are NOT specified when running the script.</maml:para>
+          <maml:para>This only affects parameters which are NOT specified when running the script.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -11981,7 +12107,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
         <maml:name>AgentAlertTime</maml:name>
         <maml:description>
-          <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
+          <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int16</command:parameterValue>
         <dev:type>
@@ -12453,7 +12579,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>License</maml:name>
           <maml:description>
-            <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+            <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -12574,7 +12700,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>License</maml:name>
         <maml:description>
-          <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+          <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -12678,7 +12804,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Execution requires User Admin Role in Azure AD To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves.</maml:para>
+        <maml:para>Execution requires User Admin Role in Azure AD To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves. Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -12796,7 +12922,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Type">
           <maml:name>ApplicationType</maml:name>
           <maml:description>
-            <maml:para>Required. CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant NOTE: The type can be switched later, though this is not recommended.</maml:para>
+            <maml:para>Required. CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -12820,7 +12946,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>License</maml:name>
           <maml:description>
-            <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+            <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -12893,7 +13019,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Type">
         <maml:name>ApplicationType</maml:name>
         <maml:description>
-          <maml:para>Required. CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant NOTE: The type can be switched later, though this is not recommended.</maml:para>
+          <maml:para>Required. CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -12917,7 +13043,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>License</maml:name>
         <maml:description>
-          <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+          <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -12985,7 +13111,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Execution requires User Admin Role in Azure AD</maml:para>
+        <maml:para>Execution requires User Admin Role in Azure AD Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -14325,7 +14451,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="DisableEnterpriseVoice">
           <maml:name>DisableEV</maml:name>
           <maml:description>
-            <maml:para>Optional. Instructs the Script to also disable the Enterprise Voice enablement of the User By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice. This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad) EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed NOTE: If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.</maml:para>
+            <maml:para>Optional. Instructs the Script to also disable the Enterprise Voice enablement of the User By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice. This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad) EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -14407,7 +14533,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="DisableEnterpriseVoice">
         <maml:name>DisableEV</maml:name>
         <maml:description>
-          <maml:para>Optional. Instructs the Script to also disable the Enterprise Voice enablement of the User By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice. This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad) EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed NOTE: If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.</maml:para>
+          <maml:para>Optional. Instructs the Script to also disable the Enterprise Voice enablement of the User By default the switch EnterpriseVoiceEnabled is left as-is. Replication applies when re-enabling EnterPriseVoice. This is useful for migrating already licensed Users between Voice Configurations as it does not impact the User Experience (Dial Pad) EnterpriseVoiceEnabled will be disabled automatically if the PhoneSystem license is removed If enabled, but no valid Voice Configuration is applied, the User will have a dial pad, but will not have an option to use the PhoneSystem.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -14495,7 +14621,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Prompting for Confirmation for disabling of EnterpriseVoice For DirectRouting, this Script does not remove any licenses. For CallingPlans it will prompt for Calling Plan licenses to be removed.</maml:para>
+        <maml:para>Prompting for Confirmation for disabling of EnterpriseVoice For DirectRouting, this Script does not remove any licenses. For CallingPlans it will prompt for Calling Plan licenses to be removed. The EnterpriseVoice flag was deliberately left enabled and can be disabled with the Switch -DisableEv. This is to enable a User to receive a new Voice Configuration without impacting their experience (dial pad).</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -15392,7 +15518,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
           <maml:name>AgentAlertTime</maml:name>
           <maml:description>
-            <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
+            <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int16</command:parameterValue>
           <dev:type>
@@ -15547,7 +15673,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
         <maml:name>AgentAlertTime</maml:name>
         <maml:description>
-          <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method NOTE: Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
+          <maml:para>Optional. Time in Seconds to alert each agent. Works depending on Routing method Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int16</command:parameterValue>
         <dev:type>
@@ -16023,7 +16149,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>License</maml:name>
           <maml:description>
-            <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+            <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -16143,7 +16269,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>License</maml:name>
         <maml:description>
-          <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+          <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -16247,7 +16373,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Execution requires User Admin Role in Azure AD To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves.</maml:para>
+        <maml:para>Execution requires User Admin Role in Azure AD To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves. Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -16365,7 +16491,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Type">
           <maml:name>ApplicationType</maml:name>
           <maml:description>
-            <maml:para>CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant NOTE: Though switching the account type is possible, this is currently untested: Handle with Care!</maml:para>
+            <maml:para>CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -16389,7 +16515,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>License</maml:name>
           <maml:description>
-            <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one.   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+            <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -16484,7 +16610,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Type">
         <maml:name>ApplicationType</maml:name>
         <maml:description>
-          <maml:para>CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant NOTE: Though switching the account type is possible, this is currently untested: Handle with Care!</maml:para>
+          <maml:para>CallQueue or AutoAttendant. Determines the association the account can have: A resource Account of the type "CallQueue" can only be associated with to a Call Queue A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -16508,7 +16634,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>License</maml:name>
         <maml:description>
-          <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one.   NOTE: PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
+          <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -16608,7 +16734,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Though working correctly in all tests, please handle with care when changing Application Types Existing Application Instance Objects may get corrupted when treated as a User. If in doubt, please recreate the Resource Account and retire the old object.</maml:para>
+        <maml:para>Though working correctly in all tests, please handle with care when changing Application Types Existing Application Instance Objects may get corrupted when treated as a User. If in doubt, please recreate the Resource Account and retire the old object. At the moment, swapping licenses is not possible/implemented. Please address manually in the Admin Center</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -16630,7 +16756,7 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -License PhoneSystem_VirtualUser</dev:code>
         <dev:remarks>
-          <maml:para>Requires the Account to have a UsageLocation populated. Applies the License to Resource Account AA-Mainline. If no license is assigned, will try to assign. If the license is already applied, no action is taken. NOTE: Swapping licenses is currently not possible.</maml:para>
+          <maml:para>Requires the Account to have a UsageLocation populated. Applies the License to Resource Account AA-Mainline. If no license is assigned, will try to assign. If the license is already applied, no action is currently taken.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -17079,7 +17205,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Many license packages are available, the following Licenses are most predominant: - Main License Packages   - Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)   - Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #NOTE: For Teams EV this requires PhoneSystem as an add-on!   - Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)   - Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #NOTE: For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!   - Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #NOTE: For Teams EV this requires PhoneSystem as an add-on!   - Skype for Business Online (Plan 2) (MCOSTANDARD)   #NOTE: For Teams EV this requires PhoneSystem as an add-on! - Add-On Licenses (Require Main License Package from above)   - Audio Conferencing License - AudioConferencing (MCOMEETADV)   - Phone System - PhoneSystem (MCOEV) - Standalone Licenses (Special)   - Common Area Phone License (MCOCAP)  #NOTE: Cheaper, but limits the Object to a Common Area Phone (no mailbox)   - Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #NOTE: Only use for Resource Accounts! - Microsoft Calling Plan Licenses   - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)   - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)</maml:para>
+        <maml:para>Many license packages are available, the following Licenses are most predominant: - Main License Packages   - Microsoft 365 E5 License - Microsoft365E5 (SPE_E5)   - Microsoft 365 E3 License - Microsoft365E3 (SPE_E3)  #For Teams EV this requires PhoneSystem as an add-on!   - Office 365 E5 License - Microsoft365E5 (ENTERPRISEPREMIUM)   - Office 365 E5 without Audio Conferencing License - Microsoft365E5noAudioConferencing (ENTERPRISEPREMIUM_NOPSTNCONF)  #For Teams EV this requires AudioConferencing and PhoneSystem as an add-on!   - Office 365 E3 License - Microsoft365E3 (ENTERPRISEPACK) #For Teams EV this requires PhoneSystem as an add-on!   - Skype for Business Online (Plan 2) (MCOSTANDARD)   #For Teams EV this requires PhoneSystem as an add-on! - Add-On Licenses (Require Main License Package from above)   - Audio Conferencing License - AudioConferencing (MCOMEETADV)   - Phone System - PhoneSystem (MCOEV) - Standalone Licenses (Special)   - Common Area Phone License (MCOCAP)  #Cheaper, but limits the Object to a Common Area Phone (no mailbox)   - Phone System Virtual User License (PHONESYSTEM_VIRTUALUSER)  #Only use for Resource Accounts! - Microsoft Calling Plan Licenses   - Domestic Calling Plan - DomesticCallingPlan (MCOPSTN1)   - Domestic and International Calling Plan - InternationalCallingPlan (MCOPSTN2)</maml:para>
         <maml:para>Data in Get-AzureAdLicense as per Microsoft Docs Article: Published Service Plan IDs for Licensing https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference#service-plans-that-cannot-be-assigned-at-the-same-time</maml:para>
       </maml:alert>
     </maml:alertSet>
@@ -18644,7 +18770,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ServicePlan</maml:name>
           <maml:description>
-            <maml:para>Defined and descriptive Name of the Service Plan to test. Only ServicePlanNames pertaining to Teams are tested. Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success" NOTE: ServicePlans can be part of a license, for Example MCOEV (PhoneSystem) is part of an E5 license. For Testing against a full License Package, please use Parameter License</maml:para>
+            <maml:para>Defined and descriptive Name of the Service Plan to test. Only ServicePlanNames pertaining to Teams are tested. Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success" at least once. ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license. For Testing against a full License Package, please use Parameter License</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -18698,7 +18824,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ServicePlan</maml:name>
         <maml:description>
-          <maml:para>Defined and descriptive Name of the Service Plan to test. Only ServicePlanNames pertaining to Teams are tested. Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success" NOTE: ServicePlans can be part of a license, for Example MCOEV (PhoneSystem) is part of an E5 license. For Testing against a full License Package, please use Parameter License</maml:para>
+          <maml:para>Defined and descriptive Name of the Service Plan to test. Only ServicePlanNames pertaining to Teams are tested. Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success" at least once. ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license. For Testing against a full License Package, please use Parameter License</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -18742,7 +18868,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.</maml:para>
+        <maml:para>This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested. ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>

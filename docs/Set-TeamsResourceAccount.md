@@ -49,8 +49,7 @@ Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.c
 Requires the Account to have a UsageLocation populated.
 Applies the License to Resource Account AA-Mainline.
 If no license is assigned, will try to assign.
-If the license is already applied, no action is taken.
-NOTE: Swapping licenses is currently not possible.
+If the license is already applied, no action is currently taken.
 
 ### EXAMPLE 4
 ```
@@ -116,7 +115,7 @@ CallQueue or AutoAttendant.
 Determines the association the account can have:
 A resource Account of the type "CallQueue" can only be associated with to a Call Queue
 A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
-NOTE: Though switching the account type is possible, this is currently untested: Handle with Care!
+The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).
 
 ```yaml
 Type: String
@@ -152,7 +151,7 @@ Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
 If not provided, will default to PhoneSystem_VirtualUser
 Unlicensed Objects can exist, but cannot be assigned a phone number
 If a license already exists, it will try to swap the license to the specified one.
-  NOTE: PhoneSystem is an add-on license and cannot be assigned on its own.
+PhoneSystem is an add-on license and cannot be assigned on its own.
 it has therefore been deactivated for now.
 
 ```yaml
@@ -262,6 +261,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Though working correctly in all tests, please handle with care when changing Application Types
 Existing Application Instance Objects may get corrupted when treated as a User.
 If in doubt, please recreate the Resource Account and retire the old object.
+At the moment, swapping licenses is not possible/implemented.
+Please address manually in the Admin Center
 
 ## RELATED LINKS
 

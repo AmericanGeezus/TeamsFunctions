@@ -54,7 +54,7 @@ Displays all licenses assigned to Users from User.csv, Column Identity.
 ## PARAMETERS
 
 ### -Identity
-The Identity, UserPrincipalname or UserName for the user.
+The Identity or UserPrincipalname for the user.
 
 ```yaml
 Type: String[]

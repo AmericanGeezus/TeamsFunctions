@@ -7,7 +7,7 @@ SHORT DESCRIPTION
 LONG DESCRIPTION
     Common Area Phone being User Accounts could be managed with the normal Voice
     Configuration CmdLets, though not very well. The object returned by GET is
-    tailored more towards the needs of a Common ara Phone
+    tailored more towards the needs of a Common area Phone
 
 CmdLets
     | Function                                                           |
@@ -29,8 +29,8 @@ CmdLets
     |
 
 EXAMPLES
-    Please see the Examples for the individual CmdLets in the
-    DOCs
+    Please see the Examples for the individual CmdLets in their respective help
+    files
 
 NOTE
     The most recent addition to the fold, they need some serious testing before
