@@ -5,7 +5,7 @@
 # Status:     Live
 
 
-
+#TODO Explore adding an option to pass an object to this function (to avoid duplicating Get-CsOnlineUser) and speed up lookup
 
 function Get-TeamsCallableEntity {
   <#

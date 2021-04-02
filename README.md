@@ -1,4 +1,4 @@
-# CmdLets for AzureAd and Teams adding to and improving on Microsoft CmdLets
+# TeamsFunctions - CmdLets for Administering Teams Users and Objects in MicrosoftTeams and AzureAd
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE)
 [![Documentation - GitHub](https://img.shields.io/badge/Documentation-TeamsFunctions-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs)
@@ -36,8 +36,8 @@ Install-Module TeamsFunctions -AllowPrerelease
 ### Documentation
 
 - All help is available in [/docs](/docs)
-- General overview: [about_TeamsFunctions](/doc/about_TeamsFunctions.md)
-- The aliases: [about_TeamsFunctionsAliases](/doc/about_TeamsFunctionsAliases.md)
+- General overview: [about_TeamsFunctions](/docs/about_TeamsFunctions.md)
+- The aliases: [about_TeamsFunctionsAliases](/docs/about_TeamsFunctionsAliases.md)
 - Individual about_-Files for each Topic have been created
 - External Help is available as XML
 - Markdown files for all CmdLets created automatically with PlatyPS and updated with each Version
