@@ -28,7 +28,7 @@ function Get-SkuPartNumberFromSkuID {
 	#>
 
   [CmdletBinding()]
-  [OutputType([String])]
+  [OutputType([String], [System.Object[]])]
   param(
     [Parameter(Mandatory = $true, Position = 0)]
     [String[]]$SkuID,

@@ -132,7 +132,7 @@ function New-TeamsCommonAreaPhone {
 
     [Parameter(HelpMessage = 'Password to be assigned to the account. Min 8 characters')]
     [ValidatePattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$')]
-    [string]$Password,
+    [SecureString]$Password,
 
     [Parameter(HelpMessage = 'IP Phone Policy')]
     [string]$IPPhonePolicy,
@@ -237,6 +237,7 @@ function New-TeamsCommonAreaPhone {
     $PasswordProfile.EnforceChangePasswordPolicy = $true
     $PasswordProfile.ForceChangePasswordNextLogin = $true
     if ($PSBoundParameters.ContainsKey('Password')) {
+      #TEST Password defined as a secure String, no idea whether this works or not!
       $PasswordProfile.Password = $Password
     }
     else {
@@ -387,9 +388,14 @@ function New-TeamsCommonAreaPhone {
 
     $ObjectCreated = $null
     $ObjectCreated = Get-TeamsCommonAreaPhone -Identity $UPN
-    #CHECK Output and Password application
-    #$ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $AzureAdUser.Password
-    $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordProfile.Password
+    if ($PSBoundParameters.ContainsKey('Password')) {
+      Write-Verbose "Password is encrypted and applied as per definition, provided it is adhering to the complexity requirements"
+    }
+    else {
+      #CHECK Output and Password application
+      #$ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $AzureAdUser.Password
+      $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordProfile.Password
+    }
     Write-Output $ObjectCreated
 
     Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
