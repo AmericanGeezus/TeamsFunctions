@@ -389,7 +389,7 @@ function New-TeamsCommonAreaPhone {
     $ObjectCreated = $null
     $ObjectCreated = Get-TeamsCommonAreaPhone -Identity $UPN
     if ($PSBoundParameters.ContainsKey('Password')) {
-      Write-Verbose "Password is encrypted and applied as per definition, provided it is adhering to the "
+      Write-Verbose "Password is encrypted and applied as per definition, provided it is adhering to the complexity requirements"
     }
     else {
       #CHECK Output and Password application
