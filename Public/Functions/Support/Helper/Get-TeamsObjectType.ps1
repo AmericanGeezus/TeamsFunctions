@@ -16,9 +16,6 @@ function Get-TeamsObjectType {
   .PARAMETER Identity
     Required. String for the TelURI, Group Name or Mailnickname, UserPrincipalName, depending on the Entity Type
   .EXAMPLE
-    Get-TeamsObjectType -Identity John@domain.com -Type User
-    Creates a callable Entity for the User John@domain.com
-  .EXAMPLE
     Get-TeamsObjectType -Identity "John@domain.com"
     Returns "User" as the type of Entity if an AzureAdUser with the UPN "John@domain.com" is found
   .EXAMPLE
@@ -94,7 +91,8 @@ function Get-TeamsObjectType {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    if ($Identity -match '^tel:\+\d') {
+    #if ($Identity -match '^tel:\+\d') {
+    if ($Identity -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$' -and -not ($Identity -match '@')) {
       Write-Verbose -Message "Callable Entity - Call Target '$Identity' (TelURI) found: TelURI (ExternalPstn)"
       return 'TelURI'
     }
@@ -103,8 +101,8 @@ function Get-TeamsObjectType {
       if ( $User ) {
         if ($User[0].Department -eq 'Microsoft Communication Application Instance') {
           #if ( Test-TeamsResourceAccount $Identity ) {
-          Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: ResourceAccount (ApplicationInstance), (VoiceApp)"
-          return 'ResourceAccount'
+          Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: ResourceAccount (ApplicationEndpoint), (VoiceApp)"
+          return 'ApplicationEndpoint'
         }
         else {
           Write-Verbose -Message "Callable Entity - Call Target '$Identity' found: User (Forward, Voicemail)"

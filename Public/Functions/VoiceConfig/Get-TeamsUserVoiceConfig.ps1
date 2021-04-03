@@ -172,8 +172,9 @@ function Get-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      #$ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
-      $ObjectType = (Get-TeamsCallableEntity -Identity $CsUser.UserPrincipalName).ObjectType
+      #TEST Performance of lookup for Get-TeamsCallableEntity  meant that it takes another Get-CsUser Lookup longer
+      #$ObjectType = (Get-TeamsCallableEntity -Identity $CsUser.UserPrincipalName).ObjectType
+      $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
       #endregion
 
 
