@@ -47,7 +47,7 @@
 #>
 
 #Requires -Version 5.1
-#Requires -Modules @{ ModuleName='MicrosoftTeams'; ModuleVersion='2.0.0' }
+#Re#quires -Modules @{ ModuleName='MicrosoftTeams'; ModuleVersion='2.0.0' }
 #Re#quires -Modules @{ ModuleName='MicrosoftTeams'; MinimumVersion='2.0.0' }
 
 #Activate when released
