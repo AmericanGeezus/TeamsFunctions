@@ -148,7 +148,7 @@ function Connect-Me {
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
     $SaveVerbosePreference = $global:VerbosePreference;
     $global:VerbosePreference = 'SilentlyContinue';
-    Import-Module MicrosoftTeams -RequiredVersion 2.0.0 -Force -Global -Verbose:$false
+    Import-Module MicrosoftTeams -MinimumVersion 2.0.0 -Force -Global -Verbose:$false
     $global:VerbosePreference = $SaveVerbosePreference
 
     if ( $AzureAdPreviewModule ) {
