@@ -79,7 +79,10 @@ function Get-CurrentConnectionInfo {
         $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Warning -Message 'Connection to MicrosoftTeams established, but Skype Admin Roles not activated. Please enable Admin Roles before continuing'
+        Write-Warning -Message 'Connection to MicrosoftTeams established, but Command not successful. Please validate your Admin Roles and reconnect'
+        if (-not $called) {
+          Write-Error -Message "$($_.Exception.Message)"
+        }
         Write-Verbose -Message 'The TeamsUpgradeEffectiveMode is not shown as it cannot be queried from the Tenant'
       }
       $SessionInfo.ConnectedTo += 'MicrosoftTeams'
