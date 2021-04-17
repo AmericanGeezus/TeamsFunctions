@@ -214,7 +214,7 @@ function Connect-Me {
           'AzureAd' {
             $AzureAdParameters = $ConnectionParameters
             $AzureAdParameters += @{ 'AccountId' = $AccountId }
-            $null = Connect-AzureAD @AzureAdParameters
+            $AzureAdFeedback = Connect-AzureAD @AzureAdParameters
           }
           'Enabling eligible Admin Roles' {
             try {
@@ -236,12 +236,20 @@ function Connect-Me {
           'MicrosoftTeams' {
             $MicrosoftTeamsParameters = $ConnectionParameters
             $MicrosoftTeamsParameters += @{ 'AccountId' = $AccountId }
+            if ($AzureAdFeedback) {
+              $MicrosoftTeamsParameters += @{ 'TenantId' = $AzureAdFeedback.TenantId }
+            }
             try {
               $TeamsConnection = Connect-MicrosoftTeams @MicrosoftTeamsParameters
             }
             catch {
               Write-Verbose -Message "$Status - $Operation - Try `#2 - Please confirm Account" -Verbose
-              $TeamsConnection = Connect-MicrosoftTeams
+              if ($AzureAdFeedback) {
+                $TeamsConnection = Connect-MicrosoftTeams -TenantId $AzureAdFeedback.TenantId
+              }
+              else {
+                $TeamsConnection = Connect-MicrosoftTeams
+              }
             }
             #$null = Use-MicrosoftTeamsConnection
             if (-not (Use-MicrosoftTeamsConnection) -and $TeamsConnection) {

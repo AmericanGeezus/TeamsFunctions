@@ -12,7 +12,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- TBC
+- `Connect-Me`:
+  - Finetuning for Connection stability. (Try #2 now connects without Parameter increasing likelihood of successful connection)
+  - Added TenantId to Connect-MicrosoftTeams to definitively connect to the same tenant as AzureAd
+  - Feedback to User is added to look out for the Authentication Dialog as it sometimes can pop up without focus, hiding behind other open windows.
 
 ### ToDo
 

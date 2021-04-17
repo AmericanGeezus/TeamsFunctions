@@ -86,13 +86,10 @@ function Get-CurrentConnectionInfo {
         Write-Verbose -Message 'The TeamsUpgradeEffectiveMode is not shown as it cannot be queried from the Tenant'
       }
       $SessionInfo.ConnectedTo += 'MicrosoftTeams'
-      $SessionInfo.Tenant = "$($CsTenant.DisplayName)"
+      if ($CsTenant.DisplayName) {
+        $SessionInfo.Tenant = $($SessionInfo.Tenant), $($CsTenant.DisplayName) -join ' - '
+      }
       $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
-    }
-
-
-    if ( $ConnectedToAD -and $ConnectedToTeams ) {
-      $SessionInfo.Tenant = "$($AzureAdFeedback.Account.Id.split('@')[1]) - $($CsTenant.DisplayName)"
     }
 
     #Exchange SessionInfo
