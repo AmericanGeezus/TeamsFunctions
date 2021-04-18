@@ -16,6 +16,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Finetuning for Connection stability. (Try #2 now connects without Parameter increasing likelihood of successful connection)
   - Added TenantId to Connect-MicrosoftTeams to definitively connect to the same tenant as AzureAd
   - Feedback to User is added to look out for the Authentication Dialog as it sometimes can pop up without focus, hiding behind other open windows.
+  - Switched Module MicrosoftTeams from `RequiredVersion` to `MinimumVersion` to allow for prereleases to be used. (Tested with v2.1.0-preview)
+- `Get-TeamsUserLicense`: Switched lookup of User type from `Get-TeamsCallableEntity` to `Get-TeamsObjectType` to improve performance
+- `Get-TeamsTDP`: Fixed output (selected parameters were not the ones desired (copy/paste error))
+- `Get-CurrentConnectionInfo`: Reworked Tenant Name & Display Name based on type of connection present.
 
 ### ToDo
 

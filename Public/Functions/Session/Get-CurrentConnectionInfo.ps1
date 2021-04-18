@@ -89,6 +89,9 @@ function Get-CurrentConnectionInfo {
       if ($CsTenant.DisplayName) {
         $SessionInfo.Tenant = $($SessionInfo.Tenant), $($CsTenant.DisplayName) -join ' - '
       }
+      else {
+        $SessionInfo.Tenant = $CsTenant.DisplayName
+      }
       $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
     }
 
