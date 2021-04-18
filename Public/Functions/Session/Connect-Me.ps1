@@ -148,7 +148,7 @@ function Connect-Me {
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
     $SaveVerbosePreference = $global:VerbosePreference;
     $global:VerbosePreference = 'SilentlyContinue';
-    Import-Module MicrosoftTeams -RequiredVersion 2.0.0 -Force -Global -Verbose:$false
+    Import-Module MicrosoftTeams -MinimumVersion 2.0.0 -Force -Global -Verbose:$false
     $global:VerbosePreference = $SaveVerbosePreference
 
     if ( $AzureAdPreviewModule ) {
@@ -195,7 +195,11 @@ function Connect-Me {
     #region Connections
     $Status = 'Establishing Connection'
     Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
-    $ConnectionOrder = @('AzureAd', 'MicrosoftTeams')
+    $ConnectionOrder = @('AzureAd')
+    if ( $PIMavailable ) { $ConnectionOrder += 'Enabling eligible Admin Roles' } else {
+      Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available' -Verbose
+    }
+    $ConnectionOrder += 'MicrosoftTeams'
     if ($ExchangeOnline) { $ConnectionOrder += 'ExchangeOnline' }
 
     foreach ($Connection in $ConnectionOrder) {
@@ -203,7 +207,7 @@ function Connect-Me {
       $step++
       $Operation = $Service
       Write-Progress -Id 0 -Status $Status -CurrentOperation "$Operation - Please see Authentication dialog" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation" -Verbose
+      Write-Verbose -Message "$Status - $Operation" #-Verbose
 
       try {
         switch ($Connection) {
@@ -211,40 +215,46 @@ function Connect-Me {
             $AzureAdParameters = $ConnectionParameters
             $AzureAdParameters += @{ 'AccountId' = $AccountId }
             $AzureAdFeedback = Connect-AzureAD @AzureAdParameters
-            #region Activating Admin Roles
-            if ( $PIMavailable ) {
-              $step++
-              $Operation = 'Enabling eligible Admin Roles'
-              Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-              Write-Verbose -Message "$Status - $Operation" -Verbose
-              try {
-                $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-                if ( $ActivatedRoles.Count -gt 0 ) {
-                  Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
-                }
-              }
-              catch {
-                if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"') {
-                  Write-Warning 'Enable-AzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry'
-                }
-                else {
-                  Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
-                }
-                $PIMavailable = $false
+          }
+          'Enabling eligible Admin Roles' {
+            try {
+              $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+              if ( $ActivatedRoles.Count -gt 0 ) {
+                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
               }
             }
-            else {
-              Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available'
+            catch {
+              if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"') {
+                Write-Warning 'Enable-AzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry'
+              }
+              else {
+                Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+              }
+              $PIMavailable = $false
             }
-            #endregion
           }
           'MicrosoftTeams' {
             $MicrosoftTeamsParameters = $ConnectionParameters
+            $MicrosoftTeamsParameters += @{ 'AccountId' = $AccountId }
+            if ($AzureAdFeedback) {
+              $MicrosoftTeamsParameters += @{ 'TenantId' = $AzureAdFeedback.TenantId }
+            }
             try {
-              $MicrosoftTeamsFeedback = Connect-MicrosoftTeams @MicrosoftTeamsParameters
+              $TeamsConnection = Connect-MicrosoftTeams @MicrosoftTeamsParameters
             }
             catch {
-              $MicrosoftTeamsFeedback = Connect-MicrosoftTeams
+              Write-Verbose -Message "$Status - $Operation - Try `#2 - Please confirm Account" -Verbose
+              if ($AzureAdFeedback) {
+                $TeamsConnection = Connect-MicrosoftTeams -TenantId $AzureAdFeedback.TenantId
+              }
+              else {
+                $TeamsConnection = Connect-MicrosoftTeams
+              }
+            }
+            #$null = Use-MicrosoftTeamsConnection
+            if (-not (Use-MicrosoftTeamsConnection) -and $TeamsConnection) {
+              # order is important here!
+              throw 'MicrosoftTeams - Connection to MicrosoftTeams established, but SkypeOnline Cmdlets not able to run. Please verify'
             }
           }
           'ExchangeOnline' {
@@ -252,9 +262,10 @@ function Connect-Me {
             $ExchangeOnlineParameters += @{ 'UserPrincipalName' = $AccountId }
             $ExchangeOnlineParameters += @{ 'ShowProgress' = $true }
             $ExchangeOnlineParameters += @{ 'ShowBanner' = $false }
-            $ExchangeOnlineFeedback = Connect-ExchangeOnline @ExchangeOnlineParameters
+            $null = Connect-ExchangeOnline @ExchangeOnlineParameters
           }
         }
+        Write-Information "SUCCESS: $Status - $Operation"
       }
       catch {
         Write-Error -Message "$($_.Exception.Message)"

@@ -79,17 +79,20 @@ function Get-CurrentConnectionInfo {
         $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Warning -Message 'Connection to MicrosoftTeams established, but Skype Admin Roles not activated. Please enable Admin Roles before continuing'
+        Write-Warning -Message 'Connection to MicrosoftTeams established, but Command not successful. Please validate your Admin Roles and reconnect'
+        if (-not $called) {
+          Write-Error -Message "$($_.Exception.Message)"
+        }
         Write-Verbose -Message 'The TeamsUpgradeEffectiveMode is not shown as it cannot be queried from the Tenant'
       }
       $SessionInfo.ConnectedTo += 'MicrosoftTeams'
-      $SessionInfo.Tenant = "$($CsTenant.DisplayName)"
+      if ($CsTenant.DisplayName) {
+        $SessionInfo.Tenant = $($SessionInfo.Tenant), $($CsTenant.DisplayName) -join ' - '
+      }
+      else {
+        $SessionInfo.Tenant = $CsTenant.DisplayName
+      }
       $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
-    }
-
-
-    if ( $ConnectedToAD -and $ConnectedToTeams ) {
-      $SessionInfo.Tenant = "$($AzureAdFeedback.Account.Id.split('@')[1]) - $($CsTenant.DisplayName)"
     }
 
     #Exchange SessionInfo

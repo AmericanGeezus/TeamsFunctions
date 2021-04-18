@@ -102,7 +102,7 @@ function Get-TeamsTDP {
     }
 
     if ( $Filtered.Count -gt 3) {
-      $Filtered = $Filtered | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList
+      $Filtered = $Filtered | Select-Object Identity, SimpleName, OptimizeDeviceDialing, Description
     }
     return $Filtered | Sort-Object Identity
   } #process

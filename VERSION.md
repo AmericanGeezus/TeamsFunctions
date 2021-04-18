@@ -189,8 +189,7 @@ Switching to a new way of connecting was easy, though due to lack of information
   - `Enable-CsOnlineSessionForReconnection` is now always available and will be run
   - Improved feedback with Information Output instead of forced Verbosity
 - `Assert-Module`: Reimagining Test-Module. Now also validates Latest Version and latest pre-release. Might add checking for specific version if needed, but not right now.
-- `Get-TeamsAutoAttant`: Fine-Tuned output
-- `New-TeamsCallQueue` and `Set-TeamsCallQueue`:
+- `Get-TeamsAutoAttendant`: Fine-Tuned output
 - `Find-TeamsUserVoiceConfig`: Improved lookup for Phone Numbers
 - `Find-AzureAdUser`: Complete rework. Now properly extends Get-AzureAdUser -SearchString
 - Revamped all Get-Helpers for OVR,OPU,OVP, etc.
