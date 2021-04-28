@@ -155,6 +155,7 @@ function Connect-Me {
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
     $SaveVerbosePreference = $global:VerbosePreference;
     $global:VerbosePreference = 'SilentlyContinue';
+    Remove-Module MicrosoftTeams -Force -Verbose:$false -ErrorAction SilentlyContinue
     if ( $UseV1Module ) {
       Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -Force -Global -Verbose:$false
     }
