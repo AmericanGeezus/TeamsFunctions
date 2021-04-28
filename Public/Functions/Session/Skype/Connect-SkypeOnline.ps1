@@ -156,12 +156,19 @@ function Connect-SkypeOnline {
     if ($AzureAdConnection) {
       $AzureSessionInfo = Get-AzureADCurrentSessionInfo
       $TenantDomain = $AzureSessionInfo.TenantDomain
-      if ( $AccountId -and $AccountId -ne $AzureSessionInfo.Account ) {
-        Write-Warning "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'. - '$AccountId' is ignored"
-        $AccountId = $AzureSessionInfo.Account
+      if ( $AzureSessionInfo.Account ) {
+        if ( $AccountId -ne $AzureSessionInfo.Account ) {
+          Write-Warning "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'. - '$AccountId' is ignored"
+          $AccountId = $AzureSessionInfo.Account
+        }
+        else {
+          Write-Information "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'"
+          $AccountId = $AzureSessionInfo.Account
+        }
       }
       else {
-        Write-Information "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'"
+        Write-Information "$($MyInvocation.MyCommand) - AzureAd: Not Connected"
+        $AccountId = ""
       }
 
       # Existing Session

@@ -78,7 +78,7 @@ function Assert-SkypeOnlineConnection {
             }
             else {
               try {
-                $null = Get-CsTenant -WarningAction SilentlyContinue -errorAction Stop
+                $null = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
                 if ($Called) {
                   return $(if ($Called) { $true } else { $Connection })
                 }
