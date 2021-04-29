@@ -126,6 +126,9 @@ function Connect-SkypeOnline {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
+
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
@@ -141,7 +144,7 @@ function Connect-SkypeOnline {
     $Parameters += @{ 'ErrorAction' = 'Stop' }
     $Parameters += @{ 'WarningAction' = 'Continue' }
 
-<#  Disabled as handled by Connect-Me
+    <#  Disabled as handled by Connect-Me
     # Module Prerequisites
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
     $SaveVerbosePreference = $global:VerbosePreference;
@@ -150,6 +153,16 @@ function Connect-SkypeOnline {
     Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -Global -Force -Verbose:$false
     $global:VerbosePreference = $SaveVerbosePreference
 #>
+    # Module Prerequisites
+    if ( -not $Called ) {
+      Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
+      $SaveVerbosePreference = $global:VerbosePreference;
+      $global:VerbosePreference = 'SilentlyContinue';
+      Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
+      Remove-Module MicrosoftTeams -Verbose:$false -ErrorAction SilentlyContinue -Force
+      Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -Global -Force -Verbose:$false
+      $global:VerbosePreference = $SaveVerbosePreference
+    }
 
     # Validating existing Connection to AzureAd
     $AzureAdConnection = Test-AzureADConnection
@@ -158,17 +171,17 @@ function Connect-SkypeOnline {
       $TenantDomain = $AzureSessionInfo.TenantDomain
       if ( $AzureSessionInfo.Account ) {
         if ( $AccountId -ne $AzureSessionInfo.Account ) {
-          Write-Warning "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'. - '$AccountId' is ignored"
+          Write-Verbose "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'. - '$AccountId' is ignored"
           $AccountId = $AzureSessionInfo.Account
         }
         else {
-          Write-Information "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'"
+          Write-Verbose "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'"
           $AccountId = $AzureSessionInfo.Account
         }
       }
       else {
-        Write-Information "$($MyInvocation.MyCommand) - AzureAd: Not Connected"
-        $AccountId = ""
+        Write-Verbose "$($MyInvocation.MyCommand) - AzureAd: Not Connected"
+        $AccountId = ''
       }
 
       # Existing Session
@@ -189,7 +202,7 @@ function Connect-SkypeOnline {
 
     # OverrideAdminDomain
     if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
-      Write-Information "$($MyInvocation.MyCommand) - OverrideAdminDomain provided. Using Domain '$OverrideAdminDomain'"
+      Write-Verbose "$($MyInvocation.MyCommand) - OverrideAdminDomain provided. Using Domain '$OverrideAdminDomain'"
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
     }
     else {
@@ -198,7 +211,7 @@ function Connect-SkypeOnline {
         $Parameters += @{ 'OverrideAdminDomain' = $TenantDomain }
       }
       else {
-        Write-Information "$($MyInvocation.MyCommand) - OverrideAdminDomain not used. If prompted, please provide."
+        Write-Warning "$($MyInvocation.MyCommand) - OverrideAdminDomain not used. If prompted, please provide."
       }
     }
     <#CHECK Applying any session Options will result in 15mins timeouts - able to reconnect, but still, not good.
@@ -273,8 +286,8 @@ function Connect-SkypeOnline {
         Write-Verbose -Message 'Importing temporary Module from Import-PSSession'
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global -Verbose:$false
         $null = Enable-CsOnlineSessionForReconnection
-        Write-Information "$($MyInvocation.MyCommand) - Session is enabled for reconnection! You are prompted to reconnect, if possible."
-        Write-Verbose -Message 'The success of reconnection attempts depends on a few factors, including the Tenants Security settings' -Verbose
+        Write-Information 'SUCCESS: Enabling Reconnection - SkypeOnline Session. You are prompted to reconnect, if possible.'
+        Write-Verbose -Message 'The success of reconnection attempts depends on a few factors, including the Security Settings in the Tenant.' -Verbose
       }
       catch {
         Write-Error -Message "EXCEPTION: $($.Exception.Message)"
