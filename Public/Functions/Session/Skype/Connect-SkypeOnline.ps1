@@ -236,7 +236,7 @@ function Connect-SkypeOnline {
       if ($PSBoundParameters.ContainsKey('Debug')) {
         "Function: $($MyInvocation.MyCommand.Name): Connection `#1: Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
-      Write-Host 'INFORMATION: AccountId cannot be pre-selected - Please select Account manually!' -ForegroundColor Magenta
+      Write-Verbose 'Establishing Connection - SkypeOnline: AccountId may not be able to be pre-selected - Please select or provide Account manually!' -Verbose
       $SkypeOnlineSession = New-CsOnlineSession @Parameters
     }
     catch [System.Net.WebException] {
