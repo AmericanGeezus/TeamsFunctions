@@ -259,7 +259,7 @@ function Connect-Me {
     else {
       Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available' -Verbose
     }
-    if ($UseV1Module -or $TeamsModuleVersionMajor -lt 2) {
+    if ($UseV1Module -and $($TeamsModuleVersion.Major) -lt 2) {
       $ConnectionOrder += 'SkypeOnline'
     }
     else {
