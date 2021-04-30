@@ -169,21 +169,33 @@ function Connect-Me {
       Remove-Module SkypeOnlineConnector -Verbose:$false -Force -ErrorAction SilentlyContinue
     }
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
+    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
     $SaveVerbosePreference = $global:VerbosePreference;
     $global:VerbosePreference = 'SilentlyContinue';
-    Remove-Module MicrosoftTeams -Force -Verbose:$false -ErrorAction SilentlyContinue
-    if ( $UseV1Module ) {
-      Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -MinimumVersion 1.1.10 -Force -Global -Verbose:$false
+    if ( $UseV1Module -and $($TeamsModuleVersion.Major) -ge 2 ) {
+      Remove-Module MicrosoftTeams -Force -Verbose:$false -ErrorAction SilentlyContinue
+      try {
+        Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -MinimumVersion 1.1.10 -Force -Global -Verbose:$false -ErrorAction Stop
+      }
+      catch {
+        throw 'MicrosoftTeams Module not installed in v1.1.10-preview or v1.1.11-preview!'
+      }
     }
     else {
       #Import-Module MicrosoftTeams -MinimumVersion 2.0.0 -Force -Global -Verbose:$false
-      Import-Module MicrosoftTeams -Force -Global -Verbose:$false
+      if ( -not (Get-Module MicrosoftTeams) ) {
+        try {
+          Import-Module MicrosoftTeams -RequiredVersion 2.0.0 -Force -Global -Verbose:$false -ErrorAction Stop
+        }
+        catch {
+          throw 'MicrosoftTeams Module not installed in v2.0.0 - Please verify Module!'
+        }
+      }
     }
     $global:VerbosePreference = $SaveVerbosePreference
 
     # Determine Module Version loaded
-    $TeamsModuleVersionMajor = (Get-Module MicrosoftTeams).Version.Major
-    if ( $TeamsModuleVersionMajor -lt 2 ) {
+    if ( $($TeamsModuleVersion.Major) -lt 2 ) {
       try {
         $null = Get-Command New-CsOnlineSession -ErrorAction Stop
       }

@@ -160,7 +160,12 @@ function Connect-SkypeOnline {
       $global:VerbosePreference = 'SilentlyContinue';
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
       Remove-Module MicrosoftTeams -Verbose:$false -ErrorAction SilentlyContinue -Force
-      Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -Global -Force -Verbose:$false
+      try {
+        Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -MinimumVersion 1.1.10 -Force -Global -Verbose:$false -ErrorAction Stop
+      }
+      catch {
+        throw 'MicrosoftTeams Module not installed in v1.1.10-preview or v1.1.11-preview!'
+      }
       $global:VerbosePreference = $SaveVerbosePreference
     }
 
@@ -290,7 +295,7 @@ function Connect-SkypeOnline {
         Write-Verbose -Message 'The success of reconnection attempts depends on a few factors, including the Security Settings in the Tenant.' -Verbose
       }
       catch {
-        Write-Error -Message "EXCEPTION: $($.Exception.Message)"
+        Write-Error -Message "EXCEPTION: $($_.Exception.Message)"
       }
 
       $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like '*.online.lync.com' -or $_.Computername -eq 'api.interfaces.records.teams.microsoft.com') -and $_.State -eq 'Opened' -and $_.Availability -eq 'Available' } -WarningAction STOP -ErrorAction STOP

@@ -48,6 +48,7 @@
 #>
 
 #Requires -Version 5.1
+#Requires -Modules @{ ModuleName="MicrosoftTeams"; MaximumVersion="2.0.0" }
 
 # Addressing Limitations
 function Get-StrictMode {
@@ -197,8 +198,8 @@ if ($env:username -eq 'Julia.Horvath') {
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, ear, cur, Enable-Ev, Set-ServicePlan, ` #Connect-SkypeOnline, `
-  Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
+Export-ModuleMember -Alias con, dis, pol, ear, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
+Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   #Test-TeamsTDP, `
   Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, `
