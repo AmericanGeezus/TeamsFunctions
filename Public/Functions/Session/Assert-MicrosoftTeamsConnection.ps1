@@ -74,7 +74,7 @@ function Assert-MicrosoftTeamsConnection {
         return $(if ($Called) { $true })
       }
       else {
-        Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - Reconnect unsuccessful - Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
+        Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - No connection established or reconnect unsuccessful' -ForegroundColor Red
         return $(if ($Called) { $false })
       }
     }

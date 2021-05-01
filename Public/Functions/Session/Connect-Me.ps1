@@ -22,6 +22,8 @@ function Connect-Me {
 	.PARAMETER UseV1Module
 		Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x
     This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.
+    Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.
+    Handle with care.
 	.PARAMETER NoFeedback
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
@@ -202,7 +204,7 @@ function Connect-Me {
       catch {
         throw "Command 'New-CsOnlineSession' not available. Please ensure MicrosoftTeams is installed with v1.1.10 or higher."
       }
-      Write-Verbose "Module MicrosoftTeams v1 is used. - Session established with 'New-CsOnlineSession'" -Verbose
+      Write-Verbose "Module MicrosoftTeams v1 is used ('New-CsOnlineSession'). Please note, that due to recent changes by Microsoft, session connection may fail" -Verbose
     }
 
 
@@ -322,7 +324,7 @@ function Connect-Me {
               }
             }
             catch {
-              if ( $_.Exception.Message.Contains('does not have permission to manage this tenant') ) {
+              if ( $_.Exception.Message.Contains('does not have permission to manage this tenant') -or $_.Exception.Message.Contains('403')) {
                 if ( -not $_.Exception.Message.Contains("$AccountId") -and $_.Exception.Message -match "'(?<content>.*)'") {
                   Write-Error -Message "Establishing Connection to SkypeOnline failed. Connection attempted with a Username that is not authorised for this Tenant: $($matches.content) "
                   Write-Debug "This happens, if connections are established to different tenants and a session token is from the previous connection is still lingering in the session. This is a bug in the 'New-CsOnlineSession' CmdLet (The Session token from a previous session is not removed correctly). The only way to currently overcome this is to close your PowerShell Session and start a fresh session!" -Debug

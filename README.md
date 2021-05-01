@@ -58,6 +58,7 @@ Install-Module TeamsFunctions -AllowPrerelease
 ### Extension plans
 
 - Figuring out Pester, Writing proper Test scenarios
+- Adding recently introduced features for Call Queues (Forward to Channel) and Auto Attendants (Call Target: Announcement)
 - Standing up a full CI/CD Pipeline with Appveyor (most is done manually presently)
 - Comparing backups, changed elements for Change control... Looking at Lee Fords backup scripts :)
 

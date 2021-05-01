@@ -24,47 +24,40 @@ Returns ObjectType: User (AzureAdUser), Group (AzureAdGroup), ResourceAccount (A
 
 ### EXAMPLE 1
 ```
-Get-TeamsObjectType -Identity John@domain.com -Type User
-```
-
-Creates a callable Entity for the User John@domain.com
-
-### EXAMPLE 2
-```
 Get-TeamsObjectType -Identity "John@domain.com"
 ```
 
 Returns "User" as the type of Entity if an AzureAdUser with the UPN "John@domain.com" is found
 
-### EXAMPLE 3
+### EXAMPLE 2
 ```
 Get-TeamsObjectType -Identity "Accounting"
 ```
 
 Returns "Group" as the type of Entity if a AzureAdGroup with the Name "Accounting" is found.
 
-### EXAMPLE 4
+### EXAMPLE 3
 ```
 Get-TeamsObjectType -Identity "Accounting@domain.com"
 ```
 
 Returns "Group" as the type of Entity if a AzureAdGroup with the Mailnickname "Accounting@domain.com" is found.
 
-### EXAMPLE 5
+### EXAMPLE 4
 ```
 Get-TeamsObjectType -Identity "ResourceAccount@domain.com"
 ```
 
 Returns "ResourceAccount" as the type of Entity if a CsOnlineApplicationInstance with the UPN "ResourceAccount@domain.com" is found
 
-### EXAMPLE 6
+### EXAMPLE 5
 ```
 Get-TeamsObjectType -Identity "tel:+1555123456"
 ```
 
 Returns "TelURI" as the type of Entity
 
-### EXAMPLE 7
+### EXAMPLE 6
 ```
 Get-TeamsObjectType -Identity "+1555123456"
 ```

@@ -82,13 +82,11 @@ function Assert-SkypeOnlineConnection {
                 if ($Called) {
                   return $(if ($Called) { $true } else { $Connection })
                 }
-
               }
               catch {
                 return $(if ($Called) { $false })
               }
             }
-
             else {
               return $Connection
             }
@@ -100,7 +98,6 @@ function Assert-SkypeOnlineConnection {
         }
       }
     }
-
   } #process
 
   end {
