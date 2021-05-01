@@ -17,9 +17,9 @@ function Test-MicrosoftTeamsConnection {
 		Test-MicrosoftTeamsConnection
 		Will Return $TRUE only if a session is found.
   .INPUTS
-    None
+    System.Void
   .OUTPUTS
-    Boolean
+    System.Boolean
   .NOTES
     Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOnline) exists
   .COMPONENT

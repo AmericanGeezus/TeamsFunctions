@@ -38,20 +38,32 @@ function Use-MicrosoftTeamsConnection {
   begin {
     #Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    $TeamsModuleVersionMajor = (Get-Module MicrosoftTeams).Version.Major
+
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      # MEASUREMENTS This currently takes about half a second (486ms on average)
-      $null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
-      #Write-Verbose -Message "$($MyInvocation.MyCommand) - No Teams session found"
-      #Start-Sleep -Seconds 1
-      if (Test-MicrosoftTeamsConnection) {
-        return $true
+      if ($TeamsModuleVersionMajor -lt 2) {
+        if (Test-SkypeOnlineConnection) {
+          return $true
+        }
+        else {
+          return $false
+        }
       }
       else {
-        return $false
+        # MEASUREMENTS This currently takes about half a second (486ms on average)
+        $null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
+        #Write-Verbose -Message "$($MyInvocation.MyCommand) - No Teams session found"
+        #Start-Sleep -Seconds 1
+        if (Test-MicrosoftTeamsConnection) {
+          return $true
+        }
+        else {
+          return $false
+        }
       }
     }
     catch {

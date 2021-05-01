@@ -42,13 +42,24 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 | [`Assert-MicrosoftTeamsConnection`](Assert-MicrosoftTeamsConnection.md) | Tests connection and **Attempts to reconnect** a timed-out session. Alias `PoL` *Ping-of-life*                |
 | [`Get-CurrentConnection`](Get-CurrentConnection.md)                   | Returning information about existing Sessions to AzureAd and MicrosoftTeams                     |
 | [`Test-AzureAdConnection`](Test-AzureAdConnection.md)                   | Verifying a Session to AzureAD exists                                                         |
-| [`Test-SkypeOnlineConnection`](Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                     |
 | [`Test-ExchangeOnlineConnection`](Test-ExchangeOnlineConnection.md)     | Verifying a Session to ExchangeOnline exists                                                  |
+| [`Test-MicrosoftTeamsConnection`](Test-MicrosoftTeamsConnection.md)           | Verifying a Session to MicrosoftTeams exists                                                     |
+| [`Test-SkypeOnlineConnection`](Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                     |
 
 The Assert cmdlets are nested in all Scripts to ensure sessions are created and available
 
 > [!NOTE] While Assert-MicrosoftTeamsConnection is powerful, I cannot overload it. At a certain point I have to leave the decision to the Administrator on how to proceed
 > This includes the infamous `StepablePipelineError` which doesn't hint towards to PIM Admin roles to be activated. Please run `Connect-Me` again to rectify.
+
+### SkypeOnline Functions
+
+Temporarily re-introduced into the modules to allow backwards compatibility with MicrosoftTeams v1
+
+| Function                                                  | Description                                                                                                        |
+| --------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------ |
+| [`Connect-SkypeOnline`](Connect-SkypeOnline.md)           | Creates a session to SkypeOnline with New-CsOnlineSession (Requires MicrosoftTeams v1.1.10 or higher).             |
+| [`Enable-CsOnlineSessionForReconnection`](Enable-CsOnlineSessionForReconnection.md)           | Enables a Session established with New-CsOnlineSession to reconnect.           |
+| [`Test-SkypeOnlineConnection`](Test-SkypeOnlineConnection.md)           | Verifying a Session to SkypeOnline exists                                                     |
 
 ## EXAMPLES
 

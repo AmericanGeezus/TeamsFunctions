@@ -4,8 +4,8 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
-
+#TODO After determining the Number type (TDR vs CP), add Check to see whether a CP license is there? Throw error if so
+#TODO Change Output object to display only Teams relevant Licenses (incl. CallingPlans!)
 
 function Set-TeamsUserVoiceConfig {
   <#

@@ -5,28 +5,30 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Test-MicrosoftTeamsConnection
+# Assert-SkypeOnlineConnection
 
 ## SYNOPSIS
-Tests whether a valid PS Session exists for MicrosoftTeams
+Asserts an established Connection to SkypeOnline
 
 ## SYNTAX
 
 ```
-Test-MicrosoftTeamsConnection [<CommonParameters>]
+Assert-SkypeOnlineConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-A connection established via Connect-MicrosoftTeams is parsed.
+Tests and tries to reconnect to a SkypeOnline connection already established.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Test-MicrosoftTeamsConnection
+Assert-SkypeOnlineConnection
 ```
 
-Will Return $TRUE only if a session is found.
+Will run Test-SkypeOnlineConnection and, if successful, stops.
+  If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection.
+  If that too is unsuccessful, displays request to reconnect with Connect-Me.
 
 ## PARAMETERS
 
@@ -40,21 +42,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Boolean
 ## NOTES
-Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOnline) exists
+Calls Test-SkypeOnlineConnection to ascertain session.
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [about_TeamsSession]()
-
-[Test-AzureAdConnection]()
-
-[Test-MicrosoftTeamsConnection]()
-
-[Test-ExchangeOnlineConnection]()
-
-[Assert-AzureAdConnection]()
-
-[Assert-MicrosoftTeamsConnection]()
 

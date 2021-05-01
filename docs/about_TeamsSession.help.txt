@@ -81,11 +81,14 @@ Admin Roles
     `Test-AzureAdConnection`
     | Verifying a Session to AzureAD exists                                     
                        | |
-    `Test-SkypeOnlineConnection`
-    | Verifying a Session to SkypeOnline exists                                 
-                       | |
     `Test-ExchangeOnlineConnection`
     | Verifying a Session to ExchangeOnline exists                              
+                       | |
+    `Test-MicrosoftTeamsConnection`
+    | Verifying a Session to MicrosoftTeams exists                              
+                          | |
+    `Test-SkypeOnlineConnection`
+    | Verifying a Session to SkypeOnline exists                                 
                        |
     The Assert cmdlets are nested in all Scripts to ensure sessions are created
     and available
@@ -94,6 +97,24 @@ Admin Roles
     Administrator on how to proceed > This includes the infamous
     `StepablePipelineError` which doesn't hint towards to PIM Admin roles to be
     activated. Please run `Connect-Me` again to rectify.
+
+    SKYPEONLINE FUNCTIONS
+    Temporarily re-introduced into the modules to allow backwards compatibility
+    with MicrosoftTeams v1
+    | Function                                                  | Description   
+                                                                                
+                           | |
+    --------------------------------------------------------: |
+    ------------------------------------------------------------------------------------------------------------------
+    | |
+    `Connect-SkypeOnline`
+    .             | |
+    `Enable-CsOnlineSessionForReconnection`
+    | Enables a Session established with New-CsOnlineSession to reconnect.      
+        | |
+    `Test-SkypeOnlineConnection`
+    | Verifying a Session to SkypeOnline exists                                 
+                       |
 
 EXAMPLES
     EXAMPLE 1 - CONNECTING TO AZUREAD, MICROSOFTTEAMS

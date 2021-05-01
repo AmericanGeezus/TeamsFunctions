@@ -3,16 +3,63 @@
 Full Change Log for all major releases.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.05 - May 2021 release
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-97-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-83-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2005-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing                                                                                                                                                                                                                      |
+
+No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
+
+### Focus for this month
+
+- Stabilisation of the Connection CmdLets incl. Reconnection
+- Re-Addition of support for MicrosoftTeams v1
+- Quality of Life improvements (better feedback, fine tuning, etc.)
+- Bugfixing
+
+### New
+
+- **Return of SkypeOnline**: Re-integration of Connect-SkypeOnline and utilisation of MicrosoftTeams v1.1.10-preview
+  - MicrosoftTeams v2.3.0 was released and is broken (Connection with -AccountId is not possible). v2.0.0 is now the allowed Maximum Version.
+  - MicrosoftTeams v2.0.0 has performance issues still, we see 6-10x execution commands for basic commands. Stable, but slow.
+  - MicrosoftTeams v1.1.10 was re-introduced as a baseline, testing performance return to normal. Dual operation possible, depending on MicrosoftTeams
+- `Connect-SkypeOnline`: Re-Added for backwards compatibility
+- `Enable-CsOnlineSessionForReconnection`: Re-Added to allow legacy sessions to reconnect.
+- `Assert-SkypeOnlineConnection`: Re-Added to validate against a Skype Session. Integrated into  `Assert-MicrosoftTeamsConnection`
+- `Test-SkypeOnlineConnection`: Re-Added to test for a Skype Session. Used by `Connect-SkypeOnline` and `Assert-SkypeOnlineConnection` if Module used is v1
+
+### Updated
+
+- `Connect-Me`:
+  - Fine-tuning for Connection stability. (Try #2 now connects without Parameter increasing likelihood of successful connection)
+  - Better feedback for issues encountered.
+  - Added TenantId to Connect-MicrosoftTeams to definitively connect to the same tenant as AzureAd
+  - Feedback to User is added to look out for the Authentication Dialog as it sometimes can pop up without focus, hiding behind other open windows.
+  - Switched Module MicrosoftTeams from `RequiredVersion` to `MaximumVersion` to allow for execution on tested versions (v2.0.0)
+  - Adding support for MicrosoftTeams v1.1.10 or v1.1.11 (these come with New-CsOnlineSession which is needed to connect)
+- `Get-TeamsUserLicense`: Switched lookup of User type from `Get-TeamsCallableEntity` to `Get-TeamsObjectType` to improve performance
+- `Get-TeamsTDP`: Fixed output (selected parameters were not the ones desired (copy/paste error))
+- `Get-TeamsObjectType`: Improved detection of TelephoneNumber (Regex) and changed wording of output for ResourceAccount to 'ApplicationEndpoint'
+- `Get-TeamsUserVoiceConfig`: Changed determination of ObjectType to faster Get-TeamsObjectType as only the name is needed.
+- `Get-CurrentConnectionInfo`: Reworked Tenant Name & Display Name based on type of connection present.
+- `Assert-MicrosoftTeamsConnection`: Added trigger for `Assert-SkypeOnlineConnection` if Module used is v1
+
 ## v21.04 - April 2021 release
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-93-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-46-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-79-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1925-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing |
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-93-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-46-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-79-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1925-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing                                                                                                                                                                                                                      |
 
 No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
 
@@ -98,12 +145,12 @@ Not in this release
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-82-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-71-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1118-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | MicrosoftTeams v2, Bugfixing, Licensing |
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-82-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-71-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1118-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | MicrosoftTeams v2, Bugfixing, Licensing                                                                                                                                                                                                                                                      |
 
 ### Focus for this month
 
@@ -147,12 +194,12 @@ Switching to a new way of connecting was easy, though due to lack of information
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-87-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-76-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1181-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | Bugfixing, TeamsCommonAreaPhone |
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-87-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-76-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1181-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Bugfixing, TeamsCommonAreaPhone                                                                                                                                                                                                                                                              |
 
 ### Focus for this month
 

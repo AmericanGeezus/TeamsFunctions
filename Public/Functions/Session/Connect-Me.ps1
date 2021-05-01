@@ -19,6 +19,11 @@ function Connect-Me {
 		Required. UserPrincipalName or LoginName of the Office365 Administrator
 	.PARAMETER ExchangeOnline
 		Optional. Connects to Exchange Online Management. Requires Exchange Admin Role
+	.PARAMETER UseV1Module
+		Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x
+    This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.
+    Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.
+    Handle with care.
 	.PARAMETER NoFeedback
 		Optional. Suppresses output session information about established sessions. Used for calls by other functions
 	.EXAMPLE
@@ -86,6 +91,10 @@ function Connect-Me {
     [Alias('Exchange')]
     [switch]$ExchangeOnline,
 
+    [Parameter(HelpMessage = 'Establishes a connection to MicrosoftTeams with the v1 Module.')]
+    [Alias('v1')]
+    [switch]$UseV1Module,
+
     [Parameter(HelpMessage = 'Suppresses Session Information output')]
     [switch]$NoFeedback
 
@@ -101,11 +110,27 @@ function Connect-Me {
 
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
-    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) {
+      $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference')
+    }
+    else {
+      $DebugPreference = 'Continue'
+    }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) {
+      $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction')
+    }
+    else {
+      $InformationPreference = 'Continue'
+    }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -146,10 +171,42 @@ function Connect-Me {
       Remove-Module SkypeOnlineConnector -Verbose:$false -Force -ErrorAction SilentlyContinue
     }
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
+    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
     $SaveVerbosePreference = $global:VerbosePreference;
     $global:VerbosePreference = 'SilentlyContinue';
-    Import-Module MicrosoftTeams -MinimumVersion 2.0.0 -Force -Global -Verbose:$false
+    if ( $UseV1Module -and $($TeamsModuleVersion.Major) -ge 2 ) {
+      Remove-Module MicrosoftTeams -Force -Verbose:$false -ErrorAction SilentlyContinue
+      try {
+        Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -MinimumVersion 1.1.10 -Force -Global -Verbose:$false -ErrorAction Stop
+      }
+      catch {
+        throw 'MicrosoftTeams Module not installed in v1.1.10-preview or v1.1.11-preview!'
+      }
+    }
+    else {
+      #Import-Module MicrosoftTeams -MinimumVersion 2.0.0 -Force -Global -Verbose:$false
+      if ( -not (Get-Module MicrosoftTeams) ) {
+        try {
+          Import-Module MicrosoftTeams -RequiredVersion 2.0.0 -Force -Global -Verbose:$false -ErrorAction Stop
+        }
+        catch {
+          throw 'MicrosoftTeams Module not installed in v2.0.0 - Please verify Module!'
+        }
+      }
+    }
     $global:VerbosePreference = $SaveVerbosePreference
+
+    # Determine Module Version loaded
+    if ( $($TeamsModuleVersion.Major) -lt 2 ) {
+      try {
+        $null = Get-Command New-CsOnlineSession -ErrorAction Stop
+      }
+      catch {
+        throw "Command 'New-CsOnlineSession' not available. Please ensure MicrosoftTeams is installed with v1.1.10 or higher."
+      }
+      Write-Verbose "Module MicrosoftTeams v1 is used ('New-CsOnlineSession'). Please note, that due to recent changes by Microsoft, session connection may fail" -Verbose
+    }
+
 
     if ( $AzureAdPreviewModule ) {
       Remove-Module AzureAd -Verbose:$false -ErrorAction SilentlyContinue
@@ -167,7 +224,9 @@ function Connect-Me {
     $Command = 'Get-AzureADMSPrivilegedRoleAssignment'
     try {
       $PIMavailable = Get-Command -Name $Command -ErrorAction Stop
-      if ( $PIMavailable ) { $sMax++ }
+      if ( $PIMavailable ) {
+        $sMax++
+      }
     }
     catch {
       Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
@@ -196,11 +255,21 @@ function Connect-Me {
     $Status = 'Establishing Connection'
     Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     $ConnectionOrder = @('AzureAd')
-    if ( $PIMavailable ) { $ConnectionOrder += 'Enabling eligible Admin Roles' } else {
+    if ( $PIMavailable ) {
+      $ConnectionOrder += 'Enabling eligible Admin Roles'
+    }
+    else {
       Write-Verbose 'Enable-AzureAdAdminrole - Privileged Identity Management functions are not available' -Verbose
     }
-    $ConnectionOrder += 'MicrosoftTeams'
-    if ($ExchangeOnline) { $ConnectionOrder += 'ExchangeOnline' }
+    if ($UseV1Module -and $($TeamsModuleVersion.Major) -lt 2) {
+      $ConnectionOrder += 'SkypeOnline'
+    }
+    else {
+      $ConnectionOrder += 'MicrosoftTeams'
+    }
+    if ($ExchangeOnline) {
+      $ConnectionOrder += 'ExchangeOnline'
+    }
 
     foreach ($Connection in $ConnectionOrder) {
       $Service = $Connection
@@ -231,6 +300,43 @@ function Connect-Me {
                 Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
               }
               $PIMavailable = $false
+            }
+          }
+          'SkypeOnline' {
+            $SkypeOnlineParameters = $ConnectionParameters
+            $SkypeOnlineParameters += @{ 'AccountId' = $AccountId }
+            try {
+              try {
+                if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
+                  $TeamsConnection = Connect-SkypeOnline @SkypeOnlineParameters -OverrideAdminDomain $OverrideAdminDomain
+                }
+                else {
+                  $TeamsConnection = Connect-SkypeOnline @SkypeOnlineParameters
+                }
+              }
+              catch {
+                Write-Verbose -Message "$Status - $Operation - Try `#2 - Please confirm Account" -Verbose
+                $TeamsConnection = Connect-SkypeOnline -ErrorAction Stop
+              }
+              if (-not (Use-MicrosoftTeamsConnection) -and $TeamsConnection) {
+                # order is important here!
+                throw 'SkypeOnline - Connection to SkypeOnline not able to establish. Please run Connect-SkypeOnline manually'
+              }
+            }
+            catch {
+              if ( $_.Exception.Message.Contains('does not have permission to manage this tenant') -or $_.Exception.Message.Contains('403')) {
+                if ( -not $_.Exception.Message.Contains("$AccountId") -and $_.Exception.Message -match "'(?<content>.*)'") {
+                  Write-Error -Message "Establishing Connection to SkypeOnline failed. Connection attempted with a Username that is not authorised for this Tenant: $($matches.content) "
+                  Write-Debug "This happens, if connections are established to different tenants and a session token is from the previous connection is still lingering in the session. This is a bug in the 'New-CsOnlineSession' CmdLet (The Session token from a previous session is not removed correctly). The only way to currently overcome this is to close your PowerShell Session and start a fresh session!" -Debug
+                }
+                else {
+                  Write-Error -Message 'User does not have permission to manage this tenant. If Privileged Identity Management is used please validate Admin Roles being activated'
+                }
+              }
+              else {
+                Write-Error -Message "Establishing Connection to SkypeOnline failed: $($_.Exception.Message)"
+                Write-Verbose -Message 'Please verify Username, Password, OverrideAdminDomain and Session Exhaustion (maximum two concurrent sessions)'
+              }
             }
           }
           'MicrosoftTeams' {
@@ -283,7 +389,7 @@ function Connect-Me {
       $SessionInfo | Add-Member -MemberType NoteProperty -Name AdminRoles -Value ''
 
       #Querying Admin Roles
-      if ( $ActivatedRoles ) {
+      if ( $ActivatedRoles -and $ActivatedRoles.RoleName -gt 0 ) {
         $SessionInfo.AdminRoles = $($ActivatedRoles.RoleName -join ', ')
       }
       else {

@@ -38,8 +38,9 @@
   20.12       DEC 2020 Release - Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes
   21.01       JAN 2021 Release - Updated Session connection, improved Auto Attendants, etc.
   21.02       FEB 2021 Release - Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector
-  21.03       MAR 2021 Release - Switched to support for MicrosoftTeams v2.0.0.0 - Removed SkypeOnline, Bugfixes
+  21.03       MAR 2021 Release - Switched to support for MicrosoftTeams v2.0.0 - Removed SkypeOnline, Bugfixes
   21.04       APR 2021 Release - Improved stability to Connect Scripts, Added more query scripts (Licensing, Policies), Script improvements, Bugfixes
+  21.05       MAY 2021 Release - Re-introduced support for MicrosoftTeams v1, Bugfixes and minor improvements
 
 .LINK
   https://github.com/DEberhardt/TeamsFunctions/tree/master/docs
@@ -47,13 +48,7 @@
 #>
 
 #Requires -Version 5.1
-#Re#quires -Modules @{ ModuleName='MicrosoftTeams'; ModuleVersion='2.0.0' }
-#Re#quires -Modules @{ ModuleName='MicrosoftTeams'; MinimumVersion='2.0.0' }
-
-#Activate when released
-# AzureAdPreview 2.0.2.129
-#Re#quires -Modules @{ ModuleName="AzureAd"; ModuleVersion="2.0.2.129" }
-#Re#quires -Modules @{ ModuleName="AzureAdPreview"; ModuleVersion="2.0.2.24" }
+#Requires -Modules @{ ModuleName="MicrosoftTeams"; MaximumVersion="2.0.0" }
 
 # Addressing Limitations
 function Get-StrictMode {
@@ -187,7 +182,7 @@ Get-ChildItem -Filter *.ps1 -Path $PSScriptRoot\Public\Functions, $PSScriptRoot\
 Set-Alias -Name New-TeamsAutoAttendantCallHandlingAssociation -Value New-CsAutoAttendantCallHandlingAssociation
 Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
 Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
-Set-Alias -Name Connect-SkypeOnline -Value Connect-MicrosoftTeams
+#Set-Alias -Name Connect-SkypeOnline -Value Connect-MicrosoftTeams
 
 # Dedication
 if ($env:username -eq 'Julia.Horvath') {
@@ -203,8 +198,8 @@ if ($env:username -eq 'Julia.Horvath') {
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, ear, cur, Connect-SkypeOnline, Enable-Ev, Set-ServicePlan, `
-  Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
+Export-ModuleMember -Alias con, dis, pol, ear, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
+Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   #Test-TeamsTDP, `
   Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, `

@@ -14,7 +14,7 @@ Creates a new Common Area Phone
 
 ```
 New-TeamsCommonAreaPhone [-UserPrincipalName] <String> [-DisplayName <String>] -UsageLocation <String>
- [-License <String>] [-Password <String>] [-IPPhonePolicy <String>] [-TeamsCallingPolicy <String>]
+ [-License <String>] [-Password <SecureString>] [-IPPhonePolicy <String>] [-TeamsCallingPolicy <String>]
  [-TeamsCallParkPolicy <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -144,7 +144,7 @@ String.
 If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"
 
 ```yaml
-Type: String
+Type: SecureString
 Parameter Sets: (All)
 Aliases:
 

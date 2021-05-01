@@ -47,21 +47,21 @@ function Get-RandomQuote {
     'Forward the Foundation! (Isaac Asimov)', `
     "When live gives you lemons? Don't make lemonade. Make life take the lemons back! Get mad! Say: 'I don't want your damn lemons! What am I supposed to do with these?' Demand to see life's manager! (Portal 2, Cave Johnson)", `
     "I love* when I need to download an update for the updater to install an update. (*I don't love that.) -- It's even more fun when your updater is so out of date you have to manually go get the newest avaliable updater in order to update the product. (unknown)", `
-    "The two basic principles of Windows system administration: For minor problems, reboot; For major problems, reinstall (unknown)", `
-    "If you want to make an apple pie from scratch, you must first create the universe (Carl Sagan)", `
+    'The two basic principles of Windows system administration: For minor problems, reboot; For major problems, reinstall (unknown)', `
+    'If you want to make an apple pie from scratch, you must first create the universe (Carl Sagan)', `
     'With insufficient data it is easy to go wrong (Carl Sagan)', `
     'We should therefore claim, in the name of tolerance, the right not to tolerate the intolerant. (Sir Charles Popper)', `
-    "Activating the Out-of-Office Assistant while being present is the ninja-trick of the office employee (unknown)", `
+    'Activating the Out-of-Office Assistant while being present is the ninja-trick of the office employee (unknown)', `
     "I'd love to be as tired in the evenings as I am in the mornings. My biorhythm is in a different time zone.", `
     "We are all flawed, my dear. Every one of us. And believe me, we've all made mistakes. You've just got to take a good hard look at yourself, change what needs to be changed, and move on, pet. (Lauren Myracle)", `
     'I live in my own little world. But its ok, they know me here. (Lauren Myracle)', `
     "Hey. What is it that famous person said? 'It'll all work out in the end, and if it doesn't, that means it's not the end yet'? (Lauren Myracle)", `
     'If you would be a real seeker after truth, it is necessary that at least once in your life you doubt, as far as possible, all things. (Rene Descartes)', `
-    "Plan A is always more effective when the device you are working on understands that Plan B involves either a large hammer or screwdriver... (unknown)", `
-    "A programmer is just a tool which converts caffeine into code (unknown)", `
+    'Plan A is always more effective when the device you are working on understands that Plan B involves either a large hammer or screwdriver... (unknown)', `
+    'A programmer is just a tool which converts caffeine into code (unknown)', `
     "The database hates you right now. The entry might exist or it might not exist. We would clear this mystery up for you, if we could get to the database. We tried to look it up, but the database puked up an error:Lost connection to My SQL server at 'reading initial communication packet', system error: 0 (unknown)", `
     'May all things go according to the wishes of those who hear it (Stargate Universe/Cantonese Proverb)', `
-    "people who say it cannot be done should not interrupt those who are doing it (George Bernard Shaw)", `
+    'people who say it cannot be done should not interrupt those who are doing it (George Bernard Shaw)', `
     'Passion is energy. Feel the power that comes from focusing on what excites you. (Oprah Winfrey)', `
     'Doing the best at this moment puts you in the best place for the next moment. (Oprah Winfrey)', `
     "Be thankful for what you have; you'll end up having more. If you concentrate on what you don't have, you will never, ever have enough. (Oprah Winfrey)", `
@@ -71,11 +71,12 @@ function Get-RandomQuote {
     "'Educational' refers to the process, not the object. Although, come to think of it, some of my teachers could easily have been replaced by a cheeseburger. (Terry Pratchett)", `
     'Fantasy is an exercise bicycle for the mind. It might not take you anywhere, but it tones up the muscles that can. Of course, I could be wrong. (Terry Pratchett)', `
     "What is normal? Normal was yesterday. If you lose a leg, one day you're hopping around on one leg, so you know the difference. (Terry Pratchett)", `
-    "Do you know that a man is not dead while his name is still spoken? (Terry Pratchett) -- GNU Sir Terry.", `
+    'Do you know that a man is not dead while his name is still spoken? (Terry Pratchett) -- GNU Sir Terry.', `
+    "It's not worth doing something unless someone, somewhere, would much rather you weren't doing it (Terry Pratchett)", `
     #endregion Addded David
 
-    #region Added Julia
-    "Give a man a fire and he's warm for a day, but set fire to him and he's warm for the rest of his life. (Terry Pratchett)", `
+  #region Added Julia
+  "Give a man a fire and he's warm for a day, but set fire to him and he's warm for the rest of his life. (Terry Pratchett)", `
     'In ancient times cats were worshipped as gods; they have not forgotten this. (Terry Pratchett)', `
     'In the beginning there was nothing, which exploded. (Terry Pratchett)', `
     'Real stupidity beats artificial intelligence every time. (Terry Pratchett)', `
@@ -84,12 +85,17 @@ function Get-RandomQuote {
     "Steal five dollars and you're a common thief. Steal thousands and you're either the government or a hero. (Terry Pratchett)", `
     'A witch ought never to be frightened in the darkest forest, Granny Weatherwax had once told her, because she should be sure in her soul that the most terrifying thing in the forest was her. (Terry Pratchett)', `
     'His progress through life was hampered by his tremendous sense of his own ignorance, a disability which affects all too few. (Terry Pratchett)', `
-    'There Has Ceased to Be a Difference Between My Awake Clothes and My Asleep Clothes (Mindy Kaling)', `
+    "Stories of imagination tend to upset those without one. (Terry Pratchett)", `
+    "The phrase 'Someone ought to do something' was not, by itself, a helpful one. People who used it never added the rider 'and that someone is me'. (Terry Pratchett - The Hogfather)", `
+    "Always remember that the crowd that applauds your coronation is the same crowd that will applaud your beheading. People like a show. (Terry Pratchett - Going Postal)", `
+    "It is well known that a vital ingredient of success is not knowing that what you're attempting can't be done. (Terry Pratchett - Equal Rites)", `
+
+    'There has ceased to be a difference between my awake clothes and my asleep clothes (Mindy Kaling)', `
     "If you don't stick to your values when they're being tested, they're not values: they're hobbies. (Jon Stewart)", `
     #endregion Added Julia
 
-    #region Imported
-    'People say nothing is impossible, but I do nothing every day. (A. A. Milne)', `
+  #region Imported
+  'People say nothing is impossible, but I do nothing every day. (A. A. Milne)', `
     'The best thing about the future is that it comes one day at a time. (Abraham Lincoln)', `
     'Light travels faster than sound. This is why some people appear bright until you hear them speak. (Alan Dundes)', `
     'The difference between stupidity and genius is that genius has its limits. (Albert Einstein)', `
@@ -130,7 +136,7 @@ function Get-RandomQuote {
     'Remember, today is the tomorrow you worried about yesterday. (Dale Carnegie)', `
     "Education is learning what you didn't even know you didn't know. (Daniel J. Boorstin)", `
     "It is a scientific fact that your body will not absorb cholesterol if you take it from another person's plate. (Dave Barry)", `
-    "Never under any circumstances take a sleeping pill and a laxative on the same night. (Dave Barry)", `
+    'Never under any circumstances take a sleeping pill and a laxative on the same night. (Dave Barry)', `
     'I used to jog but the ice cubes kept falling out of my glass. (David Lee Roth)', `
     'The digital camera is a great invention because it allows us to reminisce. Instantly. (Demetri Martin)', `
     'A failure is like fertilizer; it stinks to be sure, but it makes things grow faster in the future. (Denis Waitley)', `
@@ -220,7 +226,7 @@ function Get-RandomQuote {
     'A committee is a group that keeps minutes and loses hours. (Milton Berle)', `
     'My doctor told me that jogging could add years to my life. I think he was right. I feel ten years older already. (Milton Berle)', `
     'I drank some boiling water because I wanted to whistle. (Mitch Hedberg)', `
-    "I prefer someone who burns the flag and then wraps themselves up in the Constitution over someone who burns the Constitution and then wraps themselves up in the flag. (Molly Ivins)", `
+    'I prefer someone who burns the flag and then wraps themselves up in the Constitution over someone who burns the Constitution and then wraps themselves up in the flag. (Molly Ivins)', `
     "It's just a job. Grass grows, birds fly, waves pound the sand. I beat people up. (Muhammad Ali)", `
     "It's always darkest before the dawn. So if you're going to steal your neighbor's newspaper, that's the time to do it. (Navjot Singh Sidhu)", `
     "When you go into court you are putting your fate into the hands of twelve people who weren't smart enough to get out of jury duty. (Norm Crosby)", `

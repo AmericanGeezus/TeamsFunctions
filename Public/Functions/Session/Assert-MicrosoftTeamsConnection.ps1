@@ -51,26 +51,32 @@ function Assert-MicrosoftTeamsConnection {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
+    $TeamsModuleVersionMajor = (Get-Module MicrosoftTeams).Version.Major
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    if (Test-MicrosoftTeamsConnection) {
-      if ($stack.length -lt 3) {
-        Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Connected!'
-      }
-      return $(if ($Called) { $true })
-    }
-    elseif (Use-MicrosoftTeamsConnection) {
-      if ($stack.length -lt 3) {
-        Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!' -Verbose
-      }
-      return $(if ($Called) { $true })
+    if ($TeamsModuleVersionMajor -lt 2) {
+      Assert-SkypeOnlineConnection
     }
     else {
-      Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - Reconnect unsuccessful - Please validate your Admin roles, disconnect and reconnect' -ForegroundColor Red
-      return $(if ($Called) { $false })
+      if (Test-MicrosoftTeamsConnection) {
+        if ($stack.length -lt 3) {
+          Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Connected!'
+        }
+        return $(if ($Called) { $true })
+      }
+      elseif (Use-MicrosoftTeamsConnection) {
+        if ($stack.length -lt 3) {
+          Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!' -Verbose
+        }
+        return $(if ($Called) { $true })
+      }
+      else {
+        Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - No connection established or reconnect unsuccessful' -ForegroundColor Red
+        return $(if ($Called) { $false })
+      }
     }
   } #process
 

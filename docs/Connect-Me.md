@@ -13,7 +13,7 @@ Connect to AzureAd, MicrosoftTeams and optionally also to Exchange
 ## SYNTAX
 
 ```
-Connect-Me [-AccountId] <String> [-ExchangeOnline] [-NoFeedback] [<CommonParameters>]
+Connect-Me [-AccountId] <String> [-ExchangeOnline] [-UseV1Module] [-NoFeedback] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -80,6 +80,25 @@ Requires Exchange Admin Role
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: Exchange
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UseV1Module
+Optional.
+Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x
+  This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.
+  Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.
+  Handle with care.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: v1
 
 Required: False
 Position: Named
