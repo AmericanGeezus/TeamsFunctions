@@ -36,6 +36,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.Void
 ## OUTPUTS
 
 ### System.Boolean
@@ -46,4 +47,6 @@ Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsSession]()
 

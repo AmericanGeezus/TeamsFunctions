@@ -17,9 +17,9 @@ function Enable-CsOnlineSessionForReconnection {
     Enable-CsOnlineSessionForReconnection
     Enables the Skype Online Session to reconnect
   .INPUTS
-    None
+    System.Void
   .OUTPUTS
-    None
+    System.Void
   .NOTES
     With special thanks to Andres for providing the code for this wonderful command
   .COMPONENT
@@ -30,6 +30,8 @@ function Enable-CsOnlineSessionForReconnection {
     Enables the Skype Online Session to reconnect
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
   .LINK
     Enable-CsOnlineSessionForReconnection
   .LINK

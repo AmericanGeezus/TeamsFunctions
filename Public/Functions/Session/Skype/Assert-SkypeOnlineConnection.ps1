@@ -18,12 +18,23 @@ function Assert-SkypeOnlineConnection {
     Will run Test-SkypeOnlineConnection and, if successful, stops.
     If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection.
     If that too is unsuccessful, displays request to reconnect with Connect-Me.
+  .INPUTS
+    System.Void
+  .OUTPUTS
+    System.Boolean
+  .NOTES
+    Calls Test-SkypeOnlineConnection to ascertain session.
+  .COMPONENT
+    TeamsSession
+  .FUNCTIONALITY
+    Asserts the connection to MicrosoftTeams (SkypeOnline)
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
   #>
 
   [CmdletBinding()]
-  [Alias('pol')]
   [OutputType([Boolean])]
   param() #param
 

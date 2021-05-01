@@ -7,8 +7,7 @@
 
 
 
-function Connect-SkypeOnline
-{
+function Connect-SkypeOnline {
   <#
 	.SYNOPSIS
 		Creates a remote PowerShell session to Teams (SkypeOnline)
@@ -39,6 +38,10 @@ function Connect-SkypeOnline
     When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
     The OverrideAdminDomain is not provided, so it is constructed from the domain part. Please see Notes for details.
     Additional prompts for Multi Factor Authentication are displayed as required.
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
 	.EXAMPLE
 		Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com
     When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com
@@ -85,8 +88,14 @@ function Connect-SkypeOnline
     - Prompting for Username and password to establish the session
     - Prompting for MFA if required
     - Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Creates a new connection to MicrosoftTeams (SkypeOnline) with New-CsOnlineSession
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
   .LINK
     Connect-Me
 	.LINK
@@ -122,8 +131,7 @@ function Connect-SkypeOnline
     [int]$IdleTimeout = 4
   ) #param
 
-  begin
-  {
+  begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
@@ -133,31 +141,25 @@ function Connect-SkypeOnline
 
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
-    if ( $PSBoundParameters.ContainsKey('InformationAction'))
-    { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') 
-    } else
-    { $InformationPreference = 'Continue' 
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction')
+    }
+    else { $InformationPreference = 'Continue'
     }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose'))
-    { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') 
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
     }
-    if (-not $PSBoundParameters.ContainsKey('Confirm'))
-    { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') 
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
     }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf'))
-    { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') 
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
     }
-    if (-not $PSBoundParameters.ContainsKey('Debug'))
-    { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') 
-    } else
-    { $DebugPreference = 'Continue' 
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference')
     }
-    if ( $PSBoundParameters.ContainsKey('InformationAction'))
-    { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') 
-    } else
-    { $InformationPreference = 'Continue' 
+    else { $DebugPreference = 'Continue'
+    }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction')
+    }
+    else { $InformationPreference = 'Continue'
     }
 
     $Parameters = $null
@@ -174,18 +176,16 @@ function Connect-SkypeOnline
     $global:VerbosePreference = $SaveVerbosePreference
 #>
     # Module Prerequisites
-    if ( -not $Called )
-    {
+    if ( -not $Called ) {
       Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
       $SaveVerbosePreference = $global:VerbosePreference;
       $global:VerbosePreference = 'SilentlyContinue';
       Remove-Module SkypeOnlineConnector -Verbose:$false -ErrorAction SilentlyContinue
       Remove-Module MicrosoftTeams -Verbose:$false -ErrorAction SilentlyContinue -Force
-      try
-      {
+      try {
         Import-Module MicrosoftTeams -MaximumVersion 1.1.11 -MinimumVersion 1.1.10 -Force -Global -Verbose:$false -ErrorAction Stop
-      } catch
-      {
+      }
+      catch {
         throw 'MicrosoftTeams Module not installed in v1.1.10-preview or v1.1.11-preview!'
       }
       $global:VerbosePreference = $SaveVerbosePreference
@@ -193,34 +193,30 @@ function Connect-SkypeOnline
 
     # Validating existing Connection to AzureAd
     $AzureAdConnection = Test-AzureADConnection
-    if ($AzureAdConnection)
-    {
+    if ($AzureAdConnection) {
       $AzureSessionInfo = Get-AzureADCurrentSessionInfo
       $TenantDomain = $AzureSessionInfo.TenantDomain
-      if ( $AzureSessionInfo.Account )
-      {
-        if ( $AccountId -ne $AzureSessionInfo.Account )
-        {
+      if ( $AzureSessionInfo.Account ) {
+        if ( $AccountId -ne $AzureSessionInfo.Account ) {
           Write-Verbose "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'. - '$AccountId' is ignored"
           $AccountId = $AzureSessionInfo.Account
-        } else
-        {
+        }
+        else {
           Write-Verbose "$($MyInvocation.MyCommand) - AzureAd: Connected with '$($AzureSessionInfo.Account)'"
           $AccountId = $AzureSessionInfo.Account
         }
-      } else
-      {
+      }
+      else {
         Write-Verbose "$($MyInvocation.MyCommand) - AzureAd: Not Connected"
         $AccountId = ''
       }
 
       # Existing Session
-      if (Test-SkypeOnlineConnection)
-      {
+      if (Test-SkypeOnlineConnection) {
         Write-Warning -Message "$($MyInvocation.MyCommand) - A valid Skype Online PowerShell Sessions already exists. Please run Disconnect-SkypeOnline before attempting this command again."
         break
-      } else
-      {
+      }
+      else {
       }
     }
     <# Disabled as handled by Connect-Me now
@@ -232,18 +228,16 @@ function Connect-SkypeOnline
     #>
 
     # OverrideAdminDomain
-    if ($PSBoundParameters.ContainsKey('OverrideAdminDomain'))
-    {
+    if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
       Write-Verbose "$($MyInvocation.MyCommand) - OverrideAdminDomain provided. Using Domain '$OverrideAdminDomain'"
       $Parameters += @{ 'OverrideAdminDomain' = $OverrideAdminDomain }
-    } else
-    {
-      if ($AzureAdConnection)
-      {
+    }
+    else {
+      if ($AzureAdConnection) {
         Write-Verbose -Message "$($MyInvocation.MyCommand) - OverrideAdminDomain from AzureAd. Using Domain '$TenantDomain'"
         $Parameters += @{ 'OverrideAdminDomain' = $TenantDomain }
-      } else
-      {
+      }
+      else {
         Write-Warning "$($MyInvocation.MyCommand) - OverrideAdminDomain not used. If prompted, please provide."
       }
     }
@@ -260,92 +254,79 @@ function Connect-SkypeOnline
     #>
   } #begin
 
-  process
-  {
+  process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     # Creating Session
-    try
-    {
+    try {
       # Debug information on Parameters
-      if ($PSBoundParameters.ContainsKey('Debug'))
-      {
+      if ($PSBoundParameters.ContainsKey('Debug')) {
         "Function: $($MyInvocation.MyCommand.Name): Connection `#1: Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
       Write-Verbose 'Establishing Connection - SkypeOnline: AccountId may not be able to be pre-selected - Please select or provide Account manually!' -Verbose
       $SkypeOnlineSession = New-CsOnlineSession @Parameters
-    } catch [System.Net.WebException]
-    {
-      try
-      {
-        if ($PSBoundParameters.ContainsKey('OverrideAdminDomain'))
-        {
+    }
+    catch [System.Net.WebException] {
+      try {
+        if ($PSBoundParameters.ContainsKey('OverrideAdminDomain')) {
           Write-Error -Message "Session could not be created with OverrideAdminDomain '$OverrideAdminDomain'. Please verify Domain Name"
-        } else
-        {
+        }
+        else {
           Write-Warning -Message 'Session could not be created. Maybe missing OverrideAdminDomain to connect?'
         }
         $Domain = Read-Host 'Please enter an OverrideAdminDomain for this Tenant'
-        if ( $Parameters.OverrideAdminDomain )
-        {
+        if ( $Parameters.OverrideAdminDomain ) {
           $Parameters.OverrideAdminDomain = $Domain
-        } else
-        {
+        }
+        else {
           $Parameters += @{ 'OverrideAdminDomain' = $Domain }
         }
         # Creating Session (again)
         # Debug information on Parameters
-        if ($PSBoundParameters.ContainsKey('Debug'))
-        {
+        if ($PSBoundParameters.ContainsKey('Debug')) {
           "Function: $($MyInvocation.MyCommand.Name): Connection `#2: Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         $SkypeOnlineSession = New-CsOnlineSession @Parameters
-      } catch
-      {
+      }
+      catch {
         # Catching 403 (not allowed) and general Session error
-        if ( $_.Exception.Message.Contains('not allowed to manage'))
-        {
+        if ( $_.Exception.Message.Contains('not allowed to manage')) {
           throw [System.Management.Automation.SessionStateUnauthorizedAccessException]::New("Session creation failed: $($_.Exception.Message)")
-        } else
-        {
+        }
+        else {
           throw [System.Management.Automation.SessionStateException]::New("Session creation failed: $($_.Exception.Message)")
         }
       }
-    } catch
-    {
+    }
+    catch {
       # Catching 403 (not allowed) and general Session error
-      if ( $_.Exception.Message.Contains('not allowed to manage'))
-      {
+      if ( $_.Exception.Message.Contains('not allowed to manage')) {
         throw [System.Management.Automation.SessionStateUnauthorizedAccessException]::New("Session creation failed: $($_.Exception.Message)")
-      } else
-      {
+      }
+      else {
         throw [System.Management.Automation.SessionStateException]::New("Session creation failed: $($_.Exception.Message)")
       }
     }
 
-    if ( $SkypeOnlineSession )
-    {
-      try
-      {
+    if ( $SkypeOnlineSession ) {
+      try {
         Write-Verbose -Message 'Importing temporary Module from Import-PSSession'
         Import-Module (Import-PSSession -Session $SkypeOnlineSession -AllowClobber -ErrorAction STOP) -Global -Verbose:$false
         $null = Enable-CsOnlineSessionForReconnection
         Write-Information 'SUCCESS: Enabling Reconnection - SkypeOnline Session. You are prompted to reconnect, if possible.'
         Write-Verbose -Message 'The success of reconnection attempts depends on a few factors, including the Security Settings in the Tenant.' -Verbose
-      } catch
-      {
+      }
+      catch {
         Write-Error -Message "EXCEPTION: $($_.Exception.Message)"
       }
 
       $PSSkypeOnlineSession = Get-PSSession | Where-Object { ($_.ComputerName -like '*.online.lync.com' -or $_.Computername -eq 'api.interfaces.records.teams.microsoft.com') -and $_.State -eq 'Opened' -and $_.Availability -eq 'Available' } -WarningAction STOP -ErrorAction STOP
       $TenantInformation = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction STOP
-      if (-not $TenantDomain)
-      { $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1 
+      if (-not $TenantDomain) { $TenantDomain = $TenantInformation.Domains | Select-Object -Last 1
       }
       $Timeout = New-TimeSpan -Hours $($PSSkypeOnlineSession.IdleTimeout / 3600000)
       $Environment = $PSSkypeOnlineSession.Name.split('_')[0]
-      if (-not $Environment)
-      {
+      if (-not $Environment) {
         $Environment = 'SfBPowerShellSession'
       }
 
@@ -366,8 +347,7 @@ function Connect-SkypeOnline
 
   } #process
 
-  end
-  {
+  end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Connect-SkypeOnline

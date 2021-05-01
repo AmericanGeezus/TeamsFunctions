@@ -35,10 +35,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### System.Void
 ## OUTPUTS
 
-### Boolean
+### System.Boolean
 ## NOTES
 Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOnline) exists
 

@@ -332,7 +332,16 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Void</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
@@ -345,7 +354,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para></maml:para>
+        <maml:para>Calls Test-SkypeOnlineConnection to ascertain session.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -361,6 +370,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>
@@ -1156,8 +1169,26 @@
         <dev:defaultValue>4</dev:defaultValue>
       </command:parameter>
     </command:parameters>
-    <command:inputTypes />
-    <command:returnValues />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
     <maml:alertSet>
       <maml:alert>
         <maml:para>Connection to SkypeOnline is done by creating a Session with New-CsOnlineSession, which later needs to be imported. A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E. SkypeOnline)</maml:para>
@@ -1198,6 +1229,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Connect-Me</maml:linkText>
@@ -1698,7 +1733,7 @@
     <command:inputTypes>
       <command:inputType>
         <dev:type>
-          <maml:name>None</maml:name>
+          <maml:name>System.Void</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -1708,7 +1743,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>None</maml:name>
+          <maml:name>System.Void</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -1733,6 +1768,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Enable-CsOnlineSessionForReconnection</maml:linkText>
@@ -18546,7 +18585,7 @@
     <command:inputTypes>
       <command:inputType>
         <dev:type>
-          <maml:name>None</maml:name>
+          <maml:name>System.Void</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -18556,7 +18595,7 @@
     <command:returnValues>
       <command:returnValue>
         <dev:type>
-          <maml:name>Boolean</maml:name>
+          <maml:name>System.Boolean</maml:name>
         </dev:type>
         <maml:description>
           <maml:para></maml:para>
@@ -18626,7 +18665,16 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters />
-    <command:inputTypes />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Void</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
     <command:returnValues>
       <command:returnValue>
         <dev:type>
@@ -18655,6 +18703,10 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsSession</maml:linkText>
+        <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>

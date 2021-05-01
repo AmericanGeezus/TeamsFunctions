@@ -119,8 +119,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.String
 ## OUTPUTS
 
+### System.Object
 ## NOTES
 Connection to SkypeOnline is done by creating a Session with New-CsOnlineSession, which later needs to be imported.
 A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E.
@@ -169,6 +171,8 @@ This CmdLet is preforming the following Tasks:
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsSession]()
 
 [Connect-Me]()
 

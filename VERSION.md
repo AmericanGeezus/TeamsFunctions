@@ -7,12 +7,12 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-97-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-83-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1987-blue.svg) ![Failed](https://img.shields.io/badge/Failed-18-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing |
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-97-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-83-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2005-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing                                                                                                                                                                                                                      |
 
 No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
 
@@ -54,12 +54,12 @@ No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-93-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-46-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-79-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1925-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing |
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-93-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-46-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-79-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1925-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Connection & Reconnection, Pipeline Support, Quality of Life, Bugfixing                                                                                                                                                                                                                      |
 
 No fundamental changes for CommonAreaPhone Cmdlets, so they are still in RC
 
@@ -145,12 +145,12 @@ Not in this release
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-82-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-71-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1118-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | MicrosoftTeams v2, Bugfixing, Licensing |
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-82-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-71-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1118-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | MicrosoftTeams v2, Bugfixing, Licensing                                                                                                                                                                                                                                                      |
 
 ### Focus for this month
 
@@ -194,12 +194,12 @@ Switching to a new way of connecting was easy, though due to lack of information
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-87-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                          |
-| Status    | ![Live](https://img.shields.io/badge/Live-76-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg)                  |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-1181-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg) |
-| Focus | Bugfixing, TeamsCommonAreaPhone |
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-87-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-42-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-76-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg)  ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-grey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-1181-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Bugfixing, TeamsCommonAreaPhone                                                                                                                                                                                                                                                              |
 
 ### Focus for this month
 

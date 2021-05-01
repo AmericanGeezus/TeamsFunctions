@@ -17,11 +17,21 @@ function Test-SkypeOnlineConnection {
 	.EXAMPLE
 		Test-SkypeOnlineConnection
 		Will Return $TRUE only if a valid and open session is found.
-	.NOTES
+  .INPUTS
+    System.Void
+  .OUTPUTS
+    System.Boolean
+  .NOTES
 		Added check for Open Session to err on the side of caution.
 		Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
+  .COMPONENT
+    TeamsSession
+	.FUNCTIONALITY
+    Tests the connection to MicrosoftTeams (SkypeOnline)
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsSession
 	#>
 
   [CmdletBinding()]

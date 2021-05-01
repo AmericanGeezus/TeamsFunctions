@@ -35,16 +35,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### System.Void
 ## OUTPUTS
 
-### None
+### System.Void
 ## NOTES
 With special thanks to Andres for providing the code for this wonderful command
 
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
+[about_TeamsSession]()
 
 [Enable-CsOnlineSessionForReconnection]()
 
