@@ -4,7 +4,8 @@
 # Updated:  01-JAN-2021
 # Status:   Live
 
-
+#TODO Add Channel as an entity - with Regex Match for this example? 19:57e130f4d8d34b1a83bd0110f092cea2@thread.tacv2
+#REGEX -match "^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$"
 
 function Get-TeamsObjectType {
   <#
