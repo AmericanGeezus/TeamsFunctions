@@ -17,7 +17,8 @@ function Get-TeamsUserVoiceConfig {
   .PARAMETER UserPrincipalName
     Required. UserPrincipalName (UPN) of the User
 	.PARAMETER DiagnosticLevel
-    Optional. Value from 1 to 4. Higher values will display more parameters
+    Optional. Value from 0 to 4. Higher values will display more parameters
+    If not provided (and not suppressed with SkipLicenseCheck), will change the output of LicensesAssigned to ProductNames only
     See NOTES below for details.
   .PARAMETER SkipLicenseCheck
     Optional. Will not perform queries against User Licensing to improve performance
@@ -40,6 +41,7 @@ function Get-TeamsUserVoiceConfig {
     System.Object
   .NOTES
     DiagnosticLevel details:
+    0 Same output as without the Parameter, though LicensesAssigned are nested in as an Object rather than names only.
     1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype
     2 Extended diagnostics displaying additional Voice-related Policies
     3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc.
@@ -50,6 +52,12 @@ function Get-TeamsUserVoiceConfig {
     - for AzureAD:    "Find-AzureAdUser $UserPrincipalName | FL"
     - for Licensing:  "Get-AzureAdUserLicense $UserPrincipalName"
     - for Teams:      "Get-CsOnlineUser $UserPrincipalName"
+
+    Exporting PowerShell Objects that contain Nested Objects as CSV results in this parameter being shown as "System.Object[]".
+    The nested Object itself however enables a more in-depth view of Licensing for this Object.
+    The introduction of Diagnostic Level 0 tries to bridge two seemingly contradicting requirements.
+    Using any diagnostic level gives the flexibly to drill-down into Licensing.
+    Omitting it allows for visible data when exporting as a CSV.
   .COMPONENT
     VoiceConfiguration
 	.FUNCTIONALITY
@@ -86,7 +94,7 @@ function Get-TeamsUserVoiceConfig {
 
     [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
     [Alias('DiagLevel', 'Level', 'DL')]
-    [ValidateRange(1, 4)]
+    [ValidateRange(0, 4)]
     [int32]$DiagnosticLevel,
 
     [Parameter(HelpMessage = 'Improves performance by not performing a License Check on the User')]
@@ -177,7 +185,6 @@ function Get-TeamsUserVoiceConfig {
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
       #endregion
 
-
       #region Creating Base Custom Object
       $Operation = 'Preparing Output Object'
       $step++
@@ -214,12 +221,18 @@ function Get-TeamsUserVoiceConfig {
         $step++
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
-        $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
-        #$UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
+
+        if ( $PSBoundParameters.ContainsKey('DiagnosticLevel') ) {
+          $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
+          $UserObject.LicensesAssigned | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
+        }
+        else {
+          $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
+        }
+
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $CsUserLicense.PhoneSystemStatus
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
-        $UserObject.LicensesAssigned | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
       }
 
       # Adding Provisioning Parameters
