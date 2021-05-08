@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.05'
+  ModuleVersion         = '21.05.08'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -173,6 +173,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsECP',
     'Get-TeamsECRP',
 
+    'Get-TeamsTeamChannel',
+
     #UserManagement
     ##AzureAdAdminRole
     'Enable-AzureAdAdminRole',
@@ -224,7 +226,9 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'New-TeamsAAMenu', 'New-TeamsAAOption', 'New-TeamsAAFlow',
     'New-TeamsAAPrompt', 'New-TeamsAAScope', 'New-TeamsAASchedule',
     'New-TeamsAAEntity', 'New-TeamsAutoAttendantCallableEntity',
-    'New-TeamsAutoAttendantCallHandlingAssociation'
+    'New-TeamsAutoAttendantCallHandlingAssociation',
+
+    'Get-Channel'
 
   )
 
@@ -246,7 +250,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
       Tags       = @('Teams', 'DirectRouting', 'EnterpriseVoice', 'Licensing', 'ResourceAccount', 'CallQueue', 'AutoAttendant', 'VoiceConfig', 'CommonAreaPhone')
 
       # Prerelease Version
-      #Prerelease = '-prerelease'
+      Prerelease = '-prerelease'
 
       # A URL to the license for this module.
       LicenseUri = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE'

@@ -3,10 +3,10 @@
 # Author:     David Eberhardt
 # Updated:    01-NOV-2020
 # Status:     Live
-
 #TODO Explore adding an option to pass an object to this function (to avoid duplicating Get-CsOnlineUser) and speed up lookup
-#TODO Add Channel as an entity - with Regex Match for this example? 19:57e130f4d8d34b1a83bd0110f092cea2@thread.tacv2
-#REGEX -match "^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$"
+#VALIDATE whether adding the Channel as a Callable Entity is desirable
+#TODO Add Announcement TTV and File
+
 function Get-TeamsCallableEntity {
   <#
 	.SYNOPSIS
@@ -108,6 +108,14 @@ function Get-TeamsCallableEntity {
 
     foreach ($Id in $Identity) {
       Write-Verbose -Message "Processing '$Id'"
+      <#
+      if ($Id -match '^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$') {
+        #TEST this is not yet tested. Requires Call Queue with a Callable Entity being a channel
+        Write-Verbose 'Target is a Teams Channel'
+        $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", 'Channel', 'Channel')
+      }
+      else
+      #>
       if ($Id -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$' -and -not ($Id -match '@')) {
         Write-Verbose 'Target is a Tel URI'
         $Id = Format-StringForUse -InputString "$Id" -As LineURI

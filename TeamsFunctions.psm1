@@ -23,7 +23,7 @@
   This Module follows the Versioning Convention Microsoft uses to show the Release Date in the Version number
   Major v20 is the the first one published in 2020, followed by Minor version for the Month.
   Subsequent Minor versions include the Day and are released as PreReleases
-  Revisions are planned quarterly, but are currently on a monthly schedule until mature. PreReleases weekly.
+  Revisions are planned quarterly, but are currently on a monthly schedule until mature. PreReleases as required.
 
   # Version History (abbreviated)
   1.0         Initial Version (as SkypeFunctions) - 02-OCT-2017
@@ -207,8 +207,9 @@ Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-
   Get-TeamsCQ, New-TeamsCQ, Remove-TeamsCQ, Set-TeamsCQ, `
   Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, `
   New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAAPrompt, New-TeamsAAScope, New-TeamsAASchedule, `
-  New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAutoAttendantCallHandlingAssociation #, `
+  New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAutoAttendantCallHandlingAssociation , `
 
+  Get-Channel
 
 # SIG # Begin signature block
 # MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB

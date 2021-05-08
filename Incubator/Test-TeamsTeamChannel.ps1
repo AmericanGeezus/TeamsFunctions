@@ -7,7 +7,7 @@ function Test-TeamsTeamChannel {
 
   param (
     [Parameter(Mandatory, HelpMessage = 'DisplayName of the Team')]
-    [string]$Team
+    [string]$Team,
 
     [Parameter(Mandatory, HelpMessage = 'DisplayName of the Channel')]
     [string]$Channel
@@ -23,10 +23,10 @@ function Test-TeamsTeamChannel {
 
   try {
     if ($Channel -match "^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$") {
-      $null = $TeamObj | Get-TeamChannel | Where Id -eq "$Channel" -ErrorAction Stop
+      $null = $TeamObj | Get-TeamChannel | Where-Object Id -eq "$Channel" -ErrorAction Stop
     }
     else {
-      $null = $TeamObj | Get-TeamChannel | Where DisplayName -eq "$Channel" -ErrorAction Stop
+      $null = $TeamObj | Get-TeamChannel | Where-Object DisplayName -eq "$Channel" -ErrorAction Stop
     }
     return $true
   }

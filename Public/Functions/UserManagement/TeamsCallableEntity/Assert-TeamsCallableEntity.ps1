@@ -4,8 +4,8 @@
 # Updated:  15-DEC-2020
 # Status:   Live
 
-
-
+#VALIDATE whether adding the Channel as a Callable Entity is desirable
+#TODO Add Announcement TTV and File
 
 function Assert-TeamsCallableEntity {
   <#
