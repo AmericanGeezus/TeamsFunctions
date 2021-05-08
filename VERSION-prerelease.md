@@ -8,7 +8,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
-TBC
+- `Get-TeamsTeamChannel` (Alias `Get-Channel`): My take on Get-Team and Get-TeamChannel. One Command to get the Channel
+  - Provid Name or Id for Team and Channel to lookup a match
+  - v1 only provides basic lookup. It does not (yet) account for multiple Teams or Channels with the provided DisplayName
+
 ### Updated
 
 TBC
