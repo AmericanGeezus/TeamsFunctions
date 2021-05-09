@@ -22,8 +22,8 @@ New-TeamsCallQueue [-Name] <String> [-UseMicrosoftDefaults] [[-AgentAlertTime] <
  [[-EnableTimeoutSharedVoicemailTranscription] <Boolean>] [[-TimeoutThreshold] <Int16>]
  [[-RoutingMethod] <String>] [[-PresenceBasedRouting] <Boolean>] [[-UseDefaultMusicOnHold] <Boolean>]
  [[-ConferenceMode] <Boolean>] [[-WelcomeMusicAudioFile] <String>] [[-MusicOnHoldAudioFile] <String>]
- [[-DistributionLists] <String[]>] [[-Users] <String[]>] [[-LanguageId] <String>] [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [[-TeamAndChannel] <String>] [[-DistributionLists] <String[]>] [[-Users] <String[]>] [[-LanguageId] <String>]
+ [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -471,13 +471,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DistributionLists
+### -TeamAndChannel
 Optional.
-Display Names of DistributionLists or Groups to be used as Agents.
-Will be parsed after Users if they are specified as well.
+Uses a Channel to route calls to.
+Members of the Channel become Agents in the Queue.
+Mutually exclusive with Users and DistributionLists.
+Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
+Acceptable Identifier for Teams are GroupId (GUID) or DisplayName.
+NOTE: DisplayName may not be unique.
+Acceptable Identifier for Channels are Id (GUID) or DisplayName.
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -488,12 +493,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Users
+### -DistributionLists
 Optional.
-UPNs of Users.
-Will be parsed first.
-Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
-Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+Display Names of DistributionLists or Groups.
+Their members are to become Agents in the Queue.
+  Mutually exclusive with TeamAndChannel.
+Can be combined with Users.
+Will be parsed after Users if they are specified as well.
+  To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.
 
 ```yaml
 Type: String[]
@@ -502,6 +509,27 @@ Aliases:
 
 Required: False
 Position: 23
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Users
+Optional.
+UserPrincipalNames of Users that are to become Agents in the Queue.
+  Mutually exclusive with TeamAndChannel.
+Can be combined with DistributionLists.
+  Will be parsed first.
+Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
+  Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 24
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -517,7 +545,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 24
+Position: 25
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
