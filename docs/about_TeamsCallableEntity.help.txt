@@ -1,0 +1,74 @@
+﻿TOPIC
+    about_teamscallableentity
+
+SHORT DESCRIPTION
+    Callable Entities are Objects that CQs or AAs can direct calls to.
+
+LONG DESCRIPTION
+    Each type of Object has different requirement to meet before they can be
+    used. Users, for example need to be Licensed with Teams and PhoneSystem,
+    which not only has to be assigned but the respective ServicePlan must be
+    enabled before they can be enabled for Enterprise Voice. Once enabled, they
+    can receive a Phone Number in order to place or receive calls via the PhoneSystem.
+    These scripts aim to address all these requirements and validate them before
+    allowing them to be used. They feed into Call Queue and Auto Attendant
+    CmdLets that make heavy use of them.
+
+CmdLets
+    | Function                                                  | Description   
+                                                                                
+                                                | |
+    ---------------------------------------------------------: |
+    ---------------------------------------------------------------------------------------------------------------------------------------
+    | |
+    `Assert-TeamsCallableEntity`
+    . | |
+    `Find-TeamsCallableEntity`
+    . | |
+    `Get-TeamsCallableEntity`
+    | Creates a new Object emulating the output of a `Callable Entity`,
+    validating the Object type and its usability for CQs or AAs.          | |
+    `New-TeamsCallableEntity`
+    |
+
+EXAMPLES
+    Please see the Examples for the individual CmdLets in their respective help
+    files
+
+NOTE
+    The Concept of a Callable Entity is introduced with Auto Attendants where
+    Call Targets need to be created as a Callable Entity before they can be used
+    for an Auto Attendant.
+    The other CmdLets expand on this concept:
+    - `Assert-TeamsCallableEntity` was broken out of the Get-TeamsCallableEntity
+    and will assert whether the Object is in a state to be used as a Call Target
+    - `Get-TeamsCallableEntity` will identify and assert whether the Object is
+    in a state to be used as a Call Target and is the backbone of the CallQueue
+    and AutoAttendant improvements in this Module
+    - `Find-TeamsCallableEntity` finds whether the Object provided is used on
+    any Call Queue or Auto Attendant
+
+Development Status
+    Complete.
+
+TROUBLESHOOTING NOTE
+    Thoroughly tested, but Unit-tests for these CmdLets are not yet available.
+    As they are so integral to this Module, they should not throw any Errors, if
+    they do they will be addressed swiftly.
+
+SEE ALSO
+    -
+    about_TeamsCallQueue
+    -
+    about_TeamsAutoAttendant
+    -
+    about_TeamsResourceAccount
+
+KEYWORDS
+    - Creation
+    - Configuration
+    - Management
+    - User, AzureAdUser, CsOnlineUser
+    - Group, AzureAdGroup
+    - Resource, Resource Account, CsOnlineApplicationInstance
+

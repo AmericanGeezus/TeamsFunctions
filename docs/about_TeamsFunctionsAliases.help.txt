@@ -1,0 +1,115 @@
+﻿TOPIC
+    about_teamsfunctionsaliases
+
+SHORT DESCRIPTION
+    Collection of Aliases available for the CmdLets in the Module
+
+LONG DESCRIPTION
+    All Aliases recorded here manually as the generated DOCS are not captured
+    automatically by PlatyPS
+
+List of Aliases and their Functions
+    | Alias                                         | Function                  
+                                                                         | |
+    --------------------------------------------- |
+    -----------------------------------------------------------------------------------------------
+    | | Assert-TeamsUVC                               |
+    `Assert-TeamsUserVoiceConfig`
+    | | con                                           |
+    `Connect-Me`
+    | | Connect-SkypeOnline                           |
+    `Connect-MicrosoftTeams`
+    | | cur                                           |
+    `Get-CurrentConnection`
+    | | dis                                           |
+    `Disconnect-Me`
+    | | ear                                           |
+    `Enable-MyAzureAdAdminRole`
+    | | Enable-Ev                                     |
+    `Enable-TeamsUserForEnterpriseVoice`
+    | | Find-TeamsRA                                  |
+    `Find-TeamsResourceAccount`
+    | | Find-TeamsUVC                                 |
+    `Find-TeamsUserVoiceConfig`
+    | | Find-TeamsUVR                                 |
+    `Find-TeamsUserVoiceRouting`
+    | | Get-TeamsAA                                   |
+    `Get-AutoAttendant`
+    | | Get-TeamsCAP                                  |
+    `Get-TeamsCommonAreaPhone`
+    | | Get-TeamsCQ                                   |
+    `Get-TeamsCallQueue`
+    | | Get-TeamsRA                                   |
+    `Get-TeamsResourceAccount`
+    | | Get-TeamsRAA                                  |
+    `Get-TeamsResourceAccountAssociation`
+    | | Get-TeamsUVC                                  |
+    `Get-TeamsUserVoiceConfig`
+    | | New-TeamsAA                                   |
+    `New-TeamsAutoAttendant`
+    | | New-TeamsAAEntity                             |
+    `New-TeamsCallableEntity`
+    | | New-TeamsAAFlow                               |
+    `New-TeamsAutoAttendantCallFlow`
+    | | New-TeamsAAMenu                               |
+    `New-TeamsAutoAttendantMenu`
+    | | New-TeamsAAOption                             |
+    `New-TeamsAutoAttendantMenuOption`
+    | | New-TeamsAAPrompt                             |
+    `New-TeamsAutoAttendantPrompt`
+    | | New-TeamsAASchedule                           |
+    `New-TeamsAutoAttendantSchedule`
+    | | New-TeamsAAScope                              |
+    `New-TeamsAutoAttendantDialScope`
+    | | New-TeamsAutoAttendantCallableEntity          |
+    `New-TeamsCallableEntity`
+    | | New-TeamsAutoAttendantCallHandlingAssociation |
+    New-CsAutoAttendantCallHandlingAssociation (MS)                             
+                       | | New-TeamsCAP                                  |
+    `New-TeamsCommonAreaPhone`
+    | | New-TeamsCQ                                   |
+    `New-TeamsCallQueue`
+    | | New-TeamsRA                                   |
+    `New-TeamsResourceAccount`
+    | | New-TeamsRAA                                  |
+    `New-TeamsResourceAccountAssociation`
+    | | PoL                                           |
+    `Assert-MicrosoftTeamsConnection`
+    - think: "ping-of-life" | | Remove-CsOnlineApplicationInstance            |
+    `Remove-TeamsResourceAccount`
+    | | Remove-TeamsAA                                |
+    `Remove-TeamsAutoAttendant`
+    | | Remove-TeamsCAP                               |
+    `Remove-TeamsCommonAreaPhone`
+    | | Remove-TeamsCQ                                |
+    `Remove-TeamsCallQueue`
+    | | Remove-TeamsRA                                |
+    `Remove-TeamsResourceAccount`
+    | | Remove-TeamsRAA                               |
+    `Remove-TeamsResourceAccountAssociation`
+    | | Remove-TeamsUVC                               |
+    `Remove-TeamsUserVoiceConfig`
+    | | Set-ServicePlan                               |
+    `Set-AzureAdUserLicenseServicePlan`
+    | | Set-TeamsAA                                   | Set-CsAutoAttendant (MS)
+                                                                           | |
+    Set-TeamsAutoAttendant                        | Set-CsAutoAttendant (MS)    
+                                                                       | |
+    Set-TeamsCAP                                  |
+    `Set-TeamsCommonAreaPhone`
+    | | Set-TeamsCQ                                   |
+    `Set-TeamsCallQueue`
+    | | Set-TeamsRA                                   |
+    `Set-TeamsResourceAccount`
+    | | Set-TeamsUVC                                  |
+    `Set-TeamsUserVoiceConfig`
+    | | Test-TeamsUVC                                 |
+    `Test-TeamsUserVoiceConfig`
+    |
+
+SEE ALSO
+    about_TeamsFunctions
+
+KEYWORDS
+    - Alias
+
