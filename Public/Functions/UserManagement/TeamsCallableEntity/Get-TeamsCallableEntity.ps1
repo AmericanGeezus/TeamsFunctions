@@ -3,8 +3,8 @@
 # Author:     David Eberhardt
 # Updated:    01-NOV-2020
 # Status:     Live
+
 #TODO Explore adding an option to pass an object to this function (to avoid duplicating Get-CsOnlineUser) and speed up lookup
-#VALIDATE whether adding the Channel as a Callable Entity is desirable
 #TODO Add Announcement TTV and File
 
 function Get-TeamsCallableEntity {
@@ -12,9 +12,10 @@ function Get-TeamsCallableEntity {
 	.SYNOPSIS
 		Returns a callable Entity Object from an Identity/ObjectId or string
 	.DESCRIPTION
-    Helper function to prepare a nested Object of an Auto Attendant for display
-    Helper function to determine an Objects validity for use in an Auto Attendant or Call Queue
-    Used in Get-TeamsAutoAttendant
+    Determines an Objects validity for use in an Auto Attendant or Call Queue
+    Prepares output of Get-CsCallQueue by querying the Team and Channel (used in Get-TeamsCallQueue)
+    Prepares output of Get-CsAutoAttendant (nested Objects) for display (used in Get-TeamsAutoAttendant)
+    Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
   .PARAMETER Identity
     The ObjectId of the CallableEntity linked
   .EXAMPLE
@@ -34,18 +35,30 @@ function Get-TeamsCallableEntity {
     Get-TeamsCallableEntity -Identity "tel:+15551234567"
     No Queries performed, as the Tel URI is passed on as-is.
     Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+  .EXAMPLE
+    Get-TeamsCallableEntity -Identity "00000000-0000-0000-0000-000000000000\19:abcdef1234567890abcdef1234567890@thread.tacv2"
+    Format provided is of in TeamId\ChannelId. This is interpreted as a TeamsChannel. Queries Team & Channel.
+    Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+  .EXAMPLE
+    Get-TeamsCallableEntity -Identity "My Team Name\My Channel Name"
+    Format provided is of in TeamDisplayName\ChannelDisplayName. This is interpreted as a TeamsChannel. Queries Team & Channel.
+    Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
   .NOTES
-    Queries the provided String against AzureAdUser, AzureAdGroup and CsOnlineApplicationInstance.
+    If a match for Team\Channel or PhoneNumber is found, these are treated as such.
+    For Team\Channel, the Id and DisplayName are interchangeable. The first match is performed for '\', if it matches,
+    the string is split and individual matches are performed for Team and Channel respectively.
+    The PhoneNumber is found with a very flexible match based on multiple formats (Integer, E.164 or LineUri)
+    If no match is found, queries the string sequentially against AzureAdUser, CsOnlineApplicationInstance and AzureAdGroup.
     Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
 
+    This script is used to determine the eligibility of an Object as a Callable Entity in Call Queues and Auto Attendants
+    This script does not yet support Announcements (sorry. Working on it)
     This script does not support the Types for legacy Hunt Group or Organisational Auto Attendant
     If nothing can be found for the String, an Object is returned with the Entity being $null
-
-    This Script is used to determine the eligibility of an Object as a Callable Entity in Call Queues and Auto Attendants
   .COMPONENT
     UserManagement
     TeamsAutoAttendant
@@ -108,15 +121,15 @@ function Get-TeamsCallableEntity {
 
     foreach ($Id in $Identity) {
       Write-Verbose -Message "Processing '$Id'"
-      <#
-      if ($Id -match '^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$') {
-        #TEST this is not yet tested. Requires Call Queue with a Callable Entity being a channel
-        Write-Verbose 'Target is a Teams Channel'
-        $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", 'Channel', 'Channel')
+      if ($Id -match "\\") {
+        $Team,$Channel = Get-TeamAndChannel -String "$Id"
+        if ($Channel) {
+          Write-Verbose 'Target is a Teams Channel'
+          $TeamAndChannelName = $Team.DisplayName + "\" + $Channel.DisplayName
+          $CallableEntity = [TFCallableEntity]::new( "$TeamAndChannelName", "$($Channel.Id)", 'Channel', 'Channel')
+        }
       }
-      else
-      #>
-      if ($Id -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$' -and -not ($Id -match '@')) {
+      elseif ($Id -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$' -and -not ($Id -match '@')) {
         Write-Verbose 'Target is a Tel URI'
         $Id = Format-StringForUse -InputString "$Id" -As LineURI
         $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", 'TelURI', 'ExternalPstn')
@@ -180,7 +193,7 @@ function Get-TeamsCallableEntity {
             }
             if ( $CallTarget.Count -gt 1 ) {
               Write-Verbose 'Target is a Group, but not unique!'
-              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique')
+              throw [System.Reflection.AmbiguousMatchException]::New('Multiple Targets found - Result not unique (Group)')
             }
             else {
               # Unique result found
