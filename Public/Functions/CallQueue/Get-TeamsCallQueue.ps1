@@ -6,7 +6,7 @@
 
 
 #TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
-
+#TODO Add new Switches: ChannelId & Suppress Shared Voicemail System messages
 function Get-TeamsCallQueue {
   <#
 	.SYNOPSIS
@@ -152,7 +152,7 @@ function Get-TeamsCallQueue {
       Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
       $QueueCounter++
       [int]$step = 0
-      [int]$sMax = 6
+      [int]$sMax = 7
 
       # Initialising Arrays
       [System.Collections.ArrayList]$UserObjects = @()
@@ -187,6 +187,18 @@ function Get-TeamsCallQueue {
       #endregion
 
       #region Endpoints
+      # Channel
+      $Operation = 'Parsing Channel'
+      $step++
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - $Operation"
+      if ($Q.ChannelId) {
+        $FullChannelId = $Q.DistributionLists.Guid + "\" + $Q.ChannelId
+        $Team,$Channel = Get-TeamAndChannel -String "$FullChannelId"
+        $TeamAndChannelName = $Team.DisplayName + "\" + $Channel.DisplayName
+      }
+      # Output: $ChannelObject
+
       # Distribution Lists
       $Operation = 'Parsing DistributionLists'
       $step++
@@ -292,6 +304,7 @@ function Get-TeamsCallQueue {
       }
 
       # Adding Agent Information
+      $QueueObject | Add-Member -MemberType NoteProperty -Name TeamAndChannel -Value $TeamAndChannelName
       $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
       $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
       $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded

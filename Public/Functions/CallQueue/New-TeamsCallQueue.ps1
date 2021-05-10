@@ -4,8 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
-#TODO add Team & Channel as Parameters for Forwarding "Team\Channel" as name? Alternatively Accept ID with Regex
+#TODO Add new Switch: Suppress Shared Voicemail System messages
 
 function New-TeamsCallQueue {
   <#
@@ -90,11 +89,20 @@ function New-TeamsCallQueue {
 	.PARAMETER ConferenceMode
     Optional. Will establish a conference instead of a direct call and should help with connection time.
     Default: TRUE,   Microsoft Default: FALSE
-  .PARAMETER DistributionLists
-    Optional. Display Names of DistributionLists or Groups to be used as Agents.
-    Will be parsed after Users if they are specified as well.
-  .PARAMETER Users
-    Optional. UPNs of Users.
+  .PARAMETER TeamAndChannel
+    Optional. Uses a Channel to route calls to. Members of the Channel become Agents in the Queue.
+    Mutually exclusive with Users and DistributionLists.
+    Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
+    Acceptable Identifier for Teams are GroupId (GUID) or DisplayName. NOTE: DisplayName may not be unique.
+    Acceptable Identifier for Channels are Id (GUID) or DisplayName.
+	.PARAMETER DistributionLists
+		Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.
+    Mutually exclusive with TeamAndChannel. Can be combined with Users.
+		Will be parsed after Users if they are specified as well.
+    To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.
+	.PARAMETER Users
+		Optional. UserPrincipalNames of Users that are to become Agents in the Queue.
+    Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.
     Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
     Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
   .PARAMETER LanguageId
@@ -335,6 +343,10 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Agents
+    [Parameter(HelpMessage = "Team and Channel in the format 'Team\Channel'")]
+    [ValidateScript( { $_ -match '\\' })]
+    [string]$TeamAndChannel,
+
     [Parameter(HelpMessage = 'Name of one or more Distribution Lists')]
     [string[]]$DistributionLists,
 
@@ -370,7 +382,7 @@ function New-TeamsCallQueue {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 11
+    [int]$sMax = 12
 
     $Status = 'Verifying input'
     $Operation = 'Validating Parameters'
@@ -400,6 +412,11 @@ function New-TeamsCallQueue {
       }
     }
 
+    # Mutual exclusivity of Channel and Users/Groups
+    if ($PSBoundParameters.ContainsKey('TeamAndChannel') -and ($PSBoundParameters.ContainsKey('Users') -or $PSBoundParameters.ContainsKey('DistributionLists'))) {
+      Write-Warning "Parameter 'TeamAndChannel' cannot be combined with Users or Groups. It will be ignored!"
+      [void]$PSBoundParameters.Remove('TeamAndChannel')
+    }
   } #begin
 
   process {
@@ -520,6 +537,7 @@ function New-TeamsCallQueue {
     if ($PSBoundParameters.ContainsKey('RoutingMethod')) {
       $Parameters += @{'RoutingMethod' = $RoutingMethod }
     }
+    #endregion
 
     #region Boolean Parameters
     # PresenceBasedRouting
@@ -600,6 +618,7 @@ function New-TeamsCallQueue {
     # This is already done in the BEGIN block
     #endregion
     #endregion
+    #endregion
 
 
     #region Overflow
@@ -653,6 +672,7 @@ function New-TeamsCallQueue {
             $CallTarget = $null
             $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
             switch ( $CallTarget.ObjectType ) {
+              #VALIDATE whether 'Channel' would be a valid target to forward to (maybe in the future?)
               'TelURI' {
                 #Telephone Number (E.164)
                 $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
@@ -1055,6 +1075,26 @@ function New-TeamsCallQueue {
     #endregion
 
 
+    #region Agents
+    #region Channel
+    $Operation = 'Parsing Channel'
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
+    if ($PSBoundParameters.ContainsKey('TeamAndChannel')) {
+      Write-Verbose -Message "'$NameNormalised' Parsing Team and Channel" -Verbose
+      try {
+        $Team,$Channel = Get-TeamAndChannel -String "$FullChannelId"
+        Write-Information "TeamAndChannel: Team '$($Team.DisplayName)' - Channel '$($Channel.DisplayName)' will be added to the Call Queue"
+        $Parameters += @{'ChannelId' = $Channel.Id }
+      }
+      catch {
+        Write-Warning -Message "TeamAndChannel: Error parsing Object. Target will not be added to the Call Queue. Exception: $($_.Exception.Message)"
+      }
+    }
+    #endregion
+
     #region Users - Parsing and verifying Users
     $Operation = 'Parsing Users'
     $step++
@@ -1129,7 +1169,7 @@ function New-TeamsCallQueue {
       }
     }
     #endregion
-
+    #endregion
 
     #region Common parameters
     $Parameters += @{'WarningAction' = 'Continue' }

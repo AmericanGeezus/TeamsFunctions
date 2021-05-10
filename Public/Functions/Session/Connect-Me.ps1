@@ -184,6 +184,7 @@ function Connect-Me {
       }
     }
     else {
+      <# Old v2.0.0 - superceded by the below
       #Import-Module MicrosoftTeams -MinimumVersion 2.0.0 -Force -Global -Verbose:$false
       if ( -not (Get-Module MicrosoftTeams) ) {
         try {
@@ -191,6 +192,17 @@ function Connect-Me {
         }
         catch {
           throw 'MicrosoftTeams Module not installed in v2.0.0 - Please verify Module!'
+        }
+      }
+      #>
+
+      #Import-Module MicrosoftTeams -MinimumVersion 2.3.0 -Force -Global -Verbose:$false
+      if ( -not (Get-Module MicrosoftTeams) ) {
+        try {
+          Import-Module MicrosoftTeams -MinimumVersion 2.3.1 -Force -Global -Verbose:$false -ErrorAction Stop
+        }
+        catch {
+          throw 'MicrosoftTeams Module not installed in v2.3.1 or higher - Please verify Module!'
         }
       }
     }
@@ -289,7 +301,8 @@ function Connect-Me {
             try {
               $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
               if ( $ActivatedRoles.Count -gt 0 ) {
-                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -Verbose
+                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Waiting for AzureAd to propagate (8s)" -Verbose
+                Start-Sleep -Seconds 8
               }
             }
             catch {
@@ -341,7 +354,8 @@ function Connect-Me {
           }
           'MicrosoftTeams' {
             $MicrosoftTeamsParameters = $ConnectionParameters
-            $MicrosoftTeamsParameters += @{ 'AccountId' = $AccountId }
+            #Using AccountId currently results in a Connection that is established but cannot open a PS context to SfBOnline
+            #$MicrosoftTeamsParameters += @{ 'AccountId' = $AccountId }
             if ($AzureAdFeedback) {
               $MicrosoftTeamsParameters += @{ 'TenantId' = $AzureAdFeedback.TenantId }
             }

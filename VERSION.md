@@ -3,6 +3,10 @@
 Full Change Log for all major releases.
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.05.11 - May 2021 emergency release
+
+Released to adopt MicrosoftTeams v2.3.1 - Connection changed to run without `-AccountId` as it is currently not working.
+
 ## v21.05 - May 2021 release
 
 ### Component Status

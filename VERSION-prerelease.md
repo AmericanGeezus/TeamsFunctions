@@ -4,14 +4,28 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## unreleased/vNext
 
-[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-1987-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2015-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
 ### New
 
-TBC
+- `Get-TeamsTeamChannel` (Alias `Get-Channel`): My take on Get-Team and Get-TeamChannel. One Command to get the Channel
+  - Provid Name or Id for Team and Channel to lookup a match
+  - v1 only provides basic lookup. It does not (yet) account for multiple Teams or Channels with the provided DisplayName
+- New private Function `Get-TeamAndChannel` to query Team Object and Channel Object for use in Get-TeamsCallQueue and Get-TeamsCallableEntity
+
 ### Updated
 
-TBC
+- `Get-TeamsUserVoiceConfig`:
+  - Changed default output of Licenses to List of License Names only if no DiagnosticLevel is provided. This allows for Export as CSV.
+  - Added DiagnosticLevel 0 to display the same as without, though with nested Object.
+- `Get-TeamsCallableEntity`: Added match for '\' triggering query for TeamAndChannel.<br \>This should not be part of any other Object
+- `Get-TeamsCallQueue`: Added Parameter TeamAndChannel to display the Team & Channel in the format 'Team\Channel'
+- `New-TeamsCallQueue`:
+  - Added Parameter TeamAndChannel (input in the format 'Team\Channel')
+  - Added Validation of mutual exclusivity for TeamAndChannel VS (Users or Groups)
+- `Set-TeamsCallQueue`:
+  - Added Parameter TeamAndChannel (input in the format 'Team\Channel')
+  - Added Validation of mutual exclusivity for TeamAndChannel VS (Users or Groups)
 
 ### ToDo
 

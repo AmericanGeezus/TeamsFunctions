@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.05'
+  ModuleVersion         = '21.05.11'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -53,9 +53,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
   # Modules that must be imported into the global environment prior to importing this module
   RequiredModules       = @('MicrosoftTeams')
-  #RequiredModules       = @(@{ModuleName = 'MicrosoftTeams'; ModuleVersion = '2.0.0' })
   #RequiredModules       = @('AzureAdPreview','MicrosoftTeams')
-  #RequiredModules = @('AzureAd','MicrosoftTeams'))
+  #RequiredModules       = @('AzureAd','MicrosoftTeams'))
 
   # Assemblies that must be loaded prior to importing this module
   # RequiredAssemblies = @()
@@ -173,6 +172,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsECP',
     'Get-TeamsECRP',
 
+    'Get-TeamsTeamChannel',
+
     #UserManagement
     ##AzureAdAdminRole
     'Enable-AzureAdAdminRole',
@@ -224,7 +225,9 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'New-TeamsAAMenu', 'New-TeamsAAOption', 'New-TeamsAAFlow',
     'New-TeamsAAPrompt', 'New-TeamsAAScope', 'New-TeamsAASchedule',
     'New-TeamsAAEntity', 'New-TeamsAutoAttendantCallableEntity',
-    'New-TeamsAutoAttendantCallHandlingAssociation'
+    'New-TeamsAutoAttendantCallHandlingAssociation',
+
+    'Get-Channel'
 
   )
 

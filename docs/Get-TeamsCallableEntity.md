@@ -17,9 +17,10 @@ Get-TeamsCallableEntity [-Identity] <String[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Helper function to prepare a nested Object of an Auto Attendant for display
-Helper function to determine an Objects validity for use in an Auto Attendant or Call Queue
-Used in Get-TeamsAutoAttendant
+Determines an Objects validity for use in an Auto Attendant or Call Queue
+Prepares output of Get-CsCallQueue by querying the Team and Channel (used in Get-TeamsCallQueue)
+Prepares output of Get-CsAutoAttendant (nested Objects) for display (used in Get-TeamsAutoAttendant)
+Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
 
 ## EXAMPLES
 
@@ -60,6 +61,26 @@ Get-TeamsCallableEntity -Identity "tel:+15551234567"
 No Queries performed, as the Tel URI is passed on as-is.
 Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
 
+### EXAMPLE 6
+```
+Get-TeamsCallableEntity -Identity "00000000-0000-0000-0000-000000000000\19:abcdef1234567890abcdef1234567890@thread.tacv2"
+```
+
+Format provided is of in TeamId\ChannelId.
+This is interpreted as a TeamsChannel.
+Queries Team & Channel.
+Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+
+### EXAMPLE 7
+```
+Get-TeamsCallableEntity -Identity "My Team Name\My Channel Name"
+```
+
+Format provided is of in TeamDisplayName\ChannelDisplayName.
+This is interpreted as a TeamsChannel.
+Queries Team & Channel.
+Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
+
 ## PARAMETERS
 
 ### -Identity
@@ -87,13 +108,19 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
-Queries the provided String against AzureAdUser, AzureAdGroup and CsOnlineApplicationInstance.
+If a match for Team\Channel or PhoneNumber is found, these are treated as such.
+For Team\Channel, the Id and DisplayName are interchangeable.
+The first match is performed for '\', if it matches,
+the string is split and individual matches are performed for Team and Channel respectively.
+The PhoneNumber is found with a very flexible match based on multiple formats (Integer, E.164 or LineUri)
+If no match is found, queries the string sequentially against AzureAdUser, CsOnlineApplicationInstance and AzureAdGroup.
 Returns a custom Object mimiking a CallableEntity Object, returning Entity, Identity & Type
 
+This script is used to determine the eligibility of an Object as a Callable Entity in Call Queues and Auto Attendants
+This script does not yet support Announcements (sorry.
+Working on it)
 This script does not support the Types for legacy Hunt Group or Organisational Auto Attendant
 If nothing can be found for the String, an Object is returned with the Entity being $null
-
-This Script is used to determine the eligibility of an Object as a Callable Entity in Call Queues and Auto Attendants
 
 ## RELATED LINKS
 

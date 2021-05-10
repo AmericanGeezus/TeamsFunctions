@@ -187,10 +187,10 @@ function Get-TeamsTenantLicense {
 
     # Output
     if ($PSBoundParameters.ContainsKey('Detailed')) {
-      Write-Output $TenantLicenses
+      Write-Output $TenantLicenses | Sort-Object ProductName
     }
     else {
-      Write-Output $TenantLicenses | Select-Object ProductName, SkuPartNumber, LicenseType, Available, Consumed, Remaining, Expiring
+      Write-Output $TenantLicenses | Sort-Object ProductName | Select-Object ProductName, SkuPartNumber, LicenseType, Available, Consumed, Remaining, Expiring
     }
   } #process
 
