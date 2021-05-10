@@ -48,7 +48,7 @@
 #>
 
 #Requires -Version 5.1
-#Requires -Modules @{ ModuleName="MicrosoftTeams"; MaximumVersion="2.0.0" }
+#Requires -Modules @{ ModuleName="MicrosoftTeams"; RequiredVersion="2.3.1" }
 
 # Addressing Limitations
 function Get-StrictMode {

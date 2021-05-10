@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.05.10'
+  ModuleVersion         = '21.05.11'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -53,7 +53,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
   # Modules that must be imported into the global environment prior to importing this module
   RequiredModules       = @('MicrosoftTeams')
-  #RequiredModules       = @(@{ModuleName = 'MicrosoftTeams'; ModuleVersion = '2.0.0' })
   #RequiredModules       = @('AzureAdPreview','MicrosoftTeams')
   #RequiredModules       = @('AzureAd','MicrosoftTeams'))
 
