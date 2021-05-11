@@ -258,7 +258,7 @@ function New-TeamsResourceAccount {
       if ($PSCmdlet.ShouldProcess("$UPN", 'New-CsOnlineApplicationInstance')) {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         $i = 0
-        $iMax = 20
+        $iMax = 30
         Write-Information "Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'

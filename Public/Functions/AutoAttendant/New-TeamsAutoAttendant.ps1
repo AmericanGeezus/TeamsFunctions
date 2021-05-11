@@ -396,7 +396,7 @@ function New-TeamsAutoAttendant {
     else {
       # AfterHours Parameters
       if (-not $PSBoundParameters.ContainsKey('AfterHoursCallFlowOption')) {
-        Write-Warning -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'BusinessHours'-Parameters are processed!"
+        Write-Warning -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'AfterHours'-Parameters are processed!"
         $AfterHoursCallFlowOption = 'Disconnect'
       }
       elseif ($AfterHoursCallFlowOption -eq 'TransferCallToTarget') {

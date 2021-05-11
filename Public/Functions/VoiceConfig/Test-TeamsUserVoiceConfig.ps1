@@ -4,8 +4,8 @@
 # Updated:  01-OCT-2020
 # Status:   RC
 
-
-
+#VALIDATE InterpretedUserType
+#VALIDATE InterpretedUserType for any of the Error-States
 
 function Test-TeamsUserVoiceConfig {
   <#
