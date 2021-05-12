@@ -126,13 +126,37 @@ function Assert-TeamsUserVoiceConfig {
         continue
       }
       else {
+        # Testing Interpreted UserType
+        #TEST InterpretedUsertype validation
+        $IUT = $CsOnlineUser.InterpretedUserType
+
+        if ($IUT -match "Disabled|OnPrem|NotLicensedForService|WithNoService|WithMCOValidationError|NotInPDL|Failed|PendingDeletionFromAD" -or `
+            ($IUT -match "SfB" -and -not $IUT -match "Teams")) {
+              if ($Called) {
+                Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1
+              }
+              else {
+                Write-Information "User '$User' has InterpretedUserType that may indicate misconfiguration: $IUT"
+                continue
+              }
+        }
+
+        # Testing Full Configuration
         Write-Verbose -Message "User '$User' - User Voice Configuration (Full)"
-        $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
+        #$TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
+        #TEST Replacement for Line above
+        if ($IncludeTenantDialPlan) {
+          $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -IncludeTenantDialPlan
+        }
+        else {
+          $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
+        }
 
         if ($TestFull) {
-          if (-not $CsOnlineUser.TenantDialPlan -and $IncludeTenantDialPlan ) {
+          if ( -not $CsOnlineUser.TenantDialPlan -and $IncludeTenantDialPlan ) {
             Write-Information "User '$User' does not have a Tenant Dial Plan assigned"
-            continue
+            #TEST Removed as to not hold up the validation (output is needed)
+            #continue
           }
           if ($Called) {
             Write-Output $TestFull
@@ -143,6 +167,7 @@ function Assert-TeamsUserVoiceConfig {
           }
         }
         else {
+          # Testing Partial Configuration
           Write-Verbose -Message "User '$User' - User Voice Configuration (Partial)"
           #TEST IncludeTenantDialPlan
           if ($IncludeTenantDialPlan) {
@@ -157,7 +182,7 @@ function Assert-TeamsUserVoiceConfig {
             }
             else {
               Write-Warning "User '$User' is partially configured! Please investigate"
-              # Output with Switch (faster with values already queried!)
+              #VALIDATE Output with Switch (faster with values already queried!)
               Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1
               #$CsOnlineUser | Select-Object UserPrincipalName, InterpretedUserType, EnterpriseVoiceEnabled, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy, TelephoneNumber, LineUri, OnPremLineURI
             }
