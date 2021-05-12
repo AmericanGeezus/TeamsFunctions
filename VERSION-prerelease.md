@@ -26,6 +26,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Set-TeamsCallQueue`:
   - Added Parameter TeamAndChannel (input in the format 'Team\Channel')
   - Added Validation of mutual exclusivity for TeamAndChannel VS (Users or Groups)
+- `Get-TeamsResourceAccountAssociation`: Fixed an issue with lookup that resulted in forced lookup of all Associations. Mea Culpa!
 
 ### ToDo
 

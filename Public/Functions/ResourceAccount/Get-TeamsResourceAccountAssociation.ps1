@@ -94,7 +94,7 @@ function Get-TeamsResourceAccountAssociation {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Accounts = $null
     [System.Collections.ArrayList]$Accounts = @()
-    if (-not $PSBoundParameters.ContainsKey('Identity')) {
+    if (-not $PSBoundParameters.ContainsKey('UserPrincipalName')) {
       Write-Information 'INFO: Querying all Resource Accounts, this may take some time...'
       $Accounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue
     }
