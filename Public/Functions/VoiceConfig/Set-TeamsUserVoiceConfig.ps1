@@ -375,7 +375,9 @@ function Set-TeamsUserVoiceConfig {
             # Checking number is free
             Write-Verbose -Message "User '$UserPrincipalName' - PhoneNumber - Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
-            if ($UserWithThisNumber) {
+            #TEST Assignment of number to user does not exclude "self". If assigned to itself (e.G. without extension), don't error
+            #if ($UserWithThisNumber) {
+            if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UserPrincipalName) {
               if ($Force) {
                 Write-Warning -Message "User '$UserPrincipalName' - Number '$LineUri' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
               }
