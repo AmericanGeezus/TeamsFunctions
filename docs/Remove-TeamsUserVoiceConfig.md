@@ -207,6 +207,8 @@ This is to enable a User to receive a new Voice Configuration without impacting 
 
 [Get-TeamsUserVoiceConfig]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
 
 [Remove-TeamsUserVoiceConfig]()

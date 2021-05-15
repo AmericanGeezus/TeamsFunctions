@@ -4,8 +4,8 @@
 # Updated:  01-OCT-2020
 # Status:   RC
 
-#VALIDATE InterpretedUserType
-#VALIDATE InterpretedUserType for any of the Error-States
+
+
 
 function Test-TeamsUserVoiceConfig {
   <#
@@ -69,6 +69,8 @@ function Test-TeamsUserVoiceConfig {
     Get-TeamsTenantVoiceConfig
 	.LINK
     Get-TeamsUserVoiceConfig
+	.LINK
+    New-TeamsUserVoiceConfig
 	.LINK
     Set-TeamsUserVoiceConfig
 	.LINK

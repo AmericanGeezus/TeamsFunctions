@@ -139,6 +139,8 @@ Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, Voic
 
 [Get-TeamsUserVoiceConfig]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
 
 [Remove-TeamsUserVoiceConfig]()

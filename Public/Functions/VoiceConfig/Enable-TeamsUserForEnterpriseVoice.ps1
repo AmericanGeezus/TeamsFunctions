@@ -39,7 +39,11 @@ function Enable-TeamsUserForEnterpriseVoice {
   .LINK
     about_UserManagement
 	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
+	.LINK
+    Assert-TeamsCallableEntity
 	.LINK
     Enable-TeamsUserForEnterpriseVoice
 	#>
@@ -93,13 +97,13 @@ function Enable-TeamsUserForEnterpriseVoice {
 
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
-        #CHECK Deactivated as Object is able to be used/enabled even if in Islands mode and Object in Skype!
         if ($Called) {
           Write-Warning -Message $Message
           #return $false
         }
         else {
           Write-Warning -Message $Message
+          #Deactivated as Object is able to be used/enabled even if in Islands mode and Object in Skype!
           #throw [System.InvalidOperationException]::New("$Message")
         }
       }

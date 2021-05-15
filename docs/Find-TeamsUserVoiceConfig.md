@@ -307,6 +307,8 @@ Please see Related Link for more information
 
 [Get-TeamsUserVoiceConfig]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
 
 [Remove-TeamsUserVoiceConfig]()

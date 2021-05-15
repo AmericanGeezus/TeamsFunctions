@@ -5,7 +5,7 @@
 # Status:   RC
 
 #TODO Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
-#CHECK Add Switch to validate OnPremLineUri must (or must not) have an extension?
+#VALIDATE Switch to validate OnPremLineUri must (or must not) have an extension?
 #VALIDATE InterpretedUserType for any of the Error-States
 function Assert-TeamsUserVoiceConfig {
   <#
@@ -61,6 +61,8 @@ function Assert-TeamsUserVoiceConfig {
     Get-TeamsTenantVoiceConfig
 	.LINK
     Get-TeamsUserVoiceConfig
+	.LINK
+    New-TeamsUserVoiceConfig
 	.LINK
     Set-TeamsUserVoiceConfig
 	.LINK

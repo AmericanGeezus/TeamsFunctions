@@ -13,7 +13,8 @@ Tests the validity of the Voice Configuration for one or more Users
 ## SYNTAX
 
 ```
-Assert-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-IncludeTenantDialPlan] [<CommonParameters>]
+Assert-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-IncludeTenantDialPlan] [-ExtensionState <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -77,6 +78,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ExtensionState
+Optional.
+Enforces the presence (or absence) of an Extension.
+Default: NotMeasured
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: NotMeasured
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -108,6 +126,8 @@ Piping the Output to Export-Csv can give the best result for investigation into 
 [Get-TeamsTenantVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
+
+[New-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

@@ -152,6 +152,8 @@ Omitting it allows for visible data when exporting as a CSV.
 
 [Get-TeamsUserVoiceConfig]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
 
 [Remove-TeamsUserVoiceConfig]()

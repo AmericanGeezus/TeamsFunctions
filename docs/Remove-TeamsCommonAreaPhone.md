@@ -127,5 +127,7 @@ Execution requires User Admin Role in Azure AD
 
 [Get-TeamsUserVoiceConfig]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
 

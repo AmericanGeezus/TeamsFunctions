@@ -114,7 +114,11 @@ Returns boolean result and less communication if called by another function
 
 [about_UserManagement]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
+
+[Assert-TeamsCallableEntity]()
 
 [Enable-TeamsUserForEnterpriseVoice]()
 

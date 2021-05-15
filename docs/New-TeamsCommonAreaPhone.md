@@ -270,5 +270,7 @@ Assigning the PhoneSystem license has been deactivated as it is an add-on licens
 
 [Get-TeamsUserVoiceConfig]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
 

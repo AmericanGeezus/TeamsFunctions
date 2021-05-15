@@ -50,6 +50,8 @@ function Remove-TeamsCommonAreaPhone {
 	.LINK
     Get-TeamsUserVoiceConfig
 	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
 	#>
 

@@ -40,6 +40,30 @@ function Use-MicrosoftTeamsConnection {
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     $TeamsModuleVersionMajor = (Get-Module MicrosoftTeams).Version.Major
 
+    #region Functions copied from SfBoRemotePowerShellModule.psm1
+    $script:GetCsOnlineSession = $null
+
+    function Get-CsOnlineSessionCommand {
+      if ($null -eq $script:GetCsOnlineSession) {
+        $module = [Microsoft.Teams.ConfigApi.Cmdlets.PowershellUtils]::GetRootModule()
+        $script:GetCsOnlineSession = [Microsoft.Teams.ConfigApi.Cmdlets.PowershellUtils]::GetCmdletInfo($module, "Microsoft.Teams.ConfigAPI.Cmdlets.private", "Get-CsOnlineSession")
+      }
+
+      return $script:GetCsOnlineSession;
+    }
+
+    function Get-PSImplicitRemotingSession {
+      param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string]$commandName
+      )
+
+      $remoteSession = & (Get-CsOnlineSessionCommand)
+
+      return $remoteSession
+    }
+    #endregion
+
   } #begin
 
   process {
@@ -54,8 +78,15 @@ function Use-MicrosoftTeamsConnection {
         }
       }
       else {
-        # MEASUREMENTS This currently takes about half a second (486ms on average)
-        $null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
+        $RemotingSession = Get-PSImplicitRemotingSession Get-CsPresencePolicy -ErrorAction SilentlyContinue
+        if ( -not $RemotingSession) {
+          return $false
+        }
+        else {
+          # MEASUREMENTS This currently takes about half a second (486ms on average)
+          $null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        }
+
         #Write-Verbose -Message "$($MyInvocation.MyCommand) - No Teams session found"
         #Start-Sleep -Seconds 1
         if (Test-MicrosoftTeamsConnection) {
