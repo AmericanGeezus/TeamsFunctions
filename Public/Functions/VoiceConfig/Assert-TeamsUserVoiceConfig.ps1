@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-APR-2020
-# Status:   RC
+# Updated:  15-MAY-2021
+# Status:   Live
 
 #TODO Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
 
@@ -94,7 +94,7 @@ function Assert-TeamsUserVoiceConfig {
   )
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 

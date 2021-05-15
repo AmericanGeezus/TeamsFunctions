@@ -178,7 +178,7 @@ function Get-TeamsUserLicense {
       $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
       $AudioConfLicense = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
       $PhoneSystemVirtual = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
-      $CommonAreaPhoneLic = ('MCOCAP' -in $UserServicePlans.ServicePlanName)
+      $CommonAreaPhoneLic = ('MCOCAP' -in $UserLicenses.SkuPartNumber)
       $CommunicationCredits = ('MCOPSTNC' -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom = ('MCOPSTN1' -in $UserServicePlans.ServicePlanName)
       $CallingPlanInt = ('MCOPSTN2' -in $UserServicePlans.ServicePlanName)
@@ -228,7 +228,7 @@ function Get-TeamsUserLicense {
         Licenses                 = $UserLicensesSorted
         ServicePlans             = $UserServicePlansSorted
         AudioConferencing        = $AudioConfLicense
-        CommoneAreaPhoneLicense  = $CommonAreaPhoneLic
+        CommonAreaPhoneLicense   = $CommonAreaPhoneLic
         PhoneSystemVirtualUser   = $PhoneSystemVirtual
         PhoneSystem              = $PhoneSystemLicense
         PhoneSystemStatus        = $PhoneSystemStatus

@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-OCT-2020
-# Status:   RC
+# Updated:  15-MAY-2021
+# Status:   Live
 
 
 
@@ -100,7 +100,7 @@ function Test-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
     $CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig') #DOCU Save as snippet before removing for future use!

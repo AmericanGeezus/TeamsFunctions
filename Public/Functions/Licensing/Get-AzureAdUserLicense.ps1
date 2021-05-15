@@ -2,7 +2,7 @@
 # Function: Licensing
 # Author:		David Eberhardt
 # Updated:  01-APR-2020
-# Status:   RC
+# Status:   Live
 
 
 #CHECK whether to add Identity to output Object? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
@@ -79,7 +79,7 @@ function Get-AzureAdUserLicense {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -184,7 +184,7 @@ function Get-AzureAdUserLicense {
       $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
       $AudioConfLicense = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
       $PhoneSystemVirtual = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
-      $CommonAreaPhoneLic = ('MCOCAP' -in $UserServicePlans.ServicePlanName)
+      $CommonAreaPhoneLic = ('MCOCAP' -in $UserLicenses.SkuPartNumber)
       $CommunicationCredits = ('MCOPSTNC' -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom = ('MCOPSTN1' -in $UserServicePlans.ServicePlanName)
       $CallingPlanInt = ('MCOPSTN2' -in $UserServicePlans.ServicePlanName)
@@ -234,7 +234,7 @@ function Get-AzureAdUserLicense {
         Licenses                 = $UserLicensesSorted
         ServicePlans             = $UserServicePlansSorted
         AudioConferencing        = $AudioConfLicense
-        CommoneAreaPhoneLicense  = $CommonAreaPhoneLic
+        CommonAreaPhoneLicense   = $CommonAreaPhoneLic
         PhoneSystemVirtualUser   = $PhoneSystemVirtual
         PhoneSystem              = $PhoneSystemLicense
         PhoneSystemStatus        = $PhoneSystemStatus
