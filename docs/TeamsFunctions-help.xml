@@ -553,7 +553,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ExtensionState</maml:name>
           <maml:description>
-            <maml:para>Optional. Enforces the presence (or absence) of an Extension. Default: NotMeasured</maml:para>
+            <maml:para>Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured No effect for Microsoft Calling Plans</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -592,7 +592,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ExtensionState</maml:name>
         <maml:description>
-          <maml:para>Optional. Enforces the presence (or absence) of an Extension. Default: NotMeasured</maml:para>
+          <maml:para>Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured No effect for Microsoft Calling Plans</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -656,6 +656,13 @@
         <dev:code>Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -IncludeTenantDialPlan</dev:code>
         <dev:remarks>
           <maml:para>If incorrect/missing, writes information output about every tested parameter including the Tenant Dial Plan Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -ExtensionState MustBePopulated</dev:code>
+        <dev:remarks>
+          <maml:para>If incorrect/missing, writes information output about every tested parameter including the Extension. With MustBePopulated an Extension is expected. If no Extension is present, it is flagged as misconfigured Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -5640,6 +5647,10 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Get-TeamsUserVoiceConfig</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsUserVoiceConfig</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
@@ -17553,6 +17564,10 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>New-TeamsUserVoiceConfig</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Set-TeamsUserVoiceConfig</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -20139,6 +20154,18 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ExtensionState</maml:name>
+          <maml:description>
+            <maml:para>Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured No effect for Microsoft Calling Plans</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>NotMeasured</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
@@ -20177,6 +20204,18 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>ExtensionState</maml:name>
+        <maml:description>
+          <maml:para>Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured No effect for Microsoft Calling Plans</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>NotMeasured</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>

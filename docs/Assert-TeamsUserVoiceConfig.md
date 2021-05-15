@@ -43,6 +43,16 @@ Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -IncludeTenantDia
 If incorrect/missing, writes information output about every tested parameter including the Tenant Dial Plan
 Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
 
+### EXAMPLE 3
+```
+Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -ExtensionState MustBePopulated
+```
+
+If incorrect/missing, writes information output about every tested parameter including the Extension.
+With MustBePopulated an Extension is expected.
+If no Extension is present, it is flagged as misconfigured
+Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
+
 ## PARAMETERS
 
 ### -UserPrincipalName
@@ -80,8 +90,9 @@ Accept wildcard characters: False
 
 ### -ExtensionState
 Optional.
-Enforces the presence (or absence) of an Extension.
+For DirectRouting, enforces the presence (or absence) of an Extension.
 Default: NotMeasured
+No effect for Microsoft Calling Plans
 
 ```yaml
 Type: String

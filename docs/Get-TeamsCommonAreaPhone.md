@@ -146,5 +146,7 @@ Running the CmdLet without any input might take a while, depending on size of th
 
 [Get-TeamsUserVoiceConfig]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
 

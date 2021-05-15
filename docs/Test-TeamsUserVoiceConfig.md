@@ -13,7 +13,8 @@ Tests whether any Voice Configuration has been applied to one or more Users
 ## SYNTAX
 
 ```
-Test-TeamsUserVoiceConfig [-Identity] <String[]> [-Partial] [-IncludeTenantDialPlan] [<CommonParameters>]
+Test-TeamsUserVoiceConfig [-Identity] <String[]> [-Partial] [-IncludeTenantDialPlan] [-ExtensionState <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -101,6 +102,24 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExtensionState
+Optional.
+For DirectRouting, enforces the presence (or absence) of an Extension.
+Default: NotMeasured
+No effect for Microsoft Calling Plans
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: NotMeasured
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
