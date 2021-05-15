@@ -4,7 +4,7 @@
 # Updated:  01-JUN-2021
 # Status:   RC
 
-#TODO After determining the Number type (TDR vs CP), add Check to see whether a CP license is there? Throw error if so
+
 
 
 function New-TeamsUserVoiceConfig {
