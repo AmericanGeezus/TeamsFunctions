@@ -184,15 +184,6 @@ Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
 Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
 #Set-Alias -Name Connect-SkypeOnline -Value Connect-MicrosoftTeams
 
-# Dedication
-if ($env:username -eq 'Julia.Horvath') {
-  if ($(Get-Date -Format 'dd') % 2 -eq 1 ) {
-    Write-Host 'Julia, I love you. Thank you for being with me. -D-' -ForegroundColor DarkMagenta
-  }
-  else {
-    Write-Host 'Julia, I love you. Thank you for being my friend. -D-' -ForegroundColor DarkYellow
-  }
-}
 
 # Exporting Module Members (Functions)
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
