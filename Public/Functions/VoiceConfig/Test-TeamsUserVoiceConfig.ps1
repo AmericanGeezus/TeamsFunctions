@@ -23,6 +23,8 @@ function Test-TeamsUserVoiceConfig {
     Optional. By default, only the core requirements for Voice Routing are verified.
     This extends the requirements to also include the Tenant Dial Plan.
     Returns FALSE if no or only a TenantDialPlan is assigned
+  .PARAMETER ExtensionState
+    Optional. Enforces the presence (or absence) of an Extension. Default: NotMeasured
 	.EXAMPLE
     Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
@@ -139,7 +141,7 @@ function Test-TeamsUserVoiceConfig {
 
       # Testing Tenant Dial Plan Enablement
       #TEST IncludeTenantDialPlan
-      if ($IncludeTenantDialPlan) {
+      if ($IncludeTenantDialPlan.IsPresent) {
         $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
         if ( $Verbose -or -not $Called ) {
           if ($TDPPresent) {
@@ -219,11 +221,31 @@ function Test-TeamsUserVoiceConfig {
           }
         }
 
+        # Testing Extension State
+        #TEST ExtensionState
+        if ($ExtensionState.IsPresent) {
+          $EXTState = ($CsUser.LineUri -notcontains ';ext=')
+          if ( $Verbose -or -not $Called ) {
+            if ($EXTState) {
+              Write-Verbose -Message "User '$User' - Tenant Dial Plan - OK"
+            }
+            else {
+              Write-Warning -Message "User '$User' - Tenant Dial Plan - Not assigned"
+            }
+          }
+        }
+
+
 
         #Defining Fully Configured
-        $FullyConfigured = ($Routing -and $EVenabled -and $TelPresent -and (if ($IncludeTenantDialPlan) { $TDPPresent } else { $true }))
+        $FullyConfigured = ($Routing -and $EVenabled -and $TelPresent `
+        -and (if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $true }) `
+        -and (if ($ExtensionState.IsPresent) { $EXTState } else { $true }))
+
         if ($PSBoundParameters.ContainsKey('Partial')) {
-          $PartiallyConfigured = (($Routing -or $EVenabled -or $TelPresent -or $TDPPresent) -and -not $FullyConfigured)
+          $PartiallyConfigured = (($Routing -or $EVenabled -or $TelPresent -or $TDPPresent `
+          -or (if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $false }) `
+          -or (if ($ExtensionState.IsPresent) { $EXTState } else { $false })) -and -not $FullyConfigured)
           return $PartiallyConfigured
         }
         else {

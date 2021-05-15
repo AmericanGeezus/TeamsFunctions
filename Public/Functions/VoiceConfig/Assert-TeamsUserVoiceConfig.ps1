@@ -23,6 +23,8 @@ function Assert-TeamsUserVoiceConfig {
   .PARAMETER IncludeTenantDialPlan
     Optional. By default, only the core requirements for Voice Routing are verified.
     This extends the requirements to also include the Tenant Dial Plan.
+  .PARAMETER ExtensionState
+    Optional. Enforces the presence (or absence) of an Extension. Default: NotMeasured
   .EXAMPLE
     Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     If incorrect/missing, writes information output about every tested parameter
@@ -76,7 +78,11 @@ function Assert-TeamsUserVoiceConfig {
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Extends requirements to include Tenant Dial Plan assignment')]
-    [switch]$IncludeTenantDialPlan
+    [switch]$IncludeTenantDialPlan,
+
+    [Parameter(HelpMessage = 'Extends requirements to validate the status of the Extension')]
+    [ValidateSet('MustBePopulated','MustNotBePopulated','NotMeasured')]
+    [string]$ExtensionState = 'NotMeasured'
   )
 
   begin {
@@ -145,12 +151,7 @@ function Assert-TeamsUserVoiceConfig {
         Write-Verbose -Message "User '$User' - User Voice Configuration (Full)"
         #$TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
         #TEST Replacement for Line above
-        if ($IncludeTenantDialPlan) {
-          $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -IncludeTenantDialPlan
-        }
-        else {
-          $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
-        }
+        $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState
 
         if ($TestFull) {
           if ( -not $CsOnlineUser.TenantDialPlan -and $IncludeTenantDialPlan ) {
@@ -170,12 +171,7 @@ function Assert-TeamsUserVoiceConfig {
           # Testing Partial Configuration
           Write-Verbose -Message "User '$User' - User Voice Configuration (Partial)"
           #TEST IncludeTenantDialPlan
-          if ($IncludeTenantDialPlan) {
-            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan
-          }
-          else {
-            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial
-          }
+          $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState
           if ($TestPart) {
             if ($Called) {
               Write-Output $TestPart
