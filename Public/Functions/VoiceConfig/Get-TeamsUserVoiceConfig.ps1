@@ -134,7 +134,7 @@ function Get-TeamsUserVoiceConfig {
     foreach ($User in $UserPrincipalName) {
       # Initialising counters for Progress bars
       [int]$step = 0
-      [int]$sMax = 6
+      [int]$sMax = 7
       if ( $DiagnosticLevel ) { $sMax = $sMax + $DiagnosticLevel }
       if ( $DiagnosticLevel -gt 3 ) { $sMax++ }
       if ( -not $SkipLicenseCheck ) { $sMax++ }
@@ -182,9 +182,21 @@ function Get-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      #TEST Performance of lookup for Get-TeamsCallableEntity  meant that it takes another Get-CsUser Lookup longer
+      #VALIDATE Performance of lookup for Get-TeamsCallableEntity  meant that it takes another Get-CsUser Lookup longer
       #$ObjectType = (Get-TeamsCallableEntity -Identity $CsUser.UserPrincipalName).ObjectType
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
+
+      # Testing for Misconfiguration
+      $Operation = 'Testing for Misconfiguration'
+      $step++
+      Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message $Operation
+      $null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
+
+      #Info about unassigned Dial Plan
+      if ('' -ne $CsUser.TenantDialPlan) {
+        Write-Verbose -Message "User '$User' - No Dial Plan is assigned"
+      }
       #endregion
 
       #region Creating Base Custom Object

@@ -103,7 +103,7 @@ function Test-TeamsUserVoiceConfig {
     Show-FunctionStatus -Level RC
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
-    #$CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig') #DOCU Save as snippet before removing for future use!
+    $CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig') #DOCU Save as snippet before removing for future use!
 
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
@@ -149,7 +149,8 @@ function Test-TeamsUserVoiceConfig {
         }
       }
       else {
-        Write-Warning -Message "User '$User' - $TestObject - Potential misconfiguration detected"
+        Write-Warning -Message "User '$User' - $TestObject"
+        Write-Verbose -Message "Potential misconfiguration detected - Contains 'Disabled', 'OnPrem', 'Failed' or any other error-state. Please investigate!"
       }
 
 
@@ -173,12 +174,12 @@ function Test-TeamsUserVoiceConfig {
 
 
       # Testing Tenant Dial Plan Enablement
+      $TestObject = 'Tenant Dial Plan'
+      $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        Write-Debug "General - TDPPresent: $TDPPresent"
+      }
       if ($IncludeTenantDialPlan.IsPresent) {
-        $TestObject = 'Tenant Dial Plan'
-        $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
-        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          Write-Debug "General - TDPPresent: $TDPPresent"
-        }
         if ($TDPPresent) {
           Write-Verbose -Message "User '$User' - $TestObject - OK"
           if ( -not $Called) {
@@ -344,8 +345,10 @@ function Test-TeamsUserVoiceConfig {
         }
       }
       else {
-        Write-Warning -Message "User '$User' - InterpretedVoiceConfigType is 'Unknown' (undetermined) - No tests can be performed."
-        return $false
+        if ( $CalledByAssertTUVC -or -not $Called ) {
+          Write-Warning -Message "User '$User' - InterpretedVoiceConfigType is 'Unknown' (undetermined) - No tests can be performed."
+          return $false
+        }
       }
 
     }

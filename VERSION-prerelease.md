@@ -19,20 +19,21 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### Updated
 
 - `Assert-TeamsUserVoiceConfig`:
-  - Added validation of InterpretedUserType. Known error-states now will result in immediate return of Object (or False)
   - Added Parameter ExtensionState to validate whether an Extension has to be present or not.
   - Refactored calls to Test-TeamsUserVoiceConfig with multiple parameters.
 - `Test-TeamsUserVoiceConfig`:
-  - Added Parameter ExtensionState to validate whether an Extension has to be present or not.
   - Refactored use of switches.
+  - Added Parameter ExtensionState to validate whether an Extension has to be present or not.
+  - Added validation of InterpretedUserType. Known error-states are now fed back as a Warning
 - `Get-TeamsUserVoiceConfig`:
   - Changed default output of Licenses to List of License Names only if no DiagnosticLevel is provided. This allows for Export as CSV.
   - Added DiagnosticLevel 0 to display the same as without, though with nested Object.
+  - Added Feedback from Test-TeamsUserVoiceconfig to indicate misconfiguration for the Object.
 - `Set-TeamsUserVoiceConfig`:
   - Excluding "self" when validating Phone Number in use (Warning is only displayed if the UserPrincipalName is different)
 - `Test-TeamsUserVoiceConfig`:
-  - Fixed an issue with Partial Configuration - Will return FALSE now if Object is NOT partially configured
-  NOTE: This now returns false also if it is fully configured
+  - Fixed an issue with Partial Configuration - Will return FALSE now if Object is NOT partially configured (but fully)
+  NOTE: Using `-Partial` now properly returns false if it is fully configured
   - Included Debug output after tests. Changed Verbose output to Information output (displayed only if it isn't called or `-Verbose` is used)
 - `Get-TeamsCallableEntity`: Added match for '\' triggering query for TeamAndChannel.<br \>This should not be part of any other Object
 - `Get-TeamsCallQueue`: Added Parameter TeamAndChannel to display the Team & Channel in the format 'Team\Channel'
