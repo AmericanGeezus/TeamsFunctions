@@ -166,7 +166,7 @@ function Assert-TeamsUserVoiceConfig {
             }
             else {
               Write-Warning "User '$User' is only partially configured!"
-              Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1
+              Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1 -WarningAction SilentlyContinue
             }
           }
         }

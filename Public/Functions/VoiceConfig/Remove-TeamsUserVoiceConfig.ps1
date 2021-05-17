@@ -354,7 +354,7 @@ function Remove-TeamsUserVoiceConfig {
 
       # Output
       if ( $PassThru ) {
-        Get-TeamsUserVoiceConfig -UserPrincipalName "$User"
+        Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -WarningAction SilentlyContinue
       }
 
     }
