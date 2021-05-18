@@ -198,6 +198,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Find-TeamsUserVoiceRoute',
     'Get-TeamsTenantVoiceConfig',
     'Get-TeamsUserVoiceConfig',
+    'Grant-TeamsEmergencyAddress',
     'New-TeamsUserVoiceConfig',
     'Remove-TeamsUserVoiceConfig',
     'Set-TeamsUserVoiceConfig',

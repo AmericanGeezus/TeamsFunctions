@@ -4,7 +4,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## unreleased/vNext
 
-[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2049-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2069-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
 ### New
 
@@ -14,6 +14,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Get-TeamsTeamChannel` (Alias `Get-Channel`): My take on Get-Team and Get-TeamChannel. One Command to get the Channel
   - Provid Name or Id for Team and Channel to lookup a match
   - v1 only provides basic lookup. It does not (yet) account for multiple Teams or Channels with the provided DisplayName
+- `Grant-TeamsEmergencyAddress` (Alias `Grant-TeamsEA`): My take on Set-CsOnlineVoiceUser to apply an Emergency Location
 - New private Function `Get-TeamAndChannel` to query Team Object and Channel Object for use in Get-TeamsCallQueue and Get-TeamsCallableEntity
 
 ### Updated
