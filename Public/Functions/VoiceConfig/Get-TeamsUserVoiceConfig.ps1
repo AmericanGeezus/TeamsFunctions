@@ -136,7 +136,7 @@ function Get-TeamsUserVoiceConfig {
       [int]$step = 0
       [int]$sMax = 7
       if ( $DiagnosticLevel ) { $sMax = $sMax + $DiagnosticLevel }
-      if ( $DiagnosticLevel -gt 3 ) { $sMax++ }
+      if ( $DiagnosticLevel -ge 3 ) { $sMax++ }
       if ( -not $SkipLicenseCheck ) { $sMax++ }
 
       #region Information Gathering
@@ -148,7 +148,7 @@ function Get-TeamsUserVoiceConfig {
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error -Message "User '$User' not found: $($_.Exception.Message)" -Category ObjectNotFound
+        Write-Error -Message "User '$User' not found (CsOnlineUser): $($_.Exception.Message)" -Category ObjectNotFound
         continue
       }
 
