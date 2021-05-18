@@ -33,10 +33,21 @@ function Grant-TeamsEmergencyAddress {
   .EXAMPLE
 		Grant-TeamsEmergencyAddress -Identity John@domain.com -Address "3rd Floor Cafe"
     Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and assigns this Address to the User
+
+  .EXAMPLE
+		Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"
+    Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and
+    assigns this Address to the Number +15551234567 if found in the Business Voice Directory
+    AddressDescription is an Alias for Address
 	.EXAMPLE
-		Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000
-    Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and assigns this Address to the User
+		Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000000-0000-000000000000
+    Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and assigns this Address to the User
     LocationId is an Alias for Address
+	.EXAMPLE
+		Grant-TeamsEmergencyAddress -Identity +15551234567 -PolicyName 0000000-0000-000000000000
+    Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and
+    assigns this Address to the Number +15551234567 if found in the Business Voice Directory
+    PolicyName is an Alias for Address (as it fits the theme)
   .INPUTS
     System.String
   .OUTPUTS
