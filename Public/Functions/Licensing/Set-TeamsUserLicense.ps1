@@ -511,7 +511,14 @@ function Set-TeamsUserLicense {
       if ($PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
         #Assign $LicenseObject to each User
         Write-Verbose -Message "'$ID' - Setting Licenses"
-        Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject
+        #TEST Try/Catch to limit feedback
+        #Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject
+        try {
+          $null = Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject -ErrorAction Stop
+        }
+        catch {
+          throw "Set-TeamsUserLicense failed to run Set-AzureADUserLicense with Exception: $($_.Exception.Message)"
+        }
         Write-Verbose -Message "'$ID' - Setting Licenses: Done"
       }
 
