@@ -8968,9 +8968,23 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000</dev:code>
+        <dev:code>Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"</dev:code>
         <dev:remarks>
-          <maml:para>Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and assigns this Address to the User   LocationId is an Alias for Address</maml:para>
+          <maml:para>Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and   assigns this Address to the Number +15551234567 if found in the Business Voice Directory   AddressDescription is an Alias for Address</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000000-0000-000000000000</dev:code>
+        <dev:remarks>
+          <maml:para>Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and assigns this Address to the User   LocationId is an Alias for Address</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Grant-TeamsEmergencyAddress -Identity +15551234567 -PolicyName 0000000-0000-000000000000</dev:code>
+        <dev:remarks>
+          <maml:para>Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and   assigns this Address to the Number +15551234567 if found in the Business Voice Directory   PolicyName is an Alias for Address (as it fits the theme)</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
