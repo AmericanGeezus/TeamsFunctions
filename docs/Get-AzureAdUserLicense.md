@@ -13,7 +13,7 @@ Returns License information for an Object in AzureAD
 ## SYNTAX
 
 ```
-Get-AzureAdUserLicense [-Identity] <String[]> [-FilterRelevantForTeams] [<CommonParameters>]
+Get-AzureAdUserLicense [-UserPrincipalName] <String[]> [-FilterRelevantForTeams] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,21 +24,21 @@ Licenses and ServicePlans are nested in the respective parameters for further in
 
 ### EXAMPLE 1
 ```
-Get-AzureAdUserLicense [-Identity] John@domain.com
+Get-AzureAdUserLicense [-UserPrincipalname] John@domain.com
 ```
 
 Displays all licenses assigned to User John@domain.com
 
 ### EXAMPLE 2
 ```
-Get-AzureAdUserLicense -Identity John@domain.com,Jane@domain.com
+Get-AzureAdUserLicense -UserPrincipalname John@domain.com,Jane@domain.com
 ```
 
 Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 
 ### EXAMPLE 3
 ```
-Get-AzureAdUserLicense -Identity Jane@domain.com -FilterRelevantForTeams
+Get-AzureAdUserLicense -UserPrincipalname Jane@domain.com -FilterRelevantForTeams
 ```
 
 Displays all relevant Teams licenses assigned to Jane@domain.com
@@ -48,18 +48,18 @@ Displays all relevant Teams licenses assigned to Jane@domain.com
 Import-Csv User.csv | Get-AzureAdUserLicense
 ```
 
-Displays all licenses assigned to Users from User.csv, Column Identity.
-  The input file must have a single column heading of "Identity" with properly formatted UPNs.
+Displays all licenses assigned to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.
+  The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.
 
 ## PARAMETERS
 
-### -Identity
-The Identity or UserPrincipalname for the user.
+### -UserPrincipalName
+The UserPrincipalname or ObjectId of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

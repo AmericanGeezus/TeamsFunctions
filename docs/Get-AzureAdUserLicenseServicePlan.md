@@ -13,8 +13,8 @@ Returns License information (ServicePlans) for an Object in AzureAD
 ## SYNTAX
 
 ```
-Get-AzureAdUserLicenseServicePlan [-Identity] <String[]> [-FilterRelevantForTeams] [-FilterUnsuccessful]
- [<CommonParameters>]
+Get-AzureAdUserLicenseServicePlan [-UserPrincipalName] <String[]> [-FilterRelevantForTeams]
+ [-FilterUnsuccessful] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,28 +24,28 @@ Returns an Object containing all ServicePlans (for Licenses assigned) for a spec
 
 ### EXAMPLE 1
 ```
-Get-AzureAdUserLicenseServicePlan [-Identity] John@domain.com
+Get-AzureAdUserLicenseServicePlan [-UserPrincipalname] John@domain.com
 ```
 
 Displays all Service Plans assigned through Licenses to User John@domain.com
 
 ### EXAMPLE 2
 ```
-Get-AzureAdUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
+Get-AzureAdUserLicenseServicePlan -UserPrincipalname John@domain.com,Jane@domain.com
 ```
 
 Displays all Service Plans assigned through Licenses to Users John@domain.com and Jane@domain.com
 
 ### EXAMPLE 3
 ```
-Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterRelevantForTeams
+Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterRelevantForTeams
 ```
 
 Displays all relevant Teams Service Plans assigned through Licenses to Jane@domain.com
 
 ### EXAMPLE 4
 ```
-Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterUnsuccessful
+Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterUnsuccessful
 ```
 
 Displays all Service Plans assigned through Licenses to Jane@domain.com that are not provisioned successfully
@@ -55,18 +55,18 @@ Displays all Service Plans assigned through Licenses to Jane@domain.com that are
 Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan
 ```
 
-Displays all Service Plans assigned through Licenses to Users from User.csv, Column Identity.
-  The input file must have a single column heading of "Identity" with properly formatted UPNs.
+Displays all Service Plans assigned through Licenses to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.
+  The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.
 
 ## PARAMETERS
 
-### -Identity
-The Identity, UserPrincipalname or UserName for the user.
+### -UserPrincipalName
+The UserPrincipalname or ObjectId of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

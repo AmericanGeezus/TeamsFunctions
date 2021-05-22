@@ -13,7 +13,7 @@ Tests whether an Object exists in Teams (record found)
 ## SYNTAX
 
 ```
-Test-TeamsUser [-Identity] <String> [<CommonParameters>]
+Test-TeamsUser [-UserPrincipalName] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +23,7 @@ Simple lookup - does the Object exist - to avoid TRY/CATCH statements for proces
 
 ### EXAMPLE 1
 ```
-Test-TeamsUser -Identity $UPN
+Test-TeamsUser -Identity "$UPN"
 ```
 
 Will Return $TRUE only if the object $UPN is found.
@@ -31,14 +31,14 @@ Will Return $FALSE in any other case, including if there is no Connection to Mic
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Mandatory.
-The sign-in address or User Principal Name of the user account to modify.
+The sign-in address, User Principal Name or Object Id of the Object.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

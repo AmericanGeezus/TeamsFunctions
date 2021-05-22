@@ -89,7 +89,7 @@ The ObjectId of the CallableEntity linked
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: ObjectId
+Aliases: ObjectId, UserPrincipalName
 
 Required: True
 Position: 1

@@ -13,7 +13,7 @@ Resolves the type of the object
 ## SYNTAX
 
 ```
-Get-TeamsObjectType [-Identity] <String> [<CommonParameters>]
+Get-TeamsObjectType [-Identity] <String[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -71,7 +71,7 @@ Required.
 String for the TelURI, Group Name or Mailnickname, UserPrincipalName, depending on the Entity Type
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 

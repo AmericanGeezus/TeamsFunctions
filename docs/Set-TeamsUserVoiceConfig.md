@@ -77,7 +77,7 @@ UserPrincipalName (UPN) of the User to change the configuration for
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

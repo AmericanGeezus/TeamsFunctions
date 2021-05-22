@@ -70,7 +70,7 @@ Invalid characters are stripped from the provided string
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

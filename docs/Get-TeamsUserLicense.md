@@ -13,7 +13,7 @@ Returns Teams License information for an Object in AzureAD
 ## SYNTAX
 
 ```
-Get-TeamsUserLicense [-Identity] <String[]> [-DisplayAll] [<CommonParameters>]
+Get-TeamsUserLicense [-UserPrincipalName] <String[]> [-DisplayAll] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,14 +24,14 @@ Licenses and ServicePlans are nested in the respective parameters for further in
 
 ### EXAMPLE 1
 ```
-Get-TeamsUserLicense [-Identity] John@domain.com
+Get-TeamsUserLicense [-UserPrincipalName] John@domain.com
 ```
 
 Displays all licenses assigned to User John@domain.com
 
 ### EXAMPLE 2
 ```
-Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
+Get-TeamsUserLicense -UserPrincipalName John@domain.com,Jane@domain.com
 ```
 
 Displays all licenses assigned to Users John@domain.com and Jane@domain.com
@@ -41,18 +41,18 @@ Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 Import-Csv User.csv | Get-TeamsUserLicense
 ```
 
-Displays all licenses assigned to Users from User.csv, Column Identity.
-  The input file must have a single column heading of "Identity" with properly formatted UPNs.
+Displays all licenses assigned to Users from User.csv, Column UserPrincipalName.
+  The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
 
 ## PARAMETERS
 
-### -Identity
-The Identity, UserPrincipalname or UserName for the user.
+### -UserPrincipalName
+The UserPrincipalName, ObjectId or Identity of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

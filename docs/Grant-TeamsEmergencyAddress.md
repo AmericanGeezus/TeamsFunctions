@@ -60,12 +60,12 @@ Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and
 
 ### -Identity
 Required.
-UserPrincipalName of the User Object or TelephoneNumber
+UserPrincipalName or ObjectId of the User Object or a TelephoneNumber
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: UserPrincipalName, ObjectId, PhoneNumber
 
 Required: True
 Position: 1

@@ -37,7 +37,7 @@ UserPrincipalName of the User to be enabled.
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

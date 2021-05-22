@@ -62,7 +62,7 @@ UserPrincipalName (UPN) of the User
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

@@ -13,7 +13,7 @@ Tests whether an Application Instance exists in Azure AD (record found)
 ## SYNTAX
 
 ```
-Test-TeamsResourceAccount [-Identity] <String> [-Quick] [<CommonParameters>]
+Test-TeamsResourceAccount [-UserPrincipalName] <String> [-Quick] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +23,7 @@ Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for p
 
 ### EXAMPLE 1
 ```
-Test-TeamsResourceAccount -Identity $UPN
+Test-TeamsResourceAccount -UserPrincipalName "$UPN"
 ```
 
 Will Return $TRUE only if an CsOnlineApplicationInstance Object with the $UPN is found.
@@ -31,7 +31,7 @@ Will Return $FALSE in any other case, including if there is no Connection to Azu
 
 ### EXAMPLE 2
 ```
-Test-TeamsResourceAccount -Identity $UPN -Quick
+Test-TeamsResourceAccount -UserPrincipalName "$UPN" -Quick
 ```
 
 Will Return $TRUE only if an AzureAdObject with the $UPN is found with the Department "Microsoft Communication Application Instance" set)
@@ -39,14 +39,14 @@ Will Return $FALSE in any other case, including if there is no Connection to Azu
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Mandatory.
 The sign-in address or User Principal Name of the user account to test.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

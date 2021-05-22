@@ -13,8 +13,8 @@ Tests whether any Voice Configuration has been applied to one or more Users
 ## SYNTAX
 
 ```
-Test-TeamsUserVoiceConfig [-Identity] <String[]> [-Partial] [-IncludeTenantDialPlan] [-ExtensionState <String>]
- [<CommonParameters>]
+Test-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-Partial] [-IncludeTenantDialPlan]
+ [-ExtensionState <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -55,14 +55,14 @@ This will treat any Object that only has a Tenant Dial Plan also as partially co
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Required.
-UserPrincipalName of the User to be tested
+UserPrincipalName or ObjectId of the Object
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

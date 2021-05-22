@@ -127,7 +127,7 @@ Behaves like Get-TeamsUserVoiceConfig, displaying the Users Voice Configuration
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: False
 Position: Named

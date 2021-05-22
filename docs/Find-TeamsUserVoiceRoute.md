@@ -48,7 +48,7 @@ User must have a valid Voice Configuration applied for this script to return a v
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
