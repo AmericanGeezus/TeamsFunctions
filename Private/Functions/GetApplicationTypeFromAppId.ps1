@@ -2,7 +2,7 @@
 # Function:   AzureAd Licensing
 # Author:     David Eberhardt
 # Updated:    29-JUN-2020
-# Status:     PreLive
+# Status:     Live
 
 function GetApplicationTypeFromAppId {
   <#

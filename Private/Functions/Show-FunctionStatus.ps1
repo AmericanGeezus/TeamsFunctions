@@ -16,8 +16,8 @@ function Show-FunctionStatus {
   .PARAMETER Level
     Level of Detail
 	.EXAMPLE
-    Show-FunctionStatus -Level Deprecated
-    Indicates that the Function is deprecated.
+    Show-FunctionStatus -Level <Level>
+    "<Level>" may be Live, RC, Beta, Alpha, Unmanaged, Deprecated, Archived
   .NOTES
     This will only ever show the status of the first Command in the Stack (i.E. when called from a function).
     It will not display the same information for any nested commands.
@@ -35,9 +35,11 @@ function Show-FunctionStatus {
 
   [CmdletBinding()]
   param(
-    [Validateset("Alpha", "Beta", "RC", "PreLive", "Live", "Unmanaged", "Deprecated", "Archived")]
+    [Validateset('Alpha', 'Beta', 'RC', 'Live', 'Unmanaged', 'Deprecated', 'Archived')]
     $Level
   ) #param
+
+  #Show-FunctionStatus -Level Live
 
   # Setting Preference Variables according to Upstream settings
   if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -52,29 +54,29 @@ function Show-FunctionStatus {
     $Function = ($Stack | Select-Object -First 2).Command[1]
 
     switch ($Level) {
-      "Alpha" {
-        $DebugPreference = "Inquire"
-        $VerbosePreference = "Continue"
+      'Alpha' {
+        $DebugPreference = 'Inquire'
+        $VerbosePreference = 'Continue'
         Write-Debug -Message "$Function has [ALPHA] Status: It may not work as intended or contain serious gaps in functionality. Please handle with care" -Debug
       }
-      "Beta" {
-        $DebugPreference = "Continue"
-        $VerbosePreference = "Continue"
+      'Beta' {
+        $DebugPreference = 'Continue'
+        $VerbosePreference = 'Continue'
         Write-Debug -Message "$Function has [BETA] Status: Build is not completed, functionality may be missing. Please report issues via GitHub"
       }
-      "RC" {
+      'RC' {
         Write-Verbose -Message "$Function has [RC] Status: Testing still commences. Please report issues via GitHub" -Verbose
       }
-      "Live" {
+      'Live' {
         Write-Verbose -Message "$Function is [LIVE]. Please report issues via GitHub or 'TeamsFunctions@outlook.com'"
       }
-      "Unmanaged" {
+      'Unmanaged' {
         Write-Verbose -Message "$Function is [LIVE] but [UNMANAGED] and comes as-is."
       }
-      "Deprecated" {
+      'Deprecated' {
         Write-Information "$Function is [LIVE] but [DEPRECATED]!"
       }
-      "Archived" {
+      'Archived' {
         Write-Information "$Function is [ARCHIVED]!"
       }
     }

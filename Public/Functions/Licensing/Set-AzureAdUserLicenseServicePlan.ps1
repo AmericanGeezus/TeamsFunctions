@@ -306,9 +306,11 @@ function Set-AzureAdUserLicenseServicePlan {
       }
 
       #TODO Feed back if this has not been executed at least for one License
+      <#
       if ( $EnabledPlans -eq 0 -and $DisabledPlans -eq 0 ) {
         #Write-Information -MessageData 'INFO:    User '$ID' - License '$LicenseName': No Service Plans to toggle. Validate License Assignments with Get-TeamsUserLicense or use PassThru'
       }
+      #>
       #endregion
 
       # Output

@@ -95,7 +95,7 @@ function Test-TeamsUserVoiceConfig {
     [switch]$IncludeTenantDialPlan,
 
     [Parameter(HelpMessage = 'Extends requirements to validate the status of the Extension')]
-    [ValidateSet('MustBePopulated','MustNotBePopulated','NotMeasured')]
+    [ValidateSet('MustBePopulated', 'MustNotBePopulated', 'NotMeasured')]
     [string]$ExtensionState = 'NotMeasured'
   ) #param
 
@@ -139,8 +139,8 @@ function Test-TeamsUserVoiceConfig {
       # Testing Interpreted UserType
       $IUT = $CsUser.InterpretedUserType
       $TestObject = "Interpreted User Type is '$IUT'"
-      $IUTMisconfigured = ($IUT -match "Disabled|OnPrem|NotLicensedForService|WithNoService|WithMCOValidationError|NotInPDL|Failed|PendingDeletionFromAD" -or `
-          ($IUT -match "SfB" -and -not $IUT -match "Teams"))
+      $IUTMisconfigured = ($IUT -match 'Disabled|OnPrem|NotLicensedForService|WithNoService|WithMCOValidationError|NotInPDL|Failed|PendingDeletionFromAD' -or `
+        ($IUT -match 'SfB' -and -not $IUT -match 'Teams'))
 
       if ( -not $IUTMisconfigured) {
         Write-Verbose -Message "User '$User' - $TestObject - Value looks OK, no immediate error-states found"
@@ -194,7 +194,7 @@ function Test-TeamsUserVoiceConfig {
       # Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
-        $TestObject = "BusinessVoice - Calling Plan License"
+        $TestObject = 'BusinessVoice - Calling Plan License'
         $CallPlanPresent = Test-TeamsUserHasCallPlan $User
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           Write-Debug "BusinessVoice - CallPlanPresent: $CallPlanPresent"
@@ -209,14 +209,14 @@ function Test-TeamsUserVoiceConfig {
           Write-Warning -Message "User '$User' - $TestObject - Not assigned"
         }
 
-        $TestObject = "BusinessVoice - Phone Number (TelephoneNumber)"
+        $TestObject = 'BusinessVoice - Phone Number (TelephoneNumber)'
         $TelPresent = ('' -ne $CsUser.TelephoneNumber)
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           Write-Debug "BusinessVoice - TelPresent: $TelPresent"
         }
         if ($TelPresent) {
           if ($ExtensionState -ne 'NotMeasured') {
-            Write-Warning -Message "ExtensionState: Parameter is not usable for BusinessVoice - CallingPlans do not support Extensions"
+            Write-Warning -Message 'ExtensionState: Parameter is not usable for BusinessVoice - CallingPlans do not support Extensions'
           }
           Write-Verbose -Message "User '$User' - $TestObject - OK"
           if ( -not $Called) {
@@ -229,14 +229,14 @@ function Test-TeamsUserVoiceConfig {
 
         #Defining Fully Configured
         $FullyConfigured = ($CallPlanPresent -and $EVenabled -and $TelPresent `
-        -and $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $true }))
+            -and $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $true }))
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           Write-Debug "BusinessVoice - FullyConfigured: $FullyConfigured"
         }
 
         if ($PSBoundParameters.ContainsKey('Partial')) {
           $PartiallyConfigured = (($CallPlanPresent -or $EVenabled -or $TelPresent `
-          -or $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $false })) -and -not $FullyConfigured)
+                -or $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $false })) -and -not $FullyConfigured)
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             Write-Debug "BusinessVoice - PartiallyConfigured: $PartiallyConfigured"
           }
@@ -248,7 +248,7 @@ function Test-TeamsUserVoiceConfig {
       }
       elseif ($CsUser.VoicePolicy -eq 'HybridVoice') {
         Write-Verbose -Message "VoicePolicy found as 'HybridVoice'"
-        $TestObject = "HybridVoice - Voice Routing"
+        $TestObject = 'HybridVoice - Voice Routing'
 
         $VRPPresent = ($null -ne $CsUser.VoiceRoutingPolicy)
         $OVPPresent = ($null -ne $CsUser.OnlineVoiceRoutingPolicy)
@@ -279,7 +279,7 @@ function Test-TeamsUserVoiceConfig {
           Write-Debug "HybridVoice - Routing: $Routing (OVPPresent: $OVPPresent, VRPPresent: $VRPPresent)"
         }
 
-        $TestObject = "HybridVoice - Phone Number (OnPremLineUri)"
+        $TestObject = 'HybridVoice - Phone Number (OnPremLineUri)'
         $TelPresent = ('' -ne $CsUser.OnPremLineURI)
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           Write-Debug "HybridVoice - TelPresent: $TelPresent"
@@ -326,15 +326,15 @@ function Test-TeamsUserVoiceConfig {
 
         #Defining Fully Configured
         $FullyConfigured = ($Routing -and $EVenabled -and $TelPresent -and $EXTState `
-        -and $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $true }))
+            -and $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $true }))
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           Write-Debug "HybridVoice - FullyConfigured: $FullyConfigured"
         }
 
         if ($PSBoundParameters.ContainsKey('Partial')) {
           $PartiallyConfigured = (($Routing -or $EVenabled -or $TelPresent `
-          -or $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $false }) `
-          -or $(if ($ExtensionState -ne 'NotMeasured') { $EXTState } else { $false })) -and -not $FullyConfigured)
+                -or $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $false }) `
+                -or $(if ($ExtensionState -ne 'NotMeasured') { $EXTState } else { $false })) -and -not $FullyConfigured)
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             Write-Debug "HybridVoice - PartiallyConfigured: $PartiallyConfigured"
           }

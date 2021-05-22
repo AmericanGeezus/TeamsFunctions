@@ -190,7 +190,7 @@ Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot
 
 # Exporting Module Members (Aliases)
 Export-ModuleMember -Alias con, dis, pol, ear, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
-Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
+New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   Grant-TeamsEA, `
   #Test-TeamsTDP, `
