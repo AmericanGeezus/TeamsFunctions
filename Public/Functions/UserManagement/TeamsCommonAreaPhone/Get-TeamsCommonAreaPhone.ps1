@@ -76,7 +76,7 @@ function Get-TeamsCommonAreaPhone {
   [OutputType([System.Object])]
   param(
     [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UserPrincipalName of the User')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DisplayName', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]

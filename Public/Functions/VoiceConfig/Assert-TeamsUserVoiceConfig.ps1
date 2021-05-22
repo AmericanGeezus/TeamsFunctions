@@ -82,7 +82,7 @@ function Assert-TeamsUserVoiceConfig {
   #[OutputType([Boolean])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s)')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Extends requirements to include Tenant Dial Plan assignment')]

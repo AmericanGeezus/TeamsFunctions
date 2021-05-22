@@ -163,7 +163,7 @@ function Assert-TeamsCallableEntity {
         Write-Verbose -Message "Target '$Identity' found and licensed and enabled for EnterpriseVoice" -Verbose
         return $true
       }
-      elseif ( $(Enable-TeamsUserForEnterpriseVoice -Identity $Object.UserPrincipalName -Force) ) {
+      elseif ( $(Enable-TeamsUserForEnterpriseVoice -Identity "$($Object.UserPrincipalName)" -Force) ) {
         Write-Verbose -Message "Target '$Identity' found and licensed and successfully enabled for EnterpriseVoice" -Verbose
         return $true
       }

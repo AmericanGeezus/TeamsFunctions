@@ -48,8 +48,8 @@ function Test-TeamsUserHasCallPlan {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
-    [Alias('UserPrincipalName')]
-    [string]$Identity
+    [Alias('ObjectId', 'Identity')]
+    [string]$UserPrincipalName
   ) #param
 
   begin {
@@ -72,21 +72,23 @@ function Test-TeamsUserHasCallPlan {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    # Query User
-    $UserObject = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue
-    $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
-    $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
+    foreach ($ID in $UserPrincipalName) {
+      # Query User
+      $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue
+      $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
+      $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
 
-    $DOM120b = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120b).SkuPartNumber -in $UserLicenseSKU)
-    $DOM120 = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120).SkuPartNumber -in $UserLicenseSKU)
-    $DOM = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan).SkuPartNumber -in $UserLicenseSKU)
-    $INT = (($AllLicenses | Where-Object ParameterName -EQ InternationalCallingPlan).SkuPartNumber -in $UserLicenseSKU)
+      $DOM120b = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120b).SkuPartNumber -in $UserLicenseSKU)
+      $DOM120 = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120).SkuPartNumber -in $UserLicenseSKU)
+      $DOM = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan).SkuPartNumber -in $UserLicenseSKU)
+      $INT = (($AllLicenses | Where-Object ParameterName -EQ InternationalCallingPlan).SkuPartNumber -in $UserLicenseSKU)
 
-    if ($INT -or - $DOM -or $DOM120 -or $DOM120b) {
-      return $true
-    }
-    else {
-      return $false
+      if ($INT -or - $DOM -or $DOM120 -or $DOM120b) {
+        return $true
+      }
+      else {
+        return $false
+      }
     }
   } #process
 

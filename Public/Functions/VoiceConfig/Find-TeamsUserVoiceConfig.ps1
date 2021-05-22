@@ -135,7 +135,7 @@ function Find-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(ParameterSetName = 'ID')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'Tel', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]

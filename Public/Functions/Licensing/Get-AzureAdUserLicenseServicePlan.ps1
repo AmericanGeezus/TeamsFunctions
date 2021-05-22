@@ -13,28 +13,28 @@ function Get-AzureAdUserLicenseServicePlan {
     Returns License information (ServicePlans) for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all ServicePlans (for Licenses assigned) for a specific Object
-	.PARAMETER Identity
-		The Identity, UserPrincipalname or UserName for the user.
+  .PARAMETER UserPrincipalname
+		The UserPrincipalname or ObjectId of the Object.
   .PARAMETER FilterRelevantForTeams
     Filters the output and displays only Licenses relevant Teams Service Plans
   .PARAMETER FilterUnsuccessful
     Filters the output and displays only ServicePlans that don't have the ProvisioningStatus "Success"
 	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan [-Identity] John@domain.com
+		Get-AzureAdUserLicenseServicePlan [-UserPrincipalname] John@domain.com
 		Displays all Service Plans assigned through Licenses to User John@domain.com
 	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
+		Get-AzureAdUserLicenseServicePlan -UserPrincipalname John@domain.com,Jane@domain.com
 		Displays all Service Plans assigned through Licenses to Users John@domain.com and Jane@domain.com
 	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterRelevantForTeams
+		Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterRelevantForTeams
 		Displays all relevant Teams Service Plans assigned through Licenses to Jane@domain.com
 	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan -Identity Jane@domain.com -FilterUnsuccessful
+		Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterUnsuccessful
 		Displays all Service Plans assigned through Licenses to Jane@domain.com that are not provisioned successfully
 	.EXAMPLE
 		Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan
-    Displays all Service Plans assigned through Licenses to Users from User.csv, Column Identity.
-    The input file must have a single column heading of "Identity" with properly formatted UPNs.
+    Displays all Service Plans assigned through Licenses to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.
+    The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.
   .INPUTS
     System.String
   .OUTPUTS
@@ -75,8 +75,8 @@ function Get-AzureAdUserLicenseServicePlan {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('ObjectId', 'Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Displays only Service Plans relevant to Teams')]
     [switch]$FilterRelevantForTeams,
@@ -115,7 +115,7 @@ function Get-AzureAdUserLicenseServicePlan {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       try {
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP

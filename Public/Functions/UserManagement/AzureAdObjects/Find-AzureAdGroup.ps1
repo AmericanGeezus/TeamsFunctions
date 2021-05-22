@@ -76,20 +76,21 @@ function Find-AzureAdGroup {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    foreach ($ID in $Identity) {
+      [System.Collections.ArrayList]$Groups = @()
 
-    [System.Collections.ArrayList]$Groups = @()
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -Like "*$ID*"
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Description -Like "*$ID*"
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object ObjectId -Like "*$ID*"
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -Like "*$ID*"
 
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -Like "*$Identity*"
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Description -Like "*$Identity*"
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object ObjectId -Like "*$Identity*"
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -Like "*$Identity*"
+      $MailNickName = $ID.Split('@')[0]
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mailnickname -Like "*$MailNickName*"
 
-    $MailNickName = $Identity.Split('@')[0]
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mailnickname -Like "*$MailNickName*"
-
-    # Output - Filtering objects
-    if ( $Groups ) {
-      $Groups | Sort-Object -Unique -Property ObjectId | Get-Unique
+      # Output - Filtering objects
+      if ( $Groups ) {
+        $Groups | Sort-Object -Unique -Property ObjectId | Get-Unique
+      }
     }
   } #process
 

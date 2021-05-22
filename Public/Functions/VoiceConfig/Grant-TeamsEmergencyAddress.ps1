@@ -23,7 +23,7 @@ function Grant-TeamsEmergencyAddress {
 		The Civic Address used as an Emergency Address is assigned to the CsOnlineVoiceUser Object
     This is done by Name (Description) of the Address instead of the Id
   .PARAMETER Identity
-    Required. UserPrincipalName of the User Object or TelephoneNumber
+    Required. UserPrincipalName or ObjectId of the User Object or a TelephoneNumber
   .PARAMETER Enable
     Optional. Service Plans to be enabled (main function)
     Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
@@ -75,7 +75,8 @@ function Grant-TeamsEmergencyAddress {
   [Alias('Grant-TeamsEA')]
   [OutputType([System.Void])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Identity of the CsOnlineVoiceUser')]
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Identity of the CsOnlineVoiceUser or TelephoneNumber')]
+    [Alias('UserPrincipalName', 'ObjectId', 'PhoneNumber')]
     [string]$Identity,
 
     [Parameter(Mandatory, Position = 1, ValueFromPipelineByPropertyName, HelpMessage = 'Type of Object presented. Determines Output')]
@@ -98,6 +99,7 @@ function Grant-TeamsEmergencyAddress {
 
     # preparing Splatting Object
     $Parameters = $null
+    $Parameters += @{'ErrorAction' = 'Stop' }
 
     try {
       $CsOnlineLisLocation = if ( $Address -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
@@ -130,7 +132,7 @@ function Grant-TeamsEmergencyAddress {
         # Querying Identity
         try {
           Write-Verbose -Message "User '$User' - Querying User Account"
-          $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+          $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
         }
         catch {
           Write-Error -Message "User '$User' not found (CsOnlineUser): $($_.Exception.Message)" -Category ObjectNotFound
@@ -143,7 +145,9 @@ function Grant-TeamsEmergencyAddress {
       # Apply
       try {
         if ($PSCmdlet.ShouldProcess("$Identity", 'Set-CsOnlineVoiceUser')) {
-          $CsOnlineVoiceUser = Set-CsOnlineVoiceUser -Identity $Identity -LocationID $CsOnlineLisLocation.LocationId
+          #Static, no splatting, only for Identities (not for phone numbers!)
+          #$CsOnlineVoiceUser = Set-CsOnlineVoiceUser -Identity "$Identity" -LocationID $CsOnlineLisLocation.LocationId
+          $CsOnlineVoiceUser = Set-CsOnlineVoiceUser @Parameters
           # Output
           if ( $PassThru ) {
             return $CsOnlineVoiceUser

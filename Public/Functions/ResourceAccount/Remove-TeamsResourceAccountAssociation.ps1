@@ -55,7 +55,7 @@ function Remove-TeamsResourceAccountAssociation {
   [OutputType([System.Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to manipulate.')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
@@ -96,7 +96,7 @@ function Remove-TeamsResourceAccountAssociation {
     [System.Collections.ArrayList]$Accounts = @()
     foreach ($UPN in $UserPrincipalName) {
       try {
-        $AppInstance = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Stop
+        $AppInstance = Get-CsOnlineApplicationInstance -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
         [void]$Accounts.Add($AppInstance)
         Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
       }

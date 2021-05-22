@@ -681,7 +681,7 @@ function Set-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -696,7 +696,7 @@ function Set-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -722,7 +722,7 @@ function Set-TeamsCallQueue {
             if ($CallTarget.ObjectType -eq 'User') {
               try {
                 $Assertion = $null
-                $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -ErrorAction Stop
                 if ($Assertion) {
                   $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                 }
@@ -929,7 +929,7 @@ function Set-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
@@ -944,7 +944,7 @@ function Set-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
@@ -969,7 +969,7 @@ function Set-TeamsCallQueue {
             $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
             if ($CallTarget.ObjectType -eq 'User') {
               $Assertion = $null
-              $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -ErrorAction SilentlyContinue
+              $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -ErrorAction SilentlyContinue
               if ($Assertion) {
                 $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
               }

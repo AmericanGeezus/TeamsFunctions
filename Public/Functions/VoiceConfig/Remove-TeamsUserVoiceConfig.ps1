@@ -155,7 +155,7 @@ function Remove-TeamsUserVoiceConfig {
       # Querying Identity
       try {
         Write-Verbose -Message "User '$User' - Querying User Account"
-        $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$User' not found: $($_.Exception.Message)" -Category ObjectNotFound
@@ -197,7 +197,7 @@ function Remove-TeamsUserVoiceConfig {
             Write-Verbose -Message $Operation
             if ( $Force -or $CsUser.TelephoneNumber ) {
               try {
-                Set-CsOnlineVoiceUser -Identity $User -TelephoneNumber $Null -ErrorAction Stop
+                Set-CsOnlineVoiceUser -Identity "$User" -TelephoneNumber $Null -ErrorAction Stop
                 Write-Information "User '$User' - Removing TelephoneNumber: OK"
               }
               catch {
@@ -222,7 +222,7 @@ function Remove-TeamsUserVoiceConfig {
             try {
               if ( $Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
                 if ( $RemoveLicenses.Count -gt 0 ) {
-                  Set-TeamsUserLicense -Identity $User -RemoveLicenses $RemoveLicenses
+                  Set-TeamsUserLicense -Identity "$User" -RemoveLicenses $RemoveLicenses
                   Write-Information "User '$User' - Removing Call Plan Licenses: OK"
                 }
                 else {

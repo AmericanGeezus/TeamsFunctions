@@ -14,8 +14,8 @@ function Test-TeamsUserVoiceConfig {
 	.DESCRIPTION
     For Microsoft Call Plans: Tests for EnterpriseVoice enablement, License AND Phone Number
     For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
-	.PARAMETER Identity
-    Required. UserPrincipalName of the User to be tested
+  .PARAMETER UserPrincipalName
+    Required. UserPrincipalName or ObjectId of the Object
   .PARAMETER Partial
     Optional. By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
     Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
@@ -85,8 +85,8 @@ function Test-TeamsUserVoiceConfig {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('ObjectId', 'Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(Helpmessage = 'Queries a partial implementation')]
     [switch]$Partial,
@@ -126,7 +126,7 @@ function Test-TeamsUserVoiceConfig {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       try {
         $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop

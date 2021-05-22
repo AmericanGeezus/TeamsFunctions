@@ -13,10 +13,10 @@ function Test-AzureAdUser {
 		Tests whether a User exists in Azure AD (record found)
 	.DESCRIPTION
 		Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for processing
-	.PARAMETER Identity
-		Mandatory. The sign-in address or User Principal Name of the user account to test.
+	.PARAMETER UserPrincipalName
+		Mandatory. The sign-in address, User Principal Name or Object Id of the Object.
 	.EXAMPLE
-		Test-AzureADUser -Identity $UPN
+		Test-AzureADUser -UserPrincipalName "$UPN"
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
   .INPUTS
@@ -51,9 +51,9 @@ function Test-AzureAdUser {
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
-    [Alias('UserPrincipalName')]
-    [string]$Identity
+    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'This is the UserID (UPN)')]
+    [Alias('ObjectId', 'Identity')]
+    [string]$UserPrincipalName
   ) #param
 
   begin {
@@ -71,20 +71,22 @@ function Test-AzureAdUser {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    try {
-      $UserObject = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
-      if ( $null -ne $UserObject ) {
-        return $true
+    foreach ($User in $UserPrincipalName) {
+      try {
+        $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+        if ( $null -ne $UserObject ) {
+          return $true
+        }
+        else {
+          return $false
+        }
       }
-      else {
+      catch [Microsoft.Open.AzureAD16.Client.ApiException] {
         return $false
       }
-    }
-    catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-      return $false
-    }
-    catch {
-      return $false
+      catch {
+        return $false
+      }
     }
   } #process
 

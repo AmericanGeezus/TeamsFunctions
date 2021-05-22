@@ -17,8 +17,8 @@ function Set-TeamsUserLicense {
     Supports all AzureAD Object that can receive Licenses and not just Teams Licenses
     Will verify major Licenses and their exclusivity, but not all.
     Verifies whether the Licenses selected are available on the Tenant before executing
-  .PARAMETER Identity
-    Required. UserPrincipalName of the Object to be manipulated
+	.PARAMETER UserPrincipalName
+		The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER Add
     Optional. Licenses to be added (main function)
     Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
@@ -34,29 +34,29 @@ function Set-TeamsUserLicense {
 	.PARAMETER PassThru
 		Optional. Displays User License Object after action.
   .EXAMPLE
-    Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E5
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add MS365E5
     Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
   .EXAMPLE
-    Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add PhoneSystem
     Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
     This requires a main license to be present as PhoneSystem is an add-on license
   .EXAMPLE
-    Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E3,PhoneSystem
-    Set-TeamsUserLicense -Identity Name@domain.com -Add @('MS365E3','PhoneSystem')
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add MS365E3,PhoneSystem
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add @('MS365E3','PhoneSystem')
     Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
   .EXAMPLE
-    Set-TeamsUserLicense -Identity Name@domain.com -Add O365E5 -Remove SFBOP2
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add O365E5 -Remove SFBOP2
     Special Case Scenario to replace a specific license with another.
     Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 365 E5 License (ENTERPRISEPREMIUM).
   .EXAMPLE
-    Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
     Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
     Replaces all Licenses currently on the User Name@domain.com with the Phone System Virtual User (MCOEV_VIRTUALUSER) License
   .EXAMPLE
-    Set-TeamsUserLicense -Identity Name@domain.com -Remove PhoneSystem
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Remove PhoneSystem
     Removes the Phone System License from the Object.
   .EXAMPLE
-    Set-TeamsUserLicense -Identity Name@domain.com -RemoveAll
+    Set-TeamsUserLicense -UserPrincipalName Name@domain.com -RemoveAll
     Removes all licenses the Object is currently provisioned for!
   .NOTES
     Many license packages are available, the following Licenses are most predominant:
@@ -119,8 +119,8 @@ function Set-TeamsUserLicense {
   [OutputType([Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('ObjectId', 'Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'Add', Mandatory, HelpMessage = 'License(s) to be added to this Object')]
     [Parameter(ParameterSetName = 'Remove', HelpMessage = 'License(s) to be added to this Object')]
@@ -170,14 +170,32 @@ function Set-TeamsUserLicense {
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if (-not (Assert-AzureADConnection)) {
+      break
+    }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
-    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
+      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
+      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
+      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
+    }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) {
+      $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference')
+    }
+    else {
+      $DebugPreference = 'Continue'
+    }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) {
+      $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction')
+    }
+    else {
+      $InformationPreference = 'Continue'
+    }
 
     # Loading License Array
     if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
@@ -382,13 +400,13 @@ function Set-TeamsUserLicense {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($ID in $Identity) {
+    foreach ($ID in $UserPrincipalName) {
       #region Object Verification
       # Querying User
       try {
         #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
         $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction STOP
-        Write-Verbose -Message "[PROCESS] $($UserObject.UserPrincipalName)"
+        Write-Verbose -Message "[PROCESS] Processing '$($UserObject.UserPrincipalName)'"
       }
       catch {
         Write-Error -Message "User '$ID' - Account not valid" -Category ObjectNotFound -RecommendedAction 'Verify UserPrincipalName'
@@ -429,6 +447,7 @@ function Set-TeamsUserLicense {
           # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
           [System.Collections.ArrayList]$AddSkuIds = @()
           foreach ($AddLic in $Add) {
+            #IMPROVE Code? it is fast, no need to change, but it is duplication
             $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
             $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
             $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('ProductName')
@@ -450,6 +469,7 @@ function Set-TeamsUserLicense {
             }
 
             # Verifying user has not already this license assigned
+            #TEST This might not be caught correctly!
             if ($SkuPartNumber -in $ObjectAssignedLicenses.SkuPartNumber) {
               Write-Warning -Message "Adding License '$AddLicName' - License already assigned to the User, omitting!"
             }
@@ -494,16 +514,28 @@ function Set-TeamsUserLicense {
       #region Creating User specific License Object
       $NewLicenseObjParameters = $null
       if ($PSBoundParameters.ContainsKey('Add')) {
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name): AddSkuIds:", ($AddSkuIds | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
         $NewLicenseObjParameters += @{'SkuId' = $AddSkuIds }
       }
       if ($PSBoundParameters.ContainsKey('Remove')) {
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name): RemoveSkuId:", ($RemoveSkuId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
         $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveSkuIds }
       }
       if ($PSBoundParameters.ContainsKey('RemoveAll')) {
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name): RemoveSkuId:", ($RemoveSkuId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
         $NewLicenseObjParameters += @{'RemoveSkuId' = $ObjectAssignedLicenses.SkuId }
       }
 
       $LicenseObject = New-AzureAdLicenseObject @NewLicenseObjParameters
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "Function: $($MyInvocation.MyCommand.Name): LicenseObject:", ($LicenseObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
       Write-Verbose -Message 'Creating License Object: Done'
       #endregion
 
@@ -512,19 +544,32 @@ function Set-TeamsUserLicense {
         #Assign $LicenseObject to each User
         Write-Verbose -Message "'$ID' - Setting Licenses"
         #TEST Try/Catch to limit feedback
-        #Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject
+        #Set-AzureADUserLicense -ObjectId "$ID" -AssignedLicenses $LicenseObject
         try {
-          $null = Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $LicenseObject -ErrorAction Stop
+          $null = Set-AzureADUserLicense -ObjectId "$ID" -AssignedLicenses $LicenseObject -ErrorAction Stop
         }
         catch {
-          throw "Set-TeamsUserLicense failed to run Set-AzureADUserLicense with Exception: $($_.Exception.Message)"
+          switch -wildcard ($_.Exception.Message ) {
+            '*No license changes provided*' {
+              Write-Information "INFO:   No Licenses have changed. Please validate already assigned licenses."
+            }
+            '*depends on the service plan(s)*' {
+              throw "Set-TeamsUserLicense failed with dependency issue: $($_.Exception.Message)"
+            }
+            '*does not exist or one of its queried reference-property objects are not present*' {
+              throw "Set-TeamsUserLicense failed to find the User '$ID'"
+            }
+            Default {
+              throw "Set-TeamsUserLicense failed to run Set-AzureADUserLicense with Exception: $($_.Exception.Message)"
+            }
+          }
         }
         Write-Verbose -Message "'$ID' - Setting Licenses: Done"
       }
 
       # Output
       if ($PassThru) {
-        Get-TeamsUserLicense -Identity $Identity -DisplayAll
+        Get-TeamsUserLicense -Identity "$Identity" -DisplayAll
       }
 
     }

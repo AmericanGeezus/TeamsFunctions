@@ -14,8 +14,8 @@ function Set-AzureAdUserLicenseServicePlan {
   .DESCRIPTION
     Enables or disables a ServicePlan from all assigned Licenses to an AzureAD Object
     Supports all Service Plans listed in Get-AzureAdLicenseServicePlan
-  .PARAMETER Identity
-    Required. UserPrincipalName of the Object to be manipulated
+	.PARAMETER UserPrincipalName
+		The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER Enable
     Optional. Service Plans to be enabled (main function)
     Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
@@ -27,13 +27,13 @@ function Set-AzureAdUserLicenseServicePlan {
 	.PARAMETER PassThru
 		Optional. Displays User License Object after action.
   .EXAMPLE
-    Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Enable MCOEV
+    Set-AzureAdUserLicenseServicePlan [-UserPrincipalName] Name@domain.com -Enable MCOEV
     Enables the Service Plan Phone System (MCOEV) on all Licenses assigned to Name@domain.com
   .EXAMPLE
-    Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Disable MCOEV,TEAMS1
+    Set-AzureAdUserLicenseServicePlan -UserPrincipalName Name@domain.com -Disable MCOEV,TEAMS1
     Disables the Service Plans Phone System (MCOEV) and Teams (TEAMS1) on all Licenses assigned to Name@domain.com
   .EXAMPLE
-    Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Enable MCOEV,TEAMS1 -PassThru
+    Set-AzureAdUserLicenseServicePlan -UserPrincipalName Name@domain.com -Enable MCOEV,TEAMS1 -PassThru
     Enables the Service Plans Phone System (MCOEV) and Teams (TEAMS1) on all Licenses assigned to Name@domain.com
     Displays User License Object after application
   .INPUTS
@@ -73,8 +73,8 @@ function Set-AzureAdUserLicenseServicePlan {
   [OutputType([Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('ObjectId', 'Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Service Plan(s) to be enabled on this Object')]
     [ValidateScript( {
@@ -149,7 +149,7 @@ function Set-AzureAdUserLicenseServicePlan {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region ForEach Identity
-    foreach ($ID in $Identity) {
+    foreach ($ID in $UserPrincipalName) {
       #region Object Verification
       # Querying User
       try {
@@ -172,12 +172,16 @@ function Set-AzureAdUserLicenseServicePlan {
       # iterating each License assigned to this Object
       foreach ($L in $ObjectAssignedLicenses) {
         # Determine License Name
+        $LicenseName = $null
         $LicenseName = ($TenantLicenses | Where-Object SkuPartNumber -EQ $L.SkuPartNumber).ProductName
-        Write-Verbose -Message "User '$Identity' - License '$LicenseName'"
+        if ( -not $LicenseName ) {
+          $LicenseName = ($TenantLicenses | Where-Object SkuPartNumber -EQ $L.SkuPartNumber).SkuPartNumber
+        }
+        Write-Verbose -Message "User '$ID' - License '$LicenseName'"
         # Verifying the License is still available in the Tenant
         $StandardLicense = Get-AzureADSubscribedSku | Where-Object { $_.SkuId -eq $L.SkuId }
         if ( -not $StandardLicense) {
-          Write-Warning -Message "User '$Identity' - License '$LicenseName' - License not found in the Tenant!?"
+          Write-Warning -Message "User '$ID' - License '$LicenseName' - License not found in the Tenant!?"
           continue
         }
 
@@ -202,7 +206,7 @@ function Set-AzureAdUserLicenseServicePlan {
           if ($PSBoundParameters.ContainsKey('Enable')) {
             foreach ($S in $Enable) {
               # Checking Service Plan is valid
-              Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' (Enabling)"
+              Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' (Enabling)"
               $ServicePlanToEnable = $null
               $ServicePlanToEnable = $StandardLicense.ServicePlans | Where-Object ServicePlanName -EQ "$S"
               if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -210,7 +214,7 @@ function Set-AzureAdUserLicenseServicePlan {
               }
               if ( -not $ServicePlanToEnable) {
                 #FIXME Add baseline and warning if it should be present!
-                Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' not present"
+                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
 
@@ -232,12 +236,12 @@ function Set-AzureAdUserLicenseServicePlan {
                 }
               }
               else {
-                Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - Service Plan '$S' is already enabled"
+                Write-Information -MessageData "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already enabled"
                 continue
               }
             }
             if ( $EnabledPlans -eq 0 ) {
-              Write-Information "User '$Identity' - License '$LicenseName' - No Service Plans to enable"
+              Write-Verbose -Message "User '$ID' - License '$LicenseName' - No Service Plans to enable"
               #continue
             }
           }
@@ -248,7 +252,7 @@ function Set-AzureAdUserLicenseServicePlan {
           if ($PSBoundParameters.ContainsKey('Disable')) {
             foreach ($S in $Disable) {
               # Checking Service Plan is valid
-              Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' (Disabling)"
+              Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' (Disabling)"
               $ServicePlanToDisable = $null
               $ServicePlanToDisable = $StandardLicense.ServicePlans | Where-Object ServicePlanName -EQ "$S"
               if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -256,7 +260,7 @@ function Set-AzureAdUserLicenseServicePlan {
               }
               if ( -not $ServicePlanToDisable) {
                 #FIXME - Not correct
-                Write-Verbose -Message "User '$Identity' - License '$LicenseName' - Service Plan: '$S' not present"
+                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
               # Checking whether Service Plan is disabled
@@ -268,12 +272,12 @@ function Set-AzureAdUserLicenseServicePlan {
                 }
               }
               else {
-                Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - Service Plan '$S' is already disabled"
+                Write-Information -MessageData "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already disabled"
                 continue
               }
             }
             if ( $DisabledPlans -eq 0 ) {
-              Write-Information "User '$Identity' - License '$LicenseName' - No Service Plans to disable"
+              Write-Verbose -Message "User '$ID' - License '$LicenseName' - No Service Plans to disable"
               #continue
             }
           }
@@ -285,7 +289,7 @@ function Set-AzureAdUserLicenseServicePlan {
 
         # Catching non-assignments
         if ( $EnabledPlans -eq 0 -and $DisabledPlans -eq 0 ) {
-          Write-Information -MessageData "INFO: User '$Identity' - License '$LicenseName' - No Service Plans to toggle. Validate License Assignments with Get-TeamsUserLicense or use PassThru"
+          Write-Verbose -Message "User '$ID' - License '$LicenseName' - No Service Plans to toggle."
           continue
         }
         # Executing Assignment
@@ -296,15 +300,20 @@ function Set-AzureAdUserLicenseServicePlan {
         if ($PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
           #Assign $LicenseObject to each User
           Write-Verbose -Message "'$ID' - Setting Licenses"
-          Set-AzureADUserLicense -ObjectId $ID -AssignedLicenses $License
+          Set-AzureADUserLicense -ObjectId "$ID" -AssignedLicenses $License
           Write-Verbose -Message "'$ID' - Setting Licenses: Done"
+        }
+
+        if ( $EnabledPlans -eq 0 -and $DisabledPlans -eq 0 ) {
+          Write-Information -MessageData 'INFO:    User '$ID' - License '$LicenseName': No Service Plans to toggle. Validate License Assignments with Get-TeamsUserLicense or use PassThru'
+          continue
         }
       }
       #endregion
 
       # Output
       if ($PassThru) {
-        Get-AzureAdUserLicenseServicePlan -Identity $Identity
+        Get-AzureAdUserLicenseServicePlan -Identity "$Identity"
       }
     }
   } #process

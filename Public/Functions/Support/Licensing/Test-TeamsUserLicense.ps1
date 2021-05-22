@@ -16,8 +16,8 @@ function Test-TeamsUserLicense {
 		Teams Direct Routing requires a specific License (ServicePlan), namely 'Phone System'
 		to enable a User for Enterprise Voice
 		This Script can be used to ascertain either.
-	.PARAMETER Identity
-		Mandatory. The sign-in address or User Principal Name of the user account to modify.
+	.PARAMETER UserPrincipalName
+		Mandatory. The sign-in address, User Principal Name or Object Id of the Object.
 	.PARAMETER ServicePlan
 		Defined and descriptive Name of the Service Plan to test.
 		Only ServicePlanNames pertaining to Teams are tested.
@@ -65,8 +65,8 @@ function Test-TeamsUserLicense {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
-    [Alias('UserPrincipalName')]
-    [string]$Identity,
+    [Alias('ObjectId', 'Identity')]
+    [string]$UserPrincipalName,
 
     [Parameter(Mandatory, ParameterSetName = 'ServicePlan', HelpMessage = 'AzureAd Service Plan')]
     [string]$ServicePlan,
@@ -107,46 +107,47 @@ function Test-TeamsUserLicense {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    # Query User
-    $UserObject = Get-AzureADUser -ObjectId "$Identity" -WarningAction SilentlyContinue
-    $DisplayName = $UserObject.DisplayName
-    $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
-
-    # ParameterSetName ServicePlan VS License
-    switch ($PsCmdlet.ParameterSetName) {
-      'ServicePlan' {
-        Write-Verbose -Message "'$DisplayName' Testing against '$ServicePlan'"
-        if ($ServicePlan -in $UserLicenseObject.ServicePlans.ServicePlanName) {
-          Write-Verbose -Message 'Service Plan found. Testing for ProvisioningStatus'
-          #Checks if the Provisioning Status is also "Success"
-          $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object -Property ServicePlanName -EQ -Value $ServicePlan)
-          Write-Verbose -Message "ServicePlan: $ServicePlanStatus"
-          if ('Success' -in $ServicePlanStatus.ProvisioningStatus) {
-            Write-Verbose -Message 'Service Plan found and provisioned successfully.'
-            if ( $ServicePlanStatus.ProvisioningStatus.Count -gt 1 ) {
-              Write-Warning -Message 'Multiple assignments found for PhoneSystem. Please verify License assignment!'
+    foreach ($ID in $UserPrincipalName) {
+      # Query User
+      $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue
+      $DisplayName = $UserObject.DisplayName
+      $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
+      # ParameterSetName ServicePlan VS License
+      switch ($PsCmdlet.ParameterSetName) {
+        'ServicePlan' {
+          Write-Verbose -Message "'$DisplayName' Testing against '$ServicePlan'"
+          if ($ServicePlan -in $UserLicenseObject.ServicePlans.ServicePlanName) {
+            Write-Verbose -Message 'Service Plan found. Testing for ProvisioningStatus'
+            #Checks if the Provisioning Status is also "Success"
+            $ServicePlanStatus = ($UserLicenseObject.ServicePlans | Where-Object -Property ServicePlanName -EQ -Value $ServicePlan)
+            Write-Verbose -Message "ServicePlan: $ServicePlanStatus"
+            if ('Success' -in $ServicePlanStatus.ProvisioningStatus) {
+              Write-Verbose -Message 'Service Plan found and provisioned successfully.'
+              if ( $ServicePlanStatus.ProvisioningStatus.Count -gt 1 ) {
+                Write-Warning -Message 'Multiple assignments found for PhoneSystem. Please verify License assignment!'
+              }
+              return $true
             }
-            return $true
+            else {
+              Write-Verbose -Message 'Service Plan found, but not provisioned successfully.'
+              return $false
+            }
           }
           else {
-            Write-Verbose -Message 'Service Plan found, but not provisioned successfully.'
+            Write-Verbose -Message 'Service Plan not found.'
             return $false
           }
         }
-        else {
-          Write-Verbose -Message 'Service Plan not found.'
-          return $false
-        }
-      }
-      'License' {
-        Write-Verbose -Message "'$DisplayName' Testing against '$License'"
-        $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
-        $Sku = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
-        if ($Sku -in $UserLicenseSKU) {
-          return $true
-        }
-        else {
-          return $false
+        'License' {
+          Write-Verbose -Message "'$DisplayName' Testing against '$License'"
+          $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
+          $Sku = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
+          if ($Sku -in $UserLicenseSKU) {
+            return $true
+          }
+          else {
+            return $false
+          }
         }
       }
     }

@@ -102,7 +102,7 @@ function Set-TeamsCommonAreaPhone {
           $false
         }
       })]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string]$UserPrincipalName,
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Display Name for this Object')]
@@ -302,7 +302,7 @@ function Set-TeamsCommonAreaPhone {
         else {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
-              $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+              $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
               Write-Information "'$Name' License assignment - '$License' SUCCESS"
             }
           }
@@ -314,7 +314,7 @@ function Set-TeamsCommonAreaPhone {
       else {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
             Write-Information "'$Name' License assignment - '$License' SUCCESS"
           }
         }
@@ -354,7 +354,7 @@ function Set-TeamsCommonAreaPhone {
       Write-Verbose -Message "$Status - $Operation"
 
       $CommonAreaPhone = $null
-      $CommonAreaPhone = Get-TeamsCommonAreaPhone -Identity $UPN
+      $CommonAreaPhone = Get-TeamsCommonAreaPhone -Identity "$UPN"
       Write-Output $CommonAreaPhone
     }
 

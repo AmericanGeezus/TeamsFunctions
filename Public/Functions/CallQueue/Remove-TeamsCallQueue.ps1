@@ -96,7 +96,7 @@ function Remove-TeamsCallQueue {
             Write-Information "Removing Queue: '$($Q.Name)'"
             $QueueCounter++
             if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
-              Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP
+              Remove-CsCallQueue -Identity "$($Q.Identity)" -ErrorAction STOP
             }
           }
         }

@@ -533,7 +533,7 @@ function New-TeamsAutoAttendant {
 
     if ($PSBoundParameters.ContainsKey('Operator')) {
       try {
-        $OperatorEntity = New-TeamsCallableEntity -Identity $Operator
+        $OperatorEntity = New-TeamsCallableEntity -Identity "$Operator"
         if ($OperatorEntity) {
           $Parameters += @{'Operator' = $OperatorEntity }
         }

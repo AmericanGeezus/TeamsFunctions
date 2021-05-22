@@ -93,7 +93,7 @@ function Get-TeamsCallableEntity {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Identity of the Callable Entity')]
-    [Alias('ObjectId')]
+    [Alias('ObjectId', 'UserPrincipalName')]
     [string[]]$Identity
 
   ) #param
@@ -143,7 +143,7 @@ function Get-TeamsCallableEntity {
           Write-Verbose 'Target is a User or Application Endpoint'
           if ( $CallTarget ) {
             try {
-              $null = Get-CsOnlineApplicationInstance -Identity $CallTarget.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
+              $null = Get-CsOnlineApplicationInstance -Identity "$($CallTarget.ObjectId)" -WarningAction SilentlyContinue -ErrorAction Stop
               Write-Verbose 'Target is an Application Endpoint'
               $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", 'ApplicationEndpoint', 'ApplicationEndpoint')
             }

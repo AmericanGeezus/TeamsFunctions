@@ -46,6 +46,12 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Added Validation of mutual exclusivity for TeamAndChannel VS (Users or Groups)
 - `Get-TeamsResourceAccountAssociation`: Fixed an issue with lookup that resulted in forced lookup of all Associations. Mea Culpa!
 - `New-TeamsResourceAccount`: Increased waiting time after creating an account from 20 to 30 seconds to get more accurate feedback.
+- `Set-TeamsUserLicense`:
+  - Improved Debug output and catching known Errors (License already assigned (i.E. no changes), Dependency issue, User not found)
+- `Connect-Me`: Tweaked the waiting time after enabling Admin roles from 8 to 10s - Connect-MicrosoftTeams sometimes fails if run too shortly after enabling roles
+- General / Multiple Scripts (43):
+  - Piping by Property Name now consequently done by UserPrincipalName first, then ObjectId, then Identity. Bindings improved
+  - When passing a UserPrincipalName, an error is encountered if this string contains an apostrophe. Patches O'Hoolahan will be proud ;)
 
 ### ToDo
 

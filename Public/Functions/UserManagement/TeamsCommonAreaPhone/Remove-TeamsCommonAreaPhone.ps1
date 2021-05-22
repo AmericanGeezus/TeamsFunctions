@@ -140,7 +140,7 @@ function Remove-TeamsCommonAreaPhone {
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
-        $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UPN -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
+        $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId "$UPN" -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
 
         if ($null -eq $UserLicenseSkuIDs) {
           Write-Verbose -Message "'$DisplayName' No licenses assigned. OK"
@@ -169,7 +169,7 @@ function Remove-TeamsCommonAreaPhone {
       Write-Verbose -Message $Operation
       if ($PSCmdlet.ShouldProcess("Common Area Phone with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
-          $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)
+          $null = (Remove-AzureADUser -ObjectId "$UPN" -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS - Object removed from Azure Active Directory'
         }
         catch {

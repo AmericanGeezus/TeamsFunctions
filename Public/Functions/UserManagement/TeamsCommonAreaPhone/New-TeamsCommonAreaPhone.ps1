@@ -330,8 +330,8 @@ function New-TeamsCommonAreaPhone {
       }
       else {
         try {
-          if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
-            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
             Write-Information "'$Name' License assignment - '$License' SUCCESS"
           }
         }
@@ -343,7 +343,7 @@ function New-TeamsCommonAreaPhone {
     else {
       try {
         if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-          $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+          $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
           Write-Information "'$Name' License assignment - '$License' SUCCESS"
         }
       }
@@ -389,7 +389,7 @@ function New-TeamsCommonAreaPhone {
     Write-Verbose -Message "$Status - $Operation"
 
     $ObjectCreated = $null
-    $ObjectCreated = Get-TeamsCommonAreaPhone -Identity $UPN
+    $ObjectCreated = Get-TeamsCommonAreaPhone -Identity "$UPN"
     if ($PSBoundParameters.ContainsKey('Password')) {
       Write-Verbose "Password is encrypted and applied as per definition, provided it is adhering to the complexity requirements"
     }

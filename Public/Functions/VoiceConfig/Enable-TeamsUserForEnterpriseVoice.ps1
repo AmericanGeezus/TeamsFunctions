@@ -53,7 +53,7 @@ function Enable-TeamsUserForEnterpriseVoice {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Suppresses confirmation prompt unless -Confirm is used explicitly')]
@@ -159,7 +159,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             $Status = 'Enable User For Enterprise Voice'
             $Operation = 'Waiting for Get-CsOnlineUser to return a Result'
             Write-Verbose -Message "$Status - $Operation"
-            while ( -not $(Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
+            while ( -not $(Get-CsOnlineUser -Identity "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
               if ($i -gt $iMax) {
                 Write-Error -Message "User '$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false

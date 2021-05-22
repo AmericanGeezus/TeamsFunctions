@@ -62,7 +62,7 @@ function Get-TeamsResourceAccountAssociation {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to manipulate.')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName
   ) #param
 
@@ -103,7 +103,7 @@ function Get-TeamsResourceAccountAssociation {
       foreach ($UPN in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account '$UPN'"
         try {
-          $AppInstance = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Stop
+          $AppInstance = Get-CsOnlineApplicationInstance -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
           [void]$Accounts.Add($AppInstance)
           Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
         }
@@ -117,7 +117,7 @@ function Get-TeamsResourceAccountAssociation {
     # Processing found accounts
     if ($null -ne $Accounts) {
       foreach ($Account in $Accounts) {
-        $Association = Get-CsOnlineApplicationInstanceAssociation $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         $ApplicationType = GetApplicationTypeFromAppId $Account.ApplicationId
         if ($null -ne $Association) {
           # Finding associated entity

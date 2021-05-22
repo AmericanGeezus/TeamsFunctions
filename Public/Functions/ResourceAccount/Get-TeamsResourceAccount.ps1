@@ -14,7 +14,7 @@ function Get-TeamsResourceAccount {
 	.DESCRIPTION
 		Returns one or more Resource Accounts based on input.
 		This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
-	.PARAMETER Identity
+	.PARAMETER UserPrincipalName
 		Default and positional. One or more UserPrincipalNames to be queried.
 	.PARAMETER DisplayName
 		Optional. Search parameter. Alternative to Find-TeamsResourceAccount
@@ -81,7 +81,7 @@ function Get-TeamsResourceAccount {
   [OutputType([System.Object])]
   param (
     [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'User Principal Name of the Object.')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DisplayName', ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
@@ -151,7 +151,7 @@ function Get-TeamsResourceAccount {
       foreach ($I in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
-          $RA = Get-CsOnlineApplicationInstance -Identity $I -ErrorAction Stop
+          $RA = Get-CsOnlineApplicationInstance -Identity "$I" -ErrorAction Stop
           [void]$ResourceAccounts.Add($RA)
         }
         catch {
@@ -290,7 +290,6 @@ function Get-TeamsResourceAccount {
       Write-Progress -Id 0 -Status 'Information Gathering' -Activity $MyInvocation.MyCommand -Completed
     }
     #endregion
-
   } #process
 
   end {

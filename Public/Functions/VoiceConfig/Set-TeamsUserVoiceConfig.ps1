@@ -107,7 +107,7 @@ function Set-TeamsUserVoiceConfig {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipelineByPropertyName, ValueFromPipeline, HelpMessage = 'UserPrincipalName of the User')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DirectRouting', HelpMessage = 'Enables an Object for Direct Routing')]
@@ -208,6 +208,7 @@ function Set-TeamsUserVoiceConfig {
     $Operation = 'Querying Account Type is not a Resource Account'
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
+    #FIXME Lookup against all OnlineApplicationInstances - Passing ObjectId will not result in this being caught! needs fix!
     $ResourceAccounts = (Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue).UserPrincipalName
     if ( $UserPrincipalName -in $ResourceAccounts) {
       Write-Error -Message 'Resource Account specified! Please use Set-TeamsResourceAccount to provision Resource Accounts' -Category InvalidType -RecommendedAction 'Please use Set-TeamsResourceAccount to provision Resource Accounts'
@@ -245,7 +246,7 @@ function Set-TeamsUserVoiceConfig {
           try {
             if ( $CsUser.PhoneSystemStatus.Contains('Disabled')) {
               Write-Information "TRYING:  User '$UserPrincipalName' - PhoneSystem License is assigned - ServicePlan PhoneSystem is Disabled - Trying to activate"
-              Set-AzureAdLicenseServicePlan -Identity $CsUser.UserPrincipalName -Enable MCOEV -ErrorAction Stop
+              Set-AzureAdLicenseServicePlan -Identity "$($CsUser.UserPrincipalName)" -Enable MCOEV -ErrorAction Stop
               if (-not (Get-AzureAdUserLicense -Identity "$UserPrincipalName").PhoneSystemStatus.Contains('Success')) {
                 throw
               }
@@ -410,7 +411,7 @@ function Set-TeamsUserVoiceConfig {
     if ( -not $IsEVenabled) {
       Write-Verbose "User '$UserPrincipalName' - $Operation`: Not enabled, trying to Enable"
       if ($Force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity $UserPrincipalName -Force
+        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity "$UserPrincipalName" -Force
         if ($IsEVenabled) {
           Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK"
         }
@@ -542,7 +543,7 @@ function Set-TeamsUserVoiceConfig {
           # Apply $CallingPlanLicense
           if ($CallingPlanLicense) {
             try {
-              $null = Set-TeamsUserLicense -Identity $UserPrincipalName -Add $CallingPlanLicense -ErrorAction Stop
+              $null = Set-TeamsUserLicense -Identity "$UserPrincipalName" -Add $CallingPlanLicense -ErrorAction Stop
               Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - '$CallingPlanLicense'"
             }
             catch {
@@ -616,7 +617,7 @@ function Set-TeamsUserVoiceConfig {
         catch {
           if ($_.Exception.Message.Contains('dirsync')) {
             Write-Warning -Message "User '$UserPrincipalName' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
-            Write-Host "Set-CsUser -Identity $UserPrincipalName -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
+            Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
           }
           else {
             Write-Verbose -Message "User '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'" -Verbose
@@ -643,7 +644,7 @@ function Set-TeamsUserVoiceConfig {
               catch {
                 if ($_.Exception.Message.Contains('dirsync')) {
                   Write-Warning -Message "User '$UserPrincipalName' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
-                  Write-Host "Set-CsUser -Identity $UserPrincipalName -LineUri '$LineUri'" -ForegroundColor Magenta
+                  Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -LineUri '$LineUri'" -ForegroundColor Magenta
                 }
                 else {
                   $ErrorLogMessage = "User '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'"
@@ -665,7 +666,7 @@ function Set-TeamsUserVoiceConfig {
               try {
                 # Pipe should work but was not yet tested.
                 #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
-                $null = Set-CsOnlineVoiceUser -Identity $($CsUser.ObjectId) -TelephoneNumber $E164Number -ErrorAction Stop
+                $null = Set-CsOnlineVoiceUser -Identity "$($CsUser.ObjectId)" -TelephoneNumber $E164Number -ErrorAction Stop
                 Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - '$E164Number' (Calling Plan Number)"
               }
               catch {

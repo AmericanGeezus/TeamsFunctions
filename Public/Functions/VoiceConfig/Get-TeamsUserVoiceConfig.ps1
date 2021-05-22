@@ -91,7 +91,7 @@ function Get-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Defines level of Diagnostic Data that are added to the output object')]
@@ -145,7 +145,7 @@ function Get-TeamsUserVoiceConfig {
       # Querying Identity
       try {
         Write-Verbose -Message "User '$User' - Querying User Account"
-        $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error -Message "User '$User' not found (CsOnlineUser): $($_.Exception.Message)" -Category ObjectNotFound
@@ -183,7 +183,7 @@ function Get-TeamsUserVoiceConfig {
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       #VALIDATE Performance of lookup for Get-TeamsCallableEntity  meant that it takes another Get-CsUser Lookup longer
-      #$ObjectType = (Get-TeamsCallableEntity -Identity $CsUser.UserPrincipalName).ObjectType
+      #$ObjectType = (Get-TeamsCallableEntity -Identity "$($CsUser.UserPrincipalName)").ObjectType
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
 
       # Testing for Misconfiguration
