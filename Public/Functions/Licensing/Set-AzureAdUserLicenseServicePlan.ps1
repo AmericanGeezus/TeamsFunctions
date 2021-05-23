@@ -170,6 +170,7 @@ function Set-AzureAdUserLicenseServicePlan {
 
       Write-Verbose -Message 'Processing Service Plans'
       # iterating each License assigned to this Object
+      $NoChanges = 0
       foreach ($L in $ObjectAssignedLicenses) {
         # Determine License Name
         $LicenseName = $null
@@ -219,6 +220,7 @@ function Set-AzureAdUserLicenseServicePlan {
               }
 
               # Checking whether Service Plan is disabled
+              #VALIDATE ELSE Statement may not be triggered correctly!
               if ( $ServicePlanToEnable.ServicePlanId -in $License.AddLicenses.DisabledPlans ) {
                 <# This works, but might not result in the correct outcome. Simplified below. Remove once verified working
                 if ( $($License.AddLicenses).DisabledPlans.Remove($ServicePlanToEnable.ServicePlanId) ) {
@@ -289,6 +291,7 @@ function Set-AzureAdUserLicenseServicePlan {
 
         # Catching non-assignments
         if ( $EnabledPlans -eq 0 -and $DisabledPlans -eq 0 ) {
+          $NoChanges++
           Write-Verbose -Message "User '$ID' - License '$LicenseName' - No Service Plans to toggle."
           continue
         }
@@ -305,12 +308,15 @@ function Set-AzureAdUserLicenseServicePlan {
         }
       }
 
-      #TODO Feed back if this has not been executed at least for one License
-      <#
-      if ( $EnabledPlans -eq 0 -and $DisabledPlans -eq 0 ) {
-        #Write-Information -MessageData 'INFO:    User '$ID' - License '$LicenseName': No Service Plans to toggle. Validate License Assignments with Get-TeamsUserLicense or use PassThru'
+      #Feedback of operation for this Object
+      $ChangedLicenseCount = $ObjectAssignedLicenses.Count - $NoChanges
+      if ( $ChangedLicenseCount -gt 0 ) {
+        Write-Information -MessageData "INFO:    '$ID' - Operation performed: $ChangedLicenseCount Assigned Licenses changed"
       }
-      #>
+      else {
+        Write-Warning 'INFO:    '$ID' - No Licenses changed. Please validate License Assignments with Get-TeamsUserLicense or use switch PassThru'
+      }
+
       #endregion
 
       # Output
