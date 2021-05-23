@@ -123,6 +123,10 @@ function Get-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    # Adding Types
+    Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
+    Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
+
     # preparing Output Field Separator
     $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
 
@@ -144,12 +148,27 @@ function Get-TeamsUserVoiceConfig {
       Write-Verbose -Message "[PROCESS] Processing '$User'"
       # Querying Identity
       try {
-        Write-Verbose -Message "User '$User' - Querying User Account"
+        Write-Verbose -Message "User '$User' - Querying User Account (CsOnlineUser)"
         $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error -Message "User '$User' not found (CsOnlineUser): $($_.Exception.Message)" -Category ObjectNotFound
-        continue
+        #Write-Error -Message "User '$User' not found (CsOnlineUser): $($_.Exception.Message)" -Category ObjectNotFound
+        #continue
+        try {
+          Write-Verbose -Message "User '$User' - Querying User Account (AzureAdUser)"
+          $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+          $CsUser = $AdUser
+          Write-Warning -Message "User '$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
+          Write-Verbose -Message 'You receive this message if no License containing Teams is assigned or the Teams ServicePlan (TEAMS1) is disabled! Please validate the User License. No further validation is performed. The Object returned only contains data from AzureAd' -Verbose
+        }
+        catch [Microsoft.Open.AzureAD16.Client.ApiException] {
+          Write-Error -Message "User '$User' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$User' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
+          continue
+        }
+        catch {
+          Write-Error -Message "User '$User' not found. Error encountered: $($_.Exception.Message)" -Category ObjectNotFound
+          continue
+        }
       }
 
       # Constructing InterpretedVoiceConfigType
@@ -191,11 +210,11 @@ function Get-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
+      $null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
 
-      #Info about unassigned Dial Plan
-      if ('' -ne $CsUser.TenantDialPlan) {
-        Write-Verbose -Message "User '$User' - No Dial Plan is assigned"
+      #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
+      if ('' -ne $CsUser.TenantDialPlan -and -not $AdUser) {
+        Write-Information "User '$User' - No Dial Plan is assigned"
       }
       #endregion
 
@@ -238,13 +257,18 @@ function Get-TeamsUserVoiceConfig {
 
         if ( $PSBoundParameters.ContainsKey('DiagnosticLevel') ) {
           $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
-          $UserObject.LicensesAssigned | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
+          if ($CsUserLicense.Licenses) {
+            $UserObject.LicensesAssigned | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
+          }
         }
         else {
           $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
         }
 
-        #TODO: Add check and feedback for PhoneSystemStatus not containing "success"
+        #Info about PhoneSystemStatus (suppressing feedback if AzureAdUser is already populated)
+        if ( 'Success' -notin $CsUserLicense.PhoneSystemStatus -and -not $AdUser) {
+          Write-Warning -Message "User '$User' - PhoneSystemStatus is not Success. User cannot be configured for Voice"
+        }
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $CsUserLicense.PhoneSystemStatus
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
@@ -304,11 +328,13 @@ function Get-TeamsUserVoiceConfig {
             $step++
             Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
-            try {
-              $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
-            }
-            catch {
-              Write-Warning -Message "User '$User' not found in AzureAD. Some data will not be available"
+            if ( -not $AdUser ) {
+              try {
+                $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+              }
+              catch {
+                Write-Warning -Message "User '$User' not found in AzureAD. Some data will not be available"
+              }
             }
 
             # Displaying advanced diagnostic parameters
