@@ -30,6 +30,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Changed default output of Licenses to List of License Names only if no DiagnosticLevel is provided. This allows for Export as CSV.
   - Added DiagnosticLevel 0 to display the same as without, though with nested Object.
   - Added Feedback from Test-TeamsUserVoiceconfig to indicate misconfiguration for the Object.
+  - Added secondary query if CsOnlineUser is not found. If an AzureAdUser can be found, Warning and Information output followed by a limited Object are returned.
 - `Set-TeamsUserVoiceConfig`:
   - Excluding "self" when validating Phone Number in use (Warning is only displayed if the UserPrincipalName is different)
 - `Test-TeamsUserVoiceConfig`:
@@ -49,6 +50,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Set-TeamsUserLicense`:
   - Improved Debug output and catching known Errors (License already assigned (i.E. no changes), Dependency issue, User not found)
 - `Connect-Me`: Tweaked the waiting time after enabling Admin roles from 8 to 10s - Connect-MicrosoftTeams sometimes fails if run too shortly after enabling roles
+- `Set-AzureAdUserLicenseServicePlan`: Added feedback for when no changes have been made (i.E. no License did contain any of the Service plans to enable/disable)
 - General / Multiple Scripts (43):
   - Piping by Property Name now consequently done by UserPrincipalName first, then ObjectId, then Identity. Bindings improved
   - When passing a UserPrincipalName, an error is encountered if this string contains an apostrophe. Patches O'Hoolahan will be proud ;)
