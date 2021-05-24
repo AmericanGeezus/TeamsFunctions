@@ -30,7 +30,7 @@ function New-TeamsCommonAreaPhone {
 		Unlicensed Objects can exist, but cannot be assigned a phone number
 		PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
   .PARAMETER Password
-    Optional. String. 8 to 16 characters, at least one uppercase letter, one lowercase letter and one number.
+    Optional. PowerShell SecureString
     If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"
 	.PARAMETER IPPhonePolicy
 		Optional. Adds an IP Phone Policy to the User
@@ -133,7 +133,7 @@ function New-TeamsCommonAreaPhone {
     [string]$License,
 
     [Parameter(HelpMessage = 'Password to be assigned to the account. Min 8 characters')]
-    [ValidatePattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$')]
+    #[ValidatePattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$')]
     [SecureString]$Password,
 
     [Parameter(HelpMessage = 'IP Phone Policy')]
@@ -243,7 +243,7 @@ function New-TeamsCommonAreaPhone {
       $PasswordProfile.Password = $Password
     }
     else {
-      $PasswordProfile.Password = 'CAP-' + $(Get-Date -Format 'dd-MMM-yyyy')
+      $PasswordProfile.Password = 'CAP-' + $(Get-Date -Format 'dd-MMM-yyyy') | ConvertTo-SecureString -AsPlainText -Force
     }
     $Parameters += @{ 'PasswordProfile' = $PasswordProfile }
     $Parameters += @{ 'AccountEnabled' = $true }
@@ -298,8 +298,7 @@ function New-TeamsCommonAreaPhone {
     }
     catch {
       # Catching anything
-      Write-Error "Common Area Phone '$Name' - Creation failed: $($_.Exception.Message)" -ForegroundColor Red
-      return
+      throw "Common Area Phone '$Name' - Creation failed: $($_.Exception.Message)"
     }
     #endregion
 
@@ -324,9 +323,9 @@ function New-TeamsCommonAreaPhone {
     Write-Verbose -Message "$Status - $Operation"
     if ($License -eq 'CommonAreaPhone') {
       $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'MCOCAP' }).Remaining
-      Write-Verbose -Message "INFO: $RemainingCAPLicenses Common Area Phone Licenses still available"
+      Write-Verbose -Message "$RemainingCAPLicenses Common Area Phone Licenses still available"
       if ($RemainingCAPLicenses -lt 1) {
-        Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.' -ErrorAction Stop
+        Write-Error -Message 'No free Common Area Phone Licenses remaining in the Tenant.' -ErrorAction Stop
       }
       else {
         try {
@@ -391,7 +390,7 @@ function New-TeamsCommonAreaPhone {
     $ObjectCreated = $null
     $ObjectCreated = Get-TeamsCommonAreaPhone -Identity "$UPN"
     if ($PSBoundParameters.ContainsKey('Password')) {
-      Write-Verbose "Password is encrypted and applied as per definition, provided it is adhering to the complexity requirements"
+      Write-Verbose 'Password is encrypted and applied as per definition, provided it is adhering to the complexity requirements'
     }
     else {
       #CHECK Output and Password application
