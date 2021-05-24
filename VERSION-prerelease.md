@@ -51,6 +51,22 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Improved Debug output and catching known Errors (License already assigned (i.E. no changes), Dependency issue, User not found)
 - `Connect-Me`: Tweaked the waiting time after enabling Admin roles from 8 to 10s - Connect-MicrosoftTeams sometimes fails if run too shortly after enabling roles
 - `Set-AzureAdUserLicenseServicePlan`: Added feedback for when no changes have been made (i.E. no License did contain any of the Service plans to enable/disable)
+- `Get-TeamsCommonAreaPhone`:
+  - Changed Query based on input (this now enables proper pipeline input for UserPrincipalNames)
+  -
+- `New-TeamsCommonAreaPhone`:
+  - Fixed an issue with the Password (ValidatePattern doesn't mix well with a SecureString)
+  - Removed reverse engineering of applied password
+  - Increased wait time for an AzureAdUser from 20 to 30s
+  - Removed hard-wired License (CommonAreaPhone). If not provided, no policies are applied as Object is not enabled for Teams
+- `Set-TeamsCommonAreaPhone`:
+  - Added secondary lookup for AzureAdUser
+- `Remove-TeamsCommonAreaPhone`:
+  - Added Switch Force
+  - Rebound lookup to AzureAdUser
+  - Removed Removal of Voice Configuration if CsOnlineUser Object is not found
+- `Remove-TeamsResourceAccount`:
+  - Added Switch Force
 - General / Multiple Scripts (43):
   - Piping by Property Name now consequently done by UserPrincipalName first, then ObjectId, then Identity. Bindings improved
   - When passing a UserPrincipalName, an error is encountered if this string contains an apostrophe. Patches O'Hoolahan will be proud ;)

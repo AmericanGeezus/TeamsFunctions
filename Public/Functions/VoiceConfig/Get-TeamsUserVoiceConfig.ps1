@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK Pipeline with UPN instead of Identity
+
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -152,8 +152,7 @@ function Get-TeamsUserVoiceConfig {
         $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        #Write-Error -Message "User '$User' not found (CsOnlineUser): $($_.Exception.Message)" -Category ObjectNotFound
-        #continue
+        # If CsOnlineUser not found, trying AzureAdUser
         try {
           Write-Verbose -Message "User '$User' - Querying User Account (AzureAdUser)"
           $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP

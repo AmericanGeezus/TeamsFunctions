@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-JAN-2021
+# Updated:  24-MAY-2021
 # Status:   RC
 
 
@@ -12,11 +12,8 @@ function New-TeamsCommonAreaPhone {
 	.SYNOPSIS
 		Creates a new Common Area Phone
 	.DESCRIPTION
-		Teams Call Queues and Auto Attendants require a Common Area Phone.
-		It can carry a license and optionally also a phone number.
-		This Function was designed to create the ApplicationInstance in AD,
-		apply a UsageLocation to the corresponding AzureAD User,
-		license the User and subsequently apply a phone number, all with one Command.
+		This CmdLet creates an AzureAdUser Object, applies a UsageLocation
+    If a License is applied, a PhoneNumber, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
 	.PARAMETER UserPrincipalName
 		Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string
 	.PARAMETER DisplayName
@@ -64,10 +61,10 @@ function New-TeamsCommonAreaPhone {
     System.Object
 	.NOTES
     Execution requires User Admin Role in Azure AD
-    To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig
-    This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan.
+    This CmdLet deliberately does not apply a Phone Number to the Object. To do so, please run New-TeamsUserVoiceConfig
+    or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
+    a Phone Number and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
-		Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
   .COMPONENT
 		UserManagement
 	.FUNCTIONALITY
@@ -133,7 +130,6 @@ function New-TeamsCommonAreaPhone {
     [string]$License,
 
     [Parameter(HelpMessage = 'Password to be assigned to the account. Min 8 characters')]
-    #[ValidatePattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,16}$')]
     [SecureString]$Password,
 
     [Parameter(HelpMessage = 'IP Phone Policy')]
@@ -239,11 +235,12 @@ function New-TeamsCommonAreaPhone {
     $PasswordProfile.EnforceChangePasswordPolicy = $true
     $PasswordProfile.ForceChangePasswordNextLogin = $true
     if ($PSBoundParameters.ContainsKey('Password')) {
-      #TEST Password defined as a secure String, no idea whether this works or not!
       $PasswordProfile.Password = $Password
     }
     else {
-      $PasswordProfile.Password = 'CAP-' + $(Get-Date -Format 'dd-MMM-yyyy') | ConvertTo-SecureString -AsPlainText -Force
+      #VALIDATE Check for alternatives to the below
+      $PasswordFormat = 'CAP-' + $(Get-Date -Format 'dd-MMM-yyyy')
+      $PasswordProfile.Password = $PasswordFormat | ConvertTo-SecureString -AsPlainText -Force
     }
     $Parameters += @{ 'PasswordProfile' = $PasswordProfile }
     $Parameters += @{ 'AccountEnabled' = $true }
@@ -272,14 +269,13 @@ function New-TeamsCommonAreaPhone {
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name) - AzureAdUser created", ($AzureAdUser | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
-
         $i = 0
-        $iMax = 20
-        Write-Information "Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
+        $iMax = 30
+        Write-Information -MessageData "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
-        while ( -not (Test-AzureADUser $UPN)) {
+        while ( -not (Test-AzureADUser "$UPN")) {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsCommonAreaPhone'
             return
@@ -311,11 +307,6 @@ function New-TeamsCommonAreaPhone {
     Write-Verbose -Message "$Status - $Operation"
     $TenantLicenses = Get-TeamsTenantLicense
 
-    # Setting License to Common Area Phone if not provided
-    if ( -not $PSBoundParameters.ContainsKey('License')) {
-      $License = 'CommonAreaPhone'
-    }
-
     # Verifying License is available
     $Operation = 'Verifying License is available'
     $step++
@@ -331,7 +322,7 @@ function New-TeamsCommonAreaPhone {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
             $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-            Write-Information "'$Name' License assignment - '$License' SUCCESS"
+            Write-Information -MessageData "INFO:    '$Name' License assignment - '$License' SUCCESS"
           }
         }
         catch {
@@ -340,44 +331,70 @@ function New-TeamsCommonAreaPhone {
       }
     }
     else {
-      try {
-        if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-          $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-          Write-Information "'$Name' License assignment - '$License' SUCCESS"
+      if ( $PSBoundParameters.ContainsKey('License')) {
+        try {
+          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
+            Write-Information -MessageData "INFO:    '$Name' License assignment - '$License' SUCCESS"
+          }
+        }
+        catch {
+          Write-Error -Message "'$Name' License assignment failed for '$License'"
         }
       }
-      catch {
-        Write-Error -Message "'$Name' License assignment failed for '$License'"
+      else {
+        Write-Warning -Message "'$Name' no License applied. Policies cannot be assigned in one step. Please use Set-TeamsCommonAreaPhone or Grant the policies directly"
+        $Licensed = $false
       }
     }
+    #VALIDATE does this need to have a delay between license assignment and any future steps? If not, it might not even need a License!
+    #TEST bug here pot. fixed by changing WHILE to DO/WHILE
+    do {
+      if ($i -gt $iMax) {
+        Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
+      }
+      Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
+        -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+
+      Start-Sleep -Milliseconds 1000
+      $i++
+
+      #$TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -License $License
+      $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlanName "TEAMS1"
+    }
+    while (-not $TeamsUserLicenseNotYetAssigned)
     #endregion
 
     #region Policies
-    $Operation = 'Applying Policies'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    if ($Licensed) {
+      $Operation = 'Applying Policies'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
 
-    if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
-      Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
-    }
-    else {
-      Write-Verbose -Message 'No IP Phone Policy supplied - Global Policy is in effect!'
+      #IP Phone Policy
+      if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
+        Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
+      }
+      else {
+        Write-Verbose -Message 'No IP Phone Policy supplied - Global Policy is in effect!'
+      }
+      #Teams Calling Policy
+      if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
+        Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
+      }
+      else {
+        Write-Verbose -Message 'No Calling Policy supplied - Global Policy is in effect!'
+      }
+      #Teams Call Park Policy
+      if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
+        Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
+      }
+      else {
+        Write-Verbose -Message 'No Call Park Policy supplied - Global Policy is in effect!'
+      }
     }
 
-    if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
-      Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
-    }
-    else {
-      Write-Verbose -Message 'No Calling Policy supplied - Global Policy is in effect!'
-    }
-
-    if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
-      Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
-    }
-    else {
-      Write-Verbose -Message 'No Call Park Policy supplied - Global Policy is in effect!'
-    }
     #endregion
 
     #region OUTPUT
@@ -388,14 +405,12 @@ function New-TeamsCommonAreaPhone {
     Write-Verbose -Message "$Status - $Operation"
 
     $ObjectCreated = $null
-    $ObjectCreated = Get-TeamsCommonAreaPhone -Identity "$UPN"
+    $ObjectCreated = Get-TeamsCommonAreaPhone -Identity "$UPN" -WarningAction SilentlyContinue
     if ($PSBoundParameters.ContainsKey('Password')) {
       Write-Verbose 'Password is encrypted and applied as per definition, provided it is adhering to the complexity requirements'
     }
     else {
-      #CHECK Output and Password application
-      #$ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $AzureAdUser.Password
-      $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordProfile.Password
+      $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordFormat
     }
     Write-Output $ObjectCreated
 

@@ -17,6 +17,8 @@ function Remove-TeamsCommonAreaPhone {
 		Required. Identifies the Object being changed
 	.PARAMETER PassThru
 		Optional. Displays UserPrincipalName of removed objects.
+	.PARAMETER Force
+		Optional. Suppresses Confirmation prompt to remove User.
 	.EXAMPLE
 		Remove-TeamsCommonAreaPhone -UserPrincipalName "Common Area Phone@TenantName.onmicrosoft.com"
 		Removes a CommonAreaPhone
@@ -73,7 +75,10 @@ function Remove-TeamsCommonAreaPhone {
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory = $false)]
-    [switch]$PassThru
+    [switch]$PassThru,
+
+    [Parameter(Mandatory = $false)]
+    [switch]$Force
   ) #param
 
   begin {
@@ -115,7 +120,8 @@ function Remove-TeamsCommonAreaPhone {
       Write-Verbose -Message "Processing: $UPN"
       try {
         #Trying to query the Common Area Phone
-        $Object = (Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
+        #$Object = (Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
+        $Object = (Get-AzureAdUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
         $DisplayName = $Object.DisplayName
       }
       catch {
@@ -130,7 +136,12 @@ function Remove-TeamsCommonAreaPhone {
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      Remove-TeamsUserVoiceConfig -UserPrincipalName $UPN -PassThru
+      try {
+        Remove-TeamsUserVoiceConfig -UserPrincipalName $UPN -PassThru -ErrorAction Stop
+      }
+      catch {
+        Write-Verbose "'$DisplayName' Object not licensed for Teams"
+      }
       #endregion
 
       #region Licensing
@@ -158,7 +169,6 @@ function Remove-TeamsCommonAreaPhone {
         Write-Error -Message 'Removal of Licenses failed' -Category NotImplemented -Exception $_.Exception -RecommendedAction 'Try manually with Set-AzureADUserLicense'
         return
       }
-
       #endregion
 
       #region Account Removal
@@ -167,7 +177,7 @@ function Remove-TeamsCommonAreaPhone {
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if ($PSCmdlet.ShouldProcess("Common Area Phone with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
+      if ($Force -or $PSCmdlet.ShouldProcess("Common Area Phone with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId "$UPN" -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS - Object removed from Azure Active Directory'
@@ -181,10 +191,8 @@ function Remove-TeamsCommonAreaPhone {
       }
       #endregion
 
-
-      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
-
       # Output
+      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
       if ($PassThru) {
         Write-Output "AzureAdUser '$UserPrincipalName' removed"
       }

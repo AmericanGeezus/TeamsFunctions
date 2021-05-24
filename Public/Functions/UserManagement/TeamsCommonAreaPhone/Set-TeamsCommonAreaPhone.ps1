@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-JAN-2021
+# Updated:  24-MAY-2021
 # Status:   RC
 
 
@@ -10,13 +10,10 @@
 function Set-TeamsCommonAreaPhone {
   <#
 	.SYNOPSIS
-		Creates a new Common Area Phone
+		Changes settings for a Common Area Phone
 	.DESCRIPTION
-		Teams Call Queues and Auto Attendants require a Common Area Phone.
-		It can carry a license and optionally also a phone number.
-		This Function was designed to create the ApplicationInstance in AD,
-		apply a UsageLocation to the corresponding AzureAD User,
-		license the User and subsequently apply a phone number, all with one Command.
+		Applies settings relevant to a Common Area Phone.
+    This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
 	.PARAMETER UserPrincipalName
 		Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string
 	.PARAMETER DisplayName
@@ -56,10 +53,10 @@ function Set-TeamsCommonAreaPhone {
     System.Object
 	.NOTES
     Execution requires User Admin Role in Azure AD
-    To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig
-    This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan.
+    This CmdLet deliberately does not apply a Phone Number to the Object. To do so, please run New-TeamsUserVoiceConfig
+    or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
+    a Phone Number and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
-		Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
   .COMPONENT
 		UserManagement
 	.FUNCTIONALITY
@@ -88,7 +85,7 @@ function Set-TeamsCommonAreaPhone {
     Set-TeamsUserVoiceConfig
   #>
 
-  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
   [Alias('Set-TeamsCAP')]
   [OutputType([System.Void])]
   param (
@@ -103,7 +100,7 @@ function Set-TeamsCommonAreaPhone {
         }
       })]
     [Alias('ObjectId', 'Identity')]
-    [string]$UserPrincipalName,
+    [string[]]$UserPrincipalName,
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Display Name for this Object')]
     [string]$DisplayName,
@@ -156,210 +153,235 @@ function Set-TeamsCommonAreaPhone {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 2
-    if ( $DisplayName ) { $sMax++ }
-    if ( $UsageLocation ) { $sMax++ }
-    if ( $License ) { $sMax++ }
-    if ( $PassThru ) { $sMax++ }
-
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Parameters = @{}
 
-    #region PREPARATION
-    $Status = 'Verifying input'
-    #region Lookup of UserPrincipalName
-    $Operation = 'Querying Object'
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    ForEach ($User in $UserPrincipalName) {
+      # Initialising counters for Progress bars
+      [int]$step = 0
+      [int]$sMax = 2
+      if ( $DisplayName ) { $sMax++ }
+      if ( $UsageLocation ) { $sMax++ }
+      if ( $License ) { $sMax++ }
+      if ( $PassThru ) { $sMax++ }
 
-    try {
-      #Trying to query the Resource Account
-      $CsOnlineUser = (Get-CsOnlineUser -Identity "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction STOP)
-      $CurrentDisplayName = $CsOnlineUser.DisplayName
-      Write-Verbose -Message "'$UserPrincipalName' Teams Object found: '$CurrentDisplayName'"
-
-      $Parameters += @{ 'ObjectId' = $CsOnlineUser.ObjectId }
-    }
-    catch {
-      # Catching anything
-      Write-Error -Message "'$UserPrincipalName' Teams Object not found!" -Category ObjectNotFound -RecommendedAction 'Please provide a valid UserPrincipalName of an existing Resource Account' #-ErrorAction Stop
-      return
-    }
-    #endregion
-
-    #region Normalising $DisplayName
-    if ($PSBoundParameters.ContainsKey('DisplayName')) {
-      $Operation = 'Normalising DisplayName'
-      $step++
+      #region PREPARATION
+      $Status = 'Verifying input'
+      #region Lookup of UserPrincipalName
+      $Operation = 'Querying Object'
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      $Name = Format-StringForUse -InputString $DisplayName -As DisplayName
-      Write-Verbose -Message "DisplayName normalised to: '$Name'"
-      $Parameters += @{ 'DisplayName' = "$Name" }
-    }
-    else {
-      $Name = $CurrentDisplayName
-    }
-    #endregion
-
-    #region UsageLocation
-    $CurrentUsageLocation = $CsOnlineUser.UsageLocation
-    if ($PSBoundParameters.ContainsKey('UsageLocation')) {
-      $Operation = 'Parsing UsageLocation'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
-      if ($Usagelocation -eq $CurrentUsageLocation) {
-        Write-Verbose -Message "'$Name' Usage Location already set to: $CurrentUsageLocation"
+      try {
+        #Trying to query the Resource Account
+        $CsOnlineUser = (Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction STOP)
+        $CurrentDisplayName = $CsOnlineUser.DisplayName
+        Write-Verbose -Message "'$User' Teams Object found: '$CurrentDisplayName'"
+        $Parameters += @{ 'ObjectId' = $CsOnlineUser.ObjectId }
       }
-      else {
-        Write-Verbose -Message "'$Name' Usage Location will be set to: $Usagelocation"
-        $Parameters += @{ 'UsageLocation' = "$UsageLocation" }
-      }
-    }
-    else {
-      if ($null -ne $CurrentUsageLocation) {
-        Write-Verbose -Message "'$Name' Usage Location currently set to: $CurrentUsageLocation"
-      }
-      else {
-        if ($PSBoundParameters.ContainsKey('License')) {
-          Write-Error -Message "'$Name' Usage Location not set!" -Category ObjectNotFound -RecommendedAction 'Please run command again and specify -UsageLocation'# -ErrorAction Stop
-          return
-        }
-        else {
-          Write-Warning -Message "'$Name' Usage Location not set! This is a requirement for License assignment and Phone Number"
-        }
-      }
-    }
-    #endregion
-
-    #Common Parameters
-    $Parameters += @{ 'ErrorAction' = 'STOP' }
-    #endregion
-
-
-    #region ACTION
-    $Status = 'Azure Ad User'
-    #region Setting Object
-    $Operation = 'Applying Settings'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-    try {
-      #Trying to create the Common Area Phone
-      Write-Verbose -Message "'$Name' Creating Common Area Phone with New-AzureAdUser..."
-      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name) - Parameters", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
-      if ($PSCmdlet.ShouldProcess("$UPN", 'Set-AzureAdUser')) {
-        $null = Set-AzureADUser @Parameters
-        $AzureAdUser = Get-AzureADUser -ObjectId $Parameters.ObjectId
-      }
-      else {
-        return
-      }
-    }
-    catch {
-      # Catching anything
-      Write-Host "ERROR:   Application of settings failed: $($_.Exception.Message)" -ForegroundColor Red
-      return
-    }
-    #endregion
-
-    #region Licensing
-    if ($PSBoundParameters.ContainsKey('License')) {
-      # Verifying License is available to be assigned
-      # Determining available Licenses from Tenant
-      $Operation = 'Querying Tenant Licenses'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-      $TenantLicenses = Get-TeamsTenantLicense
-
-      # Setting License to Common Area Phone if not provided
-      if ( -not $PSBoundParameters.ContainsKey('License')) {
-        $License = 'CommonAreaPhone'
-      }
-
-      # Verifying License is available
-      $Operation = 'Verifying License is available'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-      if ($License -eq 'CommonAreaPhone') {
-        $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'MCOCAP' }).Remaining
-        Write-Verbose -Message "INFO: $RemainingCAPLicenses Common Area Phone Licenses still available"
-        if ($RemainingCAPLicenses -lt 1) {
-          Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.' -ErrorAction Stop
-        }
-        else {
-          try {
-            if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
-              $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-              Write-Information "'$Name' License assignment - '$License' SUCCESS"
-            }
-          }
-          catch {
-            Write-Error -Message "'$Name' License assignment failed for '$License'"
-          }
-        }
-      }
-      else {
+      catch {
+        # If CsOnlineUser not found, trying AzureAdUser
         try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-            Write-Information "'$Name' License assignment - '$License' SUCCESS"
-          }
+          Write-Verbose -Message "'$User' - Querying User Account (AzureAdUser)"
+          $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+          $CsOnlineUser = $AdUser
+          $CurrentDisplayName = $AdUser.DisplayName
+          Write-Warning -Message "'$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
+        }
+        catch [Microsoft.Open.AzureAD16.Client.ApiException] {
+          Write-Error -Message "'$User' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$User' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
+          continue
         }
         catch {
-          Write-Error -Message "'$Name' License assignment failed for '$License'"
+          Write-Error -Message "'$User' not found. Error encountered: $($_.Exception.Message)" -Category ObjectNotFound
+          continue
         }
       }
-    }
-    #endregion
+      #endregion
 
-    #region Policies
-    $Operation = 'Applying Policies'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+      #region Normalising $DisplayName
+      if ($PSBoundParameters.ContainsKey('DisplayName')) {
+        if ($User.IsArray) {
+          Write-Warning -Message "'$User' Changing DisplayName for Array input disabled to avoid accidents."
+        }
+        else {
+          $Operation = 'Normalising DisplayName'
+          $step++
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
+          $Name = Format-StringForUse -InputString $DisplayName -As DisplayName
+          Write-Verbose -Message "DisplayName normalised to: '$Name'"
+          $Parameters += @{ 'DisplayName' = "$Name" }
+        }
+      }
+      else {
+        $Name = $CurrentDisplayName
+      }
+      #endregion
 
-    if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
-      Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
-    }
+      #region UsageLocation
+      $CurrentUsageLocation = $CsOnlineUser.UsageLocation
+      if ($PSBoundParameters.ContainsKey('UsageLocation')) {
+        $Operation = 'Parsing UsageLocation'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
 
-    if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
-      Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
-    }
+        if ($Usagelocation -eq $CurrentUsageLocation) {
+          Write-Verbose -Message "'$Name' Usage Location already set to: $CurrentUsageLocation"
+        }
+        else {
+          Write-Verbose -Message "'$Name' Usage Location will be set to: $Usagelocation"
+          $Parameters += @{ 'UsageLocation' = "$UsageLocation" }
+        }
+      }
+      else {
+        if ($null -ne $CurrentUsageLocation) {
+          Write-Verbose -Message "'$Name' Usage Location currently set to: $CurrentUsageLocation"
+        }
+        else {
+          if ($PSBoundParameters.ContainsKey('License')) {
+            Write-Error -Message "'$Name' Usage Location not set!" -Category ObjectNotFound -RecommendedAction 'Please run command again and specify -UsageLocation'# -ErrorAction Stop
+            return
+          }
+          else {
+            Write-Warning -Message "'$Name' Usage Location not set! This is a requirement for License assignment and Phone Number"
+          }
+        }
+      }
+      #endregion
 
-    if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
-      Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
-    }
-    #endregion
-    #endregion
+      #Common Parameters
+      $Parameters += @{ 'ErrorAction' = 'STOP' }
+      #endregion
 
-    #region OUTPUT
-    if ($PassThru) {
-      $Status = 'Validation'
-      $Operation = 'Querying Object'
+
+      #region ACTION
+      $Status = 'Azure Ad User'
+      #region Setting Object
+      $Operation = 'Applying Settings'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      try {
+        #Trying to create the Common Area Phone
+        Write-Verbose -Message "'$Name' Creating Common Area Phone with New-AzureAdUser..."
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name) - Parameters", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
+        if ($PSCmdlet.ShouldProcess("$UPN", 'Set-AzureAdUser')) {
+          $null = Set-AzureADUser @Parameters
+          $AzureAdUser = Get-AzureADUser -ObjectId $Parameters.ObjectId
+        }
+        else {
+          return
+        }
+      }
+      catch {
+        # Catching anything
+        Write-Host "ERROR:   Application of settings failed: $($_.Exception.Message)" -ForegroundColor Red
+        return
+      }
+      #endregion
+
+      #region Licensing
+      if ($PSBoundParameters.ContainsKey('License')) {
+        # Verifying License is available to be assigned
+        # Determining available Licenses from Tenant
+        $Operation = 'Querying Tenant Licenses'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+        $TenantLicenses = Get-TeamsTenantLicense
+
+        # Verifying License is available
+        $Operation = 'Verifying License is available'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+        if ($License -eq 'CommonAreaPhone') {
+          $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'MCOCAP' }).Remaining
+          Write-Verbose -Message "INFO: $RemainingCAPLicenses Common Area Phone Licenses still available"
+          if ($RemainingCAPLicenses -lt 1) {
+            Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.' -ErrorAction Stop
+          }
+          else {
+            try {
+              if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
+                $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
+                Write-Information "'$Name' License assignment - '$License' SUCCESS"
+              }
+            }
+            catch {
+              Write-Error -Message "'$Name' License assignment failed for '$License'"
+            }
+          }
+        }
+        else {
+          if ( $PSBoundParameters.ContainsKey('License')) {
+            try {
+              if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+                $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
+                Write-Information "'$Name' License assignment - '$License' SUCCESS"
+              }
+            }
+            catch {
+              Write-Error -Message "'$Name' License assignment failed for '$License'"
+            }
+          }
+        }
+        else {
+          #FIXME Add caveat according to Set-TeamsRA - if licensed continue
+          #If not, Write warning, set $Licensed and stop applying policies!
+          #Write-Warning -Message "'$Name' no License applied. Policies cannot be assigned in one step. Please use Set-TeamsCommonAreaPhone or Grant the policies directly"
+          #$Licensed = $false
+        }
+      }
+      else {
+        #TODO Check license
+      }
+      #endregion
+
+      #region Policies
+      $Operation = 'Applying Policies'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      $CommonAreaPhone = $null
-      $CommonAreaPhone = Get-TeamsCommonAreaPhone -Identity "$UPN"
-      Write-Output $CommonAreaPhone
-    }
+      if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
+        Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
+      }
 
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
-    #endregion
+      if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
+        Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
+      }
+
+      if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
+        Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
+      }
+      #endregion
+      #endregion
+
+      #region OUTPUT
+      if ($PassThru) {
+        $Status = 'Validation'
+        $Operation = 'Querying Object'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+
+        $CommonAreaPhone = $null
+        $CommonAreaPhone = Get-TeamsCommonAreaPhone -Identity "$UPN"
+        Write-Output $CommonAreaPhone
+      }
+
+      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+      #endregion
+
+    }
 
   } #process
 

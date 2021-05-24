@@ -259,7 +259,7 @@ function New-TeamsResourceAccount {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         $i = 0
         $iMax = 30
-        Write-Information "Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
+        Write-Information "INFO:    Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
@@ -287,8 +287,7 @@ function New-TeamsResourceAccount {
     }
     catch {
       # Catching anything
-      Write-Host "ERROR:   Creation failed: $($_.Exception.Message)" -ForegroundColor Red
-      return
+      throw "Resource Account '$Name' - Creation failed: $($_.Exception.Message)"
     }
     #endregion
 
