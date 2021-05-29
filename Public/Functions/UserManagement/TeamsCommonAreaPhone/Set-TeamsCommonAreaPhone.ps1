@@ -165,7 +165,7 @@ function Set-TeamsCommonAreaPhone {
       [int]$sMax = 2
       if ( $DisplayName ) { $sMax++ }
       if ( $UsageLocation ) { $sMax++ }
-      if ( $License ) { $sMax++ }
+      if ( $License ) { $sMax = $sMax + 2 }
       if ( $PassThru ) { $sMax++ }
 
       #region PREPARATION
@@ -254,6 +254,31 @@ function Set-TeamsCommonAreaPhone {
       }
       #endregion
 
+      #region Current License
+      $Operation = 'License Query (current)'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
+      if ($PSBoundParameters.ContainsKey('License')) {
+        $CurrentLicense = $null
+        # Determining license Status of Object
+        if (Test-TeamsUserLicense -Identity "$UPN" -License CommonAreaPhone) {
+          $CurrentLicense = 'CommonAreaPhone'
+        }
+        elseif (Test-TeamsUserLicense -Identity "$UPN" -ServicePlan TEAMS1) {
+          $CurrentLicense = 'Teams'
+          #CHECK add validation for PhoneSystem too (only needed when applying a number which we don't do here)
+        }
+        if ($null -ne $CurrentLicense) {
+          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: $CurrentLicense"
+        }
+        else {
+          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: NONE"
+        }
+      }
+      #endregion
+
       #Common Parameters
       $Parameters += @{ 'ErrorAction' = 'STOP' }
       #endregion
@@ -297,35 +322,38 @@ function Set-TeamsCommonAreaPhone {
         Write-Verbose -Message "$Status - $Operation"
         $TenantLicenses = Get-TeamsTenantLicense
 
+        if ($License -eq $CurrentLicense) {
+          #BODGE This does not properly catch Licenses that are already assigned as $CurrentLicense is either CAP or PhoneSystem
+          # No action required
+          Write-Information "'$Name ($UPN)' License '$License' already assigned."
+          $IsLicensed = $true
+        }
         # Verifying License is available
-        $Operation = 'Verifying License is available'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-        if ($License -eq 'CommonAreaPhone') {
+        elseif ($License -eq 'CommonAreaPhone') {
           $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'MCOCAP' }).Remaining
-          Write-Verbose -Message "INFO: $RemainingCAPLicenses Common Area Phone Licenses still available"
+          Write-Verbose -Message "INFO: $RemainingCAPLicenses Common Area Phone Licenses remaining"
           if ($RemainingCAPLicenses -lt 1) {
-            Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.' -ErrorAction Stop
+            Write-Error -Message 'ERROR: No free Common Area Phone License remaining in the Tenant.' -ErrorAction Stop
           }
           else {
             try {
               if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
                 $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
                 Write-Information "'$Name' License assignment - '$License' SUCCESS"
+                $IsLicensed = $true
               }
             }
             catch {
               Write-Error -Message "'$Name' License assignment failed for '$License'"
+              Write-Debug $_
             }
           }
-        }
-        else {
-          if ( $PSBoundParameters.ContainsKey('License')) {
+          else {
             try {
               if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
                 $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
                 Write-Information "'$Name' License assignment - '$License' SUCCESS"
+                $IsLicensed = $true
               }
             }
             catch {
@@ -333,15 +361,6 @@ function Set-TeamsCommonAreaPhone {
             }
           }
         }
-        else {
-          #FIXME Add caveat according to Set-TeamsRA - if licensed continue
-          #If not, Write warning, set $Licensed and stop applying policies!
-          #Write-Warning -Message "'$Name' no License applied. Policies cannot be assigned in one step. Please use Set-TeamsCommonAreaPhone or Grant the policies directly"
-          #$Licensed = $false
-        }
-      }
-      else {
-        #TODO Check license
       }
       #endregion
 
@@ -351,16 +370,21 @@ function Set-TeamsCommonAreaPhone {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
-        Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
+      if ($null -eq $CurrentLicense -and -not $IsLicensed) {
+        Write-Error -Message 'Policies can only be assigned to licensed objects.' -Category ResourceUnavailable -RecommendedAction 'Please apply a license before assigning any Policy.'
       }
+      else {
+        if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
+          Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
+        }
 
-      if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
-        Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
-      }
+        if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
+          Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
+        }
 
-      if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
-        Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
+        if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
+          Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
+        }
       }
       #endregion
       #endregion

@@ -61,6 +61,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Removed hard-wired License (CommonAreaPhone). If not provided, no policies are applied as Object is not enabled for Teams
 - `Set-TeamsCommonAreaPhone`:
   - Added secondary lookup for AzureAdUser
+  - Built out License application (analog to Set-TeamsResourceAccount).
+  - Gated Policy Assignment for licensed objects only
 - `Remove-TeamsCommonAreaPhone`:
   - Added Switch Force
   - Rebound lookup to AzureAdUser

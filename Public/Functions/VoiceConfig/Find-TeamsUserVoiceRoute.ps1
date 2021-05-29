@@ -4,8 +4,8 @@
 # Updated:  28-DEC-2020
 # Status:   Live
 
-#CHECK Pipeline with UPN instead of Identity
-#EXPAND: Make Number an Array?
+#TODO EXPAND: Make DialedNumber an Array? (ForEach Number, run everything?)
+
 
 function Find-TeamsUserVoiceRoute {
   <#

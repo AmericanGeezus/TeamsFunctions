@@ -358,7 +358,7 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region Current License
-      $Operation = 'License Assignment'
+      $Operation = 'License Query (current)'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -480,7 +480,7 @@ function Set-TeamsResourceAccount {
         # Verifying License is available
         elseif ($License -eq 'PhoneSystemVirtualUser') {
           $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'PHONESYSTEM_VIRTUALUSER' }).Remaining
-          Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining Phone System Virtual User Licenses"
+          Write-Verbose -Message "INFO: $RemainingPSVULicenses Phone System Virtual User Licenses remaining"
           if ($RemainingPSVULicenses -lt 1) {
             Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.'
           }
