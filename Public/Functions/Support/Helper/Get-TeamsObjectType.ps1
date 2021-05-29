@@ -4,8 +4,8 @@
 # Updated:  01-JAN-2021
 # Status:   Live
 
-#TODO Add Channel as an entity - with Regex Match for this example? 19:57e130f4d8d34b1a83bd0110f092cea2@thread.tacv2
-#REGEX -match "^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$"
+
+
 
 function Get-TeamsObjectType {
   <#
@@ -94,8 +94,12 @@ function Get-TeamsObjectType {
     foreach ($Id in $Identity) {
       #if ($Id -match '^tel:\+\d') {
       if ($Id -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$' -and -not ($Id -match '@')) {
-        Write-Verbose -Message "Callable Entity - Call Target '$Id' (TelURI) found: TelURI (ExternalPstn)"
+        Write-Verbose -Message "Callable Entity - Call Target '$Id' found: TelURI (ExternalPstn)"
         return 'TelURI'
+      }
+      elseif ($Id -match '^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$') {
+        Write-Verbose -Message "Callable Entity - Call Target '$Id' found: Channel (Channel)"
+        return 'Channel'
       }
       else {
         $User = Get-AzureADUser -ObjectId "$Id"

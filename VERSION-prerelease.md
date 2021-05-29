@@ -37,6 +37,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Fixed an issue with Partial Configuration - Will return FALSE now if Object is NOT partially configured (but fully)
   NOTE: Using `-Partial` now properly returns false if it is fully configured
   - Included Debug output after tests. Changed Verbose output to Information output (displayed only if it isn't called or `-Verbose` is used)
+- `Get-TeamsObjectType`: Added 'Channel' as an ObjectType for a certain match.
 - `Get-TeamsCallableEntity`: Added match for '\' triggering query for TeamAndChannel.<br \>This should not be part of any other Object
 - `Get-TeamsCallQueue`: Added Parameter TeamAndChannel to display the Team & Channel in the format 'Team\Channel'
 - `New-TeamsCallQueue`:

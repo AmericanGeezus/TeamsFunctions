@@ -208,9 +208,16 @@ function Set-TeamsUserVoiceConfig {
     $Operation = 'Querying Account Type is not a Resource Account'
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
-    #FIXME Lookup against all OnlineApplicationInstances - Passing ObjectId will not result in this being caught! needs fix!
+    <#
+    #Lookup against all OnlineApplicationInstances - Passing ObjectId will not result in this being caught! needs fix!
     $ResourceAccounts = (Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue).UserPrincipalName
     if ( $UserPrincipalName -in $ResourceAccounts) {
+      Write-Error -Message 'Resource Account specified! Please use Set-TeamsResourceAccount to provision Resource Accounts' -Category InvalidType -RecommendedAction 'Please use Set-TeamsResourceAccount to provision Resource Accounts'
+      return
+    }
+    #>
+    #TEST Performance of Test done
+    if ( Test-TeamsResourceAccount $UserPrincipalName) {
       Write-Error -Message 'Resource Account specified! Please use Set-TeamsResourceAccount to provision Resource Accounts' -Category InvalidType -RecommendedAction 'Please use Set-TeamsResourceAccount to provision Resource Accounts'
       return
     }
@@ -378,8 +385,6 @@ function Set-TeamsUserVoiceConfig {
             # Checking number is free
             Write-Verbose -Message "User '$UserPrincipalName' - PhoneNumber - Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
-            #TEST Assignment of number to user does not exclude "self". If assigned to itself (e.G. without extension), don't error
-            #if ($UserWithThisNumber) {
             if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UserPrincipalName) {
               if ($Force) {
                 Write-Warning -Message "User '$UserPrincipalName' - Number '$LineUri' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
