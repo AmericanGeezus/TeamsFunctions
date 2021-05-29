@@ -13344,7 +13344,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Teams Call Queues and Auto Attendants require a Common Area Phone. It can carry a license and optionally also a phone number. This Function was designed to create the ApplicationInstance in AD, apply a UsageLocation to the corresponding AzureAD User, license the User and subsequently apply a phone number, all with one Command.</maml:para>
+      <maml:para>This CmdLet creates an AzureAdUser Object, applies a UsageLocation   If a License is applied, a PhoneNumber, IP Phone Policy, Calling Policy and Call Park Policy can be applied.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -13400,7 +13400,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Password</maml:name>
           <maml:description>
-            <maml:para>Optional. String. 8 to 16 characters, at least one uppercase letter, one lowercase letter and one number. If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"</maml:para>
+            <maml:para>Optional. PowerShell SecureString If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">SecureString</command:parameterValue>
           <dev:type>
@@ -13521,7 +13521,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Password</maml:name>
         <maml:description>
-          <maml:para>Optional. String. 8 to 16 characters, at least one uppercase letter, one lowercase letter and one number. If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"</maml:para>
+          <maml:para>Optional. PowerShell SecureString If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">SecureString</command:parameterValue>
         <dev:type>
@@ -13613,7 +13613,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Execution requires User Admin Role in Azure AD To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves. Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.</maml:para>
+        <maml:para>Execution requires User Admin Role in Azure AD This CmdLet deliberately does not apply a Phone Number to the Object. To do so, please run New-TeamsUserVoiceConfig or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy a Phone Number and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -15121,6 +15121,17 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Optional. Suppresses Confirmation prompt to remove User.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
           <maml:name>WhatIf</maml:name>
           <maml:description>
@@ -15162,6 +15173,18 @@
         <maml:name>PassThru</maml:name>
         <maml:description>
           <maml:para>Optional. Displays UserPrincipalName of removed objects.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:description>
+          <maml:para>Optional. Suppresses Confirmation prompt to remove User.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -17427,11 +17450,11 @@
       <command:verb>Set</command:verb>
       <command:noun>TeamsCommonAreaPhone</command:noun>
       <maml:description>
-        <maml:para>Creates a new Common Area Phone</maml:para>
+        <maml:para>Changes settings for a Common Area Phone</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Teams Call Queues and Auto Attendants require a Common Area Phone. It can carry a license and optionally also a phone number. This Function was designed to create the ApplicationInstance in AD, apply a UsageLocation to the corresponding AzureAD User, license the User and subsequently apply a phone number, all with one Command.</maml:para>
+      <maml:para>Applies settings relevant to a Common Area Phone.   This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -17441,9 +17464,9 @@
           <maml:description>
             <maml:para>Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -17561,9 +17584,9 @@
         <maml:description>
           <maml:para>Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -17699,7 +17722,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Execution requires User Admin Role in Azure AD To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves. Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.</maml:para>
+        <maml:para>Execution requires User Admin Role in Azure AD This CmdLet deliberately does not apply a Phone Number to the Object. To do so, please run New-TeamsUserVoiceConfig or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy a Phone Number and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -18706,7 +18729,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number, LineURI">
           <maml:name>PhoneNumber</maml:name>
           <maml:description>
-            <maml:para>Optional. Phone Number in E.164 format to be assigned to the User. For proper configuration a PhoneNumber is required. Without it, the User will not be able to make or receive calls. This script does not enforce all Parameters and is intended to validate and configure one or all Parameters. For enforced ParameterSet please call New-TeamsUserVoiceConfig (NOTE: This script does currently not yet exist) For DirectRouting, will populate the OnPremLineUri For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)</maml:para>
+            <maml:para>Optional. Phone Number in E.164 format to be assigned to the User. For proper configuration a PhoneNumber is required. Without it, the User will not be able to make or receive calls. This script does not enforce all Parameters and is intended to validate and configure one or all Parameters. For enforced ParameterSet please call New-TeamsUserVoiceConfig For DirectRouting, will populate the OnPremLineUri For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -18800,7 +18823,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number, LineURI">
           <maml:name>PhoneNumber</maml:name>
           <maml:description>
-            <maml:para>Optional. Phone Number in E.164 format to be assigned to the User. For proper configuration a PhoneNumber is required. Without it, the User will not be able to make or receive calls. This script does not enforce all Parameters and is intended to validate and configure one or all Parameters. For enforced ParameterSet please call New-TeamsUserVoiceConfig (NOTE: This script does currently not yet exist) For DirectRouting, will populate the OnPremLineUri For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)</maml:para>
+            <maml:para>Optional. Phone Number in E.164 format to be assigned to the User. For proper configuration a PhoneNumber is required. Without it, the User will not be able to make or receive calls. This script does not enforce all Parameters and is intended to validate and configure one or all Parameters. For enforced ParameterSet please call New-TeamsUserVoiceConfig For DirectRouting, will populate the OnPremLineUri For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -18941,7 +18964,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number, LineURI">
         <maml:name>PhoneNumber</maml:name>
         <maml:description>
-          <maml:para>Optional. Phone Number in E.164 format to be assigned to the User. For proper configuration a PhoneNumber is required. Without it, the User will not be able to make or receive calls. This script does not enforce all Parameters and is intended to validate and configure one or all Parameters. For enforced ParameterSet please call New-TeamsUserVoiceConfig (NOTE: This script does currently not yet exist) For DirectRouting, will populate the OnPremLineUri For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)</maml:para>
+          <maml:para>Optional. Phone Number in E.164 format to be assigned to the User. For proper configuration a PhoneNumber is required. Without it, the User will not be able to make or receive calls. This script does not enforce all Parameters and is intended to validate and configure one or all Parameters. For enforced ParameterSet please call New-TeamsUserVoiceConfig For DirectRouting, will populate the OnPremLineUri For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>

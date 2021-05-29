@@ -8,22 +8,19 @@ schema: 2.0.0
 # Set-TeamsCommonAreaPhone
 
 ## SYNOPSIS
-Creates a new Common Area Phone
+Changes settings for a Common Area Phone
 
 ## SYNTAX
 
 ```
-Set-TeamsCommonAreaPhone [-UserPrincipalName] <String> [-DisplayName <String>] [-UsageLocation <String>]
+Set-TeamsCommonAreaPhone [-UserPrincipalName] <String[]> [-DisplayName <String>] [-UsageLocation <String>]
  [-License <String>] [-IPPhonePolicy <String>] [-TeamsCallingPolicy <String>] [-TeamsCallParkPolicy <String>]
  [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Teams Call Queues and Auto Attendants require a Common Area Phone.
-It can carry a license and optionally also a phone number.
-This Function was designed to create the ApplicationInstance in AD,
-apply a UsageLocation to the corresponding AzureAD User,
-license the User and subsequently apply a phone number, all with one Command.
+Applies settings relevant to a Common Area Phone.
+  This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
 
 ## EXAMPLES
 
@@ -68,7 +65,7 @@ The UPN for the new CommonAreaPhone.
 Invalid characters are stripped from the provided string
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases: ObjectId, Identity
 
@@ -240,10 +237,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 Execution requires User Admin Role in Azure AD
-To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig
-This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan.
+This CmdLet deliberately does not apply a Phone Number to the Object.
+To do so, please run New-TeamsUserVoiceConfig
+or Set-TeamsUserVoiceConfig.
+For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
+a Phone Number and optionally a Tenant Dial Plan.
 This Script only covers relevant elements for Common Area Phones themselves.
-Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
 
 ## RELATED LINKS
 

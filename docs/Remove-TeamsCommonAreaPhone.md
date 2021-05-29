@@ -13,7 +13,7 @@ Removes a Common Area Phone from AzureAD
 ## SYNTAX
 
 ```
-Remove-TeamsCommonAreaPhone [-UserPrincipalName] <String[]> [-PassThru] [-WhatIf] [-Confirm]
+Remove-TeamsCommonAreaPhone [-UserPrincipalName] <String[]> [-PassThru] [-Force] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -51,6 +51,22 @@ Accept wildcard characters: False
 ### -PassThru
 Optional.
 Displays UserPrincipalName of removed objects.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Optional.
+Suppresses Confirmation prompt to remove User.
 
 ```yaml
 Type: SwitchParameter

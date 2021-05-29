@@ -142,7 +142,7 @@ Phone Number in E.164 format to be assigned to the User.
 For proper configuration a PhoneNumber is required.
 Without it, the User will not be able to make or receive calls.
 This script does not enforce all Parameters and is intended to validate and configure one or all Parameters.
-For enforced ParameterSet please call New-TeamsUserVoiceConfig (NOTE: This script does currently not yet exist)
+For enforced ParameterSet please call New-TeamsUserVoiceConfig
 For DirectRouting, will populate the OnPremLineUri
 For CallingPlans, will populate the TelephoneNumber (must be present in the Tenant)
 
