@@ -110,10 +110,16 @@ function Get-AzureAdLicenseServicePlan {
 
         #store the service plan string IDs for later match
         $srcServicePlan -split '<br.?>' | ForEach-Object {
-          $planServicePlanName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
-          $planServicePlanId = $_.SubString($_.LastIndexOf('(') + 1)
-          if ($planServicePlanId.Contains(')')) {
-            $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+          try {
+            $NameString = $_
+            $planServicePlanName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
+            $planServicePlanId = $_.SubString($_.LastIndexOf('(') + 1)
+            if ($planServicePlanId.Contains(')')) {
+              $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+            }
+          }
+          catch {
+            Write-Warning -Message "Cannot read Entry '$NameString' - malformed string. Reading this requires open and close parenthesis around ServicePlanId - please open issue against Documentation: https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference"
           }
 
           if (-not $planServicePlanNames.ContainsKey($planServicePlanId)) {
@@ -123,10 +129,16 @@ function Get-AzureAdLicenseServicePlan {
 
         #get te included service plans
         $srcServicePlanName -split '<br.?>' | ForEach-Object {
-          $planProductName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
-          $planServicePlanId = $_.SubString($_.LastIndexOF('(') + 1)
-          if ($planServicePlanId.Contains(')')) {
-            $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+          try {
+            $NameString = $_
+            $planProductName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
+            $planServicePlanId = $_.SubString($_.LastIndexOF('(') + 1)
+            if ($planServicePlanId.Contains(')')) {
+              $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+            }
+          }
+          catch {
+            Write-Warning -Message "Cannot read Entry '$NameString' - malformed string. Reading this requires open and close parenthesis around ServicePlanId - please open issue against Documentation: https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference"
           }
 
           # Add RelevantForTeams
@@ -158,11 +170,11 @@ function Get-AzureAdLicenseServicePlan {
               if ( $planProductName -ne 'Powerapps For Office 365 K1') {
                 $PlansNotAdded += $planProductName
               }
-
             }
           }
         }
       }
+      #>
     }
 
     # Manually Adding to List of $Plans
