@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.05.15'
+  ModuleVersion         = '21.06'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -70,7 +70,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
   # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
   # NestedModules = @()
-  #NestedModules       = @(@{ModuleName = 'MicrosoftTeams'; ModuleVersion = '2.0.0' })
 
   # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
   FunctionsToExport     = @(
@@ -93,8 +92,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Set-TeamsCallQueue',
 
     # Licensing
-    #'Disable-AzureAdUserLicenseServicePlan', # To be built - Alias: Disable-ServicePlan
-    #'Enable-AzureAdUserLicenseServicePlan', # To be built - Alias: Enable-ServicePlan
     'Get-AzureAdLicense',
     'Get-AzureAdLicenseServicePlan',
     'Get-AzureAdUserLicense',
@@ -127,7 +124,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Test-MicrosoftTeamsConnection',
 
     # Temporary Re-Additions
-    'Enable-CsOnlineSessionForReconnection',
     'Connect-SkypeOnline',
     'Assert-SkypeOnlineConnection',
     'Test-SkypeOnlineConnection',
@@ -202,7 +198,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'New-TeamsUserVoiceConfig',
     'Remove-TeamsUserVoiceConfig',
     'Set-TeamsUserVoiceConfig',
-    #'Test-TeamsTenantDialPlan',
     'Test-TeamsUserVoiceConfig'
 
   )
@@ -217,7 +212,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
   AliasesToExport       = @(
     'con', 'dis', 'pol', 'ear', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
     'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
-    'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP', #'Test-TeamsTDP',
+    'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 
     'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA',
     'Get-TeamsRAA', 'New-TeamsRAA', 'Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance',

@@ -39,7 +39,7 @@ function Test-SkypeOnlineConnection {
   param() #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level Deprecated
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
   } #begin
