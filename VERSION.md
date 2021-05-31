@@ -66,7 +66,10 @@ Nevertheless, please use the most recent release-version of MicrosoftTeams publi
 - `New-TeamsResourceAccount`: Increased waiting time after creating an account from 20 to 30 seconds to get more accurate feedback.
 - `Set-TeamsUserLicense`:
   - Improved Debug output and catching known Errors (License already assigned (i.E. no changes), Dependency issue, User not found)
-- `Connect-Me`: Tweaked the waiting time after enabling Admin roles from 8 to 10s - Connect-MicrosoftTeams sometimes fails if run too shortly after enabling roles
+- `Connect-Me`:
+  - Tweaked the waiting time after enabling Admin roles from 8 to 10s - Connect-MicrosoftTeams sometimes fails if run too shortly after enabling roles
+  - Added TenantDomain to PowerShell Window Title
+- `Disconnect-Me`: PowerShell Window Title reset to 'Windows PowerShell' once disconnected.
 - `Set-AzureAdUserLicenseServicePlan`: Added feedback for when no changes have been made (i.E. no License did contain any of the Service plans to enable/disable)
 - `Get-TeamsCommonAreaPhone`:
   - Changed Query based on input (this now enables proper pipeline input for UserPrincipalNames)

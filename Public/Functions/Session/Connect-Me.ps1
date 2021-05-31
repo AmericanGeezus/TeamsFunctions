@@ -424,6 +424,11 @@ function Connect-Me {
         }
       }
 
+      # Changing Window Title to match TenantDomain
+      if ( $SessionInfo.TenantDomain ) {
+        Set-PowerShellWindowTitle $SessionInfo.TenantDomain
+      }
+
       #Output
       Write-Output $SessionInfo
 

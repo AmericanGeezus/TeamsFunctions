@@ -1,4 +1,6 @@
-# TeamsFunctions - CmdLets for Administering Teams Users and Objects in MicrosoftTeams and AzureAd
+# TeamsFunctions - Administering Teams made easier
+
+This is the home for `TeamsFunctions`, a module for Administering Teams Users and Objects in MicrosoftTeams and AzureAd
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE)
 [![Documentation - GitHub](https://img.shields.io/badge/Documentation-TeamsFunctions-blue.svg)](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs)
@@ -11,15 +13,18 @@
 This module exists as many of Microsofts Teams back-end (SkypeOnline) Cmdlets are too clunky to handle easily on a daily basis without building a big library of quirks and GUIDs and snippets as well as a growing understanding of all the pitfalls and requirements needed for individual features.
 
 The goal is to make this easier for day-to-day use, to simplify the input and to feed back good information if not successful.
-Teams evolves constantly, so does this Module: Released monthly, with weekly pre-releases.
+Teams evolves constantly, so does this Module. Current release cadence:
+
+- Released monthly, later quarterly
+- PreReleases as required
 
 ### Installation
 
 ```powershell
-# Release (Monthly)
+# Release
 Install-Module TeamsFunctions
 
-# PreRelease (weekly)
+# PreRelease
 Install-Module TeamsFunctions -AllowPrerelease
 ```
 
