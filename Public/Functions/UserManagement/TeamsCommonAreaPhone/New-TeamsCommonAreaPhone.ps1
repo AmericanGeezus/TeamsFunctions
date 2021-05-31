@@ -4,7 +4,7 @@
 # Updated:  24-MAY-2021
 # Status:   RC
 
-
+# https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/  - check setup against blog
 
 
 function New-TeamsCommonAreaPhone {

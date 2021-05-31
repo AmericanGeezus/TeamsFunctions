@@ -103,7 +103,7 @@ function Test-TeamsUserVoiceConfig {
     Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
-    $CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig') #DOCU Save as snippet before removing for future use!
+    $CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
 
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"

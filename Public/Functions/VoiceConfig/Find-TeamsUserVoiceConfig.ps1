@@ -243,7 +243,7 @@ function Find-TeamsUserVoiceConfig {
             $Number = $matches[1]
           }
           else {
-            #BODGE Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
+            #CHECK Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
             $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep 'tel:+;x='
           }
           Write-Information "Finding all Users enabled for Teams with Phone Number '$PhoneNr': Searching..."
