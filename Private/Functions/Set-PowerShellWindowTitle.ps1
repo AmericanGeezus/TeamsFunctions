@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
-# Function:   Assertion
-# Author:     David Eberhardt
+# Function:   Helper
+# Author:     Francois-Xavier Cat
 # Updated:    31-MAY-2021
 # Status:     Live
 
