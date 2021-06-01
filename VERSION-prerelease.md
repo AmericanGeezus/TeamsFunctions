@@ -12,7 +12,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- TBC
+- `New-TeamsResourceAccount`: Adding Parameter `OnlineVoiceRoutingPolicy` to allow provisioning of OVPs for ResourceAccounts
+- `Set-TeamsResourceAccount`: Adding Parameter `OnlineVoiceRoutingPolicy` to allow provisioning of OVPs for ResourceAccounts
 
 ### ToDo
 

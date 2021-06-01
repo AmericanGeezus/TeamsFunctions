@@ -39,6 +39,8 @@ function Set-TeamsResourceAccount {
 		Can either be a Microsoft Number or a Direct Routing Number.
 		Requires the Resource Account to be licensed correctly
 		Required format is E.164, starting with a '+' and 10-15 digits long.
+  .PARAMETER OnlineVoiceRoutingPolicy
+    Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
   .PARAMETER PassThru
     By default, no output is generated, PassThru will display the Object changed
 	.PARAMETER Force
@@ -150,6 +152,10 @@ function Set-TeamsResourceAccount {
     [AllowNull()]
     [AllowEmptyString()]
     [string]$PhoneNumber,
+
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Routing Policy')]
+    [Alias('OVP')]
+    [string]$OnlineVoiceRoutingPolicy,
 
     [Parameter(HelpMessage = 'By default, no output is generated, PassThru will display the Object changed')]
     [switch]$PassThru,
@@ -358,7 +364,7 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region Current License
-      $Operation = 'License Query (current)'
+      $Operation = 'License Assignment'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -480,7 +486,7 @@ function Set-TeamsResourceAccount {
         # Verifying License is available
         elseif ($License -eq 'PhoneSystemVirtualUser') {
           $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'PHONESYSTEM_VIRTUALUSER' }).Remaining
-          Write-Verbose -Message "INFO: $RemainingPSVULicenses Phone System Virtual User Licenses remaining"
+          Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining remaining remaining remaining rema"
           if ($RemainingPSVULicenses -lt 1) {
             Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.'
           }
@@ -666,6 +672,19 @@ function Set-TeamsResourceAccount {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             "Function: $($MyInvocation.MyCommand.Name)", (Get-CsOnlineApplicationInstance -Identity "$UPN" | Select-Object UserPrincipalName, DisplayName, PhoneNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
+        }
+      }
+      #endregion
+
+      #region OnlineVoiceRoutingPolicy
+      if ( $OnlineVoiceRoutingPolicy ) {
+        try {
+          Grant-CsOnlineVoiceRoutingPolicy -Identity $UPN -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
+          Write-Information "SUCCESS: '$Name ($UPN)' Assigning OnlineVoiceRoutingPolicy: OK: '$OnlineVoiceRoutingPolicy'"
+        }
+        catch {
+          $ErrorLogMessage = "User '$Name ($UPN)' Assigning OnlineVoiceRoutingPolicy`: Failed: '$($_.Exception.Message)'"
+          Write-Error -Message $ErrorLogMessage
         }
       }
       #endregion

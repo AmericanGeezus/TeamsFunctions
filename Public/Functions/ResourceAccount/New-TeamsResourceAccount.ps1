@@ -38,6 +38,8 @@ function New-TeamsResourceAccount {
 		Optional. Adds a Microsoft or Direct Routing Number to the Resource Account.
 		Requires the Resource Account to be licensed (License Switch)
 		Required format is E.164, starting with a '+' and 10-15 digits long.
+  .PARAMETER OnlineVoiceRoutingPolicy
+    Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
 	.EXAMPLE
 		New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
 		Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
@@ -139,7 +141,12 @@ function New-TeamsResourceAccount {
         }
       })]
     [Alias('Tel', 'Number', 'TelephoneNumber')]
-    [string]$PhoneNumber
+    [string]$PhoneNumber,
+
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Routing Policy')]
+    [Alias('OVP')]
+    [string]$OnlineVoiceRoutingPolicy
+
   ) #param
 
   begin {
@@ -460,6 +467,19 @@ function New-TeamsResourceAccount {
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
     Start-Sleep -Seconds 2
+    #endregion
+
+    #region OnlineVoiceRoutingPolicy
+    if ( $OnlineVoiceRoutingPolicy ) {
+      try {
+        Grant-CsOnlineVoiceRoutingPolicy -Identity $UPN -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
+        Write-Information "SUCCESS: '$Name ($UPN)' Assigning OnlineVoiceRoutingPolicy: OK: '$OnlineVoiceRoutingPolicy'"
+      }
+      catch {
+        $ErrorLogMessage = "User '$Name ($UPN)' Assigning OnlineVoiceRoutingPolicy`: Failed: '$($_.Exception.Message)'"
+        Write-Error -Message $ErrorLogMessage
+      }
+    }
     #endregion
     #endregion
 
