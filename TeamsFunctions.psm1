@@ -34,7 +34,7 @@
 #>
 
 #Requires -Version 5.1
-#Requires -Modules MicrosoftTeams
+#Req#uires -Modules MicrosoftTeams
 
 # Addressing Limitations
 function Get-StrictMode {

@@ -52,9 +52,9 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
   ProcessorArchitecture = 'Amd64'
 
   # Modules that must be imported into the global environment prior to importing this module
-  RequiredModules       = @('MicrosoftTeams')
-  #RequiredModules       = @('AzureAdPreview','MicrosoftTeams')
-  #RequiredModules       = @('AzureAd','MicrosoftTeams'))
+  # RequiredModules       = @('MicrosoftTeams')
+  # RequiredModules       = @('AzureAdPreview','MicrosoftTeams')
+  # RequiredModules       = @('AzureAd','MicrosoftTeams'))
 
   # Assemblies that must be loaded prior to importing this module
   # RequiredAssemblies = @()
