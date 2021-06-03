@@ -14,6 +14,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 - `New-TeamsResourceAccount`: Adding Parameter `OnlineVoiceRoutingPolicy` to allow provisioning of OVPs for ResourceAccounts
 - `Set-TeamsResourceAccount`: Adding Parameter `OnlineVoiceRoutingPolicy` to allow provisioning of OVPs for ResourceAccounts
+- `Get-TeamsCallQueue`:
+  - Renamed Parameter ApplicationInstances to `ResourceAccountsAssociated` for consistency
+  - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccounts translated
+  - Adding Parameter `ChannelUsers` (enumerated and displayed only with Switch `Detailed`): ChannelUserObjectId translated
 
 ### ToDo
 

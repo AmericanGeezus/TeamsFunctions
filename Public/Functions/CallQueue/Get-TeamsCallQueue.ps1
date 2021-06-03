@@ -4,7 +4,7 @@
 # Updated:  01-JAN-2021
 # Status:   Live
 
-#TEST Add Switch ChannelUserObjectId, OboResourceAccountIds
+#TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForChannelId (OboResourceAccountIds)
 #TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 
 function Get-TeamsCallQueue {
