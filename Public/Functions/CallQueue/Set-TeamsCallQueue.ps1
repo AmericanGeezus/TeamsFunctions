@@ -4,7 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   Live
 
-#TODO Add new Switch: Suppress Shared Voicemail System messages
+#TODO Add Switch ChannelUserObjectId
+#TODO Add Switch ChannelId  (TeamAndChannel)
+#TODO Add Object OboResourceAccountIds (requires lookup like ApplicationInstances)
 #TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 #CHECK Once ID Lookup is done, check in the ForEach (for Pipeline with Get) whether an Object is present and bind/re-lookup to the correct instance!
 function Set-TeamsCallQueue {

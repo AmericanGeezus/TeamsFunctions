@@ -4,8 +4,9 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add new Switch: Suppress Shared Voicemail System messages
-
+#TODO Add Switch ChannelUserObjectId
+#TODO Add Switch ChannelId  (TeamAndChannel)
+#TODO Add Object OboResourceAccountIds (requires lookup like ApplicationInstances)
 function New-TeamsCallQueue {
   <#
   .SYNOPSIS
