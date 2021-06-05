@@ -14,8 +14,8 @@ Changes a new Resource Account
 
 ```
 Set-TeamsResourceAccount [-UserPrincipalName] <String> [-DisplayName <String>] [-ApplicationType <String>]
- [-UsageLocation <String>] [-License <String>] [-PhoneNumber <String>] [-PassThru] [-Force] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-UsageLocation <String>] [-License <String>] [-PhoneNumber <String>] [-OnlineVoiceRoutingPolicy <String>]
+ [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -176,6 +176,23 @@ Required format is E.164, starting with a '+' and 10-15 digits long.
 Type: String
 Parameter Sets: (All)
 Aliases: Tel, Number, TelephoneNumber
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -OnlineVoiceRoutingPolicy
+Optional.
+Required for DirectRouting.
+Assigns an Online Voice Routing Policy to the Account
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: OVP
 
 Required: False
 Position: Named

@@ -22,8 +22,9 @@ New-TeamsCallQueue [-Name] <String> [-UseMicrosoftDefaults] [[-AgentAlertTime] <
  [[-EnableTimeoutSharedVoicemailTranscription] <Boolean>] [[-TimeoutThreshold] <Int16>]
  [[-RoutingMethod] <String>] [[-PresenceBasedRouting] <Boolean>] [[-UseDefaultMusicOnHold] <Boolean>]
  [[-ConferenceMode] <Boolean>] [[-WelcomeMusicAudioFile] <String>] [[-MusicOnHoldAudioFile] <String>]
- [[-TeamAndChannel] <String>] [[-DistributionLists] <String[]>] [[-Users] <String[]>] [[-LanguageId] <String>]
- [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-DistributionLists] <String[]>] [[-Users] <String[]>] [[-ChannelUsers] <String[]>]
+ [[-TeamAndChannel] <String>] [[-ResourceAccountsForCallerId] <String[]>] [[-LanguageId] <String>] [-Force]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -471,28 +472,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TeamAndChannel
-Optional.
-Uses a Channel to route calls to.
-Members of the Channel become Agents in the Queue.
-Mutually exclusive with Users and DistributionLists.
-Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
-Acceptable Identifier for Teams are GroupId (GUID) or DisplayName.
-NOTE: DisplayName may not be unique.
-Acceptable Identifier for Channels are Id (GUID) or DisplayName.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 22
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -DistributionLists
 Optional.
 Display Names of DistributionLists or Groups.
@@ -508,7 +487,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 23
+Position: 22
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -529,7 +508,64 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
+Position: 23
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ChannelUsers
+Optional.
+UserPrincipalNames of Users.
+Unknown use-case right now.
+Feeds Parameter ChannelUserObjectId
+  Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: 24
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TeamAndChannel
+Optional.
+Uses a Channel to route calls to.
+Members of the Channel become Agents in the Queue.
+Mutually exclusive with Users and DistributionLists.
+Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
+Acceptable Identifier for Teams are GroupId (GUID) or DisplayName.
+NOTE: DisplayName may not be unique.
+Acceptable Identifier for Channels are Id (GUID) or DisplayName.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 25
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ResourceAccountsForCallerId
+Optional.
+Resource Account to be used for allowing Agents to use its number as a Caller Id.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 26
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -545,7 +581,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 25
+Position: 27
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

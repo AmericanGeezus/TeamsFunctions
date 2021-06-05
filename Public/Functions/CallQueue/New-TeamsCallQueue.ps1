@@ -4,9 +4,9 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add Switch ChannelUserObjectId
-#TODO Add Switch ChannelId  (TeamAndChannel)
-#TODO Add Object OboResourceAccountIds (requires lookup like ApplicationInstances)
+#TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
+
+
 function New-TeamsCallQueue {
   <#
   .SYNOPSIS
@@ -90,12 +90,6 @@ function New-TeamsCallQueue {
 	.PARAMETER ConferenceMode
     Optional. Will establish a conference instead of a direct call and should help with connection time.
     Default: TRUE,   Microsoft Default: FALSE
-  .PARAMETER TeamAndChannel
-    Optional. Uses a Channel to route calls to. Members of the Channel become Agents in the Queue.
-    Mutually exclusive with Users and DistributionLists.
-    Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
-    Acceptable Identifier for Teams are GroupId (GUID) or DisplayName. NOTE: DisplayName may not be unique.
-    Acceptable Identifier for Channels are Id (GUID) or DisplayName.
 	.PARAMETER DistributionLists
 		Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.
     Mutually exclusive with TeamAndChannel. Can be combined with Users.
@@ -106,6 +100,17 @@ function New-TeamsCallQueue {
     Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.
     Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
     Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+	.PARAMETER ChannelUsers
+		Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId
+    Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+  .PARAMETER TeamAndChannel
+    Optional. Uses a Channel to route calls to. Members of the Channel become Agents in the Queue.
+    Mutually exclusive with Users and DistributionLists.
+    Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
+    Acceptable Identifier for Teams are GroupId (GUID) or DisplayName. NOTE: DisplayName may not be unique.
+    Acceptable Identifier for Channels are Id (GUID) or DisplayName.
+  .PARAMETER ResourceAccountsForCallerId
+    Optional. Resource Account to be used for allowing Agents to use its number as a Caller Id.
   .PARAMETER LanguageId
     Optional Language Identifier indicating the language that is used to play shared voicemail prompts.
     This parameter becomes a required parameter If either OverflowAction or TimeoutAction is set to SharedVoicemail.
@@ -344,15 +349,21 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Agents
-    [Parameter(HelpMessage = "Team and Channel in the format 'Team\Channel'")]
-    [ValidateScript( { $_ -match '\\' })]
-    [string]$TeamAndChannel,
-
     [Parameter(HelpMessage = 'Name of one or more Distribution Lists')]
     [string[]]$DistributionLists,
 
     [Parameter(HelpMessage = 'UPN of one or more Users')]
     [string[]]$Users,
+
+    [Parameter(HelpMessage = 'UPN of one or more Channel Users')]
+    [string[]]$ChannelUsers,
+
+    [Parameter(HelpMessage = "Team and Channel in the format 'Team\Channel'")]
+    [ValidateScript( { $_ -match '\\' })]
+    [string]$TeamAndChannel,
+
+    [Parameter(HelpMessage = 'UPN of one or more Resource Accounts used for Caller Id')]
+    [string[]]$ResourceAccountsForCallerId,
     #endregion
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
@@ -383,7 +394,7 @@ function New-TeamsCallQueue {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 12
+    [int]$sMax = 14
 
     $Status = 'Verifying input'
     $Operation = 'Validating Parameters'
@@ -608,7 +619,6 @@ function New-TeamsCallQueue {
       $Parameters += @{'TimeoutThreshold' = $TimeoutThreshold }
     }
     #endregion
-
 
     #region Language
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
@@ -1076,7 +1086,7 @@ function New-TeamsCallQueue {
     #endregion
 
 
-    #region Agents
+    #region Agents & Accounts
     #region Channel
     $Operation = 'Parsing Channel'
     $step++
@@ -1096,15 +1106,59 @@ function New-TeamsCallQueue {
     }
     #endregion
 
+    #region ChannelUsers - Parsing and verifying ChannelUsers
+    $Operation = 'Parsing ChannelUsers'
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
+    if ($PSBoundParameters.ContainsKey('ChannelUsers')) {
+      Write-Verbose -Message "'$NameNormalised' Parsing ChannelUsers"
+      [System.Collections.ArrayList]$ChannelUsersIdList = @()
+      foreach ($ChannelUser in $ChannelUsers) {
+        $Assertion = $null
+        $CallTarget = $null
+        $CallTarget = Get-TeamsCallableEntity -Identity "$ChannelUser"
+        if ( $CallTarget.ObjectType -ne 'User') {
+          Write-Warning -Message "'$NameNormalised' Object '$ChannelUser' is not a User, omitting Object!"
+          continue
+        }
+        try {
+          # Asserting Object - Validation of Type
+          $Assertion = Assert-TeamsCallableEntity -Identity "$ChannelUser" -ErrorAction SilentlyContinue
+          if ( $Assertion ) {
+            Write-Information "User '$ChannelUser' will be added to CallQueue"
+            [void]$ChannelUsersIdList.Add($CallTarget.Identity)
+          }
+          else {
+            Write-Warning -Message "'$NameNormalised' Object '$ChannelUser' not found in AzureAd, omitting Object!"
+            continue
+          }
+        }
+        catch {
+          Write-Warning -Message "'$NameNormalised' Object '$ChannelUser' not in correct state or not enabled for Enterprise Voice, omitting Object!"
+          Write-Debug "Exception: $($_.Exception.Message)"
+          continue
+        }
+      }
+
+      if ($UserIdList.Count -gt 0) {
+        Write-Verbose -Message "'$NameNormalised' Users: Adding $($ChannelUsersIdList.Count) ChannelUsers to the Queue" -Verbose
+        $Parameters += @{'ChannelUserObjectId' = @($ChannelUsersIdList) }
+      }
+    }
+    #endregion
+
+
     #region Users - Parsing and verifying Users
     $Operation = 'Parsing Users'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
 
-    [System.Collections.ArrayList]$UserIdList = @()
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' - Parsing Users"
+      [System.Collections.ArrayList]$UserIdList = @()
       foreach ($User in $Users) {
         $Assertion = $null
         $CallTarget = $null
@@ -1145,9 +1199,9 @@ function New-TeamsCallQueue {
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
 
-    [System.Collections.ArrayList]$DLIdList = @()
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists" -Verbose
+      [System.Collections.ArrayList]$DLIdList = @()
       foreach ($DL in $DistributionLists) {
         $DLObject = $null
         $DLObject = Get-TeamsCallableEntity -Identity "$DL"
@@ -1170,8 +1224,53 @@ function New-TeamsCallQueue {
       }
     }
     #endregion
+
+
+    #region ResourceAccountsForCallerId - Parsing and verifying Parsing Resource Accounts for Caller Id
+    $Operation = 'Parsing Resource Accounts for Caller Id'
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
+    if ($PSBoundParameters.ContainsKey('ResourceAccountsForCallerId')) {
+      Write-Verbose -Message "'$NameNormalised' Parsing Resource Accounts for Caller Id"
+      [System.Collections.ArrayList]$OboResourceAccountIds = @()
+      foreach ($RA in $ResourceAccountsForCallerId) {
+        $Assertion = $null
+        $CallTarget = $null
+        $CallTarget = Get-TeamsCallableEntity -Identity "$RA"
+        if ( $CallTarget.ObjectType -ne 'ApplicationEndpoint') {
+          Write-Warning -Message "'$NameNormalised' Object '$RA' is not a Resource Account, omitting Object!"
+          continue
+        }
+        try {
+          # Asserting Object - Validation of Type
+          $Assertion = Assert-TeamsCallableEntity -Identity "$RA" -ErrorAction SilentlyContinue
+          if ( $Assertion ) {
+            Write-Information "Resource Account '$RA' will be added to CallQueue"
+            [void]$RAIdList.Add($CallTarget.Identity)
+          }
+          else {
+            Write-Warning -Message "'$NameNormalised' Object '$RA' not found in AzureAd, omitting Object!"
+            continue
+          }
+        }
+        catch {
+          Write-Warning -Message "'$NameNormalised' Object '$RA' not in correct state or not enabled for Enterprise Voice, omitting Object!"
+          Write-Debug "Exception: $($_.Exception.Message)"
+          continue
+        }
+      }
+
+      if ($OboResourceAccountIds.Count -gt 0) {
+        Write-Verbose -Message "'$NameNormalised' Resource Account: Adding $($OboResourceAccountIds.Count) Resource Accounts for Caller Id to the Queue" -Verbose
+        $Parameters += @{'OboResourceAccountIds' = @($OboResourceAccountIds) }
+      }
+    }
+    #endregion
     #endregion
 
+    
     #region Common parameters
     $Parameters += @{'WarningAction' = 'Continue' }
     $Parameters += @{'ErrorAction' = 'Stop' }
