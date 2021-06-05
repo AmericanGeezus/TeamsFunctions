@@ -219,7 +219,7 @@ Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToS
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: OverflowSharedVMFile
+Aliases: OfVMFile
 
 Required: False
 Position: 7
@@ -237,7 +237,7 @@ Enables a transcription of the Voicemail message to be sent to the Group mailbox
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
-Aliases: EnableOsVmTranscript
+Aliases: TranscribeOfVm
 
 Required: False
 Position: 8
@@ -324,7 +324,7 @@ Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpe
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: TimeoutSharedVMFile
+Aliases: ToVMFile
 
 Required: False
 Position: 13
@@ -342,7 +342,7 @@ Enables a transcription of the Voicemail message to be sent to the Group mailbox
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
-Aliases: EnableToSVmTranscript
+Aliases: TranscribeToVm
 
 Required: False
 Position: 14
@@ -644,7 +644,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
-Currently in Testing
+Audio Files, if not found will result in this option not being configured.
+Warnings are displayed, but default options or none are taken.
+WelcomeMusicAudioFile - No Greeting is played (default)
+MusicOnHoldAudioFile - No custom MusicOnHold is played (UseDefaultMusicOnHold is used)
+OverflowSharedVoicemailAudioFile - SharedVoicemail will not be configured
+TimeoutSharedVoicemailAudioFile - SharedVoicemail will not be configured
 
 ## RELATED LINKS
 

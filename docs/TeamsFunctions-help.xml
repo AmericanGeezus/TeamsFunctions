@@ -9047,6 +9047,14 @@
         <maml:uri></maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
+        <maml:linkText>Assert-TeamsAudioFile</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Import-TeamsAudioFile</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>New-TeamsCallQueue</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -12501,7 +12509,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="TimeoutSharedVMFile">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="ToVMFile">
           <maml:name>TimeoutSharedVoicemailAudioFile</maml:name>
           <maml:description>
             <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -12513,7 +12521,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="EnableToSVmTranscript">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="TranscribeToVm">
           <maml:name>EnableTimeoutSharedVoicemailTranscription</maml:name>
           <maml:description>
             <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -12741,7 +12749,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="OverflowSharedVMFile">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="OfVMFile">
           <maml:name>OverflowSharedVoicemailAudioFile</maml:name>
           <maml:description>
             <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -12753,7 +12761,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="EnableOsVmTranscript">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="TranscribeOfVm">
           <maml:name>EnableOverflowSharedVoicemailTranscription</maml:name>
           <maml:description>
             <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -12914,7 +12922,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="OverflowSharedVMFile">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="OfVMFile">
         <maml:name>OverflowSharedVoicemailAudioFile</maml:name>
         <maml:description>
           <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -12926,7 +12934,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="EnableOsVmTranscript">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="TranscribeOfVm">
         <maml:name>EnableOverflowSharedVoicemailTranscription</maml:name>
         <maml:description>
           <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -12986,7 +12994,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="TimeoutSharedVMFile">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="ToVMFile">
         <maml:name>TimeoutSharedVoicemailAudioFile</maml:name>
         <maml:description>
           <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -12998,7 +13006,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="EnableToSVmTranscript">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="TranscribeToVm">
         <maml:name>EnableTimeoutSharedVoicemailTranscription</maml:name>
         <maml:description>
           <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -13225,7 +13233,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Currently in Testing</maml:para>
+        <maml:para>Audio Files, if not found will result in this option not being configured. Warnings are displayed, but default options or none are taken. WelcomeMusicAudioFile - No Greeting is played (default) MusicOnHoldAudioFile - No custom MusicOnHold is played (UseDefaultMusicOnHold is used) OverflowSharedVoicemailAudioFile - SharedVoicemail will not be configured TimeoutSharedVoicemailAudioFile - SharedVoicemail will not be configured</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -16685,7 +16693,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="TimeoutSharedVMFile">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="ToVMFile">
           <maml:name>TimeoutSharedVoicemailAudioFile</maml:name>
           <maml:description>
             <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -16697,7 +16705,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="EnableToSVmTranscript">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="TranscribeToVm">
           <maml:name>EnableTimeoutSharedVoicemailTranscription</maml:name>
           <maml:description>
             <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -16937,7 +16945,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="OverflowSharedVMFile">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="OfVMFile">
           <maml:name>OverflowSharedVoicemailAudioFile</maml:name>
           <maml:description>
             <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -16949,7 +16957,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="EnableOfSVmTranscript">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="TranscribeOfVm">
           <maml:name>EnableOverflowSharedVoicemailTranscription</maml:name>
           <maml:description>
             <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -17092,7 +17100,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="OverflowSharedVMFile">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="OfVMFile">
         <maml:name>OverflowSharedVoicemailAudioFile</maml:name>
         <maml:description>
           <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -17104,7 +17112,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="EnableOfSVmTranscript">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="TranscribeOfVm">
         <maml:name>EnableOverflowSharedVoicemailTranscription</maml:name>
         <maml:description>
           <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -17164,7 +17172,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="TimeoutSharedVMFile">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="ToVMFile">
         <maml:name>TimeoutSharedVoicemailAudioFile</maml:name>
         <maml:description>
           <maml:para>Situational. Path to the Audio File for a Shared Voicemail greeting Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null</maml:para>
@@ -17176,7 +17184,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="EnableToSVmTranscript">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="TranscribeToVm">
         <maml:name>EnableTimeoutSharedVoicemailTranscription</maml:name>
         <maml:description>
           <maml:para>Situational. Boolean Switch. Requires specification of LanguageId Enables a transcription of the Voicemail message to be sent to the Group mailbox</maml:para>
@@ -17415,7 +17423,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Changes settings of an existing Call Queue</maml:para>
+        <maml:para>Audio Files, if not found will result in errors being generated. This deviates from the behaviour in New-TeamsCallQueue WelcomeMusicAudioFile - Setting not changed. If set before, this will remain. MusicOnHoldAudioFile - Setting not changed. If set before, this will remain. OverflowSharedVoicemailAudioFile - Setting not changed. OverflowAction will not be changed TimeoutSharedVoicemailAudioFile - Setting not changed. TimeoutAction will not be changed</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>

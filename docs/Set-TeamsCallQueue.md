@@ -209,7 +209,7 @@ Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToS
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: OverflowSharedVMFile
+Aliases: OfVMFile
 
 Required: False
 Position: 8
@@ -227,7 +227,7 @@ Enables a transcription of the Voicemail message to be sent to the Group mailbox
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
-Aliases: EnableOfSVmTranscript
+Aliases: TranscribeOfVm
 
 Required: False
 Position: 9
@@ -313,7 +313,7 @@ Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpe
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: TimeoutSharedVMFile
+Aliases: ToVMFile
 
 Required: False
 Position: 14
@@ -331,7 +331,7 @@ Enables a transcription of the Voicemail message to be sent to the Group mailbox
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
-Aliases: EnableToSVmTranscript
+Aliases: TranscribeToVm
 
 Required: False
 Position: 15
@@ -646,7 +646,16 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object or None
 ## NOTES
-Changes settings of an existing Call Queue
+Audio Files, if not found will result in errors being generated.
+This deviates from the behaviour in New-TeamsCallQueue
+WelcomeMusicAudioFile - Setting not changed.
+If set before, this will remain.
+MusicOnHoldAudioFile - Setting not changed.
+If set before, this will remain.
+OverflowSharedVoicemailAudioFile - Setting not changed.
+OverflowAction will not be changed
+TimeoutSharedVoicemailAudioFile - Setting not changed.
+TimeoutAction will not be changed
 
 ## RELATED LINKS
 
