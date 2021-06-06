@@ -115,15 +115,7 @@ function Get-TeamsCommonAreaPhone {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 4
-
-    # Loading all Microsoft Telephone Numbers
-    $Operation = 'Gathering Phone Numbers from the Tenant'
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
-    if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-      $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-    }
+    [int]$sMax = 3
 
     # Querying Global Policies
     $Operation = 'Querying Global Policies'
@@ -294,14 +286,15 @@ function Get-TeamsCommonAreaPhone {
       $CommonAreaPhoneLicense = Get-AzureAdUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
 
       # Phone Number Type
-      $Operation = 'Parsing PhoneNumber'
+      $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars 'tel:+') -split ';')[0]
-        if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
+        $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
+        if ($PhoneNumberIsMSNumber) {
           $CommonAreaPhonePhoneNumberType = 'Microsoft Number'
         }
         else {

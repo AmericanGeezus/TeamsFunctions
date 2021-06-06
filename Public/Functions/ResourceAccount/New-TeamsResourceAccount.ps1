@@ -214,16 +214,13 @@ function New-TeamsResourceAccount {
 
     #region PhoneNumbers
     if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $Operation = 'Parsing PhoneNumbers from the Tenant'
+      $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      # Loading all Microsoft Telephone Numbers
-      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      }
+      $MSNumber = $null
       $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
-      $PhoneNumberIsMSNumber = ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id)
+      $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
       Write-Verbose -Message "'$Name' PhoneNumber parsed"
     }
     #endregion

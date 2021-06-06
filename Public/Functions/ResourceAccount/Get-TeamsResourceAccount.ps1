@@ -125,15 +125,8 @@ function Get-TeamsResourceAccount {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 3
+    [int]$sMax = 2
 
-    # Loading all Microsoft Telephone Numbers
-    $Operation = 'Gathering Phone Numbers from the Tenant'
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
-    if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-      $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-    }
   } #begin
 
   process {
@@ -232,14 +225,15 @@ function Get-TeamsResourceAccount {
       $ResourceAccountLicense = Get-AzureAdUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
 
       # Phone Number Type
-      $Operation = 'Parsing PhoneNumber'
+      $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.PhoneNumber)" -SpecialChars 'tel:+') -split ';')[0]
-        if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
+        $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
+        if ($PhoneNumberIsMSNumber) {
           $ResourceAccountPhoneNumberType = 'Microsoft Number'
         }
         else {

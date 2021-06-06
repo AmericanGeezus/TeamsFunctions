@@ -643,12 +643,9 @@ function Set-TeamsResourceAccount {
             # Assigning new Number
             # Processing paths for Telephone Numbers depending on Type
             try {
-              # Loading all Microsoft Telephone Numbers
-              if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-                $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-              }
+              $MSNumber = $null
               $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
-              $PhoneNumberIsMSNumber = ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id)
+              $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
               if ($PhoneNumberIsMSNumber) {
                 # Set in VoiceApplicationInstance
                 if ($force -or $PSCmdlet.ShouldProcess("$UPN", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {

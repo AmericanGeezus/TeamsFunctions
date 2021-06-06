@@ -320,16 +320,24 @@ function Set-TeamsUserVoiceConfig {
 
       if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
         # Validating Microsoft Number
-        $Operation = 'Querying Microsoft Phone Numbers from Tenant'
+        $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
+        <# Replacement to not populate the Global variable as it currently only grabs 500 Numbers - Issue #79
+        #TEST Change to individual number lookup
         if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
           $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
         }
+        #>
+        <# Replacement to not populate the Global variable as it currently only grabs 500 Numbers - Issue #79
         $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
         $PhoneNumberIsMSNumber = ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id)
+        #>
+        $MSNumber = $null
+        $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
+        $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
         if ($PhoneNumberIsMSNumber) {
           Write-Verbose -Message "Phone Number '$PhoneNumber' found in the Tenant."
         }
