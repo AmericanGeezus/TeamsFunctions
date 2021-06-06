@@ -9,18 +9,18 @@
 
 function Find-AzureAdGroup {
   <#
-	.SYNOPSIS
-		Returns an Object if an AzureAd Group has been found
-	.DESCRIPTION
-		Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
-	.PARAMETER Identity
+  .SYNOPSIS
+    Returns an Object if an AzureAd Group has been found
+  .DESCRIPTION
+    Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
+  .PARAMETER Identity
     Mandatory. String to search. Provide part or full DisplayName, MailAddress or MailNickName
     Returns all matching groups
-	.EXAMPLE
+  .EXAMPLE
     Find-AzureAdGroup [-Identity] "My Group"
     Will return all Groups that have "My Group" in the DisplayName, ObjectId or MailNickName
-	.EXAMPLE
-		Find-AzureAdGroup -Identity "MyGroup@domain.com"
+  .EXAMPLE
+    Find-AzureAdGroup -Identity "MyGroup@domain.com"
     Will return all Groups that match "MyGroup@domain.com" in the DisplayName, ObjectId or MailNickName
   .INPUTS
     System.String
@@ -30,7 +30,7 @@ function Find-AzureAdGroup {
     None
   .COMPONENT
     UserManagement
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries Group Objects in Azure Ad with different mechanics
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
