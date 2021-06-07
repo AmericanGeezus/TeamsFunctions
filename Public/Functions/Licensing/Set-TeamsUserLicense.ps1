@@ -126,7 +126,7 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'Remove', HelpMessage = 'License(s) to be added to this Object')]
     [Parameter(ParameterSetName = 'RemoveAll', HelpMessage = 'License(s) to be added to this Object')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
@@ -140,7 +140,7 @@ function Set-TeamsUserLicense {
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
@@ -551,7 +551,7 @@ function Set-TeamsUserLicense {
         catch {
           switch -wildcard ($_.Exception.Message ) {
             '*No license changes provided*' {
-              Write-Information "INFO:   No Licenses have changed. Please validate already assigned licenses."
+              Write-Information 'INFO:   No Licenses have changed. Please validate already assigned licenses.'
             }
             '*depends on the service plan(s)*' {
               throw "Set-TeamsUserLicense failed with dependency issue: $($_.Exception.Message)"

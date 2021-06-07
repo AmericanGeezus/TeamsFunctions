@@ -73,7 +73,7 @@ function Test-TeamsUserLicense {
 
     [Parameter(Mandatory, ParameterSetName = 'License', HelpMessage = 'Teams License Package: E5,E3,S2')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
