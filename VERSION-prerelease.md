@@ -8,6 +8,18 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
+- TBC
+
+### Updated
+
+- TBC
+
+## v21.6.9 - prerelease to test AudioFiles
+
+[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2061-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+
+### New
+
 - New private function: `Assert-TeamsAudioFile`: Validating requirements for AudioFiles before importing them.
 
 ### Updated
@@ -20,7 +32,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Integrated Size and Format check here to simplify all AudioFile imports to Call Queues or Auto Attendants
   - Returns error if File size is above limit or not in the correct format (in addition to file not found)
 - `New-TeamsAutoAttendant`:
-  - Fixed an issue with very long Auto Attendant names.
+  - Fixed an issue with very long Auto Attendant names: Now consistently cutting off after 38 characters
   - Added a random number to the Call Flow name to enable creation for multiple Auto Attendants with similar names.
 - `Get-TeamsCallQueue`:
   - Renamed Parameter ApplicationInstances to `ResourceAccountsAssociated` for consistency
@@ -38,6 +50,15 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Clarifying warning for unusable User Objects - If `Assert-TeamsCallableEntity` does not return a usable object.
   - Refreshed processing of AudioFiles, delegating validation to using Assert-TeamsAudioFile
   - Reworked processing of SharedVoicemail parameters
+- `Get-TeamsTenantLicense`:
+  - Fixed an issue with the enumeration of available units: Now the sum of Units in the Status Enabled and Warning is taken
+  <br />NOTE: The Status 'Suspended' has not been considered among the available units. This will need to be validated still!
+  - Improved Lookup of unknown licenses - Now consistently adds license counters instead of just populating non-existent parameters (and writing errors)
+- `Set-TeamsUserLicense`:
+  - Re-ordered validation for selected Licenses: Now checking for already assigned license first before querying available units
+  - Validated License assignments together with queries with `Get-TeamsTenantLicense`
+- Quieten errors and warnings for all calls to `Get-AzureAdLicense` for functions using this to validate input
+- Improved validation to all Cmdlets where the PhoneNumber is validated against Microsoft Numbers (utilising search rather than global variable!)
 
 ### Limitations
 
