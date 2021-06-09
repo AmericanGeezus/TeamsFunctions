@@ -1151,7 +1151,7 @@ function Set-TeamsCallQueue {
             [void]$ChannelUsersIdList.Add($CallTarget.Identity)
           }
           else {
-            Write-Warning -Message "'$NameNormalised' Object '$ChannelUser' not found in AzureAd, omitting Object!"
+            Write-Warning -Message "'$NameNormalised' Object '$ChannelUser' not found or in unusable state, omitting Object!"
             continue
           }
         }
@@ -1195,7 +1195,7 @@ function Set-TeamsCallQueue {
             [void]$UserIdList.Add($CallTarget.Identity)
           }
           else {
-            Write-Warning -Message "'$NameNormalised' Object '$User' not found in AzureAd, omitting Object!"
+            Write-Warning -Message "'$NameNormalised' Object '$User' not found or in unusable state, omitting Object!"
             continue
           }
         }
@@ -1233,7 +1233,7 @@ function Set-TeamsCallQueue {
           [void]$DLIdList.Add($DLObject.Identity)
         }
         else {
-          Write-Warning -Message "Group '$DL' not found in AzureAd, omitting Group!"
+          Write-Warning -Message "Group '$DL' not found or not unique in AzureAd, omitting Group!"
         }
       }
 
@@ -1271,7 +1271,7 @@ function Set-TeamsCallQueue {
             [void]$RAIdList.Add($CallTarget.Identity)
           }
           else {
-            Write-Warning -Message "'$NameNormalised' Object '$RA' not found in AzureAd, omitting Object!"
+            Write-Warning -Message "'$NameNormalised' Object '$RA' not found or in unusable state, omitting Object!"
             continue
           }
         }

@@ -26,11 +26,13 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `New-TeamsCallQueue`:
   - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds simplified
   - Adding Parameter `ChannelUsers`: ChannelUserObjectId simplified. (NOTE: Currently use for this is unknown)
+  - Clarifying warning for unusable User Objects - If `Assert-TeamsCallableEntity` does not return a usable object.
   - Refreshed processing of AudioFiles, delegating validation to using Assert-TeamsAudioFile
   - Reworked processing of SharedVoicemail parameters
 - `Set-TeamsCallQueue`:
   - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds simplified
   - Adding Parameter `ChannelUsers`: ChannelUserObjectId simplified. (NOTE: Currently use for this is unknown)
+  - Clarifying warning for unusable User Objects - If `Assert-TeamsCallableEntity` does not return a usable object.
   - Refreshed processing of AudioFiles, delegating validation to using Assert-TeamsAudioFile
   - Reworked processing of SharedVoicemail parameters
 
