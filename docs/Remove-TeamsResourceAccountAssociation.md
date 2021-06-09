@@ -38,7 +38,7 @@ UPN(s) of the Resource Account(s) to be removed from a Call Queue or AutoAttenda
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

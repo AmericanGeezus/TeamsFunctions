@@ -1,7 +1,101 @@
 # TeamsFunctions - Change Log
 
-Full Change Log for all major releases.
+Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
+
+## v21.06 - Jun 2021 release
+
+_I got 99 functions and `Connect-SkypeOnline` is still one_ :)
+
+The performance issue for MicrosoftTeams v2.0.0 was resolved with publication of v2.3.1 -
+The issue only occurred if the local clients time zone is not set to UTC. To avoid having to use `RequiredVersion` in the #Requires statement,
+I have removed the Version Number from it, # Asserting AzureAD Connection
+if (-not (Assert-AzureADConnection)) { break }s the Module still supports connection with MicrosoftTeams v1.1.10-preview.
+Nevertheless, please use the most recent release-version of MicrosoftTeams published. I currently do not test on pre-released versions.
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-99-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-83-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-2-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-3-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2053-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Stability, Feedback, Bugfixing, CommonAreaPhone, CallQueue (Channel)                                                                                                                                                                                                                      |
+
+### New
+
+- `New-TeamsUserVoiceConfig`:
+  - New Function. Same as Set-TeamsUserVoiceConfig, although all required parameters are required.
+  - Will always return an Object after applying configuration.
+- `Get-TeamsTeamChannel` (Alias `Get-Channel`): My take on Get-Team and Get-TeamChannel. One Command to get the Channel
+  - Provid Name or Id for Team and Channel to lookup a match
+  - v1 only provides basic lookup. It does not (yet) account for multiple Teams or Channels with the provided DisplayName
+- `Grant-TeamsEmergencyAddress` (Alias `Grant-TeamsEA`): My take on Set-CsOnlineVoiceUser to apply an Emergency Location
+- New private Function `Get-TeamAndChannel` to query Team Object and Channel Object for use in Get-TeamsCallQueue and Get-TeamsCallableEntity
+
+### Updated
+
+- `Assert-TeamsUserVoiceConfig`:
+  - Added Parameter ExtensionState to validate whether an Extension has to be present or not.
+  - Refactored calls to Test-TeamsUserVoiceConfig with multiple parameters.
+- `Test-TeamsUserVoiceConfig`:
+  - Refactored use of switches.
+  - Added Parameter ExtensionState to validate whether an Extension has to be present or not.
+  - Added validation of InterpretedUserType. Known error-states are now fed back as a Warning
+- `Get-TeamsUserVoiceConfig`:
+  - Changed default output of Licenses to List of License Names only if no DiagnosticLevel is provided. This allows for Export as CSV.
+  - Added DiagnosticLevel 0 to display the same as without, though with nested Object.
+  - Added Feedback from Test-TeamsUserVoiceconfig to indicate misconfiguration for the Object.
+  - Added secondary query if CsOnlineUser is not found. If an AzureAdUser can be found, Warning and Information output followed by a limited Object are returned.
+- `Set-TeamsUserVoiceConfig`:
+  - Excluding "self" when validating Phone Number in use (Warning is only displayed if the UserPrincipalName is different)
+- `Test-TeamsUserVoiceConfig`:
+  - Fixed an issue with Partial Configuration - Will return FALSE now if Object is NOT partially configured (but fully)<br \>
+  NOTE: Using `-Partial` now properly returns false if it is fully configured
+  - Included Debug output after tests. Changed Verbose output to Information output (displayed only if it isn't called or `-Verbose` is used)
+- `Get-TeamsObjectType`: Added 'Channel' as an ObjectType for a match on the ChannelId.
+- `Get-TeamsCallableEntity`: Added match for '\' triggering query for TeamAndChannel.<br \>This should not be part of any other Object
+- `Get-TeamsCallQueue`: Added Parameter TeamAndChannel to display the Team & Channel in the format 'Team\Channel'
+- `New-TeamsCallQueue`:
+  - Added Parameter TeamAndChannel (input in the format 'Team\Channel')
+  - Added Validation of mutual exclusivity for TeamAndChannel VS (Users or Groups)
+- `Set-TeamsCallQueue`:
+  - Added Parameter TeamAndChannel (input in the format 'Team\Channel')
+  - Added Validation of mutual exclusivity for TeamAndChannel VS (Users or Groups)
+- `Get-TeamsResourceAccountAssociation`: Fixed an issue with lookup that resulted in forced lookup of all Associations. Mea Culpa!
+- `New-TeamsResourceAccount`: Increased waiting time after creating an account from 20 to 30 seconds to get more accurate feedback.
+- `Set-TeamsUserLicense`:
+  - Improved Debug output and catching known Errors (License already assigned (i.E. no changes), Dependency issue, User not found)
+- `Connect-Me`:
+  - Tweaked the waiting time after enabling Admin roles from 8 to 10s - Connect-MicrosoftTeams sometimes fails if run too shortly after enabling roles
+  - Added TenantDomain to PowerShell Window Title
+- `Disconnect-Me`: PowerShell Window Title reset to 'Windows PowerShell' once disconnected.
+- `Set-AzureAdUserLicenseServicePlan`: Added feedback for when no changes have been made (i.E. no License did contain any of the Service plans to enable/disable)
+- `Get-TeamsCommonAreaPhone`:
+  - Changed Query based on input (this now enables proper pipeline input for UserPrincipalNames)
+- `New-TeamsCommonAreaPhone`:
+  - Fixed an issue with the Password (ValidatePattern doesn't mix well with a SecureString, oops)
+  - Removed reverse engineering of applied password. Password is now only displayed if generated.
+  - Increased wait time for an AzureAdUser from 20 to 30s
+  - Removed hard-wired License (CommonAreaPhone). If not provided, no policies are applied as Object is not enabled for Teams. Warnings are displayed.
+- `Set-TeamsCommonAreaPhone`:
+  - Added secondary lookup for AzureAdUser
+  - Built out License application (analog to Set-TeamsResourceAccount).
+  - Gated Policy Assignment for licensed objects only
+- `Remove-TeamsCommonAreaPhone`:
+  - Added Switch Force
+  - Rebound lookup to AzureAdUser
+  - Removed Removal of Voice Configuration if CsOnlineUser Object is not found
+- `Remove-TeamsResourceAccount`:
+  - Added Switch Force
+- General / Multiple Scripts (43):
+  - Piping by Property Name now consequently done by UserPrincipalName first, then ObjectId, then Identity. Bindings improved
+  - When passing a UserPrincipalName, an error is encountered if this string contains an apostrophe. Patches O'Houlihan will be proud ;)
+
+### Behind the scenes
+
+- Deprecated the following Functions: `Connect-SkypeOnline`, `Assert-SkypeOnlineConnection`, `Test-SkypeOnlineConnection`
+- `Enable-CsOnlineSessionForReconnection`: Now a private function. It is only needed for `Connect-SkypeOnline`. This avoids having to use `-AllowClobber` for MicrosoftTeams v1.1.10
 
 ## v21.05.11 - May 2021 emergency release
 
@@ -425,9 +519,11 @@ Yes, it is time to remove some Functions. Mainly letting go of unused (unloved) 
 - Proper testing of the new: `TeamsCommonAreaPhone`-Scripts
 - More Auto Attendant love.
 
-## v20.12 - December 2020 release
+## More History
 
-### Component Status
+### v20.12 - December 2020 release
+
+#### Component Status
 
 - Function Status: 66 Public CmdLets, 8 private CmdLets, 15 Live
 - Development Status: 35 PreLive, 14 RC Functions; 2 in Beta, 0 in Alpha
@@ -438,7 +534,7 @@ Yes, it is time to remove some Functions. Mainly letting go of unused (unloved) 
 - `TeamsAutoAttendant` Scripts remain in BETA Status as improvements are still ongoing.
 - `TeamsCallableEntity` Scripts have been added (GET and FIND)
 
-### Focus for this month
+#### Focus for this month
 
 - *Faster*: Performance Improvements for multiple `Get` and `Test` commands
 - *Making 'Progress'*: Added Status bars and Verbose output to indicate progress for most longer running scripts (if you get div/0 errors, I can't count^^)
@@ -446,7 +542,7 @@ Yes, it is time to remove some Functions. Mainly letting go of unused (unloved) 
 - *PassThru*: Previously `-Silent` was used to suppress output. This has now reversed with `-PassThru` for some (3) SET Commands and removed for 2 NEW commands. Going forward, the  `PassThru` Switch is added to SET and REMOVE Commands respectively.
 - *Licensing*: New Scripts have been added to put the Licensing offer this Module is making on new, highly oiled rails: By parsing the [AzureAd License Document file on Microsoft Docs](https://docs.microsoft.com/en-us/azure/active-directory/enterprise-users/licensing-service-plan-reference) .
 
-### New Functions
+#### New Functions
 
 Some Helper functions for Call Queues and Auto Attendants, to find the type of Object: `Get-TeamsObjectType`, `Get-TeamsCallableEntity` and `Find-TeamsCallableEntity`. In the Resource Account family I have added `Test-TeamsResourceAccount`. To simplify Objects in AzureAd, `Find-AzureAdGroup` and `Find-AzureAdUser` (this was Get-AzureAdUserFromUpn, now renamed and revamped)
 
@@ -477,7 +573,7 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
 - `Get-AzureAdLicenseServicePlan` - EXPERIMENTAL - Same as above, just displaying all ServicePlans instead of License Products. Can also be `-FilterRelevantForTeams`. Not yet linked into any other functions.
 - `Enable-TeamsUserForEnterpriseVoice` (Alias: `Enable-Ev`) - I needed a shortcut.
 
-### Updated Functions & Bugfixes
+#### Updated Functions & Bugfixes
 
 - `Assert-` Functions have now more simplified output, displaying only one Message in all but one case
 - `Connect-Me`: Minor Code improvements and corrections. Added Output information at the end, containing Date, Timestamp, Connected Services
@@ -510,7 +606,7 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
   - Added an option to normalise Strings `-As E164` - This will format any String to an E.164 Number, for example: "1 (555) 1234-567" to "+15551234567"
   - Added an option to normalise Strings `-As LineURI` - This will format any String to a LineURI, for example: "1 (555) 1234-567 ;ext=1234" to "tel:+15551234567;ext=1234"
 
-### Other Improvements
+#### Other Improvements
 
 - Component Status: 15 Live, 32 PreLive, 11 RC Functions; 5 in Beta, 0 in Alpha
 - Pester Testing are still mostly structural checks, but I was able to formulate some tests for scripts (3) as well
@@ -518,20 +614,20 @@ Some Helper functions for Call Queues and Auto Attendants, to find the type of O
   - Tests working with PowerShell v7.20-preview.1 resolving an issue with Security/not recognising Unblocked Files
 - PowerShell 7 - More tests to come
 
-## v20.11 - November 2020 release
+### v20.11 - November 2020 release
 
-### New Functions
+#### New Functions
 
 Two small helper functions are coming to the fold. They mainly help you type less: `Get-TeamsOVP` for finding Online Voice Routing Policies and `Get-TeamsTDP` for finding Tenant Dial Plans (except the Global ones).
 
-### Major Overhaul
+#### Major Overhaul
 
 New Module structure means debugging gets easier and testing becomes an option. This is a big internal shift from a Module of ONE file of 13k+ lines of code to separate PS1 files dot-sourced into the main Module.
 While the one-file approach was managable with regions, it was a bit tiresome to scroll all the time...
 
 Limiting the Scope to one function per file also means that I can - finally - use the debugger in VScode. This will help me find variable states easier and not rely on the ISE Steroids and live testing that much. Speaking of testing, I am now also in a position to write tests for individual Functions.
 
-### Updated Functions & Bugfixes
+#### Updated Functions & Bugfixes
 
 - `Get-TeamsCallQueue`: Reworked Output completely. Get-CsCallQueue has surfaced more parameters and displays File parameters better. After changing the design principle from *expansive-by-default* to *concise-by-default* for GET-Commands, the following change was necessary to bring it in line. Removed Parameter `ConciseView` as the default Output now displays a concise object and added Added Parameter `Detailed` instead.
 - `Get-TeamsAutoAttendant`: Expanded on the existing output. Added Switch `Detailed` which additionally displays all nested Objects (and their nested Objects)
@@ -545,7 +641,7 @@ Limiting the Scope to one function per file also means that I can - finally - us
 - `Get-TeamsResourceAccount`: Performance improvements
 - `Show-FunctionStatus` now also has the Level RC. Pre-Live will now log verbose messages quietly, thus  significantly reducing Verbose noise. RC will display more. Order: Alpha > Beta > RC > PreLive > Live | Unmanaged, Deprecated
 
-### Other Improvements
+#### Other Improvements
 
 - Pester Testing
   - Current Status: Tests Passed: 779, Failed: 0, Skipped: 0 NotRun: 0<br />These are for the most part structural Module tests to enforce design principals and lets me not forget to use CmdLetBinding and other goodies in my code. More individual tests still to come.
@@ -555,11 +651,11 @@ Limiting the Scope to one function per file also means that I can - finally - us
 - Code Signing - The Module itself is now code-signed, this means:
 - PowerShell 7 support. Having installed v7.1.0-RC2 (which solves the issue with SkypeOnlineConnector not being able to be loaded), I will now test on both v5.1 and v7.1
 
-## v20.10 - October 2020 release
+### v20.10 - October 2020 release
 
 *More, we need more!*
 
-### NEW: Teams Voice Configuration Scripts
+#### NEW: Teams Voice Configuration Scripts
 
 - `Get-TeamsTenantVoiceConfig` - Displays Tenant Voice Configuration Information, like number of Gateways, Voice Policies, etc.
 - `Get-TeamsUserVoiceConfig` (Alias: `Get-TeamsUVC`) - Displays all Voice related parameters from the AD-Object, CS-Object and AD-Licensing-Object
@@ -568,7 +664,7 @@ Limiting the Scope to one function per file also means that I can - finally - us
 - `Remove-TeamsUserVoiceConfig` (Alias: `Remove-TeamsUVC`) - Removes a Voice Configuration set from the provided Identity. User will become "un-configured" for Voice in order to apply a new Voice Config set. This is handy when moving from Calling Plans to Direct Routing or vice versa
 - `Test-TeamsUserVoiceConfig` (Alias: `Test-TeamsUVC`) - TBC - Tests an individual VoiceConfig Package against the provided Identity. (not fully functional yet, will need a bit more love, sorry)
 
-### NEW: Auto Attendant Scripts
+#### NEW: Auto Attendant Scripts
 
 - `Get-TeamsAutoAttendant` (Alias: `Get-TeamsAA`) - A wrap for Get-CsAutoAttendant with slightly better output, or so I think. The display of Names with the Display-Parameters (Cs-Command) is something I want to learn and understand. I currently help myself by showing that the Name only hinting that there *is* an Object behind some parameters
 - `New-TeamsAutoAttendant` (Alias: `New-TeamsAA`) - A wrap for New-CsAutoAttendant with improved functionality. Only Name is required to stand up an AA now. Defaults are available for Language (en-US), TimeZone (UTC) and Schedule (Mon-Fri 9-5). Input for Business Hours and After Hours Greeting and Call Flow are available. Override with specific Object available for all options (passed through to New-CsAutoAttendant)
@@ -580,7 +676,7 @@ Limiting the Scope to one function per file also means that I can - finally - us
   - `New-TeamsAutoAttendantPrompt`: Creates a Prompt Object to be fed into Auto Attendants. Input: String. CmdLet decides whether it is a Text-to-Voice string or an AudioFile :)
   - `New-TeamsAutoAttendantSchedule`: Creates a Schedule Object to be fed into Auto Attendants. Input: Business Days, Business Hours. Many examples available to chose from. This should cover 95% of all Schedules
 
-### NEW: Aliases
+#### NEW: Aliases
 
 - All `TeamsAutoAttendant` CmdLets now also listen to `TeamsAA` (incl. their support functions)
 - All `TeamsCallQueue` CmdLets now also listen to `TeamsCQ` as well
@@ -590,13 +686,13 @@ Limiting the Scope to one function per file also means that I can - finally - us
 - Existing Aliases `con`, `dis`, `pol`, etc. have not been changed.
 - Alias and Function Name have swapped for `Connect-Me` and `Disconnect-Me` - Please note: The old `Connect-SkypeTeamsAndAAD` will be removed in v20.11
 
-### NEW: More support Functions
+#### NEW: More support Functions
 
 - `Resolve-AdGroupObjectFromName` and other support functions have been broken out.
 - This is in line with my learning to have "one function to one thing". PowerShell in a month of lunches and PowerShell Toolmaking improves the way I write :D
 - `Test-TeamsUserHasCallPlan` was added to gain feedback of whether remnant Calling Plan configuration may be present
 
-### Improvements
+#### Improvements
 
 - Adopted better Style guides to help clarify script exit scenarios and provide better output.
 - Added this file - VERSION.md - to collect a detailed change log.
@@ -619,15 +715,15 @@ Limiting the Scope to one function per file also means that I can - finally - us
 - **NOTE**: With the exception of Boolean Output Test scripts, all Functions can reach only **Pre-Live Status**. Once I am able to provide some basic Pester integration, these will be able to 'mature' more :)
 - **NOTE**: Feedback is appreciated for all scripts. Please send verbose output of the Scripts that generate errors to TeamsFunctions@outlook.com. Thanks!
 
-### Fixes
+#### Fixes
 
 - Multiple iterations of testing fixed a lot of small things across the board.
 
-## v20.09 - September 2020 release
+### v20.09 - September 2020 release
 
 Another month of bugfixing and stabilisation
 
-### NEW: Assert-CmdLets for Connections
+#### NEW: Assert-CmdLets for Connections
 
 - The Test-Commands only verify whether a session exists but do not action anything. As I didn't want to touch them, I have created their corresponding Assert-Commands (Output: OnScreen display and returns Boolean value)
 - `Assert-AzureADConnection` executes Test-AzureADConnection and if unsuccessful, displays output to run Connect-AzureAD (as all AzureAD scripts do already, preempting issues with AzureAD)
@@ -635,7 +731,7 @@ Another month of bugfixing and stabilisation
 - `Assert-SkypeOnlineConnection` executes Test-SkypeOnlineConnection and if unsuccessful, **tries to reconnect** the session with Get-CsTenant because of the caveat listed below. <br/>If this too proves unsuccessful, it will request to disconnect and reconnect manually using `Connect-Me`. The Alias '`pol`' is available. PoL for *Ping-of-life* as it it either resets the timeout counter or reconnects the session for you.
 - **NOTE**: The behavior of the Scripts did not change, I merely pulled the existing pre-check functionality into a separate function and linked them in the Script as a one-liner, this brought the line count of the module down by 300 :)
 
-### CHANGED: Teams Call Queue Handling
+#### CHANGED: Teams Call Queue Handling
 
 - `New-/Set-TeamsCallQueue` will now try to enable Users for EnterpriseVoice if they are Licensed, but not enabled yet.
   This affects User Objects added as agents with the *Users* Parameter as well as the *OverflowActionTarget* and *TimeoutActionTarget* if the respective *OverflowAction* or *TimeoutAction* if set to *'Forward'*
@@ -643,7 +739,7 @@ Another month of bugfixing and stabilisation
 - If the *TimeoutActionTarget* could not be enumerated and the TimeoutAction is not *'Disconnect'* the TimeoutAction will be removed from the parameter stack (reducing errors)
 - `Get-TeamsCallQueue` output has received a revamp. Order improved for readability, parameter *ConciseView* delivers less (similar to Get-CsCallQueue -ExcludeContent, but developed without knowing about this switch). <br/>Added parameters that Microsoft now exposes due to requests from myself and others in Uservoice. For Example: *DistributionGroupsLastExpanded* gives feedback on when the agent list was last updated. <br/>**NOTE**: This is still on an 8 hour cadence without an option to trigger other than to remove the Group and re-attach it to the CallQueue
 
-### Bugfixes
+#### Bugfixes
 
 - `Get-TeamsCallQueue` now returns a result again. Mea culpa.
 - Many small improvements in all `TeamsCallQueue` CmdLets
@@ -651,22 +747,22 @@ Another month of bugfixing and stabilisation
 - `Set-TeamsResourceAccount` now should be a tad faster as it does not query the Object for every single piece of information.
 - Typos fixed. 'timout' will be the bane of my existence.
 
-### **Caveats**
+#### **Caveats**
 
 Consistency of ability to reconnect sessions is dependent on the Security settings in the Tenant. On some tenants this works fine and commands are executed correctly after re-authenticating yourself. On other tenants, most notably ones with PIM activated, Error-messages are received with 'Session assertion' or other seemingly abstruse messages. Just run `Connect-Me` again to recreate a session (this will cleanly disconnect the session prior). The Assert-CmdLets should help with this :)
 
-## v20.08 - August 2020 Release
+### v20.08 - August 2020 Release
 
 July was "quiet" because I only published pre-releases with bugfixes (mostly). Here the full log:
 
-### NEW: Teams Licensing Application
+#### NEW: Teams Licensing Application
 
 - `Set-TeamsUserLicense` - Replacement function for Add-TeamsUserLicense (which now is deprecated). Add or Remove Licenses with an array. Accepted values are found in the accompanying variable `$TeamsLicenses.ParameterName`
 - Added Variables containing all relevant information for 38 Products and 13 ServicePlans! They are threaded into the TeamsUserLicense CmdLets as well as Get-TeamsTenantLicense. Translating a friendly Name (Property `ParameterName`, `FriendlyName`& `ProductName`) to the `SkuPartNumber`or `SkuID`is what I am trying to bridge (who wants to remember a 36 digit GUID for each Product?)
 - Accompanying this, changes to `Get-TeamsUserLicense` have been made to report a uniform feedback of Licenses (based on the same variable)
   - `Get-TeamsTenantLicense` (replaces Get-TeamsTenantLicense**s**) has been completely reworked. A
 
-### NEW: Teams Call Queue Handling
+#### NEW: Teams Call Queue Handling
 
 - Added SharedVoicemail-Parameters are processed for `New-TeamsCallQueue` and `Set-TeamsCallQueue`
 - **New**: `Import-TeamsAudioFile` - Generic helper function for Importing Audio Files. Returns ID of the File for processing. TeamsCallQueue CmdLets are using it.
@@ -675,14 +771,14 @@ July was "quiet" because I only published pre-releases with bugfixes (mostly). H
 - All CmdLets that can try a reconnect (SkypeOnline and ExchangeOnline) will try. This is done with Get-CsTenant and Get-UnifiedGroup respectively. AzureAD and MicrosoftTeams should not time out and therefore do not need to be reconnected to.
 - `Connect-SkypeTeamsAndAAD` (`Connect-Me` for short) now supports a connection to Exchange, though manually to select with the Switch `-ExchangeOnline`.
 
-### Improved
+#### Improved
 
 - Behind the scenes improvements and Performance
 - Proper application of `ShouldProcess` for all State Changing Functions
 - Performance for all `Test`-CmdLets (and some `Get`-CmdLets)
 - Verification for Sessions
 
-### Fixed
+#### Fixed
 
 - Plenty of Bugs squashed for `TeamsCallQueue` CmdLets (Plenty more to come, I am sure)
 - Fixes applied for `TeamsResourceAccount` Scripts - These have now lost the BETA-Moniker and are live :)
@@ -691,7 +787,7 @@ We are now in line with all but a few recommendations from PS Script Analyzer. I
 
 This modules row count is OVER 9000! ;)
 
-## v20.6.29.1 - July 2020 Release
+### v20.6.29.1 - July 2020 Release
 
 added Resource Account Association Scripts
 
@@ -709,7 +805,7 @@ Making a tactical halt here to add some Pester tests (once I figure them out :))
 
 Celebrating 7500 lines of code
 
-## v20.6.22.0
+### v20.6.22.0
 
 - More Improvements for Resource Accounts Scripts - LIVE
 - More Improvements for Call Queue Scripts - Still BETA
@@ -717,13 +813,13 @@ Celebrating 7500 lines of code
 - Incorporating Script Analyzer and starting to implement some suggestions:
 - Renamed Remove-StringSpecialCharacter to `Format-StringRemoveSpecialCharacter`
 
-## v20.6.17.1
+### v20.6.17.1
 
 - More Improvements for Resource Accounts Scripts - Still BETA
 - More Improvements for Call Queue Scripts - Still BETA
 - Added helper function `Write-ErrorRecord` to improve the output for Error Messages in a more readable format.
 
-## v20.6.9.1 - June 2020 Release
+### v20.6.9.1 - June 2020 Release
 
 - Added `Get-AzureAdUserFromUpn` to simplify looking up Users in AzureAD by providing the UserPrincipalName (now renamed to `Find-AzureAdUser`)
 - Added Call Queue Scripts
@@ -737,7 +833,7 @@ Celebrating 7500 lines of code
   - Added `Test-TeamsUser`
 - Removed Module testing scripts and replaced them with a generic `Test-Module`
 
-## v20.5.24.2
+### v20.5.24.2
 
 - Improved Resource Accounts by employing Parameter splatting. Much better now, faster too! Continuing to testing the scripts, still in BETA.
 
@@ -749,7 +845,7 @@ Celebrating 7500 lines of code
 - Improved Test functions for Module (speed!) and Connection (consistency)
 - Added test functions for Module and Connection consistently to all functions that need it.
 
-## v20.5.19.2
+### v20.5.19.2
 
 - Added Resource Account Scripts - in BETA.
   - `New-TeamsResourceAccount`
@@ -766,11 +862,11 @@ Celebrating 7500 lines of code
   - `Remove-StringSpecialCharacter` - By Francois-Xavier Cat. Removes special characters from strings. Incorporated here only because I need to rely on it.
   - `Format-StringForUse` - Same as above, though my own approach based on an anonymous coder. Applies rules for DisplayName and UPN respectively.
 
-## v20.5.9.1
+### v20.5.9.1
 
 Revamping existing scripts. No Additions.
 
-## v20.5.3.1 - May 2020 Release
+### v20.5.3.1 - May 2020 Release
 
 TeamsFunctions. A module. A way to collect relevant Scipts and Functions for Administration of SkypeOnline (Teams Backend), Voice and Direct Routing, Resource Accounts, Call Queues, etc.
 
@@ -780,5 +876,25 @@ This module is a collection of Teams-related PowerShell scripts and functions ba
 
 The first goal was to refresh what needs adding (for example, License names for Microsoft 365). The second goal was to learn and understand PowerShell better and test all Functions for applicability in Teams. Once vetted, some functions have been renamed from "SkypeOnline" to "Teams" (others, like the "Connect"-scripts have been retained).
 
-Enjoy,
-David
+## Abbreviated History
+
+This now moved from the PSM1 file to here:
+
+| Version | Release | Description |
+| ------- | ------- | ----------- |
+| 1.0         | 02-OCT-2017 | Initial Version (as SkypeFunctions)
+| 20.04.17.1  | 17-APR-2020 | Initial Version (as TeamsFunctions)
+| 20.05.03.1  | MAY 2020 | First Publication - Refresh for Teams |
+| 20.06.09.1  | JUN 2020 | Added Session Connection & TeamsCallQueue Functions |
+| 20.06.29.1  | JUL 2020 | Added TeamsResourceAccount & TeamsResourceAccountAssociation Functions |
+| 20.08       | AUG 2020 | Added new License Functions, Shared Voicemail Support for TeamsCalLQueue |
+| 20.09       | SEP 2020 | Bugfixes |
+| 20.10       | OCT 2020 | Added TeamsUserVoiceConfig & TeamsAutoAttendant Functions |
+| 20.11       | NOV 2020 | Restructuring, Bugfixes and general overhaul. Also more Pester-Testing |
+| 20.12       | DEC 2020 | Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes |
+| 21.01       | JAN 2021 | Updated Session connection, improved Auto Attendants, etc. |
+| 21.02       | FEB 2021 | Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector |
+| 21.03       | MAR 2021 | Switched to support for MicrosoftTeams v2.0.0 - Removed SkypeOnline, Bugfixes |
+| 21.04       | APR 2021 | Improved stability to Connect Scripts, Added more query scripts (Licensing, Policies), Script improvements, Bugfixes |
+| 21.05       | MAY 2021 | Re-introduced support for MicrosoftTeams v1, Bugfixes and minor improvements |
+| 21.06       | JUN 2021 | Bugfixes. Improvements for TeamsCommonAreaPhone and TeamsUserVoiceConfig cmdLets |

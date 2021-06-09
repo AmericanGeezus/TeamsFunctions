@@ -4,8 +4,8 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add Parameter ALL? - if path is found to search for ALL Objects in Ad (time!)
 #TODO Check for SupportsPaging for OVP and TDP (result size is not managable!)
+
 
 function Find-TeamsUserVoiceConfig {
   <#
@@ -121,6 +121,8 @@ function Find-TeamsUserVoiceConfig {
 	.LINK
     Get-TeamsUserVoiceConfig
 	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
 	.LINK
     Remove-TeamsUserVoiceConfig
@@ -133,7 +135,7 @@ function Find-TeamsUserVoiceConfig {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(ParameterSetName = 'ID')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'Tel', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]
@@ -241,7 +243,7 @@ function Find-TeamsUserVoiceConfig {
             $Number = $matches[1]
           }
           else {
-            #BODGE Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
+            #CHECK Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
             $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep 'tel:+;x='
           }
           Write-Information "Finding all Users enabled for Teams with Phone Number '$PhoneNr': Searching..."
@@ -314,7 +316,7 @@ function Find-TeamsUserVoiceConfig {
             if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
               Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
             }
-            #BODGE Revisit this based on Test-TeamsUserVoiceConfig
+            #CHECK Revisit this based on Test-TeamsUserVoiceConfig
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {

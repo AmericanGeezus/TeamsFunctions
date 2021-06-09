@@ -83,7 +83,7 @@ function Get-TeamsTenantLicense {
 
     [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
@@ -149,12 +149,22 @@ function Get-TeamsTenantLicense {
       $Lic = $null
       $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ "$($tenantSKU.SkuPartNumber)"
 
-      if ($null -ne $Lic) {
-        $Lic.Available = $($tenantSKU.PrepaidUnits.Enabled)
-        $Lic.Consumed = $($tenantSKU.ConsumedUnits)
-        $Lic.Remaining = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
-        $Lic.Expiring = $($tenantSKU.PrepaidUnits.Warning)
+      if ($PSBoundParameters.ContainsKey('Debug')) {
+        "Function: $($MyInvocation.MyCommand.Name): SkuPartNumber: $($tenantSKU.SkuPartNumber)" | Write-Debug
+        "Function: $($MyInvocation.MyCommand.Name): tenantSKU", $tenantSKU | Write-Debug
+      }
 
+      #VALIDATE segmentation: Available = Enabled + Warning?; understand Suspended
+      $LicUnitsAvailable = $tenantSKU.PrepaidUnits.Enabled + $tenantSKU.PrepaidUnits.Warning # + $tenantSKU.PrepaidUnits.Suspended # Omitted Suspended ones for now
+      $LicUnitsConsumed = $tenantSKU.ConsumedUnits
+      $LicUnitsRemaining = $LicUnitsAvailable - $LicUnitsConsumed
+      $LicUnitsExpiring = $tenantSKU.PrepaidUnits.Warning
+
+      if ($null -ne $Lic) {
+        $Lic | Add-Member -NotePropertyName Available -NotePropertyValue $LicUnitsAvailable -Force
+        $Lic | Add-Member -NotePropertyName Consumed -NotePropertyValue $LicUnitsConsumed -Force
+        $Lic | Add-Member -NotePropertyName Remaining -NotePropertyValue $LicUnitsRemaining -Force
+        $Lic | Add-Member -NotePropertyName Expiring -NotePropertyValue $LicUnitsExpiring -Force
         [void]$TenantLicenses.Add($Lic)
       }
       else {
@@ -168,13 +178,12 @@ function Get-TeamsTenantLicense {
             IncludesPhoneSystem = $null
             SkuId               = $tenantSKU.SkuId
             ServicePlans        = 'Unknown'
-            Available           = $($tenantSKU.PrepaidUnits.Enabled)
-            Consumed            = $($tenantSKU.ConsumedUnits)
-            Remaining           = $($tenantSKU.PrepaidUnits.Enabled - $tenantSKU.ConsumedUnits)
-            Expiring            = $($tenantSKU.PrepaidUnits.Warning)
+            Available           = $LicUnitsAvailable
+            Consumed            = $LicUnitsConsumed
+            Remaining           = $LicUnitsRemaining
+            Expiring            = $LicUnitsExpiring
           }
           [void]$TenantLicenses.Add($NewLic)
-
         }
         else {
           if (!$PSBoundParameters.ContainsKey('Detailed')) {

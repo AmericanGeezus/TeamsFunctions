@@ -4,8 +4,8 @@
 # Updated:  28-DEC-2020
 # Status:   Live
 
-#CHECK Pipeline with UPN instead of Identity
-#EXPAND: Make Number an Array?
+#TODO EXPAND: Make DialedNumber an Array? (ForEach Number, run everything?)
+
 
 function Find-TeamsUserVoiceRoute {
   <#
@@ -50,6 +50,8 @@ function Find-TeamsUserVoiceRoute {
 	.LINK
     Get-TeamsUserVoiceConfig
 	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
 	.LINK
     Remove-TeamsUserVoiceConfig
@@ -62,7 +64,7 @@ function Find-TeamsUserVoiceRoute {
   [OutputType([PSCustomObject])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s) to query routing for')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Phone Number to be normalised with the Dial Plan')]

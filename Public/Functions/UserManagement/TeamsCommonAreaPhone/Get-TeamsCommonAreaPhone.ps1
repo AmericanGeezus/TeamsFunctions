@@ -63,9 +63,11 @@ function Get-TeamsCommonAreaPhone {
     Remove-TeamsCommonAreaPhone
   .LINK
     Find-TeamsUserVoiceConfig
-  .LINK
+	.LINK
     Get-TeamsUserVoiceConfig
-  .LINK
+	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
 	#>
 
@@ -74,7 +76,7 @@ function Get-TeamsCommonAreaPhone {
   [OutputType([System.Object])]
   param(
     [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UserPrincipalName of the User')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DisplayName', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
@@ -113,22 +115,14 @@ function Get-TeamsCommonAreaPhone {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 4
-
-    # Loading all Microsoft Telephone Numbers
-    $Operation = 'Gathering Phone Numbers from the Tenant'
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
-    if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-      $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-    }
+    [int]$sMax = 3
 
     # Querying Global Policies
     $Operation = 'Querying Global Policies'
     $step++
     Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    $GlobalIPPhonePolicy = Get-CsTeamsIpPhonePolicy 'Global'
+    $GlobalIPPhonePolicy = Get-CsTeamsIPPhonePolicy 'Global'
     $GlobalCallingPolicy = Get-CsTeamsCallingPolicy 'Global'
     $GlobalCallParkPolicy = Get-CsTeamsCallParkPolicy 'Global'
 
@@ -143,38 +137,54 @@ function Get-TeamsCommonAreaPhone {
     $step++
     Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
-    if ($PSBoundParameters.ContainsKey('UserPrincipalName')) {
-      # Default Parameterset
-      [System.Collections.ArrayList]$CommonAreaPhones = @()
-      foreach ($I in $UserPrincipalName) {
-        Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
-        try {
-          $CAP = $null
-          $CAP = Get-CsOnlineUser -Identity "$I" -ErrorAction Stop
-          [void]$CommonAreaPhones.Add($CAP)
-        }
-        catch {
-          Write-Verbose -Message "Not found: '$I'" -Verbose
-          continue
+    switch ($PSCmdlet.ParameterSetName) {
+      'Identity' {
+        # Default Parameterset
+        [System.Collections.ArrayList]$CommonAreaPhones = @()
+        foreach ($User in $UserPrincipalName) {
+          Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$User'"
+          try {
+            $CAP = $null
+            $CAP = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            [void]$CommonAreaPhones.Add($CAP)
+          }
+          catch {
+            # If CsOnlineUser not found, trying AzureAdUser
+            try {
+              $CAP = $null
+              $CAP = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+              [void]$CommonAreaPhones.Add($CAP)
+              Write-Warning -Message "User '$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
+              Write-Verbose -Message 'You receive this message if no License containing Teams is assigned or the Teams ServicePlan (TEAMS1) is disabled! Please validate the User License. No further validation is performed. The Object returned only contains data from AzureAd' -Verbose
+            }
+            catch [Microsoft.Open.AzureAD16.Client.ApiException] {
+              Write-Error -Message "User '$User' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$User' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
+              continue
+            }
+            catch {
+              Write-Error -Message "User '$User' not found. Error encountered: $($_.Exception.Message)" -Category ObjectNotFound
+              continue
+            }
+          }
         }
       }
-    }
-    elseif ($PSBoundParameters.ContainsKey('DisplayName')) {
-      # Minimum Character length is 3
-      Write-Verbose -Message "DisplayName - Searching for Accounts with DisplayName '$DisplayName'"
-      $Filter = 'DisplayName -like "*{0}*"' -f $DisplayName
-      $CommonAreaPhones = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-      #$CommonAreaPhones = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
-    }
-    elseif ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars 'tel'
-      Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
-      $Filter = 'LineURI -like "*{0}*"' -f $SearchString
-      $CommonAreaPhones = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-    }
-    else {
-      Write-Warning -Message 'No parameters provided. Please provide at least one UserPrincipalName with Identity a DisplayName or a PhoneNumber'
-      return
+      'Displayname' {
+        # Minimum Character length is 3
+        Write-Verbose -Message "DisplayName - Searching for Accounts with DisplayName '$DisplayName'"
+        $Filter = 'DisplayName -like "*{0}*"' -f $DisplayName
+        $CommonAreaPhones = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        #$CommonAreaPhones = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
+      }
+      'Number' {
+        $SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars 'tel'
+        Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
+        $Filter = 'LineURI -like "*{0}*"' -f $SearchString
+        $CommonAreaPhones = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      }
+      Default {
+        Write-Warning -Message 'No parameters provided. Please provide at least one UserPrincipalName with Identity a DisplayName or a PhoneNumber'
+        return
+      }
     }
 
     # Stop script if no data has been determined
@@ -276,14 +286,15 @@ function Get-TeamsCommonAreaPhone {
       $CommonAreaPhoneLicense = Get-AzureAdUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
 
       # Phone Number Type
-      $Operation = 'Parsing PhoneNumber'
+      $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
       Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars 'tel:+') -split ';')[0]
-        if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
+        $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
+        if ($PhoneNumberIsMSNumber) {
           $CommonAreaPhonePhoneNumberType = 'Microsoft Number'
         }
         else {

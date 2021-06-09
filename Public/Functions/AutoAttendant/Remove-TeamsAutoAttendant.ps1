@@ -96,7 +96,7 @@ function Remove-TeamsAutoAttendant {
             Write-Information "Removing Auto Attendant: '$($AA.Name)'"
             $AACounter++
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
-              Remove-CsAutoAttendant -Identity $($AA.Identity) -ErrorAction STOP
+              Remove-CsAutoAttendant -Identity "$($AA.Identity)" -ErrorAction STOP
             }
           }
         }

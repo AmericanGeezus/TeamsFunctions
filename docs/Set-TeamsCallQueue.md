@@ -22,13 +22,15 @@ Set-TeamsCallQueue [-Name] <String> [[-DisplayName] <String>] [[-AgentAlertTime]
  [[-EnableTimeoutSharedVoicemailTranscription] <Boolean>] [[-TimeoutThreshold] <Int16>]
  [[-RoutingMethod] <String>] [[-PresenceBasedRouting] <Boolean>] [[-UseDefaultMusicOnHold] <Boolean>]
  [[-ConferenceMode] <Boolean>] [[-WelcomeMusicAudioFile] <String>] [[-MusicOnHoldAudioFile] <String>]
- [[-TeamAndChannel] <String>] [[-DistributionLists] <String[]>] [[-Users] <String[]>] [[-LanguageId] <String>]
- [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-DistributionLists] <String[]>] [[-Users] <String[]>] [[-ChannelUsers] <String[]>]
+ [[-TeamAndChannel] <String>] [[-ResourceAccountsForCallerId] <String[]>] [[-LanguageId] <String>] [-PassThru]
+ [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Does all the same things that Set-CsCallQueue does, but differs in a few significant respects:
 UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
+  File Import is handled by this Script
 Set-CsCallQueue   is used to apply parameters dependent on specification.
 Partial implementation is possible, output will show differences.
 
@@ -207,7 +209,7 @@ Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToS
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: OverflowSharedVMFile
+Aliases: OfVMFile
 
 Required: False
 Position: 8
@@ -225,7 +227,7 @@ Enables a transcription of the Voicemail message to be sent to the Group mailbox
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
-Aliases: EnableOfSVmTranscript
+Aliases: TranscribeOfVm
 
 Required: False
 Position: 9
@@ -311,7 +313,7 @@ Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpe
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: TimeoutSharedVMFile
+Aliases: ToVMFile
 
 Required: False
 Position: 14
@@ -329,7 +331,7 @@ Enables a transcription of the Voicemail message to be sent to the Group mailbox
 ```yaml
 Type: Boolean
 Parameter Sets: (All)
-Aliases: EnableToSVmTranscript
+Aliases: TranscribeToVm
 
 Required: False
 Position: 15
@@ -457,28 +459,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TeamAndChannel
-Optional.
-Uses a Channel to route calls to.
-Members of the Channel become Agents in the Queue.
-Mutually exclusive with Users and DistributionLists.
-Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
-Acceptable Identifier for Teams are GroupId (GUID) or DisplayName.
-NOTE: DisplayName may not be unique.
-Acceptable Identifier for Channels are Id (GUID) or DisplayName.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 23
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -DistributionLists
 Optional.
 Display Names of DistributionLists or Groups.
@@ -494,7 +474,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 24
+Position: 23
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -515,7 +495,64 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
+Position: 24
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ChannelUsers
+Optional.
+UserPrincipalNames of Users.
+Unknown use-case right now.
+Feeds Parameter ChannelUserObjectId
+  Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: 25
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TeamAndChannel
+Optional.
+Uses a Channel to route calls to.
+Members of the Channel become Agents in the Queue.
+Mutually exclusive with Users and DistributionLists.
+Acceptable format for Team and Channel is "TeamIdentifier\ChannelIdentifier".
+Acceptable Identifier for Teams are GroupId (GUID) or DisplayName.
+NOTE: DisplayName may not be unique.
+Acceptable Identifier for Channels are Id (GUID) or DisplayName.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 26
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ResourceAccountsForCallerId
+Optional.
+Resource Account to be used for allowing Agents to use its number as a Caller Id.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 27
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -531,7 +568,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 26
+Position: 28
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -609,7 +646,16 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object or None
 ## NOTES
-Changes settings of an existing Call Queue
+Audio Files, if not found will result in errors being generated.
+This deviates from the behaviour in New-TeamsCallQueue
+WelcomeMusicAudioFile - Setting not changed.
+If set before, this will remain.
+MusicOnHoldAudioFile - Setting not changed.
+If set before, this will remain.
+OverflowSharedVoicemailAudioFile - Setting not changed.
+OverflowAction will not be changed
+TimeoutSharedVoicemailAudioFile - Setting not changed.
+TimeoutAction will not be changed
 
 ## RELATED LINKS
 

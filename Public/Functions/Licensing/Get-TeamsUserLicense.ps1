@@ -14,20 +14,20 @@ function Get-TeamsUserLicense {
   .DESCRIPTION
     Returns an Object containing all Teams related Licenses found for a specific Object
     Licenses and ServicePlans are nested in the respective parameters for further investigation
-	.PARAMETER Identity
-		The Identity, UserPrincipalname or UserName for the user.
+	.PARAMETER UserPrincipalName
+		The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER DisplayAll
     Displays all Licenses, not only identified or relevant Teams Licenses
 	.EXAMPLE
-		Get-TeamsUserLicense [-Identity] John@domain.com
+		Get-TeamsUserLicense [-UserPrincipalName] John@domain.com
 		Displays all licenses assigned to User John@domain.com
 	.EXAMPLE
-		Get-TeamsUserLicense -Identity John@domain.com,Jane@domain.com
+		Get-TeamsUserLicense -UserPrincipalName John@domain.com,Jane@domain.com
 		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 	.EXAMPLE
 		Import-Csv User.csv | Get-TeamsUserLicense
-    Displays all licenses assigned to Users from User.csv, Column Identity.
-    The input file must have a single column heading of "Identity" with properly formatted UPNs.
+    Displays all licenses assigned to Users from User.csv, Column UserPrincipalName.
+    The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
   .INPUTS
     System.String
   .OUTPUTS
@@ -68,8 +68,8 @@ function Get-TeamsUserLicense {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('ObjectId', 'Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Displays all Licenses, not only Teams relevant')]
     [switch]$DisplayAll
@@ -116,15 +116,18 @@ function Get-TeamsUserLicense {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       try {
-        #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }
       catch {
-        #Write-Error -Message "Error ocurred for User '$User': $($_.Exception.Message)" -Category InvalidResult
-        throw $_
+        if ($_.Exception.Message.Contains('does not exist')) {
+          Write-Error -Message "User '$User' - Account not valid" -Category ObjectNotFound -RecommendedAction 'Verify UserPrincipalName'
+        }
+        else {
+          Write-Error "User '$User' - Exception Message: $($_.Exception.Message)"
+        }
         continue
       }
 
@@ -178,7 +181,7 @@ function Get-TeamsUserLicense {
       $PhoneSystemLicense = ('MCOEV' -in $UserServicePlans.ServicePlanName)
       $AudioConfLicense = ('MCOMEETADV' -in $UserServicePlans.ServicePlanName)
       $PhoneSystemVirtual = ('MCOEV_VIRTUALUSER' -in $UserServicePlans.ServicePlanName)
-      $CommonAreaPhoneLic = ('MCOCAP' -in $UserServicePlans.ServicePlanName)
+      $CommonAreaPhoneLic = ('MCOCAP' -in $UserLicenses.SkuPartNumber)
       $CommunicationCredits = ('MCOPSTNC' -in $UserServicePlans.ServicePlanName)
       $CallingPlanDom = ('MCOPSTN1' -in $UserServicePlans.ServicePlanName)
       $CallingPlanInt = ('MCOPSTN2' -in $UserServicePlans.ServicePlanName)
@@ -228,7 +231,7 @@ function Get-TeamsUserLicense {
         Licenses                 = $UserLicensesSorted
         ServicePlans             = $UserServicePlansSorted
         AudioConferencing        = $AudioConfLicense
-        CommoneAreaPhoneLicense  = $CommonAreaPhoneLic
+        CommonAreaPhoneLicense   = $CommonAreaPhoneLic
         PhoneSystemVirtualUser   = $PhoneSystemVirtual
         PhoneSystem              = $PhoneSystemLicense
         PhoneSystemStatus        = $PhoneSystemStatus

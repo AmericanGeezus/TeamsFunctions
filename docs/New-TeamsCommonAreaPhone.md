@@ -19,11 +19,8 @@ New-TeamsCommonAreaPhone [-UserPrincipalName] <String> [-DisplayName <String>] -
 ```
 
 ## DESCRIPTION
-Teams Call Queues and Auto Attendants require a Common Area Phone.
-It can carry a license and optionally also a phone number.
-This Function was designed to create the ApplicationInstance in AD,
-apply a UsageLocation to the corresponding AzureAD User,
-license the User and subsequently apply a phone number, all with one Command.
+This CmdLet creates an AzureAdUser Object, applies a UsageLocation
+  If a License is applied, a PhoneNumber, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
 
 ## EXAMPLES
 
@@ -139,8 +136,7 @@ Accept wildcard characters: False
 
 ### -Password
 Optional.
-String.
-8 to 16 characters, at least one uppercase letter, one lowercase letter and one number.
+PowerShell SecureString
 If not provided a Password will be generated with the string "CAP-" and todays date in the format: "CAP-03-JAN-2021"
 
 ```yaml
@@ -245,10 +241,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 Execution requires User Admin Role in Azure AD
-To assign a Phone Number to this Object, please apply a full Voice Configuration using Set-TeamsUserVoiceConfig
-This includes Phone Number and Calling Plan or Online Voice Routing Policy and optionally a Tenant Dial Plan.
+This CmdLet deliberately does not apply a Phone Number to the Object.
+To do so, please run New-TeamsUserVoiceConfig
+or Set-TeamsUserVoiceConfig.
+For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
+a Phone Number and optionally a Tenant Dial Plan.
 This Script only covers relevant elements for Common Area Phones themselves.
-Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
 
 ## RELATED LINKS
 
@@ -269,6 +267,8 @@ Assigning the PhoneSystem license has been deactivated as it is an add-on licens
 [Find-TeamsUserVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
+
+[New-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

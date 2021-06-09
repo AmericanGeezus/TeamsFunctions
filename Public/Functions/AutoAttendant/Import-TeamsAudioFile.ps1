@@ -40,6 +40,10 @@ function Import-TeamsAudioFile {
   .LINK
     about_TeamsCallQueue
 	.LINK
+		Assert-TeamsAudioFile
+	.LINK
+		Import-TeamsAudioFile
+	.LINK
 		New-TeamsCallQueue
 	.LINK
 		Set-TeamsCallQueue
@@ -70,14 +74,13 @@ function Import-TeamsAudioFile {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Testing File
-    if (-not (Test-Path $File)) {
-      Write-Error -Message 'File not found!' -ErrorAction Stop
+    if ( -not (Assert-TeamsAudioFile "$File")) {
+      return
     }
 
     $FileName = Split-Path $File -Leaf
 
     # remodelling ApplicationType to ApplicationId
-    #CHECK errors with Import-TeamsAudioFile may be related to Type? Validate that command is well!
     $ApplicationId = switch ($ApplicationType) {
       'CallQueue' { 'HuntGroup' }
       'AutoAttendant' { 'OrgAutoAttendant' }

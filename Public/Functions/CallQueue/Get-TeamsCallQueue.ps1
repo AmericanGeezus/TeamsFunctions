@@ -4,9 +4,9 @@
 # Updated:  01-JAN-2021
 # Status:   Live
 
-
+#TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForChannelId (OboResourceAccountIds)
 #TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
-#TODO Add new Switches: ChannelId & Suppress Shared Voicemail System messages
+
 function Get-TeamsCallQueue {
   <#
 	.SYNOPSIS
@@ -152,16 +152,18 @@ function Get-TeamsCallQueue {
       Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
       $QueueCounter++
       [int]$step = 0
-      [int]$sMax = 7
+      [int]$sMax = 8
 
       # Initialising Arrays
       [System.Collections.ArrayList]$UserObjects = @()
       [System.Collections.ArrayList]$DLNames = @()
       [System.Collections.ArrayList]$AIObjects = @()
+      [System.Collections.ArrayList]$OboObjects = @()
 
       if ( $Detailed ) {
+        [System.Collections.ArrayList]$ChannelUserObjects = @()
         [System.Collections.ArrayList]$AgentObjects = @()
-        $sMax++
+        $sMax = $sMax + 2
       }
 
       #region Finding OverflowActionTarget
@@ -193,9 +195,9 @@ function Get-TeamsCallQueue {
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       if ($Q.ChannelId) {
-        $FullChannelId = $Q.DistributionLists.Guid + "\" + $Q.ChannelId
-        $Team,$Channel = Get-TeamAndChannel -String "$FullChannelId"
-        $TeamAndChannelName = $Team.DisplayName + "\" + $Channel.DisplayName
+        $FullChannelId = $Q.DistributionLists.Guid + '\' + $Q.ChannelId
+        $Team, $Channel = Get-TeamAndChannel -String "$FullChannelId"
+        $TeamAndChannelName = $Team.DisplayName + '\' + $Channel.DisplayName
       }
       # Output: $ChannelObject
 
@@ -226,6 +228,17 @@ function Get-TeamsCallQueue {
       # Output: $UserObjects.UserPrincipalName
 
       if ( $Detailed ) {
+        # Parsing Channel Users when the detailed Switch is used
+        $Operation = 'Parsing Channel Users'
+        $step++
+        Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "'$($Q.Name)' - $Operation"
+        foreach ($User in $Q.ChannelUserObjectId) {
+          $ChannelUserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+          [void]$ChannelUserObjects.Add($ChannelUserObject)
+        }
+        # Output: $UserObjects.UserPrincipalName
+
         # Parsing Agents only when the detailed Switch is used
         $Operation = 'Parsing Agents'
         $step++
@@ -241,7 +254,7 @@ function Get-TeamsCallQueue {
       #endregion
 
       #region Application Instance UPNs
-      $Operation = 'Parsing Resource Accounts'
+      $Operation = 'Parsing Resource Accounts (Associated)'
       $step++
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
@@ -252,8 +265,22 @@ function Get-TeamsCallQueue {
           [void]$AIObjects.Add($AIObject)
         }
       }
-
       # Output: $AIObjects.UserPrincipalName
+      #endregion
+
+      #region Application Instance UPNs
+      $Operation = 'Parsing Resource Accounts (Caller Id)'
+      $step++
+      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($Q.Name)' - $Operation"
+      foreach ($OboRA in $Q.OboResourceAccountIds) {
+        $OboObject = $null
+        $OboObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $OboRA } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
+        if ($null -ne $OboObject) {
+          [void]$OboObjects.Add($OboObject)
+        }
+      }
+      # Output: $OboObjects.UserPrincipalName
       #endregion
 
       #region Creating Output Object
@@ -314,6 +341,7 @@ function Get-TeamsCallQueue {
       if ($PSBoundParameters.ContainsKey('Detailed')) {
         # Displays Agents
         $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ChannelUsers -Value $ChannelUserObjects.UserPrincipalName
         # Displays all except reserved Parameters (Microsoft Internal)
         $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
         $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId
@@ -323,7 +351,8 @@ function Get-TeamsCallQueue {
       }
 
       # Adding Resource Accounts
-      $QueueObject | Add-Member -MemberType NoteProperty -Name ApplicationInstances -Value $AIObjects.Userprincipalname
+      $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsAssociated -Value $AIObjects.Userprincipalname
+      $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsForCallerId -Value $OboObjects.Userprincipalname
       #endregion
 
       # Output
@@ -332,8 +361,6 @@ function Get-TeamsCallQueue {
 
       Write-Output $QueueObject
     }
-
-
 
   } #process
 

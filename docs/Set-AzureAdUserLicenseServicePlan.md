@@ -13,8 +13,8 @@ Changes one or more Service Plans for Licenses assigned to an AzureAD Object
 ## SYNTAX
 
 ```
-Set-AzureAdUserLicenseServicePlan [-Identity] <String[]> [-Enable <String[]>] [-Disable <String[]>] [-PassThru]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-AzureAdUserLicenseServicePlan [-UserPrincipalName] <String[]> [-Enable <String[]>] [-Disable <String[]>]
+ [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -25,21 +25,21 @@ Supports all Service Plans listed in Get-AzureAdLicenseServicePlan
 
 ### EXAMPLE 1
 ```
-Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Enable MCOEV
+Set-AzureAdUserLicenseServicePlan [-UserPrincipalName] Name@domain.com -Enable MCOEV
 ```
 
 Enables the Service Plan Phone System (MCOEV) on all Licenses assigned to Name@domain.com
 
 ### EXAMPLE 2
 ```
-Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Disable MCOEV,TEAMS1
+Set-AzureAdUserLicenseServicePlan -UserPrincipalName Name@domain.com -Disable MCOEV,TEAMS1
 ```
 
 Disables the Service Plans Phone System (MCOEV) and Teams (TEAMS1) on all Licenses assigned to Name@domain.com
 
 ### EXAMPLE 3
 ```
-Set-AzureAdUserLicenseServicePlan -Identity Name@domain.com -Enable MCOEV,TEAMS1 -PassThru
+Set-AzureAdUserLicenseServicePlan -UserPrincipalName Name@domain.com -Enable MCOEV,TEAMS1 -PassThru
 ```
 
 Enables the Service Plans Phone System (MCOEV) and Teams (TEAMS1) on all Licenses assigned to Name@domain.com
@@ -47,14 +47,13 @@ Displays User License Object after application
 
 ## PARAMETERS
 
-### -Identity
-Required.
-UserPrincipalName of the Object to be manipulated
+### -UserPrincipalName
+The UserPrincipalName, ObjectId or Identity of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.05.11'
+  ModuleVersion         = '21.06.15'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -52,9 +52,9 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
   ProcessorArchitecture = 'Amd64'
 
   # Modules that must be imported into the global environment prior to importing this module
-  RequiredModules       = @('MicrosoftTeams')
-  #RequiredModules       = @('AzureAdPreview','MicrosoftTeams')
-  #RequiredModules       = @('AzureAd','MicrosoftTeams'))
+  # RequiredModules       = @('MicrosoftTeams')
+  # RequiredModules       = @('AzureAdPreview','MicrosoftTeams')
+  # RequiredModules       = @('AzureAd','MicrosoftTeams'))
 
   # Assemblies that must be loaded prior to importing this module
   # RequiredAssemblies = @()
@@ -70,7 +70,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
   # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
   # NestedModules = @()
-  #NestedModules       = @(@{ModuleName = 'MicrosoftTeams'; ModuleVersion = '2.0.0' })
 
   # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
   FunctionsToExport     = @(
@@ -93,8 +92,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Set-TeamsCallQueue',
 
     # Licensing
-    #'Disable-AzureAdUserLicenseServicePlan', # To be built - Alias: Disable-ServicePlan
-    #'Enable-AzureAdUserLicenseServicePlan', # To be built - Alias: Enable-ServicePlan
     'Get-AzureAdLicense',
     'Get-AzureAdLicenseServicePlan',
     'Get-AzureAdUserLicense',
@@ -127,7 +124,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Test-MicrosoftTeamsConnection',
 
     # Temporary Re-Additions
-    'Enable-CsOnlineSessionForReconnection',
     'Connect-SkypeOnline',
     'Assert-SkypeOnlineConnection',
     'Test-SkypeOnlineConnection',
@@ -198,9 +194,10 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Find-TeamsUserVoiceRoute',
     'Get-TeamsTenantVoiceConfig',
     'Get-TeamsUserVoiceConfig',
+    'Grant-TeamsEmergencyAddress',
+    'New-TeamsUserVoiceConfig',
     'Remove-TeamsUserVoiceConfig',
     'Set-TeamsUserVoiceConfig',
-    #'Test-TeamsTenantDialPlan',
     'Test-TeamsUserVoiceConfig'
 
   )
@@ -214,8 +211,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport       = @(
     'con', 'dis', 'pol', 'ear', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
-    'Set-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
-    'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP', #'Test-TeamsTDP',
+    'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
+    'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 
     'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA',
     'Get-TeamsRAA', 'New-TeamsRAA', 'Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance',
@@ -249,7 +246,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
       Tags       = @('Teams', 'DirectRouting', 'EnterpriseVoice', 'Licensing', 'ResourceAccount', 'CallQueue', 'AutoAttendant', 'VoiceConfig', 'CommonAreaPhone')
 
       # Prerelease Version
-      #Prerelease = '-prerelease'
+      Prerelease = '-prerelease'
 
       # A URL to the license for this module.
       LicenseUri = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE'

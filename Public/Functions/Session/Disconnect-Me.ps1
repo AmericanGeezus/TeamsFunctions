@@ -110,6 +110,8 @@ function Disconnect-Me {
       Write-Verbose -Message 'No remote PowerShell sessions currently exist'
     }
 
+    Set-PowerShellWindowTitle "Windows PowerShell"
+
   } #process
 
   end {

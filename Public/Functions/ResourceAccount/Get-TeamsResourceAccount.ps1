@@ -4,8 +4,8 @@
 # Updated:  01-OCT-2020
 # Status:   Live
 
-
 #TODO Check usability of Calling line Identity Policy from Get-CsOnlineUser and add here
+#TODO Create manual object? add OVP to the Object for completeness? (would require Get-TeamsUVC to be run...)
 
 function Get-TeamsResourceAccount {
   <#
@@ -14,7 +14,7 @@ function Get-TeamsResourceAccount {
 	.DESCRIPTION
 		Returns one or more Resource Accounts based on input.
 		This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
-	.PARAMETER Identity
+	.PARAMETER UserPrincipalName
 		Default and positional. One or more UserPrincipalNames to be queried.
 	.PARAMETER DisplayName
 		Optional. Search parameter. Alternative to Find-TeamsResourceAccount
@@ -81,7 +81,7 @@ function Get-TeamsResourceAccount {
   [OutputType([System.Object])]
   param (
     [Parameter(Position = 0, ParameterSetName = 'Identity', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'User Principal Name of the Object.')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(ParameterSetName = 'DisplayName', ValueFromPipelineByPropertyName, HelpMessage = 'Searches for AzureAD Object with this Name')]
@@ -125,15 +125,8 @@ function Get-TeamsResourceAccount {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 3
+    [int]$sMax = 2
 
-    # Loading all Microsoft Telephone Numbers
-    $Operation = 'Gathering Phone Numbers from the Tenant'
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
-    if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-      $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-    }
   } #begin
 
   process {
@@ -151,7 +144,7 @@ function Get-TeamsResourceAccount {
       foreach ($I in $UserPrincipalName) {
         Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$I'"
         try {
-          $RA = Get-CsOnlineApplicationInstance -Identity $I -ErrorAction Stop
+          $RA = Get-CsOnlineApplicationInstance -Identity "$I" -ErrorAction Stop
           [void]$ResourceAccounts.Add($RA)
         }
         catch {
@@ -232,14 +225,15 @@ function Get-TeamsResourceAccount {
       $ResourceAccountLicense = Get-AzureAdUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
 
       # Phone Number Type
-      $Operation = 'Parsing PhoneNumber'
+      $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.PhoneNumber)" -SpecialChars 'tel:+') -split ';')[0]
-        if ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id) {
+        $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
+        if ($PhoneNumberIsMSNumber) {
           $ResourceAccountPhoneNumberType = 'Microsoft Number'
         }
         else {
@@ -290,7 +284,6 @@ function Get-TeamsResourceAccount {
       Write-Progress -Id 0 -Status 'Information Gathering' -Activity $MyInvocation.MyCommand -Completed
     }
     #endregion
-
   } #process
 
   end {

@@ -13,7 +13,7 @@ Tests an AzureAD-Object for a CallingPlan License
 ## SYNTAX
 
 ```
-Test-TeamsUserHasCallPlan [-Identity] <String> [<CommonParameters>]
+Test-TeamsUserHasCallPlan [-UserPrincipalName] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -40,14 +40,13 @@ Will Return $TRUE only if one of the following license Packages are assigned:
 
 ## PARAMETERS
 
-### -Identity
-Mandatory.
-The sign-in address or User Principal Name of the user account to modify.
+### -UserPrincipalName
+This is the UserID (UPN)
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

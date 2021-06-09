@@ -131,7 +131,7 @@ function Remove-TeamsResourceAccount {
       Write-Verbose -Message "Processing: $UPN"
       try {
         #Trying to query the Resource Account
-        $Object = (Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP)
+        $Object = (Get-CsOnlineApplicationInstance -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
         $DisplayName = $Object.DisplayName
       }
       catch {
@@ -147,7 +147,7 @@ function Remove-TeamsResourceAccount {
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity $UPN -WarningAction SilentlyContinue -ErrorAction Ignore
+      $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Ignore
       if ($Associations.count -eq 0) {
         # Object has no associations
         Write-Verbose -Message "'$DisplayName' Object does not have any associations"
@@ -187,13 +187,13 @@ function Remove-TeamsResourceAccount {
         if ($null -ne ($Object.TelephoneNumber)) {
           # Remove from VoiceApplicationInstance
           Write-Verbose -Message "'$Name' Removing Microsoft Number"
-          $null = (Set-CsOnlineVoiceApplicationInstance -Identity $UPN -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+          $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$UPN" -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS'
         }
         if ($null -ne ($Object.OnPremLineURI)) {
           # Remove from ApplicationInstance
           Write-Verbose -Message "'$Name' Removing Direct Routing Number"
-          $null = (Set-CsOnlineApplicationInstance -Identity $UPN -OnPremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
+          $null = (Set-CsOnlineApplicationInstance -Identity "$UPN" -OnPremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS'
         }
       }
@@ -210,7 +210,7 @@ function Remove-TeamsResourceAccount {
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
-        $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId $UPN -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
+        $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId "$UPN" -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
 
         if ($null -eq $UserLicenseSkuIDs) {
           Write-Verbose -Message "'$DisplayName' No licenses assigned. OK"
@@ -237,7 +237,7 @@ function Remove-TeamsResourceAccount {
       $step++
       Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if ($PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
+      if ($Force -or $PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS - Object removed from Azure Active Directory'
@@ -249,15 +249,10 @@ function Remove-TeamsResourceAccount {
       else {
         Write-Verbose -Message 'SKIPPED - Object removed not confirmed Azure Active Directory'
       }
-
-
-
       #endregion
 
-
-      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
-
       # Output
+      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
       if ($PassThru) {
         Write-Output "AzureAdUser '$UserPrincipalName' removed"
       }

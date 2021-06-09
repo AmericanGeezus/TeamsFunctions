@@ -13,10 +13,10 @@ function Test-TeamsUser {
 		Tests whether an Object exists in Teams (record found)
 	.DESCRIPTION
 		Simple lookup - does the Object exist - to avoid TRY/CATCH statements for processing
-	.PARAMETER Identity
-		Mandatory. The sign-in address or User Principal Name of the user account to modify.
+	.PARAMETER UserPrincipalName
+		Mandatory. The sign-in address, User Principal Name or Object Id of the Object.
 	.EXAMPLE
-		Test-TeamsUser -Identity $UPN
+		Test-TeamsUser -Identity "$UPN"
 		Will Return $TRUE only if the object $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to MicrosoftTeams!
   .INPUTS
@@ -52,8 +52,8 @@ function Test-TeamsUser {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
-    [Alias('UserPrincipalName')]
-    [string]$Identity
+    [Alias('ObjectId', 'Identity')]
+    [string]$UserPrincipalName
   ) #param
 
   begin {
@@ -68,20 +68,22 @@ function Test-TeamsUser {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    try {
-      $CsOnlineUser = Get-CsOnlineUser -Identity "$Identity" -WarningAction SilentlyContinue -ErrorAction STOP
-      if ( $null -ne $CsOnlineUser ) {
-        return $true
+    foreach ($User in $UserPrincipalName) {
+      try {
+        $CsOnlineUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+        if ( $null -ne $CsOnlineUser ) {
+          return $true
+        }
+        else {
+          return $false
+        }
       }
-      else {
+      catch [System.Exception] {
         return $false
       }
-    }
-    catch [System.Exception] {
-      return $false
-    }
-    catch {
-      return $false
+      catch {
+        return $false
+      }
     }
   } #process
 

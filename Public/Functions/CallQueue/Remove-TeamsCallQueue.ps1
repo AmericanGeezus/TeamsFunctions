@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
+#CHECK enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 
 function Remove-TeamsCallQueue {
   <#
@@ -96,7 +96,7 @@ function Remove-TeamsCallQueue {
             Write-Information "Removing Queue: '$($Q.Name)'"
             $QueueCounter++
             if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
-              Remove-CsCallQueue -Identity $($Q.Identity) -ErrorAction STOP
+              Remove-CsCallQueue -Identity "$($Q.Identity)" -ErrorAction STOP
             }
           }
         }

@@ -14,8 +14,8 @@ Changes a new Resource Account
 
 ```
 Set-TeamsResourceAccount [-UserPrincipalName] <String> [-DisplayName <String>] [-ApplicationType <String>]
- [-UsageLocation <String>] [-License <String>] [-PhoneNumber <String>] [-PassThru] [-Force] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+ [-UsageLocation <String>] [-License <String>] [-PhoneNumber <String>] [-OnlineVoiceRoutingPolicy <String>]
+ [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -84,7 +84,7 @@ Identifies the Object being changed
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
@@ -180,7 +180,24 @@ Aliases: Tel, Number, TelephoneNumber
 Required: False
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -OnlineVoiceRoutingPolicy
+Optional.
+Required for DirectRouting.
+Assigns an Online Voice Routing Policy to the Account
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: OVP
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 

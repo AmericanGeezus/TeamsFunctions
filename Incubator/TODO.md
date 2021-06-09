@@ -57,14 +57,14 @@
   - [ ] Default HolidaySets for a Country (this year/next year)
 - [ ] Evaluate integration Scripts
   - [ ] Default forward to CQ (wrapper for New-AA, with Menu to Forward to CallTarget Queue)
-  - [ ] Construct of 1 AA and 1 CQ, 2 RA, 2 RAA?
+  - [ ] Construct of 1 AA and 1 CQ, 2 RA, 2 RAA? (order!)
 - [ ] Continue to test Scripts
 - [ ] Add Argument Completer for all AudioFiles to expect them in C:\Temp: [ArgumentCompleter(C:\Temp\)]
 
 ## TeamsCallQueue
 
 - [ ] EVALUATE "Karen wants to call the manager" - Manager Attribute on CQs or RAs?
-- [ ] EVALUATE Refresh exposed Parameters with `CsOnlineCallQueue` scripts
+- [ ] EVALUATE Refresh exposed Parameters with `CsOnlineCallQueue` scripts - regularly
 
 ## Licenses
 

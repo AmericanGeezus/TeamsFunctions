@@ -48,7 +48,7 @@ User must have a valid Voice Configuration applied for this script to return a v
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
@@ -102,6 +102,8 @@ Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www
 [Get-TeamsTenantVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
+
+[New-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

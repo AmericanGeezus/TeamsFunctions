@@ -44,7 +44,7 @@ UPN(s) of the Resource Account(s) to be queried
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: False
 Position: 1

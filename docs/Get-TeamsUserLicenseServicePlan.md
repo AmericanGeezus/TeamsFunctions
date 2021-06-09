@@ -13,7 +13,7 @@ Returns License information (ServicePlans) for an Object in AzureAD
 ## SYNTAX
 
 ```
-Get-TeamsUserLicenseServicePlan [-Identity] <String[]> [-DisplayAll] [<CommonParameters>]
+Get-TeamsUserLicenseServicePlan [-UserPrincipalName] <String[]> [-DisplayAll] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,14 +23,14 @@ Returns an Object containing all Teams related ServicePlans (for Licenses assign
 
 ### EXAMPLE 1
 ```
-Get-TeamsUserLicenseServicePlan [-Identity] John@domain.com
+Get-TeamsUserLicenseServicePlan [-UserPrincipalName] John@domain.com
 ```
 
 Displays all licenses assigned to User John@domain.com
 
 ### EXAMPLE 2
 ```
-Get-TeamsUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
+Get-TeamsUserLicenseServicePlan -UserPrincipalName John@domain.com,Jane@domain.com
 ```
 
 Displays all licenses assigned to Users John@domain.com and Jane@domain.com
@@ -40,19 +40,18 @@ Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 Import-Csv User.csv | Get-TeamsUserLicenseServicePlan
 ```
 
-Displays all licenses assigned to Users from User.csv, Column Identity.
-  The input file must have a single column heading of "Identity" with properly formatted UPNs.
+Displays all licenses assigned to Users from User.csv, Column UserPrincipalName, ObjectId or Identity.
+  The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
 
 ## PARAMETERS
 
-### -Identity
-The Identity/UPN/sign-in address for the user entered in the format \<name\>@\<domain\>.
-  Aliases include: "UPN","UserPrincipalName","Username"
+### -UserPrincipalName
+The UserPrincipalName, ObjectId or Identity of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

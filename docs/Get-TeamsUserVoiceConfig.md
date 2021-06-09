@@ -62,7 +62,7 @@ UserPrincipalName (UPN) of the User
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
@@ -151,6 +151,8 @@ Omitting it allows for visible data when exporting as a CSV.
 [Get-TeamsTenantVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
+
+[New-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

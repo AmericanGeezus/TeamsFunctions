@@ -38,6 +38,8 @@ function New-TeamsResourceAccount {
 		Optional. Adds a Microsoft or Direct Routing Number to the Resource Account.
 		Requires the Resource Account to be licensed (License Switch)
 		Required format is E.164, starting with a '+' and 10-15 digits long.
+  .PARAMETER OnlineVoiceRoutingPolicy
+    Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
 	.EXAMPLE
 		New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
 		Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
@@ -117,7 +119,7 @@ function New-TeamsResourceAccount {
 
     [Parameter(HelpMessage = 'License to be assigned')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) {
           return $true
         }
@@ -128,7 +130,7 @@ function New-TeamsResourceAccount {
       })]
     [string]$License,
 
-    [Parameter(HelpMessage = 'Telephone Number to assign')]
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number to assign')]
     [ValidateScript( {
         If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
           $True
@@ -139,7 +141,12 @@ function New-TeamsResourceAccount {
         }
       })]
     [Alias('Tel', 'Number', 'TelephoneNumber')]
-    [string]$PhoneNumber
+    [string]$PhoneNumber,
+
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Routing Policy')]
+    [Alias('OVP')]
+    [string]$OnlineVoiceRoutingPolicy
+
   ) #param
 
   begin {
@@ -207,16 +214,13 @@ function New-TeamsResourceAccount {
 
     #region PhoneNumbers
     if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $Operation = 'Parsing PhoneNumbers from the Tenant'
+      $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      # Loading all Microsoft Telephone Numbers
-      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
-      }
+      $MSNumber = $null
       $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
-      $PhoneNumberIsMSNumber = ($MSNumber -in $global:TeamsFunctionsMSTelephoneNumbers.Id)
+      $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
       Write-Verbose -Message "'$Name' PhoneNumber parsed"
     }
     #endregion
@@ -258,8 +262,8 @@ function New-TeamsResourceAccount {
       if ($PSCmdlet.ShouldProcess("$UPN", 'New-CsOnlineApplicationInstance')) {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         $i = 0
-        $iMax = 20
-        Write-Information "Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
+        $iMax = 30
+        Write-Information "INFO:    Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
@@ -287,8 +291,7 @@ function New-TeamsResourceAccount {
     }
     catch {
       # Catching anything
-      Write-Host "ERROR:   Creation failed: $($_.Exception.Message)" -ForegroundColor Red
-      return
+      throw "Resource Account '$Name' - Creation failed: $($_.Exception.Message)"
     }
     #endregion
 
@@ -337,7 +340,7 @@ function New-TeamsResourceAccount {
         else {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add PhoneSystemVirtualUser')) {
-              $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+              $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
               Write-Information "'$Name' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
@@ -350,7 +353,7 @@ function New-TeamsResourceAccount {
       else {
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            $null = (Set-TeamsUserLicense -Identity $UPN -Add $License -ErrorAction STOP)
+            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
             Write-Information "'$Name' License assignment - '$License' SUCCESS"
             $IsLicensed = $true
           }
@@ -382,7 +385,7 @@ function New-TeamsResourceAccount {
       $Operation = 'Waiting for Get-AzureAdUserLicenseDetail to return a Result'
       Write-Verbose -Message "$Status - $Operation"
       <# There seems to be a bug here - either in the WHILE or in the Test-TeamsUserLicense... can't pinpoint
-      while (-not (Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName)) {
+      while (-not (Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlan $ServicePlanName)) {
         if ($i -gt $iMax) {
           Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
         }
@@ -405,7 +408,7 @@ function New-TeamsResourceAccount {
         Start-Sleep -Milliseconds 1000
         $i++
 
-        $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity $UserPrincipalName -ServicePlan $ServicePlanName
+        $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlan $ServicePlanName
       }
       while (-not $TeamsUserLicenseNotYetAssigned)
     }
@@ -434,7 +437,7 @@ function New-TeamsResourceAccount {
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"
           try {
             if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
-              $null = (Set-CsOnlineVoiceApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -Telephonenumber $E164Number -ErrorAction STOP)
+              $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -Telephonenumber $E164Number -ErrorAction STOP)
             }
           }
           catch {
@@ -446,7 +449,7 @@ function New-TeamsResourceAccount {
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, provisioning for: Direct Routing"
           try {
             if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $PhoneNumber")) {
-              $null = (Set-CsOnlineApplicationInstance -Identity $ResourceAccountCreated.UserPrincipalName -OnPremPhoneNumber $E164Number -Force -ErrorAction STOP)
+              $null = (Set-CsOnlineApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -OnpremPhoneNumber $E164Number -Force -ErrorAction STOP)
             }
           }
           catch {
@@ -462,6 +465,19 @@ function New-TeamsResourceAccount {
     Write-Verbose -Message "$Status - $Operation"
     Start-Sleep -Seconds 2
     #endregion
+
+    #region OnlineVoiceRoutingPolicy
+    if ( $OnlineVoiceRoutingPolicy ) {
+      try {
+        Grant-CsOnlineVoiceRoutingPolicy -Identity $UPN -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
+        Write-Information "SUCCESS: '$Name ($UPN)' Assigning OnlineVoiceRoutingPolicy: OK: '$OnlineVoiceRoutingPolicy'"
+      }
+      catch {
+        $ErrorLogMessage = "User '$Name ($UPN)' Assigning OnlineVoiceRoutingPolicy`: Failed: '$($_.Exception.Message)'"
+        Write-Error -Message $ErrorLogMessage
+      }
+    }
+    #endregion
     #endregion
 
 
@@ -474,13 +490,13 @@ function New-TeamsResourceAccount {
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $ResourceAccount = Get-CsOnlineApplicationInstance -Identity $UPN -WarningAction SilentlyContinue -ErrorAction STOP
+      $ResourceAccount = Get-CsOnlineApplicationInstance -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
 
       $Operation = 'Querying Object License'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $ResourceAccountLicense = Get-AzureAdUserLicense -Identity $UPN
+      $ResourceAccountLicense = Get-AzureAdUserLicense -Identity "$UPN"
 
       # readable Application type
       $ResourceAccountApplicationType = GetApplicationTypeFromAppId $ResourceAccount.ApplicationId

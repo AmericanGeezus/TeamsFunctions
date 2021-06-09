@@ -13,7 +13,8 @@ Tests whether any Voice Configuration has been applied to one or more Users
 ## SYNTAX
 
 ```
-Test-TeamsUserVoiceConfig [-Identity] <String[]> [-Partial] [-IncludeTenantDialPlan] [<CommonParameters>]
+Test-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-Partial] [-IncludeTenantDialPlan]
+ [-ExtensionState <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -54,14 +55,14 @@ This will treat any Object that only has a Tenant Dial Plan also as partially co
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Required.
-UserPrincipalName of the User to be tested
+UserPrincipalName or ObjectId of the Object
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
@@ -105,6 +106,24 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ExtensionState
+Optional.
+For DirectRouting, enforces the presence (or absence) of an Extension.
+Default: NotMeasured
+No effect for Microsoft Calling Plans
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: NotMeasured
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -138,6 +157,8 @@ Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, Voic
 [Get-TeamsTenantVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
+
+[New-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

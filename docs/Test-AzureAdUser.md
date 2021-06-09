@@ -13,7 +13,7 @@ Tests whether a User exists in Azure AD (record found)
 ## SYNTAX
 
 ```
-Test-AzureAdUser [-Identity] <String> [<CommonParameters>]
+Test-AzureAdUser [-UserPrincipalName] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,7 +23,7 @@ Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for p
 
 ### EXAMPLE 1
 ```
-Test-AzureADUser -Identity $UPN
+Test-AzureADUser -UserPrincipalName "$UPN"
 ```
 
 Will Return $TRUE only if the object $UPN is found.
@@ -31,19 +31,19 @@ Will Return $FALSE in any other case, including if there is no Connection to Azu
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Mandatory.
-The sign-in address or User Principal Name of the user account to test.
+The sign-in address, User Principal Name or Object Id of the Object.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 

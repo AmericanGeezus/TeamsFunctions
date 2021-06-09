@@ -37,7 +37,7 @@ UserPrincipalName of the User to be enabled.
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
@@ -114,7 +114,11 @@ Returns boolean result and less communication if called by another function
 
 [about_UserManagement]()
 
+[New-TeamsUserVoiceConfig]()
+
 [Set-TeamsUserVoiceConfig]()
+
+[Assert-TeamsCallableEntity]()
 
 [Enable-TeamsUserForEnterpriseVoice]()
 

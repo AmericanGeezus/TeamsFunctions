@@ -182,7 +182,7 @@ function New-TeamsResourceAccountAssociation {
     foreach ($UPN in $UserPrincipalName) {
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
-        $RAObject = Get-AzureADUser -ObjectId $UPN -WarningAction SilentlyContinue -ErrorAction Stop
+        $RAObject = Get-AzureADUser UPN -WarningAction SilentlyContinue -ErrorAction Stop
         $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
         [void]$Accounts.Add($AppInstance)
         Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"
@@ -237,7 +237,7 @@ function New-TeamsResourceAccountAssociation {
       $step2++
       Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $ApplicationTypeMatches = ((Get-CsOnlineApplicationInstance -Identity $Account.UserPrincipalName -WarningAction SilentlyContinue).ApplicationId -eq (GetAppIdFromApplicationType $DesiredType))
+      $ApplicationTypeMatches = ((Get-CsOnlineApplicationInstance -Identity "$($Account.UserPrincipalName)" -WarningAction SilentlyContinue).ApplicationId -eq (GetAppIdFromApplicationType $DesiredType))
 
       if ( $ApplicationTypeMatches ) {
         Write-Verbose -Message "'$($Account.UserPrincipalName)' - Application type matches '$DesiredType' - OK"
@@ -267,7 +267,7 @@ function New-TeamsResourceAccountAssociation {
           $step2++
           Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
           Write-Verbose -Message "$Status - $Operation"
-          if ($DesiredType -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity $Account.ObjectId -WarningAction SilentlyContinue).ApplicationId)) {
+          if ($DesiredType -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity "($($Account.ObjectId)" -WarningAction SilentlyContinue).ApplicationId)) {
             Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed to Desired Type: '$DesiredType'" -Category InvalidType
             continue
           }

@@ -39,7 +39,11 @@ function Enable-TeamsUserForEnterpriseVoice {
   .LINK
     about_UserManagement
 	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
+	.LINK
+    Assert-TeamsCallableEntity
 	.LINK
     Enable-TeamsUserForEnterpriseVoice
 	#>
@@ -49,7 +53,7 @@ function Enable-TeamsUserForEnterpriseVoice {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Suppresses confirmation prompt unless -Confirm is used explicitly')]
@@ -93,13 +97,13 @@ function Enable-TeamsUserForEnterpriseVoice {
 
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
-        #CHECK Deactivated as Object is able to be used/enabled even if in Islands mode and Object in Skype!
         if ($Called) {
           Write-Warning -Message $Message
           #return $false
         }
         else {
           Write-Warning -Message $Message
+          #Deactivated as Object is able to be used/enabled even if in Islands mode and Object in Skype!
           #throw [System.InvalidOperationException]::New("$Message")
         }
       }
@@ -155,7 +159,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             $Status = 'Enable User For Enterprise Voice'
             $Operation = 'Waiting for Get-CsOnlineUser to return a Result'
             Write-Verbose -Message "$Status - $Operation"
-            while ( -not $(Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
+            while ( -not $(Get-CsOnlineUser -Identity "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
               if ($i -gt $iMax) {
                 Write-Error -Message "User '$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false

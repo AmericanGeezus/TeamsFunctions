@@ -13,17 +13,17 @@ function Test-TeamsResourceAccount {
 		Tests whether an Application Instance exists in Azure AD (record found)
 	.DESCRIPTION
 		Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for processing
-	.PARAMETER Identity
+	.PARAMETER UserPrincipalName
 		Mandatory. The sign-in address or User Principal Name of the user account to test.
 	.PARAMETER Quick
 		Optional. By default, this command queries the CsOnlineApplicationInstance which takes a while.
 		A cursory check can be performed against the AzureAdUser (Department "Microsoft Communication Application Instance" indicates ResourceAccounts)
 	.EXAMPLE
-		Test-TeamsResourceAccount -Identity $UPN
+		Test-TeamsResourceAccount -UserPrincipalName "$UPN"
 		Will Return $TRUE only if an CsOnlineApplicationInstance Object with the $UPN is found.
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
 	.EXAMPLE
-		Test-TeamsResourceAccount -Identity $UPN -Quick
+		Test-TeamsResourceAccount -UserPrincipalName "$UPN" -Quick
 		Will Return $TRUE only if an AzureAdObject with the $UPN is found with the Department "Microsoft Communication Application Instance" set)
 		Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
   .INPUTS
@@ -55,8 +55,8 @@ function Test-TeamsResourceAccount {
 	[OutputType([Boolean])]
 	param(
 		[Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'This is the UserID (UPN)')]
-		[Alias('UserPrincipalName')]
-		[string]$Identity,
+		[Alias('ObjectId', 'Identity')]
+		[string]$UserPrincipalName,
 
 		[Parameter(HelpMessage = 'Quick test against AzureAdUser Department')]
 		[switch]$Quick
@@ -74,27 +74,28 @@ function Test-TeamsResourceAccount {
 
 	process {
 		Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-		if ( $Quick ) {
-			Write-Verbose -Message 'Querying AzureAdUser (Quick search and fast, but may not be 100% accurate!)'
-			$User = Get-AzureADUser -ObjectId $Identity
-			if ( $User.Department -eq 'Microsoft Communication Application Instance') {
-				return $true
+		foreach ($User in $UserPrincipalName) {
+			if ( $Quick ) {
+				Write-Verbose -Message 'Querying AzureAdUser (Quick search and fast, but may not be 100% accurate!)'
+				$User = Get-AzureADUser -ObjectId "$User"
+				if ( $User.Department -eq 'Microsoft Communication Application Instance') {
+					return $true
+				}
+				else {
+					return $false
+				}
 			}
 			else {
-				return $false
+				Write-Verbose -Message 'Querying CsOnlineApplicationInstance (Thorough search, but slower)'
+				$RA = Find-CsOnlineApplicationInstance -SearchQuery "$User" -WarningAction SilentlyContinue
+				if ( $RA ) {
+					return $true
+				}
+				else {
+					return $false
+				}
 			}
 		}
-		else {
-			Write-Verbose -Message 'Querying CsOnlineApplicationInstance (Thorough search, but slower)'
-			$RA = Find-CsOnlineApplicationInstance -SearchQuery "$Identity" -WarningAction SilentlyContinue
-			if ( $RA ) {
-				return $true
-			}
-			else {
-				return $false
-			}
-		}
-
 	} #process
 
 	end {

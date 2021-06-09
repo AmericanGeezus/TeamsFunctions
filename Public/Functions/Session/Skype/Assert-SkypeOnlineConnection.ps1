@@ -39,7 +39,7 @@ function Assert-SkypeOnlineConnection {
   param() #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level Deprecated
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 

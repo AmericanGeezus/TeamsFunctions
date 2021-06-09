@@ -154,7 +154,7 @@ function Find-TeamsCallableEntity {
       Write-Progress -Id 1 -ParentId 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
       try {
-        $CallTarget = Get-TeamsCallableEntity -Identity $Id
+        $CallTarget = Get-TeamsCallableEntity -Identity "$Id"
         if ( -not $CallTarget ) {
           Write-Error -Message "Callable Entity '$Id' not found - Please validate input"
           continue

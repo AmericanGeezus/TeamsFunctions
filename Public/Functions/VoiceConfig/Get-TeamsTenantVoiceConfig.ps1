@@ -51,6 +51,8 @@ function Get-TeamsTenantVoiceConfig {
 	.LINK
     Get-TeamsUserVoiceConfig
 	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
 	.LINK
     Remove-TeamsUserVoiceConfig
@@ -180,23 +182,23 @@ function Get-TeamsTenantVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      if (-not $global:TeamsFunctionsMSTelephoneNumbers) {
-        $global:TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -WarningAction SilentlyContinue
+      if (-not $TeamsFunctionsMSTelephoneNumbers) {
+        $TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -ResultSize 20000 -WarningAction SilentlyContinue
       }
 
-      if ( $null -ne $global:TeamsFunctionsMSTelephoneNumbers ) {
-        $MSTelephoneNumbersCount = $global:TeamsFunctionsMSTelephoneNumbers.Count
-        [int]$MSTelephoneNumbersFree = ($global:TeamsFunctionsMSTelephoneNumbers | Where-Object TargetType -NE $null).Count
+      if ( $null -ne $TeamsFunctionsMSTelephoneNumbers ) {
+        $MSTelephoneNumbersCount = $TeamsFunctionsMSTelephoneNumbers.Count
+        [int]$MSTelephoneNumbersFree = ($TeamsFunctionsMSTelephoneNumbers | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersUser = $global:TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ 'Subscriber'
+        $MSNumbersUser = $TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ 'Subscriber'
         [int]$MSTelephoneNumbersUser = $MSNumbersUser.Count
         [int]$MSTelephoneNumbersUserFree = ($MSNumbersUser | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersService = $global:TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ 'Service'
+        $MSNumbersService = $TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ 'Service'
         [int]$MSTelephoneNumbersService = $MSNumbersService.Count
         [int]$MSTelephoneNumbersServiceFree = ($MSNumbersService | Where-Object TargetType -NE $null).Count
 
-        $MSNumbersTollFree = $global:TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ 'TollFree'
+        $MSNumbersTollFree = $TeamsFunctionsMSTelephoneNumbers | Where-Object InventoryType -EQ 'TollFree'
         [int]$MSTelephoneNumbersTollFree = $MSNumbersTollFree.Count
         [int]$MSTelephoneNumbersTollFreeFree = ($MSNumbersTollFree | Where-Object TargetType -NE $null).Count
 

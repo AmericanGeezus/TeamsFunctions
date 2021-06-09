@@ -299,10 +299,11 @@ function Connect-Me {
           }
           'Enabling eligible Admin Roles' {
             try {
-              $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AccountId -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+              $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$AccountId" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
               if ( $ActivatedRoles.Count -gt 0 ) {
-                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Waiting for AzureAd to propagate (8s)" -Verbose
-                Start-Sleep -Seconds 8
+                $Seconds = 10
+                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Waiting for AzureAd to propagate ($Seconds`s)" -Verbose
+                Start-Sleep -Seconds $Seconds
               }
             }
             catch {
@@ -421,6 +422,11 @@ function Connect-Me {
             Write-Warning -Message 'Module AzureAdPreview not present. Admin Roles cannot be enumerated.'
           }
         }
+      }
+
+      # Changing Window Title to match TenantDomain
+      if ( $SessionInfo.TenantDomain ) {
+        Set-PowerShellWindowTitle $SessionInfo.TenantDomain
       }
 
       #Output

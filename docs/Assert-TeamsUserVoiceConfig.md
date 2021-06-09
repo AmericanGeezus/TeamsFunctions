@@ -13,7 +13,8 @@ Tests the validity of the Voice Configuration for one or more Users
 ## SYNTAX
 
 ```
-Assert-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-IncludeTenantDialPlan] [<CommonParameters>]
+Assert-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-IncludeTenantDialPlan] [-ExtensionState <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -42,6 +43,16 @@ Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -IncludeTenantDia
 If incorrect/missing, writes information output about every tested parameter including the Tenant Dial Plan
 Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
 
+### EXAMPLE 3
+```
+Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -ExtensionState MustBePopulated
+```
+
+If incorrect/missing, writes information output about every tested parameter including the Extension.
+With MustBePopulated an Extension is expected.
+If no Extension is present, it is flagged as misconfigured
+Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
+
 ## PARAMETERS
 
 ### -UserPrincipalName
@@ -51,7 +62,7 @@ UserPrincipalName of the User to be tested
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1
@@ -73,6 +84,24 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExtensionState
+Optional.
+For DirectRouting, enforces the presence (or absence) of an Extension.
+Default: NotMeasured
+No effect for Microsoft Calling Plans
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: NotMeasured
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -108,6 +137,8 @@ Piping the Output to Export-Csv can give the best result for investigation into 
 [Get-TeamsTenantVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
+
+[New-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

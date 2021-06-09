@@ -70,7 +70,7 @@ function Enable-MyAzureAdAdminRole {
       if ( $PIMavailable ) {
         try {
           $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-          $ActivatedRoles = Enable-AzureAdAdminRole -Identity $AzureAdFeedback.Account -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+          $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$($AzureAdFeedback.Account)" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
           if ( $ActivatedRoles.Count -gt 0 ) {
             return $(if ($Called) { $ActivatedRoles } else {
                 Write-Information "Enable-MyAzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -InformationAction Continue
@@ -91,7 +91,9 @@ function Enable-MyAzureAdAdminRole {
                 Write-Information 'Enable-MyAzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry' -InformationAction Continue
               }
               else {
-                Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management is not enabled for this tenant' -InformationAction Continue
+                Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management could not be contacted' -InformationAction Continue
+                #TEST ERROR Message
+                throw "$($_.Exception.Message)"
               }
             })
         }

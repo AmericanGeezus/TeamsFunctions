@@ -2,7 +2,7 @@
 # Function: Lookup
 # Author:	  David Eberhardt
 # Updated:  19-DEC-2020
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -85,12 +85,12 @@ function Get-RandomQuote {
     "Steal five dollars and you're a common thief. Steal thousands and you're either the government or a hero. (Terry Pratchett)", `
     'A witch ought never to be frightened in the darkest forest, Granny Weatherwax had once told her, because she should be sure in her soul that the most terrifying thing in the forest was her. (Terry Pratchett)', `
     'His progress through life was hampered by his tremendous sense of his own ignorance, a disability which affects all too few. (Terry Pratchett)', `
-    "Stories of imagination tend to upset those without one. (Terry Pratchett)", `
+    'Stories of imagination tend to upset those without one. (Terry Pratchett)', `
     "The phrase 'Someone ought to do something' was not, by itself, a helpful one. People who used it never added the rider 'and that someone is me'. (Terry Pratchett - The Hogfather)", `
-    "Always remember that the crowd that applauds your coronation is the same crowd that will applaud your beheading. People like a show. (Terry Pratchett - Going Postal)", `
+    'Always remember that the crowd that applauds your coronation is the same crowd that will applaud your beheading. People like a show. (Terry Pratchett - Going Postal)', `
     "It is well known that a vital ingredient of success is not knowing that what you're attempting can't be done. (Terry Pratchett - Equal Rites)", `
 
-    'There has ceased to be a difference between my awake clothes and my asleep clothes (Mindy Kaling)', `
+  'There has ceased to be a difference between my awake clothes and my asleep clothes (Mindy Kaling)', `
     "If you don't stick to your values when they're being tested, they're not values: they're hobbies. (Jon Stewart)", `
     #endregion Added Julia
 

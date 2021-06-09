@@ -1,11 +1,11 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:		David Eberhardt
-# Updated:  01-APR-2020
-# Status:   RC
+# Updated:  15-MAY-2021
+# Status:   Live
 
 #TODO Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
-#CHECK Add Switch to validate OnPremLineUri must (or must not) have an extension?
+
 
 function Assert-TeamsUserVoiceConfig {
   <#
@@ -23,6 +23,9 @@ function Assert-TeamsUserVoiceConfig {
   .PARAMETER IncludeTenantDialPlan
     Optional. By default, only the core requirements for Voice Routing are verified.
     This extends the requirements to also include the Tenant Dial Plan.
+  .PARAMETER ExtensionState
+    Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured
+    No effect for Microsoft Calling Plans
   .EXAMPLE
     Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     If incorrect/missing, writes information output about every tested parameter
@@ -30,6 +33,11 @@ function Assert-TeamsUserVoiceConfig {
   .EXAMPLE
     Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -IncludeTenantDialPlan
     If incorrect/missing, writes information output about every tested parameter including the Tenant Dial Plan
+    Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
+  .EXAMPLE
+    Assert-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -ExtensionState MustBePopulated
+    If incorrect/missing, writes information output about every tested parameter including the Extension.
+    With MustBePopulated an Extension is expected. If no Extension is present, it is flagged as misconfigured
     Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrectly configured Voice Configuration
   .INPUTS
     System.String
@@ -60,6 +68,8 @@ function Assert-TeamsUserVoiceConfig {
 	.LINK
     Get-TeamsUserVoiceConfig
 	.LINK
+    New-TeamsUserVoiceConfig
+	.LINK
     Set-TeamsUserVoiceConfig
 	.LINK
     Remove-TeamsUserVoiceConfig
@@ -72,15 +82,19 @@ function Assert-TeamsUserVoiceConfig {
   #[OutputType([Boolean])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s)')]
-    [Alias('Identity')]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Extends requirements to include Tenant Dial Plan assignment')]
-    [switch]$IncludeTenantDialPlan
+    [switch]$IncludeTenantDialPlan,
+
+    [Parameter(HelpMessage = 'Extends requirements to validate the status of the Extension')]
+    [ValidateSet('MustBePopulated','MustNotBePopulated','NotMeasured')]
+    [string]$ExtensionState = 'NotMeasured'
   )
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
@@ -121,19 +135,15 @@ function Assert-TeamsUserVoiceConfig {
         Write-Information "User '$User' not a User"
         continue
       }
-      if (-not $CsOnlineUser.EnterpriseVoiceEnabled ) {
-        Write-Information "User '$User' not enabled for Enterprise Voice"
-        continue
-      }
       else {
+        # Testing Full Configuration
         Write-Verbose -Message "User '$User' - User Voice Configuration (Full)"
-        $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User"
+        $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name): TestFull:", ($TestFull | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
 
         if ($TestFull) {
-          if (-not $CsOnlineUser.TenantDialPlan -and $IncludeTenantDialPlan ) {
-            Write-Information "User '$User' does not have a Tenant Dial Plan assigned"
-            continue
-          }
           if ($Called) {
             Write-Output $TestFull
           }
@@ -143,23 +153,20 @@ function Assert-TeamsUserVoiceConfig {
           }
         }
         else {
+          # Testing Partial Configuration
           Write-Verbose -Message "User '$User' - User Voice Configuration (Partial)"
-          #TEST IncludeTenantDialPlan
-          if ($IncludeTenantDialPlan) {
-            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan
+          $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState -WarningAction SilentlyContinue
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            "Function: $($MyInvocation.MyCommand.Name): TestPart:", ($TestPart | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
-          else {
-            $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial
-          }
+
           if ($TestPart) {
             if ($Called) {
               Write-Output $TestPart
             }
             else {
-              Write-Warning "User '$User' is partially configured! Please investigate"
-              # Output with Switch (faster with values already queried!)
-              Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1
-              #$CsOnlineUser | Select-Object UserPrincipalName, InterpretedUserType, EnterpriseVoiceEnabled, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy, TelephoneNumber, LineUri, OnPremLineURI
+              Write-Warning "User '$User' is only partially configured!"
+              Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -SkipLicenseCheck -DiagnosticLevel 1 -WarningAction SilentlyContinue
             }
           }
         }

@@ -147,7 +147,7 @@ function Find-TeamsResourceAccount {
             'CallQueue' { Get-CsCallQueue -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
             'AutoAttendant' { Get-CsAutoAttendant -Identity $Association.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue }
           }
-          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity $AdUser.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AssociationStatus = Get-CsOnlineApplicationInstanceAssociationStatus -Identity "$($AdUser.ObjectId)" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
           # Expanding Object
           $ResourceAccountObject | Add-Member -MemberType NoteProperty -Name AssociatedTo -Value $AssociationObject.Name

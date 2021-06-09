@@ -284,7 +284,6 @@ function Connect-Me {
           }
           'SkypeOnline' {
             try {
-              #TEST
               if (-not $CsOnlineUsername) {
                 [void]$MeToTheO365ServiceParams.Remove('AccountId')
               }

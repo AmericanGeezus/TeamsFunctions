@@ -71,7 +71,7 @@ One or more UserPrincipalNames to be queried
 ```yaml
 Type: String[]
 Parameter Sets: Identity
-Aliases: Identity
+Aliases: ObjectId, Identity
 
 Required: False
 Position: 1
@@ -145,6 +145,8 @@ Running the CmdLet without any input might take a while, depending on size of th
 [Find-TeamsUserVoiceConfig]()
 
 [Get-TeamsUserVoiceConfig]()
+
+[New-TeamsUserVoiceConfig]()
 
 [Set-TeamsUserVoiceConfig]()
 

@@ -13,22 +13,21 @@ function Get-TeamsUserLicenseServicePlan {
     Returns License information (ServicePlans) for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all Teams related ServicePlans (for Licenses assigned) for a specific Object
-	.PARAMETER Identity
-		The Identity/UPN/sign-in address for the user entered in the format <name>@<domain>.
-    Aliases include: "UPN","UserPrincipalName","Username"
+	.PARAMETER UserPrincipalName
+		The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER DisplayAll
     Displays all ServicePlans, not only relevant Teams Service Plans
     Also displays AllLicenses and AllServicePlans object for further processing
 	.EXAMPLE
-		Get-TeamsUserLicenseServicePlan [-Identity] John@domain.com
+		Get-TeamsUserLicenseServicePlan [-UserPrincipalName] John@domain.com
 		Displays all licenses assigned to User John@domain.com
 	.EXAMPLE
-		Get-TeamsUserLicenseServicePlan -Identity John@domain.com,Jane@domain.com
+		Get-TeamsUserLicenseServicePlan -UserPrincipalName John@domain.com,Jane@domain.com
 		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
 	.EXAMPLE
 		Import-Csv User.csv | Get-TeamsUserLicenseServicePlan
-    Displays all licenses assigned to Users from User.csv, Column Identity.
-    The input file must have a single column heading of "Identity" with properly formatted UPNs.
+    Displays all licenses assigned to Users from User.csv, Column UserPrincipalName, ObjectId or Identity.
+    The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
   .INPUTS
     System.String
   .OUTPUTS
@@ -69,8 +68,8 @@ function Get-TeamsUserLicenseServicePlan {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the UPN or login name of the user account, typically <user>@<domain>.')]
-    [Alias('UserPrincipalName')]
-    [string[]]$Identity,
+    [Alias('ObjectId', 'Identity')]
+    [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Displays all ServicePlans, not only Teams relevant ones')]
     [switch]$DisplayAll
@@ -110,9 +109,8 @@ function Get-TeamsUserLicenseServicePlan {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($User in $Identity) {
+    foreach ($User in $UserPrincipalName) {
       try {
-        #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
       }

@@ -14,20 +14,20 @@ Changes the License of an AzureAD Object
 
 ### Add (Default)
 ```
-Set-TeamsUserLicense [-Identity] <String[]> -Add <String[]> [-UsageLocation <String>] [-PassThru] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Set-TeamsUserLicense [-UserPrincipalName] <String[]> -Add <String[]> [-UsageLocation <String>] [-PassThru]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveAll
 ```
-Set-TeamsUserLicense [-Identity] <String[]> [-Add <String[]>] [-RemoveAll] [-UsageLocation <String>]
+Set-TeamsUserLicense [-UserPrincipalName] <String[]> [-Add <String[]>] [-RemoveAll] [-UsageLocation <String>]
  [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Remove
 ```
-Set-TeamsUserLicense [-Identity] <String[]> [-Add <String[]>] -Remove <String[]> [-UsageLocation <String>]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-TeamsUserLicense [-UserPrincipalName] <String[]> [-Add <String[]>] -Remove <String[]>
+ [-UsageLocation <String>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -41,14 +41,14 @@ Verifies whether the Licenses selected are available on the Tenant before execut
 
 ### EXAMPLE 1
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E5
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add MS365E5
 ```
 
 Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
 
 ### EXAMPLE 2
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add PhoneSystem
 ```
 
 Applies the PhoneSystem Add-on License (MCOEV) to Name@domain.com
@@ -56,15 +56,15 @@ This requires a main license to be present as PhoneSystem is an add-on license
 
 ### EXAMPLE 3
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add MS365E3,PhoneSystem
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add MS365E3,PhoneSystem
 ```
 
-Set-TeamsUserLicense -Identity Name@domain.com -Add @('MS365E3','PhoneSystem')
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add @('MS365E3','PhoneSystem')
 Applies the Microsoft 365 E3 License (SPE_E3) and PhoneSystem Add-on License (MCOEV) to Name@domain.com
 
 ### EXAMPLE 4
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add O365E5 -Remove SFBOP2
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add O365E5 -Remove SFBOP2
 ```
 
 Special Case Scenario to replace a specific license with another.
@@ -72,7 +72,7 @@ Replaces Skype for Business Online Plan 2 License (MCOSTANDARD) with the Office 
 
 ### EXAMPLE 5
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add PhoneSystem_VirtualUser -RemoveAll
 ```
 
 Special Case Scenario for Resource Accounts to swap licenses for a Phone System VirtualUser License
@@ -80,28 +80,27 @@ Replaces all Licenses currently on the User Name@domain.com with the Phone Syste
 
 ### EXAMPLE 6
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -Remove PhoneSystem
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Remove PhoneSystem
 ```
 
 Removes the Phone System License from the Object.
 
 ### EXAMPLE 7
 ```
-Set-TeamsUserLicense -Identity Name@domain.com -RemoveAll
+Set-TeamsUserLicense -UserPrincipalName Name@domain.com -RemoveAll
 ```
 
 Removes all licenses the Object is currently provisioned for!
 
 ## PARAMETERS
 
-### -Identity
-Required.
-UserPrincipalName of the Object to be manipulated
+### -UserPrincipalName
+The UserPrincipalName, ObjectId or Identity of the Object.
 
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

@@ -9,18 +9,18 @@
 
 function Find-AzureAdGroup {
   <#
-	.SYNOPSIS
-		Returns an Object if an AzureAd Group has been found
-	.DESCRIPTION
-		Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
-	.PARAMETER Identity
+  .SYNOPSIS
+    Returns an Object if an AzureAd Group has been found
+  .DESCRIPTION
+    Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
+  .PARAMETER Identity
     Mandatory. String to search. Provide part or full DisplayName, MailAddress or MailNickName
     Returns all matching groups
-	.EXAMPLE
+  .EXAMPLE
     Find-AzureAdGroup [-Identity] "My Group"
     Will return all Groups that have "My Group" in the DisplayName, ObjectId or MailNickName
-	.EXAMPLE
-		Find-AzureAdGroup -Identity "MyGroup@domain.com"
+  .EXAMPLE
+    Find-AzureAdGroup -Identity "MyGroup@domain.com"
     Will return all Groups that match "MyGroup@domain.com" in the DisplayName, ObjectId or MailNickName
   .INPUTS
     System.String
@@ -30,7 +30,7 @@ function Find-AzureAdGroup {
     None
   .COMPONENT
     UserManagement
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries Group Objects in Azure Ad with different mechanics
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -76,20 +76,21 @@ function Find-AzureAdGroup {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    foreach ($ID in $Identity) {
+      [System.Collections.ArrayList]$Groups = @()
 
-    [System.Collections.ArrayList]$Groups = @()
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -Like "*$ID*"
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Description -Like "*$ID*"
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object ObjectId -Like "*$ID*"
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -Like "*$ID*"
 
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object DisplayName -Like "*$Identity*"
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Description -Like "*$Identity*"
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object ObjectId -Like "*$Identity*"
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mail -Like "*$Identity*"
+      $MailNickName = $ID.Split('@')[0]
+      $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mailnickname -Like "*$MailNickName*"
 
-    $MailNickName = $Identity.Split('@')[0]
-    $Groups += $global:TeamsFunctionsTenantAzureAdGroups | Where-Object Mailnickname -Like "*$MailNickName*"
-
-    # Output - Filtering objects
-    if ( $Groups ) {
-      $Groups | Sort-Object -Unique -Property ObjectId | Get-Unique
+      # Output - Filtering objects
+      if ( $Groups ) {
+        $Groups | Sort-Object -Unique -Property ObjectId | Get-Unique
+      }
     }
   } #process
 

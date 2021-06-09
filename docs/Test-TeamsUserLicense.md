@@ -14,12 +14,12 @@ Tests a License or License Package assignment against an AzureAD-Object
 
 ### ServicePlan (Default)
 ```
-Test-TeamsUserLicense [-Identity] <String> -ServicePlan <String> [<CommonParameters>]
+Test-TeamsUserLicense [-UserPrincipalName] <String> -ServicePlan <String> [<CommonParameters>]
 ```
 
 ### License
 ```
-Test-TeamsUserLicense [-Identity] <String> -License <String> [<CommonParameters>]
+Test-TeamsUserLicense [-UserPrincipalName] <String> -License <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -48,14 +48,14 @@ Specific Names have been assigned to these Licenses
 
 ## PARAMETERS
 
-### -Identity
+### -UserPrincipalName
 Mandatory.
-The sign-in address or User Principal Name of the user account to modify.
+The sign-in address, User Principal Name or Object Id of the Object.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: UserPrincipalName
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

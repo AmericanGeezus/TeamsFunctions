@@ -2,7 +2,7 @@
 # Function: Lookup
 # Author:	  David Eberhardt
 # Updated:  10-JAN-2021
-# Status:   PreLive
+# Status:   Live
 
 
 
@@ -29,7 +29,7 @@ function Remove-TeamsFunctionsGlobalVariable {
   #Show-FunctionStatus -Level Live
 
   $VariableNames = @(
-    "TeamsFunctionsMSTelephoneNumbers", # Used for Microsoft TelephoneNumbers from the Tenant
+    #"TeamsFunctionsMSTelephoneNumbers", # Used for Microsoft TelephoneNumbers from the Tenant - no longer used.
     "TeamsFunctionsMSAzureAdLicenses", # Used for all Licensing commands
     "TeamsFunctionsMSAzureAdLicenseServicePlans", # Used for all Licensing commands
     "TeamsFunctionsTenantAzureAdGroups" # Used for CallableEntity cmdLets that query groups
