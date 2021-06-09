@@ -447,38 +447,35 @@ function Set-TeamsUserLicense {
           # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
           [System.Collections.ArrayList]$AddSkuIds = @()
           foreach ($AddLic in $Add) {
-            #IMPROVE Code? it is fast, no need to change, but it is duplication
-            $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuPartNumber')
-            $AddSku = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('SkuId')
-            $AddLicName = ($AllLicenses | Where-Object ParameterName -EQ $AddLic).('ProductName')
-
-            # Verifying license is available in the Tenant
-            if (-not ($SkuPartNumber -in $($TenantLicenses.SkuPartNumber))) {
-              Write-Error -Message "Adding License '$AddLicName' - License not found in the Tenant"
+            $License = $AllLicenses | Where-Object ParameterName -EQ $AddLic
+            if ($PSBoundParameters.ContainsKey('Debug')) {
+              "Function: $($MyInvocation.MyCommand.Name): License:", ($License | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            }
+            # Verifying user has not already this license assigned
+            if ( $License.SkuPartNumber -in $ObjectAssignedLicenses.SkuPartNumber) {
+              Write-Warning -Message "Adding License '$($License.ProductName)' - License already assigned to the User, omitting!"
               continue
             }
             else {
-              $RemainingLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $SkuPartNumber }).Remaining
-              if ($RemainingLicenses -lt 1) {
-                Write-Error -Message "Adding License '$AddLicName' - License found in the Tenant, but no units available"
+              # Verifying license is available in the Tenant
+              if (-not ( $License.SkuPartNumber -in $($TenantLicenses.SkuPartNumber))) {
+                Write-Error -Message "Adding License '$($License.ProductName)' - License not found in the Tenant"
                 continue
               }
               else {
-                Write-Verbose -Message "Adding License '$AddLicName' - License found in the Tenant. Free unit available!"
+                $RemainingLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $License.SkuPartNumber }).Remaining
+                if ($RemainingLicenses -lt 1) {
+                  Write-Error -Message "Adding License '$($License.ProductName)' - License found in the Tenant, but no units available"
+                  continue
+                }
+                else {
+                  Write-Verbose -Message "Adding License '$($License.ProductName)' - License found in the Tenant. Free unit available!"
+                }
               }
             }
-
-            # Verifying user has not already this license assigned
-            #TEST This might not be caught correctly!
-            if ($SkuPartNumber -in $ObjectAssignedLicenses.SkuPartNumber) {
-              Write-Warning -Message "Adding License '$AddLicName' - License already assigned to the User, omitting!"
-            }
-            else {
-              Write-Verbose -Message "Adding License '$AddLicName' - License not assigned, adding to list"
-              [void]$AddSkuIds.Add("$AddSku")
-            }
+            Write-Verbose -Message "Adding License '$($License.ProductName)' - License not assigned, adding to list"
+            [void]$AddSkuIds.Add("$($License.SkuId)")
           }
-
         }
         catch {
           throw
