@@ -19,6 +19,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Import-TeamsAudioFile`:
   - Integrated Size and Format check here to simplify all AudioFile imports to Call Queues or Auto Attendants
   - Returns error if File size is above limit or not in the correct format (in addition to file not found)
+- `New-TeamsAutoAttendant`:
+  - Fixed an issue with very long Auto Attendant names.
+  - Added a random number to the Call Flow name to enable creation for multiple Auto Attendants with similar names.
 - `Get-TeamsCallQueue`:
   - Renamed Parameter ApplicationInstances to `ResourceAccountsAssociated` for consistency
   - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds translated

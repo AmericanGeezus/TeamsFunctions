@@ -502,10 +502,16 @@ function New-TeamsAutoAttendant {
     $Parameters += @{'Name' = $NameNormalised }
 
     # Preparing Call Flow String (to adhere to 64 Character limit)
-    $CallFlowNamePrefix = -join "$NameNormalised"[0..40]
     if ($NameNormalised.length -gt 40) {
       Write-Verbose 'Auto Attendant Name is too long and cannot be used for Call Flow Name(s) as-is. Name will be shortened'
+      $CallFlowNamePrefix = -join "$NameNormalised"[0..38]
+      $RandomString = '{0:d4}' -f $(Get-Random -Minimum 000 -Maximum 9999)
+      $CallFlowNamePrefix = $CallFlowNamePrefix + $RandomString
     }
+    else {
+      $CallFlowNamePrefix = "$NameNormalised"
+    }
+    Write-Verbose "Auto Attendant Call Flow Name Prefix used: '$CallFlowNamePrefix'"
 
     # Adding required parameters
     $Parameters += @{'LanguageId' = $Language }
@@ -560,7 +566,7 @@ function New-TeamsAutoAttendant {
     else {
       Write-Verbose -Message "'$NameNormalised' DefaultCallFlow - No Custom Object - Processing 'BusinessHoursCallFlowOption'..."
       $BusinessHoursCallFlowParameters = @{}
-      $BusinessHoursCallFlowParameters.Name = "$NameNormalised - Business Hours CF"
+      $BusinessHoursCallFlowParameters.Name = "$CallFlowNamePrefix - Business Hours CF"
 
       #region Processing BusinessHoursCallFlowOption
       switch ($BusinessHoursCallFlowOption) {
