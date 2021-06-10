@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: VoiceRouting
-# Author:	  David Eberhardt
+# Author:    David Eberhardt
 # Updated:  28-DEC-2020
 # Status:   Live
 
@@ -43,19 +43,19 @@ function Find-TeamsUserVoiceRoute {
     about_VoiceConfiguration
   .LINK
     Assert-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsTenantVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Remove-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Test-TeamsUserVoiceConfig
   #>
 

@@ -9,20 +9,20 @@
 
 function New-AzureAdLicenseObject {
   <#
-	.SYNOPSIS
-		Creates a new License Object for processing
-	.DESCRIPTION
-		Helper function to create a new License Object
-	.PARAMETER SkuId
-		SkuId(s) of the License to be added
-	.PARAMETER RemoveSkuId
-		SkuId(s) of the License to be removed
-	.EXAMPLE
-		New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd
-		Will create a license Object for the MCOEV license .
-	.EXAMPLE
-		New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd -RemoveSkuId 440eaaa8-b3e0-484b-a8be-62870b9ba70a
-		Will create a license Object based on the existing users License
+  .SYNOPSIS
+    Creates a new License Object for processing
+  .DESCRIPTION
+    Helper function to create a new License Object
+  .PARAMETER SkuId
+    SkuId(s) of the License to be added
+  .PARAMETER RemoveSkuId
+    SkuId(s) of the License to be removed
+  .EXAMPLE
+    New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd
+    Will create a license Object for the MCOEV license .
+  .EXAMPLE
+    New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd -RemoveSkuId 440eaaa8-b3e0-484b-a8be-62870b9ba70a
+    Will create a license Object based on the existing users License
     Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.
   .INPUTS
     System.String
@@ -43,7 +43,7 @@ function New-AzureAdLicenseObject {
     about_SupportingFunction
   .LINK
     Set-TeamsUserLicense
-	#>
+  #>
 
   [CmdletBinding(ConfirmImpact = 'Low')]
   [OutputType([Microsoft.Open.AzureAD.Model.AssignedLicenses])] #LicenseObject

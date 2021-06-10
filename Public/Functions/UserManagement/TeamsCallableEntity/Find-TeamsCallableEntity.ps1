@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -10,23 +10,23 @@
 
 function Find-TeamsCallableEntity {
   <#
-	.SYNOPSIS
-		Finds all Call Queues where a specific User is an Agent
-	.DESCRIPTION
-		Finding all Call Queues where a User is linked as an Agent, as an OverflowActionTarget or as a TimeoutActionTarget
-	.PARAMETER Identity
-		Required. Callable Entity Object to be found (Tel URI, User, Group, Resource Account)
-	.PARAMETER Scope
-		Optional. Limits searches to Call Queues, Auto Attendants or both (All) - Currently Hardcoded to CallQueue until development finishes
-	.EXAMPLE
-		Find-TeamsCallableEntity "John@domain.com" [-Scope All]
+  .SYNOPSIS
+    Finds all Call Queues where a specific User is an Agent
+  .DESCRIPTION
+    Finding all Call Queues where a User is linked as an Agent, as an OverflowActionTarget or as a TimeoutActionTarget
+  .PARAMETER Identity
+    Required. Callable Entity Object to be found (Tel URI, User, Group, Resource Account)
+  .PARAMETER Scope
+    Optional. Limits searches to Call Queues, Auto Attendants or both (All) - Currently Hardcoded to CallQueue until development finishes
+  .EXAMPLE
+    Find-TeamsCallableEntity "John@domain.com" [-Scope All]
     Finds all Call Queues or Auto Attendants in which John is an Agent, OverflowTarget or TimeoutTarget, Menu Option, Operator, etc.
-	.EXAMPLE
-		Find-TeamsCallableEntity "MyGroup@domain.com" -Scope CallQueue
-		Finds all Call Queues in which My Group is linked as an Agent Group, OverflowTarget or TimeoutTarget
-	.EXAMPLE
-		Find-TeamsCallableEntity "tel:+15551234567" -Scope AutoAttendant
-		Finds all Auto Attendants in which the Tel URI is linked as an Operator, Menu Option, etc.
+  .EXAMPLE
+    Find-TeamsCallableEntity "MyGroup@domain.com" -Scope CallQueue
+    Finds all Call Queues in which My Group is linked as an Agent Group, OverflowTarget or TimeoutTarget
+  .EXAMPLE
+    Find-TeamsCallableEntity "tel:+15551234567" -Scope AutoAttendant
+    Finds all Auto Attendants in which the Tel URI is linked as an Operator, Menu Option, etc.
   .INPUTS
     System.String
   .OUTPUTS
@@ -39,7 +39,7 @@ function Find-TeamsCallableEntity {
     UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Finding Call Queues and/or Auto Attendants where specific Callable Entity is attached
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -57,11 +57,11 @@ function Find-TeamsCallableEntity {
     Get-TeamsCallableEntity
   .LINK
     New-TeamsCallableEntity
-	.LINK
+  .LINK
     Get-TeamsObjectType
-	.LINK
+  .LINK
     Get-TeamsCallQueue
-	.LINK
+  .LINK
     Get-TeamsAutoAttendant
   #>
 

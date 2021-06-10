@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: Lookup
-# Author:	  David Eberhardt
+# Author:    David Eberhardt
 # Updated:  11-NOV-2020
 # Status:   Live
 
@@ -24,7 +24,7 @@ function Get-TeamsTenant {
     None
   .COMPONENT
     SupportingFunction
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries abbreviated information about the Teams Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

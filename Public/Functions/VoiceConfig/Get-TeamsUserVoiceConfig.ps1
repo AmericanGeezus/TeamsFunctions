@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -9,14 +9,14 @@
 
 function Get-TeamsUserVoiceConfig {
   <#
-	.SYNOPSIS
-		Displays Voice Configuration Parameters for one or more Users
-	.DESCRIPTION
+  .SYNOPSIS
+    Displays Voice Configuration Parameters for one or more Users
+  .DESCRIPTION
     Displays Voice Configuration Parameters with different Diagnostic Levels
     ranging from basic Voice Configuration up to Policies, Account Status & DirSync Information
   .PARAMETER UserPrincipalName
     Required. UserPrincipalName (UPN) of the User
-	.PARAMETER DiagnosticLevel
+  .PARAMETER DiagnosticLevel
     Optional. Value from 0 to 4. Higher values will display more parameters
     If not provided (and not suppressed with SkipLicenseCheck), will change the output of LicensesAssigned to ProductNames only
     See NOTES below for details.
@@ -25,7 +25,7 @@ function Get-TeamsUserVoiceConfig {
   .EXAMPLE
     Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     Shows Voice Configuration for John with a concise view of Parameters
-	.EXAMPLE
+  .EXAMPLE
     Get-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DiagnosticLevel 2
     Shows Voice Configuration for John with a extended list of Parameters (see NOTES)
   .EXAMPLE
@@ -60,8 +60,8 @@ function Get-TeamsUserVoiceConfig {
     Omitting it allows for visible data when exporting as a CSV.
   .COMPONENT
     VoiceConfiguration
-	.FUNCTIONALITY
-		Returns an Object to validate the Voice Configuration for an Object
+  .FUNCTIONALITY
+    Returns an Object to validate the Voice Configuration for an Object
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -70,19 +70,19 @@ function Get-TeamsUserVoiceConfig {
     about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsTenantVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Remove-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Test-TeamsUserVoiceConfig
   #>
 

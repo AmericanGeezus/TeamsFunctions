@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 #TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
@@ -10,89 +10,89 @@
 #IMPROVE Warning feedback for Users not enabled for EV not necessary - we know they won't be configured! - suppress warnings?
 function Set-TeamsCallQueue {
   <#
-	.SYNOPSIS
-		Set-CsCallQueue with UPNs instead of IDs
-	.DESCRIPTION
-		Does all the same things that Set-CsCallQueue does, but differs in a few significant respects:
-		UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
+  .SYNOPSIS
+    Set-CsCallQueue with UPNs instead of IDs
+  .DESCRIPTION
+    Does all the same things that Set-CsCallQueue does, but differs in a few significant respects:
+    UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
     File Import is handled by this Script
-		Set-CsCallQueue   is used to apply parameters dependent on specification.
-		Partial implementation is possible, output will show differences.
-	.PARAMETER Name
-		Required. Friendly Name of the Call Queue. Used to Identify the Object
-	.PARAMETER DisplayName
-		Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
-	.PARAMETER AgentAlertTime
-		Optional. Time in Seconds to alert each agent. Works depending on Routing method
-		Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
-	.PARAMETER AllowOptOut
-		Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
-	.PARAMETER UseDefaultMusicOnHold
-		Optional Switch. Indicates whether the default Music On Hold should be used.
-	.PARAMETER WelcomeMusicAudioFile
-		Optional or $NULL. Path to Audio File to be used as a Welcome message
-		Accepted Formats: MP3, WAV or WMA, max 5MB
-	.PARAMETER MusicOnHoldAudioFile
-		Optional. Path to Audio File to be used as Music On Hold.
-		Accepted Formats: MP3, WAV or WMA, max 5MB
+    Set-CsCallQueue   is used to apply parameters dependent on specification.
+    Partial implementation is possible, output will show differences.
+  .PARAMETER Name
+    Required. Friendly Name of the Call Queue. Used to Identify the Object
+  .PARAMETER DisplayName
+    Optional. Updates the Name of the Call Queue. Name will be normalised (unsuitable characters are filtered)
+  .PARAMETER AgentAlertTime
+    Optional. Time in Seconds to alert each agent. Works depending on Routing method
+    Size AgentAlertTime and TimeoutThreshold depending on Routing method and # of Agents available.
+  .PARAMETER AllowOptOut
+    Optional Switch. Allows Agents to Opt out of receiving calls from the Call Queue
+  .PARAMETER UseDefaultMusicOnHold
+    Optional Switch. Indicates whether the default Music On Hold should be used.
+  .PARAMETER WelcomeMusicAudioFile
+    Optional or $NULL. Path to Audio File to be used as a Welcome message
+    Accepted Formats: MP3, WAV or WMA, max 5MB
+  .PARAMETER MusicOnHoldAudioFile
+    Optional. Path to Audio File to be used as Music On Hold.
+    Accepted Formats: MP3, WAV or WMA, max 5MB
   .PARAMETER OverflowAction
     Optional. Action to be taken if the Queue size limit (OverflowThreshold) is reached
     Forward requires specification of OverflowActionTarget
     Default: DisconnectWithBusy, Values: DisconnectWithBusy, Forward, VoiceMail, SharedVoiceMail
-	.PARAMETER OverflowActionTarget
-		Situational. Required only if OverflowAction is not DisconnectWithBusy
-		UserPrincipalName of the Target
-	.PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
+  .PARAMETER OverflowActionTarget
+    Situational. Required only if OverflowAction is not DisconnectWithBusy
+    UserPrincipalName of the Target
+  .PARAMETER OverflowSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
     Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailAudioFile is $null
-	.PARAMETER OverflowSharedVoicemailAudioFile
+  .PARAMETER OverflowSharedVoicemailAudioFile
     Situational. Path to the Audio File for a Shared Voicemail greeting
     Required if OverflowAction is SharedVoicemail and OverflowSharedVoicemailTextToSpeechPrompt is $null
   .PARAMETER EnableOverflowSharedVoicemailTranscription
     Situational. Boolean Switch. Requires specification of LanguageId
     Enables a transcription of the Voicemail message to be sent to the Group mailbox
-	.PARAMETER OverflowThreshold
-		Optional. Time in Seconds for the OverflowAction to trigger
-	.PARAMETER TimeoutAction
-		Optional. Action to be taken if the TimeoutThreshold is reached
-		Forward requires specification of TimeoutActionTarget
+  .PARAMETER OverflowThreshold
+    Optional. Time in Seconds for the OverflowAction to trigger
+  .PARAMETER TimeoutAction
+    Optional. Action to be taken if the TimeoutThreshold is reached
+    Forward requires specification of TimeoutActionTarget
     Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
-	.PARAMETER TimeoutActionTarget
-		Situational. Required only if TimeoutAction is not Disconnect
-		UserPrincipalName of the Target
-	.PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
+  .PARAMETER TimeoutActionTarget
+    Situational. Required only if TimeoutAction is not Disconnect
+    UserPrincipalName of the Target
+  .PARAMETER TimeoutSharedVoicemailTextToSpeechPrompt
     Situational. Text to be read for a Shared Voicemail greeting. Requires LanguageId
     Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailAudioFile is $null
-	.PARAMETER TimeoutSharedVoicemailAudioFile
+  .PARAMETER TimeoutSharedVoicemailAudioFile
     Situational. Path to the Audio File for a Shared Voicemail greeting
     Required if TimeoutAction is SharedVoicemail and TimeoutSharedVoicemailTextToSpeechPrompt is $null
   .PARAMETER EnableTimeoutSharedVoicemailTranscription
     Situational. Boolean Switch. Requires specification of LanguageId
     Enables a transcription of the Voicemail message to be sent to the Group mailbox
-	.PARAMETER TimeoutThreshold
-		Optional. Time in Seconds for the TimeoutAction to trigger
-	.PARAMETER RoutingMethod
+  .PARAMETER TimeoutThreshold
+    Optional. Time in Seconds for the TimeoutAction to trigger
+  .PARAMETER RoutingMethod
     Optional. Describes how the Call Queue is hunting for an Agent.
-		Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
-		Attendant behaves like Parallel if PresenceBasedRouting is used.
+    Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
+    Attendant behaves like Parallel if PresenceBasedRouting is used.
     Default: Attendant, Values: Attendant, Serial, RoundRobin, LongestIdle
-	.PARAMETER PresenceBasedRouting
-		Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status).
-	.PARAMETER ConferenceMode
+  .PARAMETER PresenceBasedRouting
+    Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status).
+  .PARAMETER ConferenceMode
     Optional. Will establish a conference instead of a direct call and should help with connection time.
     Default: TRUE,   Microsoft Default: FALSE
-	.PARAMETER DistributionLists
-		Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.
+  .PARAMETER DistributionLists
+    Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.
     Mutually exclusive with TeamAndChannel. Can be combined with Users.
-		Will be parsed after Users if they are specified as well.
+    Will be parsed after Users if they are specified as well.
     To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.
-	.PARAMETER Users
-		Optional. UserPrincipalNames of Users that are to become Agents in the Queue.
+  .PARAMETER Users
+    Optional. UserPrincipalNames of Users that are to become Agents in the Queue.
     Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.
     Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
     Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
-	.PARAMETER ChannelUsers
-		Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId
+  .PARAMETER ChannelUsers
+    Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId
     Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
   .PARAMETER TeamAndChannel
     Optional. Uses a Channel to route calls to. Members of the Channel become Agents in the Queue.
@@ -109,23 +109,23 @@ function Set-TeamsCallQueue {
     Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified
     Currently no other impact
   .EXAMPLE
-		Set-TeamsCallQueue -Name "My Queue" -DisplayName "My new Queue Name"
-		Changes the DisplayName of Call Queue "My Queue" to "My new Queue Name"
-	.EXAMPLE
-		Set-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefaults
-		Changes the Call Queue "My Queue" to use Microsoft Default Values
-	.EXAMPLE
-		Set-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
-		Changes the Call Queue "My Queue" to overflow with more than 5 Callers waiting and a timeout window of 90s
-	.EXAMPLE
-		Set-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
-		Changes the Call Queue "My Queue" with custom Audio Files
-	.EXAMPLE
-		Set-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
-		Changes the Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
-	.EXAMPLE
-		Set-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
-		Changes the Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
+    Set-TeamsCallQueue -Name "My Queue" -DisplayName "My new Queue Name"
+    Changes the DisplayName of Call Queue "My Queue" to "My new Queue Name"
+  .EXAMPLE
+    Set-TeamsCallQueue -Name "My Queue" -UseMicrosoftDefaults
+    Changes the Call Queue "My Queue" to use Microsoft Default Values
+  .EXAMPLE
+    Set-TeamsCallQueue -Name "My Queue" -OverflowThreshold 5 -TimeoutThreshold 90
+    Changes the Call Queue "My Queue" to overflow with more than 5 Callers waiting and a timeout window of 90s
+  .EXAMPLE
+    Set-TeamsCallQueue -Name "My Queue" -MusicOnHoldAudioFile C:\Temp\Moh.wav -WelcomeMusicAudioFile C:\Temp\WelcomeMessage.wmv
+    Changes the Call Queue "My Queue" with custom Audio Files
+  .EXAMPLE
+    Set-TeamsCallQueue -Name "My Queue" -AgentAlertTime 15 -RoutingMethod Serial -AllowOptOut:$false -DistributionLists @(List1@domain.com,List2@domain.com)
+    Changes the Call Queue "My Queue" alerting every Agent nested in Azure AD Groups List1@domain.com and List2@domain.com in sequence for 15s.
+  .EXAMPLE
+    Set-TeamsCallQueue -Name "My Queue" -OverflowAction Forward -OverflowActionTarget SIP@domain.com -TimeoutAction Voicemail
+    Changes the Call Queue "My Queue" forwarding to SIP@domain.com for Overflow and to Voicemail when it times out.
   .INPUTS
     System.String
   .OUTPUTS
@@ -139,23 +139,23 @@ function Set-TeamsCallQueue {
     TimeoutSharedVoicemailAudioFile - Setting not changed. TimeoutAction will not be changed
     .COMPONENT
     TeamsCallQueue
-	.FUNCTIONALITY
-		Changes a Call Queue with friendly names as input
+  .FUNCTIONALITY
+    Changes a Call Queue with friendly names as input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsCallQueue
-	.LINK
-		New-TeamsCallQueue
-	.LINK
-		Get-TeamsCallQueue
-	.LINK
+  .LINK
+    New-TeamsCallQueue
+  .LINK
+    Get-TeamsCallQueue
+  .LINK
     Set-TeamsCallQueue
-	.LINK
+  .LINK
     Remove-TeamsCallQueue
-	.LINK
+  .LINK
     Set-TeamsAutoAttendant
-	#>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('Set-TeamsCQ')]

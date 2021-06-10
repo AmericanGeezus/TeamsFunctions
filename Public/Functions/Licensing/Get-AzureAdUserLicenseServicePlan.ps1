@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-APR-2020
 # Status:   RC
 
@@ -9,42 +9,42 @@
 
 function Get-AzureAdUserLicenseServicePlan {
   <#
-	.SYNOPSIS
+  .SYNOPSIS
     Returns License information (ServicePlans) for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all ServicePlans (for Licenses assigned) for a specific Object
   .PARAMETER UserPrincipalname
-		The UserPrincipalname or ObjectId of the Object.
+    The UserPrincipalname or ObjectId of the Object.
   .PARAMETER FilterRelevantForTeams
     Filters the output and displays only Licenses relevant Teams Service Plans
   .PARAMETER FilterUnsuccessful
     Filters the output and displays only ServicePlans that don't have the ProvisioningStatus "Success"
-	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan [-UserPrincipalname] John@domain.com
-		Displays all Service Plans assigned through Licenses to User John@domain.com
-	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan -UserPrincipalname John@domain.com,Jane@domain.com
-		Displays all Service Plans assigned through Licenses to Users John@domain.com and Jane@domain.com
-	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterRelevantForTeams
-		Displays all relevant Teams Service Plans assigned through Licenses to Jane@domain.com
-	.EXAMPLE
-		Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterUnsuccessful
-		Displays all Service Plans assigned through Licenses to Jane@domain.com that are not provisioned successfully
-	.EXAMPLE
-		Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan
+  .EXAMPLE
+    Get-AzureAdUserLicenseServicePlan [-UserPrincipalname] John@domain.com
+    Displays all Service Plans assigned through Licenses to User John@domain.com
+  .EXAMPLE
+    Get-AzureAdUserLicenseServicePlan -UserPrincipalname John@domain.com,Jane@domain.com
+    Displays all Service Plans assigned through Licenses to Users John@domain.com and Jane@domain.com
+  .EXAMPLE
+    Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterRelevantForTeams
+    Displays all relevant Teams Service Plans assigned through Licenses to Jane@domain.com
+  .EXAMPLE
+    Get-AzureAdUserLicenseServicePlan -UserPrincipalname Jane@domain.com -FilterUnsuccessful
+    Displays all Service Plans assigned through Licenses to Jane@domain.com that are not provisioned successfully
+  .EXAMPLE
+    Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan
     Displays all Service Plans assigned through Licenses to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.
     The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		Requires a connection to Azure Active Directory
+  .NOTES
+    Requires a connection to Azure Active Directory
   .COMPONENT
     Licensing
   .FUNCTIONALITY
-		Returns a list of Licenses assigned to a specific User depending on input
+    Returns a list of Licenses assigned to a specific User depending on input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Helper
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  06-DEC-2020
 # Status:   RC
 
@@ -9,37 +9,37 @@
 
 function Get-RegionFromCountryCode {
   <#
-	.SYNOPSIS
-		Ever wondered in which Region a ZW is?
-	.DESCRIPTION
-		Returns a Global Region or Country Name for any given CountryCode
-	.PARAMETER CountryCode
-		This is the CountryCode in the format ISO 3166-alpha2 (2-digit)
+  .SYNOPSIS
+    Ever wondered in which Region a ZW is?
+  .DESCRIPTION
+    Returns a Global Region or Country Name for any given CountryCode
+  .PARAMETER CountryCode
+    This is the CountryCode in the format ISO 3166-alpha2 (2-digit)
   .PARAMETER Output
-		Optional. By Default the Region is returned.
-		With this Parameter, you can get the CountryName instead.
-	.EXAMPLE
-		Get-RegionFromCountryCode -CountryCode UZ
-		Returns Region "APAC" for CountryCode UZ ("Uzbekistan")
-	.EXAMPLE
-		Get-RegionFromCountryCode AW -Output Country
-		Returns Country "Aruba" for CountryCode AW
+    Optional. By Default the Region is returned.
+    With this Parameter, you can get the CountryName instead.
+  .EXAMPLE
+    Get-RegionFromCountryCode -CountryCode UZ
+    Returns Region "APAC" for CountryCode UZ ("Uzbekistan")
+  .EXAMPLE
+    Get-RegionFromCountryCode AW -Output Country
+    Returns Country "Aruba" for CountryCode AW
   .INPUTS
-		System.String
+    System.String
   .OUTPUTS
     System.String
-	.NOTES
-		CountryCode must be provided otherwise InvalidData Error will be thrown
-		FullyQualifiedErrorId: ParameterArgumentValidationErrorEmptyStringNotAllowed
+  .NOTES
+    CountryCode must be provided otherwise InvalidData Error will be thrown
+    FullyQualifiedErrorId: ParameterArgumentValidationErrorEmptyStringNotAllowed
   .COMPONENT
     SupportingFunction
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Retruns the Region or Country for any given CountryCode
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction
-	#>
+  #>
 
   [CmdletBinding()]
   [OutputType([System.String])]

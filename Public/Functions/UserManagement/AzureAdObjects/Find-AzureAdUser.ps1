@@ -9,27 +9,27 @@
 
 function Find-AzureAdUser {
   <#
-	.SYNOPSIS
-		Returns User Objects from Azure AD based on a search string or UserPrincipalName
-	.DESCRIPTION
+  .SYNOPSIS
+    Returns User Objects from Azure AD based on a search string or UserPrincipalName
+  .DESCRIPTION
     Simplifies lookups with Get-AzureAdUser by using and combining -SearchString and -ObjectId Parameters.
     CmdLet can find uses by either query, if nothing is found with the Searchstring, another search is done via the ObjectId
     This simplifies the query without having to rely multiple queries with Get-AzureAdUser
-	.PARAMETER SearchString
+  .PARAMETER SearchString
     Required. A 3-255 digit string to be found on any Object.
     Performs multiple searches against the Searches against this sting and parts thereof.
     Uses Get-AzureAd-User -SearchString and Get-AzureAdUser -Filter and subsequently Get-AzureAdUser -ObjectType
-	.EXAMPLE
-		Find-AzureAdUser [-Search] "John"
+  .EXAMPLE
+    Find-AzureAdUser [-Search] "John"
     Will search for the string "John" and return all Azure AD Objects found
     If nothing has been found, will try to search for by identity
-	.EXAMPLE
-		Find-AzureAdUser [-Search] "John@domain.com"
-		Will search for the string "John@domain.com" and return all Azure AD Objects found
+  .EXAMPLE
+    Find-AzureAdUser [-Search] "John@domain.com"
+    Will search for the string "John@domain.com" and return all Azure AD Objects found
     If nothing has been found, will try to search for by identity
-	.EXAMPLE
-		Find-AzureAdUser -Identity John@domain.com,Mary@domain.com
-		Will search for the string "John@domain.com" and return all Azure AD Objects found
+  .EXAMPLE
+    Find-AzureAdUser -Identity John@domain.com,Mary@domain.com
+    Will search for the string "John@domain.com" and return all Azure AD Objects found
   .INPUTS
     System.String
   .OUTPUTS
@@ -38,7 +38,7 @@ function Find-AzureAdUser {
     None
   .COMPONENT
     UserManagement
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries User Objects in Azure Ad with different mechanics
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

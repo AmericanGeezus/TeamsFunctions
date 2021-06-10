@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Support
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  14-NOV-2020
 # Status:   Live
 
@@ -9,16 +9,16 @@
 
 function Test-TeamsUser {
   <#
-	.SYNOPSIS
-		Tests whether an Object exists in Teams (record found)
-	.DESCRIPTION
-		Simple lookup - does the Object exist - to avoid TRY/CATCH statements for processing
-	.PARAMETER UserPrincipalName
-		Mandatory. The sign-in address, User Principal Name or Object Id of the Object.
-	.EXAMPLE
-		Test-TeamsUser -Identity "$UPN"
-		Will Return $TRUE only if the object $UPN is found.
-		Will Return $FALSE in any other case, including if there is no Connection to MicrosoftTeams!
+  .SYNOPSIS
+    Tests whether an Object exists in Teams (record found)
+  .DESCRIPTION
+    Simple lookup - does the Object exist - to avoid TRY/CATCH statements for processing
+  .PARAMETER UserPrincipalName
+    Mandatory. The sign-in address, User Principal Name or Object Id of the Object.
+  .EXAMPLE
+    Test-TeamsUser -Identity "$UPN"
+    Will Return $TRUE only if the object $UPN is found.
+    Will Return $FALSE in any other case, including if there is no Connection to MicrosoftTeams!
   .INPUTS
     System.String
   .OUTPUTS
@@ -27,8 +27,8 @@ function Test-TeamsUser {
     None
   .COMPONENT
     SupportingFunction
-		UserManagement
-	.FUNCTIONALITY
+    UserManagement
+  .FUNCTIONALITY
     Tests whether an Teams User exists in AzureAd
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

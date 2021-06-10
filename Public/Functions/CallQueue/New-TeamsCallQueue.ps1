@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -13,7 +13,7 @@ function New-TeamsCallQueue {
   .SYNOPSIS
     New-CsCallQueue with UPNs instead of IDs
   .DESCRIPTION
-		Does all the same things that New-CsCallQueue does, but differs in a few significant respects:
+    Does all the same things that New-CsCallQueue does, but differs in a few significant respects:
     UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
     File Import is handled by this Script
     Small changes to defaults (see Parameter UseMicrosoftDefaults for details)
@@ -62,9 +62,9 @@ function New-TeamsCallQueue {
   .PARAMETER OverflowThreshold
     Optional. Time in Seconds for the OverflowAction to trigger
     Default:  30s,   Microsoft Default:   50s (See Parameter UseMicrosoftDefaults)
-	.PARAMETER TimeoutAction
-		Optional. Action to be taken if the TimeoutThreshold is reached
-		Forward requires specification of TimeoutActionTarget
+  .PARAMETER TimeoutAction
+    Optional. Action to be taken if the TimeoutThreshold is reached
+    Forward requires specification of TimeoutActionTarget
     Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
   .PARAMETER TimeoutActionTarget
     Situational. Required only if TimeoutAction is not Disconnect
@@ -81,28 +81,28 @@ function New-TeamsCallQueue {
   .PARAMETER TimeoutThreshold
     Optional. Time in Seconds for the TimeoutAction to trigger
     Default:  30s,   Microsoft Default:  1200s (See Parameter UseMicrosoftDefaults)
-	.PARAMETER RoutingMethod
+  .PARAMETER RoutingMethod
     Optional. Describes how the Call Queue is hunting for an Agent.
-		Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
-		Attendant behaves like Parallel if PresenceBasedRouting is used.
+    Serial will Alert them one by one in order specified (Distribution lists will contact alphabethically)
+    Attendant behaves like Parallel if PresenceBasedRouting is used.
     Default: Attendant, Values: Attendant, Serial, RoundRobin, LongestIdle
   .PARAMETER PresenceBasedRouting
     Optional. Default: FALSE. If used alerts Agents only when they are available (Teams status).
-	.PARAMETER ConferenceMode
+  .PARAMETER ConferenceMode
     Optional. Will establish a conference instead of a direct call and should help with connection time.
     Default: TRUE,   Microsoft Default: FALSE
-	.PARAMETER DistributionLists
-		Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.
+  .PARAMETER DistributionLists
+    Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.
     Mutually exclusive with TeamAndChannel. Can be combined with Users.
-		Will be parsed after Users if they are specified as well.
+    Will be parsed after Users if they are specified as well.
     To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.
-	.PARAMETER Users
-		Optional. UserPrincipalNames of Users that are to become Agents in the Queue.
+  .PARAMETER Users
+    Optional. UserPrincipalNames of Users that are to become Agents in the Queue.
     Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.
     Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
     Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
-	.PARAMETER ChannelUsers
-		Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId
+  .PARAMETER ChannelUsers
+    Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId
     Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
   .PARAMETER TeamAndChannel
     Optional. Uses a Channel to route calls to. Members of the Channel become Agents in the Queue.

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -9,9 +9,9 @@
 
 function Find-TeamsUserVoiceConfig {
   <#
-	.SYNOPSIS
-		Displays User Accounts matching a specific Voice Configuration Parameter
-	.DESCRIPTION
+  .SYNOPSIS
+    Displays User Accounts matching a specific Voice Configuration Parameter
+  .DESCRIPTION
     Returns UserPrincipalNames of Objects matching specific parameters. For PhoneNumbers also displays their basic Voice Configuration
     Search parameters are mutually exclusive, only one Parameter can be specified at the same time.
     Available parameters are:
@@ -23,41 +23,41 @@ function Find-TeamsUserVoiceConfig {
   .PARAMETER UserPrincipalName
     Optional. UserPrincipalName (UPN) of the User
     Behaves like Get-TeamsUserVoiceConfig, displaying the Users Voice Configuration
-	.PARAMETER PhoneNumber
+  .PARAMETER PhoneNumber
     Optional. Searches all Users matching the given String in their LineURI.
     The expected ResultSize is limited, the full Object is displayed (Get-TeamsUserVoiceConfig)
     Please see NOTES for details
-	.PARAMETER ConfigurationType
+  .PARAMETER ConfigurationType
     Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'.
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
-	.PARAMETER VoicePolicy
+  .PARAMETER VoicePolicy
     Optional. Searches all enabled Users which are reported as 'BusinessVoice' or 'HybridVoice'.
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
-	.PARAMETER OnlineVoiceRoutingPolicy
+  .PARAMETER OnlineVoiceRoutingPolicy
     Optional. Searches all enabled Users which have the OnlineVoiceRoutingPolicy specified assigned.
     Please specify full and correct name or '$null' to receive all Users without one
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
-	.PARAMETER TenantDialPlan
+  .PARAMETER TenantDialPlan
     Optional. Searches all enabled Users which have the TenantDialPlan specified assigned.
     Please specify full and correct name or '$null' to receive all Users without one
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
-	.PARAMETER ValidateLicense
+  .PARAMETER ValidateLicense
     Optional. Can be combined only with -ConfigurationType
     In addition to validation of Parameters, also validates License assignment for the found user.
     License Check is performed AFTER parameters are verified.
-	.EXAMPLE
+  .EXAMPLE
     Find-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
     Shows Voice Configuration for John, returning the full Object
-	.EXAMPLE
+  .EXAMPLE
     Find-TeamsUserVoiceConfig -PhoneNumber "15551234567"
     Shows all Users which have this String in their LineURI (TelephoneNumber or OnPremLineURI)
     The expected ResultSize is limited, the full Object is returned (Get-TeamsUserVoiceConfig)
     Please see NOTES for details
-	.EXAMPLE
+  .EXAMPLE
     Find-TeamsUserVoiceConfig -ConfigurationType CallingPlans
     Shows all Users which are configured for CallingPlans (Full)
     The expected ResultSize is big, therefore only Names (UPNs) of Users are returned
@@ -102,7 +102,7 @@ function Find-TeamsUserVoiceConfig {
     Please see Related Link for more information
   .COMPONENT
     VoiceConfiguration
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Finding Users with a specific values in their Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -114,19 +114,19 @@ function Find-TeamsUserVoiceConfig {
     about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsTenantVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Remove-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Test-TeamsUserVoiceConfig
   #>
 

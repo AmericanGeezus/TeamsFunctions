@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  15-MAY-2021
 # Status:   Live
 
@@ -9,9 +9,9 @@
 
 function Test-TeamsUserVoiceConfig {
   <#
-	.SYNOPSIS
-		Tests whether any Voice Configuration has been applied to one or more Users
-	.DESCRIPTION
+  .SYNOPSIS
+    Tests whether any Voice Configuration has been applied to one or more Users
+  .DESCRIPTION
     For Microsoft Call Plans: Tests for EnterpriseVoice enablement, License AND Phone Number
     For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
   .PARAMETER UserPrincipalName
@@ -26,17 +26,17 @@ function Test-TeamsUserVoiceConfig {
   .PARAMETER ExtensionState
     Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured
     No effect for Microsoft Calling Plans
-	.EXAMPLE
+  .EXAMPLE
     Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
-	.EXAMPLE
+  .EXAMPLE
     Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
-	.EXAMPLE
+  .EXAMPLE
     Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDialPlan
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
     This requires a Tenant Dial Plan to be assigned as well.
-	.EXAMPLE
+  .EXAMPLE
     Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial -IncludeTenantDialPlan
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
     This will treat any Object that only has a Tenant Dial Plan also as partially configured
@@ -52,7 +52,7 @@ function Test-TeamsUserVoiceConfig {
     Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
   .COMPONENT
     VoiceConfiguration
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Testing Users Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -64,21 +64,21 @@ function Test-TeamsUserVoiceConfig {
     about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsTenantVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Remove-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Test-TeamsUserVoiceConfig
-	#>
+  #>
 
   [CmdletBinding()]
   [Alias('Test-TeamsUVC')]

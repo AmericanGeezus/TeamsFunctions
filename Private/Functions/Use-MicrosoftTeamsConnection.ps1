@@ -9,14 +9,14 @@
 
 function Use-MicrosoftTeamsConnection {
   <#
-	.SYNOPSIS
-		Attempts to reconnect an existing SkypeOnline Session for MicrosoftTeams
-	.DESCRIPTION
-		A connection established via Connect-MicrosoftTeams is parsed and if it exists will be attempted to reconnected to.
-	.EXAMPLE
-		Use-MicrosoftTeamsConnection
+  .SYNOPSIS
+    Attempts to reconnect an existing SkypeOnline Session for MicrosoftTeams
+  .DESCRIPTION
+    A connection established via Connect-MicrosoftTeams is parsed and if it exists will be attempted to reconnected to.
+  .EXAMPLE
+    Use-MicrosoftTeamsConnection
     Runs Get-CsTeamsUpgradeConfiguration to open or reconnect the established PowerShell Session for SkypeOnline commands
-		Will Return $TRUE only if a valid session is found.
+    Will Return $TRUE only if a valid session is found.
   .INPUTS
     None
   .OUTPUTS

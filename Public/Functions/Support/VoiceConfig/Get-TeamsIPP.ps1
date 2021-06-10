@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-APR-2021
 # Status:   Live
 
@@ -30,7 +30,7 @@ function Get-TeamsIPP {
     Behaviour like: Get-CsTeamsIPPhonePolicy -Filter "*CommonAreaPhone*"
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .NOTES
@@ -39,8 +39,8 @@ function Get-TeamsIPP {
     Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries IP Phone Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

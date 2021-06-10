@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -9,31 +9,31 @@
 
 function Get-TeamsResourceAccountAssociation {
   <#
-	.SYNOPSIS
-		Queries a Resource Account Association
-	.DESCRIPTION
-		Queries an existing Resource Account and lists its Association (if any)
-	.PARAMETER UserPrincipalName
-		Optional. UPN(s) of the Resource Account(s) to be queried
-	.EXAMPLE
-		Get-TeamsResourceAccountAssociation
-		Queries all Resource Accounts and enumerates their Association as well as the Association Status
-	.EXAMPLE
-		Get-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
-		Queries the Association of the Account 'ResourceAccount@domain.com'
+  .SYNOPSIS
+    Queries a Resource Account Association
+  .DESCRIPTION
+    Queries an existing Resource Account and lists its Association (if any)
+  .PARAMETER UserPrincipalName
+    Optional. UPN(s) of the Resource Account(s) to be queried
+  .EXAMPLE
+    Get-TeamsResourceAccountAssociation
+    Queries all Resource Accounts and enumerates their Association as well as the Association Status
+  .EXAMPLE
+    Get-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
+    Queries the Association of the Account 'ResourceAccount@domain.com'
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
-		Without any Parameters, can be used to enumerate all Resource Accounts
+  .NOTES
+    Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
+    Without any Parameters, can be used to enumerate all Resource Accounts
     This may take a while to calculate, depending on # of Accounts in the Tenant
   .COMPONENT
     TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries the Association Status of one or more Resource Accounts
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -41,22 +41,22 @@ function Get-TeamsResourceAccountAssociation {
     about_TeamsResourceAccount
   .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Find-TeamsResourceAccount
-	.LINK
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     Remove-TeamsResourceAccount
-	.LINK
+  .LINK
     Set-TeamsResourceAccount
 
-	#>
+  #>
   [CmdletBinding()]
   [Alias('Get-TeamsRAA')]
   [OutputType([System.Object])]

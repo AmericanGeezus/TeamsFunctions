@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  13-MAR-2021
 # Status:   Live
 
@@ -9,13 +9,13 @@
 
 function Enable-MyAzureAdAdminRole {
   <#
-	.SYNOPSIS
-		Activates Azure Ad Admin Roles for currently connected User
-	.DESCRIPTION
-		Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
+  .SYNOPSIS
+    Activates Azure Ad Admin Roles for currently connected User
+  .DESCRIPTION
+    Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
     Requires a Connection to AzureAd
-	.EXAMPLE
-		Enable-MyAzureAdAdminRole
+  .EXAMPLE
+    Enable-MyAzureAdAdminRole
   .INPUTS
     None
   .OUTPUTS
@@ -25,7 +25,7 @@ function Enable-MyAzureAdAdminRole {
     None
   .COMPONENT
     UserManagement
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams for the currently connected on User
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -43,7 +43,7 @@ function Enable-MyAzureAdAdminRole {
     Get-AzureAdAdminRole
   .LINK
     Get-MyAzureAdAdminRole
-	#>
+  #>
 
   [CmdletBinding()]
   [Alias('ear')]

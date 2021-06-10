@@ -9,12 +9,12 @@
 
 function Get-CurrentConnectionInfo {
   <#
-	.SYNOPSIS
-		Queries AzureAd, MicrosoftTeams and ExchangeOnline for currently established Sessions
-	.DESCRIPTION
-		Returns an object displaying all currently connected PowerShell Sessions and basic output about the Tenant.
-	.EXAMPLE
-		Get-CurrentConnectionInfo
+  .SYNOPSIS
+    Queries AzureAd, MicrosoftTeams and ExchangeOnline for currently established Sessions
+  .DESCRIPTION
+    Returns an object displaying all currently connected PowerShell Sessions and basic output about the Tenant.
+  .EXAMPLE
+    Get-CurrentConnectionInfo
     Will Test current connection to AzureAd, MicrosoftTeams and ExchangeOnline and displays simple output object.
   .INPUTS
     None
@@ -24,7 +24,7 @@ function Get-CurrentConnectionInfo {
     Information about a Service is only displayed if an active connection can be found
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries Information about existing Sessions to AzureAd and MicrosoftTeams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

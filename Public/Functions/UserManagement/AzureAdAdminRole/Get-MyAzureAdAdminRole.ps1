@@ -9,26 +9,26 @@
 
 function Get-MyAzureAdAdminRole {
   <#
-	.SYNOPSIS
-		Queries Admin Roles assigned to the currently connected User
-	.DESCRIPTION
-		Azure Active Directory Admin Roles assigned to the currently connected User
-		Requires a Connection to AzureAd
+  .SYNOPSIS
+    Queries Admin Roles assigned to the currently connected User
+  .DESCRIPTION
+    Azure Active Directory Admin Roles assigned to the currently connected User
+    Requires a Connection to AzureAd
     Querying '-Type Elibile' requires the Module AzureAdPreview installed
-	.PARAMETER Type
-		Optional. Switches query to Active (Default) or Eligible Admin Roles
+  .PARAMETER Type
+    Optional. Switches query to Active (Default) or Eligible Admin Roles
     Eligibility can only be queried with Module AzureAdPreview installed
-	.EXAMPLE
-		Get-AzureAdAdminRole [-Type Active]
-		Returns all active Admin Roles for the currently connected User
-	.EXAMPLE
-		Get-AzureAdAdminRole -Type Eligible
-		Returns all eligible Admin Roles for the currently connected User
-	.INPUTS
-		System.String
-	.OUTPUTS
-		PSCustomObject
-	.NOTES
+  .EXAMPLE
+    Get-AzureAdAdminRole [-Type Active]
+    Returns all active Admin Roles for the currently connected User
+  .EXAMPLE
+    Get-AzureAdAdminRole -Type Eligible
+    Returns all eligible Admin Roles for the currently connected User
+  .INPUTS
+    System.String
+  .OUTPUTS
+    PSCustomObject
+  .NOTES
     This is a wrapper for Get-AzureAdAdminRole targeting the currently connected User
   .COMPONENT
     UserAdmin

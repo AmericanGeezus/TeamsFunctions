@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-APR-2021
 # Status:   Live
 
@@ -34,13 +34,13 @@ function Get-TeamsCP {
     Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries Calling Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

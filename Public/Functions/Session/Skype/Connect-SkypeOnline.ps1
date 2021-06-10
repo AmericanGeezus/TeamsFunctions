@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  22-JAN-2021
 # Status:   Live
 
@@ -9,30 +9,30 @@
 
 function Connect-SkypeOnline {
   <#
-	.SYNOPSIS
-		Creates a remote PowerShell session to Teams (SkypeOnline)
-	.DESCRIPTION
+  .SYNOPSIS
+    Creates a remote PowerShell session to Teams (SkypeOnline)
+  .DESCRIPTION
     The Connect-SkypeOnline cmdlet connects an account to use for Microsoft Teams (SkypeOnline) cmdlet requests.
     Establishing a remote PowerShell session to Microsoft Teams (SkypeOnline)
     A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect and execute GET-commands.
     To execute other commands against Teams, a Teams Admin roles with appropriate rights is required.
-	.PARAMETER AccountId
-		Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.
+  .PARAMETER AccountId
+    Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.
     If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.
     Please see Notes for a detailed example
-	.PARAMETER OverrideAdminDomain
+  .PARAMETER OverrideAdminDomain
     Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records.
     If a Session to AzureAd exists, the TenantDomain will be used as the OverrideAdminDomain. Please see notes for details
-	.PARAMETER IdleTimeout
-		Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
+  .PARAMETER IdleTimeout
+    Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.
     By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
     Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.
-	.EXAMPLE
-		Connect-SkypeOnline
+  .EXAMPLE
+    Connect-SkypeOnline
     Prompt for the Username and password of an administrator with permissions to connect to Microsoft Teams (SkypeOnline).
     Additional prompts for Multi Factor Authentication are displayed as required
-	.EXAMPLE
-		Connect-SkypeOnline -AccountId admin@contoso.com
+  .EXAMPLE
+    Connect-SkypeOnline -AccountId admin@contoso.com
     When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com
     and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
     When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
@@ -42,13 +42,13 @@ function Connect-SkypeOnline {
     System.String
   .OUTPUTS
     System.Object
-	.EXAMPLE
-		Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com
+  .EXAMPLE
+    Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com
     When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com
     and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
     When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
     The provided OverrideAdminDomain will be used to establish the connection. If not provided, it is constructed.
-	.NOTES
+  .NOTES
     Connection to SkypeOnline is done by creating a Session with New-CsOnlineSession, which later needs to be imported.
     A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E. SkypeOnline)
 
@@ -90,7 +90,7 @@ function Connect-SkypeOnline {
     - Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Creates a new connection to MicrosoftTeams (SkypeOnline) with New-CsOnlineSession
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -98,21 +98,21 @@ function Connect-SkypeOnline {
     about_TeamsSession
   .LINK
     Connect-Me
-	.LINK
+  .LINK
     Connect-SkypeOnline
-	.LINK
+  .LINK
     Connect-AzureAD
-	.LINK
+  .LINK
     Connect-MicrosoftTeams
-	.LINK
+  .LINK
     Assert-SkypeOnlineConnection
-	.LINK
+  .LINK
     Disconnect-Me
-	.LINK
+  .LINK
     Disconnect-SkypeOnline
-	.LINK
+  .LINK
     Disconnect-AzureAD
-	.LINK
+  .LINK
     Disconnect-MicrosoftTeams
   #>
 

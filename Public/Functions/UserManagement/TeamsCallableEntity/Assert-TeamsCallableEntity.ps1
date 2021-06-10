@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  15-DEC-2020
 # Status:   Live
 
@@ -9,8 +9,8 @@
 
 function Assert-TeamsCallableEntity {
   <#
-	.SYNOPSIS
-		Verifies User is ready for Voice Config
+  .SYNOPSIS
+    Verifies User is ready for Voice Config
   .DESCRIPTION
     Tests whether a the Object can be used as a Callable Entity in Call Queues or Auto Attendant
   .PARAMETER Identity
@@ -33,7 +33,7 @@ function Assert-TeamsCallableEntity {
     UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Verifies whether a User Object is correctly configured to be used for Auto Attendants or Call Queues
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -34,7 +34,7 @@ function Get-TeamsVNR {
     Behaviour like: (Get-CsTenantDialPlan -Identity "*DP-HUN*").NormalizationRules
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .NOTES
@@ -42,8 +42,8 @@ function Get-TeamsVNR {
     Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, Pattern, Translation, Description
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries Normalization Rules from a Tenant Dial Plan from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

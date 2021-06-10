@@ -9,34 +9,34 @@
 
 function Get-AzureAdAdminRole {
   <#
-	.SYNOPSIS
-		Queries Admin Roles assigned to an Object
-	.DESCRIPTION
-		Azure Active Directory Admin Roles assigned to an Object
-		Requires a Connection to AzureAd
+  .SYNOPSIS
+    Queries Admin Roles assigned to an Object
+  .DESCRIPTION
+    Azure Active Directory Admin Roles assigned to an Object
+    Requires a Connection to AzureAd
     Querying '-Type Elibile' requires the Module AzureAdPreview installed
-	.PARAMETER Identity
-		Required. One or more UserPrincipalNames of the Office365 Administrator
-	.PARAMETER Type
-		Optional. Switches query to Active (Default) or Eligible Admin Roles
+  .PARAMETER Identity
+    Required. One or more UserPrincipalNames of the Office365 Administrator
+  .PARAMETER Type
+    Optional. Switches query to Active (Default) or Eligible Admin Roles
     Eligibility can only be queried with Module AzureAdPreview installed
-	.EXAMPLE
-		Get-AzureAdAdminRole [-Identity] user@domain.com [-Type Active]
-		Returns all active Admin Roles for the provided Identity
-	.EXAMPLE
-		Get-AzureAdAdminRole [-Identity] user@domain.com -Type Eligible
-		Returns all eligible Admin Roles for the provided Identity
-	.INPUTS
-		System.String
-	.OUTPUTS
-		System.Object
-	.NOTES
+  .EXAMPLE
+    Get-AzureAdAdminRole [-Identity] user@domain.com [-Type Active]
+    Returns all active Admin Roles for the provided Identity
+  .EXAMPLE
+    Get-AzureAdAdminRole [-Identity] user@domain.com -Type Eligible
+    Returns all eligible Admin Roles for the provided Identity
+  .INPUTS
+    System.String
+  .OUTPUTS
+    System.Object
+  .NOTES
     Returns an Object containing all Admin Roles assigned to a User.
     This is intended as an informational for the User currently connected to a specific PS session (whoami and whatcanido)
     The Output can be used as baseline for other functions (-contains "Teams Service Admin")
   .COMPONENT
     UserManagement
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries active or eligible Privileged Identity roles for Administration of Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

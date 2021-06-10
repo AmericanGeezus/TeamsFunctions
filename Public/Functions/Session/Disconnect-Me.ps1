@@ -1,15 +1,15 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
 
 function Disconnect-Me {
   <#
-	.SYNOPSIS
-		Disconnects all sessions for AzureAD & MicrosoftTeams
-	.DESCRIPTION
+  .SYNOPSIS
+    Disconnects all sessions for AzureAD & MicrosoftTeams
+  .DESCRIPTION
     Helper function to disconnect from AzureAD & MicrosoftTeams
     By default Office 365 allows two (!) concurrent sessions per User.
     Session exhaustion may occur if sessions hang or incorrectly closed.
@@ -21,8 +21,8 @@ function Disconnect-Me {
   .INPUTS
     None
   .OUTPUTS
-		System.Void
-	.NOTES
+    System.Void
+  .NOTES
     Helper function to disconnect from AzureAD & MicrosoftTeams
     To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
     By default Office 365 allows two (!) concurrent sessions per User.
@@ -33,7 +33,7 @@ function Disconnect-Me {
     An Alias is available for this function: dis
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Disconnects existing connections to AzureAd and MicrosoftTeams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -41,17 +41,17 @@ function Disconnect-Me {
     about_TeamsSession
   .LINK
     Connect-Me
-	.LINK
+  .LINK
     Connect-AzureAD
-	.LINK
+  .LINK
     Connect-MicrosoftTeams
-	.LINK
+  .LINK
     Disconnect-Me
-	.LINK
+  .LINK
     Disconnect-AzureAD
-	.LINK
+  .LINK
     Disconnect-MicrosoftTeams
-	#>
+  #>
 
   [CmdletBinding()]
   [Alias('dis')]

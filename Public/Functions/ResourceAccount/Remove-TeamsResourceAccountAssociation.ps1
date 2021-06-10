@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -9,32 +9,32 @@
 
 function Remove-TeamsResourceAccountAssociation {
   <#
-	.SYNOPSIS
-		Removes the connection between a Resource Account and a CQ or AA
-	.DESCRIPTION
-		Removes an associated Resource Account from a Call Queue or Auto Attendant
-	.PARAMETER UserPrincipalName
-		Required. UPN(s) of the Resource Account(s) to be removed from a Call Queue or AutoAttendant
-	.PARAMETER Force
-		Optional. Suppresses Confirmation dialog if -Confirm is not provided
-	.PARAMETER PassThru
-		Optional. Displays Object after removal of association.
-	.EXAMPLE
-		Remove-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
-		Removes the Association of the Account 'ResourceAccount@domain.com' from the identified Call Queue or Auto Attendant
-	.NOTES
-		Does the same as Remove-CsOnlineApplicationInstanceAssociation, but with friendly Names
-		General notes
+  .SYNOPSIS
+    Removes the connection between a Resource Account and a CQ or AA
+  .DESCRIPTION
+    Removes an associated Resource Account from a Call Queue or Auto Attendant
+  .PARAMETER UserPrincipalName
+    Required. UPN(s) of the Resource Account(s) to be removed from a Call Queue or AutoAttendant
+  .PARAMETER Force
+    Optional. Suppresses Confirmation dialog if -Confirm is not provided
+  .PARAMETER PassThru
+    Optional. Displays Object after removal of association.
+  .EXAMPLE
+    Remove-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
+    Removes the Association of the Account 'ResourceAccount@domain.com' from the identified Call Queue or Auto Attendant
+  .NOTES
+    Does the same as Remove-CsOnlineApplicationInstanceAssociation, but with friendly Names
+    General notes
   .INPUTS
     System.String
   .OUTPUTS
-		System.Void - Default Behavior
+    System.Void - Default Behavior
     System.Object - With Switch PassThru
   .COMPONENT
     TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Removes an existing association between a Resource Account and an Auto Attendant or Call Queue
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -42,11 +42,11 @@ function Remove-TeamsResourceAccountAssociation {
     about_TeamsResourceAccount
   .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  .LINK
     Remove-TeamsResourceAccount
   #>
 

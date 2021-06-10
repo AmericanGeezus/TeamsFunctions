@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-APR-2020
 # Status:   Live
 
@@ -9,35 +9,35 @@
 
 function Get-TeamsUserLicenseServicePlan {
   <#
-	.SYNOPSIS
+  .SYNOPSIS
     Returns License information (ServicePlans) for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all Teams related ServicePlans (for Licenses assigned) for a specific Object
-	.PARAMETER UserPrincipalName
-		The UserPrincipalName, ObjectId or Identity of the Object.
+  .PARAMETER UserPrincipalName
+    The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER DisplayAll
     Displays all ServicePlans, not only relevant Teams Service Plans
     Also displays AllLicenses and AllServicePlans object for further processing
-	.EXAMPLE
-		Get-TeamsUserLicenseServicePlan [-UserPrincipalName] John@domain.com
-		Displays all licenses assigned to User John@domain.com
-	.EXAMPLE
-		Get-TeamsUserLicenseServicePlan -UserPrincipalName John@domain.com,Jane@domain.com
-		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
-	.EXAMPLE
-		Import-Csv User.csv | Get-TeamsUserLicenseServicePlan
+  .EXAMPLE
+    Get-TeamsUserLicenseServicePlan [-UserPrincipalName] John@domain.com
+    Displays all licenses assigned to User John@domain.com
+  .EXAMPLE
+    Get-TeamsUserLicenseServicePlan -UserPrincipalName John@domain.com,Jane@domain.com
+    Displays all licenses assigned to Users John@domain.com and Jane@domain.com
+  .EXAMPLE
+    Import-Csv User.csv | Get-TeamsUserLicenseServicePlan
     Displays all licenses assigned to Users from User.csv, Column UserPrincipalName, ObjectId or Identity.
     The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		Requires a connection to Azure Active Directory
+  .NOTES
+    Requires a connection to Azure Active Directory
   .COMPONENT
     Licensing
   .FUNCTIONALITY
-		Returns a list of Licenses assigned to a specific User depending on input
+    Returns a list of Licenses assigned to a specific User depending on input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

@@ -9,23 +9,23 @@
 
 function Format-StringForUse {
   <#
-	.SYNOPSIS
-		Formats a string by removing special characters usually not allowed.
-	.DESCRIPTION
-		Special Characters in strings usually lead to terminating errors.
-		This function gets around that by formating the string properly.
-		Use is limited, but can be used for UPNs and Display Names
-		Adheres to Microsoft recommendation of special Characters
-	.PARAMETER InputString
-		Mandatory. The string to be reformatted
-	.PARAMETER As
-		Optional String. DisplayName or UserPrincipalName. Uses predefined special characters to remove
-		Cannot be used together with -SpecialChars
-	.PARAMETER SpecialChars
-		Default, Optional String. Manually define which special characters to remove.
-		If not specified, only the following characters are removed: ?()[]{}
-		Cannot be used together with -As
-	.PARAMETER Replacement
+  .SYNOPSIS
+    Formats a string by removing special characters usually not allowed.
+  .DESCRIPTION
+    Special Characters in strings usually lead to terminating errors.
+    This function gets around that by formating the string properly.
+    Use is limited, but can be used for UPNs and Display Names
+    Adheres to Microsoft recommendation of special Characters
+  .PARAMETER InputString
+    Mandatory. The string to be reformatted
+  .PARAMETER As
+    Optional String. DisplayName or UserPrincipalName. Uses predefined special characters to remove
+    Cannot be used together with -SpecialChars
+  .PARAMETER SpecialChars
+    Default, Optional String. Manually define which special characters to remove.
+    If not specified, only the following characters are removed: ?()[]{}
+    Cannot be used together with -As
+  .PARAMETER Replacement
     Optional String. Manually replaces removed characters with this string.
   .EXAMPLE
     Format-StringForUse  -InputString "<my>\Test(String)"
@@ -53,7 +53,7 @@ function Format-StringForUse {
     None
   .COMPONENT
     SupportingFunction
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Reformats a string to be used as an E.164 Number, LineUri/TelUri, DisplayName or UserPrincipalName; Removes special Characters in the process
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -63,7 +63,7 @@ function Format-StringForUse {
     Format-StringForUse
   .LINK
     Format-StringRemoveSpecialCharacter
-	#>
+  #>
 
   [CmdletBinding(DefaultParameterSetName = 'Manual')]
   [OutputType([String])]

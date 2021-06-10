@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -9,73 +9,73 @@
 #TODO Add new Switches: ChannelId & Suppress Shared Voicemail System messages
 function Get-TeamsAutoAttendant {
   <#
-	.SYNOPSIS
-		Queries Auto Attendants and displays friendly Names (UPN or DisplayName)
-	.DESCRIPTION
-		Same functionality as Get-CsAutoAttendant, but display reveals friendly Names,
-		like UserPrincipalName or DisplayName for the following connected Objects
+  .SYNOPSIS
+    Queries Auto Attendants and displays friendly Names (UPN or DisplayName)
+  .DESCRIPTION
+    Same functionality as Get-CsAutoAttendant, but display reveals friendly Names,
+    like UserPrincipalName or DisplayName for the following connected Objects
     Operator and ApplicationInstances (Resource Accounts)
-	.PARAMETER Name
-		Optional. Finds all Auto Attendants with this name (unique results).
-	.PARAMETER SearchString
-		Optional. Searches all Auto Attendants for this string (multiple results possible).
+  .PARAMETER Name
+    Optional. Finds all Auto Attendants with this name (unique results).
+  .PARAMETER SearchString
+    Optional. Searches all Auto Attendants for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays nested Objects for all Parameters of the Auto Attendant
     By default, only Names of nested Objects are shown.
-	.EXAMPLE
-		Get-TeamsAutoAttendant
-		Same result as Get-CsAutoAttendant
-	.EXAMPLE
-		Get-TeamsAutoAttendant -Name "My AutoAttendant"
-		Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"
-	.EXAMPLE
-		Get-TeamsAutoAttendant -Name "My AutoAttendant" -Detailed
-		Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"
+  .EXAMPLE
+    Get-TeamsAutoAttendant
+    Same result as Get-CsAutoAttendant
+  .EXAMPLE
+    Get-TeamsAutoAttendant -Name "My AutoAttendant"
+    Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"
+  .EXAMPLE
+    Get-TeamsAutoAttendant -Name "My AutoAttendant" -Detailed
+    Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"
     Detailed view will display all nested Objects indented as a tree
-	.EXAMPLE
-		Get-TeamsAutoAttendant -Name "My AutoAttendant" -SearchString "My AutoAttendant"
-		Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" and
+  .EXAMPLE
+    Get-TeamsAutoAttendant -Name "My AutoAttendant" -SearchString "My AutoAttendant"
+    Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" and
     Returns an Object for every Auto Attendant matching the String "My AutoAttendant"
-	.EXAMPLE
-		Get-TeamsAutoAttendant -SearchString "My AutoAttendant"
+  .EXAMPLE
+    Get-TeamsAutoAttendant -SearchString "My AutoAttendant"
     Returns an Object for every Auto Attendant matching the String "My AutoAttendant"
     Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output shown differently.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
+  .NOTES
     Without any parameters, Get-TeamsAutoAttendant will show names only.
-		Operator and Resource Accounts, etc. are displayed with friendly name.
+    Operator and Resource Accounts, etc. are displayed with friendly name.
     Main difference to Get-CsAutoAttendant (apart from the friendly names) is how the Objects are shown.
     The connected Objects DefaultCallFlow, CallFlows, Schedules, CallHandlingAssociations and DirectoryLookups
     are all shown with Name only, but can be queried with .<ObjectName>
     This also works with Get-CsAutoAttendant, but with the help of "Display" Parameters.
   .COMPONENT
     TeamsAutoAttendant
-	.FUNCTIONALITY
-		Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
+  .FUNCTIONALITY
+    Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant
-	.LINK
-		Get-TeamsCallQueue
-	.LINK
+  .LINK
+    Get-TeamsCallQueue
+  .LINK
     New-TeamsAutoAttendant
-	.LINK
+  .LINK
     Set-TeamsAutoAttendant
-	.LINK
+  .LINK
     Get-TeamsCallableEntity
-	.LINK
+  .LINK
     Find-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsCallableEntity
-	.LINK
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     Remove-TeamsAutoAttendant
   #>
 

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   RC
 
@@ -9,101 +9,101 @@
 
 function Set-TeamsResourceAccount {
   <#
-	.SYNOPSIS
-		Changes a new Resource Account
-	.DESCRIPTION
-		This function allows you to update Resource accounts for Teams Call Queues and Auto Attendants.
-		It can carry a license and optionally also a phone number.
-		This Function was designed to service the ApplicationInstance in AD,
-		the corresponding AzureAD User and its license and enable use of a phone number, all with one Command.
-	.PARAMETER UserPrincipalName
-		Required. Identifies the Object being changed
-	.PARAMETER DisplayName
-		Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
-	.PARAMETER ApplicationType
-		CallQueue or AutoAttendant. Determines the association the account can have:
-		A resource Account of the type "CallQueue" can only be associated with to a Call Queue
-		A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
-		The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).
-	.PARAMETER UsageLocation
-		Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
-		Before a License can be assigned, the account needs a Usage Location populated.
-	.PARAMETER License
-		Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
-		If not provided, will default to PhoneSystem_VirtualUser
-		Unlicensed Objects can exist, but cannot be assigned a phone number
-		If a license already exists, it will try to swap the license to the specified one.
-		PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
-	.PARAMETER PhoneNumber
-		Changes the Phone Number of the object.
-		Can either be a Microsoft Number or a Direct Routing Number.
-		Requires the Resource Account to be licensed correctly
-		Required format is E.164, starting with a '+' and 10-15 digits long.
+  .SYNOPSIS
+    Changes a new Resource Account
+  .DESCRIPTION
+    This function allows you to update Resource accounts for Teams Call Queues and Auto Attendants.
+    It can carry a license and optionally also a phone number.
+    This Function was designed to service the ApplicationInstance in AD,
+    the corresponding AzureAD User and its license and enable use of a phone number, all with one Command.
+  .PARAMETER UserPrincipalName
+    Required. Identifies the Object being changed
+  .PARAMETER DisplayName
+    Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
+  .PARAMETER ApplicationType
+    CallQueue or AutoAttendant. Determines the association the account can have:
+    A resource Account of the type "CallQueue" can only be associated with to a Call Queue
+    A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
+    The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).
+  .PARAMETER UsageLocation
+    Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
+    Before a License can be assigned, the account needs a Usage Location populated.
+  .PARAMETER License
+    Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
+    If not provided, will default to PhoneSystem_VirtualUser
+    Unlicensed Objects can exist, but cannot be assigned a phone number
+    If a license already exists, it will try to swap the license to the specified one.
+    PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
+  .PARAMETER PhoneNumber
+    Changes the Phone Number of the object.
+    Can either be a Microsoft Number or a Direct Routing Number.
+    Requires the Resource Account to be licensed correctly
+    Required format is E.164, starting with a '+' and 10-15 digits long.
   .PARAMETER OnlineVoiceRoutingPolicy
     Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
   .PARAMETER PassThru
     By default, no output is generated, PassThru will display the Object changed
-	.PARAMETER Force
-		Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object
+  .PARAMETER Force
+    Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object
     If PhoneNumber is not Null or Empty, will reapply the PhoneNumber
   .EXAMPLE
-		Set-TeamsResourceAccount -UserPrincipalName ResourceAccount@TenantName.onmicrosoft.com -Displayname "My {ResourceAccount}"
-		Will normalize the Display Name (i.E. remove special characters), then set it as "My ResourceAccount"
-	.EXAMPLE
-		Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -UsageLocation US
-		Sets the UsageLocation for the Account in AzureAD to US.
-	.EXAMPLE
-		Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -License PhoneSystem_VirtualUser
-		Requires the Account to have a UsageLocation populated. Applies the License to Resource Account AA-Mainline.
-		If no license is assigned, will try to assign. If the license is already applied, no action is currently taken.
-	.EXAMPLE
-		Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber +1555123456
-		Changes the Phone number of the Object. Will cleanly remove the Phone Number first before reapplying it.
-		This will only succeed if the object is licensed correctly!
-	.EXAMPLE
-		Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber $Null
-		Removes the Phone number from the Object
-	.EXAMPLE
-		Set-TeamsResourceAccount -UserPrincipalName MyRessourceAccount@TenantName.onmicrosoft.com -ApplicationType AutoAttendant
-		Switches MyResourceAccount to the Type AutoAttendant
-		Though working correctly in all tests, please handle with care
+    Set-TeamsResourceAccount -UserPrincipalName ResourceAccount@TenantName.onmicrosoft.com -Displayname "My {ResourceAccount}"
+    Will normalize the Display Name (i.E. remove special characters), then set it as "My ResourceAccount"
+  .EXAMPLE
+    Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -UsageLocation US
+    Sets the UsageLocation for the Account in AzureAD to US.
+  .EXAMPLE
+    Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -License PhoneSystem_VirtualUser
+    Requires the Account to have a UsageLocation populated. Applies the License to Resource Account AA-Mainline.
+    If no license is assigned, will try to assign. If the license is already applied, no action is currently taken.
+  .EXAMPLE
+    Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber +1555123456
+    Changes the Phone number of the Object. Will cleanly remove the Phone Number first before reapplying it.
+    This will only succeed if the object is licensed correctly!
+  .EXAMPLE
+    Set-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -PhoneNumber $Null
+    Removes the Phone number from the Object
+  .EXAMPLE
+    Set-TeamsResourceAccount -UserPrincipalName MyRessourceAccount@TenantName.onmicrosoft.com -ApplicationType AutoAttendant
+    Switches MyResourceAccount to the Type AutoAttendant
+    Though working correctly in all tests, please handle with care
   .INPUTS
     System.String
   .OUTPUTS
-		System.Void - Default Behavior
+    System.Void - Default Behavior
     System.Object - With Switch PassThru
   .NOTES
     Though working correctly in all tests, please handle with care when changing Application Types
     Existing Application Instance Objects may get corrupted when treated as a User.
     If in doubt, please recreate the Resource Account and retire the old object.
-		At the moment, swapping licenses is not possible/implemented. Please address manually in the Admin Center
+    At the moment, swapping licenses is not possible/implemented. Please address manually in the Admin Center
   .COMPONENT
     TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
-		Changes a resource Account in AzureAD for use in Teams
+  .FUNCTIONALITY
+    Changes a resource Account in AzureAD for use in Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Find-TeamsResourceAccount
-	.LINK
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     Remove-TeamsResourceAccount
-	.LINK
+  .LINK
     Set-TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	#>
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('Set-TeamsRA')]

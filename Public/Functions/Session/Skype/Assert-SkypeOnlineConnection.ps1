@@ -9,12 +9,12 @@
 
 function Assert-SkypeOnlineConnection {
   <#
-	.SYNOPSIS
-		Asserts an established Connection to SkypeOnline
-	.DESCRIPTION
-		Tests and tries to reconnect to a SkypeOnline connection already established.
-	.EXAMPLE
-		Assert-SkypeOnlineConnection
+  .SYNOPSIS
+    Asserts an established Connection to SkypeOnline
+  .DESCRIPTION
+    Tests and tries to reconnect to a SkypeOnline connection already established.
+  .EXAMPLE
+    Assert-SkypeOnlineConnection
     Will run Test-SkypeOnlineConnection and, if successful, stops.
     If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection.
     If that too is unsuccessful, displays request to reconnect with Connect-Me.

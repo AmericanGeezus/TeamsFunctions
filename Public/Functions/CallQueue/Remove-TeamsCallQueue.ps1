@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -9,14 +9,14 @@
 
 function Remove-TeamsCallQueue {
   <#
-	.SYNOPSIS
-		Removes a Call Queue
-	.DESCRIPTION
-		Remove-CsCallQueue for friendly Names
-	.PARAMETER Name
-		DisplayName of the Call Queue
-	.EXAMPLE
-		Remove-TeamsCallQueue -Name "My Queue"
+  .SYNOPSIS
+    Removes a Call Queue
+  .DESCRIPTION
+    Remove-CsCallQueue for friendly Names
+  .PARAMETER Name
+    DisplayName of the Call Queue
+  .EXAMPLE
+    Remove-TeamsCallQueue -Name "My Queue"
     Prompts for removal for all queues found with the string "My Queue"
   .INPUTS
     System.String
@@ -26,27 +26,27 @@ function Remove-TeamsCallQueue {
     None
   .COMPONENT
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Removes a Call Queue Object from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsCallQueue
   .LINK
-		Get-TeamsCallQueue
-	.LINK
+    Get-TeamsCallQueue
+  .LINK
     Set-TeamsCallQueue
-	.LINK
-		New-TeamsCallQueue
-	.LINK
+  .LINK
+    New-TeamsCallQueue
+  .LINK
     Remove-TeamsCallQueue
-	.LINK
+  .LINK
     Remove-TeamsAutoAttendant
-	.LINK
-		Remove-TeamsResourceAccount
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	#>
+  .LINK
+    Remove-TeamsResourceAccount
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
   [Alias('Remove-TeamsCQ')]

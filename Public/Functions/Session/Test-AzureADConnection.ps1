@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-AUG-2020
 # Status:   Live
 
@@ -9,13 +9,13 @@
 
 function Test-AzureADConnection {
   <#
-	.SYNOPSIS
-		Tests whether a valid PS Session exists for Azure Active Directory (v2)
-	.DESCRIPTION
-		A connection established via Connect-AzureAD is parsed.
-	.EXAMPLE
-		Test-AzureADConnection
-		Will Return $TRUE only if a session is found.
+  .SYNOPSIS
+    Tests whether a valid PS Session exists for Azure Active Directory (v2)
+  .DESCRIPTION
+    A connection established via Connect-AzureAD is parsed.
+  .EXAMPLE
+    Test-AzureADConnection
+    Will Return $TRUE only if a session is found.
   .INPUTS
     None
   .OUTPUTS
@@ -24,7 +24,7 @@ function Test-AzureADConnection {
     Calls Get-AzureADCurrentSessionInfo to determine whether a Connection exists
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Tests the connection to AzureAd
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

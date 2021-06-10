@@ -9,19 +9,19 @@
 
 function Enable-TeamsUserForEnterpriseVoice {
   <#
-	.SYNOPSIS
+  .SYNOPSIS
     Enables a User for Enterprise Voice
   .DESCRIPTION
-		Enables a User for Enterprise Voice and verifies its status
+    Enables a User for Enterprise Voice and verifies its status
   .PARAMETER UserPrincipalName
-		UserPrincipalName of the User to be enabled.
+    UserPrincipalName of the User to be enabled.
   .PARAMETER Force
-		Suppresses confirmation prompt unless -Confirm is used explicitly
+    Suppresses confirmation prompt unless -Confirm is used explicitly
   .EXAMPLE
     Enable-TeamsUserForEnterpriseVoice John@domain.com
     Enables John for Enterprise Voice
   .INPUTS
-		System.String
+    System.String
   .OUTPUTS
     System.Void - If called directly
     Boolean - If called by another CmdLet
@@ -30,7 +30,7 @@ function Enable-TeamsUserForEnterpriseVoice {
     Returns boolean result and less communication if called by another function
   .COMPONENT
     VoiceConfiguration
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Enables a User for Enterprise Voice in order to apply a valid Voice Configuration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -38,15 +38,15 @@ function Enable-TeamsUserForEnterpriseVoice {
     about_VoiceConfiguration
   .LINK
     about_UserManagement
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Assert-TeamsCallableEntity
-	.LINK
+  .LINK
     Enable-TeamsUserForEnterpriseVoice
-	#>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('Enable-Ev')]

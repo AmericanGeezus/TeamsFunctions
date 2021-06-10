@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Backup
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JUN-2020
 # Status:   Unmanaged
 
@@ -9,12 +9,12 @@
 
 function Backup-TeamsTenant {
   <#
-	.SYNOPSIS
-		A script to automatically backup a Microsoft Teams Tenant configuration.
-	.DESCRIPTION
-		Automates the backup of Microsoft Teams.
-	.PARAMETER OverrideAdminDomain
-		OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
+  .SYNOPSIS
+    A script to automatically backup a Microsoft Teams Tenant configuration.
+  .DESCRIPTION
+    Automates the backup of Microsoft Teams.
+  .PARAMETER OverrideAdminDomain
+    OPTIONAL: The FQDN your Office365 tenant. Use if your admin account is not in the same domain as your tenant (ie. doesn't use a @tenantname.onmicrosoft.com address)
   .EXAMPLE
     Backup-TeamsTenant
     Takes a backup of the entire Teams Tenant configuration and stores it as a ZIP file with the Tenant Name and Current Date in the current directory.
@@ -22,32 +22,32 @@ function Backup-TeamsTenant {
     None
     System.String
   .OUTPUTS
-		System.File
+    System.File
   .NOTES
-		Version 1.10
-		Build: Feb 04, 2020
+    Version 1.10
+    Build: Feb 04, 2020
 
-		Copyright © 2020  Ken Lasko
-		klasko@ucdialplans.com
-		https://www.ucdialplans.com
+    Copyright © 2020  Ken Lasko
+    klasko@ucdialplans.com
+    https://www.ucdialplans.com
 
-		Expanded to cover more elements
-		David Eberhardt
-		https://github.com/DEberhardt/
-		https://davideberhardt.wordpress.com/
+    Expanded to cover more elements
+    David Eberhardt
+    https://github.com/DEberhardt/
+    https://davideberhardt.wordpress.com/
 
-		14-MAY 2020
+    14-MAY 2020
 
-		The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
+    The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
   .COMPONENT
     SupportingFunction
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Creating a backup for all Configuration in the Teams Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction
-	#>
+  #>
 
   [CmdletBinding(ConfirmImpact = 'None')]
   param(

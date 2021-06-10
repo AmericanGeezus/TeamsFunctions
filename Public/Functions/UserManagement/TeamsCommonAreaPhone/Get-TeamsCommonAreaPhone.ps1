@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   RC
 
@@ -9,44 +9,44 @@
 
 function Get-TeamsCommonAreaPhone {
   <#
-	.SYNOPSIS
-		Returns Common Area Phones from AzureAD
-	.DESCRIPTION
+  .SYNOPSIS
+    Returns Common Area Phones from AzureAD
+  .DESCRIPTION
     Returns one or more AzureAdUser Accounts that are Common Area Phones
     Accounts returned are strictly limited to having to have the Common Area Phone License assigned.
   .PARAMETER UserPrincipalName
     Default and positional. One or more UserPrincipalNames to be queried
   .PARAMETER DisplayName
-		Optional. Search parameter.
-		Use Find-TeamsUserVoiceConfig for more search options
+    Optional. Search parameter.
+    Use Find-TeamsUserVoiceConfig for more search options
   .PARAMETER PhoneNumber
-		Optional. Returns all Common Area Phones with a specific string in the PhoneNumber
-	.EXAMPLE
-		Get-TeamsCommonAreaPhone
-		Returns all Common Area Phones.
+    Optional. Returns all Common Area Phones with a specific string in the PhoneNumber
+  .EXAMPLE
+    Get-TeamsCommonAreaPhone
+    Returns all Common Area Phones.
     Depending on size of the Tenant, this might take a while.
-	.EXAMPLE
-		Get-TeamsCommonAreaPhone -Identity MyCAP@TenantName.onmicrosoft.com
-		Returns the Common Area Phone with the Identity specified, if found.
-	.EXAMPLE
-		Get-TeamsCommonAreaPhone -DisplayName "Lobby"
-		Returns all Common Area Phones with "Lobby" as part of their Display Name.
-	.EXAMPLE
-		Get-TeamsCommonAreaPhone -PhoneNumber +1555123456
-		Returns the Resource Account with the Phone Number specified, if found.
+  .EXAMPLE
+    Get-TeamsCommonAreaPhone -Identity MyCAP@TenantName.onmicrosoft.com
+    Returns the Common Area Phone with the Identity specified, if found.
+  .EXAMPLE
+    Get-TeamsCommonAreaPhone -DisplayName "Lobby"
+    Returns all Common Area Phones with "Lobby" as part of their Display Name.
+  .EXAMPLE
+    Get-TeamsCommonAreaPhone -PhoneNumber +1555123456
+    Returns the Resource Account with the Phone Number specified, if found.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
+  .NOTES
     Displays similar output as Get-TeamsUserVoiceConfig, but more tailored to Common Area Phones
     Running the CmdLet without any input might take a while, depending on size of the Tenant.
-	.FUNCTIONALITY
-		Queries a Common Area Phone in AzureAD for use in Teams
+  .FUNCTIONALITY
+    Queries a Common Area Phone in AzureAD for use in Teams
   .COMPONENT
-		UserManagement
+    UserManagement
   .COMPONENT
-		VoiceConfiguration
+    VoiceConfiguration
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -63,13 +63,13 @@ function Get-TeamsCommonAreaPhone {
     Remove-TeamsCommonAreaPhone
   .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	#>
+  #>
 
   [CmdletBinding(ConfirmImpact = 'Low', DefaultParameterSetName = 'Identity')]
   [Alias('Get-TeamsCAP')]

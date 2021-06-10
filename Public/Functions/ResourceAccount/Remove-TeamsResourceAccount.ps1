@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -9,34 +9,34 @@
 
 function Remove-TeamsResourceAccount {
   <#
-	.SYNOPSIS
-		Removes a Resource Account from AzureAD
-	.DESCRIPTION
-		This function allows you to remove Resource Accounts (Application Instances) from AzureAD
-	.PARAMETER UserPrincipalName
-		Required. Identifies the Object being changed
-	.PARAMETER PassThru
-		Optional. Displays UserPrincipalName of removed objects.
-	.PARAMETER Force
-		Optional. Will also sever all associations this account has in order to remove it
-		If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
-	.EXAMPLE
-		Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
-		Removes a ResourceAccount
-		Removes in order: Phone Number, License and Account
-	.EXAMPLE
-		Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
-		Removes a ResourceAccount
-		Removes in order: Association, Phone Number, License and Account
+  .SYNOPSIS
+    Removes a Resource Account from AzureAD
+  .DESCRIPTION
+    This function allows you to remove Resource Accounts (Application Instances) from AzureAD
+  .PARAMETER UserPrincipalName
+    Required. Identifies the Object being changed
+  .PARAMETER PassThru
+    Optional. Displays UserPrincipalName of removed objects.
+  .PARAMETER Force
+    Optional. Will also sever all associations this account has in order to remove it
+    If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
+  .EXAMPLE
+    Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
+    Removes a ResourceAccount
+    Removes in order: Phone Number, License and Account
+  .EXAMPLE
+    Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
+    Removes a ResourceAccount
+    Removes in order: Association, Phone Number, License and Account
   .INPUTS
     System.String
   .OUTPUTS
-		System.Void - Default Behavior
+    System.Void - Default Behavior
     System.Object - With Switch PassThru
-	.NOTES
-		Execution requires User Admin Role in Azure AD
-	.FUNCTIONALITY
-		Removes a resource Account in AzureAD for use in Teams
+  .NOTES
+    Execution requires User Admin Role in Azure AD
+  .FUNCTIONALITY
+    Removes a resource Account in AzureAD for use in Teams
   .COMPONENT
     TeamsResourceAccount
     TeamsAutoAttendant
@@ -45,23 +45,23 @@ function Remove-TeamsResourceAccount {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Find-TeamsResourceAccount
-	.LINK
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     Remove-TeamsResourceAccount
-	.LINK
+  .LINK
     Set-TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	#>
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
   [Alias('Remove-TeamsRA')]

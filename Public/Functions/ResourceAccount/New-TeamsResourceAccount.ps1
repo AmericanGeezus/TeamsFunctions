@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -9,84 +9,84 @@
 
 function New-TeamsResourceAccount {
   <#
-	.SYNOPSIS
-		Creates a new Resource Account
-	.DESCRIPTION
-		Teams Call Queues and Auto Attendants require a resource account.
-		It can carry a license and optionally also a phone number.
-		This Function was designed to create the ApplicationInstance in AD,
-		apply a UsageLocation to the corresponding AzureAD User,
-		license the User and subsequently apply a phone number, all with one Command.
-	.PARAMETER UserPrincipalName
-		Required. The UPN for the new ResourceAccount. Invalid characters are stripped from the provided string
-	.PARAMETER DisplayName
-		Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
-	.PARAMETER ApplicationType
-		Required. CallQueue or AutoAttendant. Determines the association the account can have:
-		A resource Account of the type "CallQueue" can only be associated with to a Call Queue
-		A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
-		The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).
-	.PARAMETER UsageLocation
-		Required. Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
-		Before a License can be assigned, the account needs a Usage Location populated.
-	.PARAMETER License
-		Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
-		If not provided, will default to PhoneSystem_VirtualUser
-		Unlicensed Objects can exist, but cannot be assigned a phone number
-		PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
-	.PARAMETER PhoneNumber
-		Optional. Adds a Microsoft or Direct Routing Number to the Resource Account.
-		Requires the Resource Account to be licensed (License Switch)
-		Required format is E.164, starting with a '+' and 10-15 digits long.
+  .SYNOPSIS
+    Creates a new Resource Account
+  .DESCRIPTION
+    Teams Call Queues and Auto Attendants require a resource account.
+    It can carry a license and optionally also a phone number.
+    This Function was designed to create the ApplicationInstance in AD,
+    apply a UsageLocation to the corresponding AzureAD User,
+    license the User and subsequently apply a phone number, all with one Command.
+  .PARAMETER UserPrincipalName
+    Required. The UPN for the new ResourceAccount. Invalid characters are stripped from the provided string
+  .PARAMETER DisplayName
+    Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
+  .PARAMETER ApplicationType
+    Required. CallQueue or AutoAttendant. Determines the association the account can have:
+    A resource Account of the type "CallQueue" can only be associated with to a Call Queue
+    A resource Account of the type "AutoAttendant" can only be associated with an Auto Attendant
+    The type can be switched later (this is supported and worked flawlessly when testing, but not recommended by Microsoft).
+  .PARAMETER UsageLocation
+    Required. Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
+    Before a License can be assigned, the account needs a Usage Location populated.
+  .PARAMETER License
+    Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
+    If not provided, will default to PhoneSystem_VirtualUser
+    Unlicensed Objects can exist, but cannot be assigned a phone number
+    PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
+  .PARAMETER PhoneNumber
+    Optional. Adds a Microsoft or Direct Routing Number to the Resource Account.
+    Requires the Resource Account to be licensed (License Switch)
+    Required format is E.164, starting with a '+' and 10-15 digits long.
   .PARAMETER OnlineVoiceRoutingPolicy
     Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
-	.EXAMPLE
-		New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
-		Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
-		User Principal Name will be normalised to: ResourceAccount@TenantName.onmicrosoft.com
-		DisplayName will be taken from the User PrincipalName and normalised to "ResourceAccount"
-	.EXAMPLE
-		New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -Displayname "My {ResourceAccount}" -ApplicationType CallQueue -UsageLocation US
-		Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
-		User Principal Name will be normalised to: ResourceAccount@TenantName.onmicrosoft.com
-		DisplayName will be normalised to "My ResourceAccount"
-	.EXAMPLE
-		New-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -Displayname "Mainline" -ApplicationType AutoAttendant -UsageLocation US -License PhoneSystem -PhoneNumber +1555123456
-		Creates a Resource Account for Auto Attendants with a Usage Location for 'US'
-		Applies the specified PhoneSystem License (if available in the Tenant)
-		Assigns the Telephone Number if object could be licensed correctly.
+  .EXAMPLE
+    New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
+    Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
+    User Principal Name will be normalised to: ResourceAccount@TenantName.onmicrosoft.com
+    DisplayName will be taken from the User PrincipalName and normalised to "ResourceAccount"
+  .EXAMPLE
+    New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -Displayname "My {ResourceAccount}" -ApplicationType CallQueue -UsageLocation US
+    Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
+    User Principal Name will be normalised to: ResourceAccount@TenantName.onmicrosoft.com
+    DisplayName will be normalised to "My ResourceAccount"
+  .EXAMPLE
+    New-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com -Displayname "Mainline" -ApplicationType AutoAttendant -UsageLocation US -License PhoneSystem -PhoneNumber +1555123456
+    Creates a Resource Account for Auto Attendants with a Usage Location for 'US'
+    Applies the specified PhoneSystem License (if available in the Tenant)
+    Assigns the Telephone Number if object could be licensed correctly.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		Execution requires User Admin Role in Azure AD
-		Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
+  .NOTES
+    Execution requires User Admin Role in Azure AD
+    Assigning the PhoneSystem license has been deactivated as it is an add-on license and cannot be assigned on its own.
   .COMPONENT
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
-		Creates a resource Account in AzureAD for use in Teams
+  .FUNCTIONALITY
+    Creates a resource Account in AzureAD for use in Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Find-TeamsResourceAccount
-	.LINK
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     Remove-TeamsResourceAccount
-	.LINK
+  .LINK
     Set-TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
+  .LINK
+    Remove-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

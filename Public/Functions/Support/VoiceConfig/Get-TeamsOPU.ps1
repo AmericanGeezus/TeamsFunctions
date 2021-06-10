@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -27,13 +27,13 @@ function Get-TeamsOPU {
     This CmdLet behaves slightly different than the others, due to the nature of Pstn Usages.
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries Online Pstn Usages by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
