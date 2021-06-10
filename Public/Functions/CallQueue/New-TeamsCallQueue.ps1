@@ -635,7 +635,7 @@ function New-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -650,7 +650,7 @@ function New-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -670,13 +670,14 @@ function New-TeamsCallQueue {
             }
           }
           'VoiceMail' {
+            #TEST Voicemail does not work as desired!?
             # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
             $Target = $OverflowActionTarget
             $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
             if ($CallTarget.ObjectType -eq 'User') {
               try {
                 $Assertion = $null
-                $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
                 if ($Assertion) {
                   $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                 }
@@ -889,7 +890,7 @@ function New-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
@@ -904,7 +905,7 @@ function New-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -Terminate -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
@@ -924,14 +925,23 @@ function New-TeamsCallQueue {
             }
           }
           'VoiceMail' {
+            #TEST Voicemail does not work as desired!?
             # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
             $Target = $TimeoutActionTarget
             $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
             if ($CallTarget.ObjectType -eq 'User') {
-              $Object = $null
-              $Object = Assert-TeamsCallableEntity -Identity $CallTarget.Entity -ErrorAction Stop
-              if ($Object) {
-                $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
+              try {
+                $Assertion = $null
+                $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                if ($Assertion) {
+                  $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
+                }
+                else {
+                  Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' not asserted"
+                }
+              }
+              catch {
+                Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': TimeoutActionTarget '$TimeoutActionTarget' Error: $($_.Exception.Message)"
               }
             }
             else {
@@ -1118,7 +1128,7 @@ function New-TeamsCallQueue {
         }
         try {
           # Asserting Object - Validation of Type
-          $Assertion = Assert-TeamsCallableEntity -Identity "$ChannelUser" -ErrorAction SilentlyContinue
+          $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
             Write-Information "User '$ChannelUser' will be added to CallQueue"
             [void]$ChannelUsersIdList.Add($CallTarget.Identity)
@@ -1162,7 +1172,7 @@ function New-TeamsCallQueue {
         }
         try {
           # Asserting Object - Validation of Type
-          $Assertion = Assert-TeamsCallableEntity -Identity "$User" -ErrorAction SilentlyContinue
+          $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
             Write-Information "User '$User' will be added to CallQueue"
             [void]$UserIdList.Add($CallTarget.Identity)
@@ -1238,7 +1248,7 @@ function New-TeamsCallQueue {
         }
         try {
           # Asserting Object - Validation of Type
-          $Assertion = Assert-TeamsCallableEntity -Identity "$RA" -ErrorAction SilentlyContinue
+          $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
             Write-Information "Resource Account '$RA' will be added to CallQueue"
             [void]$RAIdList.Add($CallTarget.Identity)
