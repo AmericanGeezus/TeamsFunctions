@@ -41,7 +41,7 @@ Import-Csv User.csv | Get-TeamsUserLicenseServicePlan
 ```
 
 Displays all licenses assigned to Users from User.csv, Column UserPrincipalName, ObjectId or Identity.
-  The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
+The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
 
 ## PARAMETERS
 

@@ -9,24 +9,24 @@
 
 function Assert-MicrosoftTeamsConnection {
   <#
-	.SYNOPSIS
-		Asserts an established Connection to MicrosoftTeams
-	.DESCRIPTION
-		Tests a connection to MicrosoftTeams is established.
-	.EXAMPLE
-		Assert-MicrosoftTeamsConnection
+  .SYNOPSIS
+    Asserts an established Connection to MicrosoftTeams
+  .DESCRIPTION
+    Tests a connection to MicrosoftTeams is established.
+  .EXAMPLE
+    Assert-MicrosoftTeamsConnection
     Will run Test-MicrosoftTeamsConnection and, if successful, stops.
     If unsuccessful, displays request to create a new session and stops.
   .INPUTS
     None
   .OUTPUTS
-		System.Void - If called directly; On-Screen output only
+    System.Void - If called directly; On-Screen output only
     Boolean - If called by other CmdLets, On-Screen output for the first call only
   .NOTES
     None
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Verifies a Connection to AzureAd is established
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

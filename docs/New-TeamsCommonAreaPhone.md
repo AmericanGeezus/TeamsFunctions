@@ -20,7 +20,7 @@ New-TeamsCommonAreaPhone [-UserPrincipalName] <String> [-DisplayName <String>] -
 
 ## DESCRIPTION
 This CmdLet creates an AzureAdUser Object, applies a UsageLocation
-  If a License is applied, a PhoneNumber, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
+If a License is applied, a PhoneNumber, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
 
 ## EXAMPLES
 
@@ -32,7 +32,7 @@ New-TeamsCommonAreaPhone -UserPrincipalName "My Lobby Phone@TenantName.onmicroso
 Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License
 User Principal Name will be normalised to: MyLobbyPhone@TenantName.onmicrosoft.com
 DisplayName will be taken from the User PrincipalName and normalised to "MyLobbyPhone"
-  No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone
+No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone
 
 ### EXAMPLE 2
 ```
@@ -42,7 +42,7 @@ New-TeamsCommonAreaPhone -UserPrincipalName "Lobby.@TenantName.onmicrosoft.com" 
 Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License
 User Principal Name will be normalised to: Lobby@TenantName.onmicrosoft.com
 DisplayName will be normalised to "Lobby Phone"
-  No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone
+No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone
 
 ### EXAMPLE 3
 ```
@@ -50,7 +50,7 @@ New-TeamsCommonAreaPhone -UserPrincipalName "Lobby@TenantName.onmicrosoft.com" -
 ```
 
 Will create a CommonAreaPhone with a Usage Location for 'US' and assign the Office 365 E3 License as well as PhoneSystem
-  No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone
+No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone
 
 ### EXAMPLE 4
 ```
@@ -58,7 +58,7 @@ New-TeamsCommonAreaPhone -UserPrincipalName "Lobby@TenantName.onmicrosoft.com" -
 ```
 
 Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License
-  The supplied Policies will be assigned to the Common Area Phone
+The supplied Policies will be assigned to the Common Area Phone
 
 ## PARAMETERS
 

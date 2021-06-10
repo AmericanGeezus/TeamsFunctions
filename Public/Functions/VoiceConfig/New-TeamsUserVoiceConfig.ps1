@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JUN-2021
 # Status:   RC
 
@@ -9,9 +9,9 @@
 
 function New-TeamsUserVoiceConfig {
   <#
-	.SYNOPSIS
-		Enables a User to consume Voice services in Teams (Pstn breakout)
-	.DESCRIPTION
+  .SYNOPSIS
+    Enables a User to consume Voice services in Teams (Pstn breakout)
+  .DESCRIPTION
     Enables a User for Direct Routing, Microsoft Callings or for use in Call Queues (EvOnly)
     User requires a Phone System License in any case.
     Requires all necessary parameters. Calls Set-TeamsUserVoiceConfig after validating parameters.
@@ -38,19 +38,19 @@ function New-TeamsUserVoiceConfig {
   .PARAMETER Force
     By default, this script only applies changed elements. Force overwrites configuration regardless of current status.
     Additionally Suppresses confirmation inputs except when $Confirm is explicitly specified
-	.PARAMETER WriteErrorLog
+  .PARAMETER WriteErrorLog
     If Errors are encountered, writes log to C:\Temp
   .EXAMPLE
-		New-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
+    New-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -CallingPlanLicense DomesticCallingPlan
     Provisions John@domain.com for Calling Plans with the Calling Plan License and Phone Number provided
   .EXAMPLE
-		New-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
+    New-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog
     Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
     If Errors are encountered, they are written to C:\Temp as well as on screen
   .EXAMPLE
     New-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -DirectRouting -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER"
     Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy and Phone Number provided
-	.EXAMPLE
+  .EXAMPLE
     New-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -PhoneNumber "+15551234567" -OnlineVoiceRoutingPolicy "O_VP_AMER" -TenantDialPlan "DP-US"
     Provisions John@domain.com for DirectRouting with the Online Voice Routing Policy, Tenant Dial Plan and Phone Number provided
   .EXAMPLE
@@ -61,7 +61,7 @@ function New-TeamsUserVoiceConfig {
   .OUTPUTS
     System.Object - Default Behaviour
     System.File - With Switch WriteErrorLog
-	.NOTES
+  .NOTES
     ParameterSet 'DirectRouting' will provision a User to use DirectRouting. Enables User for Enterprise Voice,
     assigns a Number and an Online Voice Routing Policy and optionally also a Tenant Dial Plan. This is the default.
     ParameterSet 'CallingPlans' will provision a User to use Microsoft CallingPlans.
@@ -74,7 +74,7 @@ function New-TeamsUserVoiceConfig {
     It differs only in that all Parameters are required and that an Object is always returned.
   .COMPONENT
     VoiceConfiguration
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Applying Voice Configuration parameters to a User
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -84,23 +84,23 @@ function New-TeamsUserVoiceConfig {
     about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsTenantVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Remove-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Test-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Enable-TeamsUserForEnterpriseVoice
-	#>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'DirectRouting', ConfirmImpact = 'Medium')]
   [Alias('New-TeamsUVC')]

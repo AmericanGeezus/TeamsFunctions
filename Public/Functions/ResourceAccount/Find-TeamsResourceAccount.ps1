@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   RC
 
@@ -9,26 +9,26 @@
 
 function Find-TeamsResourceAccount {
   <#
-	.SYNOPSIS
-		Finds Resource Accounts from AzureAD
-	.DESCRIPTION
-		Returns Resource Accounts based on input (Search String).
-		This runs Find-CsOnlineApplicationInstance but reformats the Output with friendly names
-	.PARAMETER SearchQuery
-		Required. Positional. Part of the DisplayName of the Account.
-	.PARAMETER AssociatedOnly
-		Optional. Considers only associated Resource Accounts
-	.PARAMETER UnAssociatedOnly
-		Optional. Considers only unassociated Resource Accounts
-	.EXAMPLE
-		Find-TeamsResourceAccount -SearchQuery "Office"
-		Returns all Resource Accounts with "Office" as part of their DisplayName
-	.EXAMPLE
-		Find-TeamsResourceAccount -SearchQuery "Office" -AssociatedOnly
-		Returns all associated Resource Accounts with "Office" as part of their DisplayName
-	.EXAMPLE
-		Find-TeamsResourceAccount -SearchQuery "Office" -UnAssociatedOnly
-		Returns all unassociated Resource Accounts with "Office" as part of their DisplayName
+  .SYNOPSIS
+    Finds Resource Accounts from AzureAD
+  .DESCRIPTION
+    Returns Resource Accounts based on input (Search String).
+    This runs Find-CsOnlineApplicationInstance but reformats the Output with friendly names
+  .PARAMETER SearchQuery
+    Required. Positional. Part of the DisplayName of the Account.
+  .PARAMETER AssociatedOnly
+    Optional. Considers only associated Resource Accounts
+  .PARAMETER UnAssociatedOnly
+    Optional. Considers only unassociated Resource Accounts
+  .EXAMPLE
+    Find-TeamsResourceAccount -SearchQuery "Office"
+    Returns all Resource Accounts with "Office" as part of their DisplayName
+  .EXAMPLE
+    Find-TeamsResourceAccount -SearchQuery "Office" -AssociatedOnly
+    Returns all associated Resource Accounts with "Office" as part of their DisplayName
+  .EXAMPLE
+    Find-TeamsResourceAccount -SearchQuery "Office" -UnAssociatedOnly
+    Returns all unassociated Resource Accounts with "Office" as part of their DisplayName
   .INPUTS
     System.String
   .OUTPUTS
@@ -39,29 +39,29 @@ function Find-TeamsResourceAccount {
     TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Finds Resource Accounts by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Find-TeamsResourceAccount
-	.LINK
+  .LINK
     Set-TeamsResourceAccount
-	.LINK
+  .LINK
     Remove-TeamsResourceAccount
-	#>
+  #>
 
   [CmdletBinding(DefaultParameterSetName = 'Search')]
   [Alias('Find-TeamsRA')]

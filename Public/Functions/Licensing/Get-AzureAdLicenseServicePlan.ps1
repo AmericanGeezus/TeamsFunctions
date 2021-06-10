@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		Philipp, Scripting.up-in-the.cloud
+# Author:   Philipp, Scripting.up-in-the.cloud
 # Updated:  01-DEC-2020
 # Status:   Live
 

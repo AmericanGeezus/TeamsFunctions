@@ -19,7 +19,7 @@ Get-TeamsAutoAttendant [[-Name] <String[]>] [[-SearchString] <String>] [-Detaile
 ## DESCRIPTION
 Same functionality as Get-CsAutoAttendant, but display reveals friendly Names,
 like UserPrincipalName or DisplayName for the following connected Objects
-  Operator and ApplicationInstances (Resource Accounts)
+Operator and ApplicationInstances (Resource Accounts)
 
 ## EXAMPLES
 
@@ -43,7 +43,7 @@ Get-TeamsAutoAttendant -Name "My AutoAttendant" -Detailed
 ```
 
 Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"
-  Detailed view will display all nested Objects indented as a tree
+Detailed view will display all nested Objects indented as a tree
 
 ### EXAMPLE 4
 ```
@@ -51,7 +51,7 @@ Get-TeamsAutoAttendant -Name "My AutoAttendant" -SearchString "My AutoAttendant"
 ```
 
 Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" and
-  Returns an Object for every Auto Attendant matching the String "My AutoAttendant"
+Returns an Object for every Auto Attendant matching the String "My AutoAttendant"
 
 ### EXAMPLE 5
 ```
@@ -59,7 +59,7 @@ Get-TeamsAutoAttendant -SearchString "My AutoAttendant"
 ```
 
 Returns an Object for every Auto Attendant matching the String "My AutoAttendant"
-  Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output shown differently.
+Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output shown differently.
 
 ## PARAMETERS
 

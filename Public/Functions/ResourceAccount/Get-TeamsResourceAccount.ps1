@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -9,72 +9,72 @@
 
 function Get-TeamsResourceAccount {
   <#
-	.SYNOPSIS
-		Returns Resource Accounts from AzureAD
-	.DESCRIPTION
-		Returns one or more Resource Accounts based on input.
-		This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
-	.PARAMETER UserPrincipalName
-		Default and positional. One or more UserPrincipalNames to be queried.
-	.PARAMETER DisplayName
-		Optional. Search parameter. Alternative to Find-TeamsResourceAccount
-		Use Find-TeamsUserVoiceConfig for more search options
-	.PARAMETER ApplicationType
-		Optional. Returns all Call Queues or AutoAttendants
-	.PARAMETER PhoneNumber
-		Optional. Returns all ResourceAccount with a specific string in the PhoneNumber
-	.EXAMPLE
-		Get-TeamsResourceAccount
-		Returns all Resource Accounts.
-		Depending on size of the Tenant, this might take a while.
-	.EXAMPLE
-		Get-TeamsResourceAccount -Identity ResourceAccount@TenantName.onmicrosoft.com
-		Returns the Resource Account with the Identity specified, if found.
-	.EXAMPLE
-		Get-TeamsResourceAccount -DisplayName "Queue"
-		Returns all Resource Accounts with "Queue" as part of their Display Name.
-		Use Find-TeamsResourceAccount / Find-CsOnlineApplicationInstance for finer search
-	.EXAMPLE
-		Get-TeamsResourceAccount -ApplicationType AutoAttendant
-		Returns all Resource Accounts of the specified ApplicationType.
-	.EXAMPLE
-		Get-TeamsResourceAccount -PhoneNumber +1555123456
-		Returns the Resource Account with the Phone Number specified, if found.
+  .SYNOPSIS
+    Returns Resource Accounts from AzureAD
+  .DESCRIPTION
+    Returns one or more Resource Accounts based on input.
+    This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
+  .PARAMETER UserPrincipalName
+    Default and positional. One or more UserPrincipalNames to be queried.
+  .PARAMETER DisplayName
+    Optional. Search parameter. Alternative to Find-TeamsResourceAccount
+    Use Find-TeamsUserVoiceConfig for more search options
+  .PARAMETER ApplicationType
+    Optional. Returns all Call Queues or AutoAttendants
+  .PARAMETER PhoneNumber
+    Optional. Returns all ResourceAccount with a specific string in the PhoneNumber
+  .EXAMPLE
+    Get-TeamsResourceAccount
+    Returns all Resource Accounts.
+    Depending on size of the Tenant, this might take a while.
+  .EXAMPLE
+    Get-TeamsResourceAccount -Identity ResourceAccount@TenantName.onmicrosoft.com
+    Returns the Resource Account with the Identity specified, if found.
+  .EXAMPLE
+    Get-TeamsResourceAccount -DisplayName "Queue"
+    Returns all Resource Accounts with "Queue" as part of their Display Name.
+    Use Find-TeamsResourceAccount / Find-CsOnlineApplicationInstance for finer search
+  .EXAMPLE
+    Get-TeamsResourceAccount -ApplicationType AutoAttendant
+    Returns all Resource Accounts of the specified ApplicationType.
+  .EXAMPLE
+    Get-TeamsResourceAccount -PhoneNumber +1555123456
+    Returns the Resource Account with the Phone Number specified, if found.
   .INPUTS
     None
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		Pipeline input possible
+  .NOTES
+    Pipeline input possible
     Running the CmdLet without any input might take a while, depending on size of the Tenant.
   .COMPONENT
     TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
-		Returns one or more Resource Accounts from the Tenant
+  .FUNCTIONALITY
+    Returns one or more Resource Accounts from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Find-TeamsResourceAccount
-	.LINK
+  .LINK
     Set-TeamsResourceAccount
-	.LINK
+  .LINK
     Remove-TeamsResourceAccount
-	#>
+  #>
 
   [CmdletBinding(DefaultParameterSetName = 'Identity')]
   [Alias('Get-TeamsRA')]

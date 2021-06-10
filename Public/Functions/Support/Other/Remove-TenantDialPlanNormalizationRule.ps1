@@ -9,41 +9,41 @@
 
 function Remove-TenantDialPlanNormalizationRule {
   <#
-	.SYNOPSIS
-		Removes a normalization rule from a tenant dial plan.
-	.DESCRIPTION
-		This command will display the normalization rules for a tenant dial plan in a list with
-		index numbers. After choosing one of the rule index numbers, the rule will be removed from
-		the tenant dial plan. This command requires a remote PowerShell session to Teams.
-		Note: The Module name is still referencing Skype for Business Online (SkypeOnlineConnector).
-	.PARAMETER DialPlan
-		This is the name of a valid dial plan for the tenant. To view available tenant dial plans,
-		use the command Get-TeamsTDP.
-	.EXAMPLE
-		Remove-TenantDialPlanNormalizationRule -DialPlan US-OK-OKC-DialPlan
-		Displays available normalization rules to remove from dial plan US-OK-OKC-DialPlan.
+  .SYNOPSIS
+    Removes a normalization rule from a tenant dial plan.
+  .DESCRIPTION
+    This command will display the normalization rules for a tenant dial plan in a list with
+    index numbers. After choosing one of the rule index numbers, the rule will be removed from
+    the tenant dial plan. This command requires a remote PowerShell session to Teams.
+    Note: The Module name is still referencing Skype for Business Online (SkypeOnlineConnector).
+  .PARAMETER DialPlan
+    This is the name of a valid dial plan for the tenant. To view available tenant dial plans,
+    use the command Get-TeamsTDP.
+  .EXAMPLE
+    Remove-TenantDialPlanNormalizationRule -DialPlan US-OK-OKC-DialPlan
+    Displays available normalization rules to remove from dial plan US-OK-OKC-DialPlan.
   .INPUTS
     System.String
   .OUTPUTS
-		System.Void - Default Behavior
+    System.Void - Default Behavior
     System.Object - With Switch PassThru
-	.NOTES
-		The dial plan rules will display in format similar the example below:
-		RuleIndex Name            Pattern    Translation
-		--------- ----            -------    -----------
-		0 Intl Dialing    ^011(\d+)$ +$1
-		1 Extension Rule  ^(\d{5})$  +155512$1
-		2 Long Distance   ^1(\d+)$   +1$1
-		3 Default         ^(\d+)$    +1$1
+  .NOTES
+    The dial plan rules will display in format similar the example below:
+    RuleIndex Name            Pattern    Translation
+    --------- ----            -------    -----------
+    0 Intl Dialing    ^011(\d+)$ +$1
+    1 Extension Rule  ^(\d{5})$  +155512$1
+    2 Long Distance   ^1(\d+)$   +1$1
+    3 Default         ^(\d+)$    +1$1
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Removes a Normalisation Rule from a Tenant Dial Plan - This script is untested and unmanaged
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Unmanaged
-	#>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   param(

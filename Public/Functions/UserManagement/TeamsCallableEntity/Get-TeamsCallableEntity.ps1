@@ -9,9 +9,9 @@
 
 function Get-TeamsCallableEntity {
   <#
-	.SYNOPSIS
-		Returns a callable Entity Object from an Identity/ObjectId or string
-	.DESCRIPTION
+  .SYNOPSIS
+    Returns a callable Entity Object from an Identity/ObjectId or string
+  .DESCRIPTION
     Determines an Objects validity for use in an Auto Attendant or Call Queue
     Prepares output of Get-CsCallQueue by querying the Team and Channel (used in Get-TeamsCallQueue)
     Prepares output of Get-CsAutoAttendant (nested Objects) for display (used in Get-TeamsAutoAttendant)
@@ -63,7 +63,7 @@ function Get-TeamsCallableEntity {
     UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Queries a Callable Entity attached to a Call Queues or Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -87,7 +87,7 @@ function Get-TeamsCallableEntity {
     Get-TeamsAutoAttendant
   .LINK
     Get-TeamsObjectType
-	#>
+  #>
 
   [CmdletBinding()]
   [OutputType([PSCustomObject])]

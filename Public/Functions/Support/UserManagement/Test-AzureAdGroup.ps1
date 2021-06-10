@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Support
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  14-NOV-2020
 # Status:   Live
 
@@ -9,15 +9,15 @@
 
 function Test-AzureAdGroup {
   <#
-	.SYNOPSIS
-		Tests whether an Group exists in Azure AD (record found)
-	.DESCRIPTION
-		Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
-	.PARAMETER Identity
-		Mandatory. The Name or User Principal Name (MailNickName) of the Group to test.
-	.EXAMPLE
-		Test-AzureAdGroup -Identity "My Group"
-		Will Return $TRUE only if the object "My Group" is found.
+  .SYNOPSIS
+    Tests whether an Group exists in Azure AD (record found)
+  .DESCRIPTION
+    Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
+  .PARAMETER Identity
+    Mandatory. The Name or User Principal Name (MailNickName) of the Group to test.
+  .EXAMPLE
+    Test-AzureAdGroup -Identity "My Group"
+    Will Return $TRUE only if the object "My Group" is found.
     Will Return $FALSE in any other case
   .INPUTS
     System.String
@@ -27,8 +27,8 @@ function Test-AzureAdGroup {
     None
   .COMPONENT
     SupportingFunction
-		UserManagement
-	.FUNCTIONALITY
+    UserManagement
+  .FUNCTIONALITY
     Tests whether an Azure Ad Group exists in AzureAd
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -46,7 +46,7 @@ function Test-AzureAdGroup {
     Test-AzureAdUser
   .LINK
     Test-TeamsUser
-	#>
+  #>
 
   [CmdletBinding()]
   [OutputType([Boolean])]

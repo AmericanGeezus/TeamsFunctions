@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-APR-2020
 # Status:   Live
 
@@ -9,38 +9,38 @@
 
 function Get-AzureAdUserLicense {
   <#
-	.SYNOPSIS
+  .SYNOPSIS
     Returns License information for an Object in AzureAD
   .DESCRIPTION
     Returns an Object containing all Licenses found for a specific Object
     Licenses and ServicePlans are nested in the respective parameters for further investigation
   .PARAMETER UserPrincipalname
-		The UserPrincipalname or ObjectId of the Object.
+    The UserPrincipalname or ObjectId of the Object.
   .PARAMETER FilterRelevantForTeams
     Filters the output and displays only Licenses relevant to Teams
   .EXAMPLE
-		Get-AzureAdUserLicense [-UserPrincipalname] John@domain.com
-		Displays all licenses assigned to User John@domain.com
-	.EXAMPLE
-		Get-AzureAdUserLicense -UserPrincipalname John@domain.com,Jane@domain.com
-		Displays all licenses assigned to Users John@domain.com and Jane@domain.com
-	.EXAMPLE
-		Get-AzureAdUserLicense -UserPrincipalname Jane@domain.com -FilterRelevantForTeams
-		Displays all relevant Teams licenses assigned to Jane@domain.com
-	.EXAMPLE
-		Import-Csv User.csv | Get-AzureAdUserLicense
+    Get-AzureAdUserLicense [-UserPrincipalname] John@domain.com
+    Displays all licenses assigned to User John@domain.com
+  .EXAMPLE
+    Get-AzureAdUserLicense -UserPrincipalname John@domain.com,Jane@domain.com
+    Displays all licenses assigned to Users John@domain.com and Jane@domain.com
+  .EXAMPLE
+    Get-AzureAdUserLicense -UserPrincipalname Jane@domain.com -FilterRelevantForTeams
+    Displays all relevant Teams licenses assigned to Jane@domain.com
+  .EXAMPLE
+    Import-Csv User.csv | Get-AzureAdUserLicense
     Displays all licenses assigned to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.
     The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		Requires a connection to Azure Active Directory
+  .NOTES
+    Requires a connection to Azure Active Directory
   .COMPONENT
     Licensing
   .FUNCTIONALITY
-		Returns a list of Licenses assigned to a specific User depending on input
+    Returns a list of Licenses assigned to a specific User depending on input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

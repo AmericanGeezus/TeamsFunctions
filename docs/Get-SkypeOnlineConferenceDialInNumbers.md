@@ -59,7 +59,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Void - Default Behavior
-###   System.Object - With Switch PassThru
+### System.Object - With Switch PassThru
 ## NOTES
 This function was taken 1:1 from SkypeFunctions and remains untested for Teams
 

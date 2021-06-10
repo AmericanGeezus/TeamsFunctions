@@ -65,7 +65,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
 Without any Parameters, can be used to enumerate all Resource Accounts
-  This may take a while to calculate, depending on # of Accounts in the Tenant
+This may take a while to calculate, depending on # of Accounts in the Tenant
 
 ## RELATED LINKS
 

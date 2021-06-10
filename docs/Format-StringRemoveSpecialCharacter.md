@@ -91,7 +91,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.String
 ## NOTES
 Originally written by:
-  Francois-Xavier Cat
+Francois-Xavier Cat
 @lazywinadmin
 lazywinadmin.com
 github.com/lazywinadmin

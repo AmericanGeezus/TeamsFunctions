@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -9,37 +9,37 @@
 
 function Connect-Me {
   <#
-	.SYNOPSIS
-		Connect to AzureAd, MicrosoftTeams and optionally also to Exchange
-	.DESCRIPTION
-		One function to connect them all.
+  .SYNOPSIS
+    Connect to AzureAd, MicrosoftTeams and optionally also to Exchange
+  .DESCRIPTION
+    One function to connect them all.
     This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams
     (and optionally also to ExchangeOnline) when multiple connections are required.
-	.PARAMETER AccountId
-		Required. UserPrincipalName or LoginName of the Office365 Administrator
-	.PARAMETER ExchangeOnline
-		Optional. Connects to Exchange Online Management. Requires Exchange Admin Role
-	.PARAMETER UseV1Module
-		Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x
+  .PARAMETER AccountId
+    Required. UserPrincipalName or LoginName of the Office365 Administrator
+  .PARAMETER ExchangeOnline
+    Optional. Connects to Exchange Online Management. Requires Exchange Admin Role
+  .PARAMETER UseV1Module
+    Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x
     This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.
     Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.
     Handle with care.
-	.PARAMETER NoFeedback
-		Optional. Suppresses output session information about established sessions. Used for calls by other functions
-	.EXAMPLE
-		Connect-Me [-AccountId] admin@domain.com
+  .PARAMETER NoFeedback
+    Optional. Suppresses output session information about established sessions. Used for calls by other functions
+  .EXAMPLE
+    Connect-Me [-AccountId] admin@domain.com
     Creates a session to AzureAD prompting for a Password for 'admin@domain.com'
     If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
     Creates a session to MicrosoftTeams with the AzureAd Session details
     If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
-	.EXAMPLE
-		Connect-Me -AccountId admin@domain.com -NoFeedBack
+  .EXAMPLE
+    Connect-Me -AccountId admin@domain.com -NoFeedBack
     If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
     Creates a session to MicrosoftTeams with the AzureAd Session details
     If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
     Does not display Session Information Object at the end - This is useful if called by other functions.
-	.EXAMPLE
-		Connect-Me -AccountId admin@domain.com -ExchangeOnline
+  .EXAMPLE
+    Connect-Me -AccountId admin@domain.com -ExchangeOnline
     If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
     Creates a session to MicrosoftTeams with the AzureAd Session details
     If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
@@ -52,12 +52,12 @@ function Connect-Me {
   .NOTES
     This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline
     Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets)
-		For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role.
-		For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator)
-		Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline.
+    For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role.
+    For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator)
+    Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline.
     The Skype for Business Legacy Administrator Roles are still required to create the PsSession.
-		Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
-		Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
+    Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
+    Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
   .COMPONENT
     TeamsSession
   .FUNCTIONALITY
@@ -68,17 +68,17 @@ function Connect-Me {
     about_TeamsSession
   .LINK
     Connect-Me
-	.LINK
+  .LINK
     Connect-AzureAD
-	.LINK
+  .LINK
     Connect-MicrosoftTeams
-	.LINK
+  .LINK
     Disconnect-Me
-	.LINK
+  .LINK
     Disconnect-AzureAD
-	.LINK
+  .LINK
     Disconnect-MicrosoftTeams
-	#>
+  #>
 
   [CmdletBinding()]
   [Alias('con')]

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		Philipp, Scripting.up-in-the.cloud
+# Author:    Philipp, Scripting.up-in-the.cloud
 # Updated:  14-FEB-2021
 # Status:   Live
 
@@ -9,7 +9,7 @@
 
 function Get-AzureAdLicense {
   <#
-	.SYNOPSIS
+  .SYNOPSIS
     License information for AzureAD Licenses related to Teams
   .DESCRIPTION
     Returns an Object containing all Teams related Licenses
@@ -30,7 +30,7 @@ function Get-AzureAdLicense {
   .COMPONENT
     Licensing
   .FUNCTIONALITY
-		Returns a list of published Licenses
+    Returns a list of published Licenses
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

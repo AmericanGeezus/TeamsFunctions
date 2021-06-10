@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -30,7 +30,7 @@ function Get-TeamsMGW {
     Behaviour like: Get-CsOnlineVoiceRoute -Filter "*EMEA*"
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .NOTES
@@ -39,8 +39,8 @@ function Get-TeamsMGW {
     Get-CsOnlinePSTNGateway | Select-Object Identity, SipSignalingPort, Enabled, MediaByPass
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries MediaGateways by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

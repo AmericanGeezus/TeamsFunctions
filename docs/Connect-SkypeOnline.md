@@ -31,7 +31,7 @@ Connect-SkypeOnline
 ```
 
 Prompt for the Username and password of an administrator with permissions to connect to Microsoft Teams (SkypeOnline).
-  Additional prompts for Multi Factor Authentication are displayed as required
+Additional prompts for Multi Factor Authentication are displayed as required
 
 ### EXAMPLE 2
 ```
@@ -39,11 +39,11 @@ Connect-SkypeOnline -AccountId admin@contoso.com
 ```
 
 When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com
-  and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
-  When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
-  The OverrideAdminDomain is not provided, so it is constructed from the domain part.
+and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
+When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
+The OverrideAdminDomain is not provided, so it is constructed from the domain part.
 Please see Notes for details.
-  Additional prompts for Multi Factor Authentication are displayed as required.
+Additional prompts for Multi Factor Authentication are displayed as required.
 
 ### EXAMPLE 3
 ```
@@ -51,9 +51,9 @@ Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.on
 ```
 
 When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com
-  and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
-  When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
-  The provided OverrideAdminDomain will be used to establish the connection.
+and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).
+When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.
+The provided OverrideAdminDomain will be used to establish the connection.
 If not provided, it is constructed.
 
 ## PARAMETERS
@@ -61,8 +61,8 @@ If not provided, it is constructed.
 ### -AccountId
 Optional String.
 The Username or sign-in address to use when making the remote PowerShell session connection.
-  If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.
-  Please see Notes for a detailed example
+If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.
+Please see Notes for a detailed example
 
 ```yaml
 Type: String
@@ -98,8 +98,8 @@ Accept wildcard characters: False
 Optional.
 Defines the IdleTimeout of the session in full hours between 1 and 8.
 Default is 4 hrs.
-  By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
-  Please note that this setting could not be verified working.
+By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!
+Please note that this setting could not be verified working.
 SessionOptions seem to be ignored by the CmdLet.
 
 ```yaml

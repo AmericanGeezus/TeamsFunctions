@@ -45,7 +45,7 @@ Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -Phone
 ```
 
 Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)
-  If Errors are encountered, they are written to C:\Temp as well as on screen
+If Errors are encountered, they are written to C:\Temp as well as on screen
 
 ### EXAMPLE 3
 ```

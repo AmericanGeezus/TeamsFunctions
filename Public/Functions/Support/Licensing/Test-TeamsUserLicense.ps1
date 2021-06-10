@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -9,43 +9,43 @@
 
 function Test-TeamsUserLicense {
   <#
-	.SYNOPSIS
-		Tests a License or License Package assignment against an AzureAD-Object
-	.DESCRIPTION
-		Teams requires a specific License combination (License) for a User.
-		Teams Direct Routing requires a specific License (ServicePlan), namely 'Phone System'
-		to enable a User for Enterprise Voice
-		This Script can be used to ascertain either.
-	.PARAMETER UserPrincipalName
-		Mandatory. The sign-in address, User Principal Name or Object Id of the Object.
-	.PARAMETER ServicePlan
-		Defined and descriptive Name of the Service Plan to test.
-		Only ServicePlanNames pertaining to Teams are tested.
-		Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success" at least once.
-		ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license.
-		For Testing against a full License Package, please use Parameter License
-	.PARAMETER License
-		Defined and descriptive Name of the License Combination to test.
-		This will test whether one more more individual Service Plans are present on the Identity
-	.EXAMPLE
-		Test-TeamsUserLicense -Identity User@domain.com -ServicePlan MCOEV
-		Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!
-		This can be a part of a License.
-	.EXAMPLE
-		Test-TeamsUserLicense -Identity User@domain.com -License Microsoft365E5
-		Will Return $TRUE only if the license Package is assigned.
-		Specific Names have been assigned to these Licenses
+  .SYNOPSIS
+    Tests a License or License Package assignment against an AzureAD-Object
+  .DESCRIPTION
+    Teams requires a specific License combination (License) for a User.
+    Teams Direct Routing requires a specific License (ServicePlan), namely 'Phone System'
+    to enable a User for Enterprise Voice
+    This Script can be used to ascertain either.
+  .PARAMETER UserPrincipalName
+    Mandatory. The sign-in address, User Principal Name or Object Id of the Object.
+  .PARAMETER ServicePlan
+    Defined and descriptive Name of the Service Plan to test.
+    Only ServicePlanNames pertaining to Teams are tested.
+    Returns $TRUE only if the ServicePlanName was found and the ProvisioningStatus is "Success" at least once.
+    ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license.
+    For Testing against a full License Package, please use Parameter License
+  .PARAMETER License
+    Defined and descriptive Name of the License Combination to test.
+    This will test whether one more more individual Service Plans are present on the Identity
+  .EXAMPLE
+    Test-TeamsUserLicense -Identity User@domain.com -ServicePlan MCOEV
+    Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!
+    This can be a part of a License.
+  .EXAMPLE
+    Test-TeamsUserLicense -Identity User@domain.com -License Microsoft365E5
+    Will Return $TRUE only if the license Package is assigned.
+    Specific Names have been assigned to these Licenses
   .INPUTS
     System.String
   .OUTPUTS
-		Boolean
-	.NOTES
-		This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
-		ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license.
+    Boolean
+  .NOTES
+    This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
+    ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) is part of any E5 license.
   .COMPONENT
     SupportingFunction
     Licensing
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Returns a boolean value for License or Serviceplan for a specific user.
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

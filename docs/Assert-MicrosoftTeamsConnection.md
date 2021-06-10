@@ -27,7 +27,7 @@ Assert-MicrosoftTeamsConnection
 ```
 
 Will run Test-MicrosoftTeamsConnection and, if successful, stops.
-  If unsuccessful, displays request to create a new session and stops.
+If unsuccessful, displays request to create a new session and stops.
 
 ## PARAMETERS
 
@@ -40,7 +40,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Void - If called directly; On-Screen output only
-###   Boolean - If called by other CmdLets, On-Screen output for the first call only
+### Boolean - If called by other CmdLets, On-Screen output for the first call only
 ## NOTES
 None
 

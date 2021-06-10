@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  24-MAY-2021
 # Status:   RC
 
@@ -9,79 +9,79 @@
 
 function Set-TeamsCommonAreaPhone {
   <#
-	.SYNOPSIS
-		Changes settings for a Common Area Phone
-	.DESCRIPTION
-		Applies settings relevant to a Common Area Phone.
+  .SYNOPSIS
+    Changes settings for a Common Area Phone
+  .DESCRIPTION
+    Applies settings relevant to a Common Area Phone.
     This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
-	.PARAMETER UserPrincipalName
-		Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string
-	.PARAMETER DisplayName
-		Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
-	.PARAMETER UsageLocation
-		Required. Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
-		Before a License can be assigned, the account needs a Usage Location populated.
-	.PARAMETER License
-		Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
-		If not provided, will default to PhoneSystem_VirtualUser
-		Unlicensed Objects can exist, but cannot be assigned a phone number
-		PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
-	.PARAMETER IPPhonePolicy
-		Optional. Adds an IP Phone Policy to the User
-	.PARAMETER TeamsCallingPolicy
-		Optional. Adds a Calling Policy to the User
-	.PARAMETER TeamsCallParkPolicy
-		Optional. Adds a Call Park Policy to the User
-	.PARAMETER PassThru
-		Optional. Displays the Object after execution.
-	.EXAMPLE
+  .PARAMETER UserPrincipalName
+    Required. The UPN for the new CommonAreaPhone. Invalid characters are stripped from the provided string
+  .PARAMETER DisplayName
+    Optional. The Name it will show up as in Teams. Invalid characters are stripped from the provided string
+  .PARAMETER UsageLocation
+    Required. Two Digit Country Code of the Location of the entity. Should correspond to the Phone Number.
+    Before a License can be assigned, the account needs a Usage Location populated.
+  .PARAMETER License
+    Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser
+    If not provided, will default to PhoneSystem_VirtualUser
+    Unlicensed Objects can exist, but cannot be assigned a phone number
+    PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.
+  .PARAMETER IPPhonePolicy
+    Optional. Adds an IP Phone Policy to the User
+  .PARAMETER TeamsCallingPolicy
+    Optional. Adds a Calling Policy to the User
+  .PARAMETER TeamsCallParkPolicy
+    Optional. Adds a Call Park Policy to the User
+  .PARAMETER PassThru
+    Optional. Displays the Object after execution.
+  .EXAMPLE
     Set-TeamsCommonAreaPhone -UserPrincipalName MyLobbyPhone@TenantName.onmicrosoft.com -Displayname "Lobby {Phone}"
     Changes the Object MyLobbyPhone@TenantName.onmicrosoft.com. DisplayName will be normalised to "Lobby Phone" and applied.
-	.EXAMPLE
+  .EXAMPLE
     Set-TeamsCommonAreaPhone -UserPrincipalName MyLobbyPhone@TenantName.onmicrosoft.com -UsageLocation US -License CommonAreaPhone
     Changes the Object MyLobbyPhone@TenantName.onmicrosoft.com. Usage Location is set to 'US' and the CommonAreaPhone License is assigned.
-	.EXAMPLE
+  .EXAMPLE
     Set-TeamsCommonAreaPhone -UserPrincipalName MyLobbyPhone@TenantName.onmicrosoft.com -License Office365E3,PhoneSystem
     Changes the Object MyLobbyPhone@TenantName.onmicrosoft.com. Usage Location is required to be set. Assigns the Office 365 E3 License as well as PhoneSystem
-	.EXAMPLE
-		Set-TeamsCommonAreaPhone -UserPrincipalName "MyLobbyPhone@TenantName.onmicrosoft.com" -IPPhonePolicy "My IPP" -TeamsCallingPolicy "CallP" -TeamsCallParkPolicy "CallPark" -PassThru
+  .EXAMPLE
+    Set-TeamsCommonAreaPhone -UserPrincipalName "MyLobbyPhone@TenantName.onmicrosoft.com" -IPPhonePolicy "My IPP" -TeamsCallingPolicy "CallP" -TeamsCallParkPolicy "CallPark" -PassThru
     Applies IPPhonePolicy, TeamsCallingPolicy and TeamsCallParkPolicy to the Common Area Phone
     Displays the Common Area Phone Object afterwards
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
+  .NOTES
     Execution requires User Admin Role in Azure AD
     This CmdLet deliberately does not apply a Phone Number to the Object. To do so, please run New-TeamsUserVoiceConfig
     or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
     a Phone Number and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
   .COMPONENT
-		UserManagement
-	.FUNCTIONALITY
-		Changes a Common Area Phone in AzureAD for use in Teams
+    UserManagement
+  .FUNCTIONALITY
+    Changes a Common Area Phone in AzureAD for use in Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_UserManagement
   .LINK
     about_VoiceConfiguration
-	.LINK
+  .LINK
     Get-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     New-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     Set-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     Remove-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
   #>
 

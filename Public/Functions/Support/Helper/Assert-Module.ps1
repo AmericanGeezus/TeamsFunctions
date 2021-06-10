@@ -1,13 +1,13 @@
 ﻿# Module:   TeamsFunctions
 # Function: Support
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JUL-2020
 # Status:   Live
 
 function Assert-Module {
   <#
-	.SYNOPSIS
-		Tests whether a Module is loaded
+  .SYNOPSIS
+    Tests whether a Module is loaded
   .DESCRIPTION
     Tests whether a specific Module is loaded
   .PARAMETER Module
@@ -17,23 +17,23 @@ function Assert-Module {
   .PARAMETER PreRelease
     Verifies Version installed is equal to the latest prerelease version found online
   .EXAMPLE
-		Assert-Module -Module ModuleName
-		Will Return $TRUE if the Module 'ModuleName' is installed and loaded
+    Assert-Module -Module ModuleName
+    Will Return $TRUE if the Module 'ModuleName' is installed and loaded
   .EXAMPLE
-		Assert-Module -Module ModuleName -UpToDate
-		Will Return $TRUE if the Module 'ModuleName' is installed in the latest release version and loaded
+    Assert-Module -Module ModuleName -UpToDate
+    Will Return $TRUE if the Module 'ModuleName' is installed in the latest release version and loaded
   .EXAMPLE
-		Assert-Module -Module ModuleName -UpToDate -PreRelease
-		Will Return $TRUE if the Module 'ModuleName' is installed in the latest pre-release version and loaded
+    Assert-Module -Module ModuleName -UpToDate -PreRelease
+    Will Return $TRUE if the Module 'ModuleName' is installed in the latest pre-release version and loaded
   .INPUTS
-		System.String
+    System.String
   .OUTPUTS
     Boolean
   .NOTES
     None
   .COMPONENT
     SupportingFunction
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Asserts whether the Module is installed, Loaded and optionally also whether it is up-to-date (incl. Prerelease)
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

@@ -1,22 +1,22 @@
 ﻿# Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-SEP-2020
 # Status:   Unmanaged
 
 function Test-TeamsExternalDNS {
   <#
-	.SYNOPSIS
-		Tests a domain for the required external DNS records for a Teams deployment.
-	.DESCRIPTION
-		Teams requires the use of several external DNS records for clients and federated
-		partners to locate services and users. This function will look for the required external DNS records
-		and display their current values, if they are correctly implemented, and any issues with the records.
-	.PARAMETER Domain
-		The domain name to test records. This parameter is required.
-	.EXAMPLE
-		Test-TeamsExternalDNS -Domain contoso.com
-		Example 1 will test the contoso.com domain for the required external DNS records for Teams.
+  .SYNOPSIS
+    Tests a domain for the required external DNS records for a Teams deployment.
+  .DESCRIPTION
+    Teams requires the use of several external DNS records for clients and federated
+    partners to locate services and users. This function will look for the required external DNS records
+    and display their current values, if they are correctly implemented, and any issues with the records.
+  .PARAMETER Domain
+    The domain name to test records. This parameter is required.
+  .EXAMPLE
+    Test-TeamsExternalDNS -Domain contoso.com
+    Example 1 will test the contoso.com domain for the required external DNS records for Teams.
   .INPUTS
     System.String
   .OUTPUTS
@@ -25,13 +25,13 @@ function Test-TeamsExternalDNS {
     None
   .COMPONENT
     None
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Tests DNS Records for external communication
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Unmanaged
-	#>
+  #>
 
   [CmdletBinding()]
   [OutputType([Boolean])]

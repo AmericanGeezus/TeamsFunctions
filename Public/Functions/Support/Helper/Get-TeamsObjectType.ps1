@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -44,17 +44,17 @@ function Get-TeamsObjectType {
     UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Determining the Object Type for the String
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-	.LINK
+  .LINK
     about_UserManagement
-	.LINK
+  .LINK
     about_TeamsAutoAttendant
-	.LINK
+  .LINK
     about_TeamsCallQueue
-	.LINK
+  .LINK
     Get-TeamsObjectType
   .LINK
     Find-TeamsCallableEntity

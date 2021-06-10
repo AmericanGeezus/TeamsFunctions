@@ -56,7 +56,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Assert-AzureADConnection</dev:code>
         <dev:remarks>
-          <maml:para>Will run Test-AzureADConnection and, if successful, stops.   If unsuccessful, displays request to create a new session and stops.</maml:para>
+          <maml:para>Will run Test-AzureADConnection and, if successful, stops. If unsuccessful, displays request to create a new session and stops.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -139,7 +139,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Assert-MicrosoftTeamsConnection</dev:code>
         <dev:remarks>
-          <maml:para>Will run Test-MicrosoftTeamsConnection and, if successful, stops.   If unsuccessful, displays request to create a new session and stops.</maml:para>
+          <maml:para>Will run Test-MicrosoftTeamsConnection and, if successful, stops. If unsuccessful, displays request to create a new session and stops.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -362,7 +362,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Assert-SkypeOnlineConnection</dev:code>
         <dev:remarks>
-          <maml:para>Will run Test-SkypeOnlineConnection and, if successful, stops.   If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection.   If that too is unsuccessful, displays request to reconnect with Connect-Me.</maml:para>
+          <maml:para>Will run Test-SkypeOnlineConnection and, if successful, stops. If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection. If that too is unsuccessful, displays request to reconnect with Connect-Me.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -920,7 +920,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>One function to connect them all.   This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams   (and optionally also to ExchangeOnline) when multiple connections are required.</maml:para>
+      <maml:para>One function to connect them all. This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams (and optionally also to ExchangeOnline) when multiple connections are required.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -951,7 +951,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="v1">
           <maml:name>UseV1Module</maml:name>
           <maml:description>
-            <maml:para>Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x   This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.   Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.   Handle with care.</maml:para>
+            <maml:para>Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module. Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors. Handle with care.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1000,7 +1000,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="v1">
         <maml:name>UseV1Module</maml:name>
         <maml:description>
-          <maml:para>Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x   This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.   Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.   Handle with care.</maml:para>
+          <maml:para>Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module. Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors. Handle with care.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1060,21 +1060,21 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Connect-Me [-AccountId] admin@domain.com</dev:code>
         <dev:remarks>
-          <maml:para>Creates a session to AzureAD prompting for a Password for 'admin@domain.com'   If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management   Creates a session to MicrosoftTeams with the AzureAd Session details   If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)</maml:para>
+          <maml:para>Creates a session to AzureAD prompting for a Password for 'admin@domain.com' If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management Creates a session to MicrosoftTeams with the AzureAd Session details If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Connect-Me -AccountId admin@domain.com -NoFeedBack</dev:code>
         <dev:remarks>
-          <maml:para>If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management   Creates a session to MicrosoftTeams with the AzureAd Session details   If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)   Does not display Session Information Object at the end - This is useful if called by other functions.</maml:para>
+          <maml:para>If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management Creates a session to MicrosoftTeams with the AzureAd Session details If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed) Does not display Session Information Object at the end - This is useful if called by other functions.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Connect-Me -AccountId admin@domain.com -ExchangeOnline</dev:code>
         <dev:remarks>
-          <maml:para>If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management   Creates a session to MicrosoftTeams with the AzureAd Session details   If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)   Also connects to ExchangeOnline</maml:para>
+          <maml:para>If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management Creates a session to MicrosoftTeams with the AzureAd Session details If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed) Also connects to ExchangeOnline</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -1131,7 +1131,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
           <maml:name>AccountId</maml:name>
           <maml:description>
-            <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.   If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.   Please see Notes for a detailed example</maml:para>
+            <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection. If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId. Please see Notes for a detailed example</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1155,7 +1155,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
           <maml:name>IdleTimeout</maml:name>
           <maml:description>
-            <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.   By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!   Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
+            <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs. By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins! Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1170,7 +1170,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
         <maml:name>AccountId</maml:name>
         <maml:description>
-          <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection.   If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId.   Please see Notes for a detailed example</maml:para>
+          <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection. If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId. Please see Notes for a detailed example</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -1194,7 +1194,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
         <maml:name>IdleTimeout</maml:name>
         <maml:description>
-          <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs.   By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins!   Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
+          <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs. By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins! Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -1242,21 +1242,21 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Connect-SkypeOnline</dev:code>
         <dev:remarks>
-          <maml:para>Prompt for the Username and password of an administrator with permissions to connect to Microsoft Teams (SkypeOnline).   Additional prompts for Multi Factor Authentication are displayed as required</maml:para>
+          <maml:para>Prompt for the Username and password of an administrator with permissions to connect to Microsoft Teams (SkypeOnline). Additional prompts for Multi Factor Authentication are displayed as required</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com</dev:code>
         <dev:remarks>
-          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com   and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).   When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.   The OverrideAdminDomain is not provided, so it is constructed from the domain part. Please see Notes for details.   Additional prompts for Multi Factor Authentication are displayed as required.</maml:para>
+          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline). When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually. The OverrideAdminDomain is not provided, so it is constructed from the domain part. Please see Notes for details. Additional prompts for Multi Factor Authentication are displayed as required.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com</dev:code>
         <dev:remarks>
-          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com   and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline).   When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually.   The provided OverrideAdminDomain will be used to establish the connection. If not provided, it is constructed.</maml:para>
+          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline). When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually. The provided OverrideAdminDomain will be used to establish the connection. If not provided, it is constructed.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -1757,7 +1757,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.   Requires a Connection to AzureAd</maml:para>
+      <maml:para>Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User. Requires a Connection to AzureAd</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -2207,14 +2207,14 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Find-AzureAdUser [-Search] "John"</dev:code>
         <dev:remarks>
-          <maml:para>Will search for the string "John" and return all Azure AD Objects found   If nothing has been found, will try to search for by identity</maml:para>
+          <maml:para>Will search for the string "John" and return all Azure AD Objects found If nothing has been found, will try to search for by identity</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Find-AzureAdUser [-Search] "John@domain.com"</dev:code>
         <dev:remarks>
-          <maml:para>Will search for the string "John@domain.com" and return all Azure AD Objects found   If nothing has been found, will try to search for by identity</maml:para>
+          <maml:para>Will search for the string "John@domain.com" and return all Azure AD Objects found If nothing has been found, will try to search for by identity</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -3436,7 +3436,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Originally written by:   Francois-Xavier Cat @lazywinadmin lazywinadmin.com github.com/lazywinadmin</maml:para>
+        <maml:para>Originally written by: Francois-Xavier Cat @lazywinadmin lazywinadmin.com github.com/lazywinadmin</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -3491,7 +3491,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Azure Active Directory Admin Roles assigned to an Object Requires a Connection to AzureAd   Querying '-Type Elibile' requires the Module AzureAdPreview installed</maml:para>
+      <maml:para>Azure Active Directory Admin Roles assigned to an Object Requires a Connection to AzureAd Querying '-Type Elibile' requires the Module AzureAdPreview installed</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -3511,7 +3511,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -3538,7 +3538,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -3979,7 +3979,7 @@
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Import-Csv User.csv | Get-AzureAdUserLicense</dev:code>
         <dev:remarks>
-          <maml:para>Displays all licenses assigned to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.   The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.</maml:para>
+          <maml:para>Displays all licenses assigned to Users from User.csv, Column UserPrincipalname, ObjectId or Identity. The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -4181,7 +4181,7 @@
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <dev:code>Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan</dev:code>
         <dev:remarks>
-          <maml:para>Displays all Service Plans assigned through Licenses to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.   The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.</maml:para>
+          <maml:para>Displays all Service Plans assigned through Licenses to Users from User.csv, Column UserPrincipalname, ObjectId or Identity. The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -4317,7 +4317,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Azure Active Directory Admin Roles assigned to the currently connected User Requires a Connection to AzureAd   Querying '-Type Elibile' requires the Module AzureAdPreview installed</maml:para>
+      <maml:para>Azure Active Directory Admin Roles assigned to the currently connected User Requires a Connection to AzureAd Querying '-Type Elibile' requires the Module AzureAdPreview installed</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -4325,7 +4325,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -4340,7 +4340,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles   Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -4842,7 +4842,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Same functionality as Get-CsAutoAttendant, but display reveals friendly Names, like UserPrincipalName or DisplayName for the following connected Objects   Operator and ApplicationInstances (Resource Accounts)</maml:para>
+      <maml:para>Same functionality as Get-CsAutoAttendant, but display reveals friendly Names, like UserPrincipalName or DisplayName for the following connected Objects Operator and ApplicationInstances (Resource Accounts)</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -4966,21 +4966,21 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsAutoAttendant -Name "My AutoAttendant" -Detailed</dev:code>
         <dev:remarks>
-          <maml:para>Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"   Detailed view will display all nested Objects indented as a tree</maml:para>
+          <maml:para>Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" Detailed view will display all nested Objects indented as a tree</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Get-TeamsAutoAttendant -Name "My AutoAttendant" -SearchString "My AutoAttendant"</dev:code>
         <dev:remarks>
-          <maml:para>Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" and   Returns an Object for every Auto Attendant matching the String "My AutoAttendant"</maml:para>
+          <maml:para>Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" and Returns an Object for every Auto Attendant matching the String "My AutoAttendant"</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <dev:code>Get-TeamsAutoAttendant -SearchString "My AutoAttendant"</dev:code>
         <dev:remarks>
-          <maml:para>Returns an Object for every Auto Attendant matching the String "My AutoAttendant"   Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output shown differently.</maml:para>
+          <maml:para>Returns an Object for every Auto Attendant matching the String "My AutoAttendant" Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output shown differently.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -5208,7 +5208,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Same functionality as Get-CsCallQueue, but display reveals friendly Names, like UserPrincipalName or DisplayName for the following connected Objects   OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)</maml:para>
+      <maml:para>Same functionality as Get-CsCallQueue, but display reveals friendly Names, like UserPrincipalName or DisplayName for the following connected Objects OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -5216,7 +5216,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>Optional. Searches all Call Queues for this name (unique results).   If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)</maml:para>
+            <maml:para>Optional. Searches all Call Queues for this name (unique results). If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -5254,7 +5254,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>Optional. Searches all Call Queues for this name (unique results).   If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)</maml:para>
+          <maml:para>Optional. Searches all Call Queues for this name (unique results). If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -5332,21 +5332,21 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsCallQueue -Name "My CallQueue" -Detailed</dev:code>
         <dev:remarks>
-          <maml:para>Returns an Object for every Call Queue found with the String "My CallQueue"   Displays additional Parameters used for Diagnostics &amp; Shared Voicemail.</maml:para>
+          <maml:para>Returns an Object for every Call Queue found with the String "My CallQueue" Displays additional Parameters used for Diagnostics &amp; Shared Voicemail.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Get-TeamsCallQueue -SearchString "My CallQueue"</dev:code>
         <dev:remarks>
-          <maml:para>Returns an Object for every Call Queue matching the String "My CallQueue"   Synonymous with Get-CsCallQueue -NameFilter "My CallQueue", but output shown differently.</maml:para>
+          <maml:para>Returns an Object for every Call Queue matching the String "My CallQueue" Synonymous with Get-CsCallQueue -NameFilter "My CallQueue", but output shown differently.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <dev:code>Get-TeamsCallQueue -Name "My CallQueue" -SearchString "My CallQueue"</dev:code>
         <dev:remarks>
-          <maml:para>Returns an Object for every Call Queue found with the exact Name "My CallQueue" and   Returns an Object for every Call Queue matching the String "My CallQueue"</maml:para>
+          <maml:para>Returns an Object for every Call Queue found with the exact Name "My CallQueue" and Returns an Object for every Call Queue matching the String "My CallQueue"</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -5516,7 +5516,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-TeamsCommonAreaPhone</dev:code>
         <dev:remarks>
-          <maml:para>Returns all Common Area Phones.   Depending on size of the Tenant, this might take a while.</maml:para>
+          <maml:para>Returns all Common Area Phones. Depending on size of the Tenant, this might take a while.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -7114,7 +7114,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Pipeline input possible   Running the CmdLet without any input might take a while, depending on size of the Tenant.</maml:para>
+        <maml:para>Pipeline input possible Running the CmdLet without any input might take a while, depending on size of the Tenant.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -7262,7 +7262,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names Without any Parameters, can be used to enumerate all Resource Accounts   This may take a while to calculate, depending on # of Accounts in the Tenant</maml:para>
+        <maml:para>Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names Without any Parameters, can be used to enumerate all Resource Accounts This may take a while to calculate, depending on # of Accounts in the Tenant</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -7496,7 +7496,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="none">
           <maml:name>Team</maml:name>
           <maml:description>
-            <maml:para>Required. Name or GroupId (Guid). As the name might not be unique, validation is performed for unique matches.   If the input matches a 36-digit GUID, lookup is performed via GroupId, otherwise via DisplayName</maml:para>
+            <maml:para>Required. Name or GroupId (Guid). As the name might not be unique, validation is performed for unique matches. If the input matches a 36-digit GUID, lookup is performed via GroupId, otherwise via DisplayName</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -7508,7 +7508,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="2" aliases="none">
           <maml:name>Channel</maml:name>
           <maml:description>
-            <maml:para>Required. Name or Id (Guid). If multiple Teams have been discovered, all Channels with this name in each team are returned.   If the input matches a GUID (starting with "19:"), lookup is performed via Id, otherwise via DisplayName</maml:para>
+            <maml:para>Required. Name or Id (Guid). If multiple Teams have been discovered, all Channels with this name in each team are returned. If the input matches a GUID (starting with "19:"), lookup is performed via Id, otherwise via DisplayName</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -7523,7 +7523,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="none">
         <maml:name>Team</maml:name>
         <maml:description>
-          <maml:para>Required. Name or GroupId (Guid). As the name might not be unique, validation is performed for unique matches.   If the input matches a 36-digit GUID, lookup is performed via GroupId, otherwise via DisplayName</maml:para>
+          <maml:para>Required. Name or GroupId (Guid). As the name might not be unique, validation is performed for unique matches. If the input matches a 36-digit GUID, lookup is performed via GroupId, otherwise via DisplayName</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -7535,7 +7535,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="2" aliases="none">
         <maml:name>Channel</maml:name>
         <maml:description>
-          <maml:para>Required. Name or Id (Guid). If multiple Teams have been discovered, all Channels with this name in each team are returned.   If the input matches a GUID (starting with "19:"), lookup is performed via Id, otherwise via DisplayName</maml:para>
+          <maml:para>Required. Name or Id (Guid). If multiple Teams have been discovered, all Channels with this name in each team are returned. If the input matches a GUID (starting with "19:"), lookup is performed via Id, otherwise via DisplayName</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -7575,28 +7575,28 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-TeamsTeamChannel -Team "My Team" -Channel "CallQueue"</dev:code>
         <dev:remarks>
-          <maml:para>Searches for Teams with the DisplayName of "My Team".   If found, looking for a channel with the DisplayName "CallQueue"   If found, the Channel Object will be returned   Multiple Objects could be returned if multiple Teams called "My Team" with Channels called "CallQueue" exist.</maml:para>
+          <maml:para>Searches for Teams with the DisplayName of "My Team". If found, looking for a channel with the DisplayName "CallQueue" If found, the Channel Object will be returned Multiple Objects could be returned if multiple Teams called "My Team" with Channels called "CallQueue" exist.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-TeamsTeamChannel -Team 1234abcd-1234-1234-1234abcd5678 -Channel "CallQueue"</dev:code>
         <dev:remarks>
-          <maml:para>Searches for Teams with the GroupId of 1234abcd-1234-1234-1234abcd5678.   If found, looking for a channel with the DisplayName "CallQueue"   If found, the Channel Object will be returned</maml:para>
+          <maml:para>Searches for Teams with the GroupId of 1234abcd-1234-1234-1234abcd5678. If found, looking for a channel with the DisplayName "CallQueue" If found, the Channel Object will be returned</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsTeamChannel -Team "My Team" -Channel 19:1234abcd567890ef1234abcd567890ef@thread.skype</dev:code>
         <dev:remarks>
-          <maml:para>Searches for Teams with the DisplayName of "My Team".   If found, looking for a channel with the ID "19:1234abcd567890ef1234abcd567890ef@thread.skype"   If found, the Channel Object will be returned</maml:para>
+          <maml:para>Searches for Teams with the DisplayName of "My Team". If found, looking for a channel with the ID "19:1234abcd567890ef1234abcd567890ef@thread.skype" If found, the Channel Object will be returned</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Get-TeamsTeamChannel -Team 1234abcd-1234-1234-1234abcd5678 -Channel 19:1234abcd567890ef1234abcd567890ef@thread.skype</dev:code>
         <dev:remarks>
-          <maml:para>If a Team with the GroupId 1234abcd-1234-1234-1234abcd5678 is found and this team has a channel with the ID "19:1234abcd567890ef1234abcd567890ef@thread.skype", the Channel Object will be returned   This is the safest option as it will always find a correct result provided the entities exist.</maml:para>
+          <maml:para>If a Team with the GroupId 1234abcd-1234-1234-1234abcd5678 is found and this team has a channel with the ID "19:1234abcd567890ef1234abcd567890ef@thread.skype", the Channel Object will be returned This is the safest option as it will always find a correct result provided the entities exist.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -7987,14 +7987,14 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-TeamsTenantVoiceConfig</dev:code>
         <dev:remarks>
-          <maml:para>Displays Licenses for Call Plans, available Numbers, as well as   Counters for all relevant Policies, available VoiceRoutingPolicies</maml:para>
+          <maml:para>Displays Licenses for Call Plans, available Numbers, as well as Counters for all relevant Policies, available VoiceRoutingPolicies</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-TeamsTenantVoiceConfig -Detailed</dev:code>
         <dev:remarks>
-          <maml:para>Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways   Also displays diagnostic parameters for troubleshooting</maml:para>
+          <maml:para>Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways Also displays diagnostic parameters for troubleshooting</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -8155,7 +8155,7 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Import-Csv User.csv | Get-TeamsUserLicense</dev:code>
         <dev:remarks>
-          <maml:para>Displays all licenses assigned to Users from User.csv, Column UserPrincipalName.   The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.</maml:para>
+          <maml:para>Displays all licenses assigned to Users from User.csv, Column UserPrincipalName. The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -8320,7 +8320,7 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Import-Csv User.csv | Get-TeamsUserLicenseServicePlan</dev:code>
         <dev:remarks>
-          <maml:para>Displays all licenses assigned to Users from User.csv, Column UserPrincipalName, ObjectId or Identity.   The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.</maml:para>
+          <maml:para>Displays all licenses assigned to Users from User.csv, Column UserPrincipalName, ObjectId or Identity. The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -8736,7 +8736,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>The Civic Address used as an Emergency Address is assigned to the CsOnlineVoiceUser Object   This is done by Name (Description) of the Address instead of the Id</maml:para>
+      <maml:para>The Civic Address used as an Emergency Address is assigned to the CsOnlineVoiceUser Object This is done by Name (Description) of the Address instead of the Id</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -8899,21 +8899,21 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"</dev:code>
         <dev:remarks>
-          <maml:para>Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and   assigns this Address to the Number +15551234567 if found in the Business Voice Directory   AddressDescription is an Alias for Address</maml:para>
+          <maml:para>Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and assigns this Address to the Number +15551234567 if found in the Business Voice Directory AddressDescription is an Alias for Address</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000000-0000-000000000000</dev:code>
         <dev:remarks>
-          <maml:para>Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and assigns this Address to the User   LocationId is an Alias for Address</maml:para>
+          <maml:para>Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and assigns this Address to the User LocationId is an Alias for Address</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Grant-TeamsEmergencyAddress -Identity +15551234567 -PolicyName 0000000-0000-000000000000</dev:code>
         <dev:remarks>
-          <maml:para>Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and   assigns this Address to the Number +15551234567 if found in the Business Voice Directory   PolicyName is an Alias for Address (as it fits the theme)</maml:para>
+          <maml:para>Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and assigns this Address to the Number +15551234567 if found in the Business Voice Directory PolicyName is an Alias for Address (as it fits the theme)</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -9168,7 +9168,7 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd -RemoveSkuId 440eaaa8-b3e0-484b-a8be-62870b9ba70a</dev:code>
         <dev:remarks>
-          <maml:para>Will create a license Object based on the existing users License   Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.</maml:para>
+          <maml:para>Will create a license Object based on the existing users License Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -9807,14 +9807,14 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>New-TeamsAutoAttendant -Name "My Auto Attendant"</dev:code>
         <dev:remarks>
-          <maml:para>Creates a new Auto Attendant "My Auto Attendant" with Defaults   TimeZone is UTC, Language is en-US and Schedule is Mon-Fri 9to5.   Business hours and After Hours action is Disconnect</maml:para>
+          <maml:para>Creates a new Auto Attendant "My Auto Attendant" with Defaults TimeZone is UTC, Language is en-US and Schedule is Mon-Fri 9to5. Business hours and After Hours action is Disconnect</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>New-TeamsAutoAttendant -Name "My Auto Attendant" -TimeZone UTC-05:00 -LanguageId pt-BR -AfterHoursSchedule MonToFri8to12and13to18 -EnableVoiceResponse</dev:code>
         <dev:remarks>
-          <maml:para>Creates a new Auto Attendant "My Auto Attendant" and sets the TimeZone to UTC-5 and the language to Portuguese (Brazil)   The Schedule of Mon-Fri 8to12 and 13to18 will be applied. Also enables VoiceResponses</maml:para>
+          <maml:para>Creates a new Auto Attendant "My Auto Attendant" and sets the TimeZone to UTC-5 and the language to Portuguese (Brazil) The Schedule of Mon-Fri 8to12 and 13to18 will be applied. Also enables VoiceResponses</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -9835,7 +9835,11 @@
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <dev:code>New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -InclusionScope $InGroups -ExclusionScope $OutGroups</dev:code>
         <dev:remarks>
-          <maml:para>Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are   passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:   - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters   - One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters   - One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters   - An InclusionScope and an ExclusionScope are defined. These are passed on as-is All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.</maml:para>
+          <maml:para>Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are passed on through tto New-CsAutoAttendant and override other respective Parmeters provided: - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters</maml:para>
+          <maml:para>- One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters</maml:para>
+          <maml:para>- One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters</maml:para>
+          <maml:para>- An InclusionScope and an ExclusionScope are defined.</maml:para>
+          <maml:para>These are passed on as-is All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -12456,7 +12460,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Does all the same things that New-CsCallQueue does, but differs in a few significant respects:   UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs   File Import is handled by this Script   Small changes to defaults (see Parameter UseMicrosoftDefaults for details)   Partial implementation is possible, output will show differences.</maml:para>
+      <maml:para>Does all the same things that New-CsCallQueue does, but differs in a few significant respects: UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs File Import is handled by this Script Small changes to defaults (see Parameter UseMicrosoftDefaults for details) Partial implementation is possible, output will show differences.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -12476,7 +12480,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="TA">
           <maml:name>TimeoutAction</maml:name>
           <maml:description>
-            <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget   Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
+            <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -12632,7 +12636,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="22" aliases="none">
           <maml:name>DistributionLists</maml:name>
           <maml:description>
-            <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well.   To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
+            <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well. To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -12644,7 +12648,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="23" aliases="none">
           <maml:name>Users</maml:name>
           <maml:description>
-            <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.   Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+            <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists. Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod) Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -12656,7 +12660,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="24" aliases="none">
           <maml:name>ChannelUsers</maml:name>
           <maml:description>
-            <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+            <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -12961,7 +12965,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="TA">
         <maml:name>TimeoutAction</maml:name>
         <maml:description>
-          <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget   Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
+          <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -13105,7 +13109,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="22" aliases="none">
         <maml:name>DistributionLists</maml:name>
         <maml:description>
-          <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well.   To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
+          <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well. To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -13117,7 +13121,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="23" aliases="none">
         <maml:name>Users</maml:name>
         <maml:description>
-          <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.   Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+          <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists. Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod) Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -13129,7 +13133,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="24" aliases="none">
         <maml:name>ChannelUsers</maml:name>
         <maml:description>
-          <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+          <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -13329,7 +13333,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>This CmdLet creates an AzureAdUser Object, applies a UsageLocation   If a License is applied, a PhoneNumber, IP Phone Policy, Calling Policy and Call Park Policy can be applied.</maml:para>
+      <maml:para>This CmdLet creates an AzureAdUser Object, applies a UsageLocation If a License is applied, a PhoneNumber, IP Phone Policy, Calling Policy and Call Park Policy can be applied.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -13606,28 +13610,28 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>New-TeamsCommonAreaPhone -UserPrincipalName "My Lobby Phone@TenantName.onmicrosoft.com" -UsageLocation US</dev:code>
         <dev:remarks>
-          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License User Principal Name will be normalised to: MyLobbyPhone@TenantName.onmicrosoft.com DisplayName will be taken from the User PrincipalName and normalised to "MyLobbyPhone"   No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone</maml:para>
+          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License User Principal Name will be normalised to: MyLobbyPhone@TenantName.onmicrosoft.com DisplayName will be taken from the User PrincipalName and normalised to "MyLobbyPhone" No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>New-TeamsCommonAreaPhone -UserPrincipalName "Lobby.@TenantName.onmicrosoft.com" -Displayname "Lobby {Phone}" -UsageLocation US -License CommonAreaPhone</dev:code>
         <dev:remarks>
-          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License User Principal Name will be normalised to: Lobby@TenantName.onmicrosoft.com DisplayName will be normalised to "Lobby Phone"   No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone</maml:para>
+          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License User Principal Name will be normalised to: Lobby@TenantName.onmicrosoft.com DisplayName will be normalised to "Lobby Phone" No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>New-TeamsCommonAreaPhone -UserPrincipalName "Lobby@TenantName.onmicrosoft.com" -Displayname "Lobby Phone" -UsageLocation US -License Office365E3,PhoneSystem</dev:code>
         <dev:remarks>
-          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the Office 365 E3 License as well as PhoneSystem   No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone</maml:para>
+          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the Office 365 E3 License as well as PhoneSystem No Policies will be assigned to the Common Area Phone, the Global Policy will be in effect for this Phone</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>New-TeamsCommonAreaPhone -UserPrincipalName "Lobby@TenantName.onmicrosoft.com" -Displayname "Lobby Phone" -UsageLocation US -IPPhonePolicy "My IPP" -TeamsCallingPolicy "CallP" -TeamsCallParkPolicy "CallPark"</dev:code>
         <dev:remarks>
-          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License   The supplied Policies will be assigned to the Common Area Phone</maml:para>
+          <maml:para>Will create a CommonAreaPhone with a Usage Location for 'US' and assign the CommonAreaPhone License The supplied Policies will be assigned to the Common Area Phone</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -14692,7 +14696,7 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>New-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog</dev:code>
         <dev:remarks>
-          <maml:para>Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)   If Errors are encountered, they are written to C:\Temp as well as on screen</maml:para>
+          <maml:para>Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already) If Errors are encountered, they are written to C:\Temp as well as on screen</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -15973,14 +15977,14 @@
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans [-Confirm]</dev:code>
         <dev:remarks>
-          <maml:para>Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned   Prompts for Confirmation before removing Call Plan licenses</maml:para>
+          <maml:para>Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned Prompts for Confirmation before removing Call Plan licenses</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPlans -Force</dev:code>
         <dev:remarks>
-          <maml:para>Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned   Does not prompt for Confirmation (unless -Confirm is specified explicitly)</maml:para>
+          <maml:para>Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned Does not prompt for Confirmation (unless -Confirm is specified explicitly)</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -16628,7 +16632,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Does all the same things that Set-CsCallQueue does, but differs in a few significant respects: UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs   File Import is handled by this Script Set-CsCallQueue   is used to apply parameters dependent on specification. Partial implementation is possible, output will show differences.</maml:para>
+      <maml:para>Does all the same things that Set-CsCallQueue does, but differs in a few significant respects: UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs File Import is handled by this Script Set-CsCallQueue   is used to apply parameters dependent on specification. Partial implementation is possible, output will show differences.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -16660,7 +16664,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="TA">
           <maml:name>TimeoutAction</maml:name>
           <maml:description>
-            <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget   Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
+            <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -16816,7 +16820,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="23" aliases="none">
           <maml:name>DistributionLists</maml:name>
           <maml:description>
-            <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well.   To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
+            <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well. To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -16828,7 +16832,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="24" aliases="none">
           <maml:name>Users</maml:name>
           <maml:description>
-            <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.   Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+            <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists. Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod) Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -16840,7 +16844,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="25" aliases="none">
           <maml:name>ChannelUsers</maml:name>
           <maml:description>
-            <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+            <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -17139,7 +17143,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="TA">
         <maml:name>TimeoutAction</maml:name>
         <maml:description>
-          <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget   Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
+          <maml:para>Optional. Action to be taken if the TimeoutThreshold is reached Forward requires specification of TimeoutActionTarget Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -17283,7 +17287,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="23" aliases="none">
         <maml:name>DistributionLists</maml:name>
         <maml:description>
-          <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well.   To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
+          <maml:para>Optional. Display Names of DistributionLists or Groups. Their members are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with Users. Will be parsed after Users if they are specified as well. To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -17295,7 +17299,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="24" aliases="none">
         <maml:name>Users</maml:name>
         <maml:description>
-          <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue.   Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists.   Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod)   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+          <maml:para>Optional. UserPrincipalNames of Users that are to become Agents in the Queue. Mutually exclusive with TeamAndChannel. Can be combined with DistributionLists. Will be parsed first. Order is only important if Serial Routing is desired (See Parameter RoutingMethod) Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -17307,7 +17311,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="25" aliases="none">
         <maml:name>ChannelUsers</maml:name>
         <maml:description>
-          <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId   Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
+          <maml:para>Optional. UserPrincipalNames of Users. Unknown use-case right now. Feeds Parameter ChannelUserObjectId Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -17511,7 +17515,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Applies settings relevant to a Common Area Phone.   This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.</maml:para>
+      <maml:para>Applies settings relevant to a Common Area Phone. This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -17808,7 +17812,7 @@
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Set-TeamsCommonAreaPhone -UserPrincipalName "MyLobbyPhone@TenantName.onmicrosoft.com" -IPPhonePolicy "My IPP" -TeamsCallingPolicy "CallP" -TeamsCallParkPolicy "CallPark" -PassThru</dev:code>
         <dev:remarks>
-          <maml:para>Applies IPPhonePolicy, TeamsCallingPolicy and TeamsCallParkPolicy to the Common Area Phone   Displays the Common Area Phone Object afterwards</maml:para>
+          <maml:para>Applies IPPhonePolicy, TeamsCallingPolicy and TeamsCallParkPolicy to the Common Area Phone Displays the Common Area Phone Object afterwards</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -17972,7 +17976,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
-            <maml:para>Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object   If PhoneNumber is not Null or Empty, will reapply the PhoneNumber</maml:para>
+            <maml:para>Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object If PhoneNumber is not Null or Empty, will reapply the PhoneNumber</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -18104,7 +18108,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
         <maml:description>
-          <maml:para>Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object   If PhoneNumber is not Null or Empty, will reapply the PhoneNumber</maml:para>
+          <maml:para>Optional. If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object If PhoneNumber is not Null or Empty, will reapply the PhoneNumber</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -19192,7 +19196,7 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Set-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -CallingPlans -PhoneNumber "+15551234567" -WriteErrorLog</dev:code>
         <dev:remarks>
-          <maml:para>Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already)   If Errors are encountered, they are written to C:\Temp as well as on screen</maml:para>
+          <maml:para>Provisions John@domain.com for Calling Plans with the Phone Number provided (requires Calling Plan License to be assigned already) If Errors are encountered, they are written to C:\Temp as well as on screen</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -19424,7 +19428,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Test-AzureAdGroup -Identity "My Group"</dev:code>
         <dev:remarks>
-          <maml:para>Will Return $TRUE only if the object "My Group" is found.   Will Return $FALSE in any other case</maml:para>
+          <maml:para>Will Return $TRUE only if the object "My Group" is found. Will Return $FALSE in any other case</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -20218,7 +20222,7 @@
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Test-TeamsUserHasCallPlan -Identity User@domain.com</dev:code>
         <dev:remarks>
-          <maml:para>Will Return $TRUE only if one of the following license Packages are assigned:   InternationalCallingPlan, DomesticCallingPlan, DomesticCallingPlan120, DomesticCallingPlan120b</maml:para>
+          <maml:para>Will Return $TRUE only if one of the following license Packages are assigned: InternationalCallingPlan, DomesticCallingPlan, DomesticCallingPlan120, DomesticCallingPlan120b</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

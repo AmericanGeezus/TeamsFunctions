@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -30,7 +30,7 @@ function Get-TeamsOVP {
     Behaviour like: Get-CsOnlineVoiceRoutingPolicy -Filter "*OVP-EMEA-*"
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .NOTES
@@ -39,8 +39,8 @@ function Get-TeamsOVP {
     Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Object Identity, Description, OnlinePstnUsages
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries Online Voice Routing Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

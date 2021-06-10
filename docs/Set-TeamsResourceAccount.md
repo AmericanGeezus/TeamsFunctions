@@ -219,7 +219,7 @@ Accept wildcard characters: False
 ### -Force
 Optional.
 If parameter PhoneNumber is provided, will always remove the PhoneNumber from the object
-  If PhoneNumber is not Null or Empty, will reapply the PhoneNumber
+If PhoneNumber is not Null or Empty, will reapply the PhoneNumber
 
 ```yaml
 Type: SwitchParameter
@@ -273,7 +273,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Void - Default Behavior
-###   System.Object - With Switch PassThru
+### System.Object - With Switch PassThru
 ## NOTES
 Though working correctly in all tests, please handle with care when changing Application Types
 Existing Application Instance Objects may get corrupted when treated as a User.

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -9,30 +9,30 @@
 
 function New-TeamsResourceAccountAssociation {
   <#
-	.SYNOPSIS
-		Connects one or more Resource Accounts to a single CallQueue or AutoAttendant
-	.DESCRIPTION
-		Associates one or more existing Resource Accounts to a Call Queue or Auto Attendant
-		Resource Account Type is checked against the ApplicationType.
-		User is prompted if types do not match
-	.PARAMETER UserPrincipalName
-		Required. UPN(s) of the Resource Account(s) to be associated to a Call Queue or AutoAttendant
-	.PARAMETER CallQueue
-		Optional. Specifies the connection to be made to the provided Call Queue Name
-	.PARAMETER AutoAttendant
-		Optional. Specifies the connection to be made to the provided Auto Attendant Name
-	.PARAMETER Force
-		Optional. Suppresses Confirmation dialog if -Confirm is not provided
-		Used to override prompts for alignment of ApplicationTypes.
-		The Resource Account is changed to have the same type as the associated Object (CallQueue or AutoAttendant)!
-	.EXAMPLE
-		New-TeamsResourceAccountAssociation -UserPrincipalName Account1@domain.com -
-		Explanation of what the example does
+  .SYNOPSIS
+    Connects one or more Resource Accounts to a single CallQueue or AutoAttendant
+  .DESCRIPTION
+    Associates one or more existing Resource Accounts to a Call Queue or Auto Attendant
+    Resource Account Type is checked against the ApplicationType.
+    User is prompted if types do not match
+  .PARAMETER UserPrincipalName
+    Required. UPN(s) of the Resource Account(s) to be associated to a Call Queue or AutoAttendant
+  .PARAMETER CallQueue
+    Optional. Specifies the connection to be made to the provided Call Queue Name
+  .PARAMETER AutoAttendant
+    Optional. Specifies the connection to be made to the provided Auto Attendant Name
+  .PARAMETER Force
+    Optional. Suppresses Confirmation dialog if -Confirm is not provided
+    Used to override prompts for alignment of ApplicationTypes.
+    The Resource Account is changed to have the same type as the associated Object (CallQueue or AutoAttendant)!
+  .EXAMPLE
+    New-TeamsResourceAccountAssociation -UserPrincipalName Account1@domain.com -
+    Explanation of what the example does
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
+  .NOTES
     Connects multiple Resource Accounts to ONE CallQueue or AutoAttendant
     The Type of the Resource Account has to corellate to the entity connected.
     Parameter Force can be used to change the type of RA to align to the entity if possible.
@@ -40,7 +40,7 @@ function New-TeamsResourceAccountAssociation {
     TeamsResourceAccount
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Creates a new Association between an unassociated Resource Account and an Auto Attendant or a Call Queue
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -48,19 +48,19 @@ function New-TeamsResourceAccountAssociation {
     about_TeamsResourceAccount
   .LINK
     Get-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	.LINK
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Find-TeamsResourceAccount
-	.LINK
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     Remove-TeamsResourceAccount
-	.LINK
+  .LINK
     Set-TeamsResourceAccount
   #>
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'CallQueue')]
@@ -182,7 +182,7 @@ function New-TeamsResourceAccountAssociation {
     foreach ($UPN in $UserPrincipalName) {
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
-        $RAObject = Get-AzureADUser UPN -WarningAction SilentlyContinue -ErrorAction Stop
+        $RAObject = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
         $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
         [void]$Accounts.Add($AppInstance)
         Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"

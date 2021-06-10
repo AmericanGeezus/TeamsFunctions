@@ -39,7 +39,7 @@ Get-TeamsCommonAreaPhone
 ```
 
 Returns all Common Area Phones.
-  Depending on size of the Tenant, this might take a while.
+Depending on size of the Tenant, this might take a while.
 
 ### EXAMPLE 2
 ```

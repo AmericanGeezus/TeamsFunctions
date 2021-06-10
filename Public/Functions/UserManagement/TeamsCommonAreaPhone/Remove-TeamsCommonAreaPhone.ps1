@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   RC
 
@@ -9,53 +9,53 @@
 
 function Remove-TeamsCommonAreaPhone {
   <#
-	.SYNOPSIS
-		Removes a Common Area Phone from AzureAD
-	.DESCRIPTION
-		This function allows you to remove Common Area Phones (AzureAdUser) from AzureAD
-	.PARAMETER UserPrincipalName
-		Required. Identifies the Object being changed
-	.PARAMETER PassThru
-		Optional. Displays UserPrincipalName of removed objects.
-	.PARAMETER Force
-		Optional. Suppresses Confirmation prompt to remove User.
-	.EXAMPLE
-		Remove-TeamsCommonAreaPhone -UserPrincipalName "Common Area Phone@TenantName.onmicrosoft.com"
-		Removes a CommonAreaPhone
-		Removes in order: Phone Number, License and Account
+  .SYNOPSIS
+    Removes a Common Area Phone from AzureAD
+  .DESCRIPTION
+    This function allows you to remove Common Area Phones (AzureAdUser) from AzureAD
+  .PARAMETER UserPrincipalName
+    Required. Identifies the Object being changed
+  .PARAMETER PassThru
+    Optional. Displays UserPrincipalName of removed objects.
+  .PARAMETER Force
+    Optional. Suppresses Confirmation prompt to remove User.
+  .EXAMPLE
+    Remove-TeamsCommonAreaPhone -UserPrincipalName "Common Area Phone@TenantName.onmicrosoft.com"
+    Removes a CommonAreaPhone
+    Removes in order: Phone Number, License and Account
   .INPUTS
     System.String
   .OUTPUTS
     None
-	.NOTES
-		Execution requires User Admin Role in Azure AD
+  .NOTES
+    Execution requires User Admin Role in Azure AD
   .COMPONENT
-		UserManagement
-	.FUNCTIONALITY
-		Removes a Common Area Phone in AzureAD for use in Teams
+    UserManagement
+  .FUNCTIONALITY
+    Removes a Common Area Phone in AzureAD for use in Teams
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_UserManagement
   .LINK
     about_VoiceConfiguration
-	.LINK
+  .LINK
     Get-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     New-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     Set-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     Remove-TeamsCommonAreaPhone
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	#>
+  #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
   [Alias('Remove-TeamsCAP')]

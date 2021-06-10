@@ -18,7 +18,7 @@ Enable-MyAzureAdAdminRole [<CommonParameters>]
 
 ## DESCRIPTION
 Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
-  Requires a Connection to AzureAd
+Requires a Connection to AzureAd
 
 ## EXAMPLES
 

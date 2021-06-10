@@ -9,41 +9,41 @@
 
 function Format-StringRemoveSpecialCharacter {
   <#
-	.SYNOPSIS
-		This function will remove the special character from a string.
-	.DESCRIPTION
-		This function will remove the special character from a string.
-		I'm using Unicode Regular Expressions with the following categories
-		\p{L} : any kind of letter from any language.
-		\p{Nd} : a digit zero through nine in any script except ideographic
-		http://www.regular-expressions.info/unicode.html
-		http://unicode.org/reports/tr18/
-	.PARAMETER String
-		Specifies the String on which the special character will be removed
-	.PARAMETER SpecialCharacterToKeep
-		Specifies the special character to keep in the output
-	.EXAMPLE
-		Format-StringRemoveSpecialCharacter -String "^&*@wow*(&(*&@"
-		wow
-	.EXAMPLE
-		Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
-		wow
-	.EXAMPLE
-		Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
+  .SYNOPSIS
+    This function will remove the special character from a string.
+  .DESCRIPTION
+    This function will remove the special character from a string.
+    I'm using Unicode Regular Expressions with the following categories
+    \p{L} : any kind of letter from any language.
+    \p{Nd} : a digit zero through nine in any script except ideographic
+    http://www.regular-expressions.info/unicode.html
+    http://unicode.org/reports/tr18/
+  .PARAMETER String
+    Specifies the String on which the special character will be removed
+  .PARAMETER SpecialCharacterToKeep
+    Specifies the special character to keep in the output
+  .EXAMPLE
+    Format-StringRemoveSpecialCharacter -String "^&*@wow*(&(*&@"
+    wow
+  .EXAMPLE
+    Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
+    wow
+  .EXAMPLE
+    Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
     wow-_*
   .INPUTS
     System.String
   .OUTPUTS
     System.String
   .NOTES
-		Originally written by:
+    Originally written by:
     Francois-Xavier Cat
-		@lazywinadmin
-		lazywinadmin.com
-		github.com/lazywinadmin
+    @lazywinadmin
+    lazywinadmin.com
+    github.com/lazywinadmin
   .COMPONENT
     SupportingFunction
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Reformats a string to be used; Removes special Characters in the process
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -53,7 +53,7 @@ function Format-StringRemoveSpecialCharacter {
     Format-StringForUse
   .LINK
     Format-StringRemoveSpecialCharacter
-	#>
+  #>
 
   [CmdletBinding()]
   [OutputType([String])]

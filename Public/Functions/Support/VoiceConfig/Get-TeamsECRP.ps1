@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-APR-2021
 # Status:   Live
 
@@ -30,7 +30,7 @@ function Get-TeamsECRP {
     Behaviour like: Get-CsTeamsEmergencyCallRoutingPolicy -Filter "*ECRP-US-*"
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .NOTES
@@ -38,8 +38,8 @@ function Get-TeamsECRP {
     Get-CsTeamsEmergencyCallRoutingPolicy | Select-Object Identity, Description, AllowEnhancedEmergencyServices, EmergencyNumbers
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries Emergency Call Routing Policies by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

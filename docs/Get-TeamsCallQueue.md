@@ -19,7 +19,7 @@ Get-TeamsCallQueue [[-Name] <String[]>] [[-SearchString] <String>] [-Detailed] [
 ## DESCRIPTION
 Same functionality as Get-CsCallQueue, but display reveals friendly Names,
 like UserPrincipalName or DisplayName for the following connected Objects
-  OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
+OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
 
 ## EXAMPLES
 
@@ -43,7 +43,7 @@ Get-TeamsCallQueue -Name "My CallQueue" -Detailed
 ```
 
 Returns an Object for every Call Queue found with the String "My CallQueue"
-  Displays additional Parameters used for Diagnostics & Shared Voicemail.
+Displays additional Parameters used for Diagnostics & Shared Voicemail.
 
 ### EXAMPLE 4
 ```
@@ -51,7 +51,7 @@ Get-TeamsCallQueue -SearchString "My CallQueue"
 ```
 
 Returns an Object for every Call Queue matching the String "My CallQueue"
-  Synonymous with Get-CsCallQueue -NameFilter "My CallQueue", but output shown differently.
+Synonymous with Get-CsCallQueue -NameFilter "My CallQueue", but output shown differently.
 
 ### EXAMPLE 5
 ```
@@ -59,14 +59,14 @@ Get-TeamsCallQueue -Name "My CallQueue" -SearchString "My CallQueue"
 ```
 
 Returns an Object for every Call Queue found with the exact Name "My CallQueue" and
-  Returns an Object for every Call Queue matching the String "My CallQueue"
+Returns an Object for every Call Queue matching the String "My CallQueue"
 
 ## PARAMETERS
 
 ### -Name
 Optional.
 Searches all Call Queues for this name (unique results).
-  If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
 
 ```yaml
 Type: String[]

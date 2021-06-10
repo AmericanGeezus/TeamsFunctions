@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-AUG-2020
 # Status:   Live
 
@@ -9,13 +9,13 @@
 
 function Test-MicrosoftTeamsConnection {
   <#
-	.SYNOPSIS
-		Tests whether a valid PS Session exists for MicrosoftTeams
-	.DESCRIPTION
-		A connection established via Connect-MicrosoftTeams is parsed.
-	.EXAMPLE
-		Test-MicrosoftTeamsConnection
-		Will Return $TRUE only if a session is found.
+  .SYNOPSIS
+    Tests whether a valid PS Session exists for MicrosoftTeams
+  .DESCRIPTION
+    A connection established via Connect-MicrosoftTeams is parsed.
+  .EXAMPLE
+    Test-MicrosoftTeamsConnection
+    Will Return $TRUE only if a session is found.
   .INPUTS
     System.Void
   .OUTPUTS
@@ -24,7 +24,7 @@ function Test-MicrosoftTeamsConnection {
     Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOnline) exists
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Tests the connection to MicrosoftTeams (SkypeOnline)
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

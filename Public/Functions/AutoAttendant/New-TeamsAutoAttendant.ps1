@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -9,16 +9,16 @@
 #  Add TimeZone to main output (UTC+/-) and detailed output
 function New-TeamsAutoAttendant {
   <#
-	.SYNOPSIS
-		Support function wrapping around New-CsAutoAttendant
-	.DESCRIPTION
+  .SYNOPSIS
+    Support function wrapping around New-CsAutoAttendant
+  .DESCRIPTION
     This script handles select and limited variety for what Auto Attendants have to offer
     It should be seen as an extension rather than a replacement of New-CsAutoAttendant.
     It is currently still in development!
-		UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
-	.PARAMETER Name
-		Name of the Auto Attendant. Name will be normalised (unsuitable characters are filtered)
-		Used as the DisplayName - Visible in Teams
+    UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
+  .PARAMETER Name
+    Name of the Auto Attendant. Name will be normalised (unsuitable characters are filtered)
+    Used as the DisplayName - Visible in Teams
   .PARAMETER TimeZone
     Required. TimeZone Identifier based on Get-CsAutoAttendantSupportedTimeZone, but abbreviated for easier input.
     Warning: Due to multiple time zone names with in the same relative difference to UTC this MAY produce incongruent output
@@ -96,75 +96,75 @@ function New-TeamsAutoAttendant {
   .PARAMETER Force
     Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified
     Currently no other impact
-	.EXAMPLE
-		New-TeamsAutoAttendant -Name "My Auto Attendant"
+  .EXAMPLE
+    New-TeamsAutoAttendant -Name "My Auto Attendant"
     Creates a new Auto Attendant "My Auto Attendant" with Defaults
     TimeZone is UTC, Language is en-US and Schedule is Mon-Fri 9to5.
     Business hours and After Hours action is Disconnect
-	.EXAMPLE
-		New-TeamsAutoAttendant -Name "My Auto Attendant" -TimeZone UTC-05:00 -LanguageId pt-BR -AfterHoursSchedule MonToFri8to12and13to18 -EnableVoiceResponse
+  .EXAMPLE
+    New-TeamsAutoAttendant -Name "My Auto Attendant" -TimeZone UTC-05:00 -LanguageId pt-BR -AfterHoursSchedule MonToFri8to12and13to18 -EnableVoiceResponse
     Creates a new Auto Attendant "My Auto Attendant" and sets the TimeZone to UTC-5 and the language to Portuguese (Brazil)
     The Schedule of Mon-Fri 8to12 and 13to18 will be applied. Also enables VoiceResponses
-	.EXAMPLE
-		New-TeamsAutoAttendant -Name "My Auto Attendant" -Operator "tel:+1555123456"
+  .EXAMPLE
+    New-TeamsAutoAttendant -Name "My Auto Attendant" -Operator "tel:+1555123456"
     Creates a new Auto Attendant "My Auto Attendant" with default TimeZone and Language, but defines an Operator as a Callable Entity (Forward to Pstn)
-	.EXAMPLE
+  .EXAMPLE
     New-TeamsAutoAttendant -Name "My Auto Attendant" -BusinessHoursGreeting "Welcome to Contoso" -BusinessHoursCallFlowOption TransferCallToTarget -BusinessHoursCallTarget $CallTarget
     Creates a new Auto Attendant "My Auto Attendant" with defaults, but defines a Text-to-Voice Greeting, then forwards the Call to the Call Target.
     The CallTarget is queried based on input and created as required. UserPrincipalname for Users or ResourceAccount, Group Name for SharedVoicemail, provided as a string in the Variable $UPN
     This example is equally applicable to AfterHours.
-	.EXAMPLE
-		New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -InclusionScope $InGroups -ExclusionScope $OutGroups
+  .EXAMPLE
+    New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -InclusionScope $InGroups -ExclusionScope $OutGroups
     Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are
     passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
     - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters
     - One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters
     - One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters
     - An InclusionScope and an ExclusionScope are defined. These are passed on as-is
-		All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.
+    All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
-	.NOTES
-		None
+  .NOTES
+    None
   .COMPONENT
     TeamsAutoAttendant
-	.FUNCTIONALITY
-		Creates a Auto Attendant with custom settings and friendly names as input
+  .FUNCTIONALITY
+    Creates a Auto Attendant with custom settings and friendly names as input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant
-	.LINK
-		New-TeamsCallQueue
-	.LINK
+  .LINK
+    New-TeamsCallQueue
+  .LINK
     New-TeamsAutoAttendant
-	.LINK
+  .LINK
     Set-TeamsAutoAttendant
-	.LINK
+  .LINK
     Get-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsAutoAttendantCallFlow
-	.LINK
+  .LINK
     New-TeamsAutoAttendantMenu
-	.LINK
+  .LINK
     New-TeamsAutoAttendantMenuOption
-	.LINK
+  .LINK
     New-TeamsAutoAttendantPrompt
-	.LINK
+  .LINK
     New-TeamsAutoAttendantSchedule
-	.LINK
+  .LINK
     New-TeamsAutoAttendantDialScope
-	.LINK
+  .LINK
     Remove-TeamsAutoAttendant
-	.LINK
+  .LINK
     New-TeamsResourceAccount
-	.LINK
+  .LINK
     New-TeamsResourceAccountAssociation
-	#>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('New-TeamsAA')]

@@ -1,19 +1,19 @@
 ﻿# Module:   TeamsFunctions
 # Function: Testing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JUN-2020
 # Status:   Live
 
 function Test-ExchangeOnlineConnection {
   <#
-	.SYNOPSIS
-		Tests whether a valid PS Session exists for ExchangeOnline
-	.DESCRIPTION
-		A connection established via Connect-ExchangeOnline is parsed.
-		This connection must be valid (Available and Opened)
-	.EXAMPLE
-		Test-ExchangeOnlineConnection
-		Will Return $TRUE only if a session is found.
+  .SYNOPSIS
+    Tests whether a valid PS Session exists for ExchangeOnline
+  .DESCRIPTION
+    A connection established via Connect-ExchangeOnline is parsed.
+    This connection must be valid (Available and Opened)
+  .EXAMPLE
+    Test-ExchangeOnlineConnection
+    Will Return $TRUE only if a session is found.
   .INPUTS
     None
   .OUTPUTS
@@ -22,7 +22,7 @@ function Test-ExchangeOnlineConnection {
     Calls Get-PsSession to determine whether a Connection to ExchangeOnline exists
   .COMPONENT
     TeamsSession
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Tests the connection to ExchangeOnline
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

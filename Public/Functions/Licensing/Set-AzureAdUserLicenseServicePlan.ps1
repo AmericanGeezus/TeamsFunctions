@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: VoiceConfig/Licensing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  10-JAN-2021
 # Status:   Live
 
@@ -14,8 +14,8 @@ function Set-AzureAdUserLicenseServicePlan {
   .DESCRIPTION
     Enables or disables a ServicePlan from all assigned Licenses to an AzureAD Object
     Supports all Service Plans listed in Get-AzureAdLicenseServicePlan
-	.PARAMETER UserPrincipalName
-		The UserPrincipalName, ObjectId or Identity of the Object.
+  .PARAMETER UserPrincipalName
+    The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER Enable
     Optional. Service Plans to be enabled (main function)
     Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
@@ -24,8 +24,8 @@ function Set-AzureAdUserLicenseServicePlan {
     Optional. Service Plans to be disabled (alternative function)
     Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
     No action is taken for any Licenses not containing this Service Plan
-	.PARAMETER PassThru
-		Optional. Displays User License Object after action.
+  .PARAMETER PassThru
+    Optional. Displays User License Object after action.
   .EXAMPLE
     Set-AzureAdUserLicenseServicePlan [-UserPrincipalName] Name@domain.com -Enable MCOEV
     Enables the Service Plan Phone System (MCOEV) on all Licenses assigned to Name@domain.com
@@ -39,7 +39,7 @@ function Set-AzureAdUserLicenseServicePlan {
   .INPUTS
     System.String
   .OUTPUTS
-		System.Void - Default Behavior
+    System.Void - Default Behavior
     System.Object - With Switch PassThru
   .NOTES
     Data in Get-AzureAdLicenseServicePlan as per Microsoft Docs Article: Published Service Plan IDs for Licensing

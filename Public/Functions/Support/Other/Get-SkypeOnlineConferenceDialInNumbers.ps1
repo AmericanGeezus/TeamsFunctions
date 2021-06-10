@@ -9,34 +9,34 @@
 
 function Get-SkypeOnlineConferenceDialInNumbers {
   <#
-	.SYNOPSIS
-		Gathers the audio conference dial-in numbers information for a Skype for Business Online tenant.
-	.DESCRIPTION
-		This command uses the tenant's conferencing dial-in number web page to gather a "user-readable" list of
-		the regions, numbers, and available languages where dial-in conferencing numbers are available. This web
-		page can be access at https://dialin.lync.com/DialInOnline/Dialin.aspx?path=<DOMAIN> replacing "<DOMAIN>"
-		with the tenant's default domain name (i.e. contoso.com).
-	.PARAMETER Domain
-		The Skype for Business Online Tenant domain to gather the conference dial-in numbers.
-	.EXAMPLE
-		Get-SkypeOnlineConferenceDialInNumbers -Domain contoso.com
-		Example 1 will gather the conference dial-in numbers for contoso.com based on their conference dial-in number web page.
+  .SYNOPSIS
+    Gathers the audio conference dial-in numbers information for a Skype for Business Online tenant.
+  .DESCRIPTION
+    This command uses the tenant's conferencing dial-in number web page to gather a "user-readable" list of
+    the regions, numbers, and available languages where dial-in conferencing numbers are available. This web
+    page can be access at https://dialin.lync.com/DialInOnline/Dialin.aspx?path=<DOMAIN> replacing "<DOMAIN>"
+    with the tenant's default domain name (i.e. contoso.com).
+  .PARAMETER Domain
+    The Skype for Business Online Tenant domain to gather the conference dial-in numbers.
+  .EXAMPLE
+    Get-SkypeOnlineConferenceDialInNumbers -Domain contoso.com
+    Example 1 will gather the conference dial-in numbers for contoso.com based on their conference dial-in number web page.
   .INPUTS
     System.String
   .OUTPUTS
-		System.Void - Default Behavior
+    System.Void - Default Behavior
     System.Object - With Switch PassThru
-	.NOTES
-		This function was taken 1:1 from SkypeFunctions and remains untested for Teams
+  .NOTES
+    This function was taken 1:1 from SkypeFunctions and remains untested for Teams
   .COMPONENT
     None
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Lists Dial-In Conferencing numbers
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Unmanaged
-	#>
+  #>
 
   [CmdletBinding()]
   param(

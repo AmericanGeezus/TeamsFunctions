@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -9,12 +9,12 @@
 
 function Get-TeamsTenantLicense {
   <#
-	.SYNOPSIS
-		Returns one or all Teams Tenant licenses from a Tenant
+  .SYNOPSIS
+    Returns one or all Teams Tenant licenses from a Tenant
   .DESCRIPTION
     Returns an Object containing Teams related Licenses found in the Tenant
-		Teams services can be provisioned through several different combinations of individual
-		plans as well as add-on and grouped license SKUs. This command displays these license SKUs in a more friendly
+    Teams services can be provisioned through several different combinations of individual
+    plans as well as add-on and grouped license SKUs. This command displays these license SKUs in a more friendly
     format with descriptive names, SkuPartNumber, active, consumed, remaining, and expiring licenses.
   .PARAMETER License
     Optional. Limits the Output to one license.
@@ -24,21 +24,21 @@ function Get-TeamsTenantLicense {
     By default, only Parameters relevant to determine License availability are shown.
   .PARAMETER DisplayAll
     Displays all Licenses, not only relevant Teams Licenses
-	.EXAMPLE
-		Get-TeamsTenantLicense
-		Displays detailed information about all Teams related licenses found on the tenant.
-	.EXAMPLE
-		Get-TeamsTenantLicense -License PhoneSystem
+  .EXAMPLE
+    Get-TeamsTenantLicense
+    Displays detailed information about all Teams related licenses found on the tenant.
+  .EXAMPLE
+    Get-TeamsTenantLicense -License PhoneSystem
     Displays detailed information about the PhoneSystem license found on the tenant.
   .EXAMPLE
-		Get-TeamsTenantLicense -ConciseView
-		Displays all Teams Licenses found on the tenant, but only Name and counters.
+    Get-TeamsTenantLicense -ConciseView
+    Displays all Teams Licenses found on the tenant, but only Name and counters.
   .EXAMPLE
-		Get-TeamsTenantLicense -DisplayAll
-		Displays detailed information about all licenses found on the tenant.
+    Get-TeamsTenantLicense -DisplayAll
+    Displays detailed information about all licenses found on the tenant.
   .EXAMPLE
-		Get-TeamsTenantLicense -ConciseView -DisplayAll
-		Displays a concise view of all licenses found on the tenant.
+    Get-TeamsTenantLicense -ConciseView -DisplayAll
+    Displays a concise view of all licenses found on the tenant.
   .INPUTS
     System.String
   .OUTPUTS
@@ -48,7 +48,7 @@ function Get-TeamsTenantLicense {
   .COMPONENT
     Licensing
   .FUNCTIONALITY
-		Returns a list of Licenses on the Tenant depending on input
+    Returns a list of Licenses on the Tenant depending on input
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK

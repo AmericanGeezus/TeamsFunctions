@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -9,21 +9,21 @@
 
 function Get-TeamsTenantVoiceConfig {
   <#
-	.SYNOPSIS
-		Displays Information about available Voice Configuration in the Tenant
-	.DESCRIPTION
-		Displays all Voice relevant information configured in the Tenant incl. counters for free Licenses and Numbers
+  .SYNOPSIS
+    Displays Information about available Voice Configuration in the Tenant
+  .DESCRIPTION
+    Displays all Voice relevant information configured in the Tenant incl. counters for free Licenses and Numbers
   .PARAMETER DisplayUserCounters
     Optional. Displays information about Users enabled for Teams and for EnterpriseVoice
     This extends Script execution depending on number of Users in the Tenant
   .PARAMETER Detailed
     Optional. Displays more information about Voice Routing Policies, Dial Plans, etc.
-	.EXAMPLE
-		Get-TeamsTenantVoiceConfig
+  .EXAMPLE
+    Get-TeamsTenantVoiceConfig
     Displays Licenses for Call Plans, available Numbers, as well as
     Counters for all relevant Policies, available VoiceRoutingPolicies
-	.EXAMPLE
-		Get-TeamsTenantVoiceConfig -Detailed
+  .EXAMPLE
+    Get-TeamsTenantVoiceConfig -Detailed
     Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways
     Also displays diagnostic parameters for troubleshooting
   .INPUTS
@@ -34,7 +34,7 @@ function Get-TeamsTenantVoiceConfig {
     General notes
   .COMPONENT
     VoiceConfiguration
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Returns Object with information about the Voice Configuration in the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -44,19 +44,19 @@ function Get-TeamsTenantVoiceConfig {
     about_UserManagement
   .LINK
     Assert-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Find-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsTenantVoiceConfig
-	.LINK
+  .LINK
     Get-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     New-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Set-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Remove-TeamsUserVoiceConfig
-	.LINK
+  .LINK
     Test-TeamsUserVoiceConfig
   #>
 

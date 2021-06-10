@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -46,7 +46,7 @@ function New-TeamsCallableEntity {
     UserManagement
     TeamsAutoAttendant
     TeamsCallQueue
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Creates a new Callable Entity for use in Call Queues or Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
@@ -64,17 +64,17 @@ function New-TeamsCallableEntity {
     Get-TeamsCallableEntity
   .LINK
     New-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsAutoAttendant
-	.LINK
+  .LINK
     Set-TeamsAutoAttendant
-	.LINK
+  .LINK
     New-TeamsAutoAttendantDialScope
-	.LINK
+  .LINK
     New-TeamsAutoAttendantMenu
-	.LINK
+  .LINK
     New-TeamsAutoAttendantPrompt
-	.LINK
+  .LINK
     New-TeamsAutoAttendantSchedule
   #>
 

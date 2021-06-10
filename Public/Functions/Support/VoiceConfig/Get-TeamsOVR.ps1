@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -30,7 +30,7 @@ function Get-TeamsOVR {
     Behaviour like: Get-CsOnlineVoiceRoute -Filter "*OVR-EMEA-*"
   .INPUTS
     None
-		System.String
+    System.String
   .OUTPUTS
     System.Object
   .NOTES
@@ -39,8 +39,8 @@ function Get-TeamsOVR {
     Get-CsOnlineVoiceRoute | Where-Object Identity -NE 'LocalRoute' | Select-Object Identity, Priority, NumberPattern, OnlinePstnGatewayList
   .COMPONENT
     SupportingFunction
-		VoiceConfiguration
-	.FUNCTIONALITY
+    VoiceConfiguration
+  .FUNCTIONALITY
     Queries Online Voice Route by Name
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/

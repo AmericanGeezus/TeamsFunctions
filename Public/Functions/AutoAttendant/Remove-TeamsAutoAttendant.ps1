@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -9,14 +9,14 @@
 
 function Remove-TeamsAutoAttendant {
   <#
-	.SYNOPSIS
-		Removes an Auto Attendant
-	.DESCRIPTION
-		Remove-CsAutoAttendant for friendly Names
-	.PARAMETER Name
-		DisplayName of the Auto Attendant
-	.EXAMPLE
-		Remove-TeamsAutoAttendant -Name "My AutoAttendant"
+  .SYNOPSIS
+    Removes an Auto Attendant
+  .DESCRIPTION
+    Remove-CsAutoAttendant for friendly Names
+  .PARAMETER Name
+    DisplayName of the Auto Attendant
+  .EXAMPLE
+    Remove-TeamsAutoAttendant -Name "My AutoAttendant"
     Prompts for removal for all Auto Attendant found with the string "My AutoAttendant"
   .INPUTS
     System.String
@@ -26,27 +26,27 @@ function Remove-TeamsAutoAttendant {
     None
   .COMPONENT
     TeamsAutoAttendant
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Removes Auto Attendant Objects from the Tenant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant
-	.LINK
+  .LINK
     Get-TeamsAutoAttendant
-	.LINK
+  .LINK
     Set-TeamsAutoAttendant
-	.LINK
+  .LINK
     New-TeamsAutoAttendant
-	.LINK
+  .LINK
     Remove-TeamsAutoAttendant
-	.LINK
+  .LINK
     Remove-TeamsCallQueue
-	.LINK
-		Remove-TeamsResourceAccount
-	.LINK
-		Remove-TeamsResourceAccountAssociation
-	#>
+  .LINK
+    Remove-TeamsResourceAccount
+  .LINK
+    Remove-TeamsResourceAccountAssociation
+  #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
   [Alias('Remove-TeamsAA')]

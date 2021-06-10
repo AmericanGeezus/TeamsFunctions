@@ -9,13 +9,13 @@
 
 function Import-TeamsAudioFile {
   <#
-	.SYNOPSIS
-		Imports an AudioFile for CallQueues or AutoAttendants
-	.DESCRIPTION
-		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
-	.PARAMETER File
-		File to be imported
-	.PARAMETER ApplicationType
+  .SYNOPSIS
+    Imports an AudioFile for CallQueues or AutoAttendants
+  .DESCRIPTION
+    Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
+  .PARAMETER File
+    File to be imported
+  .PARAMETER ApplicationType
     ApplicationType of the entity it is for
   .EXAMPLE
     Import-TeamsAudioFile -File C:\Temp\MyMusicOnHold.wav -ApplicationType CallQueue
@@ -24,30 +24,30 @@ function Import-TeamsAudioFile {
     System.String
   .OUTPUTS
     Microsoft.Rtc.Management.Hosted.Online.Models.AudioFile
-	.NOTES
+  .NOTES
     Translation of Import-CsOnlineAudioFile to process with New/Set-TeamsResourceAccount
     Simplifies the ApplicationType input for friendly names
     Captures different behavior of Get-Content (ByteStream syntax) in PowerShell 6 and above VS PowerShell 5 and below
   .COMPONENT
     TeamsCallQueue
     TeamsAutoAttendant
-	.FUNCTIONALITY
-		Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
+  .FUNCTIONALITY
+    Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant
   .LINK
     about_TeamsCallQueue
-	.LINK
-		Assert-TeamsAudioFile
-	.LINK
-		Import-TeamsAudioFile
-	.LINK
-		New-TeamsCallQueue
-	.LINK
-		Set-TeamsCallQueue
-	#>
+  .LINK
+    Assert-TeamsAudioFile
+  .LINK
+    Import-TeamsAudioFile
+  .LINK
+    New-TeamsCallQueue
+  .LINK
+    Set-TeamsCallQueue
+  #>
 
   [CmdletBinding()]
   [OutputType([System.Object])]

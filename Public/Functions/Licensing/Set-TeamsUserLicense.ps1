@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -17,8 +17,8 @@ function Set-TeamsUserLicense {
     Supports all AzureAD Object that can receive Licenses and not just Teams Licenses
     Will verify major Licenses and their exclusivity, but not all.
     Verifies whether the Licenses selected are available on the Tenant before executing
-	.PARAMETER UserPrincipalName
-		The UserPrincipalName, ObjectId or Identity of the Object.
+  .PARAMETER UserPrincipalName
+    The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER Add
     Optional. Licenses to be added (main function)
     Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
@@ -31,8 +31,8 @@ function Set-TeamsUserLicense {
     Optional String. ISO3166-Alpha2 CountryCode indicating the Country for the User. Required for Licensing
     If required, the script will try to apply the UsageLocation (pending right).
     If not provided, defaults to 'US'
-	.PARAMETER PassThru
-		Optional. Displays User License Object after action.
+  .PARAMETER PassThru
+    Optional. Displays User License Object after action.
   .EXAMPLE
     Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add MS365E5
     Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
@@ -82,7 +82,7 @@ function Set-TeamsUserLicense {
   .INPUTS
     System.String
   .OUTPUTS
-		System.Void - Default Behavior
+    System.Void - Default Behavior
     System.Object - With Switch PassThru
   .COMPONENT
     Licensing

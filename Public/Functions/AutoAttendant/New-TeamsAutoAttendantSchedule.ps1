@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -74,33 +74,33 @@ function New-TeamsAutoAttendantSchedule {
     3. DateTimeRange - Provide a DateTimeRange Object manually defined with New-CsOnlineTimeRange and New-CsOnlineSchedule
   .COMPONENT
     TeamsAutoAttendant
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Creates a Schedule Object for use in an AutoAttendant
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant
-	.LINK
+  .LINK
     New-TeamsAutoAttendant
-	.LINK
+  .LINK
     Set-TeamsAutoAttendant
-	.LINK
+  .LINK
     Get-TeamsCallableEntity
-	.LINK
+  .LINK
     Find-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsAutoAttendantCallFlow
-	.LINK
+  .LINK
     New-TeamsAutoAttendantMenu
-	.LINK
+  .LINK
     New-TeamsAutoAttendantMenuOption
-	.LINK
+  .LINK
     New-TeamsAutoAttendantPrompt
-	.LINK
+  .LINK
     New-TeamsAutoAttendantSchedule
-	.LINK
+  .LINK
     New-TeamsAutoAttendantDialScope
   #>
 

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -9,37 +9,37 @@
 
 function Get-TeamsCallQueue {
   <#
-	.SYNOPSIS
-		Queries Call Queues and displays friendly Names (UPN or Displayname)
-	.DESCRIPTION
-		Same functionality as Get-CsCallQueue, but display reveals friendly Names,
-		like UserPrincipalName or DisplayName for the following connected Objects
+  .SYNOPSIS
+    Queries Call Queues and displays friendly Names (UPN or Displayname)
+  .DESCRIPTION
+    Same functionality as Get-CsCallQueue, but display reveals friendly Names,
+    like UserPrincipalName or DisplayName for the following connected Objects
     OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
-	.PARAMETER Name
-		Optional. Searches all Call Queues for this name (unique results).
+  .PARAMETER Name
+    Optional. Searches all Call Queues for this name (unique results).
     If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
-	.PARAMETER SearchString
-		Optional. Searches all Call Queues for this string (multiple results possible).
+  .PARAMETER SearchString
+    Optional. Searches all Call Queues for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays all Parameters of the CallQueue
     This also shows parameters relating to Ids and Diagnostic Parameters.
-	.EXAMPLE
-		Get-TeamsCallQueue
-		Same result as Get-CsCallQueue
-	.EXAMPLE
-		Get-TeamsCallQueue -Name "My CallQueue"
-		Returns an Object for every Call Queue found with the exact Name "My CallQueue"
-	.EXAMPLE
-		Get-TeamsCallQueue -Name "My CallQueue" -Detailed
+  .EXAMPLE
+    Get-TeamsCallQueue
+    Same result as Get-CsCallQueue
+  .EXAMPLE
+    Get-TeamsCallQueue -Name "My CallQueue"
+    Returns an Object for every Call Queue found with the exact Name "My CallQueue"
+  .EXAMPLE
+    Get-TeamsCallQueue -Name "My CallQueue" -Detailed
     Returns an Object for every Call Queue found with the String "My CallQueue"
     Displays additional Parameters used for Diagnostics & Shared Voicemail.
-	.EXAMPLE
-		Get-TeamsCallQueue -SearchString "My CallQueue"
+  .EXAMPLE
+    Get-TeamsCallQueue -SearchString "My CallQueue"
     Returns an Object for every Call Queue matching the String "My CallQueue"
     Synonymous with Get-CsCallQueue -NameFilter "My CallQueue", but output shown differently.
-	.EXAMPLE
-		Get-TeamsCallQueue -Name "My CallQueue" -SearchString "My CallQueue"
-		Returns an Object for every Call Queue found with the exact Name "My CallQueue" and
+  .EXAMPLE
+    Get-TeamsCallQueue -Name "My CallQueue" -SearchString "My CallQueue"
+    Returns an Object for every Call Queue found with the exact Name "My CallQueue" and
     Returns an Object for every Call Queue matching the String "My CallQueue"
   .INPUTS
     System.String
@@ -47,30 +47,30 @@ function Get-TeamsCallQueue {
     System.Object
   .NOTES
     Without any parameters, Get-TeamsCallQueue will show names only
-		Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
+    Agents, DistributionLists, Targets and Resource Accounts are displayed with friendly name.
     Main difference to Get-CsCallQueue (apart from the friendly names) is that the
     Output view more concise
   .COMPONENT
     TeamsCallQueue
-	.FUNCTIONALITY
-		Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
+  .FUNCTIONALITY
+    Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsCallQueue
-	.LINK
-		New-TeamsCallQueue
-	.LINK
-		Get-TeamsCallQueue
-	.LINK
+  .LINK
+    New-TeamsCallQueue
+  .LINK
+    Get-TeamsCallQueue
+  .LINK
     Set-TeamsCallQueue
-	.LINK
+  .LINK
     Remove-TeamsCallQueue
-	.LINK
+  .LINK
     Get-TeamsAutoAttendant
-	.LINK
+  .LINK
     Get-TeamsResourceAccount
-	.LINK
+  .LINK
     Get-TeamsResourceAccountAssociation
   #>
 

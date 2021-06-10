@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  12-DEC-2020
 # Status:   Live
 
@@ -100,33 +100,33 @@ function New-TeamsAutoAttendantMenu {
     https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH
   .COMPONENT
     TeamsAutoAttendant
-	.FUNCTIONALITY
+  .FUNCTIONALITY
     Creates a Menu Object to be used in Auto Attendants
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant
-	.LINK
+  .LINK
     New-TeamsAutoAttendant
-	.LINK
+  .LINK
     Set-TeamsAutoAttendant
-	.LINK
+  .LINK
     New-TeamsCallableEntity
-	.LINK
+  .LINK
     New-TeamsAutoAttendantCallFlow
-	.LINK
+  .LINK
     New-TeamsAutoAttendantMenu
-	.LINK
+  .LINK
     New-TeamsAutoAttendantMenuOption
-	.LINK
+  .LINK
     New-TeamsAutoAttendantPrompt
-	.LINK
+  .LINK
     New-TeamsAutoAttendantSchedule
-	.LINK
+  .LINK
     New-TeamsAutoAttendantDialScope
-	.LINK
+  .LINK
     https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH
-	.LINK
+  .LINK
     https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps
   #>
 

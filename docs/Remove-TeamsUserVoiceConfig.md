@@ -42,7 +42,7 @@ Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPla
 ```
 
 Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
-  Prompts for Confirmation before removing Call Plan licenses
+Prompts for Confirmation before removing Call Plan licenses
 
 ### EXAMPLE 4
 ```
@@ -50,7 +50,7 @@ Remove-TeamsUserVoiceConfig -UserPrincipalName John@domain.com -Scope CallingPla
 ```
 
 Disables John for Enterprise Voice, Removes Phone Number and subsequently removes all Call Plan Licenses assigned
-  Does not prompt for Confirmation (unless -Confirm is specified explicitly)
+Does not prompt for Confirmation (unless -Confirm is specified explicitly)
 
 ## PARAMETERS
 

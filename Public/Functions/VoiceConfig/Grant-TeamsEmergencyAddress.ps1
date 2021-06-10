@@ -1,7 +1,7 @@
 ﻿#SupportsConfirm: MID
 # Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:		David Eberhardt
+# Author:    David Eberhardt
 # Updated:  18-MAY-2021
 # Status:   BETA
 
@@ -17,10 +17,10 @@
 
 function Grant-TeamsEmergencyAddress {
   <#
-	.SYNOPSIS
-		Grants an existing Emergency Address (CivicAddress) to a User
-	.DESCRIPTION
-		The Civic Address used as an Emergency Address is assigned to the CsOnlineVoiceUser Object
+  .SYNOPSIS
+    Grants an existing Emergency Address (CivicAddress) to a User
+  .DESCRIPTION
+    The Civic Address used as an Emergency Address is assigned to the CsOnlineVoiceUser Object
     This is done by Name (Description) of the Address instead of the Id
   .PARAMETER Identity
     Required. UserPrincipalName or ObjectId of the User Object or a TelephoneNumber
@@ -31,20 +31,20 @@ function Grant-TeamsEmergencyAddress {
   .PARAMETER PassThru
     Optional. Displays Object after action.
   .EXAMPLE
-		Grant-TeamsEmergencyAddress -Identity John@domain.com -Address "3rd Floor Cafe"
+    Grant-TeamsEmergencyAddress -Identity John@domain.com -Address "3rd Floor Cafe"
     Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and assigns this Address to the User
 
   .EXAMPLE
-		Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"
+    Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"
     Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and
     assigns this Address to the Number +15551234567 if found in the Business Voice Directory
     AddressDescription is an Alias for Address
-	.EXAMPLE
-		Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000000-0000-000000000000
+  .EXAMPLE
+    Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000000-0000-000000000000
     Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and assigns this Address to the User
     LocationId is an Alias for Address
-	.EXAMPLE
-		Grant-TeamsEmergencyAddress -Identity +15551234567 -PolicyName 0000000-0000-000000000000
+  .EXAMPLE
+    Grant-TeamsEmergencyAddress -Identity +15551234567 -PolicyName 0000000-0000-000000000000
     Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and
     assigns this Address to the Number +15551234567 if found in the Business Voice Directory
     PolicyName is an Alias for Address (as it fits the theme)
@@ -69,7 +69,7 @@ function Grant-TeamsEmergencyAddress {
     about_VoiceConfig
   .LINK
     Grant-TeamsEmergencyAddress
-	#>
+  #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('Grant-TeamsEA')]
