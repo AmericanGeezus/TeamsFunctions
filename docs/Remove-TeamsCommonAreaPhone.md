@@ -1,149 +1,54 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Remove-TeamsCommonAreaPhone
+# Get-TeamsTenant
 
 ## SYNOPSIS
-Removes a Common Area Phone from AzureAD
+
+Lists basic Tenant information
 
 ## SYNTAX
 
 ```
-Remove-TeamsCommonAreaPhone [-UserPrincipalName] <String[]> [-PassThru] [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Get-TeamsTenant [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This function allows you to remove Common Area Phones (AzureAdUser) from AzureAD
+
+To gain a quick overview, this wrapper for Get-CsTenant will display basic information
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Remove-TeamsCommonAreaPhone -UserPrincipalName "Common Area Phone@TenantName.onmicrosoft.com"
+Get-TeamsTenant
 ```
 
-Removes a CommonAreaPhone
-Removes in order: Phone Number, License and Account
+Lists basic tenant information relevant for working on this Tenant
 
 ## PARAMETERS
-
-### -UserPrincipalName
-Required.
-Identifies the Object being changed
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: Identity, ObjectId
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -PassThru
-Optional.
-Displays UserPrincipalName of removed objects.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Force
-Optional.
-Suppresses Confirmation prompt to remove User.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### None
+### System.Object
 ## NOTES
-Execution requires User Admin Role in Azure AD
+
+None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[about_VoiceConfiguration]()
-
-[Get-TeamsCommonAreaPhone]()
-
-[New-TeamsCommonAreaPhone]()
-
-[Set-TeamsCommonAreaPhone]()
-
-[Remove-TeamsCommonAreaPhone]()
-
-[Find-TeamsUserVoiceConfig]()
-
-[Get-TeamsUserVoiceConfig]()
-
-[New-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
+[about_SupportingFunction] ()
 

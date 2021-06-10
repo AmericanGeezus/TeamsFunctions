@@ -1,97 +1,56 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Assert-TeamsCallableEntity
+# Assert-SkypeOnlineConnection
 
 ## SYNOPSIS
-Verifies User is ready for Voice Config
+
+Asserts an established Connection to SkypeOnline
 
 ## SYNTAX
 
 ```
-Assert-TeamsCallableEntity [-Identity] <String> [-Terminate] [<CommonParameters>]
+Assert-SkypeOnlineConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Tests whether a the Object can be used as a Callable Entity in Call Queues or Auto Attendant
+
+Tests and tries to reconnect to a SkypeOnline connection already established.
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Assert-TeamsCallableEntity -Identity Jane@domain.com
+Assert-SkypeOnlineConnection
 ```
 
-Verifies Jane has a valid PhoneSystem License (Provisioning Status: Success) and is enabled for Enterprise Voice
-Enables Jane for Enterprise Voice if not yet done.
+Will run Test-SkypeOnlineConnection and, if successful, stops.
+If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection.
+If that too is unsuccessful, displays request to reconnect with Connect-Me.
 
 ## PARAMETERS
-
-### -Identity
-Required.
-UserPrincipalName, Group Name or Tel URI
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: UserPrincipalName, GroupName, TelUri
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -Terminate
-Optional.
-By default, the Command will not throw terminating errors.
-Using this switch a terminating error is generated.
-Useful for scripting to try/catch and silently treat the received error.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.Void
 ## OUTPUTS
 
-### Boolean
+### System.Boolean
 ## NOTES
-Returns Boolean Result
+
+Calls Test-SkypeOnlineConnection to ascertain session.
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[about_TeamsAutoAttendant]()
-
-[about_TeamsCallQueue]()
-
-[Assert-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[Get-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
+[about_TeamsSession] ()
 

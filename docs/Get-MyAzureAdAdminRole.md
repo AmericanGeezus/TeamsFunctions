@@ -1,84 +1,58 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Get-MyAzureAdAdminRole
+# Get-CurrentConnectionInfo
 
 ## SYNOPSIS
-Queries Admin Roles assigned to the currently connected User
+
+Queries AzureAd, MicrosoftTeams and ExchangeOnline for currently established Sessions
 
 ## SYNTAX
 
 ```
-Get-MyAzureAdAdminRole [[-Type] <String>] [<CommonParameters>]
+Get-CurrentConnectionInfo [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Azure Active Directory Admin Roles assigned to the currently connected User
-Requires a Connection to AzureAd
-Querying '-Type Elibile' requires the Module AzureAdPreview installed
+
+Returns an object displaying all currently connected PowerShell Sessions and basic output about the Tenant.
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Get-AzureAdAdminRole [-Type Active]
+Get-CurrentConnectionInfo
 ```
 
-Returns all active Admin Roles for the currently connected User
-
-### EXAMPLE 2
-```
-Get-AzureAdAdminRole -Type Eligible
-```
-
-Returns all eligible Admin Roles for the currently connected User
+Will Test current connection to AzureAd, MicrosoftTeams and ExchangeOnline and displays simple output object.
 
 ## PARAMETERS
-
-### -Type
-Optional.
-Switches query to Active (Default) or Eligible Admin Roles
-Eligibility can only be queried with Module AzureAdPreview installed
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 1
-Default value: Active
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### PSCustomObject
+### System.Object
 ## NOTES
-This is a wrapper for Get-AzureAdAdminRole targeting the currently connected User
+
+Information about a Service is only displayed if an active connection can be found
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
+[about_TeamsSession] ()
 
-[Enable-AzureAdAdminRole]()
+[Connect-Me] ()
 
-[Enable-MyAzureAdAdminRole]()
-
-[Get-AzureAdAdminRole]()
-
-[Get-MyAzureAdAdminRole]()
+[Get-CurrentConnectionInfo] ()
 

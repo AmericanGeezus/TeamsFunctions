@@ -1,108 +1,66 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Format-StringRemoveSpecialCharacter
+# Enable-MyAzureAdAdminRole
 
 ## SYNOPSIS
-This function will remove the special character from a string.
+
+Activates Azure Ad Admin Roles for currently connected User
 
 ## SYNTAX
 
 ```
-Format-StringRemoveSpecialCharacter [-String] <String[]> [-SpecialCharacterToKeep <String[]>]
- [<CommonParameters>]
+Enable-MyAzureAdAdminRole [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This function will remove the special character from a string.
-I'm using Unicode Regular Expressions with the following categories
-\p{L} : any kind of letter from any language.
-\p{Nd} : a digit zero through nine in any script except ideographic
-http://www.regular-expressions.info/unicode.html
-http://unicode.org/reports/tr18/
+
+Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
+Requires a Connection to AzureAd
 
 ## EXAMPLES
 
-### EXAMPLE 1
-```
-Format-StringRemoveSpecialCharacter -String "^&*@wow*(&(*&@"
-```
+### Example 1: EXAMPLE 1
 
-wow
-
-### EXAMPLE 2
 ```
-Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*"
+Enable-MyAzureAdAdminRole
 ```
-
-wow
-
-### EXAMPLE 3
-```
-Format-StringRemoveSpecialCharacter -String "wow#@!`~)(\|?/}{-_=+*" -SpecialCharacterToKeep "*","_","-"
-```
-
-wow-_*
 
 ## PARAMETERS
-
-### -String
-Specifies the String on which the special character will be removed
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: Text
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -SpecialCharacterToKeep
-Specifies the special character to keep in the output
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: Keep
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### System.String
+### System.Void - If executed from shell
+### Boolean - If called by other CmdLets
 ## NOTES
-Originally written by:
-Francois-Xavier Cat
-@lazywinadmin
-lazywinadmin.com
-github.com/lazywinadmin
+
+None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_SupportingFunction]()
+[about_UserManagement] ()
 
-[Format-StringForUse]()
+[Connect-Me] ()
 
-[Format-StringRemoveSpecialCharacter]()
+[Assert-MicrosoftTeamsConnection] ()
+
+[Enable-AzureAdAdminRole] ()
+
+[Enable-MyAzureAdAdminRole] ()
+
+[Get-AzureAdAdminRole] ()
+
+[Get-MyAzureAdAdminRole] ()
 

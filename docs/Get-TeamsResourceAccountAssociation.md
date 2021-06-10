@@ -1,91 +1,60 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Get-TeamsResourceAccountAssociation
+# Get-PublicHolidayCountry
 
 ## SYNOPSIS
-Queries a Resource Account Association
+
+Returns a list of Countries for which Public Holidays are available
 
 ## SYNTAX
 
 ```
-Get-TeamsResourceAccountAssociation [[-UserPrincipalName] <String[]>] [<CommonParameters>]
+Get-PublicHolidayCountry [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Queries an existing Resource Account and lists its Association (if any)
+
+Queries the Nager.Date API for supported Countries
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Get-TeamsResourceAccountAssociation
+Get-PublicHolidayCountry
 ```
 
-Queries all Resource Accounts and enumerates their Association as well as the Association Status
-
-### EXAMPLE 2
-```
-Get-TeamsResourceAccountAssociation -UserPrincipalName ResourceAccount@domain.com
-```
-
-Queries the Association of the Account 'ResourceAccount@domain.com'
+Lists the Countries for which Public Holidays are available
 
 ## PARAMETERS
-
-### -UserPrincipalName
-Optional.
-UPN(s) of the Resource Account(s) to be queried
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: ObjectId, Identity
-
-Required: False
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.Void
 ## OUTPUTS
 
 ### System.Object
 ## NOTES
-Combination of Get-CsOnlineApplicationInstanceAssociation and Get-CsOnlineApplicationInstanceAssociationStatus but with friendly Names
-Without any Parameters, can be used to enumerate all Resource Accounts
-This may take a while to calculate, depending on # of Accounts in the Tenant
+
+The Nager.Date API currently supports a bit over 100 Countries.
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsResourceAccount]()
+[about_SupportingFunction] ()
 
-[Get-TeamsResourceAccountAssociation]()
+[about_TeamsAutoAttendant] ()
 
-[New-TeamsResourceAccountAssociation]()
+[Get-PublicHolidayCountry] ()
 
-[Remove-TeamsResourceAccountAssociation]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[New-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
+[Get-PublicHolidayList] ()
 

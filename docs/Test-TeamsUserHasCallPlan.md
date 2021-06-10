@@ -1,79 +1,56 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Test-TeamsUserHasCallPlan
+# Test-SkypeOnlineConnection
 
 ## SYNOPSIS
-Tests an AzureAD-Object for a CallingPlan License
+
+Tests whether a valid PS Session exists for SkypeOnline (Teams)
 
 ## SYNTAX
 
 ```
-Test-TeamsUserHasCallPlan [-UserPrincipalName] <String> [<CommonParameters>]
+Test-SkypeOnlineConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Any assigned Calling Plan found on the User (with exception of the Communication Credits license, which is add-on)
-will let this function return $TRUE
+
+A connection established via Connect-SkypeOnline is parsed.
+This connection must be valid (Available and Opened)
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Test-TeamsUserHasCallPlan -Identity User@domain.com -ServicePlan MCOEV
+Test-SkypeOnlineConnection
 ```
 
-Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!
-This can be a part of a License.
-
-### EXAMPLE 2
-```
-Test-TeamsUserHasCallPlan -Identity User@domain.com
-```
-
-Will Return $TRUE only if one of the following license Packages are assigned:
-InternationalCallingPlan, DomesticCallingPlan, DomesticCallingPlan120, DomesticCallingPlan120b
+Will Return $TRUE only if a valid and open session is found.
 
 ## PARAMETERS
-
-### -UserPrincipalName
-This is the UserID (UPN)
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: ObjectId, Identity
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.Void
 ## OUTPUTS
 
-### Boolean
+### System.Boolean
 ## NOTES
-This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
+
+Added check for Open Session to err on the side of caution.
+Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_SupportingFunction]()
-
-[Test-TeamsUserLicense]()
-
-[Test-TeamsUserHasCallPlan]()
+[about_TeamsSession] ()
 

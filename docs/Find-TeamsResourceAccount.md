@@ -1,141 +1,66 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Find-TeamsResourceAccount
+# Enable-MyAzureAdAdminRole
 
 ## SYNOPSIS
-Finds Resource Accounts from AzureAD
+
+Activates Azure Ad Admin Roles for currently connected User
 
 ## SYNTAX
 
-### Search (Default)
 ```
-Find-TeamsResourceAccount [-SearchQuery] <String> [<CommonParameters>]
-```
-
-### UnAssociatedOnly
-```
-Find-TeamsResourceAccount [-SearchQuery] <String> [-UnAssociatedOnly] [<CommonParameters>]
-```
-
-### AssociatedOnly
-```
-Find-TeamsResourceAccount [-SearchQuery] <String> [-AssociatedOnly] [<CommonParameters>]
+Enable-MyAzureAdAdminRole [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Returns Resource Accounts based on input (Search String).
-This runs Find-CsOnlineApplicationInstance but reformats the Output with friendly names
+
+Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
+Requires a Connection to AzureAd
 
 ## EXAMPLES
 
-### EXAMPLE 1
-```
-Find-TeamsResourceAccount -SearchQuery "Office"
-```
+### Example 1: EXAMPLE 1
 
-Returns all Resource Accounts with "Office" as part of their DisplayName
-
-### EXAMPLE 2
 ```
-Find-TeamsResourceAccount -SearchQuery "Office" -AssociatedOnly
+Enable-MyAzureAdAdminRole
 ```
-
-Returns all associated Resource Accounts with "Office" as part of their DisplayName
-
-### EXAMPLE 3
-```
-Find-TeamsResourceAccount -SearchQuery "Office" -UnAssociatedOnly
-```
-
-Returns all unassociated Resource Accounts with "Office" as part of their DisplayName
 
 ## PARAMETERS
-
-### -SearchQuery
-Required.
-Positional.
-Part of the DisplayName of the Account.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -AssociatedOnly
-Optional.
-Considers only associated Resource Accounts
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: AssociatedOnly
-Aliases: Assigned, InUse
-
-Required: True
-Position: 2
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -UnAssociatedOnly
-Optional.
-Considers only unassociated Resource Accounts
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: UnAssociatedOnly
-Aliases: Unassigned, Free
-
-Required: True
-Position: 2
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### System.Object
+### System.Void - If executed from shell
+### Boolean - If called by other CmdLets
 ## NOTES
+
 None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsResourceAccount]()
+[about_UserManagement] ()
 
-[Get-TeamsResourceAccountAssociation]()
+[Connect-Me] ()
 
-[New-TeamsResourceAccountAssociation]()
+[Assert-MicrosoftTeamsConnection] ()
 
-[Remove-TeamsResourceAccountAssociation]()
+[Enable-AzureAdAdminRole] ()
 
-[New-TeamsResourceAccount]()
+[Enable-MyAzureAdAdminRole] ()
 
-[Get-TeamsResourceAccount]()
+[Get-AzureAdAdminRole] ()
 
-[Find-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
+[Get-MyAzureAdAdminRole] ()
 

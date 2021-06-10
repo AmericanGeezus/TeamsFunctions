@@ -1,13 +1,14 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
 # Get-PublicHolidayCountry
 
 ## SYNOPSIS
+
 Returns a list of Countries for which Public Holidays are available
 
 ## SYNTAX
@@ -17,11 +18,13 @@ Get-PublicHolidayCountry [<CommonParameters>]
 ```
 
 ## DESCRIPTION
+
 Queries the Nager.Date API for supported Countries
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
 Get-PublicHolidayCountry
 ```
@@ -40,17 +43,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
+
 The Nager.Date API currently supports a bit over 100 Countries.
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_SupportingFunction]()
+[about_SupportingFunction] ()
 
-[about_TeamsAutoAttendant]()
+[about_TeamsAutoAttendant] ()
 
-[Get-PublicHolidayCountry]()
+[Get-PublicHolidayCountry] ()
 
-[Get-PublicHolidayList]()
+[Get-PublicHolidayList] ()
 

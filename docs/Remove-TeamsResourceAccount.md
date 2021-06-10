@@ -1,157 +1,54 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Remove-TeamsResourceAccount
+# Get-TeamsTenant
 
 ## SYNOPSIS
-Removes a Resource Account from AzureAD
+
+Lists basic Tenant information
 
 ## SYNTAX
 
 ```
-Remove-TeamsResourceAccount [-UserPrincipalName] <String[]> [-PassThru] [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Get-TeamsTenant [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This function allows you to remove Resource Accounts (Application Instances) from AzureAD
+
+To gain a quick overview, this wrapper for Get-CsTenant will display basic information
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Remove-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com"
+Get-TeamsTenant
 ```
 
-Removes a ResourceAccount
-Removes in order: Phone Number, License and Account
-
-### EXAMPLE 2
-```
-Remove-TeamsResourceAccount -UserPrincipalName AA-Mainline@TenantName.onmicrosoft.com" -Force
-```
-
-Removes a ResourceAccount
-Removes in order: Association, Phone Number, License and Account
+Lists basic tenant information relevant for working on this Tenant
 
 ## PARAMETERS
-
-### -UserPrincipalName
-Required.
-Identifies the Object being changed
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: Identity, ObjectId
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -PassThru
-Optional.
-Displays UserPrincipalName of removed objects.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Force
-Optional.
-Will also sever all associations this account has in order to remove it
-If not provided and the Account is connected to a Call Queue or Auto Attendant, an error will be displayed
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### System.Void - Default Behavior
-### System.Object - With Switch PassThru
+### System.Object
 ## NOTES
-Execution requires User Admin Role in Azure AD
+
+None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsResourceAccount]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[New-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
-
-[Get-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccountAssociation]()
-
-[Remove-TeamsResourceAccountAssociation]()
+[about_SupportingFunction] ()
 

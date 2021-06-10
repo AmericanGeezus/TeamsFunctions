@@ -1,13 +1,14 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
 # Test-ExchangeOnlineConnection
 
 ## SYNOPSIS
+
 Tests whether a valid PS Session exists for ExchangeOnline
 
 ## SYNTAX
@@ -17,12 +18,14 @@ Test-ExchangeOnlineConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
+
 A connection established via Connect-ExchangeOnline is parsed.
 This connection must be valid (Available and Opened)
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
 Test-ExchangeOnlineConnection
 ```
@@ -41,21 +44,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### Boolean
 ## NOTES
+
 Calls Get-PsSession to determine whether a Connection to ExchangeOnline exists
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
+[about_TeamsSession] ()
 
-[Test-AzureAdConnection]()
+[Test-AzureAdConnection] ()
 
-[Test-MicrosoftTeamsConnection]()
+[Test-MicrosoftTeamsConnection] ()
 
-[Test-ExchangeOnlineConnection]()
+[Test-ExchangeOnlineConnection] ()
 
-[Assert-AzureAdConnection]()
+[Assert-AzureAdConnection] ()
 
-[Assert-MicrosoftTeamsConnection]()
+[Assert-MicrosoftTeamsConnection] ()
 

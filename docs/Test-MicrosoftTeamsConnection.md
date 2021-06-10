@@ -1,13 +1,14 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
 # Test-MicrosoftTeamsConnection
 
 ## SYNOPSIS
+
 Tests whether a valid PS Session exists for MicrosoftTeams
 
 ## SYNTAX
@@ -17,11 +18,13 @@ Test-MicrosoftTeamsConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
+
 A connection established via Connect-MicrosoftTeams is parsed.
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
 Test-MicrosoftTeamsConnection
 ```
@@ -40,21 +43,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Boolean
 ## NOTES
+
 Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOnline) exists
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
+[about_TeamsSession] ()
 
-[Test-AzureAdConnection]()
+[Test-AzureAdConnection] ()
 
-[Test-MicrosoftTeamsConnection]()
+[Test-MicrosoftTeamsConnection] ()
 
-[Test-ExchangeOnlineConnection]()
+[Test-ExchangeOnlineConnection] ()
 
-[Assert-AzureAdConnection]()
+[Assert-AzureAdConnection] ()
 
-[Assert-MicrosoftTeamsConnection]()
+[Assert-MicrosoftTeamsConnection] ()
 

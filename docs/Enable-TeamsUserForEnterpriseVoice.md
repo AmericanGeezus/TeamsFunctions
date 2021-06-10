@@ -1,124 +1,66 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Enable-TeamsUserForEnterpriseVoice
+# Enable-MyAzureAdAdminRole
 
 ## SYNOPSIS
-Enables a User for Enterprise Voice
+
+Activates Azure Ad Admin Roles for currently connected User
 
 ## SYNTAX
 
 ```
-Enable-TeamsUserForEnterpriseVoice [-UserPrincipalName] <String[]> [-Force] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Enable-MyAzureAdAdminRole [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Enables a User for Enterprise Voice and verifies its status
+
+Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
+Requires a Connection to AzureAd
 
 ## EXAMPLES
 
-### EXAMPLE 1
-```
-Enable-TeamsUserForEnterpriseVoice John@domain.com
-```
+### Example 1: EXAMPLE 1
 
-Enables John for Enterprise Voice
+```
+Enable-MyAzureAdAdminRole
+```
 
 ## PARAMETERS
-
-### -UserPrincipalName
-UserPrincipalName of the User to be enabled.
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: ObjectId, Identity
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Force
-Suppresses confirmation prompt unless -Confirm is used explicitly
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### System.Void - If called directly
-### Boolean - If called by another CmdLet
+### System.Void - If executed from shell
+### Boolean - If called by other CmdLets
 ## NOTES
-Simple helper function to enable and verify a User is enabled for Enterprise Voice
-Returns boolean result and less communication if called by another function
+
+None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_VoiceConfiguration]()
+[about_UserManagement] ()
 
-[about_UserManagement]()
+[Connect-Me] ()
 
-[New-TeamsUserVoiceConfig]()
+[Assert-MicrosoftTeamsConnection] ()
 
-[Set-TeamsUserVoiceConfig]()
+[Enable-AzureAdAdminRole] ()
 
-[Assert-TeamsCallableEntity]()
+[Enable-MyAzureAdAdminRole] ()
 
-[Enable-TeamsUserForEnterpriseVoice]()
+[Get-AzureAdAdminRole] ()
+
+[Get-MyAzureAdAdminRole] ()
 

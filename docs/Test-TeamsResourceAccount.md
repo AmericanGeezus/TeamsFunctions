@@ -1,100 +1,56 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Test-TeamsResourceAccount
+# Test-SkypeOnlineConnection
 
 ## SYNOPSIS
-Tests whether an Application Instance exists in Azure AD (record found)
+
+Tests whether a valid PS Session exists for SkypeOnline (Teams)
 
 ## SYNTAX
 
 ```
-Test-TeamsResourceAccount [-UserPrincipalName] <String> [-Quick] [<CommonParameters>]
+Test-SkypeOnlineConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Simple lookup - does the User Object exist - to avoid TRY/CATCH statements for processing
+
+A connection established via Connect-SkypeOnline is parsed.
+This connection must be valid (Available and Opened)
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Test-TeamsResourceAccount -UserPrincipalName "$UPN"
+Test-SkypeOnlineConnection
 ```
 
-Will Return $TRUE only if an CsOnlineApplicationInstance Object with the $UPN is found.
-Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
-
-### EXAMPLE 2
-```
-Test-TeamsResourceAccount -UserPrincipalName "$UPN" -Quick
-```
-
-Will Return $TRUE only if an AzureAdObject with the $UPN is found with the Department "Microsoft Communication Application Instance" set)
-Will Return $FALSE in any other case, including if there is no Connection to AzureAD!
+Will Return $TRUE only if a valid and open session is found.
 
 ## PARAMETERS
-
-### -UserPrincipalName
-Mandatory.
-The sign-in address or User Principal Name of the user account to test.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: ObjectId, Identity
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
-### -Quick
-Optional.
-By default, this command queries the CsOnlineApplicationInstance which takes a while.
-A cursory check can be performed against the AzureAdUser (Department "Microsoft Communication Application Instance" indicates ResourceAccounts)
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.Void
 ## OUTPUTS
 
-### Boolean
+### System.Boolean
 ## NOTES
-None
+
+Added check for Open Session to err on the side of caution.
+Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_SupportingFunction]()
-
-[about_TeamsResourceAccount]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[Test-AzureAdUser]()
+[about_TeamsSession] ()
 

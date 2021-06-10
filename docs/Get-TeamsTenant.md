@@ -1,13 +1,14 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
 # Get-TeamsTenant
 
 ## SYNOPSIS
+
 Lists basic Tenant information
 
 ## SYNTAX
@@ -17,11 +18,13 @@ Get-TeamsTenant [<CommonParameters>]
 ```
 
 ## DESCRIPTION
+
 To gain a quick overview, this wrapper for Get-CsTenant will display basic information
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
 Get-TeamsTenant
 ```
@@ -40,11 +43,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
+
 None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_SupportingFunction]()
+[about_SupportingFunction] ()
 

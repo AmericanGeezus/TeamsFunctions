@@ -1,181 +1,60 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Get-TeamsResourceAccount
+# Get-PublicHolidayCountry
 
 ## SYNOPSIS
-Returns Resource Accounts from AzureAD
+
+Returns a list of Countries for which Public Holidays are available
 
 ## SYNTAX
 
-### Identity (Default)
 ```
-Get-TeamsResourceAccount [[-UserPrincipalName] <String[]>] [<CommonParameters>]
-```
-
-### DisplayName
-```
-Get-TeamsResourceAccount [-DisplayName <String>] [<CommonParameters>]
-```
-
-### AppType
-```
-Get-TeamsResourceAccount [-ApplicationType <String>] [<CommonParameters>]
-```
-
-### Number
-```
-Get-TeamsResourceAccount [-PhoneNumber <String>] [<CommonParameters>]
+Get-PublicHolidayCountry [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Returns one or more Resource Accounts based on input.
-This runs Get-CsOnlineApplicationInstance but reformats the Output with friendly names
+
+Queries the Nager.Date API for supported Countries
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Get-TeamsResourceAccount
+Get-PublicHolidayCountry
 ```
 
-Returns all Resource Accounts.
-Depending on size of the Tenant, this might take a while.
-
-### EXAMPLE 2
-```
-Get-TeamsResourceAccount -Identity ResourceAccount@TenantName.onmicrosoft.com
-```
-
-Returns the Resource Account with the Identity specified, if found.
-
-### EXAMPLE 3
-```
-Get-TeamsResourceAccount -DisplayName "Queue"
-```
-
-Returns all Resource Accounts with "Queue" as part of their Display Name.
-Use Find-TeamsResourceAccount / Find-CsOnlineApplicationInstance for finer search
-
-### EXAMPLE 4
-```
-Get-TeamsResourceAccount -ApplicationType AutoAttendant
-```
-
-Returns all Resource Accounts of the specified ApplicationType.
-
-### EXAMPLE 5
-```
-Get-TeamsResourceAccount -PhoneNumber +1555123456
-```
-
-Returns the Resource Account with the Phone Number specified, if found.
+Lists the Countries for which Public Holidays are available
 
 ## PARAMETERS
-
-### -UserPrincipalName
-Default and positional.
-One or more UserPrincipalNames to be queried.
-
-```yaml
-Type: String[]
-Parameter Sets: Identity
-Aliases: ObjectId, Identity
-
-Required: False
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -DisplayName
-Optional.
-Search parameter.
-Alternative to Find-TeamsResourceAccount
-Use Find-TeamsUserVoiceConfig for more search options
-
-```yaml
-Type: String
-Parameter Sets: DisplayName
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: True (ByPropertyName)
-Accept wildcard characters: False
-```
-
-### -ApplicationType
-Optional.
-Returns all Call Queues or AutoAttendants
-
-```yaml
-Type: String
-Parameter Sets: AppType
-Aliases: Type
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PhoneNumber
-Optional.
-Returns all ResourceAccount with a specific string in the PhoneNumber
-
-```yaml
-Type: String
-Parameter Sets: Number
-Aliases: Tel, Number, TelephoneNumber
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: True (ByPropertyName)
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### None
-### System.String
+### System.Void
 ## OUTPUTS
 
 ### System.Object
 ## NOTES
-Pipeline input possible
-Running the CmdLet without any input might take a while, depending on size of the Tenant.
+
+The Nager.Date API currently supports a bit over 100 Countries.
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsResourceAccount]()
+[about_SupportingFunction] ()
 
-[Get-TeamsResourceAccountAssociation]()
+[about_TeamsAutoAttendant] ()
 
-[New-TeamsResourceAccountAssociation]()
+[Get-PublicHolidayCountry] ()
 
-[Remove-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccount]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
+[Get-PublicHolidayList] ()
 

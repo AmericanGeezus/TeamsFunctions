@@ -1,109 +1,62 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Assert-Module
+# Assert-MicrosoftTeamsConnection
 
 ## SYNOPSIS
-Tests whether a Module is loaded
+
+Asserts an established Connection to MicrosoftTeams
 
 ## SYNTAX
 
 ```
-Assert-Module [[-Module] <String[]>] [-UpToDate] [-PreRelease] [<CommonParameters>]
+Assert-MicrosoftTeamsConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Tests whether a specific Module is loaded
+
+Tests a connection to MicrosoftTeams is established.
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Assert-Module -Module ModuleName
+Assert-MicrosoftTeamsConnection
 ```
 
-Will Return $TRUE if the Module 'ModuleName' is installed and loaded
-
-### EXAMPLE 2
-```
-Assert-Module -Module ModuleName -UpToDate
-```
-
-Will Return $TRUE if the Module 'ModuleName' is installed in the latest release version and loaded
-
-### EXAMPLE 3
-```
-Assert-Module -Module ModuleName -UpToDate -PreRelease
-```
-
-Will Return $TRUE if the Module 'ModuleName' is installed in the latest pre-release version and loaded
+Will run Test-MicrosoftTeamsConnection and, if successful, stops.
+If unsuccessful, displays request to create a new session and stops.
 
 ## PARAMETERS
-
-### -Module
-Names of one or more Modules to assert
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -UpToDate
-Verifies Version installed is equal to the latest found online
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PreRelease
-Verifies Version installed is equal to the latest prerelease version found online
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### Boolean
+### System.Void - If called directly; On-Screen output only
+### Boolean - If called by other CmdLets, On-Screen output for the first call only
 ## NOTES
+
 None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_SupportingFunction]()
+[about_TeamsSession] ()
+
+[Assert-AzureAdConnection] ()
+
+[Assert-MicrosoftTeamsConnection] ()
+
+[Get-CurrentConnectionInfo] ()
 

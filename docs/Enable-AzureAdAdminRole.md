@@ -1,256 +1,77 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Enable-AzureAdAdminRole
+# Disconnect-Me
 
 ## SYNOPSIS
-Enables eligible Admin Roles
+
+Disconnects all sessions for AzureAD & MicrosoftTeams
 
 ## SYNTAX
 
 ```
-Enable-AzureAdAdminRole [[-Identity] <String>] [[-Reason] <String>] [[-Duration] <Int32>] [[-TicketNr] <Int32>]
- [[-ProviderId] <String>] [-Extend] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Disconnect-Me [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Azure Ad Privileged Identity Management can require you to activate Admin Roles.
-Eligibe roles or groups can be activated with this Command
+
+Helper function to disconnect from AzureAD & MicrosoftTeams
+By default Office 365 allows two (!) concurrent sessions per User.
+Session exhaustion may occur if sessions hang or incorrectly closed.
+Avoid this by cleanly disconnecting the sessions with this function before timeout
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Enable-AzureAdAdminRole John@domain.com
+Disconnect-Me
 ```
 
-Enables all eligible Teams Admin roles for User John@domain.com
-
-### EXAMPLE 2
-```
-Enable-AzureAdAdminRole John@domain.com -EnableAll -Reason "Need to provision Users" -Duration 4
-```
-
-Enables all eligible Admin roles for User John@domain.com with the reason provided.
-
-### EXAMPLE 3
-```
-Enable-AzureAdAdminRole John@domain.com -EnableAll -ProviderId azureResources -Confirm
-```
-
-Enables all eligible Azure Resources for User John@domain.com with confirmation for each Resource.
-
-### EXAMPLE 4
-```
-Enable-AzureAdAdminRole John@domain.com -Extend -Duration 3
-```
-
-If already activated, will extend the Azure Resources for User John@domain.com for up to 3 hours.
+Disconnects from AzureAD, MicrosoftTeams
+Errors and Warnings are suppressed as no verification of existing sessions is undertaken
 
 ## PARAMETERS
-
-### -Identity
-Username of the Admin Account to enable roles for
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: UserPrincipalName, ObjectId
-
-Required: False
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Reason
-Optional.
-Small statement why these roles are requested
-By default, "admin" is used as the reason.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Duration
-Optional.
-Integer.
-By default, enables Roles for 4 hours.
-Depending on your Administrators settings, values between 1 and 24 hours can be specified
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 3
-Default value: 0
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -TicketNr
-Optional.
-Integer.
-Only used if provided
-Depending on your Administrators settings, a ticket number may be required to process the request
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 4
-Default value: 0
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ProviderId
-Optional.
-Default is 'aadRoles' for the ProviderId, however, this script could also be used for activating
-Azure Resources ('azureResources').
-Use with Confirm and EnableAll.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 5
-Default value: AadRoles
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Extend
-Optional.
-Switch.
-If an assignment is already active, it can be extended.
-This will leave an open request which can be closed manually.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PassThru
-Optional.
-Displays output object for each activated Role
-Used for further processing to verify command was successful
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Force
-Overrides confirmation dialog and enables all eligible roles
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
-### System.Void - Default Behaviour
-### System.Object - With Switch PassThru
-### Boolean - If called by other CmdLets
+### System.Void
 ## NOTES
-Limitations: MFA must be authorised first
-Currently no way to trigger it via PowerShell.
-If the activation fails, please sign into Office.com
-Once Authorised, this command can be used to activate your eligible Admin Roles.
-AzureResources provider activation is not yet tested.
 
-Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1
+Helper function to disconnect from AzureAD & MicrosoftTeams
+To disconnect from ExchangeOnline, please run Disconnect-ExchangeOnline
+By default Office 365 allows two (!) concurrent sessions per User.
+If sessions hang or are incorrectly closed (not properly disconnected),
+this can lead to session exhaustion which results in not being able to connect again.
+An admin can sign-out this user from all Sessions through the Office 365 Admin Center
+This process may take up to 15 mins and is best avoided, through proper disconnect after use
+An Alias is available for this function: dis
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
+[about_TeamsSession] ()
 
-[Enable-AzureAdAdminRole]()
+[Connect-Me] ()
 
-[Enable-MyAzureAdAdminRole]()
+[Connect-AzureAD] ()
 
-[Get-AzureAdAdminRole]()
+[Connect-MicrosoftTeams] ()
 
-[Get-MyAzureAdAdminRole]()
+[Disconnect-Me] ()
+
+[Disconnect-AzureAD] ()
+
+[Disconnect-MicrosoftTeams] ()
 

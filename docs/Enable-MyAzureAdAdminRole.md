@@ -1,13 +1,14 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
 # Enable-MyAzureAdAdminRole
 
 ## SYNOPSIS
+
 Activates Azure Ad Admin Roles for currently connected User
 
 ## SYNTAX
@@ -17,12 +18,14 @@ Enable-MyAzureAdAdminRole [<CommonParameters>]
 ```
 
 ## DESCRIPTION
+
 Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
 Requires a Connection to AzureAd
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
 Enable-MyAzureAdAdminRole
 ```
@@ -40,23 +43,24 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Void - If executed from shell
 ### Boolean - If called by other CmdLets
 ## NOTES
+
 None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
+[about_UserManagement] ()
 
-[Connect-Me]()
+[Connect-Me] ()
 
-[Assert-MicrosoftTeamsConnection]()
+[Assert-MicrosoftTeamsConnection] ()
 
-[Enable-AzureAdAdminRole]()
+[Enable-AzureAdAdminRole] ()
 
-[Enable-MyAzureAdAdminRole]()
+[Enable-MyAzureAdAdminRole] ()
 
-[Get-AzureAdAdminRole]()
+[Get-AzureAdAdminRole] ()
 
-[Get-MyAzureAdAdminRole]()
+[Get-MyAzureAdAdminRole] ()
 

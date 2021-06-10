@@ -1,13 +1,14 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
 # Assert-MicrosoftTeamsConnection
 
 ## SYNOPSIS
+
 Asserts an established Connection to MicrosoftTeams
 
 ## SYNTAX
@@ -17,11 +18,13 @@ Assert-MicrosoftTeamsConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
+
 Tests a connection to MicrosoftTeams is established.
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
 Assert-MicrosoftTeamsConnection
 ```
@@ -42,17 +45,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Void - If called directly; On-Screen output only
 ### Boolean - If called by other CmdLets, On-Screen output for the first call only
 ## NOTES
+
 None
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
+[about_TeamsSession] ()
 
-[Assert-AzureAdConnection]()
+[Assert-AzureAdConnection] ()
 
-[Assert-MicrosoftTeamsConnection]()
+[Assert-MicrosoftTeamsConnection] ()
 
-[Get-CurrentConnectionInfo]()
+[Get-CurrentConnectionInfo] ()
 

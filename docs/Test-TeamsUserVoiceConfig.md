@@ -1,168 +1,56 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Test-TeamsUserVoiceConfig
+# Test-SkypeOnlineConnection
 
 ## SYNOPSIS
-Tests whether any Voice Configuration has been applied to one or more Users
+
+Tests whether a valid PS Session exists for SkypeOnline (Teams)
 
 ## SYNTAX
 
 ```
-Test-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-Partial] [-IncludeTenantDialPlan]
- [-ExtensionState <String>] [<CommonParameters>]
+Test-SkypeOnlineConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-For Microsoft Call Plans: Tests for EnterpriseVoice enablement, License AND Phone Number
-For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
+
+A connection established via Connect-SkypeOnline is parsed.
+This connection must be valid (Available and Opened)
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
+Test-SkypeOnlineConnection
 ```
 
-Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
-
-### EXAMPLE 2
-```
-Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial
-```
-
-Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
-
-### EXAMPLE 3
-```
-Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDialPlan
-```
-
-Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
-This requires a Tenant Dial Plan to be assigned as well.
-
-### EXAMPLE 4
-```
-Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial -IncludeTenantDialPlan
-```
-
-Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
-This will treat any Object that only has a Tenant Dial Plan also as partially configured
+Will Return $TRUE only if a valid and open session is found.
 
 ## PARAMETERS
-
-### -UserPrincipalName
-Required.
-UserPrincipalName or ObjectId of the Object
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: ObjectId, Identity
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Partial
-Optional.
-By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
-Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -IncludeTenantDialPlan
-Optional.
-By default, only the core requirements for Voice Routing are verified.
-This extends the requirements to also include the Tenant Dial Plan.
-Returns FALSE if no or only a TenantDialPlan is assigned
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ExtensionState
-Optional.
-For DirectRouting, enforces the presence (or absence) of an Extension.
-Default: NotMeasured
-No effect for Microsoft Calling Plans
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: NotMeasured
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.Void
 ## OUTPUTS
 
-### Boolean
+### System.Boolean
 ## NOTES
-All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
-Partial configuration provides insight for incorrectly provisioned configuration.
-Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
-Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber
-Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy
+
+Added check for Open Session to err on the side of caution.
+Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
-
-[about_VoiceConfiguration]()
-
-[about_UserManagement]()
-
-[Assert-TeamsUserVoiceConfig]()
-
-[Find-TeamsUserVoiceConfig]()
-
-[Get-TeamsTenantVoiceConfig]()
-
-[Get-TeamsUserVoiceConfig]()
-
-[New-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
-
-[Remove-TeamsUserVoiceConfig]()
-
-[Test-TeamsUserVoiceConfig]()
+[about_TeamsSession] ()
 

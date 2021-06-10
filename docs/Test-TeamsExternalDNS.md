@@ -1,69 +1,56 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Test-TeamsExternalDNS
+# Test-SkypeOnlineConnection
 
 ## SYNOPSIS
-Tests a domain for the required external DNS records for a Teams deployment.
+
+Tests whether a valid PS Session exists for SkypeOnline (Teams)
 
 ## SYNTAX
 
 ```
-Test-TeamsExternalDNS [-Domain] <String> [<CommonParameters>]
+Test-SkypeOnlineConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Teams requires the use of several external DNS records for clients and federated
-partners to locate services and users.
-This function will look for the required external DNS records
-and display their current values, if they are correctly implemented, and any issues with the records.
+
+A connection established via Connect-SkypeOnline is parsed.
+This connection must be valid (Available and Opened)
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Test-TeamsExternalDNS -Domain contoso.com
+Test-SkypeOnlineConnection
 ```
 
-Example 1 will test the contoso.com domain for the required external DNS records for Teams.
+Will Return $TRUE only if a valid and open session is found.
 
 ## PARAMETERS
-
-### -Domain
-The domain name to test records.
-This parameter is required.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### System.Void
 ## OUTPUTS
 
-### System.Object
+### System.Boolean
 ## NOTES
-None
+
+Added check for Open Session to err on the side of caution.
+Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_Unmanaged]()
+[about_TeamsSession] ()
 

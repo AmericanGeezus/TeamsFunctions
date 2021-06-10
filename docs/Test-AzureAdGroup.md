@@ -1,79 +1,64 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
-# Test-AzureAdGroup
+# Test-AzureADConnection
 
 ## SYNOPSIS
-Tests whether an Group exists in Azure AD (record found)
+
+Tests whether a valid PS Session exists for Azure Active Directory (v2)
 
 ## SYNTAX
 
 ```
-Test-AzureAdGroup [-Identity] <String> [<CommonParameters>]
+Test-AzureADConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Simple lookup - does the Group Object exist - to avoid TRY/CATCH statements for processing
+
+A connection established via Connect-AzureAD is parsed.
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
-Test-AzureAdGroup -Identity "My Group"
+Test-AzureADConnection
 ```
 
-Will Return $TRUE only if the object "My Group" is found.
-Will Return $FALSE in any other case
+Will Return $TRUE only if a session is found.
 
 ## PARAMETERS
-
-### -Identity
-Mandatory.
-The Name or User Principal Name (MailNickName) of the Group to test.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: UserPrincipalName, GroupName
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### System.String
+### None
 ## OUTPUTS
 
 ### Boolean
 ## NOTES
-None
+
+Calls Get-AzureADCurrentSessionInfo to determine whether a Connection exists
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_SupportingFunction]()
+[about_TeamsSession] ()
 
-[about_UserManagement]()
+[Test-AzureAdConnection] ()
 
-[Find-AzureAdGroup]()
+[Test-MicrosoftTeamsConnection] ()
 
-[Find-AzureAdUser]()
+[Test-ExchangeOnlineConnection] ()
 
-[Test-AzureAdGroup]()
+[Assert-AzureAdConnection] ()
 
-[Test-AzureAdUser]()
-
-[Test-TeamsUser]()
+[Assert-MicrosoftTeamsConnection] ()
 

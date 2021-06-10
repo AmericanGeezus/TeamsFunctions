@@ -1,13 +1,14 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version:
 schema: 2.0.0
 ---
 
 # Test-AzureADConnection
 
 ## SYNOPSIS
+
 Tests whether a valid PS Session exists for Azure Active Directory (v2)
 
 ## SYNTAX
@@ -17,11 +18,13 @@ Test-AzureADConnection [<CommonParameters>]
 ```
 
 ## DESCRIPTION
+
 A connection established via Connect-AzureAD is parsed.
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1: EXAMPLE 1
+
 ```
 Test-AzureADConnection
 ```
@@ -40,21 +43,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### Boolean
 ## NOTES
+
 Calls Get-AzureADCurrentSessionInfo to determine whether a Connection exists
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[] (https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
+[about_TeamsSession] ()
 
-[Test-AzureAdConnection]()
+[Test-AzureAdConnection] ()
 
-[Test-MicrosoftTeamsConnection]()
+[Test-MicrosoftTeamsConnection] ()
 
-[Test-ExchangeOnlineConnection]()
+[Test-ExchangeOnlineConnection] ()
 
-[Assert-AzureAdConnection]()
+[Assert-AzureAdConnection] ()
 
-[Assert-MicrosoftTeamsConnection]()
+[Assert-MicrosoftTeamsConnection] ()
 
