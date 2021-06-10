@@ -7,6 +7,7 @@
 #VALIDATE whether Valued parameters are integers. Display warnings if above or below threshold.
 #TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
 #TEST MusicOnHold audio file does not throw stopping error any more
+#IMPROVE Warning feedback for Users not enabled for EV not necessary - we know they won't be configured! - suppress warnings?
 function New-TeamsCallQueue {
   <#
   .SYNOPSIS

@@ -12,7 +12,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- TBC
+- `New-TeamsResourceAccountAssociation`: Fixed an issue with Resource Account Lookup - Apologies
 
 ## v21.6.9 - prerelease to test AudioFiles
 

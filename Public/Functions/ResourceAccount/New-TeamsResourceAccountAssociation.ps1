@@ -182,7 +182,7 @@ function New-TeamsResourceAccountAssociation {
     foreach ($UPN in $UserPrincipalName) {
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
-        $RAObject = Get-AzureADUser UPN -WarningAction SilentlyContinue -ErrorAction Stop
+        $RAObject = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
         $AppInstance = Get-CsOnlineApplicationInstance $RAObject.ObjectId -WarningAction SilentlyContinue -ErrorAction Stop
         [void]$Accounts.Add($AppInstance)
         Write-Verbose "Resource Account found: '$($AppInstance.DisplayName)'"

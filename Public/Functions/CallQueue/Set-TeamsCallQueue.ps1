@@ -7,6 +7,7 @@
 #TEST MusicOnHold audio file does not throw stopping error any more
 #TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 #CHECK Once ID Lookup is done, check in the ForEach (for Pipeline with Get) whether an Object is present and bind/re-lookup to the correct instance!
+#IMPROVE Warning feedback for Users not enabled for EV not necessary - we know they won't be configured! - suppress warnings?
 function Set-TeamsCallQueue {
   <#
 	.SYNOPSIS
