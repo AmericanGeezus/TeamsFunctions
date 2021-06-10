@@ -29,7 +29,7 @@ Find-AzureAdUser [-Search] "John"
 ```
 
 Will search for the string "John" and return all Azure AD Objects found
-  If nothing has been found, will try to search for by identity
+If nothing has been found, will try to search for by identity
 
 ### EXAMPLE 2
 ```
@@ -37,7 +37,7 @@ Find-AzureAdUser [-Search] "John@domain.com"
 ```
 
 Will search for the string "John@domain.com" and return all Azure AD Objects found
-  If nothing has been found, will try to search for by identity
+If nothing has been found, will try to search for by identity
 
 ### EXAMPLE 3
 ```

@@ -18,8 +18,8 @@ Connect-Me [-AccountId] <String> [-ExchangeOnline] [-UseV1Module] [-NoFeedback] 
 
 ## DESCRIPTION
 One function to connect them all.
-  This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams
-  (and optionally also to ExchangeOnline) when multiple connections are required.
+This CmdLet solves the requirement for individual authentication prompts for AzureAD and MicrosoftTeams
+(and optionally also to ExchangeOnline) when multiple connections are required.
 
 ## EXAMPLES
 
@@ -29,9 +29,9 @@ Connect-Me [-AccountId] admin@domain.com
 ```
 
 Creates a session to AzureAD prompting for a Password for 'admin@domain.com'
-  If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
-  Creates a session to MicrosoftTeams with the AzureAd Session details
-  If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
+If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
+Creates a session to MicrosoftTeams with the AzureAd Session details
+If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
 
 ### EXAMPLE 2
 ```
@@ -39,9 +39,9 @@ Connect-Me -AccountId admin@domain.com -NoFeedBack
 ```
 
 If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
-  Creates a session to MicrosoftTeams with the AzureAd Session details
-  If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
-  Does not display Session Information Object at the end - This is useful if called by other functions.
+Creates a session to MicrosoftTeams with the AzureAd Session details
+If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
+Does not display Session Information Object at the end - This is useful if called by other functions.
 
 ### EXAMPLE 3
 ```
@@ -49,9 +49,9 @@ Connect-Me -AccountId admin@domain.com -ExchangeOnline
 ```
 
 If AzureAdPreview is loaded, tries to enable eligible Admin roles in Privileged Identity Management
-  Creates a session to MicrosoftTeams with the AzureAd Session details
-  If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
-  Also connects to ExchangeOnline
+Creates a session to MicrosoftTeams with the AzureAd Session details
+If unsuccessful, prompting for selection of the authenticated User only (no additional authentication needed)
+Also connects to ExchangeOnline
 
 ## PARAMETERS
 
@@ -91,9 +91,9 @@ Accept wildcard characters: False
 ### -UseV1Module
 Optional.
 Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x
-  This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.
-  Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.
-  Handle with care.
+This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.
+Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.
+Handle with care.
 
 ```yaml
 Type: SwitchParameter

@@ -19,7 +19,7 @@ Get-AzureAdAdminRole [-Identity] <String> [-Type <String>] [<CommonParameters>]
 ## DESCRIPTION
 Azure Active Directory Admin Roles assigned to an Object
 Requires a Connection to AzureAd
-  Querying '-Type Elibile' requires the Module AzureAdPreview installed
+Querying '-Type Elibile' requires the Module AzureAdPreview installed
 
 ## EXAMPLES
 
@@ -58,7 +58,7 @@ Accept wildcard characters: False
 ### -Type
 Optional.
 Switches query to Active (Default) or Eligible Admin Roles
-  Eligibility can only be queried with Module AzureAdPreview installed
+Eligibility can only be queried with Module AzureAdPreview installed
 
 ```yaml
 Type: String

@@ -30,7 +30,7 @@ Set-TeamsCallQueue [-Name] <String> [[-DisplayName] <String>] [[-AgentAlertTime]
 ## DESCRIPTION
 Does all the same things that Set-CsCallQueue does, but differs in a few significant respects:
 UserPrincipalNames can be provided instead of IDs, FileNames (FullName) can be provided instead of IDs
-  File Import is handled by this Script
+File Import is handled by this Script
 Set-CsCallQueue   is used to apply parameters dependent on specification.
 Partial implementation is possible, output will show differences.
 
@@ -256,7 +256,7 @@ Accept wildcard characters: False
 Optional.
 Action to be taken if the TimeoutThreshold is reached
 Forward requires specification of TimeoutActionTarget
-  Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
+Default: Disconnect, Values: Disconnect, Forward, VoiceMail, SharedVoiceMail
 
 ```yaml
 Type: String
@@ -463,10 +463,10 @@ Accept wildcard characters: False
 Optional.
 Display Names of DistributionLists or Groups.
 Their members are to become Agents in the Queue.
-  Mutually exclusive with TeamAndChannel.
+Mutually exclusive with TeamAndChannel.
 Can be combined with Users.
 Will be parsed after Users if they are specified as well.
-  To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.
+To be considered for calls, members of the DistributionsLists must be Enabled for Enterprise Voice.
 
 ```yaml
 Type: String[]
@@ -483,11 +483,11 @@ Accept wildcard characters: False
 ### -Users
 Optional.
 UserPrincipalNames of Users that are to become Agents in the Queue.
-  Mutually exclusive with TeamAndChannel.
+Mutually exclusive with TeamAndChannel.
 Can be combined with DistributionLists.
-  Will be parsed first.
+Will be parsed first.
 Order is only important if Serial Routing is desired (See Parameter RoutingMethod)
-  Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
 
 ```yaml
 Type: String[]
@@ -506,7 +506,7 @@ Optional.
 UserPrincipalNames of Users.
 Unknown use-case right now.
 Feeds Parameter ChannelUserObjectId
-  Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
+Users are only added if they have a PhoneSystem license and are or can be enabled for Enterprise Voice.
 
 ```yaml
 Type: String[]

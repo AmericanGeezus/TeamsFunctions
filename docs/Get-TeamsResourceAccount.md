@@ -155,7 +155,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 Pipeline input possible
-  Running the CmdLet without any input might take a while, depending on size of the Tenant.
+Running the CmdLet without any input might take a while, depending on size of the Tenant.
 
 ## RELATED LINKS
 

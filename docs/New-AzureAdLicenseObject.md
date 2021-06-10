@@ -34,7 +34,7 @@ New-AzureAdLicenseObject -SkuId e43b5b99-8dfb-405f-9987-dc307f34bcbd -RemoveSkuI
 ```
 
 Will create a license Object based on the existing users License
-  Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.
+Adding the MCOEV license, removing the MCOEV_VIRTUALUSER license.
 
 ## PARAMETERS
 

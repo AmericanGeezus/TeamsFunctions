@@ -246,7 +246,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### System.Void - Default Behavior
-###   System.Object - With Switch PassThru
+### System.Object - With Switch PassThru
 ## NOTES
 Many license packages are available, the following Licenses are most predominant:
 - Main License Packages

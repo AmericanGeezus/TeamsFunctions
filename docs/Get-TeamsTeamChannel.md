@@ -27,9 +27,9 @@ Get-TeamsTeamChannel -Team "My Team" -Channel "CallQueue"
 ```
 
 Searches for Teams with the DisplayName of "My Team".
-  If found, looking for a channel with the DisplayName "CallQueue"
-  If found, the Channel Object will be returned
-  Multiple Objects could be returned if multiple Teams called "My Team" with Channels called "CallQueue" exist.
+If found, looking for a channel with the DisplayName "CallQueue"
+If found, the Channel Object will be returned
+Multiple Objects could be returned if multiple Teams called "My Team" with Channels called "CallQueue" exist.
 
 ### EXAMPLE 2
 ```
@@ -37,8 +37,8 @@ Get-TeamsTeamChannel -Team 1234abcd-1234-1234-1234abcd5678 -Channel "CallQueue"
 ```
 
 Searches for Teams with the GroupId of 1234abcd-1234-1234-1234abcd5678.
-  If found, looking for a channel with the DisplayName "CallQueue"
-  If found, the Channel Object will be returned
+If found, looking for a channel with the DisplayName "CallQueue"
+If found, the Channel Object will be returned
 
 ### EXAMPLE 3
 ```
@@ -46,8 +46,8 @@ Get-TeamsTeamChannel -Team "My Team" -Channel 19:1234abcd567890ef1234abcd567890e
 ```
 
 Searches for Teams with the DisplayName of "My Team".
-  If found, looking for a channel with the ID "19:1234abcd567890ef1234abcd567890ef@thread.skype"
-  If found, the Channel Object will be returned
+If found, looking for a channel with the ID "19:1234abcd567890ef1234abcd567890ef@thread.skype"
+If found, the Channel Object will be returned
 
 ### EXAMPLE 4
 ```
@@ -55,7 +55,7 @@ Get-TeamsTeamChannel -Team 1234abcd-1234-1234-1234abcd5678 -Channel 19:1234abcd5
 ```
 
 If a Team with the GroupId 1234abcd-1234-1234-1234abcd5678 is found and this team has a channel with the ID "19:1234abcd567890ef1234abcd567890ef@thread.skype", the Channel Object will be returned
-  This is the safest option as it will always find a correct result provided the entities exist.
+This is the safest option as it will always find a correct result provided the entities exist.
 
 ## PARAMETERS
 
@@ -63,7 +63,7 @@ If a Team with the GroupId 1234abcd-1234-1234-1234abcd5678 is found and this tea
 Required.
 Name or GroupId (Guid).
 As the name might not be unique, validation is performed for unique matches.
-  If the input matches a 36-digit GUID, lookup is performed via GroupId, otherwise via DisplayName
+If the input matches a 36-digit GUID, lookup is performed via GroupId, otherwise via DisplayName
 
 ```yaml
 Type: String
@@ -81,7 +81,7 @@ Accept wildcard characters: False
 Required.
 Name or Id (Guid).
 If multiple Teams have been discovered, all Channels with this name in each team are returned.
-  If the input matches a GUID (starting with "19:"), lookup is performed via Id, otherwise via DisplayName
+If the input matches a GUID (starting with "19:"), lookup is performed via Id, otherwise via DisplayName
 
 ```yaml
 Type: String

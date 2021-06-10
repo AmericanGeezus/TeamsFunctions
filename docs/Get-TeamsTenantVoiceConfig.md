@@ -28,7 +28,7 @@ Get-TeamsTenantVoiceConfig
 ```
 
 Displays Licenses for Call Plans, available Numbers, as well as
-  Counters for all relevant Policies, available VoiceRoutingPolicies
+Counters for all relevant Policies, available VoiceRoutingPolicies
 
 ### EXAMPLE 2
 ```
@@ -36,7 +36,7 @@ Get-TeamsTenantVoiceConfig -Detailed
 ```
 
 Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways
-  Also displays diagnostic parameters for troubleshooting
+Also displays diagnostic parameters for troubleshooting
 
 ## PARAMETERS
 

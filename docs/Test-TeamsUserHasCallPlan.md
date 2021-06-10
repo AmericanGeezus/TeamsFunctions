@@ -36,7 +36,7 @@ Test-TeamsUserHasCallPlan -Identity User@domain.com
 ```
 
 Will Return $TRUE only if one of the following license Packages are assigned:
-  InternationalCallingPlan, DomesticCallingPlan, DomesticCallingPlan120, DomesticCallingPlan120b
+InternationalCallingPlan, DomesticCallingPlan, DomesticCallingPlan120, DomesticCallingPlan120b
 
 ## PARAMETERS
 

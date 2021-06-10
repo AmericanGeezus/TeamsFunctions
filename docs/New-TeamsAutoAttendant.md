@@ -36,8 +36,8 @@ New-TeamsAutoAttendant -Name "My Auto Attendant"
 ```
 
 Creates a new Auto Attendant "My Auto Attendant" with Defaults
-  TimeZone is UTC, Language is en-US and Schedule is Mon-Fri 9to5.
-  Business hours and After Hours action is Disconnect
+TimeZone is UTC, Language is en-US and Schedule is Mon-Fri 9to5.
+Business hours and After Hours action is Disconnect
 
 ### EXAMPLE 2
 ```
@@ -45,7 +45,7 @@ New-TeamsAutoAttendant -Name "My Auto Attendant" -TimeZone UTC-05:00 -LanguageId
 ```
 
 Creates a new Auto Attendant "My Auto Attendant" and sets the TimeZone to UTC-5 and the language to Portuguese (Brazil)
-  The Schedule of Mon-Fri 8to12 and 13to18 will be applied.
+The Schedule of Mon-Fri 8to12 and 13to18 will be applied.
 Also enables VoiceResponses
 
 ### EXAMPLE 3
@@ -72,11 +72,11 @@ New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFl
 
 Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided.
 In this example, provided Objects are
-  passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
-  - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters
-  - One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters
-  - One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters
-  - An InclusionScope and an ExclusionScope are defined.
+passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
+- A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters
+- One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters
+- One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters
+- An InclusionScope and an ExclusionScope are defined.
 These are passed on as-is
 All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.
 

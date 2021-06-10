@@ -19,7 +19,7 @@ Grant-TeamsEmergencyAddress [-Identity] <String> [-Address] <String> [-PassThru]
 
 ## DESCRIPTION
 The Civic Address used as an Emergency Address is assigned to the CsOnlineVoiceUser Object
-  This is done by Name (Description) of the Address instead of the Id
+This is done by Name (Description) of the Address instead of the Id
 
 ## EXAMPLES
 
@@ -36,8 +36,8 @@ Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floo
 ```
 
 Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and
-  assigns this Address to the Number +15551234567 if found in the Business Voice Directory
-  AddressDescription is an Alias for Address
+assigns this Address to the Number +15551234567 if found in the Business Voice Directory
+AddressDescription is an Alias for Address
 
 ### EXAMPLE 3
 ```
@@ -45,7 +45,7 @@ Grant-TeamsEmergencyAddress -Identity John@domain.com -LocationId 0000000-0000-0
 ```
 
 Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and assigns this Address to the User
-  LocationId is an Alias for Address
+LocationId is an Alias for Address
 
 ### EXAMPLE 4
 ```
@@ -53,8 +53,8 @@ Grant-TeamsEmergencyAddress -Identity +15551234567 -PolicyName 0000000-0000-0000
 ```
 
 Searches for the Civic Address with the LocationId 0000000-0000-000000000000 and
-  assigns this Address to the Number +15551234567 if found in the Business Voice Directory
-  PolicyName is an Alias for Address (as it fits the theme)
+assigns this Address to the Number +15551234567 if found in the Business Voice Directory
+PolicyName is an Alias for Address (as it fits the theme)
 
 ## PARAMETERS
 

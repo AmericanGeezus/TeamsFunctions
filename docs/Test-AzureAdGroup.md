@@ -27,7 +27,7 @@ Test-AzureAdGroup -Identity "My Group"
 ```
 
 Will Return $TRUE only if the object "My Group" is found.
-  Will Return $FALSE in any other case
+Will Return $FALSE in any other case
 
 ## PARAMETERS
 

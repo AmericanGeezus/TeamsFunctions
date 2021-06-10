@@ -20,7 +20,7 @@ Set-TeamsCommonAreaPhone [-UserPrincipalName] <String[]> [-DisplayName <String>]
 
 ## DESCRIPTION
 Applies settings relevant to a Common Area Phone.
-  This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
+This includes DisplayName, UsageLocation, License, IP Phone Policy, Calling Policy and Call Park Policy can be applied.
 
 ## EXAMPLES
 
@@ -55,7 +55,7 @@ Set-TeamsCommonAreaPhone -UserPrincipalName "MyLobbyPhone@TenantName.onmicrosoft
 ```
 
 Applies IPPhonePolicy, TeamsCallingPolicy and TeamsCallParkPolicy to the Common Area Phone
-  Displays the Common Area Phone Object afterwards
+Displays the Common Area Phone Object afterwards
 
 ## PARAMETERS
 

@@ -56,7 +56,7 @@ Import-Csv User.csv | Get-AzureAdUserLicenseServicePlan
 ```
 
 Displays all Service Plans assigned through Licenses to Users from User.csv, Column UserPrincipalname, ObjectId or Identity.
-  The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.
+The input file must have a single column heading of "UserPrincipalname" with properly formatted UPNs.
 
 ## PARAMETERS
 

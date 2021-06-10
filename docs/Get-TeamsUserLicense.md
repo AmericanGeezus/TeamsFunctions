@@ -42,7 +42,7 @@ Import-Csv User.csv | Get-TeamsUserLicense
 ```
 
 Displays all licenses assigned to Users from User.csv, Column UserPrincipalName.
-  The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
+The input file must have a single column heading of "UserPrincipalName" with properly formatted UPNs.
 
 ## PARAMETERS
 
