@@ -305,13 +305,47 @@ function Connect-Me {
                 Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Waiting for AzureAd to propagate ($Seconds`s)" -Verbose
                 Start-Sleep -Seconds $Seconds
               }
+              else {
+                Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated' -Verbose
+              }
             }
             catch {
-              if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"') {
+              if ($_.Exception.Message.Split('["')[2] -eq 'MfaRule') {
                 Write-Warning 'Enable-AzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry'
               }
+              #elseif ($_.Exception.Message.Contains('The following policy rules failed: ["TicketingRule"')) {
+              #CHECK also apply for Enable script directly
+              elseif ($_.Exception.Message.Split('["')[2] -eq 'TicketingRule') {
+                # Querying Ticket Number
+                try {
+                  [int]$ticketNr = Read-Host 'Enable-AzureAdAdminrole - Enter Ticket number for activating PIM roles (integer)' -ErrorAction Stop
+                }
+                catch {
+                  Write-Verbose "Enable-AzureAdAdminrole - No valid Ticket Number provided, ticket Number will be presented as '$ticketNr'" -Verbose
+                  [int]$ticketNr = 0
+                }
+                # Activating Roles
+                try {
+                  $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$AccountId" -TicketNr $ticketNr -Reason 'Teams Administration' -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+                  if ( $ActivatedRoles.Count -gt 0 ) {
+                    $Seconds = 10
+                    Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Waiting for AzureAd to propagate ($Seconds`s)" -Verbose
+                    Start-Sleep -Seconds $Seconds
+                  }
+                  else {
+                    Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated' -Verbose
+                  }
+                }
+                catch {
+                  Write-Warning 'Enable-AzureAdAdminrole - Activating Admin roles failed' -Verbose
+                  Write-Error -Message "$($_.Exception.Message)"
+                }
+              }
               else {
-                Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+                Write-Verbose 'Enable-AzureAdAdminrole - Tenant may not be enabled for PIM' -Verbose
+                if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                  "Function: $($MyInvocation.MyCommand.Name): Exception:", $_.Exception.Message | Write-Debug
+                }
               }
               $PIMavailable = $false
             }

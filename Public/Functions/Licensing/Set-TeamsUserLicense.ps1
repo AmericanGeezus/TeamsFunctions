@@ -546,18 +546,19 @@ function Set-TeamsUserLicense {
           $null = Set-AzureADUserLicense -ObjectId "$ID" -AssignedLicenses $LicenseObject -ErrorAction Stop
         }
         catch {
-          switch -wildcard ($_.Exception.Message ) {
+          $Exception = $_.Exception.Message
+          switch -wildcard ( $Exception ) {
             '*No license changes provided*' {
               Write-Information 'INFO:   No Licenses have changed. Please validate already assigned licenses.'
             }
             '*depends on the service plan(s)*' {
-              throw "Set-TeamsUserLicense failed with dependency issue: $($_.Exception.Message)"
+              throw "Set-TeamsUserLicense failed with dependency issue: $Exception"
             }
             '*does not exist or one of its queried reference-property objects are not present*' {
               throw "Set-TeamsUserLicense failed to find the User '$ID'"
             }
             Default {
-              throw "Set-TeamsUserLicense failed to run Set-AzureADUserLicense with Exception: $($_.Exception.Message)"
+              throw "Set-TeamsUserLicense failed to run Set-AzureADUserLicense with Exception: $Exception"
             }
           }
         }

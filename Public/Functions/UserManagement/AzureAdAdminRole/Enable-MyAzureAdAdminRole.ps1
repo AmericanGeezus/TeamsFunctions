@@ -87,6 +87,7 @@ function Enable-MyAzureAdAdminRole {
         }
         catch {
           return $(if ($Called) { $false } else {
+            #FIXME Analog to Enable-AzureAdAdminRole - TicketingRule
               if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"]') {
                 Write-Information 'Enable-MyAzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry' -InformationAction Continue
               }
