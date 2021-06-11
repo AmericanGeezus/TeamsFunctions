@@ -8,11 +8,33 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
-- TBC
+- `Disable-AzureAdUserLicense`: Draft Status
+- `Disable-MyAzureAdUserLicense`: Draft Status
 
 ### Updated
 
+- `Connect-Me`:
+  - Adding 2nd try for `Enable-AzureAdUserAdminRole` providing TicketNr and Reason for enablement
+  - TODO: Evaluate better integration (using parameters at first try to avoid having to re-do the call)
+- `Enable-AzureAdUserAdminRole`:
+  - Adding Todos for TicketNr and Reason
 - `New-TeamsResourceAccountAssociation`: Fixed an issue with Resource Account Lookup - Apologies
+- `Assert-TeamsCallableEntity`:
+  - Fixed an issue with Resource Accounts not being enumerated.
+- Suppressed InformationAction to all Calls to Get-TeamsUserVoiceConfig where applicable (User queries)
+- `Set-TeamsResourceAccount`:
+  - Fixed an issue with Number application to itself
+- `Set-TeamsUserLicense`:
+  - Improved output for duplicate licenses - this will require more deliberation on the Input side as well.
+  - Improved output for error-states. Exception message now displayed as intended.
+- `Set-TeamsUserVoiceConfig`:
+  - Reduced output for duplicated licenses - no need to know license counters here.
+- `New-TeamsCallQueue`:
+  - Quietened Assertion of Callable Entities - no warnings are displayed as that is not the goal of this script.
+- `Set-TeamsCallQueue`:
+  - Quietened Assertion of Callable Entities - no warnings are displayed as that is not the goal of this script.
+- `Set-TeamsUserVoiceConfig`:
+  - Quietened output for InformationActions as this is not the goal of this script and not needed.
 
 ## v21.6.9 - prerelease to test AudioFiles
 
@@ -34,11 +56,6 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `New-TeamsAutoAttendant`:
   - Fixed an issue with very long Auto Attendant names: Now consistently cutting off after 38 characters
   - Added a random number to the Call Flow name to enable creation for multiple Auto Attendants with similar names.
-- `Assert-TeamsCallableEntity`:
-  - Fixed an issue with Resource Accounts not being enumerated.
-- Suppressed InformationAction to all Calls to Get-TeamsUserVoiceConfig where applicable (User queries)
-- `Set-TeamsResourceAccount`:
-  - Fixed an issue with Number application to itself
 - `Get-TeamsCallQueue`:
   - Renamed Parameter ApplicationInstances to `ResourceAccountsAssociated` for consistency
   - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds translated

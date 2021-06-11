@@ -270,7 +270,8 @@ function Set-TeamsUserVoiceConfig {
         if ( $CsUser.PhoneSystemStatus.Contains(',')) {
           Write-Warning -Message "User '$UserPrincipalName' - PhoneSystem License: Multiple assignments found. Please verify License assignment."
           Write-Verbose -Message 'All licenses assigned to the User:' -Verbose
-          Write-Output $UserLic.Licenses
+          #VALIDATE Output temporarily reduced with Select-Object - may be easier if output for Get-AzureAdUserLicense is reduced!
+          Write-Output $UserLic.Licenses | Select-Object ProductName, SkuPartNumber, LicenseType, IncludesTeams, IncludesPhoneSystem, ServicePlans
         }
       }
       else {
