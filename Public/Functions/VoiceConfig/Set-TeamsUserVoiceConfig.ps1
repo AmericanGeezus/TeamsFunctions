@@ -229,7 +229,7 @@ function Set-TeamsUserVoiceConfig {
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      $CsUser = Get-TeamsUserVoiceConfig -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction Stop
+      $CsUser = Get-TeamsUserVoiceConfig -UserPrincipalName "$UserPrincipalName" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
       $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
     }
@@ -728,10 +728,10 @@ function Set-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status 'Output' -CurrentOperation 'Waiting for Office 365 to write the Object' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message 'Waiting 3-5s for Office 365 to write changes to User Object (Policies might not show up yet)'
       Start-Sleep -Seconds 3
-      $UserObjectPost = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -WarningAction SilentlyContinue
+      $UserObjectPost = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -InformationAction SilentlyContinue -WarningAction SilentlyContinue
       if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
         Start-Sleep -Seconds 2
-        $UserObjectPost = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -WarningAction SilentlyContinue
+        $UserObjectPost = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -InformationAction SilentlyContinue -WarningAction SilentlyContinue
       }
 
       if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {

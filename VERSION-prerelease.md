@@ -34,6 +34,11 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `New-TeamsAutoAttendant`:
   - Fixed an issue with very long Auto Attendant names: Now consistently cutting off after 38 characters
   - Added a random number to the Call Flow name to enable creation for multiple Auto Attendants with similar names.
+- `Assert-TeamsCallableEntity`:
+  - Fixed an issue with Resource Accounts not being enumerated.
+- Suppressed InformationAction to all Calls to Get-TeamsUserVoiceConfig where applicable (User queries)
+- `Set-TeamsResourceAccount`:
+  - Fixed an issue with Number application to itself
 - `Get-TeamsCallQueue`:
   - Renamed Parameter ApplicationInstances to `ResourceAccountsAssociated` for consistency
   - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds translated

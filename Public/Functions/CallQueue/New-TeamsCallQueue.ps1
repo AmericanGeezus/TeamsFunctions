@@ -635,7 +635,7 @@ function New-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -650,7 +650,7 @@ function New-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -890,7 +890,7 @@ function New-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
@@ -905,7 +905,7 @@ function New-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }

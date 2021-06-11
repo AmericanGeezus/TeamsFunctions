@@ -112,7 +112,7 @@ function Set-TeamsResourceAccount {
     #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
-        If ($_ -match '@' -or $_ -match "<GUID>") {
+        If ($_ -match '@' -or $_ -match '<GUID>') {
           $True
         }
         else {
@@ -309,7 +309,7 @@ function Set-TeamsResourceAccount {
             # Checking number is free
             Write-Verbose -Message "'$Name ($UPN)' PhoneNumber - Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
-            if ($UserWithThisNumber) {
+            if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UPN) {
               if ($Force) {
                 Write-Warning -Message "'$Name ($UPN)' Number '$E164Number' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
               }
@@ -604,7 +604,7 @@ function Set-TeamsResourceAccount {
         if ($null -eq $PhoneNumber -or $force -or $CurrentPhoneNumber -ne $PhoneNumber) {
           Write-Verbose -Message "'$Name ($UPN)' ACTION: Removing Phone Number"
           try {
-            $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName $UPN -WarningAction SilentlyContinue -ErrorVariable Stop
+            $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName "$UPN" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorVariable Stop
             if ($null -ne ($UVCObject.TelephoneNumber)) {
               # Remove from VoiceApplicationInstance
               Write-Verbose -Message "'$Name ($UPN)' Removing Microsoft Number"
