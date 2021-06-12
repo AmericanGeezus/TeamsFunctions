@@ -128,7 +128,7 @@ function Find-TeamsResourceAccount {
       Write-Verbose -Message 'Found Resource Accounts. Performing lookup. Please wait...'
       foreach ($ResourceAccount in $ResourceAccounts) {
         Write-Verbose -Message "Querying Account '$($ResourceAccount.Id)'"
-        $AdUser = Get-AzureADUser -ObjectId $ResourceAccount.Id -WarningAction SilentlyContinue -ErrorAction Stop
+        $AdUser = Get-AzureADUser -ObjectId $ResourceAccount.Id -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
         # creating new PS Object (synchronous with Get and Set)
         $ResourceAccountObject = [PSCustomObject][ordered]@{

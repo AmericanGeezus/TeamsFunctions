@@ -114,8 +114,13 @@ function Get-AzureAdAdminRole {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     foreach ($Id in $Identity) {
-      #TODO replace Id with $AzureAdUser.UserPrincipalName and 'User' with 'UserPrincipalName' for more consistency.
-      $AzureAdUser = Get-AzureADUser -ObjectId "$Id"
+      try {
+        $AzureAdUser = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
+      }
+      catch {
+        $Message = $_ | Get-ErrorMessageFromErrorString
+        Write-Warning -Message "User '$Id': GetUser$($Message.Split(':')[1])"
+      }
 
       [System.Collections.ArrayList]$MyRoles = @()
 
@@ -138,7 +143,7 @@ function Get-AzureAdAdminRole {
             # Preparing Output object
             $Role = @()
             $Role = [PsCustomObject][ordered]@{
-              'User'            = $Id
+              'User'            = $AzureAdUser.UserPrincipalName
               'Rolename'        = $R.DisplayName
               'Type'            = 'Direct' # This may be different once we incorporate Groups too!
               'ActiveSince'     = ''
@@ -164,7 +169,7 @@ function Get-AzureAdAdminRole {
             # Preparing Output object
             $Role = @()
             $Role = [PsCustomObject][ordered]@{
-              'User'            = $Id
+              'User'            = $AzureAdUser.UserPrincipalName
               'Rolename'        = $RoleObject.DisplayName
               'Type'            = $R.MemberType
               'ActiveSince'     = $R.StartDateTime

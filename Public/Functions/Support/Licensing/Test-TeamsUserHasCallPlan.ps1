@@ -74,9 +74,15 @@ function Test-TeamsUserHasCallPlan {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($ID in $UserPrincipalName) {
       # Query User
-      $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue
-      $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
-      $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
+      try {
+        $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction Stop
+        $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
+        $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
+      }
+      catch {
+        $Message = $_ | Get-ErrorMessageFromErrorString
+        Write-Warning -Message "User '$ID': GetUser$($Message.Split(':')[1])"
+      }
 
       $DOM120b = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120b).SkuPartNumber -in $UserLicenseSKU)
       $DOM120 = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120).SkuPartNumber -in $UserLicenseSKU)

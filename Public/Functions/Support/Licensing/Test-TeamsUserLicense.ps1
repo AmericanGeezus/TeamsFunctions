@@ -109,9 +109,17 @@ function Test-TeamsUserLicense {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($ID in $UserPrincipalName) {
       # Query User
-      $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue
-      $DisplayName = $UserObject.DisplayName
-      $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
+      try {
+        $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue
+        $DisplayName = $UserObject.DisplayName
+        $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
+      }
+      catch {
+        $Message = $_ | Get-ErrorMessageFromErrorString
+        Write-Warning -Message "User '$ID': GetUser$($Message.Split(':')[1])"
+        return
+      }
+
       # ParameterSetName ServicePlan VS License
       switch ($PsCmdlet.ParameterSetName) {
         'ServicePlan' {

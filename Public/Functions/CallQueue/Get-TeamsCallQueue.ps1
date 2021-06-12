@@ -222,8 +222,14 @@ function Get-TeamsCallQueue {
       Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       foreach ($User in $Q.Users) {
-        $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-        [void]$UserObjects.Add($UserObject)
+        try {
+          $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+          [void]$UserObjects.Add($UserObject)
+        }
+        catch {
+          $Message = $_ | Get-ErrorMessageFromErrorString
+          Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
+        }
       }
       # Output: $UserObjects.UserPrincipalName
 
@@ -234,8 +240,14 @@ function Get-TeamsCallQueue {
         Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($Q.Name)' - $Operation"
         foreach ($User in $Q.ChannelUserObjectId) {
-          $ChannelUserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-          [void]$ChannelUserObjects.Add($ChannelUserObject)
+          try {
+            $ChannelUserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+            [void]$ChannelUserObjects.Add($ChannelUserObject)
+          }
+          catch {
+            $Message = $_ | Get-ErrorMessageFromErrorString
+            Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
+          }
         }
         # Output: $UserObjects.UserPrincipalName
 
@@ -246,8 +258,14 @@ function Get-TeamsCallQueue {
         Write-Verbose -Message "'$($Q.Name)' - $Operation"
 
         foreach ($Agent in $Q.Agents) {
-          $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
-          [void]$AgentObjects.Add($AgentObject)
+          try {
+            $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
+            [void]$AgentObjects.Add($AgentObject)
+          }
+          catch {
+            $Message = $_ | Get-ErrorMessageFromErrorString
+            Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
+          }
         }
         # Output: $AgentObjects.UserPrincipalName
       }
