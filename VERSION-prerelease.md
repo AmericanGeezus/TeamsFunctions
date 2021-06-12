@@ -12,13 +12,23 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Disable-MyAzureAdUserLicense`: Draft Status
 - `Disable-AzureAdUserAdminRole`: Disabling activated privileged AzureAd Admin Roles for any provided UserPrincipalName.
 - `Disable-MyAzureAdUserAdminRole`: Disabling activated privileged AzureAd Admin Roles for the currently logged on user.
+- Private Function `Get-ErrorMessageFromErrorString`: Reworking Output from REST API to display Message only (for Try/Catch)
 
 ### Updated
 
+- Caught Errors for `Get-AzureAdUser` - Results are now uniformly displayed as required.
+- ErrorActions and WarningActions added to multiple queries to quieten execution
+- `Get-TeamsCallQueue`:
+  - Users linked to Call Queues that are no longer queryable via Get-AzureAdUser (i.E. have been disabled/deleted) are now highlighted with a Warning
 - `Get-TeamsAutoAttendant`: Added DialByNameResourceId - as-is for now
+- `Get-AzureAdUserAdminRole`:
+  - Reworked output: Group Membership is now only queried if Module AzureAdPreview is not available
+  - Parameter Type now accepts All, Active & Eligible as input and will filter accordingly
 - `Enable-AzureAdUserAdminRole`:
   - Removed activation of SfB Legacy Admin role if MicrosoftTeams v2.3.1 is used as it is no longer needed.
+  - Fixed an issue with Output if only one role has been activated - sorry!
   - NOTE: TicketNumber can currently not be processed, it is merely added to the Reason statement if provided
+- `Connect-Me`: Refactored counter of activated Admin Roles to accurately report feedback
 - `New-TeamsResourceAccountAssociation`: Fixed an issue with Resource Account Lookup - Apologies
 - `Assert-TeamsCallableEntity`:
   - Fixed an issue with Resource Accounts not being enumerated.

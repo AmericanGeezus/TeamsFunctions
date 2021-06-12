@@ -78,7 +78,7 @@ function Disable-MyAzureAdAdminRole {
         try {
           $AzureAdFeedback = Get-AzureADCurrentSessionInfo
           $DeactivatedRoles = Disable-AzureAdAdminRole -Identity "$($AzureAdFeedback.Account)" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-          if ( $DeactivatedRoles.Count -gt 0 ) {
+          if ( $DeactivatedRoles -or $DeactivatedRoles.Count -gt 0 ) {
             return $(if ($Called) { $DeactivatedRoles } else {
                 Write-Information "Disable-MyAzureAdAdminrole - $($DeactivatedRoles.Count) Roles deactivated." -InformationAction Continue
                 Write-Output $DeactivatedRoles

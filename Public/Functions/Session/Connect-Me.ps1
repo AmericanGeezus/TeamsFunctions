@@ -300,9 +300,10 @@ function Connect-Me {
           'Enabling eligible Admin Roles' {
             try {
               $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$AccountId" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-              if ( $ActivatedRoles.Count -gt 0 ) {
+              $NrOfRoles = if ($ActivatedRoles.Count -gt 0) { $ActivatedRoles.Count } else { if ( $ActivatedRoles ) { 1 } else { 0 } }
+              if ( $NrOfRoles -gt 0 ) {
                 $Seconds = 10
-                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Waiting for AzureAd to propagate ($Seconds`s)" -Verbose
+                Write-Verbose "Enable-AzureAdAdminrole - $NrOfRoles Role(s) activated. Waiting for AzureAd to propagate ($Seconds`s)" -Verbose
                 Start-Sleep -Seconds $Seconds
               }
               else {
@@ -314,7 +315,7 @@ function Connect-Me {
                 Write-Warning 'Enable-AzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry'
               }
               elseif ($_.Exception.Message.Split('["')[2] -eq 'TicketingRule') {
-                  Write-Warning 'Enable-AzureAdAdminrole - Activating Admin roles failed: PIM requires a Ticket Number - please activate via Azure Admin Center'
+                Write-Warning 'Enable-AzureAdAdminrole - Activating Admin roles failed: PIM requires a Ticket Number - please activate via Azure Admin Center'
               }
               else {
                 Write-Verbose 'Enable-AzureAdAdminrole - Tenant may not be enabled for PIM' -Verbose

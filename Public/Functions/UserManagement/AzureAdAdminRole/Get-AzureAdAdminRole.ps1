@@ -53,6 +53,7 @@ function Get-AzureAdAdminRole {
   #>
 
   [CmdletBinding()]
+  [Alias('gar')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the User to Query')]
@@ -60,9 +61,9 @@ function Get-AzureAdAdminRole {
     [string]$Identity,
 
     [Parameter(HelpMessage = 'Active, Eligible')]
-    [ValidateSet('Active', 'Eligible')]
-    #[ValidateSet('Active', 'Eligible','Group')]
-    [string]$Type = 'Active'
+    [ValidateSet('All', 'Active', 'Eligible')]
+    #[ValidateSet('All', 'Active', 'Eligible','Group')]
+    [string]$Type = 'All'
 
   ) #param
 
@@ -82,39 +83,42 @@ function Get-AzureAdAdminRole {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
-    if ($Type -eq 'Eligible') {
-      #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
-      try {
-        Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
-        $SaveVerbosePreference = $global:VerbosePreference;
-        $global:VerbosePreference = 'SilentlyContinue';
-        Remove-Module AzureAd -Force -ErrorAction SilentlyContinue
-        Import-Module AzureAdPreview -Global -Force -ErrorAction Stop
-        $global:VerbosePreference = $SaveVerbosePreference
+    #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
+    try {
+      Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
+      $SaveVerbosePreference = $global:VerbosePreference;
+      $global:VerbosePreference = 'SilentlyContinue';
+      Remove-Module AzureAd -Force -ErrorAction SilentlyContinue
+      Import-Module AzureAdPreview -Global -Force -ErrorAction Stop
+      $global:VerbosePreference = $SaveVerbosePreference
+      $AzureAdPreviewModule = $true
+    }
+    catch {
+      $AzureAdPreviewModule = $false
+      if ($Type -eq 'Active') {
+        Write-Information 'Module AzureAdPreview not present or failed to import. No assignment data available. Active Roles can only be determined by AzureAd Group Membership'
       }
-      catch {
+      else {
         Write-Error -Message 'Module AzureAdPreview not present or failed to import. Please make sure the Module is installed'
         return
       }
-
-      # Importing all Roles
-      Write-Verbose -Message 'Querying Azure Privileged Role Definitions'
-      try {
-        $ProviderId = 'aadRoles'
-        $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
-        $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId -ErrorAction Stop
-      }
-      catch {
-        if ($_.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
-          Write-Error -Message 'Cannot query role definitions. AzureAd Premium License Required' -ErrorAction Stop
-        }
-        else {
-          Write-Error -Message "Cannot query role definitions. Exception: $($_.Exception.Message)" -ErrorAction Stop
-        }
-      }
-
     }
 
+    # Importing all Roles
+    Write-Verbose -Message 'Querying Azure Privileged Role Definitions'
+    try {
+      $ProviderId = 'aadRoles'
+      $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
+      $AllRoles = Get-AzureADMSPrivilegedRoleDefinition -ProviderId $ProviderId -ResourceId $ResourceId -ErrorAction Stop
+    }
+    catch {
+      if ($_.Exception.Message.Contains('The tenant needs an AAD Premium 2 license')) {
+        Write-Error -Message 'Cannot query role definitions. AzureAd Premium License Required' -ErrorAction Stop
+      }
+      else {
+        Write-Error -Message "Cannot query role definitions. Exception: $($_.Exception.Message)" -ErrorAction Stop
+      }
+    }
   } #begin
 
   process {
@@ -131,70 +135,73 @@ function Get-AzureAdAdminRole {
 
       [System.Collections.ArrayList]$MyRoles = @()
 
-      switch ($Type) {
-        'Active' {
-          $MyMemberships = Get-AzureADUserMembership -ObjectId $AzureAdUser.ObjectId #-All $true #CHECK Test Performance and reliability without "all!"
-          $ActiveRoles = $MyMemberships | Where-Object ObjectType -EQ Role
+      #Querying current Assignments
+      if ( $AzureAdPreviewModule ) {
+        $SubjectId = $AzureAdUser.ObjectId
+        $MyPrivilegedRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
 
-          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name) - ActiveRoles", ( $ActiveRoles | Format-List | Out-String).Trim() | Write-Debug
-          }
-
-          #Output
-          if ( -not $ActiveRoles ) {
-            Write-Warning -Message 'No active, direct assignments found. This user may be eligible for activating Admin Role access through Group assignment or Privileged Admin Groups'
-            Write-Verbose -Message "Membership of Group assignments or Privileged Admin Groups is currently not queried by $($MyInvocation.MyCommand)" -Verbose
-          }
-
-          foreach ($R in $ActiveRoles) {
-            # Preparing Output object
-            $Role = @()
-            $Role = [PsCustomObject][ordered]@{
-              'User'            = $AzureAdUser.UserPrincipalName
-              'Rolename'        = $R.DisplayName
-              'Type'            = 'Direct' # This may be different once we incorporate Groups too!
-              'ActiveSince'     = ''
-              'ActiveUntil'     = ''
-              'AssignmentState' = 'Active'
-            }
-
-            [void]$MyRoles.Add($Role)
-          }
-
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name) - MyPrivilegedRoles", ( $MyPrivilegedRoles | Format-List | Out-String).Trim() | Write-Debug
         }
-        'Eligible' {
-          $SubjectId = $AzureAdUser.ObjectId
-          $MyPrivilegedRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
 
-          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name) - MyPrivilegedRoles", ( $MyPrivilegedRoles | Format-List | Out-String).Trim() | Write-Debug
+        foreach ($R in $MyPrivilegedRoles) {
+          # Querying Role Display Name
+          $RoleObject = $AllRoles | Where-Object { $_.Id -eq $R.RoleDefinitionId }
+          # Preparing Output object
+          $Role = @()
+          $Role = [PsCustomObject][ordered]@{
+            'User'             = $AzureAdUser.UserPrincipalName
+            'Rolename'         = $RoleObject.DisplayName
+            'Type'             = $R.MemberType
+            'ActiveSince'      = $R.StartDateTime
+            'ActiveUntil'      = $R.EndDateTime
+            'AssignmentState'  = $R.AssignmentState
+            'RoleDefinitionId' = $R.RoleDefinitionId
           }
-
-          foreach ($R in $MyPrivilegedRoles) {
-            # Querying Role Display Name
-            $RoleObject = $AllRoles | Where-Object { $_.Id -eq $R.RoleDefinitionId }
-            # Preparing Output object
-            $Role = @()
-            $Role = [PsCustomObject][ordered]@{
-              'User'             = $AzureAdUser.UserPrincipalName
-              'Rolename'         = $RoleObject.DisplayName
-              'Type'             = $R.MemberType
-              'ActiveSince'      = $R.StartDateTime
-              'ActiveUntil'      = $R.EndDateTime
-              'AssignmentState'  = $R.AssignmentState
-              'RoleDefinitionId' = $R.RoleDefinitionId
-            }
-
-            [void]$MyRoles.Add($Role)
+          [void]$MyRoles.Add($Role)
+        }
+      }
+      else {
+        # Querying active roles only with Group Membership
+        $MyMemberships = Get-AzureADUserMembership -ObjectId $AzureAdUser.ObjectId #-All $true #CHECK Test Performance and reliability without "all!"
+        $Roles = $MyMemberships | Where-Object ObjectType -EQ Role
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name) - Roles (Group)", ( $Roles | Format-List | Out-String).Trim() | Write-Debug
+        }
+        #Output
+        if ( -not $Roles ) {
+          Write-Warning -Message 'No active, direct assignments found. This user may be eligible for activating Admin Role access through Group assignment or Privileged Admin Groups'
+          Write-Verbose -Message "Membership of Group assignments or Privileged Admin Groups is currently not queried by $($MyInvocation.MyCommand)" -Verbose
+        }
+        foreach ($R in $Roles) {
+          # Preparing Output object
+          $Role = @()
+          $Role = [PsCustomObject][ordered]@{
+            'User'            = $AzureAdUser.UserPrincipalName
+            'Rolename'        = $R.DisplayName
+            'Type'            = 'Direct' # This may be different once we incorporate Groups too!
+            'ActiveSince'     = ''
+            'ActiveUntil'     = ''
+            'AssignmentState' = 'Active'
+            'RoleDefinitionId' = $R.RoleTemplateId
           }
-
+          [void]$MyRoles.Add($Role)
         }
       }
 
-      Write-Output $MyRoles
-
+      # Output
+      switch ($Type) {
+        'Active' {
+          Write-Output $MyRoles | Where-Object AssignmentState -EQ 'Active'
+        }
+        'Eligible' {
+          Write-Output $MyRoles | Where-Object AssignmentState -EQ 'Eligible'
+        }
+        'All' {
+          Write-Output $MyRoles
+        }
+      }
     }
-
   } #process
 
   end {

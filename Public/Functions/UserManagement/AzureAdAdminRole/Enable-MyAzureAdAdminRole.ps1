@@ -78,7 +78,7 @@ function Enable-MyAzureAdAdminRole {
         try {
           $AzureAdFeedback = Get-AzureADCurrentSessionInfo
           $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$($AzureAdFeedback.Account)" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-          if ( $ActivatedRoles.Count -gt 0 ) {
+          if ( $ActivatedRoles -or $ActivatedRoles.Count -gt 0 ) {
             return $(if ($Called) { $ActivatedRoles } else {
                 Write-Information "Enable-MyAzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -InformationAction Continue
                 Write-Output $ActivatedRoles

@@ -102,7 +102,7 @@ function Get-TeamsObjectType {
         return 'Channel'
       }
       else {
-        $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
+        $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         if ( $User ) {
           if ($User[0].Department -eq 'Microsoft Communication Application Instance') {
             #if ( Test-TeamsResourceAccount $Id ) {

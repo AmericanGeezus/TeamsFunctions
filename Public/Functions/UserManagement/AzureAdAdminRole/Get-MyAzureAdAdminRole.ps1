@@ -52,9 +52,9 @@ function Get-MyAzureAdAdminRole {
   [OutputType([PSCustomObject])]
   param(
     [Parameter(HelpMessage = 'Active, Eligible')]
-    [ValidateSet('Active', 'Eligible')]
-    #[ValidateSet('Active', 'Eligible','Group')]
-    [string]$Type = 'Active'
+    [ValidateSet('All', 'Active', 'Eligible')]
+    #[ValidateSet('All', 'Active', 'Eligible','Group')]
+    [string]$Type = 'All'
 
   ) #param
 

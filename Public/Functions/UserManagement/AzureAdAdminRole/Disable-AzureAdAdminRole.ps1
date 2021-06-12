@@ -125,10 +125,8 @@ function Disable-AzureAdAdminRole {
 
     #region Supporting Parameters
     # Duration
-    if ( -not $Duration ) {
-      [int]$Duration = 4
-      # Duration is used in $Schedule
-    }
+    $Duration = 0
+    # Duration is used in $Schedule
 
     # Reason & Ticket Number
     if ( -not $Reason ) { $Reason = 'Administration' }
@@ -164,6 +162,20 @@ function Disable-AzureAdAdminRole {
         Write-Error -Message "Cannot query role definitions. Exception: $($_.Exception.Message)" -ErrorAction Stop
       }
     }
+
+    # Defining Schedule
+    Write-Verbose -Message "Creating Schedule based on Duration: $Duration hours"
+    $Date = Get-Date
+    $start = $Date.ToUniversalTime()
+    $end = $Date.AddHours($Duration).ToUniversalTime()
+
+    $schedule = New-Object Microsoft.Open.MSGraph.Model.AzureADMSPrivilegedSchedule
+    $schedule.Type = 'Once'
+    $schedule.StartDateTime = $start.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+    $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
+    Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
+    $Parameters += @{'Schedule' = $schedule }
+    #endregion
 
     # Identity is not mandatory, using connected Session
     if ( -not $PSBoundParameters.ContainsKey('Identity') ) {
@@ -226,7 +238,7 @@ function Disable-AzureAdAdminRole {
       }
 
       # DeActivating Role
-      [System.Collections.ArrayList]$DeActivatedRoles = @()
+      [System.Collections.ArrayList]$DeactivatedRoles = @()
 
       foreach ($R in $RolesAndGroups) {
         # Querying Role Display Name
@@ -273,15 +285,14 @@ function Disable-AzureAdAdminRole {
             }
 
             #Deactivating the Role
-            if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-              "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-            }
-
             try {
               Write-Verbose -Message "User '$Id' - '$RoleName' - Deactivating Role"
               $DeactivatedRole.ActiveUntil = $schedule.endDateTime
+              if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+              }
               $null = Open-AzureADMSPrivilegedRoleAssignmentRequest @Parameters
-              [void]$DeActivatedRoles.Add($DeactivatedRole)
+              [void]$DeactivatedRoles.Add($DeactivatedRole)
             }
             catch {
               Write-Error -Message $_.Exception.Message
@@ -294,7 +305,7 @@ function Disable-AzureAdAdminRole {
 
     # Re-Query and output (for all Users!)
     if ( $PassThru ) {
-      return $DeActivatedRoles
+      return $DeactivatedRoles
     }
 
   } #process
