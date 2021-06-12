@@ -6,7 +6,7 @@
 
 
 #TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
-#TODO Add new Switches: ChannelId & Suppress Shared Voicemail System messages
+#TODO Translate DialByNameResourceId
 function Get-TeamsAutoAttendant {
   <#
   .SYNOPSIS
@@ -221,6 +221,7 @@ function Get-TeamsAutoAttendant {
         ScheduleNames                   = $AA.Schedules.Name
         CallHandlingAssociationNames    = $AA.CallHandlingAssociations.Type
         DirectoryLookupScope            = $AA.DirectoryLookupScope.Name
+        DialByNameResourceId            = $AA.DialByNameResourceId
         GreetingsSettingAuthorizedUsers = $AA.GreetingsSettingAuthorizedUsers
       }
       #endregion

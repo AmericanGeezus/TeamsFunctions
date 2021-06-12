@@ -80,6 +80,8 @@ function Disconnect-Me {
     try {
       Write-Verbose -Message 'Disconnecting Session from MicrosoftTeams'
       $null = (Disconnect-MicrosoftTeams)
+      Write-Verbose -Message 'Disabling activated Admin Roles'
+      $null = (Disable-MyAzureAdAdminRole)
       Write-Verbose -Message 'Disconnecting Session from AzureAd'
       $null = (Disconnect-AzureAD)
     }
@@ -110,7 +112,7 @@ function Disconnect-Me {
       Write-Verbose -Message 'No remote PowerShell sessions currently exist'
     }
 
-    Set-PowerShellWindowTitle "Windows PowerShell"
+    Set-PowerShellWindowTitle 'Windows PowerShell'
 
   } #process
 

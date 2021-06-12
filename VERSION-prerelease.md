@@ -10,14 +10,15 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 - `Disable-AzureAdUserLicense`: Draft Status
 - `Disable-MyAzureAdUserLicense`: Draft Status
+- `Disable-AzureAdUserAdminRole`: Disabling activated privileged AzureAd Admin Roles for any provided UserPrincipalName.
+- `Disable-MyAzureAdUserAdminRole`: Disabling activated privileged AzureAd Admin Roles for the currently logged on user.
 
 ### Updated
 
-- `Connect-Me`:
-  - Adding 2nd try for `Enable-AzureAdUserAdminRole` providing TicketNr and Reason for enablement
-  - TODO: Evaluate better integration (using parameters at first try to avoid having to re-do the call)
+- `Get-TeamsAutoAttendant`: Added DialByNameResourceId - as-is for now
 - `Enable-AzureAdUserAdminRole`:
-  - Adding Todos for TicketNr and Reason
+  - Removed activation of SfB Legacy Admin role if MicrosoftTeams v2.3.1 is used as it is no longer needed.
+  - NOTE: TicketNumber can currently not be processed, it is merely added to the Reason statement if provided
 - `New-TeamsResourceAccountAssociation`: Fixed an issue with Resource Account Lookup - Apologies
 - `Assert-TeamsCallableEntity`:
   - Fixed an issue with Resource Accounts not being enumerated.

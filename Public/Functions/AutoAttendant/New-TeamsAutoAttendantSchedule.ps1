@@ -203,7 +203,6 @@ function New-TeamsAutoAttendantSchedule {
     }
     else {
       # Differentiating between BusinessHours and BusinessHoursStart/End
-      #TEST Start and End Time as TimeFrame
       if ($PSBoundParameters.ContainsKey('BusinessHoursStart') -and $PSBoundParameters.ContainsKey('BusinessHoursEnd')) {
         Write-Verbose -Message "[PROCESS] Processing BusinessHoursStart '$BusinessHoursStart' and BusinessHoursEnd '$BusinessHoursEnd'"
         if ($BusinessHoursStart -gt $BusinessHoursEnd) {

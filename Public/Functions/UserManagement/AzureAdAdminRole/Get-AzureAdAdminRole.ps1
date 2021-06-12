@@ -74,6 +74,13 @@ function Get-AzureAdAdminRole {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
     if ($Type -eq 'Eligible') {
       #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
@@ -169,12 +176,13 @@ function Get-AzureAdAdminRole {
             # Preparing Output object
             $Role = @()
             $Role = [PsCustomObject][ordered]@{
-              'User'            = $AzureAdUser.UserPrincipalName
-              'Rolename'        = $RoleObject.DisplayName
-              'Type'            = $R.MemberType
-              'ActiveSince'     = $R.StartDateTime
-              'ActiveUntil'     = $R.EndDateTime
-              'AssignmentState' = $R.AssignmentState
+              'User'             = $AzureAdUser.UserPrincipalName
+              'Rolename'         = $RoleObject.DisplayName
+              'Type'             = $R.MemberType
+              'ActiveSince'      = $R.StartDateTime
+              'ActiveUntil'      = $R.EndDateTime
+              'AssignmentState'  = $R.AssignmentState
+              'RoleDefinitionId' = $R.RoleDefinitionId
             }
 
             [void]$MyRoles.Add($Role)

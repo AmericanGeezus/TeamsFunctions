@@ -170,7 +170,7 @@ Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, ear, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
+Export-ModuleMember -Alias con, dis, pol, ear, dar, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
 New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   Grant-TeamsEA, `

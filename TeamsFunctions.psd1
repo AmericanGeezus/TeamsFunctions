@@ -172,6 +172,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
     #UserManagement
     ##AzureAdAdminRole
+    'Disable-AzureAdAdminRole',
+    'Disable-MyAzureAdAdminRole',
     'Enable-AzureAdAdminRole',
     'Enable-MyAzureAdAdminRole',
     'Get-AzureAdAdminRole',
@@ -210,7 +212,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport       = @(
-    'con', 'dis', 'pol', 'ear', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
+    'con', 'dis', 'pol', 'ear', 'dar', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
     'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
     'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 

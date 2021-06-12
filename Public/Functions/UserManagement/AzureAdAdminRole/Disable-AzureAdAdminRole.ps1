@@ -2,37 +2,23 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    20-DEC-2020
-# Status:     Live
+# Status:     Beta
 
 
-#TODO: Write!
+
 
 function Disable-AzureAdAdminRole {
   <#
   .SYNOPSIS
-    Enables eligible Admin Roles
+    Disables active Admin Roles
   .DESCRIPTION
     Azure Ad Privileged Identity Management can require you to activate Admin Roles.
-    Eligibe roles or groups can be activated with this Command
+    Active roles or groups can be deactivated with this Command
   .PARAMETER Identity
-    Username of the Admin Account to enable roles for
+    Username of the Admin Account to disable roles for
   .PARAMETER Reason
-    Optional. Small statement why these roles are requested
-    By default, "admin" is used as the reason.
-  .PARAMETER EnableAll
-    By default, enables only Roles required to Administer Teams
-    These are: Lync Administrator, User Administrator, License Administrator,
-    Teams Communications Administrator, Teams Service Administrator
-    This switch, when used, tries to enable all found admin role
-  .PARAMETER Duration
-    Optional. Integer. By default, enables Roles for 4 hours.
-    Depending on your Administrators settings, values between 1 and 24 hours can be specified
-  .PARAMETER TicketNr
-    Optional. Integer. Only used if provided
-    Depending on your Administrators settings, a ticket number may be required to process the request
-  .PARAMETER Extend
-    Optional. Switch. If an assignment is already active, it can be extended.
-    This will leave an open request which can be closed manually.
+    Optional. Small statement why these roles are disabled
+    By default, "Administration finished" is used as the reason.
   .PARAMETER ProviderId
     Optional. Default is 'aadRoles' for the ProviderId, however, this script could also be used for activating
     Azure Resources ('azureResources'). Use with Confirm and EnableAll.
@@ -40,17 +26,11 @@ function Disable-AzureAdAdminRole {
     Optional. Displays output object for each activated Role
     Used for further processing to verify command was successful
   .EXAMPLE
-    Enable-AzureAdAdminRole John@domain.com
-    Enables all eligible Teams Admin roles for User John@domain.com
+    Disable-AzureAdAdminRole John@domain.com
+    Disables all active Teams Admin roles for User John@domain.com
   .EXAMPLE
-    Enable-AzureAdAdminRole John@domain.com -EnableAll -Reason "Need to provision Users" -Duration 4
-    Enables all eligible Admin roles for User John@domain.com with the reason provided.
-  .EXAMPLE
-    Enable-AzureAdAdminRole John@domain.com -EnableAll -ProviderId azureResources -Confirm
-    Enables all eligible Azure Resources for User John@domain.com with confirmation for each Resource.
-  .EXAMPLE
-    Enable-AzureAdAdminRole John@domain.com -Extend -Duration 3
-    If already activated, will extend the Azure Resources for User John@domain.com for up to 3 hours.
+    Disable-AzureAdAdminRole John@domain.com -Reason "Finished"
+    Disables all active Admin roles for User John@domain.com with the reason provided.
   .INPUTS
     System.String
   .OUTPUTS
@@ -67,7 +47,7 @@ function Disable-AzureAdAdminRole {
   .COMPONENT
     UserManagement
   .FUNCTIONALITY
-    Enables eligible Privileged Identity roles for Administration of Teams
+    Disables active Privileged Identity roles
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -93,18 +73,9 @@ function Disable-AzureAdAdminRole {
     [Parameter(HelpMessage = 'Optional Reason for the request')]
     [string]$Reason,
 
-    [Parameter(HelpMessage = 'Integer in hours to activate role(s) for')]
-    [int]$Duration,
-
-    [Parameter(HelpMessage = 'Ticket Number for use to provide to the request')]
-    [int]$TicketNr,
-
     [Parameter(HelpMessage = 'Azure ProviderId to be used')]
     [ValidateSet('aadRoles', 'azureResources')]
     [string]$ProviderId = 'aadRoles',
-
-    [Parameter(HelpMessage = 'Tries to extend the activation.')]
-    [switch]$Extend,
 
     [Parameter(HelpMessage = 'Displays output of activated roles to verify')]
     [switch]$PassThru,
@@ -115,7 +86,7 @@ function Disable-AzureAdAdminRole {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level Beta
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -127,6 +98,8 @@ function Disable-AzureAdAdminRole {
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
@@ -158,8 +131,12 @@ function Disable-AzureAdAdminRole {
     }
 
     # Reason & Ticket Number
-    if ( -not $Reason ) { $Reason = 'Admin' }
-    if ( $TicketNr ) { $Reason = "Ticket: $TicketNr - $Reason" }
+    if ( -not $Reason ) { $Reason = 'Administration' }
+    if ( $TicketNr ) {
+      #TODO Where to build in TicketNr?
+      #$Parameters += @{'$TicketNr' = $TicketNr }
+      $Reason = "Ticket: $TicketNr - $Reason"
+    }
     $Parameters += @{'Reason' = $Reason }
 
     # ProviderId is hardcoded (or overridden by providing a value)
@@ -171,7 +148,7 @@ function Disable-AzureAdAdminRole {
     $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
     $Parameters += @{'ResourceId' = $ResourceId }
 
-    # Assignment state is always Active - This will change for the Disable command
+    # Assignment state is always Active
     $Parameters += @{'AssignmentState' = 'Active' }
 
     # Importing all Roles
@@ -187,20 +164,6 @@ function Disable-AzureAdAdminRole {
         Write-Error -Message "Cannot query role definitions. Exception: $($_.Exception.Message)" -ErrorAction Stop
       }
     }
-
-    # Defining Schedule
-    Write-Verbose -Message "Creating Schedule based on Duration: $Duration hours"
-    $Date = Get-Date
-    $start = $Date.ToUniversalTime()
-    $end = $Date.AddHours($Duration).ToUniversalTime()
-
-    $schedule = New-Object Microsoft.Open.MSGraph.Model.AzureADMSPrivilegedSchedule
-    $schedule.Type = 'Once'
-    $schedule.StartDateTime = $start.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
-    $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
-    Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
-    $Parameters += @{'Schedule' = $schedule }
-    #endregion
 
     # Identity is not mandatory, using connected Session
     if ( -not $PSBoundParameters.ContainsKey('Identity') ) {
@@ -251,37 +214,19 @@ function Disable-AzureAdAdminRole {
       if ($MyEligibleGroups.Count -eq 0) {
         Write-Verbose -Message "User '$Id' - No Privileged Access Groups are available that can be activated."
       #>
-      if ($MyEligibleRoles.Count -eq 0) {
-        if ($MyActiveRoles.Count -eq 0) {
-          Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
-        }
-        else {
-          Write-Information "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles"
-          #VALIDATE use of Enable-AzureAdAdminRole - this needs to catch $true correctly.
-          return $(if ($Called) { $true })
-        }
-
-        Continue
-      }
-
-      <# Commented out for Admin Groups are not yet available via PowerShell
+      if ($MyActiveRoles.Count -eq 0) {
+        Write-Warning -Message "User '$Id' - No active Privileged Access Roles availabe!"
+        continue
       }
       else {
-        # Adding Groups
-        foreach ($Role in $MyEligibleGroups) {
-          [void]$RolesAndGroups.Add($Role)
-        }
-      }
-    #>
-      if ($MyEligibleRoles.Count -gt 0) {
         # Adding Roles
-        foreach ($Role in $MyEligibleRoles) {
+        foreach ($Role in $MyActiveRoles) {
           [void]$RolesAndGroups.Add($Role)
         }
       }
 
-      # Activating Role
-      [System.Collections.ArrayList]$ActivatedRoles = @()
+      # DeActivating Role
+      [System.Collections.ArrayList]$DeActivatedRoles = @()
 
       foreach ($R in $RolesAndGroups) {
         # Querying Role Display Name
@@ -295,8 +240,8 @@ function Disable-AzureAdAdminRole {
           else {
 
             # Preparing Output object
-            $ActivatedRole = @()
-            $ActivatedRole = [PsCustomObject][ordered]@{
+            $DeactivatedRole = @()
+            $DeactivatedRole = [PsCustomObject][ordered]@{
               'User'        = $Id
               'Rolename'    = $RoleName
               'Type'        = $null
@@ -316,68 +261,30 @@ function Disable-AzureAdAdminRole {
             The value for the Request type can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
             more options could be provided than UserExtend (Request) and UserAdd. Bears investigation
             #>
-            if ( $PSBoundParameters.ContainsKey('Extend') -and $R.RoleDefinitionId -in $MyActiveRoles.RoleDefinitionId ) {
-              Write-Verbose -Message "User '$Id' - '$RoleName' is already active and will be extended"
-              $ActivatedRole.Type = 'UserExtend'
+            if ( $R.RoleDefinitionId -in $MyActiveRoles.RoleDefinitionId ) {
+              Write-Verbose -Message "User '$Id' - '$RoleName' is active and will be deactivated"
+              $DeactivatedRole.Type = 'UserRemove'
               if ($Parameters.Type) {
-                $Parameters.Type = 'UserExtend'
+                $Parameters.Type = 'UserRemove'
               }
               else {
-                $Parameters += @{'Type' = 'UserExtend' }
-              }
-            }
-            else {
-              Write-Verbose -Message "User '$Id' - '$RoleName' is currently not active and will be activated"
-              $ActivatedRole.Type = 'UserAdd'
-              if ($Parameters.Type) {
-                $Parameters.Type = 'UserAdd'
-              }
-              else {
-                $Parameters += @{'Type' = 'UserAdd' }
+                $Parameters += @{'Type' = 'UserRemove' }
               }
             }
 
-            #Activating the Role
+            #Deactivating the Role
             if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
               "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
 
             try {
-              Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
-              $ActivatedRole.ActiveUntil = $schedule.endDateTime
+              Write-Verbose -Message "User '$Id' - '$RoleName' - Deactivating Role"
+              $DeactivatedRole.ActiveUntil = $schedule.endDateTime
               $null = Open-AzureADMSPrivilegedRoleAssignmentRequest @Parameters
-              [void]$ActivatedRoles.Add($ActivatedRole)
+              [void]$DeActivatedRoles.Add($DeactivatedRole)
             }
             catch {
-              if ($_.Exception.Message.Contains('ExpirationRule')) {
-                # Amending Schedule
-                if ($Duration -eq 4) { $Duration = 2 } else { $Duration = 4 }
-                Write-Warning -Message "Specified Duration is not allowed, re-trying with $Duration hours"
-                $end = $Date.AddHours($Duration).ToUniversalTime()
-
-                $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
-                Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
-                $Parameters.Schedule = $schedule
-
-                try {
-                  Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
-                  $ActivatedRole.ActiveUntil = $schedule.endDateTime
-                  $null = Open-AzureADMSPrivilegedRoleAssignmentRequest @Parameters
-                  [void]$ActivatedRoles.Add($ActivatedRole)
-                }
-                catch {
-                  if ($_.Exception.Message.Contains('ExpirationRule')) {
-                    Write-Error -Message 'Specified Duration is not allowed, please try again with a lower number.' -Category InvalidData
-                  }
-                  else {
-                    Write-Error -Message $_.Exception.Message
-                  }
-                }
-              }
-              else {
-                Write-Error -Message $_.Exception.Message
-              }
-
+              Write-Error -Message $_.Exception.Message
             }
           }
         }
@@ -387,7 +294,7 @@ function Disable-AzureAdAdminRole {
 
     # Re-Query and output (for all Users!)
     if ( $PassThru ) {
-      return $ActivatedRoles
+      return $DeActivatedRoles
     }
 
   } #process
@@ -395,4 +302,4 @@ function Disable-AzureAdAdminRole {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Enable-AzureAdAdminRole
+} #Disable-AzureAdAdminRole

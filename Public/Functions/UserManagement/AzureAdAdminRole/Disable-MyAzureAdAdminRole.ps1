@@ -2,12 +2,12 @@
 # Function: Testing
 # Author:   David Eberhardt
 # Updated:  13-MAR-2021
-# Status:   Live
+# Status:   Beta
 
 
 
 
-function Enable-MyAzureAdAdminRole {
+function Disable-MyAzureAdAdminRole {
   <#
   .SYNOPSIS
     Activates Azure Ad Admin Roles for currently connected User
@@ -15,7 +15,7 @@ function Enable-MyAzureAdAdminRole {
     Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User.
     Requires a Connection to AzureAd
   .EXAMPLE
-    Enable-MyAzureAdAdminRole
+    Disable-MyAzureAdAdminRole
   .INPUTS
     None
   .OUTPUTS
@@ -26,7 +26,7 @@ function Enable-MyAzureAdAdminRole {
   .COMPONENT
     UserManagement
   .FUNCTIONALITY
-    Enables eligible Privileged Identity roles for Administration of Teams for the currently connected on User
+    Disables eligible Privileged Identity roles for Administration of Teams for the currently connected on User
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
@@ -36,9 +36,9 @@ function Enable-MyAzureAdAdminRole {
   .LINK
     Assert-MicrosoftTeamsConnection
   .LINK
-    Enable-AzureAdAdminRole
+    Disable-AzureAdAdminRole
   .LINK
-    Enable-MyAzureAdAdminRole
+    Disable-MyAzureAdAdminRole
   .LINK
     Get-AzureAdAdminRole
   .LINK
@@ -46,7 +46,7 @@ function Enable-MyAzureAdAdminRole {
   #>
 
   [CmdletBinding()]
-  [Alias('ear')]
+  [Alias('dar')]
   [OutputType([Boolean])]
   param() #param
 
@@ -77,16 +77,16 @@ function Enable-MyAzureAdAdminRole {
       if ( $PIMavailable ) {
         try {
           $AzureAdFeedback = Get-AzureADCurrentSessionInfo
-          $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$($AzureAdFeedback.Account)" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-          if ( $ActivatedRoles.Count -gt 0 ) {
-            return $(if ($Called) { $ActivatedRoles } else {
-                Write-Information "Enable-MyAzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -InformationAction Continue
-                Write-Output $ActivatedRoles
+          $DeactivatedRoles = Disable-AzureAdAdminRole -Identity "$($AzureAdFeedback.Account)" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
+          if ( $DeactivatedRoles.Count -gt 0 ) {
+            return $(if ($Called) { $DeactivatedRoles } else {
+                Write-Information "Disable-MyAzureAdAdminrole - $($DeactivatedRoles.Count) Roles deactivated." -InformationAction Continue
+                Write-Output $DeactivatedRoles
               })
           }
           else {
-            return $(if ($Called) { $ActivatedRoles } else {
-                Write-Information 'Enable-MyAzureAdAdminrole - No Roles activated, the following roles are active' -InformationAction Continue
+            return $(if ($Called) { $DeactivatedRoles } else {
+                Write-Information 'Disable-MyAzureAdAdminrole - No Roles deactivated, the following roles are active' -InformationAction Continue
                 Get-MyAzureAdAdminRole
               })
           }
@@ -95,10 +95,10 @@ function Enable-MyAzureAdAdminRole {
           $Exception = $_.Exception.Message
           return $(if ($Called) { $false } else {
               if ($Exception -contains 'The following policy rules failed: ["MfaRule"]') {
-                Write-Information 'Enable-MyAzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry' -InformationAction Continue
+                Write-Information 'Disable-MyAzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry' -InformationAction Continue
               }
               else {
-                Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management could not be contacted' -InformationAction Continue
+                Write-Information 'Disable-MyAzureAdAdminrole - Privileged Identity Management could not be contacted' -InformationAction Continue
                 throw "$($Exception)"
               }
             })
@@ -106,14 +106,14 @@ function Enable-MyAzureAdAdminRole {
       }
       else {
         return $(if ($Called) { $false } else {
-            Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management is not enabled for this tenant' -InformationAction Continue
+            Write-Information 'Disable-MyAzureAdAdminrole - Privileged Identity Management is not enabled for this tenant' -InformationAction Continue
           })
       }
       #endregion
     }
     catch {
       return $(if ($Called) { $false } else {
-          Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management functions are not available' -InformationAction Continue
+          Write-Information 'Disable-MyAzureAdAdminrole - Privileged Identity Management functions are not available' -InformationAction Continue
         })
     }
   } #process
@@ -121,4 +121,4 @@ function Enable-MyAzureAdAdminRole {
   end {
     #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} # Enable-MyAzureAdAdminRole
+} # Disable-MyAzureAdAdminrole
