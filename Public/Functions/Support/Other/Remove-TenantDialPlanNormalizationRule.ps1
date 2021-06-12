@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Other
-# Author:     Jeff Brown
+# Author:    Jeff Brown
 # Updated:    01-SEP-2020
 # Status:     Unmanaged
 

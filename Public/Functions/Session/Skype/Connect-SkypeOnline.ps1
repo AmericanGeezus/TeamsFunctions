@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  22-JAN-2021
 # Status:   Live
 

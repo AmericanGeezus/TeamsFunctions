@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -540,8 +540,6 @@ function Set-TeamsUserLicense {
       if ($PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
         #Assign $LicenseObject to each User
         Write-Verbose -Message "'$ID' - Setting Licenses"
-        #TEST Try/Catch to limit feedback
-        #Set-AzureADUserLicense -ObjectId "$ID" -AssignedLicenses $LicenseObject
         try {
           $null = Set-AzureADUserLicense -ObjectId "$ID" -AssignedLicenses $LicenseObject -ErrorAction Stop
         }

@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 

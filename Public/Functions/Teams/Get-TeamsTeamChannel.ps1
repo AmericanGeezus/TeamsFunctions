@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: TeamManagement
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  08-MAY-2021
 # Status:   Beta
 

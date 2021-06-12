@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Helper
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  06-DEC-2020
 # Status:   RC
 

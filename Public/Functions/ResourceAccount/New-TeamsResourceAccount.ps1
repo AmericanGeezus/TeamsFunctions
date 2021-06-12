@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -384,23 +384,9 @@ function New-TeamsResourceAccount {
       $Status = 'Applying License'
       $Operation = 'Waiting for Get-AzureAdUserLicenseDetail to return a Result'
       Write-Verbose -Message "$Status - $Operation"
-      <# There seems to be a bug here - either in the WHILE or in the Test-TeamsUserLicense... can't pinpoint
-      while (-not (Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlan $ServicePlanName)) {
-        if ($i -gt $iMax) {
-          Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
-        }
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
-          -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
-
-        Start-Sleep -Milliseconds 1000
-        $i++
-      }
-      #>
-
-      #TEST bug here pot. fixed by changing WHILE to DO/WHILE
       do {
         if ($i -gt $iMax) {
-          Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
+          Write-Error -Message "Could not find successful provisioning status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
         }
         Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
           -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
@@ -408,6 +394,7 @@ function New-TeamsResourceAccount {
         Start-Sleep -Milliseconds 1000
         $i++
 
+        #VALIDATE Output of Test-TeamsUserLicense may return true if assigned but not Success? Test!
         $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlan $ServicePlanName
       }
       while (-not $TeamsUserLicenseNotYetAssigned)

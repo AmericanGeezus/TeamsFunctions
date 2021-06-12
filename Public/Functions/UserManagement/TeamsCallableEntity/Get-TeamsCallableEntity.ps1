@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Teams Auto Attendant
-# Author:     David Eberhardt
+# Author:    David Eberhardt
 # Updated:    01-NOV-2020
 # Status:     Live
 

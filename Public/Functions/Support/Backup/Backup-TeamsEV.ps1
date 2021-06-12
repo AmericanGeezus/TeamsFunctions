@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Backup
-# Author:    Ken Lasko
+# Author:   Ken Lasko
 # Updated:  01-JUN-2020
 # Status:   Unmanaged
 

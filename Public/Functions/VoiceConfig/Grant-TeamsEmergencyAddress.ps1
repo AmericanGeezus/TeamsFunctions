@@ -1,7 +1,7 @@
 ﻿#SupportsConfirm: MID
 # Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  18-MAY-2021
 # Status:   BETA
 

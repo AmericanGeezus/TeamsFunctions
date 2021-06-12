@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   UserAdmin
-# Author:     David Eberhardt
+# Author:    David Eberhardt
 # Updated:    20-DEC-2020
 # Status:     Live
 
