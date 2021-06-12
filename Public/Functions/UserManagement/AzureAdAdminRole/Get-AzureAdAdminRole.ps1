@@ -53,7 +53,6 @@ function Get-AzureAdAdminRole {
   #>
 
   [CmdletBinding()]
-  [Alias('gar')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Enter the identity of the User to Query')]

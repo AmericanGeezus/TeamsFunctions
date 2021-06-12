@@ -49,6 +49,7 @@ function Get-MyAzureAdAdminRole {
   #>
 
   [CmdletBinding()]
+  [Alias('gar')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(HelpMessage = 'Active, Eligible')]
