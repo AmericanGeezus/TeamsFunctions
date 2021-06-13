@@ -1,11 +1,11 @@
 ﻿# Module:     TeamsFunctions
 # Function:   UserAdmin
-# Author:     David Eberhardt
+# Author:    David Eberhardt
 # Updated:    20-DEC-2020
 # Status:     Live
 
-
 #TODO: Privileged Admin Groups buildout
+#TODO: Suppress error for Skype one (or ingore Skype for Business Admin Role completely) - also for get!
 
 function Enable-AzureAdAdminRole {
   <#
@@ -18,12 +18,7 @@ function Enable-AzureAdAdminRole {
     Username of the Admin Account to enable roles for
   .PARAMETER Reason
     Optional. Small statement why these roles are requested
-    By default, "admin" is used as the reason.
-  .PARAMETER EnableAll
-    By default, enables only Roles required to Administer Teams
-    These are: Lync Administrator, User Administrator, License Administrator,
-    Teams Communications Administrator, Teams Service Administrator
-    This switch, when used, tries to enable all found admin role
+    By default, "Administration" is used as the reason.
   .PARAMETER Duration
     Optional. Integer. By default, enables Roles for 4 hours.
     Depending on your Administrators settings, values between 1 and 24 hours can be specified
@@ -127,6 +122,8 @@ function Enable-AzureAdAdminRole {
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
@@ -146,6 +143,9 @@ function Enable-AzureAdAdminRole {
       return
     }
 
+    # Evaluating requriement for SfB Legacy Role
+    $SfBRoleNotNeeded = $(Get-Module MicrosoftTeams -WarningAction SilentlyContinue).Version -ge 2.3.1
+
     # preparing Splatting Object
     $Parameters = $null
     $Parameters += @{'ErrorAction' = 'Stop' }
@@ -158,8 +158,12 @@ function Enable-AzureAdAdminRole {
     }
 
     # Reason & Ticket Number
-    if ( -not $Reason ) { $Reason = 'Admin' }
-    if ( $TicketNr ) { $Reason = "Ticket: $TicketNr - $Reason" }
+    if ( -not $Reason ) { $Reason = 'Administration' }
+    if ( $TicketNr ) {
+      #TODO Where to build in TicketNr?
+      #$Parameters += @{'$TicketNr' = $TicketNr }
+      $Reason = "Ticket: $TicketNr - $Reason"
+    }
     $Parameters += @{'Reason' = $Reason }
 
     # ProviderId is hardcoded (or overridden by providing a value)
@@ -171,7 +175,7 @@ function Enable-AzureAdAdminRole {
     $ResourceId = (Get-AzureADCurrentSessionInfo).TenantId
     $Parameters += @{'ResourceId' = $ResourceId }
 
-    # Assignment state is always Active - This will change for the Disable command
+    # Assignment state is always Active
     $Parameters += @{'AssignmentState' = 'Active' }
 
     # Importing all Roles
@@ -257,7 +261,6 @@ function Enable-AzureAdAdminRole {
         }
         else {
           Write-Information "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) permanently active Roles"
-          #VALIDATE use of Enable-AzureAdAdminRole - this needs to catch $true correctly.
           return $(if ($Called) { $true })
         }
 
@@ -287,6 +290,12 @@ function Enable-AzureAdAdminRole {
         # Querying Role Display Name
         $RoleName = $AllRoles | Where-Object { $_.Id -eq $R.RoleDefinitionId } | Select-Object -ExpandProperty DisplayName
 
+        # Not activating SfB Legacy admin for MicrosoftTeams v2.3.1 or higher
+        if ( $SfBRoleNotNeeded -and $RoleName -eq 'Skype for Business Administrator' ) {
+          # Skype For Business Administrator (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later
+          Write-Verbose -Message "Role 'Skype For Business Administrator' (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later"
+          continue
+        }
         # Confirm every role if not Force
         if ($PSCmdlet.ShouldProcess("$RoleName")) {
           if (-not ($Force -or $PSCmdlet.ShouldContinue("Eligible Role '$RoleName' found - Activate Role?", 'Enable-AzureAdAdminRole'))) {
@@ -338,13 +347,12 @@ function Enable-AzureAdAdminRole {
             }
 
             #Activating the Role
-            if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-              "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-            }
-
             try {
               Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
               $ActivatedRole.ActiveUntil = $schedule.endDateTime
+              if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+              }
               $null = Open-AzureADMSPrivilegedRoleAssignmentRequest @Parameters
               [void]$ActivatedRoles.Add($ActivatedRole)
             }
@@ -377,12 +385,10 @@ function Enable-AzureAdAdminRole {
               else {
                 Write-Error -Message $_.Exception.Message
               }
-
             }
           }
         }
       }
-
     }
 
     # Re-Query and output (for all Users!)

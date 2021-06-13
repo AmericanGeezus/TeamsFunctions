@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: VoiceConfig/Licensing
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  10-JAN-2021
 # Status:   Live
 

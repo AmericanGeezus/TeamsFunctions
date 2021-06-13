@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -200,10 +200,10 @@ function New-TeamsAutoAttendantSchedule {
       Write-Verbose -Message '[PROCESS] Processing DateTimeRanges'
       Write-Information 'INFO: The DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care'
       $TimeFrame = @($DateTimeRanges)
+      $Parameters.DateTimeRanges = @($TimeFrame)
     }
     else {
       # Differentiating between BusinessHours and BusinessHoursStart/End
-      #TEST Start and End Time as TimeFrame
       if ($PSBoundParameters.ContainsKey('BusinessHoursStart') -and $PSBoundParameters.ContainsKey('BusinessHoursEnd')) {
         Write-Verbose -Message "[PROCESS] Processing BusinessHoursStart '$BusinessHoursStart' and BusinessHoursEnd '$BusinessHoursEnd'"
         if ($BusinessHoursStart -gt $BusinessHoursEnd) {

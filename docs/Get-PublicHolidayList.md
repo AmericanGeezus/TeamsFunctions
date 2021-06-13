@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-PublicHolidayList.md
 schema: 2.0.0
 ---
 
@@ -23,7 +23,7 @@ Queries the Nager.Date API for public Holidays and returns a list per country an
 
 ### EXAMPLE 1
 ```
-Get-PublicHolidayList [-Country] CA [-Year] 2022
+Get-PublicHolidayList [-CountryCode] CA [-Year] 2022
 ```
 
 Lists the Holidays for Canada in 2022.
@@ -48,8 +48,11 @@ Accept wildcard characters: False
 ```
 
 ### -Year
-Required.
-Year for which the Holidays are to be listed
+Optional.
+Year for which the Holidays are to be listed.
+One or more Years between 2000 and 3000
+If not provided, the current year is taken.
+If the current month is December, the coming year is taken.
 
 ```yaml
 Type: Int32
@@ -74,12 +77,22 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 The Nager.Date API currently supports a bit over 100 Countries.
-I am working on an extension to this by reading from https://www.timeanddate.com/holidays/
-For Example: https://www.timeanddate.com/holidays/uk/2022?hol=9
+Please query with Get-PublicHolidayCountry
+Evaluated the following APIs:
+Nager.Date:   Decent coverage (100+ Countries).
+Free & Used Coverage: https://date.nager.at/Home/RegionStatistic
+TimeAndDate:  Great coverage.
+Requires license.
+Also a bit clunky.
+Not considering implementation.
+Calendarific: Great coverage.
+Requires license for commercial use.
+Currently not considering development
+Utilising the Calendarific API could be integrated if licensed and the API key is passed/registered locally.
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-PublicHolidayList.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-PublicHolidayList.md)
 
 [about_SupportingFunction]()
 

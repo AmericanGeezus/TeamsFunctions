@@ -77,7 +77,14 @@ function Test-TeamsResourceAccount {
     foreach ($User in $UserPrincipalName) {
       if ( $Quick ) {
         Write-Verbose -Message 'Querying AzureAdUser (Quick search and fast, but may not be 100% accurate!)'
-        $User = Get-AzureADUser -ObjectId "$User"
+        try {
+          $User = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+        }
+        catch {
+          $Message = $_ | Get-ErrorMessageFromErrorString
+          Write-Warning -Message "User '$User': GetUser$($Message.Split(':')[1])"
+        }
+
         if ( $User.Department -eq 'Microsoft Communication Application Instance') {
           return $true
         }

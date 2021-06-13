@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   RC
 
@@ -112,7 +112,7 @@ function Set-TeamsResourceAccount {
     #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
-        If ($_ -match '@' -or $_ -match "<GUID>") {
+        If ($_ -match '@' -or $_ -match '<GUID>') {
           $True
         }
         else {
@@ -184,14 +184,14 @@ function Set-TeamsResourceAccount {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 5
+    [int]$sMax = 3
     if ( $DisplayName ) { $sMax = $sMax + 2 }
     if ( $UsageLocation ) { $sMax++ }
     if ( $ApplicationType ) { $sMax = $sMax + 2 }
+    if ( $UsageLocation ) { $sMax++ }
     if ( $License ) { $sMax = $sMax + 2 }
     if ( $License -and $PhoneNumber ) { $sMax++ }
     if ( $PhoneNumber ) { $sMax++ }
-    if ( $Force ) { $sMax++ } #CHECK Count
     if ( $PassThru ) { $sMax++ }
 
     # Enabling $Confirm to work with $Force
@@ -287,7 +287,6 @@ function Set-TeamsResourceAccount {
       if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
         #Validating Phone Number
         if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
-          #TEST this. Was prior: if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
           if ($CurrentPhoneNumber) {
             Write-Warning -Message "'$Name ($UPN)' PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
           }
@@ -309,7 +308,7 @@ function Set-TeamsResourceAccount {
             # Checking number is free
             Write-Verbose -Message "'$Name ($UPN)' PhoneNumber - Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
-            if ($UserWithThisNumber) {
+            if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UPN) {
               if ($Force) {
                 Write-Warning -Message "'$Name ($UPN)' Number '$E164Number' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
               }
@@ -562,7 +561,7 @@ function Set-TeamsResourceAccount {
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
-        #TEST ForEach Loop - for $UserWithThisNumber
+        #VALIDATE scavenging of number from multiple users! (Requires ForEach Loop - for an array for $UserWithThisNumber)
         if ( $Force -and $PhoneNumber -and $UserWithThisNumber ) {
           # Removing number from previous Object
           try {
@@ -600,22 +599,20 @@ function Set-TeamsResourceAccount {
         }
 
         # Removing old Number (if $null or different to current)
-        #VALIDATE application of empty or Null does indeed remove the phonenumber!
         if ($null -eq $PhoneNumber -or $force -or $CurrentPhoneNumber -ne $PhoneNumber) {
           Write-Verbose -Message "'$Name ($UPN)' ACTION: Removing Phone Number"
           try {
-            $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName $UPN -WarningAction SilentlyContinue -ErrorVariable Stop
+            $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName "$UPN" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorVariable Stop
+            #IMPROVE Set-CsOnlineApplicationInstance returns an Object - This can be used to validate the outcome!
             if ($null -ne ($UVCObject.TelephoneNumber)) {
               # Remove from VoiceApplicationInstance
               Write-Verbose -Message "'$Name ($UPN)' Removing Microsoft Number"
-              #CHECK Set-CsOnlineApplicationInstance returns an Object - This can be used to validate the outcome!
               $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$UPN" -TelephoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
               Write-Verbose -Message 'SUCCESS'
             }
             if ($null -ne ($UVCObject.OnPremLineURI)) {
               # Remove from ApplicationInstance
               Write-Verbose -Message "'$Name ($UPN)' Removing Direct Routing Number"
-              #CHECK Set-CsOnlineApplicationInstance returns an Object - This can be used to validate the outcome!
               #CHECK why does -OnPremPhoneNumber require -Force?
               $null = (Set-CsOnlineApplicationInstance -Identity "$UPN" -OnpremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
               Write-Verbose -Message 'SUCCESS'

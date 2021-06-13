@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.06.15'
+  ModuleVersion         = '21.06.13'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -111,7 +111,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Remove-TeamsResourceAccount',
     'Remove-TeamsResourceAccountAssociation',
     'Set-TeamsResourceAccount',
-    'Test-TeamsResourceAccount',
 
     # Session
     'Assert-AzureADConnection',
@@ -128,24 +127,22 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Assert-SkypeOnlineConnection',
     'Test-SkypeOnlineConnection',
 
-    # Support
+    #region Support
+    ## AutoAttendant
+    'Get-PublicHolidayCountry',
+    'Get-PublicHolidayList',
+    'Get-TeamsAutoAttendantSchedule',
+    'New-TeamsHolidaySchedule',
     ## Backup
     'Backup-TeamsEV',
     'Backup-TeamsTenant',
     'Restore-TeamsEV',
     ## Helper
+    'Assert-Module',
     'Format-StringForUse',
     'Format-StringRemoveSpecialCharacter',
-    'Find-AzureAdGroup',
-    'Find-AzureAdUser',
-    'Get-PublicHolidayCountry',
-    'Get-PublicHolidayList',
     'Get-RegionFromCountryCode',
     'Get-TeamsObjectType',
-    'Test-AzureAdGroup',
-    'Test-AzureAdUser',
-    'Assert-Module',
-    'Test-TeamsUser',
     ## Licensing
     #'Enable-AzureAdLicenseServicePlan',
     'New-AzureAdLicenseObject',
@@ -155,7 +152,13 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-SkypeOnlineConferenceDialInNumbers',
     'Remove-TenantDialPlanNormalizationRule',
     'Test-TeamsExternalDNS',
+    ## UserManagement
+    'Test-AzureAdGroup',
+    'Test-AzureAdUser',
+    'Test-TeamsResourceAccount',
+    'Test-TeamsUser',
     ## VoiceConfig
+    'Enable-TeamsUserForEnterpriseVoice',
     'Get-TeamsMGW',
     'Get-TeamsOPU',
     'Get-TeamsOVP',
@@ -167,34 +170,41 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsIPP',
     'Get-TeamsECP',
     'Get-TeamsECRP',
+    'Grant-TeamsEmergencyAddress',
+    #endregion
 
+    #Teams
     'Get-TeamsTeamChannel',
 
-    #UserManagement
-    ##AzureAdAdminRole
+    #region UserManagement
+    ## AzureAdObjects
+    'Find-AzureAdGroup',
+    'Find-AzureAdUser',
+    ## AzureAdAdminRole
+    'Disable-AzureAdAdminRole',
+    'Disable-MyAzureAdAdminRole',
     'Enable-AzureAdAdminRole',
     'Enable-MyAzureAdAdminRole',
     'Get-AzureAdAdminRole',
     'Get-MyAzureAdAdminRole',
-    ##TeamsCallableEntity
+    ## TeamsCallableEntity
     'Assert-TeamsCallableEntity',
     'Find-TeamsCallableEntity',
     'Get-TeamsCallableEntity',
     'New-TeamsCallableEntity',
-    ##TeamsCommonAreaPhone
+    ## TeamsCommonAreaPhone
     'Get-TeamsCommonAreaPhone',
     'New-TeamsCommonAreaPhone',
     'Set-TeamsCommonAreaPhone',
     'Remove-TeamsCommonAreaPhone'
+    #endregion
 
-    # Voice Config
-    'Enable-TeamsUserForEnterpriseVoice',
+    # VoiceConfig
     'Assert-TeamsUserVoiceConfig',
     'Find-TeamsUserVoiceConfig',
     'Find-TeamsUserVoiceRoute',
     'Get-TeamsTenantVoiceConfig',
     'Get-TeamsUserVoiceConfig',
-    'Grant-TeamsEmergencyAddress',
     'New-TeamsUserVoiceConfig',
     'Remove-TeamsUserVoiceConfig',
     'Set-TeamsUserVoiceConfig',
@@ -210,7 +220,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport       = @(
-    'con', 'dis', 'pol', 'ear', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
+    'con', 'dis', 'pol', 'ear', 'dar', 'gar', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
     'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
     'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 
@@ -221,8 +231,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
     'New-TeamsAAMenu', 'New-TeamsAAOption', 'New-TeamsAAFlow',
     'New-TeamsAAPrompt', 'New-TeamsAAScope', 'New-TeamsAASchedule',
-    'New-TeamsAAEntity', 'New-TeamsAutoAttendantCallableEntity',
-    'New-TeamsAutoAttendantCallHandlingAssociation',
+    'New-TeamsAAEntity', 'New-TeamsAutoAttendantCallHandlingAssociation',
+    'Get-TeamsAASchedule', 'Remove-TeamsAASchedule', 'Remove-TeamsAutoAttendantSchedule',
 
     'Get-Channel'
 
@@ -246,7 +256,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
       Tags       = @('Teams', 'DirectRouting', 'EnterpriseVoice', 'Licensing', 'ResourceAccount', 'CallQueue', 'AutoAttendant', 'VoiceConfig', 'CommonAreaPhone')
 
       # Prerelease Version
-      Prerelease = '-prerelease'
+      #Prerelease = '-prerelease'
 
       # A URL to the license for this module.
       LicenseUri = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE'

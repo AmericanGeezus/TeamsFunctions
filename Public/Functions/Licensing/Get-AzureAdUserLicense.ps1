@@ -1,12 +1,12 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-APR-2020
 # Status:   Live
 
 
 #CHECK whether to add Identity to output Object? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
-
+#CHECK Removal of Counters for UserLicenses - not relevant here - might improve stack overall
 function Get-AzureAdUserLicense {
   <#
   .SYNOPSIS

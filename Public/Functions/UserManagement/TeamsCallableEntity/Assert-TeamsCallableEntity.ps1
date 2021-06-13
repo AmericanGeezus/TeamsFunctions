@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  15-DEC-2020
 # Status:   Live
 
@@ -83,7 +83,7 @@ function Assert-TeamsCallableEntity {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
-      $Object = Get-TeamsUserVoiceConfig -UserPrincipalName $Identity
+      $Object = Get-TeamsUserVoiceConfig -UserPrincipalName "$Identity" -WarningAction SilentlyContinue
       Write-Verbose -Message "User '$Identity' found"
     }
     catch {
@@ -98,9 +98,9 @@ function Assert-TeamsCallableEntity {
     }
 
     switch ($Object.ObjectType) {
-      'ResourceAccount' {
+      'ApplicationEndpoint' {
         #Check RA is assigned to CQ/AA
-        $CheckLicense = $true
+        $CheckLicense = $false
         $CheckAssignment = $true
         #Return Object if true, otherwise error
       }

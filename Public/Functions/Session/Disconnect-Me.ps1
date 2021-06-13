@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
@@ -14,6 +14,8 @@ function Disconnect-Me {
     By default Office 365 allows two (!) concurrent sessions per User.
     Session exhaustion may occur if sessions hang or incorrectly closed.
     Avoid this by cleanly disconnecting the sessions with this function before timeout
+  .PARAMETER DisableAdminRoles
+    Disables activated Admin roles before disconnecting from Azure Ad
   .EXAMPLE
     Disconnect-Me
     Disconnects from AzureAD, MicrosoftTeams
@@ -55,7 +57,10 @@ function Disconnect-Me {
 
   [CmdletBinding()]
   [Alias('dis')]
-  param() #param
+  param(
+    [Parameter(HelpMessage = 'Disables active AzureAd Admin Roles')]
+    [switch]$DisableAdminRoles
+  ) #param
 
   begin {
     Show-FunctionStatus -Level Live
@@ -80,6 +85,12 @@ function Disconnect-Me {
     try {
       Write-Verbose -Message 'Disconnecting Session from MicrosoftTeams'
       $null = (Disconnect-MicrosoftTeams)
+
+      if ($DisableAdminRoles) {
+        Write-Verbose -Message 'Disabling activated Admin Roles'
+        $null = (Disable-MyAzureAdAdminRole)
+      }
+      
       Write-Verbose -Message 'Disconnecting Session from AzureAd'
       $null = (Disconnect-AzureAD)
     }
@@ -110,7 +121,7 @@ function Disconnect-Me {
       Write-Verbose -Message 'No remote PowerShell sessions currently exist'
     }
 
-    Set-PowerShellWindowTitle "Windows PowerShell"
+    Set-PowerShellWindowTitle 'Windows PowerShell'
 
   } #process
 

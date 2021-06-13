@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Session
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-JAN-2021
 # Status:   Live
 
@@ -108,29 +108,15 @@ function Connect-Me {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) {
-      $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference')
-    }
-    else {
-      $DebugPreference = 'Continue'
-    }
-    if ( $PSBoundParameters.ContainsKey('InformationAction')) {
-      $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction')
-    }
-    else {
-      $InformationPreference = 'Continue'
-    }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -251,12 +237,8 @@ function Connect-Me {
     $ConnectionParameters = $null
     $ConnectionParameters += @{ 'ErrorAction' = 'Stop' }
 
-    if ($PSBoundParameters.ContainsKey('Verbose')) {
-      $ConnectionParameters += @{ 'Verbose' = $true }
-    }
-    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      $ConnectionParameters += @{ 'Debug' = $true }
-    }
+    if ($PSBoundParameters.ContainsKey('Verbose')) { $ConnectionParameters += @{ 'Verbose' = $true } }
+    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') { $ConnectionParameters += @{ 'Debug' = $true } }
 
   } #begin
 
@@ -300,18 +282,28 @@ function Connect-Me {
           'Enabling eligible Admin Roles' {
             try {
               $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$AccountId" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-              if ( $ActivatedRoles.Count -gt 0 ) {
+              $NrOfRoles = if ($ActivatedRoles.Count -gt 0) { $ActivatedRoles.Count } else { if ( $ActivatedRoles ) { 1 } else { 0 } }
+              if ( $NrOfRoles -gt 0 ) {
                 $Seconds = 10
-                Write-Verbose "Enable-AzureAdAdminrole - $($ActivatedRoles.Count) Roles activated. Waiting for AzureAd to propagate ($Seconds`s)" -Verbose
+                Write-Verbose "Enable-AzureAdAdminrole - $NrOfRoles Role(s) activated. Waiting for AzureAd to propagate ($Seconds`s)" -Verbose
                 Start-Sleep -Seconds $Seconds
+              }
+              else {
+                Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated' -Verbose
               }
             }
             catch {
-              if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"') {
+              if ($_.Exception.Message.Split('["')[2] -eq 'MfaRule') {
                 Write-Warning 'Enable-AzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry'
               }
+              elseif ($_.Exception.Message.Split('["')[2] -eq 'TicketingRule') {
+                Write-Warning 'Enable-AzureAdAdminrole - Activating Admin roles failed: PIM requires a Ticket Number - please activate via Azure Admin Center'
+              }
               else {
-                Write-Verbose 'Enable-AzureAdAdminrole - Tenant is not enabled for PIM' -Verbose
+                Write-Verbose 'Enable-AzureAdAdminrole - Tenant may not be enabled for PIM' -Verbose
+                if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                  "Function: $($MyInvocation.MyCommand.Name): Exception:", $_.Exception.Message | Write-Debug
+                }
               }
               $PIMavailable = $false
             }
@@ -415,12 +407,12 @@ function Connect-Me {
         Write-Verbose -Message "$Status - $Operation"
         if ( Test-AzureADConnection) {
           try {
-            $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account -ErrorAction Stop).RoleName -join ', '
-            $SessionInfo.AdminRoles = $Roles
+            $Roles = $(Get-AzureAdAdminRole -Identity (Get-AzureADCurrentSessionInfo).Account -ErrorAction Stop).RoleName -join ', '
           }
           catch {
-            Write-Warning -Message 'Module AzureAdPreview not present. Admin Roles cannot be enumerated.'
+            $Roles = $(Get-AzureAdAdminRole -Identity (Get-AzureADCurrentSessionInfo).Account -QueryGroupsOnly).RoleName -join ', '
           }
+          $SessionInfo.AdminRoles = $Roles
         }
       }
 
@@ -431,7 +423,6 @@ function Connect-Me {
 
       #Output
       Write-Output $SessionInfo
-
 
       Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Ready" -ForegroundColor Green
       Get-RandomQuote

@@ -1,11 +1,11 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
 
-#TODO Check usability of Calling line Identity Policy from Get-CsOnlineUser and add here
-#TODO Create manual object? add OVP to the Object for completeness? (would require Get-TeamsUVC to be run...)
+
+
 
 function Get-TeamsResourceAccount {
   <#

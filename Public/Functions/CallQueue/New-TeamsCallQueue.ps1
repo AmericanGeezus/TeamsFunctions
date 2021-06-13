@@ -1,13 +1,12 @@
 ﻿# Module:   TeamsFunctions
 # Function: CallQueue
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
 #VALIDATE whether Valued parameters are integers. Display warnings if above or below threshold.
 #TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
 #TEST MusicOnHold audio file does not throw stopping error any more
-#IMPROVE Warning feedback for Users not enabled for EV not necessary - we know they won't be configured! - suppress warnings?
 function New-TeamsCallQueue {
   <#
   .SYNOPSIS
@@ -635,7 +634,7 @@ function New-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -650,7 +649,7 @@ function New-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
                   }
@@ -890,7 +889,7 @@ function New-TeamsCallQueue {
               'User' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }
@@ -905,7 +904,7 @@ function New-TeamsCallQueue {
               'ApplicationEndpoint' {
                 try {
                   $Assertion = $null
-                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
+                  $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
                   if ($Assertion) {
                     $Parameters += @{'TimeoutActionTarget' = $CallTarget.Identity }
                   }

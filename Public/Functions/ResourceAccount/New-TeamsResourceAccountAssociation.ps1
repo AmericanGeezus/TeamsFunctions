@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
 
@@ -132,13 +132,9 @@ function New-TeamsResourceAccountAssociation {
       }
     }
     catch {
-      #TEST this should address the issue with Script not stopping if Entity not found.
       throw "Cannot determine $DesiredType '$Entity'"
-      #Write-Error -Message "Cannot determine $DesiredType '$Entity'" -ErrorAction Stop
     }
     if ($EntitySearch.Count -gt 1) {
-      #NOTE Displayname is not normalised - can lead to inconsistencies - it shouldn't need to, so needs a warning - if not found, try normalising!
-      #TEST for characters that are not supported?
       $EntityObject = $EntitySearch | Where-Object Name -EQ "$Entity"
     }
     else {

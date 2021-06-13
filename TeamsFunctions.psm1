@@ -165,12 +165,14 @@ Set-Alias -Name New-TeamsAutoAttendantCallHandlingAssociation -Value New-CsAutoA
 Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
 Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
 
+Set-Alias -Name Remove-TeamsAutoAttendantSchedule -Value Remove-CsOnlineSchedule
+Set-Alias -Name Remove-TeamsAASchedule -Value Remove-CsOnlineSchedule
 
 # Exporting Module Members (Functions)
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
 
 # Exporting Module Members (Aliases)
-Export-ModuleMember -Alias con, dis, pol, ear, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
+Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
 New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   Grant-TeamsEA, `
@@ -179,15 +181,16 @@ New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-T
   Get-TeamsCQ, New-TeamsCQ, Remove-TeamsCQ, Set-TeamsCQ, `
   Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, `
   New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAAPrompt, New-TeamsAAScope, New-TeamsAASchedule, `
-  New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAutoAttendantCallHandlingAssociation , `
+  New-TeamsAAEntity, New-TeamsAutoAttendantCallHandlingAssociation , `
+  Get-TeamsAASchedule, Remove-TeamsAASchedule, Remove-TeamsAutoAttendantSchedule, `
   Get-Channel
 
 
 # SIG # Begin signature block
 # MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUildLCC5Fx4iz6UcomyVPcfyp
-# f3+gggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjVySQ5JYTSU2byZqJzGW3Clh
+# rYygggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
 # AQUFADAlMSMwIQYDVQQDDBpEYXZpZCBFYmVyaGFyZHQgLSBDb2RlU2lnbjAeFw0y
 # MDA2MTMxMTA4NTNaFw0yNDA2MTMwMDAwMDBaMCUxIzAhBgNVBAMMGkRhdmlkIEVi
 # ZXJoYXJkdCAtIENvZGVTaWduMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3
@@ -202,8 +205,8 @@ New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-T
 # YmVyaGFyZHQgLSBDb2RlU2lnbgIQa3i9Sh/NdbhOjG+ewKFPfjAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUy/UosSUDugTyzltG4kK0wHF4KKUwDQYJKoZIhvcNAQEBBQAEgYB6Qj43
-# fjiicSN+uhOu7dJwbmUu/rCXdD/W0Xc7DfKSFu4vZHjDvAizEzIrBp5xfWaO4Pby
-# xXssIWj1zRqfiPiA4kZSD2xzh3ITR2rBhFj3xAo/l3VdGxgQKK6r5FzkNiHo+V3z
-# COYh7veoDu/Z4zRI9H4o0pNdhzHi7nZMeOR8ew==
+# CQQxFgQUSFXaJ67P5b4/4nWwM0ABkSPaUs0wDQYJKoZIhvcNAQEBBQAEgYCX9IEF
+# hamBIY5wQR6ZD9/P3vL2OPOd+zxko5ixguVve8+0Bc2/eUAdnj2xF6qt+cqFvKR0
+# SWENRPOSbdugq5Zv/5bO2LDPs4t+CbZVtuKaRNBoS3QkFs5ihjSh1vWYfufdMEZZ
+# OmHXsHCiWSMB1GDx4TPLiqOWTyRkU8yyFY+e6A==
 # SIG # End signature block

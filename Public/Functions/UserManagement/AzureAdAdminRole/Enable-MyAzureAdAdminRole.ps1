@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: Testing
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  13-MAR-2021
 # Status:   Live
 
@@ -57,6 +57,13 @@ function Enable-MyAzureAdAdminRole {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
@@ -71,14 +78,13 @@ function Enable-MyAzureAdAdminRole {
         try {
           $AzureAdFeedback = Get-AzureADCurrentSessionInfo
           $ActivatedRoles = Enable-AzureAdAdminRole -Identity "$($AzureAdFeedback.Account)" -PassThru -Force -ErrorAction Stop #(default should only enable the Teams ones? switch?)
-          if ( $ActivatedRoles.Count -gt 0 ) {
+          if ( $ActivatedRoles -or $ActivatedRoles.Count -gt 0 ) {
             return $(if ($Called) { $ActivatedRoles } else {
                 Write-Information "Enable-MyAzureAdAdminrole - $($ActivatedRoles.Count) Roles activated." -InformationAction Continue
                 Write-Output $ActivatedRoles
               })
           }
           else {
-            #TEST Query active roles with GET and feed these back! (Direct Assignments)
             return $(if ($Called) { $ActivatedRoles } else {
                 Write-Information 'Enable-MyAzureAdAdminrole - No Roles activated, the following roles are active' -InformationAction Continue
                 Get-MyAzureAdAdminRole
@@ -86,14 +92,14 @@ function Enable-MyAzureAdAdminRole {
           }
         }
         catch {
+          $Exception = $_.Exception.Message
           return $(if ($Called) { $false } else {
-              if ($_.Exception.Message -contains 'The following policy rules failed: ["MfaRule"]') {
+              if ($Exception -contains 'The following policy rules failed: ["MfaRule"]') {
                 Write-Information 'Enable-MyAzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry' -InformationAction Continue
               }
               else {
                 Write-Information 'Enable-MyAzureAdAdminrole - Privileged Identity Management could not be contacted' -InformationAction Continue
-                #TEST ERROR Message
-                throw "$($_.Exception.Message)"
+                throw "$($Exception)"
               }
             })
         }

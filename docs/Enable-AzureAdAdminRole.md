@@ -71,7 +71,7 @@ Accept wildcard characters: False
 ### -Reason
 Optional.
 Small statement why these roles are requested
-By default, "admin" is used as the reason.
+By default, "Administration" is used as the reason.
 
 ```yaml
 Type: String

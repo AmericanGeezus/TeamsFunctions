@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: Licensing
-# Author:    Philipp, Scripting.up-in-the.cloud
+# Author:   Philipp, Scripting.up-in-the.cloud
 # Updated:  14-FEB-2021
 # Status:   Live
 
@@ -239,6 +239,28 @@ function Get-AzureAdLicense {
         'MCOPSTN5' { 'DomesticCallingPlan120' }
         'MCOPSTN_5' { 'DomesticCallingPlan120b' }
         'MCOPSTNC' { 'CommunicationCredits' }
+
+
+        # Parameter names for Government Licenses #80
+        'MCOCAP_GOV' { 'CommonAreaPhoneGov' }
+        'MCOEV_GOV' { 'PhoneSystemGov' }
+        'MCOMEETADV_GOV' { 'AudioConferencingGov' }
+        'MCOPSTN_1_GOV' { 'DomesticCallingPlanGov' }
+        'PHONESYSTEM_VIRTUALUSER_GOV' { 'PhoneSystemVirtualUserGov' }
+        'VISIOCLIENT_GOV' { '' }
+        'WINE5_GCC_COMPAT' { '' }
+        'PROJECTPREMIUM_GOV' { '' }
+        'WINDOWS_STORE' { '' }
+        'SHAREPOINTSTORAGE_GOV' { '' }
+        'EMS_GOV' { '' }
+        'ENTERPRISEPREMIUM_GOV' { '' }
+        'ADALLOM_STANDALONE' { '' }
+        'ATA' { '' }
+        'THREAT_INTELLIGENCE_GOV' { '' }
+        'RMSBASIC' { '' }
+        'ENTERPRISEPACK_GOV' { '' }
+        'PROJECTPROFESSIONAL_GOV' { '' }
+        'EMSPREMIUM_GOV' { '' }
 
         default { '' }
       }

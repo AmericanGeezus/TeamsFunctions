@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   UserAdmin
-# Author:     David Eberhardt
+# Author:    David Eberhardt
 # Updated:    01-SEP-2020
 # Status:     Live
 
@@ -49,12 +49,13 @@ function Get-MyAzureAdAdminRole {
   #>
 
   [CmdletBinding()]
+  [Alias('gar')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(HelpMessage = 'Active, Eligible')]
-    [ValidateSet('Active', 'Eligible')]
-    #[ValidateSet('Active', 'Eligible','Group')]
-    [string]$Type = 'Active'
+    [ValidateSet('All', 'Active', 'Eligible')]
+    #[ValidateSet('All', 'Active', 'Eligible','Group')]
+    [string]$Type = 'All'
 
   ) #param
 
@@ -65,6 +66,13 @@ function Get-MyAzureAdAdminRole {
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
+
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
   } #begin
 

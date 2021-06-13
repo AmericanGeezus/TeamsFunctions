@@ -1,6 +1,6 @@
 ﻿# Module:     TeamsFunctions
 # Function:   Teams Auto Attendant
-# Author:     David Eberhardt
+# Author:    David Eberhardt
 # Updated:    01-NOV-2020
 # Status:     Live
 
@@ -139,7 +139,7 @@ function Get-TeamsCallableEntity {
         Write-Verbose 'Target is not a Tel URI'
         try {
           # FIRST: Trying an AzureAdUser for User or ApplicationEndPoint
-          $CallTarget = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue
+          $CallTarget = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
           Write-Verbose 'Target is a User or Application Endpoint'
           if ( $CallTarget ) {
             try {

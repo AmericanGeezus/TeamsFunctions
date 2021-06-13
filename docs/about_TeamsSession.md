@@ -31,8 +31,12 @@ Activating Admin Roles made easier. Please note that Privileged Access Groups ar
 
 | Function                                                      | Description                                                                                                                                     |
 | -------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Enable-AzureAdAdminRole`](Enable-AzureAdAdminRole.md) | Enables Admin Roles assigned directly to the AccountId provided. If no accountId is provided, the currently connected User to AzureAd is taken. |
+| [`Disable-AzureAdAdminRole`](Disable-AzureAdAdminRole.md) | Disables Admin Roles assigned directly to the AccountId provided. |
+| [`Enable-AzureAdAdminRole`](Enable-AzureAdAdminRole.md) | Enables Admin Roles assigned directly to the AccountId provided. |
 | [`Get-AzureAdAdminRole`](Get-AzureAdAdminRole.md)       | Displays all (active or eligible) Admin Roles assigned to an AzureAdUser                                                                        |
+| [`Disable-MyAzureAdAdminRole`](Disable-MyAzureAdAdminRole.md) | Disables Admin Roles for the currently connected Administrator. |
+| [`Enable-MyAzureAdAdminRole`](Enable-MyAzureAdAdminRole.md) | Enables Admin Roles for the currently connected Administrator. |
+| [`Get-MyAzureAdAdminRole`](Get-MyAzureAdAdminRole.md)       | Displays all (active or eligible) Admin Roles assigned to the currently connected  Administrator                                               |
 
 ### Support Functions
 

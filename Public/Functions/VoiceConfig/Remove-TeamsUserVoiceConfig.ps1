@@ -1,6 +1,6 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  15-NOV-2020
 # Status:   Live
 
@@ -355,7 +355,7 @@ function Remove-TeamsUserVoiceConfig {
 
       # Output
       if ( $PassThru ) {
-        Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -WarningAction SilentlyContinue
+        Get-TeamsUserVoiceConfig -UserPrincipalName "$User" -InformationAction SilentlyContinue -WarningAction SilentlyContinue
       }
 
     }

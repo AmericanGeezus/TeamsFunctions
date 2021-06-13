@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: AutoAttendant
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  12-DEC-2020
 # Status:   Live
 
@@ -142,9 +142,7 @@ function New-TeamsAutoAttendantMenuOption {
       'DisconnectCall' {
         $Parameters += @{'DtmfResponse' = 'Automatic' }
         $Parameters += @{'Action' = 'DisconnectCall' }
-
       }
-
       'Operator' {
         if ($Press) {
           $DtmfResponse = 'Tone' + $Press
@@ -158,10 +156,8 @@ function New-TeamsAutoAttendantMenuOption {
             Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
           }
         }
-
         $Parameters += @{'DtmfResponse' = $DtmfResponse }
         $Parameters += @{'Action' = 'TransferCallToOperator' }
-
       }
 
       'CallTarget' {
@@ -177,10 +173,8 @@ function New-TeamsAutoAttendantMenuOption {
             Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
           }
         }
-
         $Parameters += @{'DtmfResponse' = $DtmfResponse }
         $Parameters += @{'Action' = 'TransferCallToTarget' }
-
 
         # Determine Call Target
         try {

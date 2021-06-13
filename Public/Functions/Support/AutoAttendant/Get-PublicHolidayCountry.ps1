@@ -1,6 +1,6 @@
 # Module:   TeamsFunctions
 # Function: Helper
-# Author:    David Eberhardt
+# Author:   David Eberhardt
 # Updated:  15-JAN-2021
 # Status:   Live
 
@@ -21,7 +21,12 @@ function Get-PublicHolidayCountry {
   .OUTPUTS
     System.Object
   .NOTES
-    The Nager.Date API currently supports a bit over 100 Countries.
+    The Nager.Date API currently supports a bit over 100 Countries. Please query with Get-PublicHolidayCountry
+    Evaluated the following APIs:
+    Nager.Date:   Decent coverage (100+ Countries). Free & Used Coverage: https://date.nager.at/Home/RegionStatistic
+    TimeAndDate:  Great coverage. Requires license. Also a bit clunky. Not considering implementation.
+    Calendarific: Great coverage. Requires license for commercial use. Currently not considering development
+    Utilising the Calendarific API could be integrated if licensed and the API key is passed/registered locally.
   .COMPONENT
     SupportingFunction
     TeamsAutoAttendant
@@ -42,9 +47,7 @@ function Get-PublicHolidayCountry {
   [CmdletBinding()]
   #[Alias('')]
   [OutputType([PSCustomObject])]
-  param (
-
-  )
+  param ()
 
   begin {
     #Show-FunctionStatus -Level Live
