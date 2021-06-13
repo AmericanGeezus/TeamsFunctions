@@ -42,9 +42,7 @@ function Get-PublicHolidayCountry {
   [CmdletBinding()]
   #[Alias('')]
   [OutputType([PSCustomObject])]
-  param (
-
-  )
+  param ()
 
   begin {
     #Show-FunctionStatus -Level Live

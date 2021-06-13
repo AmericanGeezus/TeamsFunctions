@@ -79,7 +79,7 @@ function New-TeamsCallableEntity {
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
-  [Alias('New-TeamsAutoAttendantCallableEntity', 'New-TeamsAAEntity')]
+  [Alias('New-TeamsAAEntity')]
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'Identity of the Call Target')]

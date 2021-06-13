@@ -165,6 +165,8 @@ Set-Alias -Name New-TeamsAutoAttendantCallHandlingAssociation -Value New-CsAutoA
 Set-Alias -Name Set-TeamsAutoAttendant -Value Set-CsAutoAttendant
 Set-Alias -Name Set-TeamsAA -Value Set-CsAutoAttendant
 
+Set-Alias -Name Remove-TeamsAutoAttendantSchedule -Value Remove-CsOnlineSchedule
+Set-Alias -Name Remove-TeamsAASchedule -Value Remove-CsOnlineSchedule
 
 # Exporting Module Members (Functions)
 Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot\Public\Functions -Recurse).BaseName
@@ -179,7 +181,8 @@ New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-T
   Get-TeamsCQ, New-TeamsCQ, Remove-TeamsCQ, Set-TeamsCQ, `
   Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, `
   New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAAPrompt, New-TeamsAAScope, New-TeamsAASchedule, `
-  New-TeamsAAEntity, New-TeamsAutoAttendantCallableEntity, New-TeamsAutoAttendantCallHandlingAssociation , `
+  New-TeamsAAEntity, New-TeamsAutoAttendantCallHandlingAssociation , `
+  Get-TeamsAASchedule, Remove-TeamsAASchedule, Remove-TeamsAutoAttendantSchedule, `
   Get-Channel
 
 

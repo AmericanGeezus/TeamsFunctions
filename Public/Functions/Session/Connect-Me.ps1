@@ -108,29 +108,15 @@ function Connect-Me {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
+    # Setting Preference Variables according to Upstream settings
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
+
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) {
-      $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference')
-    }
-    else {
-      $DebugPreference = 'Continue'
-    }
-    if ( $PSBoundParameters.ContainsKey('InformationAction')) {
-      $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction')
-    }
-    else {
-      $InformationPreference = 'Continue'
-    }
 
     # Initialising counters for Progress bars
     [int]$step = 0
@@ -251,12 +237,8 @@ function Connect-Me {
     $ConnectionParameters = $null
     $ConnectionParameters += @{ 'ErrorAction' = 'Stop' }
 
-    if ($PSBoundParameters.ContainsKey('Verbose')) {
-      $ConnectionParameters += @{ 'Verbose' = $true }
-    }
-    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      $ConnectionParameters += @{ 'Debug' = $true }
-    }
+    if ($PSBoundParameters.ContainsKey('Verbose')) { $ConnectionParameters += @{ 'Verbose' = $true } }
+    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') { $ConnectionParameters += @{ 'Debug' = $true } }
 
   } #begin
 
@@ -425,17 +407,12 @@ function Connect-Me {
         Write-Verbose -Message "$Status - $Operation"
         if ( Test-AzureADConnection) {
           try {
-            $Roles = $(Get-AzureAdAdminRole (Get-AzureADCurrentSessionInfo).Account -ErrorAction Stop).RoleName -join ', '
-            $SessionInfo.AdminRoles = $Roles
+            $Roles = $(Get-AzureAdAdminRole -Identity (Get-AzureADCurrentSessionInfo).Account -ErrorAction Stop).RoleName -join ', '
           }
           catch {
-            if ($_.Exception.Message.contains('AzureAd Premium License Required')) {
-              Write-Warning -Message 'PIM Functions not present - no AzureAd Premium License available.'
-            }
-            else {
-              Write-Warning -Message 'Module AzureAdPreview not present. Admin Roles cannot be enumerated.'
-            }
+            $Roles = $(Get-AzureAdAdminRole -Identity (Get-AzureADCurrentSessionInfo).Account -QueryGroupsOnly).RoleName -join ', '
           }
+          $SessionInfo.AdminRoles = $Roles
         }
       }
 
@@ -446,7 +423,6 @@ function Connect-Me {
 
       #Output
       Write-Output $SessionInfo
-
 
       Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Ready" -ForegroundColor Green
       Get-RandomQuote
