@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.06.15'
+  ModuleVersion         = '21.06.13'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -256,7 +256,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
       Tags       = @('Teams', 'DirectRouting', 'EnterpriseVoice', 'Licensing', 'ResourceAccount', 'CallQueue', 'AutoAttendant', 'VoiceConfig', 'CommonAreaPhone')
 
       # Prerelease Version
-      Prerelease = '-prerelease'
+      #Prerelease = '-prerelease'
 
       # A URL to the license for this module.
       LicenseUri = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE'
