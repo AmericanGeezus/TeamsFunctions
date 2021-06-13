@@ -84,7 +84,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'New-TeamsAutoAttendantSchedule',
     'New-TeamsAutoAttendantDialScope',
     'Remove-TeamsAutoAttendant',
-    'New-TeamsHolidaySchedule',
 
     # Call Queue
     'Get-TeamsCallQueue',
@@ -132,6 +131,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     ## AutoAttendant
     'Get-PublicHolidayCountry',
     'Get-PublicHolidayList',
+    'Get-TeamsAutoAttendantSchedule',
+    'New-TeamsHolidaySchedule',
     ## Backup
     'Backup-TeamsEV',
     'Backup-TeamsTenant',

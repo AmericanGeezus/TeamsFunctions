@@ -36,6 +36,11 @@ function New-TeamsHolidaySchedule {
     System.Object
   .NOTES
     The Nager.Date API currently supports a bit over 100 Countries. Please query with Get-PublicHolidayCountry
+    Evaluated the following APIs:
+    Nager.Date:   Decent coverage (100+ Countries). Free & Used Coverage: https://date.nager.at/Home/RegionStatistic
+    TimeAndDate:  Great coverage. Requires license. Also a bit clunky. Not considering implementation.
+    Calendarific: Great coverage. Requires license for commercial use. Currently not considering development
+    Utilising the Calendarific API could be integrated if licensed and the API key is passed/registered locally.
   .COMPONENT
     SupportingFunction
     TeamsAutoAttendant
@@ -62,7 +67,7 @@ function New-TeamsHolidaySchedule {
     [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = 'ISO 3166-alpha2 Country Code (2-digit CC)')]
     [ValidateScript( {
         $Countries = Get-PublicHolidayCountry
-        if ($_ -in $Countries.CountryCode) { $true } else { Write-Host "Country '$_' not supported (yet), sorry. Please provide a CountryCode from the output of Get-PublicHolidayCountry" -ForegroundColor Red; $false }
+        if ($_ -in $Countries.CountryCode) { $true } else { Write-Host "Country '$_' not supported (yet), sorry. Please provide a CountryCode from the output of Get-PublicHolidayCountry or check https://date.nager.at/" -ForegroundColor Red; $false }
       })]
     [Alias('CC', 'Country')]
     [String[]]$CountryCode,
@@ -130,7 +135,7 @@ function New-TeamsHolidaySchedule {
         # Filtering Unique DateTimeRanges
         if ($PSCmdlet.ShouldProcess("Creating Online Schedule '$Cname $Y' with $($Holidays.Count) Holidays", "$($Schedule.Name)", 'New-TeamsAutoAttendantSchedule')) {
           try {
-            $Schedule = New-TeamsAutoAttendantSchedule -Name "$Cname $Y" -Fixed -DateTimeRanges $Holidays -InformationAction SilentlyContinue
+            $Schedule = New-TeamsAutoAttendantSchedule -Name "$Cname $Y" -Fixed -DateTimeRanges $Holidays -InformationAction SilentlyContinue -ErrorAction Stop
             Write-Information "Schedule '$($Schedule.Name)' created with $($Holidays.Count) entries"
             return $Schedule
           }

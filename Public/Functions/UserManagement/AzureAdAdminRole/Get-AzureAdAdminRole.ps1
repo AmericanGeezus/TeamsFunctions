@@ -108,7 +108,7 @@ function Get-AzureAdAdminRole {
       }
     }
 
-    if ($AzureAdPreviewModule) {
+    if ($AzureAdPreviewModule -and -not $QueryGroupsOnly) {
       # Importing all Roles
       Write-Verbose -Message 'Querying Azure Privileged Role Definitions'
       try {

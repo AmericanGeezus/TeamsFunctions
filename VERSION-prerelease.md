@@ -8,6 +8,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
+- `New-TeamsHolidaySchedule`: Creating a new Schedule Object for Holiday Sets based on Public Holidays for Country & Year
+- `Get-TeamsAutoAttendantSchedule`: Querying Schedule Objects by Id, Name and/or Association and resolving Auto Attendants names.
 - `Disable-AzureAdUserLicense`: Draft Status
 - `Disable-MyAzureAdUserLicense`: Draft Status
 - `Disable-AzureAdUserAdminRole`: Disabling activated privileged AzureAd Admin Roles for any provided UserPrincipalName.
