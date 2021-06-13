@@ -3,7 +3,7 @@
 # Function: VoiceConfig
 # Author:   David Eberhardt
 # Updated:  18-MAY-2021
-# Status:   BETA
+# Status:   RC
 
 # IDEA:
 # Grant-TeamsEmergencyAddress
@@ -88,14 +88,12 @@ function Grant-TeamsEmergencyAddress {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) {
-      break
-    }
+    if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
     # preparing Splatting Object
     $Parameters = $null

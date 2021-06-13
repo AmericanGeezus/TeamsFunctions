@@ -429,7 +429,12 @@ function Connect-Me {
             $SessionInfo.AdminRoles = $Roles
           }
           catch {
-            Write-Warning -Message 'Module AzureAdPreview not present. Admin Roles cannot be enumerated.'
+            if ($_.Exception.Message.contains('AzureAd Premium License Required')) {
+              Write-Warning -Message 'PIM Functions not present - no AzureAd Premium License available.'
+            }
+            else {
+              Write-Warning -Message 'Module AzureAdPreview not present. Admin Roles cannot be enumerated.'
+            }
           }
         }
       }

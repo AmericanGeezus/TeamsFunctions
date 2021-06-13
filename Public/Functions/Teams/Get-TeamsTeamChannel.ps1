@@ -2,12 +2,10 @@
 # Function: TeamManagement
 # Author:   David Eberhardt
 # Updated:  08-MAY-2021
-# Status:   Beta
+# Status:   RC
 
-#IDEA:
-#Get-Team & Get-TeamChannel with friendly names
-# Use for CQs and AAs when Forward to Channel is used
-#REGEX -match "^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$" Alternative to name to pinpoint channel!
+
+
 
 function Get-TeamsTeamChannel {
   <#
@@ -86,7 +84,7 @@ function Get-TeamsTeamChannel {
   )
 
   begin {
-    Show-FunctionStatus -Level BETA
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -105,9 +103,6 @@ function Get-TeamsTeamChannel {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    #TODO This does not yet account for multiple Teams with this name
-    #TEST output for multiple teams with this name
-    #VALIDATE Breakout as Test-TeamsTeam and Assert-TeamsTeam too? #Spike with object input $Team.GroupId matches
 
     #Looking up Team
     try {
@@ -115,6 +110,9 @@ function Get-TeamsTeamChannel {
         $TeamObj = Get-Team -GroupId $Team -ErrorAction Stop
       }
       else {
+        #TODO This does not yet account for multiple Teams with this name
+        #TEST output for multiple teams with this name
+        #VALIDATE Breakout as Test-TeamsTeam and Assert-TeamsTeam too? #Spike with object input $Team.GroupId matches
         $TeamObj = Get-Team -DisplayName "$Team" -ErrorAction Stop
 
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {

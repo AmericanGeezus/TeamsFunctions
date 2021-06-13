@@ -36,7 +36,7 @@ function Get-PublicHolidayList {
   .FUNCTIONALITY
     Queries available Holidays for a specific Country from the Nager.Date API
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-PublicHolidayList.md
   .LINK
     about_SupportingFunction
   .LINK

@@ -200,6 +200,7 @@ function New-TeamsAutoAttendantSchedule {
       Write-Verbose -Message '[PROCESS] Processing DateTimeRanges'
       Write-Information 'INFO: The DateTimeRanges provided are not validated, just passed on to New-CsOnlineSchedule as is. Handle with care'
       $TimeFrame = @($DateTimeRanges)
+      $Parameters.DateTimeRanges = @($TimeFrame)
     }
     else {
       # Differentiating between BusinessHours and BusinessHoursStart/End

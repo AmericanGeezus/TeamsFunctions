@@ -1,8 +1,8 @@
 ﻿# Module:     TeamsFunctions
 # Function:   UserAdmin
 # Author:     David Eberhardt
-# Updated:    20-DEC-2020
-# Status:     Beta
+# Updated:    13-JUN-2021
+# Status:     Live
 
 
 
@@ -86,7 +86,7 @@ function Disable-AzureAdAdminRole {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
