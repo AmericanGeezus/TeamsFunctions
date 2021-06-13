@@ -4,7 +4,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## unreleased/vNext
 
-[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2061-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2145-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
 ### New
 

@@ -51,12 +51,20 @@ Admin Roles
     -------------------------------------------------------------: |
     -----------------------------------------------------------------------------------------------------------------------------------------------
     | |
+    `Disable-AzureAdAdminRole`
+    | Disables Admin Roles assigned directly to the AccountId provided. | |
     `Enable-AzureAdAdminRole`
-    | Enables Admin Roles assigned directly to the AccountId provided. If no
-    accountId is provided, the currently connected User to AzureAd is taken. | |
+    | Enables Admin Roles assigned directly to the AccountId provided. | |
     `Get-AzureAdAdminRole`
     Admin Roles assigned to an AzureAdUser                                      
-                                     |
+                                     | |
+    `Disable-MyAzureAdAdminRole`
+    | Disables Admin Roles for the currently connected Administrator. | |
+    `Enable-MyAzureAdAdminRole`
+    | Enables Admin Roles for the currently connected Administrator. | |
+    `Get-MyAzureAdAdminRole`
+    Admin Roles assigned to the currently connected  Administrator              
+                                    |
 
     SUPPORT FUNCTIONS
     | Function                                                                  

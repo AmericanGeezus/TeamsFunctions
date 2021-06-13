@@ -1309,6 +1309,369 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Disable-AzureAdAdminRole</command:name>
+      <command:verb>Disable</command:verb>
+      <command:noun>AzureAdAdminRole</command:noun>
+      <maml:description>
+        <maml:para>Disables active Admin Roles</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Azure Ad Privileged Identity Management can require you to activate Admin Roles. Active roles or groups can be deactivated with this Command</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Disable-AzureAdAdminRole</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, ObjectId">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>Username of the Admin Account to disable roles for</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>Reason</maml:name>
+          <maml:description>
+            <maml:para>Optional. Small statement why these roles are disabled By default, "Administration finished" is used as the reason.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+          <maml:name>ProviderId</maml:name>
+          <maml:description>
+            <maml:para>Optional. Default is 'aadRoles' for the ProviderId, however, this script could also be used for activating Azure Resources ('azureResources'). Use with Confirm and EnableAll.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>AadRoles</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>PassThru</maml:name>
+          <maml:description>
+            <maml:para>Optional. Displays output object for each activated Role Used for further processing to verify command was successful</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Overrides confirmation dialog and enables all eligible roles</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="UserPrincipalName, ObjectId">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>Username of the Admin Account to disable roles for</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>Reason</maml:name>
+        <maml:description>
+          <maml:para>Optional. Small statement why these roles are disabled By default, "Administration finished" is used as the reason.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+        <maml:name>ProviderId</maml:name>
+        <maml:description>
+          <maml:para>Optional. Default is 'aadRoles' for the ProviderId, however, this script could also be used for activating Azure Resources ('azureResources'). Use with Confirm and EnableAll.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>AadRoles</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>PassThru</maml:name>
+        <maml:description>
+          <maml:para>Optional. Displays output object for each activated Role Used for further processing to verify command was successful</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Force</maml:name>
+        <maml:description>
+          <maml:para>Overrides confirmation dialog and enables all eligible roles</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+        <maml:name>WhatIf</maml:name>
+        <maml:description>
+          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+        <maml:name>Confirm</maml:name>
+        <maml:description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Void - Default Behaviour</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object - With Switch PassThru</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean - If called by other CmdLets</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Limitations: MFA must be authorised first Currently no way to trigger it via PowerShell. If the activation fails, please sign into Office.com Once Authorised, this command can be used to activate your eligible Admin Roles. AzureResources provider activation is not yet tested.</maml:para>
+        <maml:para>Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Disable-AzureAdAdminRole John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Disables all active Teams Admin roles for User John@domain.com</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Disable-AzureAdAdminRole John@domain.com -Reason "Finished"</dev:code>
+        <dev:remarks>
+          <maml:para>Disables all active Admin roles for User John@domain.com with the reason provided.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Enable-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Disable-MyAzureAdAdminRole</command:name>
+      <command:verb>Disable</command:verb>
+      <command:noun>MyAzureAdAdminRole</command:noun>
+      <maml:description>
+        <maml:para>Activates Azure Ad Admin Roles for currently connected User</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Activates Azure Active Directory Privileged Identity Management Admin Roles for the currently connected User. Requires a Connection to AzureAd</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Disable-MyAzureAdAdminRole</maml:name>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>None</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Void - If executed from shell</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean - If called by other CmdLets</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>None</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Disable-MyAzureAdAdminRole</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_UserManagement</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Connect-Me</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Assert-MicrosoftTeamsConnection</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Disable-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Disable-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-AzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-MyAzureAdAdminRole</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Disconnect-Me</command:name>
       <command:verb>Disconnect</command:verb>
       <command:noun>Me</command:noun>
@@ -1322,9 +1685,33 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Disconnect-Me</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>DisableAdminRoles</maml:name>
+          <maml:description>
+            <maml:para>Disables activated Admin roles before disconnecting from Azure Ad</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
-    <command:parameters />
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>DisableAdminRoles</maml:name>
+        <maml:description>
+          <maml:para>Disables activated Admin roles before disconnecting from Azure Ad</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
     <command:inputTypes>
       <command:inputType>
         <dev:type>
@@ -1424,7 +1811,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>Reason</maml:name>
           <maml:description>
-            <maml:para>Optional. Small statement why these roles are requested By default, "admin" is used as the reason.</maml:para>
+            <maml:para>Optional. Small statement why these roles are requested By default, "Administration" is used as the reason.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -1542,7 +1929,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
         <maml:name>Reason</maml:name>
         <maml:description>
-          <maml:para>Optional. Small statement why these roles are requested By default, "admin" is used as the reason.</maml:para>
+          <maml:para>Optional. Small statement why these roles are requested By default, "Administration" is used as the reason.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -3491,7 +3878,7 @@
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Azure Active Directory Admin Roles assigned to an Object Requires a Connection to AzureAd Querying '-Type Elibile' requires the Module AzureAdPreview installed</maml:para>
+      <maml:para>Azure Active Directory Admin Roles assigned to an Object Requires a Connection to AzureAd</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -3511,14 +3898,25 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Type</maml:name>
           <maml:description>
-            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+            <maml:para>Optional. Switches query to All (Default), Eligible or Active Admin Roles This requires the Module AzureAdPreview installed</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
             <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
-          <dev:defaultValue>Active</dev:defaultValue>
+          <dev:defaultValue>All</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>QueryGroupsOnly</maml:name>
+          <maml:description>
+            <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Limits the query to Active Directory Groups only. Does not require AzureAdPreview installed</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -3538,14 +3936,26 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Type</maml:name>
         <maml:description>
-          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Eligibility can only be queried with Module AzureAdPreview installed</maml:para>
+          <maml:para>Optional. Switches query to All (Default), Eligible or Active Admin Roles This requires the Module AzureAdPreview installed</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
           <maml:name>String</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>Active</dev:defaultValue>
+        <dev:defaultValue>All</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>QueryGroupsOnly</maml:name>
+        <maml:description>
+          <maml:para>Optional. Switches query to Active (Default) or Eligible Admin Roles Limits the query to Active Directory Groups only. Does not require AzureAdPreview installed</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -4332,7 +4742,7 @@
             <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
-          <dev:defaultValue>Active</dev:defaultValue>
+          <dev:defaultValue>All</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
     </command:syntax>
@@ -4347,7 +4757,7 @@
           <maml:name>String</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>Active</dev:defaultValue>
+        <dev:defaultValue>All</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -4458,7 +4868,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>The Nager.Date API currently supports a bit over 100 Countries.</maml:para>
+        <maml:para>The Nager.Date API currently supports a bit over 100 Countries. Please query with Get-PublicHolidayCountry Evaluated the following APIs: Nager.Date:   Decent coverage (100+ Countries). Free &amp; Used Coverage: https://date.nager.at/Home/RegionStatistic TimeAndDate:  Great coverage. Requires license. Also a bit clunky. Not considering implementation. Calendarific: Great coverage. Requires license for commercial use. Currently not considering development Utilising the Calendarific API could be integrated if licensed and the API key is passed/registered locally.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4523,7 +4933,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="2" aliases="Y">
           <maml:name>Year</maml:name>
           <maml:description>
-            <maml:para>Required. Year for which the Holidays are to be listed</maml:para>
+            <maml:para>Optional. Year for which the Holidays are to be listed. One or more Years between 2000 and 3000 If not provided, the current year is taken. If the current month is December, the coming year is taken.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -4550,7 +4960,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="2" aliases="Y">
         <maml:name>Year</maml:name>
         <maml:description>
-          <maml:para>Required. Year for which the Holidays are to be listed</maml:para>
+          <maml:para>Optional. Year for which the Holidays are to be listed. One or more Years between 2000 and 3000 If not provided, the current year is taken. If the current month is December, the coming year is taken.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -4582,13 +4992,13 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>The Nager.Date API currently supports a bit over 100 Countries. I am working on an extension to this by reading from https://www.timeanddate.com/holidays/ For Example: https://www.timeanddate.com/holidays/uk/2022?hol=9</maml:para>
+        <maml:para>The Nager.Date API currently supports a bit over 100 Countries. Please query with Get-PublicHolidayCountry Evaluated the following APIs: Nager.Date:   Decent coverage (100+ Countries). Free &amp; Used Coverage: https://date.nager.at/Home/RegionStatistic TimeAndDate:  Great coverage. Requires license. Also a bit clunky. Not considering implementation. Calendarific: Great coverage. Requires license for commercial use. Currently not considering development Utilising the Calendarific API could be integrated if licensed and the API key is passed/registered locally.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-PublicHolidayList [-Country] CA [-Year] 2022</dev:code>
+        <dev:code>Get-PublicHolidayList [-CountryCode] CA [-Year] 2022</dev:code>
         <dev:remarks>
           <maml:para>Lists the Holidays for Canada in 2022. The Parameters are positional, so can be omitted</maml:para>
         </dev:remarks>
@@ -4596,8 +5006,8 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-PublicHolidayList.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-PublicHolidayList.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>about_SupportingFunction</maml:linkText>
@@ -5027,6 +5437,309 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Remove-TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-TeamsAutoAttendantSchedule</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsAutoAttendantSchedule</command:noun>
+      <maml:description>
+        <maml:para>Returns Teams Schedule Objects by Id or Name and/or Association</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Queries the Nager.Date API for public Holidays for Country and year and creates a CsOnlineSchedule object for each.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsAutoAttendantSchedule</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+          <maml:name>Id</maml:name>
+          <maml:description>
+            <maml:para>Id of the Schedule Object</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ParseAutoAttendants</maml:name>
+          <maml:description>
+            <maml:para>Optional. Resolves Auto Attendant Names</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsAutoAttendantSchedule</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>String to search for (partial or full match)</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Unassigned, Free">
+          <maml:name>UnAssociatedOnly</maml:name>
+          <maml:description>
+            <maml:para>Optional. Considers only unassociated Schedules</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsAutoAttendantSchedule</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>String to search for (partial or full match)</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Assigned, InUse">
+          <maml:name>AssociatedOnly</maml:name>
+          <maml:description>
+            <maml:para>Optional. Considers only associated Schedules</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ParseAutoAttendants</maml:name>
+          <maml:description>
+            <maml:para>Optional. Resolves Auto Attendant Names</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsAutoAttendantSchedule</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>String to search for (partial or full match)</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ParseAutoAttendants</maml:name>
+          <maml:description>
+            <maml:para>Optional. Resolves Auto Attendant Names</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+        <maml:name>Id</maml:name>
+        <maml:description>
+          <maml:para>Id of the Schedule Object</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>String to search for (partial or full match)</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Assigned, InUse">
+        <maml:name>AssociatedOnly</maml:name>
+        <maml:description>
+          <maml:para>Optional. Considers only associated Schedules</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="Unassigned, Free">
+        <maml:name>UnAssociatedOnly</maml:name>
+        <maml:description>
+          <maml:para>Optional. Considers only unassociated Schedules</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>ParseAutoAttendants</maml:name>
+        <maml:description>
+          <maml:para>Optional. Resolves Auto Attendant Names</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Schedule Object can be queried by Name or Id (partent CmdLet). Additionally filtered by Association</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantSchedule -Id abcd1234-5678-efg9-0123-4567890abcd</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the Schedules with the Id  abcd1234-5678-efg9-0123-4567890abcd - Same behaviour as Get-CsOnlineSchedule</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantSchedule -Name "CAN","MEX"</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all Schedules with "CAN" or "MEX" in the Name</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantSchedule -Name "Canada 202*"</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all Schedules with the String "Canada 202" in the name (like)</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantSchedule -Name "Canada 202*" -UnassociatedOnly</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all Schedules with the String "Canada 202" in the name (like) that are not associated to any Auto Attendant Call Flow</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantSchedule -Name "Canada 202*" -AssociatedOnly</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all Schedules with the String "Canada 202" in the name (like) that are associated to any Auto Attendant Call Flow</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantSchedule -UnassociatedOnly</dev:code>
+        <dev:remarks>
+          <maml:para>Returns all Schedules that are not associated to any Auto Attendant Call Flow</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantSchedule.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantSchedule.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-TeamsAutoAttendantSchedule</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsAutoAttendantSchedule</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsHolidaySchedule</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Set-TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-PublicHolidayList</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-PublicHolidayCountry</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
@@ -13678,6 +14391,201 @@
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Set-TeamsUserVoiceConfig</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>New-TeamsHolidaySchedule</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>TeamsHolidaySchedule</command:noun>
+      <maml:description>
+        <maml:para>Creates a Teams Schedule for each Country and Year specified</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Queries the Nager.Date API for public Holidays for Country and year and creates a CsOnlineSchedule object for each.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>New-TeamsHolidaySchedule</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="CC, Country">
+          <maml:name>CountryCode</maml:name>
+          <maml:description>
+            <maml:para>Required. ISO3166-Alpha-2 Country Code. One or more Countries from the list of Get-PublicHolidayCountry</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="Y">
+          <maml:name>Year</maml:name>
+          <maml:description>
+            <maml:para>Optional. Year for which the Holidays are to be listed. One or more Years between 2000 and 3000 If not provided, the current year is taken. If the current month is December, the coming year is taken.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32[]</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="1" aliases="CC, Country">
+        <maml:name>CountryCode</maml:name>
+        <maml:description>
+          <maml:para>Required. ISO3166-Alpha-2 Country Code. One or more Countries from the list of Get-PublicHolidayCountry</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="Y">
+        <maml:name>Year</maml:name>
+        <maml:description>
+          <maml:para>Optional. Year for which the Holidays are to be listed. One or more Years between 2000 and 3000 If not provided, the current year is taken. If the current month is December, the coming year is taken.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32[]</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+        <maml:name>WhatIf</maml:name>
+        <maml:description>
+          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+        <maml:name>Confirm</maml:name>
+        <maml:description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>The Nager.Date API currently supports a bit over 100 Countries. Please query with Get-PublicHolidayCountry Evaluated the following APIs: Nager.Date:   Decent coverage (100+ Countries). Free &amp; Used Coverage: https://date.nager.at/Home/RegionStatistic TimeAndDate:  Great coverage. Requires license. Also a bit clunky. Not considering implementation. Calendarific: Great coverage. Requires license for commercial use. Currently not considering development Utilising the Calendarific API could be integrated if licensed and the API key is passed/registered locally.</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>New-TeamsHolidaySchedule -CountryCode CA -Year 2022</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a Schedule Object in Teams for Canada for the year 2022.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>New-TeamsHolidaySchedule -CountryCode CA -Year 2022,2023,2024</dev:code>
+        <dev:remarks>
+          <maml:para>Creates 3 Schedule Object in Teams for Canada for the years 2022 to 2024.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>New-TeamsHolidaySchedule -CountryCode CA,MX,GB,DE -Year 2022</dev:code>
+        <dev:remarks>
+          <maml:para>Creates 4 Schedule Objects in Teams for the Canada, Mexico, Great Britain &amp; Germany for the year 2022.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>New-TeamsHolidaySchedule -CountryCode CA,MX,GB,DE -Year 2022,2023,2024</dev:code>
+        <dev:remarks>
+          <maml:para>Creates 12 Schedule Objects in Teams for the Canada, Mexico, Great Britain &amp; Germany for the years 2022 to 2024.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsHolidaySchedule.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsHolidaySchedule.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_SupportingFunction</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>about_TeamsAutoAttendant</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>New-TeamsHolidaySchedule</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-PublicHolidayList</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-PublicHolidayCountry</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>

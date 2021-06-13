@@ -2,7 +2,7 @@
 # Function:   Support, CallQueue, AutoAttendant
 # Author:     David Eberhardt
 # Updated:    06-JUN-2021
-# Status:     RC
+# Status:     Live
 
 
 
@@ -57,7 +57,7 @@ function Assert-TeamsAudioFile {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

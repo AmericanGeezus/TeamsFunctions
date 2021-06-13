@@ -5,56 +5,42 @@ online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
 schema: 2.0.0
 ---
 
-# Enable-AzureAdAdminRole
+# Disable-AzureAdAdminRole
 
 ## SYNOPSIS
-Enables eligible Admin Roles
+Disables active Admin Roles
 
 ## SYNTAX
 
 ```
-Enable-AzureAdAdminRole [[-Identity] <String>] [[-Reason] <String>] [[-Duration] <Int32>] [[-TicketNr] <Int32>]
- [[-ProviderId] <String>] [-Extend] [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+Disable-AzureAdAdminRole [[-Identity] <String>] [[-Reason] <String>] [[-ProviderId] <String>] [-PassThru]
+ [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Azure Ad Privileged Identity Management can require you to activate Admin Roles.
-Eligibe roles or groups can be activated with this Command
+Active roles or groups can be deactivated with this Command
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Enable-AzureAdAdminRole John@domain.com
+Disable-AzureAdAdminRole John@domain.com
 ```
 
-Enables all eligible Teams Admin roles for User John@domain.com
+Disables all active Teams Admin roles for User John@domain.com
 
 ### EXAMPLE 2
 ```
-Enable-AzureAdAdminRole John@domain.com -EnableAll -Reason "Need to provision Users" -Duration 4
+Disable-AzureAdAdminRole John@domain.com -Reason "Finished"
 ```
 
-Enables all eligible Admin roles for User John@domain.com with the reason provided.
-
-### EXAMPLE 3
-```
-Enable-AzureAdAdminRole John@domain.com -EnableAll -ProviderId azureResources -Confirm
-```
-
-Enables all eligible Azure Resources for User John@domain.com with confirmation for each Resource.
-
-### EXAMPLE 4
-```
-Enable-AzureAdAdminRole John@domain.com -Extend -Duration 3
-```
-
-If already activated, will extend the Azure Resources for User John@domain.com for up to 3 hours.
+Disables all active Admin roles for User John@domain.com with the reason provided.
 
 ## PARAMETERS
 
 ### -Identity
-Username of the Admin Account to enable roles for
+Username of the Admin Account to disable roles for
 
 ```yaml
 Type: String
@@ -70,8 +56,8 @@ Accept wildcard characters: False
 
 ### -Reason
 Optional.
-Small statement why these roles are requested
-By default, "Administration" is used as the reason.
+Small statement why these roles are disabled
+By default, "Administration finished" is used as the reason.
 
 ```yaml
 Type: String
@@ -81,42 +67,6 @@ Aliases:
 Required: False
 Position: 2
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Duration
-Optional.
-Integer.
-By default, enables Roles for 4 hours.
-Depending on your Administrators settings, values between 1 and 24 hours can be specified
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 3
-Default value: 0
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -TicketNr
-Optional.
-Integer.
-Only used if provided
-Depending on your Administrators settings, a ticket number may be required to process the request
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 4
-Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -133,26 +83,8 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 5
+Position: 3
 Default value: AadRoles
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Extend
-Optional.
-Switch.
-If an assignment is already active, it can be extended.
-This will leave an open request which can be closed manually.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -2,7 +2,7 @@
 # Function:   UserAdmin
 # Author:     David Eberhardt
 # Updated:    20-DEC-2020
-# Status:     Beta
+# Status:     RC
 
 
 
@@ -52,7 +52,7 @@ function Get-ErrorMessageFromErrorString {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

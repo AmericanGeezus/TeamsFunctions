@@ -13,7 +13,7 @@ Disconnects all sessions for AzureAD & MicrosoftTeams
 ## SYNTAX
 
 ```
-Disconnect-Me [<CommonParameters>]
+Disconnect-Me [-DisableAdminRoles] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -33,6 +33,21 @@ Disconnects from AzureAD, MicrosoftTeams
 Errors and Warnings are suppressed as no verification of existing sessions is undertaken
 
 ## PARAMETERS
+
+### -DisableAdminRoles
+Disables activated Admin roles before disconnecting from Azure Ad
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).

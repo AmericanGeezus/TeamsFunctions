@@ -13,13 +13,12 @@ Queries Admin Roles assigned to an Object
 ## SYNTAX
 
 ```
-Get-AzureAdAdminRole [-Identity] <String> [-Type <String>] [<CommonParameters>]
+Get-AzureAdAdminRole [-Identity] <String> [-Type <String>] [-QueryGroupsOnly] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Azure Active Directory Admin Roles assigned to an Object
 Requires a Connection to AzureAd
-Querying '-Type Elibile' requires the Module AzureAdPreview installed
 
 ## EXAMPLES
 
@@ -57,8 +56,8 @@ Accept wildcard characters: False
 
 ### -Type
 Optional.
-Switches query to Active (Default) or Eligible Admin Roles
-Eligibility can only be queried with Module AzureAdPreview installed
+Switches query to All (Default), Eligible or Active Admin Roles
+This requires the Module AzureAdPreview installed
 
 ```yaml
 Type: String
@@ -67,7 +66,25 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: Active
+Default value: All
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -QueryGroupsOnly
+Optional.
+Switches query to Active (Default) or Eligible Admin Roles
+Limits the query to Active Directory Groups only.
+Does not require AzureAdPreview installed
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
