@@ -266,7 +266,7 @@ function Get-TeamsUserVoiceConfig {
         }
 
         #Info about PhoneSystemStatus (suppressing feedback if AzureAdUser is already populated)
-        if ( 'Success' -notin $CsUserLicense.PhoneSystemStatus -and -not $AdUser) {
+        if ( -not $CsUserLicense.PhoneSystemStatus.Contains('Success') -and -not $AdUser) {
           Write-Warning -Message "User '$User' - PhoneSystemStatus is not Success. User cannot be configured for Voice"
         }
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan

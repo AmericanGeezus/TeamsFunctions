@@ -32,11 +32,11 @@ String reformatting is needed to normalise Numbers as E.164 numbers and allow a 
 | -------------------------------------------------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------- |
 | [`Format-StringForUse`](Format-StringForUse.md)                                 | Prepares a string for use as DisplayName, UserPrincipalName, LineUri or E.164 Number, removing special characters as needed. |
 | [`Format-StringRemoveSpecialCharacter`](Format-StringRemoveSpecialCharacter.md) | Formats a String and removes special characters (harmonising Display Names)                                                  |
-| [`Get-PublicHolidayCountry`](Get-PublicHolidayCountry)                 |                                            | Lists all supported Countries for Public Holidays (from Nager.Date)                                               |
-| [`Get-PublicHolidayList`](Get-PublicHolidayList)                       |                                            | Lists all Public Holidays for a specific Country (from Nager.Date)                                                |
+| [`Get-PublicHolidayCountry`](Get-PublicHolidayCountry.md)                 |                                            | Lists all supported Countries for Public Holidays (from Nager.Date)                                               |
+| [`Get-PublicHolidayList`](Get-PublicHolidayList.md)                       |                                            | Lists all Public Holidays for a specific Country (from Nager.Date)                                                |
 | [`Get-RegionFromCountryCode`](Get-RegionFromCountryCode.md)                     | Just a little helper figuring out which geographical region (AMER, EMEA, APAC) a specific country is in.                     |
 | [`Get-TeamsObjectType`](Get-TeamsObjectType.md)                                 | Little brother to `Get-TeamsCallableEntity` Returns the type of any given Object to identify its use in CQs and AAs.         |
-| [`Import-TeamsAudioFile`](Import-TeamsAudioFile)                       | Import-CsOnlineAudioFile                   | Imports an Audio File for use within Call Queues or Auto Attendants                                               |
+| [`Import-TeamsAudioFile`](Import-TeamsAudioFile.md)                       | Import-CsOnlineAudioFile                   | Imports an Audio File for use within Call Queues or Auto Attendants                                               |
 
 ### Test & Assert Functions
 
