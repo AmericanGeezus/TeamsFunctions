@@ -103,7 +103,6 @@ function Disconnect-Me {
       throw $_
     }
 
-
     Write-Verbose -Message 'Cleaning up PowerShell Sessions'
     $PSSessions = Get-PSSession -WarningAction SilentlyContinue
 
