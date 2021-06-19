@@ -3,6 +3,115 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.06.13 - Jun 2021 release 2
+
+With many functions come many bugs...- a few of which out of my control which made this release necessary.
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-103-blue.svg) ![Private](https://img.shields.io/badge/Private-13-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-87-blue.svg) ![RC](https://img.shields.io/badge/RC-7-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-3-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2053-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Stability, Bugfixing, Auto Attendant Holiday Schedule                                                                                                                                                                                                                      |
+
+### New
+
+- `New-TeamsHolidaySchedule`: Creating a new Schedule Object for Holiday Sets based on Public Holidays for Country & Year
+- `Get-TeamsAutoAttendantSchedule`: Querying Schedule Objects by Id, Name and/or Association and resolving Auto Attendants names.
+- `Disable-AzureAdUserAdminRole`: Disabling activated privileged AzureAd Admin Roles for any provided UserPrincipalName.
+- `Disable-MyAzureAdUserAdminRole`: Disabling activated privileged AzureAd Admin Roles for the currently logged on user.
+- Private function: `Assert-TeamsAudioFile`: Validating requirements for AudioFiles before importing them.
+- Private Function `Get-ErrorMessageFromErrorString`: Reworking Output from REST API to display Message only (for Try/Catch)
+
+### Updated
+
+#### General
+
+- Caught Errors for Calls to `Get-AzureAdUser` - Results are now uniformly displayed as required.
+- ErrorActions and WarningActions added to multiple queries to quieten execution
+- Quieten errors and warnings for all calls to `Get-AzureAdLicense` for functions using this to validate input
+- Improved validation to all Cmdlets where the PhoneNumber is validated against Microsoft Numbers (utilising search rather than global variable!)
+- `Get-AzureAdUserAdminRole`:
+  - Reworked output: Group Membership is now only queried if Module AzureAdPreview is not available
+  - Parameter Type now accepts All, Active & Eligible as input and will filter accordingly
+- `Enable-AzureAdUserAdminRole`:
+  - Removed activation of SfB Legacy Admin role if MicrosoftTeams v2.3.1 is used as it is no longer needed.
+  - Fixed an issue with Output if only one role has been activated - sorry!
+  - NOTE: TicketNumber can currently not be processed, it is merely added to the Reason statement if provided
+- `Connect-Me`: Refactored counter of activated Admin Roles to accurately report feedback
+- `Assert-TeamsCallableEntity`:
+  - Fixed an issue with Resource Accounts not being enumerated.
+- Suppressed InformationAction to all Calls to Get-TeamsUserVoiceConfig where applicable (User queries)
+
+#### Licensing
+
+- `Set-TeamsUserLicense`:
+  - Improved output for duplicate licenses - this will require more deliberation on the Input side as well.
+  - Improved output for error-states. Exception message now displayed as intended.
+- `Get-TeamsTenantLicense`:
+  - Fixed an issue with the enumeration of available units: Now the sum of Units in the Status Enabled and Warning is taken
+  <br />NOTE: The Status 'Suspended' has not been considered among the available units. This will need to be validated still!
+  - Improved Lookup of unknown licenses - Now consistently adds license counters instead of just populating non-existent parameters (and writing errors)
+- `Set-TeamsUserLicense`:
+  - Re-ordered validation for selected Licenses: Now checking for already assigned license first before querying available units
+  - Validated License assignments together with queries with `Get-TeamsTenantLicense`
+
+#### Resource Account
+
+- `New-TeamsResourceAccount`:
+  - Adding Parameter `OnlineVoiceRoutingPolicy` to allow provisioning of OVPs for ResourceAccounts
+- `Set-TeamsResourceAccount`:
+  - Fixed an issue with Number application to itself
+  - Adding Parameter `OnlineVoiceRoutingPolicy` to allow provisioning of OVPs for ResourceAccounts
+- `New-TeamsResourceAccountAssociation`: Fixed an issue with Resource Account Lookup - Apologies
+
+#### Auto Attendant
+
+- `Get-TeamsAutoAttendant`: Added DialByNameResourceId - as-is for now
+- `New-TeamsAutoAttendant`:
+  - Fixed an issue with very long Auto Attendant names: Now consistently cutting off after 38 characters
+  - Added a random number to the Call Flow name to enable creation for multiple Auto Attendants with similar names.
+
+- `Import-TeamsAudioFile`:
+  - Integrated Size and Format check here to simplify all AudioFile imports to Call Queues or Auto Attendants
+  - Returns error if File size is above limit or not in the correct format (in addition to file not found)
+
+#### Call Queue
+
+- `Get-TeamsCallQueue`:
+  - Users linked to Call Queues that are no longer queryable via Get-AzureAdUser (i.E. have been disabled/deleted) are now highlighted with a Warning
+  - Renamed Parameter ApplicationInstances to `ResourceAccountsAssociated` for consistency
+  - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds translated
+  - Adding Parameter `ChannelUsers` (enumerated and displayed only with Switch `Detailed`): ChannelUserObjectId translated
+- `New-TeamsCallQueue`:
+  - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds simplified
+  - Adding Parameter `ChannelUsers`: ChannelUserObjectId simplified. (NOTE: Currently use for this is unknown)
+  - Clarifying warning for unusable User Objects - If `Assert-TeamsCallableEntity` does not return a usable object.
+  - Refreshed processing of AudioFiles, delegating validation to using Assert-TeamsAudioFile
+  - Reworked processing of SharedVoicemail parameters
+  - Quietened Assertion of Callable Entities - no warnings are displayed as that is not the goal of this script.
+- `Set-TeamsCallQueue`:
+  - Adding Parameter `ResourceAccountsForCallerId`: OboResourceAccountIds simplified
+  - Adding Parameter `ChannelUsers`: ChannelUserObjectId simplified. (NOTE: Currently use for this is unknown)
+  - Clarifying warning for unusable User Objects - If `Assert-TeamsCallableEntity` does not return a usable object.
+  - Refreshed processing of AudioFiles, delegating validation to using Assert-TeamsAudioFile
+  - Reworked processing of SharedVoicemail parameters
+  - Quietened Assertion of Callable Entities - no warnings are displayed as that is not the goal of this script.
+
+#### Voice Config
+
+- `Set-TeamsUserVoiceConfig`:
+  - Reduced output for duplicated licenses - no need to know license counters here.
+  - Quietened Assertion of Callable Entities - no warnings are displayed as that is not the goal of this script.
+  - Quietened output for InformationActions as this is not the goal of this script and not needed.
+
+### Limitations
+
+- `Connect-MicrosoftTeams`: Scenario observed where a Session has been opened, but Skype Commands cannot be used.
+<br />Mitigation: Disconnect, then close PowerShell session completely, ensure Admin Roles are activated and re-run `Connect-Me`
+
 ## v21.06 - Jun 2021 release
 
 _I got 99 functions and `Connect-SkypeOnline` is still one_ :)
