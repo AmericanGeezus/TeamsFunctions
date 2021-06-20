@@ -37,6 +37,10 @@ function Remove-TeamsResourceAccountAssociation {
   .FUNCTIONALITY
     Removes an existing association between a Resource Account and an Auto Attendant or Call Queue
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsResourceAccountAssociation.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicenseServicePlan.md
 schema: 2.0.0
 ---
 
@@ -64,6 +64,12 @@ Reads
 https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicenseServicePlan.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicenseServicePlan.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

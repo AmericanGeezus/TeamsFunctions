@@ -33,6 +33,10 @@ function Get-SkypeOnlineConferenceDialInNumbers {
   .FUNCTIONALITY
     Lists Dial-In Conferencing numbers
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-SkypeOnlineConferenceDialInNumbers.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Unmanaged.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Unmanaged

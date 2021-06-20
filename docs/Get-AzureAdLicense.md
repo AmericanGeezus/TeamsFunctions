@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicense.md
 schema: 2.0.0
 ---
 
@@ -62,6 +62,12 @@ Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mes
 With very special thanks to Philip
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicense.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicense.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

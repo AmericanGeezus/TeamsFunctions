@@ -37,9 +37,13 @@ function Get-TeamsTenantVoiceConfig {
   .FUNCTIONALITY
     Returns Object with information about the Voice Configuration in the Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTenantVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    about_VoiceConfiguration
+    about_TeamsUserVoiceConfiguration
   .LINK
     about_UserManagement
   .LINK

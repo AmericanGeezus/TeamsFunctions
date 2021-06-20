@@ -32,6 +32,12 @@ function Get-AzureAdLicense {
   .FUNCTIONALITY
     Returns a list of published Licenses
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicense.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Licensing

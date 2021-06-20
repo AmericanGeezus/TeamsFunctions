@@ -25,6 +25,10 @@ function Test-ExchangeOnlineConnection {
   .FUNCTIONALITY
     Tests the connection to ExchangeOnline
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-ExchangeOnlineConnection.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsSession

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserLicenseServicePlan.md
 schema: 2.0.0
 ---
 
@@ -161,11 +161,19 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserLicenseServicePlan.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserLicenseServicePlan.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [about_Licensing]()
 
 [about_UserManagement]()
+
+[Set-TeamsUserLicenseServicePlan]()
 
 [Get-TeamsTenantLicense]()
 

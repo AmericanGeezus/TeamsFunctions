@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsCallQueue.md
 schema: 2.0.0
 ---
 
@@ -658,6 +658,10 @@ TimeoutSharedVoicemailAudioFile - Setting not changed.
 TimeoutAction will not be changed
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsCallQueue.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

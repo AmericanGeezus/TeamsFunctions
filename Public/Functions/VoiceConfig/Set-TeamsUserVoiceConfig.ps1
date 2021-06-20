@@ -77,9 +77,13 @@ function Set-TeamsUserVoiceConfig {
   .FUNCTIONALITY
     Applying Voice Configuration parameters to a User
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    about_VoiceConfiguration
+    about_TeamsUserVoiceConfiguration
   .LINK
     about_UserManagement
   .LINK
@@ -135,7 +139,7 @@ function Set-TeamsUserVoiceConfig {
     [ValidateScript( {
         $CallingPlanLicenseValues = (Get-AzureAdLicense | Where-Object LicenseType -EQ 'CallingPlan').ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $CallingPlanLicenseValues) { $True } else {
-          Throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
         }
       })]
     [string[]]$CallingPlanLicense,

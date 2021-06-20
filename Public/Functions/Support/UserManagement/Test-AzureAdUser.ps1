@@ -31,6 +31,10 @@ function Test-AzureAdUser {
   .FUNCTIONALITY
     Tests whether an Azure Ad User exists in AzureAd
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdUser.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

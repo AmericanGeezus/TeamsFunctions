@@ -38,9 +38,13 @@ function Find-TeamsUserVoiceRoute {
   .FUNCTIONALITY
     Voice Routing and Troubleshooting
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    about_VoiceConfiguration
+    about_TeamsUserVoiceConfiguration
   .LINK
     Assert-TeamsUserVoiceConfig
   .LINK

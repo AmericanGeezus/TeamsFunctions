@@ -38,6 +38,10 @@ function Test-TeamsResourceAccount {
   .FUNCTIONALITY
     Tests whether a Resource Account exists in AzureAd
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsResourceAccount.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

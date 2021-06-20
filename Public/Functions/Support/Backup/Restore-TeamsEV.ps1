@@ -43,6 +43,10 @@ function Restore-TeamsEV {
   .FUNCTIONALITY
     Restoring a backup of the Configuration in the Teams Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Restore-TeamsEV.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

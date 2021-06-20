@@ -84,6 +84,10 @@ function Set-TeamsResourceAccount {
   .FUNCTIONALITY
     Changes a resource Account in AzureAD for use in Teams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsResourceAccount.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount
@@ -113,7 +117,7 @@ function Set-TeamsResourceAccount {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
         if ($_ -match '@' -or $_ -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') { $True } else {
-          Throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN or ObjectId.'
+          throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN or ObjectId.'
         }
       })]
     [Alias('ObjectId', 'Identity')]
@@ -137,7 +141,7 @@ function Set-TeamsResourceAccount {
           return $true
         }
         else {
-          Throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]

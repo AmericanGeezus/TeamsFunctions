@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-AzureAdConnection.md
 schema: 2.0.0
 ---
 
@@ -45,6 +45,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 None
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-AzureAdConnection.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-AzureAdConnection.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

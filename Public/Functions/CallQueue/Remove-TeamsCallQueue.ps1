@@ -29,6 +29,10 @@ function Remove-TeamsCallQueue {
   .FUNCTIONALITY
     Removes a Call Queue Object from the Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsCallQueue

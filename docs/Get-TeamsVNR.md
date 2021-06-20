@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsVNR.md
 schema: 2.0.0
 ---
 
@@ -84,11 +84,17 @@ Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Name, 
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsVNR.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsVNR.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [about_SupportingFunction]()
 
-[about_VoiceConfiguration]()
+[about_TeamsUserVoiceConfiguration]()
 
 [Get-TeamsTDP]()
 

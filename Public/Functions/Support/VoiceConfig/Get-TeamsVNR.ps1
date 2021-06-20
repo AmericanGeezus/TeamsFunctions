@@ -46,11 +46,17 @@ function Get-TeamsVNR {
   .FUNCTIONALITY
     Queries Normalization Rules from a Tenant Dial Plan from the Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsVNR.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction
   .LINK
-    about_VoiceConfiguration
+    about_TeamsUserVoiceConfiguration
   .LINK
     Get-TeamsTDP
   .LINK

@@ -49,6 +49,14 @@ function New-TeamsCallableEntity {
   .FUNCTIONALITY
     Creates a new Callable Entity for use in Call Queues or Auto Attendants
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallableEntity.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_UserManagement

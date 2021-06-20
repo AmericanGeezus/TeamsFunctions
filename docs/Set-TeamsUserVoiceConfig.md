@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserVoiceConfig.md
 schema: 2.0.0
 ---
 
@@ -295,9 +295,13 @@ This enables bulk provisioning
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserVoiceConfig.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserVoiceConfig.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_VoiceConfiguration]()
+[about_TeamsUserVoiceConfiguration]()
 
 [about_UserManagement]()
 

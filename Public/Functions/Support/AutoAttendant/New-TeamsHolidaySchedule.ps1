@@ -49,6 +49,10 @@ function New-TeamsHolidaySchedule {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsHolidaySchedule.md
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
     about_SupportingFunction
   .LINK
     about_TeamsAutoAttendant
@@ -68,7 +72,7 @@ function New-TeamsHolidaySchedule {
     [ValidateScript( {
         $Countries = Get-PublicHolidayCountry
         if ($_ -in $Countries.CountryCode) { $true } else {
-          Throw [System.Management.Automation.ValidationMetadataException] "Country '$_' not supported (yet), sorry. Please provide a CountryCode from the output of Get-PublicHolidayCountry or check https://date.nager.at/"
+          throw [System.Management.Automation.ValidationMetadataException] "Country '$_' not supported (yet), sorry. Please provide a CountryCode from the output of Get-PublicHolidayCountry or check https://date.nager.at/"
           $false
         }
       })]

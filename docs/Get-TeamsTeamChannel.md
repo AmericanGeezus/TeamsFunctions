@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTeamChannel.md
 schema: 2.0.0
 ---
 
@@ -109,6 +109,10 @@ This CmdLet combines two lookups in order to find a valid channel by Name(s).
 It is used to determine usability for Call Queues (Forward to Channel)
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTeamChannel.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTeamChannel.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

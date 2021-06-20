@@ -49,6 +49,10 @@ function Disable-AzureAdAdminRole {
   .FUNCTIONALITY
     Disables active Privileged Identity roles
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disable-AzureAdAdminRole.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_UserManagement
@@ -56,6 +60,10 @@ function Disable-AzureAdAdminRole {
     Enable-AzureAdAdminRole
   .LINK
     Enable-MyAzureAdAdminRole
+  .LINK
+    Disable-AzureAdAdminRole
+  .LINK
+    Disable-MyAzureAdAdminRole
   .LINK
     Get-AzureAdAdminRole
   .LINK

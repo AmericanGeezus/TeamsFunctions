@@ -63,9 +63,13 @@ function Get-TeamsUserVoiceConfig {
   .FUNCTIONALITY
     Returns an Object to validate the Voice Configuration for an Object
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsUserVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    about_VoiceConfiguration
+    about_TeamsUserVoiceConfiguration
   .LINK
     about_UserManagement
   .LINK

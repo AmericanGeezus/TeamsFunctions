@@ -28,17 +28,23 @@ function Enable-MyAzureAdAdminRole {
   .FUNCTIONALITY
     Enables eligible Privileged Identity roles for Administration of Teams for the currently connected on User
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Enable-MyAzureAdAdminRole.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_UserManagement
   .LINK
     Connect-Me
   .LINK
-    Assert-MicrosoftTeamsConnection
-  .LINK
     Enable-AzureAdAdminRole
   .LINK
     Enable-MyAzureAdAdminRole
+  .LINK
+    Disable-AzureAdAdminRole
+  .LINK
+    Disable-MyAzureAdAdminRole
   .LINK
     Get-AzureAdAdminRole
   .LINK

@@ -56,6 +56,10 @@ function Get-TeamsAutoAttendant {
   .FUNCTIONALITY
     Get-CsAutoAttendant with friendly names instead of GUID-strings for connected objects
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant

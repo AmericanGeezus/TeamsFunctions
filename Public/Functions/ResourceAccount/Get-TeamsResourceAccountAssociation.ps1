@@ -36,6 +36,10 @@ function Get-TeamsResourceAccountAssociation {
   .FUNCTIONALITY
     Queries the Association Status of one or more Resource Accounts
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccountAssociation.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount

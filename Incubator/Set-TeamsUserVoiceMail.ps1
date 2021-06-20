@@ -38,9 +38,11 @@ function Set-TeamsUserVoiceMail {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserVoiceMail.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfig.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfig.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+  .LINK
+    about_TeamsUserVoiceConfig
   .LINK
     Set-TeamsUserVoiceMail
   #>
@@ -134,11 +136,11 @@ function Set-TeamsUserVoiceMail {
         }
         catch {
           Write-Error -Message "Error setting Voicemail language : $($_.Exception.Message)" -Category InvalidResult
-          return
+          continue
         }
       }
       else {
-        return
+        continue
       }
       #endregion
 

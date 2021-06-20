@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsOVP.md
 schema: 2.0.0
 ---
 
@@ -83,11 +83,17 @@ Get-CsOnlineVoiceRoutingPolicy | Where-Object Identity -NE 'Global' | Select-Obj
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsOVP.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsOVP.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [about_SupportingFunction]()
 
-[about_VoiceConfiguration]()
+[about_TeamsUserVoiceConfiguration]()
 
 [Get-TeamsOVP]()
 

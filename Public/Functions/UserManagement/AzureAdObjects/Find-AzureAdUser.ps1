@@ -41,9 +41,15 @@ function Find-AzureAdUser {
   .FUNCTIONALITY
     Queries User Objects in Azure Ad with different mechanics
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-AzureAdUser.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_UserManagement
+  .LINK
+    Find-AzureAdUser
   .LINK
     Find-AzureAdGroup
   .LINK

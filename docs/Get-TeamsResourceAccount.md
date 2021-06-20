@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccount.md
 schema: 2.0.0
 ---
 
@@ -158,6 +158,10 @@ Pipeline input possible
 Running the CmdLet without any input might take a while, depending on size of the Tenant.
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccount.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccount.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

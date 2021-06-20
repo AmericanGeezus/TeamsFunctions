@@ -27,6 +27,10 @@ function Get-TeamsTenant {
   .FUNCTIONALITY
     Queries abbreviated information about the Teams Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTenant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

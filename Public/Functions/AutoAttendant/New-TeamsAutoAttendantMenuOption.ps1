@@ -62,6 +62,10 @@ function New-TeamsAutoAttendantMenuOption {
   .FUNCTIONALITY
     Creates a MenuOption Object to be used in Auto Attendants
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsAutoAttendantMenuOption.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant

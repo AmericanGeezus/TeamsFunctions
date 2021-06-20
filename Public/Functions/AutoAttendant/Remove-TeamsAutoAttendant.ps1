@@ -29,6 +29,10 @@ function Remove-TeamsAutoAttendant {
   .FUNCTIONALITY
     Removes Auto Attendant Objects from the Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsAutoAttendant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant

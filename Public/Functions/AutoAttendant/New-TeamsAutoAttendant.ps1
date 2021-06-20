@@ -133,6 +133,10 @@ function New-TeamsAutoAttendant {
   .FUNCTIONALITY
     Creates a Auto Attendant with custom settings and friendly names as input
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsAutoAttendant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsAutoAttendant

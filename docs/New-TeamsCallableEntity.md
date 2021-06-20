@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallableEntity.md
 schema: 2.0.0
 ---
 
@@ -152,6 +152,14 @@ For Groups, it will verify that the Group exists in AzureAd (but not in Exchange
 For ExternalPstn it will construct the Tel URI
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallableEntity.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallableEntity.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

@@ -116,6 +116,8 @@ Describe -Tags ('Unit', 'Acceptance') -Name 'TeamsFunctions Module Tests' {
     }
 
     It "'$($_.BaseName)' should have the HELP URL linked in the LINK section in the help block" {
+      "$($_.FullName)" | Should -FileContentMatch "https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/$($_.BaseName).md"
+      "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_'
       "$($_.FullName)" | Should -FileContentMatch 'https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/'
     }
 

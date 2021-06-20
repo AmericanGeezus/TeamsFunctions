@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Enable-AzureAdAdminRole.md
 schema: 2.0.0
 ---
 
@@ -242,6 +242,10 @@ Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this scrip
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Enable-AzureAdAdminRole.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Enable-AzureAdAdminRole.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [about_UserManagement]()
@@ -249,6 +253,10 @@ Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this scrip
 [Enable-AzureAdAdminRole]()
 
 [Enable-MyAzureAdAdminRole]()
+
+[Disable-AzureAdAdminRole]()
+
+[Disable-MyAzureAdAdminRole]()
 
 [Get-AzureAdAdminRole]()
 

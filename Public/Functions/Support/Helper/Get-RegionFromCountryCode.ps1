@@ -36,6 +36,10 @@ function Get-RegionFromCountryCode {
   .FUNCTIONALITY
     Retruns the Region or Country for any given CountryCode
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-RegionFromCountryCode.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsTenant.md
 schema: 2.0.0
 ---
 
@@ -75,6 +75,10 @@ https://davideberhardt.wordpress.com/
 The list of command is not dynamic, meaning addded commandlets post publishing date are not captured
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsTenant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsTenant.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md
 schema: 2.0.0
 ---
 
@@ -68,6 +68,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 This Script is indiscriminate against the User Type, all AzureAD User Objects can be tested.
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

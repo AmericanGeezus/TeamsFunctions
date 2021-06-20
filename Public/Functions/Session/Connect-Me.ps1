@@ -63,6 +63,10 @@ function Connect-Me {
   .FUNCTIONALITY
     Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-Me.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsSession

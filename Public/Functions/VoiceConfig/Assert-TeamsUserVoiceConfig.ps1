@@ -54,11 +54,15 @@ function Assert-TeamsUserVoiceConfig {
   .FUNCTIONALITY
     Finding Users with a incorrectly set up Voice Configuration
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-TeamsUserVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   .LINK
-    about_VoiceConfiguration
+    about_TeamsUserVoiceConfiguration
   .LINK
     Assert-TeamsUserVoiceConfig
   .LINK

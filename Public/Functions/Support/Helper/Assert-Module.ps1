@@ -36,6 +36,10 @@ function Assert-Module {
   .FUNCTIONALITY
     Asserts whether the Module is installed, Loaded and optionally also whether it is up-to-date (incl. Prerelease)
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-Module.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

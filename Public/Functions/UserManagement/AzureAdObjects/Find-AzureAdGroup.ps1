@@ -33,11 +33,17 @@ function Find-AzureAdGroup {
   .FUNCTIONALITY
     Queries Group Objects in Azure Ad with different mechanics
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-AzureAdGroup.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_UserManagement
   .LINK
     Find-AzureAdUser
+  .LINK
+    Find-AzureAdGroup
   .LINK
     Get-AzureAdGroup
   .LINK

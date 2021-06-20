@@ -90,6 +90,12 @@ function Set-TeamsUserLicense {
     This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
     Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserLicense.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Licensing

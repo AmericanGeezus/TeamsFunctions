@@ -188,6 +188,12 @@ Additionally filtered by Association
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantSchedule.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantSchedule.md)
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+
 [about_SupportingFunction]()
 
 [about_TeamsAutoAttendant]()

@@ -55,6 +55,10 @@ function Get-TeamsResourceAccount {
   .FUNCTIONALITY
     Returns one or more Resource Accounts from the Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccount.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount

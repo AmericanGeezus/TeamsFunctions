@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsResourceAccount.md
 schema: 2.0.0
 ---
 
@@ -282,6 +282,10 @@ At the moment, swapping licenses is not possible/implemented.
 Please address manually in the Admin Center
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsResourceAccount.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsResourceAccount.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

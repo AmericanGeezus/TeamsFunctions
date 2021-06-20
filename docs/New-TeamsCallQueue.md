@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallQueue.md
 schema: 2.0.0
 ---
 
@@ -652,6 +652,10 @@ OverflowSharedVoicemailAudioFile - SharedVoicemail will not be configured
 TimeoutSharedVoicemailAudioFile - SharedVoicemail will not be configured
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallQueue.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

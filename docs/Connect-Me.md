@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-Me.md
 schema: 2.0.0
 ---
 
@@ -146,6 +146,10 @@ Actual administrative capabilities are dependent on actual Office 365 admin role
 Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-Me.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-Me.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

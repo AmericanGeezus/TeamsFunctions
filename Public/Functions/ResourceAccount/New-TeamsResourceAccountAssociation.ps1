@@ -43,6 +43,10 @@ function New-TeamsResourceAccountAssociation {
   .FUNCTIONALITY
     Creates a new Association between an unassociated Resource Account and an Auto Attendant or a Call Queue
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccountAssociation.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount

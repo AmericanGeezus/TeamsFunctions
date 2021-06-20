@@ -34,6 +34,12 @@ function Get-AzureAdLicenseServicePlan {
   .FUNCTIONALITY
     Returns a list of published License Service Plans
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicenseServicePlan.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Licensing

@@ -28,6 +28,10 @@ function Test-TeamsExternalDNS {
   .FUNCTIONALITY
     Tests DNS Records for external communication
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsExternalDNS.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Unmanaged.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Unmanaged

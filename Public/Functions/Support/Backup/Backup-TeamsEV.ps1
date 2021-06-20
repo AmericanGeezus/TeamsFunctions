@@ -35,6 +35,10 @@ function Backup-TeamsEV {
   .FUNCTIONALITY
     Creating a backup for all Enterprise Voice Configuration in the Teams Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsEV.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

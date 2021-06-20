@@ -27,6 +27,10 @@ function Get-CurrentConnectionInfo {
   .FUNCTIONALITY
     Queries Information about existing Sessions to AzureAd and MicrosoftTeams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-CurrentConnectionInfo.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsSession

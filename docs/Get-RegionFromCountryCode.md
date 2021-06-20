@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-RegionFromCountryCode.md
 schema: 2.0.0
 ---
 
@@ -83,6 +83,10 @@ CountryCode must be provided otherwise InvalidData Error will be thrown
 FullyQualifiedErrorId: ParameterArgumentValidationErrorEmptyStringNotAllowed
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-RegionFromCountryCode.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-RegionFromCountryCode.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

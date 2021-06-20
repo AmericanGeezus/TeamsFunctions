@@ -35,6 +35,10 @@ function Test-TeamsUserHasCallPlan {
   .FUNCTIONALITY
     Tests whether the User has a Microsoft Calling Plan License
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

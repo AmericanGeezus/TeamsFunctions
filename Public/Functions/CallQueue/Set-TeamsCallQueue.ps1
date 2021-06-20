@@ -141,6 +141,10 @@ function Set-TeamsCallQueue {
   .FUNCTIONALITY
     Changes a Call Queue with friendly names as input
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsCallQueue
@@ -172,7 +176,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Throw [System.Management.Automation.ValidationMetadataException] 'Must be a value between 30 and 180s (3 minutes)'
+          throw [System.Management.Automation.ValidationMetadataException] 'Must be a value between 30 and 180s (3 minutes)'
           $false
         }
       })]
@@ -213,7 +217,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Throw [System.Management.Automation.ValidationMetadataException] 'OverflowThreshold: Must be a value between 0 and 200s.'
+          throw [System.Management.Automation.ValidationMetadataException] 'OverflowThreshold: Must be a value between 0 and 200s.'
           $false
         }
       })]
@@ -253,7 +257,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Throw [System.Management.Automation.ValidationMetadataException] 'TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)'
+          throw [System.Management.Automation.ValidationMetadataException] 'TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)'
           $false
         }
       })]

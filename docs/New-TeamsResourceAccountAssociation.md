@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccountAssociation.md
 schema: 2.0.0
 ---
 
@@ -152,6 +152,10 @@ The Type of the Resource Account has to corellate to the entity connected.
 Parameter Force can be used to change the type of RA to align to the entity if possible.
 
 ## RELATED LINKS
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccountAssociation.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccountAssociation.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

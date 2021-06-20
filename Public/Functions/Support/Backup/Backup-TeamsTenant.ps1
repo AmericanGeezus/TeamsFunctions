@@ -44,6 +44,10 @@ function Backup-TeamsTenant {
   .FUNCTIONALITY
     Creating a backup for all Configuration in the Teams Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsTenant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

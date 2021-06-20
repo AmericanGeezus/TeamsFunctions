@@ -29,6 +29,10 @@ function Assert-AzureADConnection {
   .FUNCTIONALITY
     Verifies a Connection to AzureAd is established
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-AzureAdConnection.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsSession

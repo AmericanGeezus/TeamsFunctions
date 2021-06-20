@@ -48,6 +48,10 @@ function Test-TeamsUserLicense {
   .FUNCTIONALITY
     Returns a boolean value for License or Serviceplan for a specific user.
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction
@@ -59,6 +63,8 @@ function Test-TeamsUserLicense {
     Get-TeamsUserLicenseServicePlan
   .LINK
     Set-TeamsUserLicense
+  .LINK
+    Test-TeamsUserLicense
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]

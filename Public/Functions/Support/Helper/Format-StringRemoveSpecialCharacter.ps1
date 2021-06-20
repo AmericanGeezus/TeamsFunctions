@@ -46,6 +46,10 @@ function Format-StringRemoveSpecialCharacter {
   .FUNCTIONALITY
     Reformats a string to be used; Removes special Characters in the process
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Format-StringRemoveSpecialCharacter.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_SupportingFunction

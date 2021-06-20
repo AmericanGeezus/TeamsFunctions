@@ -33,9 +33,13 @@ function Verb-Noun {
   .FUNCTIONALITY
     xx
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Verb-Noun.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsFunctions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    Verb2-Noun
+    Verb-Noun
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
@@ -99,8 +103,8 @@ function Verb-Noun {
       #DOC    White on GREY?, text only, SHEET?
       #WRITE  Same as DOC
       #NOTE   Same as DOC?
-      [ ] Open task
-      [x] Closed task
+      #[ ] Open task
+      #[x] Closed task
 
 
 
@@ -124,11 +128,11 @@ function Verb-Noun {
         }
         catch {
           Write-Error -Message "Error action unsuccessful : $($_.Exception.Message)" -Category InvalidResult
-          return
+          continue
         }
       }
       else {
-        return
+        continue
       }
       #endregion
 

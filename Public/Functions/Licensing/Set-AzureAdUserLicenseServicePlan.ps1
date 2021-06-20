@@ -49,11 +49,19 @@ function Set-AzureAdUserLicenseServicePlan {
   .FUNCTIONALITY
     Changes the AzureAD Object provided by enabling or disabling Service Plans on each License assigned (if present) to an AzureAd Object
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-AzureAdUserLicenseServicePlan.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_Licensing
   .LINK
     about_UserManagement
+  .LINK
+    Set-TeamsUserLicenseServicePlan
   .LINK
     Get-TeamsTenantLicense
   .LINK
@@ -80,7 +88,7 @@ function Set-AzureAdUserLicenseServicePlan {
     [ValidateScript( {
         $ServicePlanNamesEnable = (Get-AzureAdLicenseServicePlan).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $ServicePlanNamesEnable) { return $true } else {
-          Throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Enable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)"
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Enable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)"
           return $false
         }
       })]

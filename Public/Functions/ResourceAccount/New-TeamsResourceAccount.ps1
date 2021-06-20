@@ -68,6 +68,10 @@ function New-TeamsResourceAccount {
   .FUNCTIONALITY
     Creates a resource Account in AzureAD for use in Teams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccount.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     about_TeamsResourceAccount
