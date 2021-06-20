@@ -55,23 +55,11 @@ function Get-TeamsAutoAttendantSchedule {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantSchedule.md
   .LINK
-    about_SupportingFunction
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
   .LINK
-    about_TeamsAutoAttendant
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
-    Get-TeamsAutoAttendantSchedule
-  .LINK
-    New-TeamsAutoAttendantSchedule
-  .LINK
-    New-TeamsHolidaySchedule
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    Set-TeamsAutoAttendant
-  .LINK
-    Get-PublicHolidayList
-  .LINK
-    Get-PublicHolidayCountry
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding(ConfirmImpact = 'Low')]

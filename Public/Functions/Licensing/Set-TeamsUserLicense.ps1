@@ -90,31 +90,16 @@ function Set-TeamsUserLicense {
     This script changes the AzureAD Object provided by adding or removing Licenses relevant to Teams
     Calls New-AzureAdLicenseObject from this Module in order to run Set-AzureADUserLicense.
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsUserLicense.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_Licensing
-  .LINK
-    about_UserManagement
-  .LINK
-    Get-TeamsTenantLicense
-  .LINK
-    Get-TeamsUserLicense
-  .LINK
-    Get-TeamsUserLicenseServicePlan
-  .LINK
-    Set-TeamsUserLicense
-  .LINK
-    Test-TeamsUserLicense
-  .LINK
-    Get-AzureAdLicense
-  .LINK
-    Get-AzureAdLicenseServicePlan
-  .LINK
-    Enable-AzureAdUserLicenseServicePlan
-  .LINK
-    Disable-AzureAdUserLicenseServicePlan
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'Add')]
   [OutputType([Void])]
   param(
@@ -127,11 +112,8 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'RemoveAll', HelpMessage = 'License(s) to be added to this Object')]
     [ValidateScript( {
         $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $LicenseParams) {
-          return $true
-        }
-        else {
-          Write-Host "Parameter 'Add' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
+        if ($_ -in $LicenseParams) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Add' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
@@ -141,11 +123,8 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateScript( {
         $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $LicenseParams) {
-          return $true
-        }
-        else {
-          Write-Host "Parameter 'Remove' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
+        if ($_ -in $LicenseParams) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Remove' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]

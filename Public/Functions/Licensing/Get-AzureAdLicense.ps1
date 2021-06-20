@@ -32,29 +32,13 @@ function Get-AzureAdLicense {
   .FUNCTIONALITY
     Returns a list of published Licenses
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdLicense.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_Licensing
-  .LINK
-    about_UserManagement
-  .LINK
-    Get-TeamsTenantLicense
-  .LINK
-    Get-TeamsUserLicense
-  .LINK
-    Get-TeamsUserLicenseServicePlan
-  .LINK
-    Set-TeamsUserLicense
-  .LINK
-    Test-TeamsUserLicense
-  .LINK
-    Get-AzureAdUserLicense
-  .LINK
-    Get-AzureAdUserLicenseServicePlan
-  .LINK
-    Get-AzureAdLicense
-  .LINK
-    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding()]

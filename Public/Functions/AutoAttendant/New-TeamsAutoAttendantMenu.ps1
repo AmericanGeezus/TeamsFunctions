@@ -103,27 +103,11 @@ function New-TeamsAutoAttendantMenu {
   .FUNCTIONALITY
     Creates a Menu Object to be used in Auto Attendants
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsAutoAttendantMenu.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    Set-TeamsAutoAttendant
-  .LINK
-    New-TeamsCallableEntity
-  .LINK
-    New-TeamsAutoAttendantCallFlow
-  .LINK
-    New-TeamsAutoAttendantMenu
-  .LINK
-    New-TeamsAutoAttendantMenuOption
-  .LINK
-    New-TeamsAutoAttendantPrompt
-  .LINK
-    New-TeamsAutoAttendantSchedule
-  .LINK
-    New-TeamsAutoAttendantDialScope
   .LINK
     https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH
   .LINK

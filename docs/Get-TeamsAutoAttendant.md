@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendant.md
 schema: 2.0.0
 ---
 
@@ -132,25 +132,9 @@ This also works with Get-CsAutoAttendant, but with the help of "Display" Paramet
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendant.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsAutoAttendant]()
-
-[Get-TeamsCallQueue]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[Get-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[Get-TeamsResourceAccount]()
-
-[Get-TeamsResourceAccountAssociation]()
-
-[Remove-TeamsAutoAttendant]()
 

@@ -33,12 +33,16 @@ function Verb-Noun {
   .FUNCTIONALITY
     xx
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Verb-Noun.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsFunctions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
-    Verb2-Noun
+    Verb-Noun
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
   [Alias('')]
   [OutputType([PSCustomObject])]
   param (
@@ -99,8 +103,38 @@ function Verb-Noun {
       #DOC    White on GREY?, text only, SHEET?
       #WRITE  Same as DOC
       #NOTE   Same as DOC?
-      [ ] Open task
-      [x] Closed task
+      #[ ] Open task
+      #[x] Closed task
+
+
+
+      #region Applying settings
+      Write-Verbose -Message '[PROCESS] User '$($CsUser.DisplayName)' - Action'
+      $Parameters = @{
+        'Identity'       = $CsUser.ObjectId
+        'PromptLanguage' = $Language
+        'ErrorAction'    = 'Stop'
+      }
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+      if ($PSCmdlet.ShouldProcess("$($CsUser.DisplayName)", 'Set-Parameters')) {
+        try {
+          #TEST what output is received before throwing it away
+          $null = Set-Command @Parameters
+          if ($Called) {
+            Write-Information "User '$($CsUser.DisplayName)' Action successful"
+          }
+        }
+        catch {
+          Write-Error -Message "Error action unsuccessful : $($_.Exception.Message)" -Category InvalidResult
+          continue
+        }
+      }
+      else {
+        continue
+      }
+      #endregion
 
     } #foreach Identity
 

@@ -49,33 +49,15 @@ function New-TeamsCallableEntity {
   .FUNCTIONALITY
     Creates a new Callable Entity for use in Call Queues or Auto Attendants
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCallableEntity.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    Assert-TeamsCallableEntity
-  .LINK
-    Find-TeamsCallableEntity
-  .LINK
-    Get-TeamsCallableEntity
-  .LINK
-    New-TeamsCallableEntity
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    Set-TeamsAutoAttendant
-  .LINK
-    New-TeamsAutoAttendantDialScope
-  .LINK
-    New-TeamsAutoAttendantMenu
-  .LINK
-    New-TeamsAutoAttendantPrompt
-  .LINK
-    New-TeamsAutoAttendantSchedule
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]

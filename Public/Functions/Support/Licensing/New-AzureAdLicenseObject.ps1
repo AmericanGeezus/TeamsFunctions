@@ -38,13 +38,14 @@ function New-AzureAdLicenseObject {
   .FUNCTIONALITY
     Creates a new License Object to be applied with Set-AzureAdUserLicense
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-AzureAdLicenseObject.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    Set-TeamsUserLicense
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Object created locally for passing to other command. No impact')]
   [CmdletBinding(ConfirmImpact = 'Low')]
   [OutputType([Microsoft.Open.AzureAD.Model.AssignedLicenses])] #LicenseObject
   param(

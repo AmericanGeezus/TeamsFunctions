@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdGroup.md
 schema: 2.0.0
 ---
 
@@ -61,19 +61,11 @@ None
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdGroup.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdGroup.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[about_UserManagement]()
-
-[Find-AzureAdGroup]()
-
-[Find-AzureAdUser]()
-
-[Test-AzureAdGroup]()
-
-[Test-AzureAdUser]()
-
-[Test-TeamsUser]()
 

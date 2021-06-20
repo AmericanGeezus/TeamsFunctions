@@ -77,29 +77,11 @@ function New-TeamsUserVoiceConfig {
   .FUNCTIONALITY
     Applying Voice Configuration parameters to a User
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsUserVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    about_UserManagement
-  .LINK
-    Assert-TeamsUserVoiceConfig
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsTenantVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
-    Remove-TeamsUserVoiceConfig
-  .LINK
-    Test-TeamsUserVoiceConfig
-  .LINK
-    Enable-TeamsUserForEnterpriseVoice
   #>
 
   [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'DirectRouting', ConfirmImpact = 'Medium')]
@@ -133,11 +115,8 @@ function New-TeamsUserVoiceConfig {
     [Parameter(ParameterSetName = 'CallingPlans', HelpMessage = 'Calling Plan License to assign to the Object')]
     [ValidateScript( {
         $CallingPlanLicenseValues = (Get-AzureAdLicense | Where-Object LicenseType -EQ 'CallingPlan').ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $CallingPlanLicenseValues) {
-          $True
-        }
-        else {
-          Write-Host "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
+        if ($_ -in $CallingPlanLicenseValues) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
         }
       })]
     [string[]]$CallingPlanLicense,
@@ -175,7 +154,7 @@ function New-TeamsUserVoiceConfig {
     Write-Verbose -Message "[PROCESS] Processing '$UserPrincipalName'"
 
 
-    if ($Force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-TeamsUserVoiceConfig")) {
+    if ($Force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", 'Set-TeamsUserVoiceConfig')) {
       Set-TeamsUserVoiceConfig @PSBoundParameters -PassThru
     }
 

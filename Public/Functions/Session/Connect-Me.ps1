@@ -63,23 +63,14 @@ function Connect-Me {
   .FUNCTIONALITY
     Connects to one or multiple Office 365 Services with as few Authentication prompts as possible
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-Me.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Connect-Me
-  .LINK
-    Connect-AzureAD
-  .LINK
-    Connect-MicrosoftTeams
-  .LINK
-    Disconnect-Me
-  .LINK
-    Disconnect-AzureAD
-  .LINK
-    Disconnect-MicrosoftTeams
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding()]
   [Alias('con')]
   param(

@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-CurrentConnectionInfo.md
 schema: 2.0.0
 ---
 
@@ -44,11 +44,9 @@ Information about a Service is only displayed if an active connection can be fou
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-CurrentConnectionInfo.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-CurrentConnectionInfo.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsSession]()
-
-[Connect-Me]()
-
-[Get-CurrentConnectionInfo]()
 

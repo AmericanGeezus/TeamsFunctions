@@ -22,10 +22,12 @@ function Set-PowerShellWindowTitle {
       lazywinadmin.com
       @lazywinadmin
   #>
-  #Show-FunctionStatus -Level Live
-  #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Window title is a miniscule change')]
   [CmdletBinding()]
   PARAM($Title)
+  #Show-FunctionStatus -Level Live
+  #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
   try {
     $Host.UI.RawUI.WindowTitle = $Title
   }

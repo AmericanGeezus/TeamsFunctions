@@ -47,21 +47,11 @@ function Get-TeamsObjectType {
   .FUNCTIONALITY
     Determining the Object Type for the String
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsObjectType.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    Get-TeamsObjectType
-  .LINK
-    Find-TeamsCallableEntity
-  .LINK
-    Get-TeamsCallableEntity
-  .LINK
-    New-TeamsCallableEntity
   #>
 
   [CmdletBinding(ConfirmImpact = 'Low')]

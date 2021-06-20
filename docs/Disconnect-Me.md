@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disconnect-Me.md
 schema: 2.0.0
 ---
 
@@ -70,19 +70,9 @@ An Alias is available for this function: dis
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disconnect-Me.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disconnect-Me.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsSession]()
-
-[Connect-Me]()
-
-[Connect-AzureAD]()
-
-[Connect-MicrosoftTeams]()
-
-[Disconnect-Me]()
-
-[Disconnect-AzureAD]()
-
-[Disconnect-MicrosoftTeams]()
 

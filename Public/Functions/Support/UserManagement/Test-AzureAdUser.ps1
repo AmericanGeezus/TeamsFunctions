@@ -31,21 +31,13 @@ function Test-AzureAdUser {
   .FUNCTIONALITY
     Tests whether an Azure Ad User exists in AzureAd
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdUser.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_UserManagement
-  .LINK
-    Find-AzureAdGroup
-  .LINK
-    Find-AzureAdUser
-  .LINK
-    Test-AzureAdGroup
-  .LINK
-    Test-AzureAdUser
-  .LINK
-    Test-TeamsUser
   #>
 
   [CmdletBinding()]

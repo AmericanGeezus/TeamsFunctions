@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-SkypeOnline.md
 schema: 2.0.0
 ---
 
@@ -170,25 +170,9 @@ This CmdLet is preforming the following Tasks:
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-SkypeOnline.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-SkypeOnline.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsSession]()
-
-[Connect-Me]()
-
-[Connect-SkypeOnline]()
-
-[Connect-AzureAD]()
-
-[Connect-MicrosoftTeams]()
-
-[Assert-SkypeOnlineConnection]()
-
-[Disconnect-Me]()
-
-[Disconnect-SkypeOnline]()
-
-[Disconnect-AzureAD]()
-
-[Disconnect-MicrosoftTeams]()
 

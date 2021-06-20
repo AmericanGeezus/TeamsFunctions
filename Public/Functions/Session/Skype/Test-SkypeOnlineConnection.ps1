@@ -29,9 +29,11 @@ function Test-SkypeOnlineConnection {
   .FUNCTIONALITY
     Tests the connection to MicrosoftTeams (SkypeOnline)
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-SkypeOnlineConnection.md
   .LINK
-    about_TeamsSession
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]

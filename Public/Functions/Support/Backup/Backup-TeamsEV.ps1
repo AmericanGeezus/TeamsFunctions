@@ -35,11 +35,14 @@ function Backup-TeamsEV {
   .FUNCTIONALITY
     Creating a backup for all Enterprise Voice Configuration in the Teams Tenant
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsEV.md
   .LINK
-    about_SupportingFunction
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding(ConfirmImpact = 'None')]
   param(
     [Parameter(ValueFromPipelineByPropertyName)]

@@ -40,13 +40,11 @@ function Get-PublicHolidayList {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-PublicHolidayList.md
   .LINK
-    about_SupportingFunction
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
-    about_TeamsAutoAttendant
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
   .LINK
-    Get-PublicHolidayList
-  .LINK
-    Get-PublicHolidayCountry
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding()]
@@ -56,7 +54,10 @@ function Get-PublicHolidayList {
     [Parameter(Mandatory, Position = 0, HelpMessage = 'ISO 3166-alpha2 Country Code (2-digit CC)')]
     [ValidateScript( {
         $Countries = Get-PublicHolidayCountry
-        if ($_ -in $Countries.CountryCode) { $true } else { Write-Host "Country '$_' not supported (yet), sorry. Please provide a CountryCode from the output of Get-PublicHolidayCountry or check https://date.nager.at/" -ForegroundColor Red; $false }
+        if ($_ -in $Countries.CountryCode) { $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Country '$_' not supported (yet), sorry. Please provide a CountryCode from the output of Get-PublicHolidayCountry or check https://date.nager.at/"
+          $false
+        }
       })]
     [Alias('CC')]
     [String]$CountryCode,

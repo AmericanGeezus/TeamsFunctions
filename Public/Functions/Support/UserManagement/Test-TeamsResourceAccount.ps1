@@ -38,17 +38,11 @@ function Test-TeamsResourceAccount {
   .FUNCTIONALITY
     Tests whether a Resource Account exists in AzureAd
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsResourceAccount.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccount
-  .LINK
-    Find-TeamsResourceAccount
-  .LINK
-    Test-AzureAdUser
   #>
 
   [CmdletBinding()]

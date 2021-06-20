@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-SkypeOnlineConferenceDialInNumbers.md
 schema: 2.0.0
 ---
 
@@ -65,7 +65,9 @@ This function was taken 1:1 from SkypeFunctions and remains untested for Teams
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-SkypeOnlineConferenceDialInNumbers.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-SkypeOnlineConferenceDialInNumbers.md)
 
-[about_Unmanaged]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Unmanaged.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Unmanaged.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

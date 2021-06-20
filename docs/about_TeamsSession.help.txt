@@ -16,11 +16,11 @@ LONG DESCRIPTION
     simpler and provide an easier way to connect and activate your roles
 
 CmdLets
-    | Function                                                    | Description 
+    |                                  Function | Description                   
                                                                                 
-                                                       | |
-    -----------------------------------------------------------: |
-    --------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                
+                             | | ----------------------------------------: |
+    -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     | |
     `Connect-Me`
     in one go. Only displays
@@ -30,7 +30,8 @@ CmdLets
     MFA prompt! Also tries to enable your Admin Roles in PIM. | |
     `Disconnect-Me`
     | Disconnects form all Sessions to SkypeOnline, MicrosoftTeams and AzureAD  
-                                                                      |
+                                                                                
+                                                              |
     Connect-Me aims to solve the issue of having and maintaining a connection to
     all Office 365 needed for Administration. In most cases, that will be
     AzureAd and MicrosoftTeams/SkypeOnline, but could also need ExchangeOnline
@@ -45,59 +46,60 @@ Admin Roles
     , that Privileged Admin Groups are currently not covered by these CmdLets.
     This will be added as soon as they have been fully documented and PowerShell
     CmdLets are available for them.
-    | Function                                                      |
+    |                                                      Function |
     Description                                                                 
-                                                                       | |
-    -------------------------------------------------------------: |
-    -----------------------------------------------------------------------------------------------------------------------------------------------
+                        | |
+    ------------------------------------------------------------: |
+    ------------------------------------------------------------------------------------------------
     | |
     `Disable-AzureAdAdminRole`
-    | Disables Admin Roles assigned directly to the AccountId provided. | |
+    | Disables Admin Roles assigned directly to the AccountId provided.         
+                          | |
     `Enable-AzureAdAdminRole`
-    | Enables Admin Roles assigned directly to the AccountId provided. | |
+    | Enables Admin Roles assigned directly to the AccountId provided.          
+                          | |
     `Get-AzureAdAdminRole`
-    Admin Roles assigned to an AzureAdUser                                      
-                                     | |
+    Admin Roles assigned to an AzureAdUser                         | |
     `Disable-MyAzureAdAdminRole`
-    | Disables Admin Roles for the currently connected Administrator. | |
+    | Disables Admin Roles for the currently connected Administrator.           
+                          | |
     `Enable-MyAzureAdAdminRole`
-    | Enables Admin Roles for the currently connected Administrator. | |
+    | Enables Admin Roles for the currently connected Administrator.            
+                          | |
     `Get-MyAzureAdAdminRole`
-    Admin Roles assigned to the currently connected  Administrator              
-                                    |
+    Admin Roles assigned to the currently connected  Administrator |
 
     SUPPORT FUNCTIONS
-    | Function                                                                  
-       | Description                                                            
-                          | |
-    -----------------------------------------------------------------------------:
-    |
-    ---------------------------------------------------------------------------------------------
+    |                                                                Function |
+    Description                                                                 
+                      | |
+    ----------------------------------------------------------------------: |
+    ----------------------------------------------------------------------------------------------
     | |
     `Assert-AzureAdConnection`
     | Tests connection and visual feedback in the Verbose stream if called
-    directly.                | |
+    directly.                 | |
     `Assert-MicrosoftTeamsConnection`
     | Tests connection and
     Attempts to reconnect
     a timed-out session. Alias `PoL`
     Ping-of-life
     | |
-    `Get-CurrentConnection`
+    `Get-CurrentConnectionInfo`
     | Returning information about existing Sessions to AzureAd and
-    MicrosoftTeams                     | |
+    MicrosoftTeams                    | |
     `Test-AzureAdConnection`
     | Verifying a Session to AzureAD exists                                     
-                       | |
+                        | |
     `Test-ExchangeOnlineConnection`
     | Verifying a Session to ExchangeOnline exists                              
-                       | |
+                        | |
     `Test-MicrosoftTeamsConnection`
     | Verifying a Session to MicrosoftTeams exists                              
-                          | |
+                        | |
     `Test-SkypeOnlineConnection`
     | Verifying a Session to SkypeOnline exists                                 
-                       |
+                        |
     The Assert cmdlets are nested in all Scripts to ensure sessions are created
     and available
     > [!NOTE] While Assert-MicrosoftTeamsConnection is powerful, I cannot
@@ -109,20 +111,21 @@ Admin Roles
     SKYPEONLINE FUNCTIONS
     Temporarily re-introduced into the modules to allow backwards compatibility
     with MicrosoftTeams v1
-    | Function                                                  | Description   
-                                                                                
-                           | |
-    --------------------------------------------------------: |
-    ------------------------------------------------------------------------------------------------------------------
+    |                                                                           
+    Function | Description                                                      
+                                         | |
+    ----------------------------------------------------------------------------------:
+    |
+    ------------------------------------------------------------------------------------------------------
     | |
     `Connect-SkypeOnline`
-    .             | |
-    `Enable-CsOnlineSessionForReconnection`
-    | Enables a Session established with New-CsOnlineSession to reconnect.      
-        | |
+    . | |
+    `Assert-SkypeOnlineConnection`
+    | Validating a Session to SkypeOnline exists                                
+                                 | |
     `Test-SkypeOnlineConnection`
     | Verifying a Session to SkypeOnline exists                                 
-                       |
+                                |
 
 EXAMPLES
     EXAMPLE 1 - CONNECTING TO AZUREAD, MICROSOFTTEAMS

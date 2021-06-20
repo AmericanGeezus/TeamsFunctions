@@ -93,27 +93,11 @@ function Connect-SkypeOnline {
   .FUNCTIONALITY
     Creates a new connection to MicrosoftTeams (SkypeOnline) with New-CsOnlineSession
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-SkypeOnline.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Connect-Me
-  .LINK
-    Connect-SkypeOnline
-  .LINK
-    Connect-AzureAD
-  .LINK
-    Connect-MicrosoftTeams
-  .LINK
-    Assert-SkypeOnlineConnection
-  .LINK
-    Disconnect-Me
-  .LINK
-    Disconnect-SkypeOnline
-  .LINK
-    Disconnect-AzureAD
-  .LINK
-    Disconnect-MicrosoftTeams
   #>
 
   [CmdletBinding()]

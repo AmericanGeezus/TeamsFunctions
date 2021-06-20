@@ -59,29 +59,13 @@ function Remove-TeamsUserVoiceConfig {
     Removes a Users Voice Configuration (through Microsoft Call Plans or Direct Routing)
     This will leave the users in a clean and un-provisioned state and enables them to receive a new Configuration Set
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsUserVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    about_UserManagement
-  .LINK
-    Assert-TeamsUserVoiceConfig
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsTenantVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
-    Remove-TeamsUserVoiceConfig
-  .LINK
-    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]

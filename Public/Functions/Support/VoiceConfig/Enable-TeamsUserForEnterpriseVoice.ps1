@@ -33,19 +33,15 @@ function Enable-TeamsUserForEnterpriseVoice {
   .FUNCTIONALITY
     Enables a User for Enterprise Voice in order to apply a valid Voice Configuration
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Enable-TeamsUserForEnterpriseVoice.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    about_UserManagement
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
-    Assert-TeamsCallableEntity
-  .LINK
-    Enable-TeamsUserForEnterpriseVoice
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

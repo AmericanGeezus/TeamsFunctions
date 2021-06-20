@@ -34,27 +34,13 @@ function Remove-TeamsCommonAreaPhone {
   .FUNCTIONALITY
     Removes a Common Area Phone in AzureAD for use in Teams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsCommonAreaPhone.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    Get-TeamsCommonAreaPhone
-  .LINK
-    New-TeamsCommonAreaPhone
-  .LINK
-    Set-TeamsCommonAreaPhone
-  .LINK
-    Remove-TeamsCommonAreaPhone
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
@@ -63,11 +49,8 @@ function Remove-TeamsCommonAreaPhone {
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
-        }
-        else {
-          Write-Host 'Must be a valid UPN' -ForegroundColor Red
+        If ($_ -match '@') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN'
           $false
         }
       })]

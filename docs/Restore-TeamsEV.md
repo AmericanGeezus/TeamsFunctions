@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Restore-TeamsEV.md
 schema: 2.0.0
 ---
 
@@ -137,7 +137,9 @@ https://www.ucdialplans.com
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Restore-TeamsEV.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Restore-TeamsEV.md)
 
-[about_SupportingFunction]()
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 

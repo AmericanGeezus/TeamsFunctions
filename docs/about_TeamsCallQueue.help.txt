@@ -39,6 +39,16 @@ CmdLets
     | Remove-CsCallQueue  | Removes a Call Queue from the Tenant                
                   |
 
+Support CmdLet
+    | Function                                                    | Description 
+                                                                                
+      | | -----------------------------------------------------------: |
+    -------------------------------------------------------------------------------------------
+    | |
+    `Import-TeamsAudioFile`
+    | Importing an AudioFile for use as a Greeting in a Call Queue              
+                |
+
 EXAMPLES
     EXAMPLE 1 - QUERY
     Get-TeamsCallQueue [-Name] "Test"

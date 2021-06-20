@@ -25,19 +25,11 @@ function Test-ExchangeOnlineConnection {
   .FUNCTIONALITY
     Tests the connection to ExchangeOnline
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-ExchangeOnlineConnection.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Test-AzureAdConnection
-  .LINK
-    Test-MicrosoftTeamsConnection
-  .LINK
-    Test-ExchangeOnlineConnection
-  .LINK
-    Assert-AzureAdConnection
-  .LINK
-    Assert-MicrosoftTeamsConnection
   #>
 
   [CmdletBinding()]

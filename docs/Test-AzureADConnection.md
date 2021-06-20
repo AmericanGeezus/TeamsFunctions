@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdConnection.md
 schema: 2.0.0
 ---
 
@@ -44,17 +44,9 @@ Calls Get-AzureADCurrentSessionInfo to determine whether a Connection exists
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdConnection.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdConnection.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsSession]()
-
-[Test-AzureAdConnection]()
-
-[Test-MicrosoftTeamsConnection]()
-
-[Test-ExchangeOnlineConnection]()
-
-[Assert-AzureAdConnection]()
-
-[Assert-MicrosoftTeamsConnection]()
 

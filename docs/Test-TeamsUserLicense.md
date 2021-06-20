@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md
 schema: 2.0.0
 ---
 
@@ -114,15 +114,9 @@ ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) i
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[Get-TeamsTenantLicense]()
-
-[Get-TeamsUserLicense]()
-
-[Get-TeamsUserLicenseServicePlan]()
-
-[Set-TeamsUserLicense]()
 

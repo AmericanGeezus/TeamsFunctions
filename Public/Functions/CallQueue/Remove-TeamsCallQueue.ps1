@@ -29,23 +29,11 @@ function Remove-TeamsCallQueue {
   .FUNCTIONALITY
     Removes a Call Queue Object from the Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Remove-TeamsCallQueue
-  .LINK
-    Remove-TeamsAutoAttendant
-  .LINK
-    Remove-TeamsResourceAccount
-  .LINK
-    Remove-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]

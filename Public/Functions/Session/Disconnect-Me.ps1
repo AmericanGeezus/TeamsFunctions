@@ -38,21 +38,11 @@ function Disconnect-Me {
   .FUNCTIONALITY
     Disconnects existing connections to AzureAd and MicrosoftTeams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disconnect-Me.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Connect-Me
-  .LINK
-    Connect-AzureAD
-  .LINK
-    Connect-MicrosoftTeams
-  .LINK
-    Disconnect-Me
-  .LINK
-    Disconnect-AzureAD
-  .LINK
-    Disconnect-MicrosoftTeams
   #>
 
   [CmdletBinding()]
@@ -90,7 +80,7 @@ function Disconnect-Me {
         Write-Verbose -Message 'Disabling activated Admin Roles'
         $null = (Disable-MyAzureAdAdminRole)
       }
-      
+
       Write-Verbose -Message 'Disconnecting Session from AzureAd'
       $null = (Disconnect-AzureAD)
     }

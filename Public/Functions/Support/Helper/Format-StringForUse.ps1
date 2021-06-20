@@ -56,13 +56,11 @@ function Format-StringForUse {
   .FUNCTIONALITY
     Reformats a string to be used as an E.164 Number, LineUri/TelUri, DisplayName or UserPrincipalName; Removes special Characters in the process
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Format-StringForUse.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    Format-StringForUse
-  .LINK
-    Format-StringRemoveSpecialCharacter
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'Manual')]

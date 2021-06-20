@@ -32,31 +32,11 @@ function New-TeamsAutoAttendantDialScope {
   .FUNCTIONALITY
     Creates a DialScope Object to be used in Auto Attendants
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsAutoAttendantDialScope.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    Set-TeamsAutoAttendant
-  .LINK
-    Get-TeamsCallableEntity
-  .LINK
-    Find-TeamsCallableEntity
-  .LINK
-    New-TeamsCallableEntity
-  .LINK
-    New-TeamsAutoAttendantCallFlow
-  .LINK
-    New-TeamsAutoAttendantMenu
-  .LINK
-    New-TeamsAutoAttendantMenuOption
-  .LINK
-    New-TeamsAutoAttendantPrompt
-  .LINK
-    New-TeamsAutoAttendantSchedule
-  .LINK
-    New-TeamsAutoAttendantDialScope
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]

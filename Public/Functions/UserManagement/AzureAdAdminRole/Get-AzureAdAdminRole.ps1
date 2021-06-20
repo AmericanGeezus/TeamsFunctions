@@ -41,17 +41,11 @@ function Get-AzureAdAdminRole {
   .FUNCTIONALITY
     Queries active or eligible Privileged Identity roles for Administration of Teams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-AzureAdAdminRole.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    Enable-AzureAdAdminRole
-  .LINK
-    Enable-MyAzureAdAdminRole
-  .LINK
-    Get-AzureAdAdminRole
-  .LINK
-    Get-MyAzureAdAdminRole
   #>
 
   [CmdletBinding()]

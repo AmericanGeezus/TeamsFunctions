@@ -42,25 +42,11 @@ function Remove-TeamsResourceAccount {
     TeamsAutoAttendant
     TeamsCallQueue
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsResourceAccount.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccount
-  .LINK
-    Find-TeamsResourceAccount
-  .LINK
-    New-TeamsResourceAccount
-  .LINK
-    Remove-TeamsResourceAccount
-  .LINK
-    Set-TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccountAssociation
-  .LINK
-    New-TeamsResourceAccountAssociation
-  .LINK
-    Remove-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]
@@ -69,12 +55,8 @@ function Remove-TeamsResourceAccount {
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
-        }
-        else {
-          Write-Host 'Must be a valid UPN' -ForegroundColor Red
-          $false
+        if ($_ -match '@' -or $_ -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN or ObjectId.'
         }
       })]
     [Alias('Identity', 'ObjectId')]
@@ -187,13 +169,13 @@ function Remove-TeamsResourceAccount {
         if ($null -ne ($Object.TelephoneNumber)) {
           # Remove from VoiceApplicationInstance
           Write-Verbose -Message "'$Name' Removing Microsoft Number"
-          $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$UPN" -Telephonenumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
+          $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$UPN" -TelephoneNumber $null -WarningAction SilentlyContinue -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS'
         }
         if ($null -ne ($Object.OnPremLineURI)) {
           # Remove from ApplicationInstance
           Write-Verbose -Message "'$Name' Removing Direct Routing Number"
-          $null = (Set-CsOnlineApplicationInstance -Identity "$UPN" -OnPremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
+          $null = (Set-CsOnlineApplicationInstance -Identity "$UPN" -OnpremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
           Write-Verbose -Message 'SUCCESS'
         }
       }

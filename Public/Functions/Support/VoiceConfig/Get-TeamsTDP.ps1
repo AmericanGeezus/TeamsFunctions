@@ -42,31 +42,13 @@ function Get-TeamsTDP {
   .FUNCTIONALITY
     Queries Tenant Dial Plans from the Tenant
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTDP.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    Get-TeamsTDP
-  .LINK
-    Get-TeamsVNR
-  .LINK
-    Get-TeamsIPP
-  .LINK
-    Get-TeamsCP
-  .LINK
-    Get-TeamsECP
-  .LINK
-    Get-TeamsECRP
-  .LINK
-    Get-TeamsOVP
-  .LINK
-    Get-TeamsOPU
-  .LINK
-    Get-TeamsOVR
-  .LINK
-    Get-TeamsMGW
   #>
 
   [CmdletBinding()]

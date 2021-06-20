@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCallableEntity.md
 schema: 2.0.0
 ---
 
@@ -124,25 +124,13 @@ If nothing can be found for the String, an Object is returned with the Entity be
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCallableEntity.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCallableEntity.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_UserManagement]()
-
-[about_TeamsAutoAttendant]()
-
-[about_TeamsCallQueue]()
-
-[Assert-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[Get-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[Get-TeamsCallQueue]()
-
-[Get-TeamsAutoAttendant]()
-
-[Get-TeamsObjectType]()
 

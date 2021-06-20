@@ -29,11 +29,14 @@ function Assert-SkypeOnlineConnection {
   .FUNCTIONALITY
     Asserts the connection to MicrosoftTeams (SkypeOnline)
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-SkypeOnlineConnection.md
   .LINK
-    about_TeamsSession
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding()]
   [OutputType([Boolean])]
   param() #param

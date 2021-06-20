@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disable-MyAzureAdAdminRole.md
 schema: 2.0.0
 ---
 
@@ -44,19 +44,9 @@ None
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disable-MyAzureAdAdminRole.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Disable-MyAzureAdAdminRole.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_UserManagement]()
-
-[Connect-Me]()
-
-[Assert-MicrosoftTeamsConnection]()
-
-[Disable-AzureAdAdminRole]()
-
-[Disable-MyAzureAdAdminRole]()
-
-[Get-AzureAdAdminRole]()
-
-[Get-MyAzureAdAdminRole]()
 

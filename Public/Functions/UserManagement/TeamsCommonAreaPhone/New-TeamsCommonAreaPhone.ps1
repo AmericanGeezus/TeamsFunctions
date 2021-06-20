@@ -70,40 +70,24 @@ function New-TeamsCommonAreaPhone {
   .FUNCTIONALITY
     Creates a Common Area Phone in AzureAD for use in Teams
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCommonAreaPhone.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    Get-TeamsCommonAreaPhone
-  .LINK
-    New-TeamsCommonAreaPhone
-  .LINK
-    Set-TeamsCommonAreaPhone
-  .LINK
-    Remove-TeamsCommonAreaPhone
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Required for generating Password')]
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
   [Alias('New-TeamsCAP')]
   [OutputType([System.Object])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
-        }
-        else {
-          Write-Host 'Must be a valid UPN' -ForegroundColor Red
+        If ($_ -match '@') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN'
           $false
         }
       })]
@@ -119,11 +103,8 @@ function New-TeamsCommonAreaPhone {
     [Parameter(HelpMessage = 'License to be assigned')]
     [ValidateScript( {
         $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $LicenseParams) {
-          return $true
-        }
-        else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
+        if ($_ -in $LicenseParams) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
@@ -360,7 +341,7 @@ function New-TeamsCommonAreaPhone {
       $i++
 
       #$TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -License $License
-      $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlanName "TEAMS1"
+      $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlanName 'TEAMS1'
     }
     while (-not $TeamsUserLicenseNotYetAssigned)
     #endregion

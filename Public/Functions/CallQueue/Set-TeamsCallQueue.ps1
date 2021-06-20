@@ -141,19 +141,11 @@ function Set-TeamsCallQueue {
   .FUNCTIONALITY
     Changes a Call Queue with friendly names as input
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
-  .LINK
-    Remove-TeamsCallQueue
-  .LINK
-    Set-TeamsAutoAttendant
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
@@ -172,7 +164,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host 'Must be a value between 30 and 180s (3 minutes)' -ForegroundColor Red
+          throw [System.Management.Automation.ValidationMetadataException] 'Must be a value between 30 and 180s (3 minutes)'
           $false
         }
       })]
@@ -213,7 +205,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host 'OverflowThreshold: Must be a value between 0 and 200s.' -ForegroundColor Red
+          throw [System.Management.Automation.ValidationMetadataException] 'OverflowThreshold: Must be a value between 0 and 200s.'
           $false
         }
       })]
@@ -253,7 +245,7 @@ function Set-TeamsCallQueue {
           $True
         }
         else {
-          Write-Host 'TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)' -ForegroundColor Red
+          throw [System.Management.Automation.ValidationMetadataException] 'TimeoutThreshold: Must be a value between 0 and 2700s, will be rounded to nearest 15s intervall (0/15/30/45)'
           $false
         }
       })]

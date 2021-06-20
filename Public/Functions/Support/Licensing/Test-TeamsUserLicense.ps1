@@ -48,19 +48,14 @@ function Test-TeamsUserLicense {
   .FUNCTIONALITY
     Returns a boolean value for License or Serviceplan for a specific user.
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    Get-TeamsTenantLicense
-  .LINK
-    Get-TeamsUserLicense
-  .LINK
-    Get-TeamsUserLicenseServicePlan
-  .LINK
-    Set-TeamsUserLicense
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding(DefaultParameterSetName = 'ServicePlan')]
   [OutputType([Boolean])]
   param(
@@ -74,11 +69,8 @@ function Test-TeamsUserLicense {
     [Parameter(Mandatory, ParameterSetName = 'License', HelpMessage = 'Teams License Package: E5,E3,S2')]
     [ValidateScript( {
         $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $LicenseParams) {
-          return $true
-        }
-        else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
+        if ($_ -in $LicenseParams) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]

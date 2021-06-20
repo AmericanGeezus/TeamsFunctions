@@ -42,31 +42,13 @@ function Get-TeamsECRP {
   .FUNCTIONALITY
     Queries Emergency Call Routing Policies by Name
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsECRP.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    Get-TeamsOVP
-  .LINK
-    Get-TeamsOPU
-  .LINK
-    Get-TeamsOVR
-  .LINK
-    Get-TeamsMGW
-  .LINK
-    Get-TeamsTDP
-  .LINK
-    Get-TeamsVNR
-  .LINK
-    Get-TeamsIPP
-  .LINK
-    Get-TeamsCP
-  .LINK
-    Get-TeamsECRP
-  .LINK
-    Get-TeamsECRP
   #>
 
   [CmdletBinding()]

@@ -48,27 +48,13 @@ function Get-TeamsCommonAreaPhone {
   .COMPONENT
     VoiceConfiguration
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCommonAreaPhone.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    Get-TeamsCommonAreaPhone
-  .LINK
-    New-TeamsCommonAreaPhone
-  .LINK
-    Set-TeamsCommonAreaPhone
-  .LINK
-    Remove-TeamsCommonAreaPhone
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding(ConfirmImpact = 'Low', DefaultParameterSetName = 'Identity')]
@@ -85,11 +71,8 @@ function Get-TeamsCommonAreaPhone {
 
     [Parameter(ParameterSetName = 'Number', ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number of the Object')]
     [ValidateScript( {
-        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
-          $True
-        }
-        else {
-          Write-Host 'Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted.' -ForegroundColor Red
+        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted.'
           $false
         }
       })]

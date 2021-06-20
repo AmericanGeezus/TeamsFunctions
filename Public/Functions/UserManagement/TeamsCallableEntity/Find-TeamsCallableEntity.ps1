@@ -42,27 +42,15 @@ function Find-TeamsCallableEntity {
   .FUNCTIONALITY
     Finding Call Queues and/or Auto Attendants where specific Callable Entity is attached
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsCallableEntity.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    Assert-TeamsCallableEntity
-  .LINK
-    Find-TeamsCallableEntity
-  .LINK
-    Get-TeamsCallableEntity
-  .LINK
-    New-TeamsCallableEntity
-  .LINK
-    Get-TeamsObjectType
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Get-TeamsAutoAttendant
   #>
 
   [CmdletBinding()]

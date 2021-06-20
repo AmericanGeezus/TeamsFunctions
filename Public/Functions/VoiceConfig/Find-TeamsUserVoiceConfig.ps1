@@ -105,29 +105,15 @@ function Find-TeamsUserVoiceConfig {
   .FUNCTIONALITY
     Finding Users with a specific values in their Voice Configuration
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    about_UserManagement
-  .LINK
-    Assert-TeamsUserVoiceConfig
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsTenantVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
-    Remove-TeamsUserVoiceConfig
-  .LINK
-    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'Tel')]
@@ -140,11 +126,8 @@ function Find-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = 'Tel', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]
     [ValidateScript( {
-        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{3,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
-          $True
-        }
-        else {
-          Write-Host 'Not a valid phone number format. Expected min 3 digits, but multiple formats accepted. Extensions will be stripped' -ForegroundColor Red
+        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{3,15}))?((;( |-)?ext=[0-9]{3,8}))?$') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number format. Expected min 3 digits, but multiple formats accepted. Extensions will be stripped'
           $false
         }
       })]

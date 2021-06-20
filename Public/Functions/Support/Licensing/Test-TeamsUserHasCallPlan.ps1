@@ -35,15 +35,14 @@ function Test-TeamsUserHasCallPlan {
   .FUNCTIONALITY
     Tests whether the User has a Microsoft Calling Plan License
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    Test-TeamsUserLicense
-  .LINK
-    Test-TeamsUserHasCallPlan
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(

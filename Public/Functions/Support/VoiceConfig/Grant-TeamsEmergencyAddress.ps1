@@ -64,11 +64,11 @@ function Grant-TeamsEmergencyAddress {
   .FUNCTIONALITY
     Changes the CsOnlineVoiceUser Object to add a Civic Address to the User or Phone Number
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Grant-TeamsEmergencyAddress.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_VoiceConfig
-  .LINK
-    Grant-TeamsEmergencyAddress
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

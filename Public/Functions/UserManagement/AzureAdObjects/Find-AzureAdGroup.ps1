@@ -33,17 +33,14 @@ function Find-AzureAdGroup {
   .FUNCTIONALITY
     Queries Group Objects in Azure Ad with different mechanics
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-AzureAdGroup.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    Find-AzureAdUser
-  .LINK
-    Get-AzureAdGroup
-  .LINK
-    Get-TeamsCallableEntity
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding()]
   [OutputType([System.Object])]
   param(

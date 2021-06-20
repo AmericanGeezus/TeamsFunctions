@@ -55,23 +55,11 @@ function Get-TeamsCallQueue {
   .FUNCTIONALITY
     Get-CsCallQueue with friendly names instead of GUID-strings for connected objects
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCallQueue.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
-  .LINK
-    Remove-TeamsCallQueue
-  .LINK
-    Get-TeamsAutoAttendant
-  .LINK
-    Get-TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding()]

@@ -54,21 +54,11 @@ function Get-TeamsTeamChannel {
     Get-Team -DisplayName "$Team" | Get-TeamChannel | Where-Object Id -eq "$Channel"
     The CmdLet also supports providing the GUID for the Team or Channel to allow for more sturdy lookup.
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTeamChannel.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
-  .LINK
-    Assert-TeamsTeamChannel
-  .LINK
-    Get-TeamsTeamChannel
-  .LINK
-    Test-TeamsTeamChannel
   #>
 
   [CmdletBinding()]

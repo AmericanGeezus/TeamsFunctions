@@ -34,19 +34,13 @@ function Import-TeamsAudioFile {
   .FUNCTIONALITY
     Imports an AudioFile for CallQueues or AutoAttendants with Import-CsOnlineAudioFile
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Import-TeamsAudioFile.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    Assert-TeamsAudioFile
-  .LINK
-    Import-TeamsAudioFile
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
   #>
 
   [CmdletBinding()]

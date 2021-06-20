@@ -40,9 +40,11 @@ function Remove-TenantDialPlanNormalizationRule {
   .FUNCTIONALITY
     Removes a Normalisation Rule from a Tenant Dial Plan - This script is untested and unmanaged
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TenantDialPlanNormalizationRule.md
   .LINK
-    about_Unmanaged
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Unmanaged.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

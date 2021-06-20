@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsAutoAttendant.md
 schema: 2.0.0
 ---
 
@@ -90,21 +90,9 @@ None
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsAutoAttendant.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsAutoAttendant]()
-
-[Get-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[New-TeamsAutoAttendant]()
-
-[Remove-TeamsAutoAttendant]()
-
-[Remove-TeamsCallQueue]()
-
-[Remove-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccountAssociation]()
 

@@ -54,27 +54,13 @@ function Assert-TeamsUserVoiceConfig {
   .FUNCTIONALITY
     Finding Users with a incorrectly set up Voice Configuration
   .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-TeamsUserVoiceConfig.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
+  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
-  .LINK
-    about_VoiceConfiguration
-  .LINK
-    Assert-TeamsUserVoiceConfig
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsTenantVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
-    Remove-TeamsUserVoiceConfig
-  .LINK
-    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding()]
@@ -89,7 +75,7 @@ function Assert-TeamsUserVoiceConfig {
     [switch]$IncludeTenantDialPlan,
 
     [Parameter(HelpMessage = 'Extends requirements to validate the status of the Extension')]
-    [ValidateSet('MustBePopulated','MustNotBePopulated','NotMeasured')]
+    [ValidateSet('MustBePopulated', 'MustNotBePopulated', 'NotMeasured')]
     [string]$ExtensionState = 'NotMeasured'
   )
 

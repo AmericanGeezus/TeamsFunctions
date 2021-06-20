@@ -43,11 +43,14 @@ function Restore-TeamsEV {
   .FUNCTIONALITY
     Restoring a backup of the Configuration in the Teams Tenant
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Restore-TeamsEV.md
   .LINK
-    about_SupportingFunction
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding(ConfirmImpact = 'Medium', SupportsShouldProcess)]
   param(
     [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = 'Path to the zip file containing the backed up Teams EV config to restore')]

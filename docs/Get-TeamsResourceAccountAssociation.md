@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccountAssociation.md
 schema: 2.0.0
 ---
 
@@ -69,23 +69,9 @@ This may take a while to calculate, depending on # of Accounts in the Tenant
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccountAssociation.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccountAssociation.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsResourceAccount]()
-
-[Get-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccountAssociation]()
-
-[Remove-TeamsResourceAccountAssociation]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[New-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
 

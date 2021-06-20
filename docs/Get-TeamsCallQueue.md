@@ -1,7 +1,7 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCallQueue.md
 schema: 2.0.0
 ---
 
@@ -130,21 +130,9 @@ Output view more concise
 
 ## RELATED LINKS
 
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCallQueue.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md)
+
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsCallQueue]()
-
-[New-TeamsCallQueue]()
-
-[Get-TeamsCallQueue]()
-
-[Set-TeamsCallQueue]()
-
-[Remove-TeamsCallQueue]()
-
-[Get-TeamsAutoAttendant]()
-
-[Get-TeamsResourceAccount]()
-
-[Get-TeamsResourceAccountAssociation]()
 
