@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: UserVoiceConfig
 # Author:	  David Eberhardt
-# Updated:  xx-xxxx-2021
+# Updated:  20-JUN-2021
 # Status:   Alpha
 
 
@@ -41,10 +41,6 @@ function Set-TeamsUserVoiceMail {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfig.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceMail
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
