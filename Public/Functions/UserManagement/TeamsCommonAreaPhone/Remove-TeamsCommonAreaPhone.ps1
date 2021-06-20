@@ -63,11 +63,8 @@ function Remove-TeamsCommonAreaPhone {
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
-        }
-        else {
-          Write-Host 'Must be a valid UPN' -ForegroundColor Red
+        If ($_ -match '@') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN'
           $false
         }
       })]

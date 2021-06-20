@@ -79,11 +79,8 @@ function Set-AzureAdUserLicenseServicePlan {
     [Parameter(HelpMessage = 'Service Plan(s) to be enabled on this Object')]
     [ValidateScript( {
         $ServicePlanNamesEnable = (Get-AzureAdLicenseServicePlan).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $ServicePlanNamesEnable) {
-          return $true
-        }
-        else {
-          Write-Host "Parameter 'Enable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)" -ForegroundColor Red
+        if ($_ -in $ServicePlanNamesEnable) { return $true } else {
+          Throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Enable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)"
           return $false
         }
       })]
@@ -92,11 +89,8 @@ function Set-AzureAdUserLicenseServicePlan {
     [Parameter(HelpMessage = 'Service Plan(s) to be disabled on this Object')]
     [ValidateScript( {
         $ServicePlanNamesDisable = (Get-AzureAdLicenseServicePlan).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $ServicePlanNamesDisable) {
-          return $true
-        }
-        else {
-          Write-Host "Parameter 'Disable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)" -ForegroundColor Red
+        if ($_ -in $ServicePlanNamesDisable) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Disable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)"
           return $false
         }
       })]

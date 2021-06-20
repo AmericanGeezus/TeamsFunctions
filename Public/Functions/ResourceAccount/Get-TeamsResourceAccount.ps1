@@ -95,11 +95,8 @@ function Get-TeamsResourceAccount {
 
     [Parameter(ParameterSetName = 'Number', ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number of the Object')]
     [ValidateScript( {
-        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
-          $True
-        }
-        else {
-          Write-Host 'Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted. Extensions will be stripped' -ForegroundColor Red
+        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{4,15}))?((;( |-)?ext=[0-9]{3,8}))?$') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. E.164 format expected, min 4 digits, but multiple formats accepted. Extensions will be stripped'
           $false
         }
       })]

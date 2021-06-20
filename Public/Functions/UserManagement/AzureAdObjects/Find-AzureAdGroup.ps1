@@ -44,6 +44,7 @@ function Find-AzureAdGroup {
     Get-TeamsCallableEntity
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding()]
   [OutputType([System.Object])]
   param(

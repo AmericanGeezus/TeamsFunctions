@@ -38,7 +38,7 @@ function Verb-Noun {
     Verb2-Noun
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
   [Alias('')]
   [OutputType([PSCustomObject])]
   param (
@@ -101,6 +101,36 @@ function Verb-Noun {
       #NOTE   Same as DOC?
       [ ] Open task
       [x] Closed task
+
+
+
+      #region Applying settings
+      Write-Verbose -Message '[PROCESS] User '$($CsUser.DisplayName)' - Action'
+      $Parameters = @{
+        'Identity'       = $CsUser.ObjectId
+        'PromptLanguage' = $Language
+        'ErrorAction'    = 'Stop'
+      }
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+      if ($PSCmdlet.ShouldProcess("$($CsUser.DisplayName)", 'Set-Parameters')) {
+        try {
+          #TEST what output is received before throwing it away
+          $null = Set-Command @Parameters
+          if ($Called) {
+            Write-Information "User '$($CsUser.DisplayName)' Action successful"
+          }
+        }
+        catch {
+          Write-Error -Message "Error action unsuccessful : $($_.Exception.Message)" -Category InvalidResult
+          return
+        }
+      }
+      else {
+        return
+      }
+      #endregion
 
     } #foreach Identity
 

@@ -49,6 +49,7 @@ function Backup-TeamsTenant {
     about_SupportingFunction
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding(ConfirmImpact = 'None')]
   param(
     [Parameter(ValueFromPipelineByPropertyName)]

@@ -40,6 +40,7 @@ function Assert-AzureADConnection {
     Get-CurrentConnectionInfo
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding()]
   [OutputType([Boolean])]
   param() #param

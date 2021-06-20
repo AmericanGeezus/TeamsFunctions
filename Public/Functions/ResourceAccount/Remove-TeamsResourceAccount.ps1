@@ -69,12 +69,8 @@ function Remove-TeamsResourceAccount {
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
-        }
-        else {
-          Write-Host 'Must be a valid UPN' -ForegroundColor Red
-          $false
+        if ($_ -match '@' -or $_ -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') { $True } else {
+          Throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN or ObjectId.'
         }
       })]
     [Alias('Identity', 'ObjectId')]

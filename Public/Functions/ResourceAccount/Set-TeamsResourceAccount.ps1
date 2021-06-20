@@ -112,12 +112,8 @@ function Set-TeamsResourceAccount {
     #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
-        If ($_ -match '@' -or $_ -match '<GUID>') {
-          $True
-        }
-        else {
-          Write-Host 'Must be a valid UPN or ObjectId' -ForegroundColor Red
-          $false
+        if ($_ -match '@' -or $_ -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') { $True } else {
+          Throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN or ObjectId.'
         }
       })]
     [Alias('ObjectId', 'Identity')]
@@ -141,7 +137,7 @@ function Set-TeamsResourceAccount {
           return $true
         }
         else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
+          Throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
@@ -485,7 +481,7 @@ function Set-TeamsResourceAccount {
         # Verifying License is available
         elseif ($License -eq 'PhoneSystemVirtualUser') {
           $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'PHONESYSTEM_VIRTUALUSER' }).Remaining
-          Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining remaining remaining remaining rema"
+          Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining in the Tenant."
           if ($RemainingPSVULicenses -lt 1) {
             Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.'
           }

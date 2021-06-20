@@ -80,6 +80,7 @@ function Connect-Me {
     Disconnect-MicrosoftTeams
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding()]
   [Alias('con')]
   param(

@@ -48,6 +48,7 @@ function Restore-TeamsEV {
     about_SupportingFunction
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding(ConfirmImpact = 'Medium', SupportsShouldProcess)]
   param(
     [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = 'Path to the zip file containing the backed up Teams EV config to restore')]

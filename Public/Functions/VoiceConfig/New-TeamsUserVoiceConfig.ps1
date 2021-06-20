@@ -133,11 +133,8 @@ function New-TeamsUserVoiceConfig {
     [Parameter(ParameterSetName = 'CallingPlans', HelpMessage = 'Calling Plan License to assign to the Object')]
     [ValidateScript( {
         $CallingPlanLicenseValues = (Get-AzureAdLicense | Where-Object LicenseType -EQ 'CallingPlan').ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $CallingPlanLicenseValues) {
-          $True
-        }
-        else {
-          Write-Host "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
+        if ($_ -in $CallingPlanLicenseValues) { $True } else {
+          Throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
         }
       })]
     [string[]]$CallingPlanLicense,

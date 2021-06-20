@@ -95,11 +95,8 @@ function New-TeamsResourceAccount {
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to create.')]
     [ValidateScript( {
-        If ($_ -match '@') {
-          $True
-        }
-        else {
-          Write-Host 'Must be a valid UPN' -ForegroundColor Red
+        If ($_ -match '@') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Parameter UserPrincipalName must be a valid UPN'
           $false
         }
       })]
@@ -124,7 +121,7 @@ function New-TeamsResourceAccount {
           return $true
         }
         else {
-          Write-Host "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense" -ForegroundColor Red
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
@@ -136,7 +133,7 @@ function New-TeamsResourceAccount {
           $True
         }
         else {
-          Write-Host 'Not a valid phone number. Must start with a + and 8 to 15 digits long' -ForegroundColor Red
+          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. Must start with a + and 8 to 15 digits long'
           $false
         }
       })]
@@ -412,8 +409,7 @@ function New-TeamsResourceAccount {
       Write-Verbose -Message "'$Name' Processing Phone Number"
       Write-Information 'INFO: Assigning a phone number might fail if the Object is not yet replicated'
       if (-not $IsLicensed) {
-        Write-Host 'ERROR: A Phone Number can only be assigned to licensed objects.' -ForegroundColor Red
-        Write-Host 'Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
+        Write-Error -Message 'A Phone Number can only be assigned to licensed objects. Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
       }
       else {
         # Processing paths for Telephone Numbers depending on Type
@@ -424,7 +420,7 @@ function New-TeamsResourceAccount {
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"
           try {
             if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
-              $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -Telephonenumber $E164Number -ErrorAction STOP)
+              $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -TelephoneNumber $E164Number -ErrorAction STOP)
             }
           }
           catch {

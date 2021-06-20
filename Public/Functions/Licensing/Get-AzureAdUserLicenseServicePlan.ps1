@@ -71,6 +71,7 @@ function Get-AzureAdUserLicenseServicePlan {
     Get-AzureAdLicenseServicePlan
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(

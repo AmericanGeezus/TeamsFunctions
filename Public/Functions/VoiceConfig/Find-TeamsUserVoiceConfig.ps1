@@ -140,11 +140,8 @@ function Find-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = 'Tel', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]
     [ValidateScript( {
-        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{3,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
-          $True
-        }
-        else {
-          Write-Host 'Not a valid phone number format. Expected min 3 digits, but multiple formats accepted. Extensions will be stripped' -ForegroundColor Red
+        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{3,15}))?((;( |-)?ext=[0-9]{3,8}))?$') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number format. Expected min 3 digits, but multiple formats accepted. Extensions will be stripped'
           $false
         }
       })]

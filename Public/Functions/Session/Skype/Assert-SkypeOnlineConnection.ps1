@@ -34,6 +34,7 @@ function Assert-SkypeOnlineConnection {
     about_TeamsSession
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
   [CmdletBinding()]
   [OutputType([Boolean])]
   param() #param

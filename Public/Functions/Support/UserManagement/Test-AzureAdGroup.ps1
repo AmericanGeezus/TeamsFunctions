@@ -48,6 +48,7 @@ function Test-AzureAdGroup {
     Test-TeamsUser
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding()]
   [OutputType([Boolean])]
   param(

@@ -89,6 +89,7 @@ function Get-TeamsCallableEntity {
     Get-TeamsObjectType
   #>
 
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding()]
   [OutputType([PSCustomObject])]
   param(
