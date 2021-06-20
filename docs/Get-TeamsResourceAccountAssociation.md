@@ -75,21 +75,3 @@ This may take a while to calculate, depending on # of Accounts in the Tenant
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsResourceAccount]()
-
-[Get-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccountAssociation]()
-
-[Remove-TeamsResourceAccountAssociation]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[New-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
-

@@ -50,19 +50,3 @@ None
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[Connect-Me]()
-
-[Enable-AzureAdAdminRole]()
-
-[Enable-MyAzureAdAdminRole]()
-
-[Disable-AzureAdAdminRole]()
-
-[Disable-MyAzureAdAdminRole]()
-
-[Get-AzureAdAdminRole]()
-
-[Get-MyAzureAdAdminRole]()
-

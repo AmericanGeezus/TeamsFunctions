@@ -55,22 +55,6 @@ function Get-TeamsTenantLicense {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Licensing.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_Licensing
-  .LINK
-    Get-TeamsTenantLicense
-  .LINK
-    Get-TeamsUserLicense
-  .LINK
-    Get-TeamsUserLicenseServicePlan
-  .LINK
-    Set-TeamsUserLicense
-  .LINK
-    Test-TeamsUserLicense
-  .LINK
-    Get-AzureAdLicense
-  .LINK
-    Get-AzureAdLicenseServicePlan
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]

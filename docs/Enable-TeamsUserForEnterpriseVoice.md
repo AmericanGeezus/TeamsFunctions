@@ -110,21 +110,11 @@ Returns boolean result and less communication if called by another function
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Enable-TeamsUserForEnterpriseVoice.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Enable-TeamsUserForEnterpriseVoice.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsUserVoiceConfiguration]()
-
-[about_UserManagement]()
-
-[New-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
-
-[Assert-TeamsCallableEntity]()
-
-[Enable-TeamsUserForEnterpriseVoice]()
 

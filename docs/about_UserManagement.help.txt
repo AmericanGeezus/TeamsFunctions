@@ -37,6 +37,39 @@ CmdLets
     closing the PowerShell window or disconnecting from the Tenant with
     `Disconnect-Me`
 
+Admin Roles
+    Activating Admin Roles made easier. Please note that Privileged Access
+    Groups are not yet integrated as there are no PowerShell commands available
+    yet in the AzureAdPreview Module. This will be added as soon as possible.
+    Commands are used with `Connect-Me`, but can be used on its own just as well.
+    > [!NOTE] Please
+    note
+    , that Privileged Admin Groups are currently not covered by these CmdLets.
+    This will be added as soon as they have been fully documented and PowerShell
+    CmdLets are available for them.
+    |                                                      Function |
+    Description                                                                 
+                        | |
+    ------------------------------------------------------------: |
+    ------------------------------------------------------------------------------------------------
+    | |
+    `Disable-AzureAdAdminRole`
+    | Disables Admin Roles assigned directly to the AccountId provided.         
+                          | |
+    `Enable-AzureAdAdminRole`
+    | Enables Admin Roles assigned directly to the AccountId provided.          
+                          | |
+    `Get-AzureAdAdminRole`
+    Admin Roles assigned to an AzureAdUser                         | |
+    `Disable-MyAzureAdAdminRole`
+    | Disables Admin Roles for the currently connected Administrator.           
+                          | |
+    `Enable-MyAzureAdAdminRole`
+    | Enables Admin Roles for the currently connected Administrator.            
+                          | |
+    `Get-MyAzureAdAdminRole`
+    Admin Roles assigned to the currently connected  Administrator |
+
 Support CmdLet
     | Function                                                    | Description 
                                                                                 

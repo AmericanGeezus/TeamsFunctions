@@ -84,15 +84,3 @@ Captures different behavior of Get-Content (ByteStream syntax) in PowerShell 6 a
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsAutoAttendant]()
-
-[about_TeamsCallQueue]()
-
-[Assert-TeamsAudioFile]()
-
-[Import-TeamsAudioFile]()
-
-[New-TeamsCallQueue]()
-
-[Set-TeamsCallQueue]()
-

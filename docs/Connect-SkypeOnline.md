@@ -176,23 +176,3 @@ This CmdLet is preforming the following Tasks:
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
-
-[Connect-Me]()
-
-[Connect-SkypeOnline]()
-
-[Connect-AzureAD]()
-
-[Connect-MicrosoftTeams]()
-
-[Assert-SkypeOnlineConnection]()
-
-[Disconnect-Me]()
-
-[Disconnect-SkypeOnline]()
-
-[Disconnect-AzureAD]()
-
-[Disconnect-MicrosoftTeams]()
-

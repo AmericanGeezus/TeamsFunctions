@@ -134,23 +134,3 @@ If nothing can be found for the String, an Object is returned with the Entity be
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[about_TeamsAutoAttendant]()
-
-[about_TeamsCallQueue]()
-
-[Assert-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[Get-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[Get-TeamsCallQueue]()
-
-[Get-TeamsAutoAttendant]()
-
-[Get-TeamsObjectType]()
-

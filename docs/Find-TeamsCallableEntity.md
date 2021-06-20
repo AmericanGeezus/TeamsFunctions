@@ -102,23 +102,3 @@ while still being targeted as an Agent or for Overflow or Timeout.
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[about_TeamsAutoAttendant]()
-
-[about_TeamsCallQueue]()
-
-[Assert-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[Get-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[Get-TeamsObjectType]()
-
-[Get-TeamsCallQueue]()
-
-[Get-TeamsAutoAttendant]()
-

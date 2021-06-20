@@ -45,11 +45,9 @@ function Restore-TeamsEV {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Restore-TeamsEV.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]

@@ -57,27 +57,9 @@ function Get-TeamsAutoAttendantSchedule {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    Get-TeamsAutoAttendantSchedule
-  .LINK
-    New-TeamsAutoAttendantSchedule
-  .LINK
-    New-TeamsHolidaySchedule
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    Set-TeamsAutoAttendant
-  .LINK
-    Get-PublicHolidayList
-  .LINK
-    Get-PublicHolidayCountry
   #>
 
   [CmdletBinding(ConfirmImpact = 'Low')]

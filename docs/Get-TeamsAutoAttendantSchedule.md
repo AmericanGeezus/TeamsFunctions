@@ -190,25 +190,7 @@ Additionally filtered by Association
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[about_TeamsAutoAttendant]()
-
-[Get-TeamsAutoAttendantSchedule]()
-
-[New-TeamsAutoAttendantSchedule]()
-
-[New-TeamsHolidaySchedule]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[Get-PublicHolidayList]()
-
-[Get-PublicHolidayCountry]()
 

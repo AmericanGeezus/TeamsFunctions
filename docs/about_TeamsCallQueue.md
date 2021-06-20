@@ -26,6 +26,12 @@ Microsoft is continuing to improve these scripts, so I hope these can stand the 
 | [`Set-TeamsCallQueue`](Set-TeamsCallQueue.md)       | Set-CsCallQueue     | Changes a Call Queue with friendly inputs (File Names, UPNs, etc.) |
 | [`Remove-TeamsCallQueue`](Remove-TeamsCallQueue.md) | Remove-CsCallQueue  | Removes a Call Queue from the Tenant                               |
 
+## Support CmdLet
+
+| Function                                                    | Description                                                                                 |
+| -----------------------------------------------------------: | ------------------------------------------------------------------------------------------- |
+| [`Import-TeamsAudioFile`](Import-TeamsAudioFile.md)                 | Importing an AudioFile for use as a Greeting in a Call Queue                           |
+
 ## EXAMPLES
 
 ### Example 1 - Query

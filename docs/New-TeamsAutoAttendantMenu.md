@@ -336,26 +336,6 @@ https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-atten
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsAutoAttendant]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[New-TeamsCallableEntity]()
-
-[New-TeamsAutoAttendantCallFlow]()
-
-[New-TeamsAutoAttendantMenu]()
-
-[New-TeamsAutoAttendantMenuOption]()
-
-[New-TeamsAutoAttendantPrompt]()
-
-[New-TeamsAutoAttendantSchedule]()
-
-[New-TeamsAutoAttendantDialScope]()
-
 [https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH](https://docs.microsoft.com/en-us/MicrosoftTeams/create-a-phone-system-auto-attendant?WT.mc_id=TeamsAdminCenterCSH)
 
 [https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps](https://docs.microsoft.com/en-us/powershell/module/skype/new-csautoattendantmenuoption?view=skype-ps)

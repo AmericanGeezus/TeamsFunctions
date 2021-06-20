@@ -76,17 +76,3 @@ An Alias is available for this function: dis
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
-
-[Connect-Me]()
-
-[Connect-AzureAD]()
-
-[Connect-MicrosoftTeams]()
-
-[Disconnect-Me]()
-
-[Disconnect-AzureAD]()
-
-[Disconnect-MicrosoftTeams]()
-

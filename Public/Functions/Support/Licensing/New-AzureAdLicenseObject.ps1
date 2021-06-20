@@ -40,13 +40,9 @@ function New-AzureAdLicenseObject {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-AzureAdLicenseObject.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    Set-TeamsUserLicense
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Object created locally for passing to other command. No impact')]

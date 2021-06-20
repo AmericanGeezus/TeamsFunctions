@@ -61,31 +61,11 @@ function Remove-TeamsUserVoiceConfig {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsUserVoiceConfig.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   .LINK
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
-  .LINK
-    about_TeamsUserVoiceConfiguration
-  .LINK
-    about_UserManagement
-  .LINK
-    Assert-TeamsUserVoiceConfig
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsTenantVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
-    Remove-TeamsUserVoiceConfig
-  .LINK
-    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]

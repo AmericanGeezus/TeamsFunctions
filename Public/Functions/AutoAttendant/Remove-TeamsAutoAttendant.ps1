@@ -34,22 +34,6 @@ function Remove-TeamsAutoAttendant {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    Get-TeamsAutoAttendant
-  .LINK
-    Set-TeamsAutoAttendant
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    Remove-TeamsAutoAttendant
-  .LINK
-    Remove-TeamsCallQueue
-  .LINK
-    Remove-TeamsResourceAccount
-  .LINK
-    Remove-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding(ConfirmImpact = 'High', SupportsShouldProcess)]

@@ -13,9 +13,9 @@ CmdLets
     BACKUP AND RESTORE
     Taking a backup of every outputable CmdLet that Teams has to offer. Curtesy
     of Ken Lasko
-    | Function                                            | Description         
+    |                                      Function | Description               
                                                                                 
-                      | | ---------------------------------------------------: |
+                | | --------------------------------------------: |
     -------------------------------------------------------------------------------------------------------------------
     | |
     `Backup-TeamsEV`
@@ -37,10 +37,10 @@ CmdLets
     String reformatting is needed to normalise Numbers as E.164 numbers and
     allow a more diverse input (like: `'+1(555)-1234 567'`) it also serves to
     normalise DisplayNames and UPNs should characters be used that are not allowed.
-    | Function                                                                  
-               | Description                                                    
-                                                                 | |
-    -------------------------------------------------------------------------------------:
+    |                                                                       
+    Function | Description                                                      
+                                                               | |
+    ------------------------------------------------------------------------------:
     |
     ----------------------------------------------------------------------------------------------------------------------------
     | |
@@ -59,25 +59,51 @@ CmdLets
     | Little brother to `Get-TeamsCallableEntity` Returns the type of any given
     Object to identify its use in CQs and AAs.         | |
     `Import-TeamsAudioFile`
-    | Import-CsOnlineAudioFile                   | Imports an Audio File for use
-    within Call Queues or Auto Attendants                                       
-           |
+    | Import-CsOnlineAudioFile - Imports an Audio File for use within Call
+    Queues or Auto Attendants                               |
+
+    VOICE CONFIGURATION FUNCTIONS
+    These are helper functions for Voice Configuration.
+    |                                Function | Description                     
+    | | --------------------------------------: |
+    -------------------------------- | |
+    `Get-TeamsCP`
+    | Get-CsCallingPolicy              | |
+    `Get-TeamsECP`
+    | Get-CsEmergencyCallingPolicy     | |
+    `Get-TeamsECRP`
+    | Get-CsEmergencyCallRoutingPolicy | |
+    `Get-TeamsIPP`
+    | Get-CsIPPhonePolicy              | |
+    `Get-TeamsMGW`
+    | Get-CsOnlineMediaGateway         | |
+    `Get-TeamsOPU`
+    | Get-CsOnlinePstnUsage            | |
+    `Get-TeamsOVP`
+    | Get-CsOnlineVoiceRoutingPolicy   | |
+    `Get-TeamsOVR`
+    | Get-CsOnlineVoiceRoute           | |
+    `Get-TeamsTDP`
+    | Get-CsTenantDialPlan             | |
+    `Get-TeamsTenant`
+    | Get-CsTenant                     | |
+    `Get-TeamsVNR`
+    | Get-CsTenantDialPlan             |
 
     TEST & ASSERT FUNCTIONS
     These are helper functions for testing Connections and Modules. All
     Functions return boolean output. Asserting the Status of the SkypeOnline
     Connection however also tries to reconnect a broken session in the hope of
     reducing downtime.
-    | Function                                                                  
-       | Description                                                            
-                                        | |
-    -----------------------------------------------------------------------------:
-    |
+    |                                                                Function |
+    Description                                                                 
+                                   | |
+    ----------------------------------------------------------------------: |
     -----------------------------------------------------------------------------------------------------------
     | |
     `Assert-Module`
     | Verifies installation and import of a Module and optionally also verifies
-    Version.                              | |
+    Version.                          | |
     `Assert-AzureAdConnection`
     | Tests connection and visual feedback in the Verbose stream if called
     directly.                              | |
@@ -128,7 +154,6 @@ EXAMPLES
     # This will format the String as an E.164 number and return `+15551234567`
     
     '+1(555)-1234 567' | Format-StringForUse -As LineUri
-    # Example 2 will format numbers as a TEL URI
     # This will format the String as a LineUri to be used in Teams and return `tel:+15551234567`.
 
     Note, LineUris

@@ -9,18 +9,17 @@ LONG DESCRIPTION
     retained as they seemed useful. Handle with Care.
 
 CmdLets
-    | Function                                                                 
-    | Description                                                               
-                                        | |
-    -------------------------------------------------------------------------: |
-    --------------------------------------------------------------------------------------------------------------
-    | |
+    |                                                                           
+          Function | Description                                                
+         | |
+    ----------------------------------------------------------------------------------------:
+    | ---------------------------------------------------------------- | |
     `Get-SkypeOnlineConferencingDialInNumbers`
     | A Script to query all dial-in conferencing numbers on the Tenant | |
     `Remove-TenantDialPlanNormalizationRule`
-    | Removing a Normalization Rule from a Tenant Dial Plan             | |
+    | Removing a Normalization Rule from a Tenant Dial Plan            | |
     `Test-TeamsExternalDNS`
-    | Test External DNS Entries for Teams               |
+    | Test External DNS Entries for Teams                              |
 
 EXAMPLES
     None

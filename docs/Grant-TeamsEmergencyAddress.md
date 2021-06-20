@@ -160,11 +160,7 @@ https://docs.microsoft.com/en-us/microsoftteams/configure-dynamic-emergency-call
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Grant-TeamsEmergencyAddress.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Grant-TeamsEmergencyAddress.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfig.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfig.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsUserVoiceConfig]()
-
-[Grant-TeamsEmergencyAddress]()
 

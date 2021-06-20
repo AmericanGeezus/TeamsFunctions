@@ -32,12 +32,6 @@ function Get-CurrentConnectionInfo {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Connect-Me
-  .LINK
-    Get-CurrentConnectionInfo
   #>
 
   [CmdletBinding()]

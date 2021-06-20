@@ -71,5 +71,3 @@ This function was taken 1:1 from SkypeFunctions and remains untested for Teams
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_Unmanaged]()
-

@@ -252,29 +252,9 @@ This Script only covers relevant elements for Common Area Phones themselves.
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCommonAreaPhone.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsCommonAreaPhone.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_UserManagement]()
-
-[about_TeamsUserVoiceConfiguration]()
-
-[Get-TeamsCommonAreaPhone]()
-
-[New-TeamsCommonAreaPhone]()
-
-[Set-TeamsCommonAreaPhone]()
-
-[Remove-TeamsCommonAreaPhone]()
-
-[Find-TeamsUserVoiceConfig]()
-
-[Get-TeamsUserVoiceConfig]()
-
-[New-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
 

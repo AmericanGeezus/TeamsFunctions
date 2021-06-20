@@ -47,24 +47,6 @@ function Find-TeamsResourceAccount {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccountAssociation
-  .LINK
-    New-TeamsResourceAccountAssociation
-  .LINK
-    Remove-TeamsResourceAccountAssociation
-  .LINK
-    New-TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccount
-  .LINK
-    Find-TeamsResourceAccount
-  .LINK
-    Set-TeamsResourceAccount
-  .LINK
-    Remove-TeamsResourceAccount
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'Search')]

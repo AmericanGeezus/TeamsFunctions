@@ -38,16 +38,6 @@ function Find-AzureAdGroup {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    Find-AzureAdUser
-  .LINK
-    Find-AzureAdGroup
-  .LINK
-    Get-AzureAdGroup
-  .LINK
-    Get-TeamsCallableEntity
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]

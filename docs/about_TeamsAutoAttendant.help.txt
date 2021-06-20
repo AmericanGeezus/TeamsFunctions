@@ -18,19 +18,19 @@ LONG DESCRIPTION
     mantra. See Support Functions for more versatility!
 
 CmdLets
-    | Function                                                          |
-    Underlying Function    | Description                                        
-                                             | |
-    -----------------------------------------------------------------: |
+    |                                                    Function | Underlying
+    Function    | Description                                                   
+                                  | |
+    ----------------------------------------------------------: |
     ---------------------- |
     --------------------------------------------------------------------------------------------
     | |
     `Get-TeamsAutoAttendant`
     | Get-CsAutoAttendant    | Queries an Auto Attendant                        
-                                               | | Set-TeamsAutoAttendant       
-                                        | Set-CsAutoAttendant    | Changes an
-    Auto Attendant with friendly input. Alias to Set-CsAutoAttendant only!      
-         | |
+                                               | |                              
+           Set-TeamsAutoAttendant | Set-CsAutoAttendant    | Changes an Auto
+    Attendant with friendly input. Alias to Set-CsAutoAttendant only!           
+    | |
     `New-TeamsAutoAttendant`
     | |
     `Remove-TeamsAutoAttendant`
@@ -47,12 +47,12 @@ Support CmdLets
     excessive chaining in order to create a full Auto Attendant. The complexity
     of the AutoAttendants also has spawned a few support functions. Keeping in
     step with them and simplifying their use a bit is what my take on them represents.
-    | Function                                                                  
-      | Underlying Function                        | Description                
+    |                                                                  Function
+    | Underlying Function                        | Description                  
                                                                                 
-             | |
-    ----------------------------------------------------------------------------:
-    | ------------------------------------------ |
+           | |
+    ------------------------------------------------------------------------: |
+    ------------------------------------------ |
     -----------------------------------------------------------------------------------------------------------------
     | |
     `Import-TeamsAudioFile`
@@ -66,10 +66,11 @@ Support CmdLets
     `New-TeamsAutoAttendantCallFlow`
     | New-CsAutoAttendantCallFlow                | Creates a `CallFlow` Object
     with a Prompt and Menu and some default options.                            
-             | | New-TeamsAutoAttendantCallHandlingAssociation                  
-                 | New-CsAutoAttendantCallHandlingAssociation | This is only an
-    alias, as a CallHandlingAssociation is only combining a `Schedule` object
-    and a `CallFlow` object | |
+             | |                            
+    New-TeamsAutoAttendantCallHandlingAssociation |
+    New-CsAutoAttendantCallHandlingAssociation | This is only an alias, as a
+    CallHandlingAssociation is only combining a `Schedule` object and a
+    `CallFlow` object | |
     `New-TeamsAutoAttendantDialScope`
     | New-CsAutoAttendantDialScope               | Creates a `DialScope` Object
     for provided Office 365 Group Names                                         

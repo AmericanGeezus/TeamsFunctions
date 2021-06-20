@@ -93,25 +93,7 @@ Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_TeamsUserVoiceConfiguration]()
-
-[Assert-TeamsUserVoiceConfig]()
-
-[Find-TeamsUserVoiceConfig]()
-
-[Get-TeamsTenantVoiceConfig]()
-
-[Get-TeamsUserVoiceConfig]()
-
-[New-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
-
-[Remove-TeamsUserVoiceConfig]()
-
-[Test-TeamsUserVoiceConfig]()
 

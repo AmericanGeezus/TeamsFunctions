@@ -71,13 +71,7 @@ This Script is indiscriminate against the User Type, all AzureAD User Objects ca
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[Test-TeamsUserLicense]()
-
-[Test-TeamsUserHasCallPlan]()
 

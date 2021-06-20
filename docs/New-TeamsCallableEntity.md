@@ -163,29 +163,3 @@ For ExternalPstn it will construct the Tel URI
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[about_TeamsAutoAttendant]()
-
-[about_TeamsCallQueue]()
-
-[Assert-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[Get-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[New-TeamsAutoAttendantDialScope]()
-
-[New-TeamsAutoAttendantMenu]()
-
-[New-TeamsAutoAttendantPrompt]()
-
-[New-TeamsAutoAttendantSchedule]()
-

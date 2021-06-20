@@ -116,19 +116,7 @@ ServicePlans can be part of multiple licenses, for Example MCOEV (PhoneSystem) i
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[Get-TeamsTenantLicense]()
-
-[Get-TeamsUserLicense]()
-
-[Get-TeamsUserLicenseServicePlan]()
-
-[Set-TeamsUserLicense]()
-
-[Test-TeamsUserLicense]()
 

@@ -113,14 +113,8 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Set-TeamsResourceAccount',
 
     # Session
-    'Assert-AzureADConnection',
-    'Assert-MicrosoftTeamsConnection',
     'Connect-Me',
     'Disconnect-Me',
-    'Get-CurrentConnectionInfo',
-    'Test-AzureADConnection',
-    'Test-ExchangeOnlineConnection',
-    'Test-MicrosoftTeamsConnection',
 
     # Temporary Re-Additions
     'Connect-SkypeOnline',
@@ -152,6 +146,13 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-SkypeOnlineConferenceDialInNumbers',
     'Remove-TenantDialPlanNormalizationRule',
     'Test-TeamsExternalDNS',
+    ## Session
+    'Assert-AzureADConnection',
+    'Assert-MicrosoftTeamsConnection',
+    'Get-CurrentConnectionInfo',
+    'Test-AzureADConnection',
+    'Test-ExchangeOnlineConnection',
+    'Test-MicrosoftTeamsConnection',
     ## UserManagement
     'Test-AzureAdGroup',
     'Test-AzureAdUser',
@@ -232,8 +233,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'New-TeamsAAMenu', 'New-TeamsAAOption', 'New-TeamsAAFlow',
     'New-TeamsAAPrompt', 'New-TeamsAAScope', 'New-TeamsAASchedule',
     'New-TeamsAAEntity', 'New-TeamsAutoAttendantCallHandlingAssociation',
-    'Get-TeamsAASchedule', 'Remove-TeamsAASchedule', 'Remove-TeamsAutoAttendantSchedule',
-
+    'Get-TeamsAASchedule', 
     'Get-Channel'
 
   )

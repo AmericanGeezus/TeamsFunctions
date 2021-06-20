@@ -279,25 +279,3 @@ https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licen
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_Licensing]()
-
-[about_UserManagement]()
-
-[Get-TeamsTenantLicense]()
-
-[Get-TeamsUserLicense]()
-
-[Get-TeamsUserLicenseServicePlan]()
-
-[Set-TeamsUserLicense]()
-
-[Test-TeamsUserLicense]()
-
-[Get-AzureAdLicense]()
-
-[Get-AzureAdLicenseServicePlan]()
-
-[Enable-AzureAdUserLicenseServicePlan]()
-
-[Disable-AzureAdUserLicenseServicePlan]()
-

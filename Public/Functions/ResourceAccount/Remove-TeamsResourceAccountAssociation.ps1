@@ -42,16 +42,6 @@ function Remove-TeamsResourceAccountAssociation {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccountAssociation
-  .LINK
-    New-TeamsResourceAccountAssociation
-  .LINK
-    Remove-TeamsResourceAccountAssociation
-  .LINK
-    Remove-TeamsResourceAccount
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

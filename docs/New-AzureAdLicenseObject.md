@@ -86,11 +86,7 @@ Used in Set-TeamsUserLicense and Add-TeamsUserLicense
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-AzureAdLicenseObject.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-AzureAdLicenseObject.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[Set-TeamsUserLicense]()
 

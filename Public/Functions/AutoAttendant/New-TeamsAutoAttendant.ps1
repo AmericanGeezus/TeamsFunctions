@@ -138,36 +138,6 @@ function New-TeamsAutoAttendant {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    Set-TeamsAutoAttendant
-  .LINK
-    Get-TeamsCallableEntity
-  .LINK
-    New-TeamsCallableEntity
-  .LINK
-    New-TeamsAutoAttendantCallFlow
-  .LINK
-    New-TeamsAutoAttendantMenu
-  .LINK
-    New-TeamsAutoAttendantMenuOption
-  .LINK
-    New-TeamsAutoAttendantPrompt
-  .LINK
-    New-TeamsAutoAttendantSchedule
-  .LINK
-    New-TeamsAutoAttendantDialScope
-  .LINK
-    Remove-TeamsAutoAttendant
-  .LINK
-    New-TeamsResourceAccount
-  .LINK
-    New-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

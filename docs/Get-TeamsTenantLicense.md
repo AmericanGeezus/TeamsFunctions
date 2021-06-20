@@ -130,19 +130,3 @@ Requires a connection to Azure Active Directory
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_Licensing]()
-
-[Get-TeamsTenantLicense]()
-
-[Get-TeamsUserLicense]()
-
-[Get-TeamsUserLicenseServicePlan]()
-
-[Set-TeamsUserLicense]()
-
-[Test-TeamsUserLicense]()
-
-[Get-AzureAdLicense]()
-
-[Get-AzureAdLicenseServicePlan]()
-

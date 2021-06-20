@@ -73,24 +73,6 @@ function New-TeamsResourceAccount {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccount
-  .LINK
-    Find-TeamsResourceAccount
-  .LINK
-    New-TeamsResourceAccount
-  .LINK
-    Remove-TeamsResourceAccount
-  .LINK
-    Set-TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccountAssociation
-  .LINK
-    New-TeamsResourceAccountAssociation
-  .LINK
-    Remove-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

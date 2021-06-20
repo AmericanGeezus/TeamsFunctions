@@ -52,11 +52,3 @@ None
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
-
-[Assert-AzureAdConnection]()
-
-[Assert-MicrosoftTeamsConnection]()
-
-[Get-CurrentConnectionInfo]()
-

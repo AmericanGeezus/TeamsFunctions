@@ -56,24 +56,6 @@ function Set-AzureAdUserLicenseServicePlan {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_Licensing
-  .LINK
-    about_UserManagement
-  .LINK
-    Set-TeamsUserLicenseServicePlan
-  .LINK
-    Get-TeamsTenantLicense
-  .LINK
-    Get-TeamsUserLicense
-  .LINK
-    Get-TeamsUserLicenseServicePlan
-  .LINK
-    Set-TeamsUserLicense
-  .LINK
-    Get-AzureAdLicense
-  .LINK
-    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

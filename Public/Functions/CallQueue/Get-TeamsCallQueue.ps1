@@ -60,22 +60,6 @@ function Get-TeamsCallQueue {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
-  .LINK
-    Remove-TeamsCallQueue
-  .LINK
-    Get-TeamsAutoAttendant
-  .LINK
-    Get-TeamsResourceAccount
-  .LINK
-    Get-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding()]

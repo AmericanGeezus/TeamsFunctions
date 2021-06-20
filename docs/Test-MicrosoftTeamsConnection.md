@@ -50,15 +50,3 @@ Calls Get-PsSession to determine whether a Connection to MicrosoftTeams (SkypeOn
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
-
-[Test-AzureAdConnection]()
-
-[Test-MicrosoftTeamsConnection]()
-
-[Test-ExchangeOnlineConnection]()
-
-[Assert-AzureAdConnection]()
-
-[Assert-MicrosoftTeamsConnection]()
-

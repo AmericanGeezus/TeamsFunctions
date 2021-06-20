@@ -34,14 +34,6 @@ function Assert-MicrosoftTeamsConnection {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Assert-AzureAdConnection
-  .LINK
-    Assert-MicrosoftTeamsConnection
-  .LINK
-    Get-CurrentConnectionInfo
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]

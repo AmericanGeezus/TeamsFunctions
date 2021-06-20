@@ -75,13 +75,3 @@ None
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[Find-AzureAdUser]()
-
-[Find-AzureAdGroup]()
-
-[Get-AzureAdGroup]()
-
-[Get-TeamsCallableEntity]()
-

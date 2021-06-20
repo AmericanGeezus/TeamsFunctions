@@ -85,33 +85,9 @@ Get-CsOnlinePSTNGateway | Select-Object Identity, SipSignalingPort, Enabled, Med
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsMGW.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsMGW.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[about_TeamsUserVoiceConfiguration]()
-
-[Get-TeamsOVP]()
-
-[Get-TeamsOPU]()
-
-[Get-TeamsOVR]()
-
-[Get-TeamsMGW]()
-
-[Get-TeamsTDP]()
-
-[Get-TeamsVNR]()
-
-[Get-TeamsIPP]()
-
-[Get-TeamsCP]()
-
-[Get-TeamsECP]()
-
-[Get-TeamsECRP]()
 

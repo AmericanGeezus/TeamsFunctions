@@ -37,17 +37,9 @@ function Get-PublicHolidayCountry {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    Get-PublicHolidayCountry
-  .LINK
-    Get-PublicHolidayList
   #>
 
   [CmdletBinding()]

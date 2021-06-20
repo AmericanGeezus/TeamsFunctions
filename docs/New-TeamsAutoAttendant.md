@@ -528,33 +528,3 @@ None
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsAutoAttendant]()
-
-[New-TeamsCallQueue]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[Get-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[New-TeamsAutoAttendantCallFlow]()
-
-[New-TeamsAutoAttendantMenu]()
-
-[New-TeamsAutoAttendantMenuOption]()
-
-[New-TeamsAutoAttendantPrompt]()
-
-[New-TeamsAutoAttendantSchedule]()
-
-[New-TeamsAutoAttendantDialScope]()
-
-[Remove-TeamsAutoAttendant]()
-
-[New-TeamsResourceAccount]()
-
-[New-TeamsResourceAccountAssociation]()
-

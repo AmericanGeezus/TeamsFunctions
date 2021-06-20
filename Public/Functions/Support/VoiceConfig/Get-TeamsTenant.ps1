@@ -29,11 +29,9 @@ function Get-TeamsTenant {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTenant.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
   #>
 
   [CmdletBinding()]

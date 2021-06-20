@@ -144,29 +144,9 @@ Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, Voic
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserVoiceConfig.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserVoiceConfig.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
-
-[about_TeamsUserVoiceConfiguration]()
-
-[about_UserManagement]()
-
-[Assert-TeamsUserVoiceConfig]()
-
-[Find-TeamsUserVoiceConfig]()
-
-[Get-TeamsTenantVoiceConfig]()
-
-[Get-TeamsUserVoiceConfig]()
-
-[New-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
-
-[Remove-TeamsUserVoiceConfig]()
-
-[Test-TeamsUserVoiceConfig]()
 

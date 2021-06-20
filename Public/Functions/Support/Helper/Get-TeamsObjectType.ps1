@@ -52,16 +52,6 @@ function Get-TeamsObjectType {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    Get-TeamsObjectType
-  .LINK
-    Find-TeamsCallableEntity
-  .LINK
-    Get-TeamsCallableEntity
-  .LINK
-    New-TeamsCallableEntity
   #>
 
   [CmdletBinding(ConfirmImpact = 'Low')]

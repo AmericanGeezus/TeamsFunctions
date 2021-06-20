@@ -65,29 +65,9 @@ function Get-TeamsUserVoiceConfig {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsUserVoiceConfig.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsUserVoiceConfiguration
-  .LINK
-    about_UserManagement
-  .LINK
-    Assert-TeamsUserVoiceConfig
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsTenantVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
-  .LINK
-    Remove-TeamsUserVoiceConfig
-  .LINK
-    Test-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding()]

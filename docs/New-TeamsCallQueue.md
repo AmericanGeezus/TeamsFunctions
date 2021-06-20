@@ -659,19 +659,3 @@ TimeoutSharedVoicemailAudioFile - SharedVoicemail will not be configured
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsCallQueue]()
-
-[New-TeamsCallQueue]()
-
-[Get-TeamsCallQueue]()
-
-[Set-TeamsCallQueue]()
-
-[Remove-TeamsCallQueue]()
-
-[New-TeamsAutoAttendant]()
-
-[New-TeamsResourceAccount]()
-
-[New-TeamsResourceAccountAssociation]()
-

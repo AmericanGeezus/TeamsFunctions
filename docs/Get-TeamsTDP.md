@@ -82,33 +82,9 @@ Get-CsTenantDialPlan | Where-Object Identity -NE "Global" | Select-Object Identi
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTDP.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsTDP.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[about_TeamsUserVoiceConfiguration]()
-
-[Get-TeamsTDP]()
-
-[Get-TeamsVNR]()
-
-[Get-TeamsIPP]()
-
-[Get-TeamsCP]()
-
-[Get-TeamsECP]()
-
-[Get-TeamsECRP]()
-
-[Get-TeamsOVP]()
-
-[Get-TeamsOPU]()
-
-[Get-TeamsOVR]()
-
-[Get-TeamsMGW]()
 

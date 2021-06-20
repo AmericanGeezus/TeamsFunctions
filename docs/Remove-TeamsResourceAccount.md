@@ -141,21 +141,3 @@ Execution requires User Admin Role in Azure AD
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsResourceAccount]()
-
-[Get-TeamsResourceAccount]()
-
-[Find-TeamsResourceAccount]()
-
-[New-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccount]()
-
-[Set-TeamsResourceAccount]()
-
-[Get-TeamsResourceAccountAssociation]()
-
-[New-TeamsResourceAccountAssociation]()
-
-[Remove-TeamsResourceAccountAssociation]()
-

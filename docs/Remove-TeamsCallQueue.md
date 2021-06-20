@@ -96,19 +96,3 @@ None
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsCallQueue]()
-
-[Get-TeamsCallQueue]()
-
-[Set-TeamsCallQueue]()
-
-[New-TeamsCallQueue]()
-
-[Remove-TeamsCallQueue]()
-
-[Remove-TeamsAutoAttendant]()
-
-[Remove-TeamsResourceAccount]()
-
-[Remove-TeamsResourceAccountAssociation]()
-

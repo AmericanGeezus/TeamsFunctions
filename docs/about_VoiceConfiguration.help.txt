@@ -16,14 +16,17 @@ LONG DESCRIPTION
     admins
 
 CmdLets
-    | Function                             | Description                        
+    |                                                                     
+    Function | Description                                                      
                                                                                 
-                                     | | ------------------------------------: |
+       | |
+    ----------------------------------------------------------------------------:
+    |
     -------------------------------------------------------------------------------------------------------------------------------------------------
     | |
     `Assert-TeamsUserVoiceConfig`
     | Validates an Object for proper application of its Voice Configuration and
-    returns Objects that are only partially or not correctly configured. | |
+    returns Objects that are only partially or not correctly configured.    | |
     `Enable-TeamsUserForEnterpriseVoice`
     | |
     `Find-TeamsUserVoiceRoute`
@@ -53,8 +56,11 @@ CmdLets
     Routing breakouts, though the provided CmdLets are solid since its Lync
     days, getting information fast and without the hassle of piping, filtering
     and selecting was the goal behind creating the below shortcuts.
-    | Function          | Description                                           
-                                 | | -----------------: |
+    |                                                                     
+    Function | Description                                                      
+                      | |
+    ----------------------------------------------------------------------------:
+    |
     -----------------------------------------------------------------------------------
     | |
     `Get-TeamsTenant`
@@ -62,39 +68,47 @@ CmdLets
              | |
     `Get-TeamsCP`
     | Get-CsTeamsCallingPolicy is too long to type? Here is a shorter one.      
-     | |
+             | |
     `Get-TeamsECP`
     | Get-CsTeamsEmergencyCallingPolicy is too long to type? Here is a shorter
-    one.        | |
+    one.       | |
     `Get-TeamsECRP`
     | Get-CsTeamsEmergencyCallRoutingPolicy is too long to type? Here is a
-    shorter one.        | |
+    shorter one.   | |
     `Get-TeamsIPP`
     | Get-CsTeamsIpPhonePolicy is too long to type? Here is a shorter one.      
-     | |
+             | |
     `Get-TeamsOVP`
     | Get-CsOnlineVoiceRoutingPolicy is too long to type? Here is a shorter one.
-           | |
+             | |
     `Get-TeamsOPU`
     | Get-CsOnlinePstnUsage is too clunky. Here is a shorter one, with a search
     function! | |
     `Get-TeamsOVR`
     | Get-CsOnlineVoiceRoute, just more concise                                 
-                                | |
+             | |
     `Get-TeamsMGW`
     | Get-CsOnlinePstnGateway, but a bit nicer                                  
-                              | |
+             | |
     `Get-TeamsTDP`
     | Get-TeamsTenantDialPlan is too long to type. Also, we only want the
     names...        | |
     `Get-TeamsVNR`
-    for a given Dial Plan                  |
+    for a given Dial Plan                  | |
+    `Enable-TeamsUserForEnterpriseVoice`
+    | Nomen est omen                                                            
+             | |
+    `Grant-TeamsEmergencyAddresss`
+    | Applies the `CsOnlineLisAddress` as if it were a Policy                   
+             |
 
     LEGACY SUPPORT CMDLETS
     These are the last remnants of the old SkypeFunctions module. Their
-    functionality has been barely touched. | Function                           
-         | Description                                                          
-                       | | ---------------------------------------: |
+    functionality has been barely touched. |                                    
+                                             Function | Description             
+                                                                    | |
+    ------------------------------------------------------------------------------------:
+    |
     ----------------------------------------------------------------------------------------
     | |
     `Get-SkypeOnlineConferenceDialInNumbers`

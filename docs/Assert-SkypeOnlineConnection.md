@@ -52,7 +52,3 @@ Calls Test-SkypeOnlineConnection to ascertain session.
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsSession]()
-
-[Assert-SkypeOnlineConnection]()
-

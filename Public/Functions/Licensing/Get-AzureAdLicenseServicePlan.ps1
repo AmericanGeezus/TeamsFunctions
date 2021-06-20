@@ -41,24 +41,6 @@ function Get-AzureAdLicenseServicePlan {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_Licensing
-  .LINK
-    about_UserManagement
-  .LINK
-    Get-TeamsTenantLicense
-  .LINK
-    Get-TeamsUserLicense
-  .LINK
-    Get-TeamsUserLicenseServicePlan
-  .LINK
-    Set-TeamsUserLicense
-  .LINK
-    Test-TeamsUserLicense
-  .LINK
-    Get-AzureAdLicense
-  .LINK
-    Get-AzureAdLicenseServicePlan
   #>
 
   [CmdletBinding()]

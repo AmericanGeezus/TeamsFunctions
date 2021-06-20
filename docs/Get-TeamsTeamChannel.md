@@ -116,17 +116,3 @@ It is used to determine usability for Call Queues (Forward to Channel)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsCallQueue]()
-
-[New-TeamsCallQueue]()
-
-[Get-TeamsCallQueue]()
-
-[Set-TeamsCallQueue]()
-
-[Assert-TeamsTeamChannel]()
-
-[Get-TeamsTeamChannel]()
-
-[Test-TeamsTeamChannel]()
-

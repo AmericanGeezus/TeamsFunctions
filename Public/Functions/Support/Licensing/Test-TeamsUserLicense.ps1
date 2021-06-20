@@ -50,21 +50,9 @@ function Test-TeamsUserLicense {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserLicense.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    Get-TeamsTenantLicense
-  .LINK
-    Get-TeamsUserLicense
-  .LINK
-    Get-TeamsUserLicenseServicePlan
-  .LINK
-    Set-TeamsUserLicense
-  .LINK
-    Test-TeamsUserLicense
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]

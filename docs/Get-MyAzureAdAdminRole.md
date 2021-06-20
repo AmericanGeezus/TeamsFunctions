@@ -76,13 +76,3 @@ This is a wrapper for Get-AzureAdAdminRole targeting the currently connected Use
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[Enable-AzureAdAdminRole]()
-
-[Enable-MyAzureAdAdminRole]()
-
-[Get-AzureAdAdminRole]()
-
-[Get-MyAzureAdAdminRole]()
-

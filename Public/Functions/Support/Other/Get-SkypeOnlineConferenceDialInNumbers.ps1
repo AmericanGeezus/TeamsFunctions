@@ -38,8 +38,6 @@ function Get-SkypeOnlineConferenceDialInNumbers {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Unmanaged.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_Unmanaged
   #>
 
   [CmdletBinding()]

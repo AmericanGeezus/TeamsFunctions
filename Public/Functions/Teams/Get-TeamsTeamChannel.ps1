@@ -59,20 +59,6 @@ function Get-TeamsTeamChannel {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
-  .LINK
-    Assert-TeamsTeamChannel
-  .LINK
-    Get-TeamsTeamChannel
-  .LINK
-    Test-TeamsTeamChannel
   #>
 
   [CmdletBinding()]

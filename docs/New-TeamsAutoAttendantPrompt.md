@@ -107,27 +107,3 @@ This will break if the String ends in a supported File extension (WAV, WMA or MP
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsAutoAttendant]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[Get-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[New-TeamsAutoAttendantCallFlow]()
-
-[New-TeamsAutoAttendantMenu]()
-
-[New-TeamsAutoAttendantMenuOption]()
-
-[New-TeamsAutoAttendantPrompt]()
-
-[New-TeamsAutoAttendantSchedule]()
-
-[New-TeamsAutoAttendantDialScope]()
-

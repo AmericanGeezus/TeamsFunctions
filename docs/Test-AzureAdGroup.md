@@ -63,21 +63,9 @@ None
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdGroup.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdGroup.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[about_UserManagement]()
-
-[Find-AzureAdGroup]()
-
-[Find-AzureAdUser]()
-
-[Test-AzureAdGroup]()
-
-[Test-AzureAdUser]()
-
-[Test-TeamsUser]()
 

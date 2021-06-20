@@ -17,12 +17,14 @@ List of Aliases and their Functions
     `Assert-TeamsUserVoiceConfig`
     | | con                                           |
     `Connect-Me`
-    | | Connect-SkypeOnline                           |
-    `Connect-MicrosoftTeams`
-    | | cur                                           |
-    `Get-CurrentConnection`
     | | dis                                           |
     `Disconnect-Me`
+    | | cur                                           |
+    `Get-CurrentConnection`
+    | | dar                                           |
+    `Disable-MyAzureAdAdminRole`
+    | | gar                                           |
+    `Get-MyAzureAdAdminRole`
     | | ear                                           |
     `Enable-MyAzureAdAdminRole`
     | | Enable-Ev                                     |
@@ -33,8 +35,12 @@ List of Aliases and their Functions
     `Find-TeamsUserVoiceConfig`
     | | Find-TeamsUVR                                 |
     `Find-TeamsUserVoiceRouting`
+    | | Get-Channel                                   |
+    `Get-TeamsTeamChannel`
     | | Get-TeamsAA                                   |
     `Get-AutoAttendant`
+    | | Get-TeamsAASchedule                           |
+    `Get-AutoAttendantSchedule`
     | | Get-TeamsCAP                                  |
     `Get-TeamsCommonAreaPhone`
     | | Get-TeamsCQ                                   |
@@ -61,8 +67,6 @@ List of Aliases and their Functions
     `New-TeamsAutoAttendantSchedule`
     | | New-TeamsAAScope                              |
     `New-TeamsAutoAttendantDialScope`
-    | | New-TeamsAutoAttendantCallableEntity          |
-    `New-TeamsCallableEntity`
     | | New-TeamsAutoAttendantCallHandlingAssociation |
     New-CsAutoAttendantCallHandlingAssociation (MS)                             
                        | | New-TeamsCAP                                  |
@@ -73,6 +77,8 @@ List of Aliases and their Functions
     `New-TeamsResourceAccount`
     | | New-TeamsRAA                                  |
     `New-TeamsResourceAccountAssociation`
+    | | New-TeamsUVC                                  |
+    `New-TeamsUserVoiceConfig`
     | | PoL                                           |
     `Assert-MicrosoftTeamsConnection`
     - think: "ping-of-life" | | Remove-CsOnlineApplicationInstance            |

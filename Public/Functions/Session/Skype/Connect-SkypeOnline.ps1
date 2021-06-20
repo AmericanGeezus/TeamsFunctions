@@ -98,26 +98,6 @@ function Connect-SkypeOnline {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Connect-Me
-  .LINK
-    Connect-SkypeOnline
-  .LINK
-    Connect-AzureAD
-  .LINK
-    Connect-MicrosoftTeams
-  .LINK
-    Assert-SkypeOnlineConnection
-  .LINK
-    Disconnect-Me
-  .LINK
-    Disconnect-SkypeOnline
-  .LINK
-    Disconnect-AzureAD
-  .LINK
-    Disconnect-MicrosoftTeams
   #>
 
   [CmdletBinding()]

@@ -15,14 +15,14 @@ LONG DESCRIPTION
     CmdLets that make heavy use of them.
 
 CmdLets
-    | Function                                                  | Description   
-                                                                                
-                                                | |
-    ---------------------------------------------------------: |
+    |                                                      Function |
+    Description                                                                 
+                                                               | |
+    ------------------------------------------------------------: |
     ---------------------------------------------------------------------------------------------------------------------------------------
     | |
     `Assert-TeamsCallableEntity`
-    . | |
+    .                                             | |
     `Find-TeamsCallableEntity`
     . | |
     `Get-TeamsCallableEntity`

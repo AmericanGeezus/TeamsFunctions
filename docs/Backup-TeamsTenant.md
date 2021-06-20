@@ -78,9 +78,7 @@ The list of command is not dynamic, meaning addded commandlets post publishing d
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsTenant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Backup-TeamsTenant.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
 

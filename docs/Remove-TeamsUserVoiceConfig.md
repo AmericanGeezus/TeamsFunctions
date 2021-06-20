@@ -193,29 +193,9 @@ This is to enable a User to receive a new Voice Configuration without impacting 
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsUserVoiceConfig.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Remove-TeamsUserVoiceConfig.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
 [https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating](https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating)
-
-[about_TeamsUserVoiceConfiguration]()
-
-[about_UserManagement]()
-
-[Assert-TeamsUserVoiceConfig]()
-
-[Find-TeamsUserVoiceConfig]()
-
-[Get-TeamsTenantVoiceConfig]()
-
-[Get-TeamsUserVoiceConfig]()
-
-[New-TeamsUserVoiceConfig]()
-
-[Set-TeamsUserVoiceConfig]()
-
-[Remove-TeamsUserVoiceConfig]()
-
-[Test-TeamsUserVoiceConfig]()
 

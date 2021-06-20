@@ -138,23 +138,3 @@ This also works with Get-CsAutoAttendant, but with the help of "Display" Paramet
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsAutoAttendant]()
-
-[Get-TeamsCallQueue]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[Get-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[Get-TeamsResourceAccount]()
-
-[Get-TeamsResourceAccountAssociation]()
-
-[Remove-TeamsAutoAttendant]()
-

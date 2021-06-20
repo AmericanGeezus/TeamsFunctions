@@ -162,22 +162,6 @@ function New-TeamsCallQueue {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsCallQueue.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsCallQueue
-  .LINK
-    New-TeamsCallQueue
-  .LINK
-    Get-TeamsCallQueue
-  .LINK
-    Set-TeamsCallQueue
-  .LINK
-    Remove-TeamsCallQueue
-  .LINK
-    New-TeamsAutoAttendant
-  .LINK
-    New-TeamsResourceAccount
-  .LINK
-    New-TeamsResourceAccountAssociation
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

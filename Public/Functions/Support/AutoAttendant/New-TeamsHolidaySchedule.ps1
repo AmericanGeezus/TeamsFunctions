@@ -49,19 +49,9 @@ function New-TeamsHolidaySchedule {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsHolidaySchedule.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_TeamsAutoAttendant
-  .LINK
-    New-TeamsHolidaySchedule
-  .LINK
-    Get-PublicHolidayList
-  .LINK
-    Get-PublicHolidayCountry
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

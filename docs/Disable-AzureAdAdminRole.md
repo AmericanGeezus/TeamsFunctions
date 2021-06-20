@@ -180,17 +180,3 @@ Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this scrip
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_UserManagement]()
-
-[Enable-AzureAdAdminRole]()
-
-[Enable-MyAzureAdAdminRole]()
-
-[Disable-AzureAdAdminRole]()
-
-[Disable-MyAzureAdAdminRole]()
-
-[Get-AzureAdAdminRole]()
-
-[Get-MyAzureAdAdminRole]()
-

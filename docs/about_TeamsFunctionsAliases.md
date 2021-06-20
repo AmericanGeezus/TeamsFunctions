@@ -10,21 +10,28 @@ Collection of Aliases available for the CmdLets in the Module
 
 All Aliases recorded here manually as the generated DOCS are not captured automatically by PlatyPS
 
+
+
+
+
 ## List of Aliases and their Functions
 
 | Alias                                         | Function                                                                                        |
 | --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Assert-TeamsUVC                               | [`Assert-TeamsUserVoiceConfig`](Assert-TeamsUserVoiceConfig.md)                                 |
 | con                                           | [`Connect-Me`](Connect-Me.md)                                                                   |
-| Connect-SkypeOnline                           | [`Connect-MicrosoftTeams`](Connect-MicrosoftTeams.md)                                           |
-| cur                                           | [`Get-CurrentConnection`](Get-CurrentConnection.md)                                             |
 | dis                                           | [`Disconnect-Me`](Disconnect-Me.md)                                                             |
+| cur                                           | [`Get-CurrentConnection`](Get-CurrentConnection.md)                                             |
+| dar                                           | [`Disable-MyAzureAdAdminRole`](Disable-MyAzureAdAdminRole.md)                                     |
+| gar                                           | [`Get-MyAzureAdAdminRole`](Get-MyAzureAdAdminRole.md)                                     |
 | ear                                           | [`Enable-MyAzureAdAdminRole`](Enable-MyAzureAdAdminRole.md)                                     |
 | Enable-Ev                                     | [`Enable-TeamsUserForEnterpriseVoice`](Enable-TeamsUserForEnterpriseVoice.md)                   |
 | Find-TeamsRA                                  | [`Find-TeamsResourceAccount`](Find-TeamsResourceAccount.md)                                     |
 | Find-TeamsUVC                                 | [`Find-TeamsUserVoiceConfig`](Find-TeamsUserVoiceConfig.md)                                     |
 | Find-TeamsUVR                                 | [`Find-TeamsUserVoiceRouting`](Find-TeamsUserVoiceRouting.md)                                   |
+| Get-Channel                                   | [`Get-TeamsTeamChannel`](Get-TeamsTeamChannel.md)                                                     |
 | Get-TeamsAA                                   | [`Get-AutoAttendant`](Get-AutoAttendant.md)                                                     |
+| Get-TeamsAASchedule                           | [`Get-AutoAttendantSchedule`](Get-AutoAttendantSchedule.md)                                       |
 | Get-TeamsCAP                                  | [`Get-TeamsCommonAreaPhone`](Get-TeamsCommonAreaPhone.md)                                       |
 | Get-TeamsCQ                                   | [`Get-TeamsCallQueue`](Get-TeamsCallQueue.md)                                                   |
 | Get-TeamsRA                                   | [`Get-TeamsResourceAccount`](Get-TeamsResourceAccount.md)                                       |
@@ -38,12 +45,12 @@ All Aliases recorded here manually as the generated DOCS are not captured automa
 | New-TeamsAAPrompt                             | [`New-TeamsAutoAttendantPrompt`](New-TeamsAutoAttendantPrompt.md)                               |
 | New-TeamsAASchedule                           | [`New-TeamsAutoAttendantSchedule`](New-TeamsAutoAttendantSchedule.md)                           |
 | New-TeamsAAScope                              | [`New-TeamsAutoAttendantDialScope`](New-TeamsAutoAttendantDialScope.md)                         |
-| New-TeamsAutoAttendantCallableEntity          | [`New-TeamsCallableEntity`](New-TeamsCallableEntity.md)                                         |
 | New-TeamsAutoAttendantCallHandlingAssociation | New-CsAutoAttendantCallHandlingAssociation (MS)                                                 |
 | New-TeamsCAP                                  | [`New-TeamsCommonAreaPhone`](New-TeamsCommonAreaPhone.md)                                       |
 | New-TeamsCQ                                   | [`New-TeamsCallQueue`](New-TeamsCallQueue.md)                                                   |
 | New-TeamsRA                                   | [`New-TeamsResourceAccount`](New-TeamsResourceAccount.md)                                       |
 | New-TeamsRAA                                  | [`New-TeamsResourceAccountAssociation`](New-TeamsResourceAccountAssociation.md)                 |
+| New-TeamsUVC                                  | [`New-TeamsUserVoiceConfig`](New-TeamsUserVoiceConfig.md)                                       |
 | PoL                                           | [`Assert-MicrosoftTeamsConnection`](Assert-MicrosoftTeamsConnection.md) - think: "ping-of-life" |
 | Remove-CsOnlineApplicationInstance            | [`Remove-TeamsResourceAccount`](Remove-TeamsResourceAccount.md) (this didn't exist)             |
 | Remove-TeamsAA                                | [`Remove-TeamsAutoAttendant`](Remove-TeamsAutoAttendant.md)                                     |

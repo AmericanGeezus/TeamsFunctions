@@ -33,23 +33,11 @@ function Test-TeamsUser {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUser.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    about_UserManagement
-  .LINK
-    Find-AzureAdGroup
-  .LINK
-    Find-AzureAdUser
-  .LINK
-    Test-AzureAdGroup
-  .LINK
-    Test-AzureAdUser
-  .LINK
-    Test-TeamsUser
   #>
 
   [CmdletBinding()]

@@ -64,31 +64,11 @@ function Set-TeamsCommonAreaPhone {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Set-TeamsCommonAreaPhone.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfiguration.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_UserManagement.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_UserManagement
-  .LINK
-    about_TeamsUserVoiceConfiguration
-  .LINK
-    Get-TeamsCommonAreaPhone
-  .LINK
-    New-TeamsCommonAreaPhone
-  .LINK
-    Set-TeamsCommonAreaPhone
-  .LINK
-    Remove-TeamsCommonAreaPhone
-  .LINK
-    Find-TeamsUserVoiceConfig
-  .LINK
-    Get-TeamsUserVoiceConfig
-  .LINK
-    New-TeamsUserVoiceConfig
-  .LINK
-    Set-TeamsUserVoiceConfig
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]

@@ -43,20 +43,6 @@ function Disconnect-Me {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsSession
-  .LINK
-    Connect-Me
-  .LINK
-    Connect-AzureAD
-  .LINK
-    Connect-MicrosoftTeams
-  .LINK
-    Disconnect-Me
-  .LINK
-    Disconnect-AzureAD
-  .LINK
-    Disconnect-MicrosoftTeams
   #>
 
   [CmdletBinding()]

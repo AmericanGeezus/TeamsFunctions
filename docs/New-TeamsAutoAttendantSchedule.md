@@ -289,27 +289,3 @@ DateTimeRange - Provide a DateTimeRange Object manually defined with New-CsOnlin
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
 
-[about_TeamsAutoAttendant]()
-
-[New-TeamsAutoAttendant]()
-
-[Set-TeamsAutoAttendant]()
-
-[Get-TeamsCallableEntity]()
-
-[Find-TeamsCallableEntity]()
-
-[New-TeamsCallableEntity]()
-
-[New-TeamsAutoAttendantCallFlow]()
-
-[New-TeamsAutoAttendantMenu]()
-
-[New-TeamsAutoAttendantMenuOption]()
-
-[New-TeamsAutoAttendantPrompt]()
-
-[New-TeamsAutoAttendantSchedule]()
-
-[New-TeamsAutoAttendantDialScope]()
-

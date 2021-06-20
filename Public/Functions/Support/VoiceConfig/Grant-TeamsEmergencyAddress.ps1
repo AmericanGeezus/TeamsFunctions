@@ -66,13 +66,9 @@ function Grant-TeamsEmergencyAddress {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Grant-TeamsEmergencyAddress.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsUserVoiceConfig.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_TeamsUserVoiceConfig
-  .LINK
-    Grant-TeamsEmergencyAddress
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]

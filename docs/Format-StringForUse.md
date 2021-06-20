@@ -161,13 +161,7 @@ None
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Format-StringForUse.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Format-StringForUse.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[Format-StringForUse]()
-
-[Format-StringRemoveSpecialCharacter]()
 

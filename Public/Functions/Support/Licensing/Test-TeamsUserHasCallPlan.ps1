@@ -37,15 +37,9 @@ function Test-TeamsUserHasCallPlan {
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-TeamsUserHasCallPlan.md
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    about_SupportingFunction
-  .LINK
-    Test-TeamsUserLicense
-  .LINK
-    Test-TeamsUserHasCallPlan
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]

@@ -147,17 +147,7 @@ Utilising the Calendarific API could be integrated if licensed and the API key i
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsHolidaySchedule.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsHolidaySchedule.md)
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_SupportingFunction.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/)
-
-[about_SupportingFunction]()
-
-[about_TeamsAutoAttendant]()
-
-[New-TeamsHolidaySchedule]()
-
-[Get-PublicHolidayList]()
-
-[Get-PublicHolidayCountry]()
 
