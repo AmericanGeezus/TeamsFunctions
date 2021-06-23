@@ -199,6 +199,7 @@ function Set-TeamsUserVoiceConfig {
     #TEST Performance of Test done
     if ( Test-TeamsResourceAccount $UserPrincipalName) {
       Write-Error -Message 'Resource Account specified! Please use Set-TeamsResourceAccount to provision Resource Accounts' -Category InvalidType -RecommendedAction 'Please use Set-TeamsResourceAccount to provision Resource Accounts'
+      #VALIDATE what to do with this error - it is not written to errorlog
       return
     }
     #endregion
