@@ -554,8 +554,9 @@ function Set-TeamsUserVoiceConfig {
 
       #region Specific Configuration 2 - Phone Number
 
+      #region PhoneNumber
       #region Removing number from OTHER Object
-      if ( $Force -and $PhoneNumber -and $UserWithThisNumber ) {
+      if ( $Force -and $PSBoundParameters.ContainsKey('PhoneNumber') -and $UserWithThisNumber ) {
         $Operation = 'Scavenging Phone Number'
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -587,96 +588,101 @@ function Set-TeamsUserVoiceConfig {
       }
       #endregion
 
-      #region Remove Number from current Object
-      if ( $force -or [String]::IsNullOrEmpty($PhoneNumber) ) {
-        if ([String]::IsNullOrEmpty($PhoneNumber)) {
+      if ( $PSBoundParameters.ContainsKey('PhoneNumber')) {
+        #region Remove Number from current Object
+        if ( ([String]::IsNullOrEmpty($PhoneNumber)) ) {
           Write-Warning -Message "User '$UserPrincipalName' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
+          $Operation = 'Removing Phone Number'
+          $step++
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
+          try {
+            if ($PhoneNumberIsMSNumber) {
+              # Remove MS Number
+              $CsUser | Set-CsUser -TelephoneNumber $null -ErrorAction Stop
+              Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - Calling Plan number removed"
+            }
+            else {
+              # Remove Direct Routing Number
+              $CsUser | Set-CsUser -OnPremLineURI $null -ErrorAction Stop
+              Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - Direct Routing number removed"
+            }
+          }
+          catch {
+            if ($_.Exception.Message.Contains('dirsync')) {
+              Write-Warning -Message "User '$UserPrincipalName' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+              Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
+            }
+            else {
+              Write-Verbose -Message "User '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'" -Verbose
+            }
+          }
         }
-        $Operation = 'Removing Phone Number'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-        try {
-          if ($PhoneNumberIsMSNumber) {
-            # Remove MS Number
-            $CsUser | Set-CsUser -TelephoneNumber $null -ErrorAction Stop
-            Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - Calling Plan number removed"
-          }
-          else {
-            # Remove Direct Routing Number
-            $CsUser | Set-CsUser -OnPremLineURI $null -ErrorAction Stop
-            Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - Direct Routing number removed"
-          }
-        }
-        catch {
-          if ($_.Exception.Message.Contains('dirsync')) {
-            Write-Warning -Message "User '$UserPrincipalName' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
-            Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
-          }
-          else {
-            Write-Verbose -Message "User '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'" -Verbose
-          }
-        }
-      }
-      #endregion
+        #endregion
 
-      #region Applying Phone Number
-      if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
-        $Operation = 'Applying Phone Number'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-        switch ($PSCmdlet.ParameterSetName) {
-          'DirectRouting' {
-            # Apply or Remove $PhoneNumber as OnPremLineUri
-            if ( $Force -or $CsUser.OnPremLineURI -ne $LineUri) {
-              #Error Message: Filter failed to return unique result"
-              try {
-                $CsUser | Set-CsUser -OnPremLineURI $LineUri -ErrorAction Stop
-                Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - '$LineUri'"
-              }
-              catch {
-                if ($_.Exception.Message.Contains('dirsync')) {
-                  Write-Warning -Message "User '$UserPrincipalName' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
-                  Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -LineUri '$LineUri'" -ForegroundColor Magenta
+        #region Applying Phone Number
+        if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
+          $Operation = 'Applying Phone Number'
+          $step++
+          Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
+          switch ($PSCmdlet.ParameterSetName) {
+            'DirectRouting' {
+              # Apply or Remove $PhoneNumber as OnPremLineUri
+              if ( $Force -or $CsUser.OnPremLineURI -ne $LineUri) {
+                #Error Message: Filter failed to return unique result"
+                try {
+                  $CsUser | Set-CsUser -OnPremLineURI $LineUri -ErrorAction Stop
+                  Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - '$LineUri'"
                 }
-                else {
-                  $ErrorLogMessage = "User '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'"
+                catch {
+                  if ($_.Exception.Message.Contains('dirsync')) {
+                    Write-Warning -Message "User '$UserPrincipalName' - $Operation`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+                    Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -LineUri '$LineUri'" -ForegroundColor Magenta
+                  }
+                  else {
+                    $ErrorLogMessage = "User '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'"
+                    Write-Error -Message $ErrorLogMessage
+                  }
+                  $ErrorLog += $ErrorLogMessage
+                }
+              }
+              else {
+                Write-Verbose -Message "User '$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+              }
+            }
+            'OperatorConnect' {
+              #TODO prepare for OperatorConnect - how?
+            }
+            'CallingPlans' {
+              # Apply or Remove $PhoneNumber as TelephoneNumber
+              if ( $Force -or $CsUser.TelephoneNumber -ne $E164Number) {
+                try {
+                  # Pipe should work but was not yet tested.
+                  #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
+                  $null = Set-CsOnlineVoiceUser -Identity "$($CsUser.ObjectId)" -TelephoneNumber $E164Number -ErrorAction Stop
+                  Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - '$E164Number' (Calling Plan Number)"
+                }
+                catch {
+                  $ErrorLogMessage = "User '$UserPrincipalName' - Applying Phone Number failed: '$($_.Exception.Message)'"
                   Write-Error -Message $ErrorLogMessage
+                  $ErrorLog += $ErrorLogMessage
                 }
-                $ErrorLog += $ErrorLogMessage
               }
-            }
-            else {
-              Write-Verbose -Message "User '$UserPrincipalName' - $Operation`: Already assigned" -Verbose
-            }
-          }
-          'OperatorConnect' {
-            #TODO prepare for OperatorConnect - how?
-          }
-          'CallingPlans' {
-            # Apply or Remove $PhoneNumber as TelephoneNumber
-            if ( $Force -or $CsUser.TelephoneNumber -ne $E164Number) {
-              try {
-                # Pipe should work but was not yet tested.
-                #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
-                $null = Set-CsOnlineVoiceUser -Identity "$($CsUser.ObjectId)" -TelephoneNumber $E164Number -ErrorAction Stop
-                Write-Information "SUCCESS: User '$UserPrincipalName' - $Operation`: OK - '$E164Number' (Calling Plan Number)"
+              else {
+                Write-Verbose -Message "User '$UserPrincipalName' - Applying Phone Number: Already assigned" -Verbose
               }
-              catch {
-                $ErrorLogMessage = "User '$UserPrincipalName' - Applying Phone Number failed: '$($_.Exception.Message)'"
-                Write-Error -Message $ErrorLogMessage
-                $ErrorLog += $ErrorLogMessage
-              }
-            }
-            else {
-              Write-Verbose -Message "User '$UserPrincipalName' - Applying Phone Number: Already assigned" -Verbose
             }
           }
         }
+        #endregion
       }
       #endregion
       #endregion
+    }
+    else {
+      $Operation = 'Phone Number'
+      Write-Information "CURRENT: User '$UserPrincipalName' - $Operation`: '$($CsUser.LineURI)' assigned currently"
     }
     #endregion
     #endregion
