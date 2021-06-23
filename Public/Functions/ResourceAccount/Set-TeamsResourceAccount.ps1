@@ -641,8 +641,10 @@ function Set-TeamsResourceAccount {
               }
             }
             catch {
-              Write-Error -Message "'$Name ($UPN)' Number '$PhoneNumber' not assigned!" -Category NotImplemented -RecommendedAction 'Please run Set-TeamsResourceAccount manually'
-              Write-Debug $_
+              Write-Error -Message "'$Name ($UPN)' Number '$PhoneNumber' not assigned! Exception: $($_.Exception.Message)" -Category NotImplemented -RecommendedAction 'Please run Set-TeamsResourceAccount manually'
+              if ($_.Exception.Message -eq 'The application instance does not have a valid license.' ) {
+                Write-Warning -Message 'If a license was assigned recently, please allow for propagation in O365, then try this command again'
+              }
             }
           }
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
