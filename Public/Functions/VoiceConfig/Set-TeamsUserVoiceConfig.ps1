@@ -690,18 +690,17 @@ function Set-TeamsUserVoiceConfig {
 
     #region Log & Output
     # Write $ErrorLog
-    if ( $WriteErrorLog ) {
+    if ( $WriteErrorLog -and $errorLog) {
       $Path = 'C:\Temp'
-      $Filename = "$($MyInvocation.MyCommand) - $UserPrincipalName - ERROR.log"
+      $Filename = "$(Get-Date -Format 'yyyy-MM-dd HH')xx - $($MyInvocation.MyCommand) - ERROR.log"
       $LogPath = "$Path\$Filename"
       $step++
       Write-Progress -Id 0 -Status 'Output' -CurrentOperation 'Writing ErrorLog' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$UserPrincipalName - Errors encountered are written to '$Path'"
 
       # Write log entry to $Path
-      $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss K') | Out-File -FilePath $LogPath -Append
+      Write-Verbose -Message "$UserPrincipalName - Errors encountered are written to '$Path'"
+      "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss K') - $($MyInvocation.MyCommand) - $UserPrincipalName" | Out-File -FilePath $LogPath -Append
       $errorLog | Out-File -FilePath $LogPath -Append
-
     }
     else {
       Write-Verbose -Message "$UserPrincipalName - No errors encountered! No log file written."
