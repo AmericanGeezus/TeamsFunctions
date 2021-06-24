@@ -160,16 +160,16 @@ function Remove-TeamsUserVoiceConfig {
           # Determine Call Plan Licenses - Building Scope
           [System.Collections.ArrayList]$RemoveLicenses = @()
           if ($CsUserLicense.CallingPlanInternational) {
-            $RemoveLicenses.Add('InternationalCallingPlan')
+            [void]$RemoveLicenses.Add('InternationalCallingPlan')
           }
           if ($CsUserLicense.CallingPlanDomestic) {
-            $RemoveLicenses.Add('DomesticCallingPlan')
+            [void]$RemoveLicenses.Add('DomesticCallingPlan')
           }
           if ($CsUserLicense.CallingPlanDomestic120) {
-            $RemoveLicenses.Add('DomesticCallingPlan120')
+            [void]$RemoveLicenses.Add('DomesticCallingPlan120')
           }
           if ($CsUserLicense.CommunicationsCredits) {
-            $RemoveLicenses.Add('CommunicationCredits')
+            [void]$RemoveLicenses.Add('CommunicationCredits')
           }
 
           # Action only if Call Plan licenses found

@@ -154,27 +154,11 @@ function Set-TeamsUserLicense {
     }
 
     # Setting Preference Variables according to Upstream settings
-    if (-not $PSBoundParameters.ContainsKey('Verbose')) {
-      $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Confirm')) {
-      $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('WhatIf')) {
-      $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference')
-    }
-    if (-not $PSBoundParameters.ContainsKey('Debug')) {
-      $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference')
-    }
-    else {
-      $DebugPreference = 'Continue'
-    }
-    if ( $PSBoundParameters.ContainsKey('InformationAction')) {
-      $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction')
-    }
-    else {
-      $InformationPreference = 'Continue'
-    }
+    if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
+    if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
+    if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Loading License Array
     if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
@@ -388,7 +372,7 @@ function Set-TeamsUserLicense {
         Write-Verbose -Message "[PROCESS] Processing '$($UserObject.UserPrincipalName)'"
       }
       catch {
-        Write-Error -Message "User '$ID' - Account not valid" -Category ObjectNotFound -RecommendedAction 'Verify UserPrincipalName'
+        Write-Error -Message "Account '$ID' - Account not valid" -Category ObjectNotFound -RecommendedAction 'Verify UserPrincipalName'
         continue
       }
 
@@ -398,10 +382,10 @@ function Set-TeamsUserLicense {
           if ($PSCmdlet.ShouldProcess("$ID", "Set-AzureADUser -UsageLocation $UsageLocation")) {
             Set-AzureADUser -ObjectId $UserObject.ObjectId -UsageLocation $UsageLocation -ErrorAction Stop
             if ($PSBoundParameters.ContainsKey('UsageLocation')) {
-              Write-Verbose -Message "User '$ID' UsageLocation set to $UsageLocation"
+              Write-Verbose -Message "Account '$ID' - UsageLocation set to $UsageLocation"
             }
             else {
-              Write-Warning -Message "User '$ID' UsageLocation set to $UsageLocation (Default)- Please correct if necessary"
+              Write-Warning -Message "Account '$ID' - UsageLocation set to $UsageLocation (Default)- Please correct if necessary"
             }
           }
         }
@@ -411,7 +395,7 @@ function Set-TeamsUserLicense {
         }
       }
       else {
-        Write-Verbose -Message "User '$ID' UsageLocation already set ($UsageLocation)"
+        Write-Verbose -Message "Account '$ID' - UsageLocation already set ($UsageLocation)"
       }
 
       # License Query from Object
@@ -432,27 +416,27 @@ function Set-TeamsUserLicense {
             }
             # Verifying user has not already this license assigned
             if ( $License.SkuPartNumber -in $ObjectAssignedLicenses.SkuPartNumber) {
-              Write-Warning -Message "Adding License '$($License.ProductName)' - License already assigned to the User, omitting!"
+              Write-Warning -Message "Account '$ID' - Adding License '$($License.ProductName)' - License already assigned to the User, omitting!"
               continue
             }
             else {
               # Verifying license is available in the Tenant
               if (-not ( $License.SkuPartNumber -in $($TenantLicenses.SkuPartNumber))) {
-                Write-Error -Message "Adding License '$($License.ProductName)' - License not found in the Tenant"
+                Write-Error -Message "Account '$ID' - Adding License '$($License.ProductName)' - License not found in the Tenant"
                 continue
               }
               else {
                 $RemainingLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq $License.SkuPartNumber }).Remaining
                 if ($RemainingLicenses -lt 1) {
-                  Write-Error -Message "Adding License '$($License.ProductName)' - License found in the Tenant, but no units available"
+                  Write-Error -Message "Account '$ID' - Adding License '$($License.ProductName)' - License found in the Tenant, but no units available"
                   continue
                 }
                 else {
-                  Write-Verbose -Message "Adding License '$($License.ProductName)' - License found in the Tenant. Free unit available!"
+                  Write-Verbose -Message "Account '$ID' - Adding License '$($License.ProductName)' - License found in the Tenant. Free unit available!"
                 }
               }
             }
-            Write-Verbose -Message "Adding License '$($License.ProductName)' - License not assigned, adding to list"
+            Write-Verbose -Message "Account '$ID' - Adding License '$($License.ProductName)' - License not assigned, adding to list"
             [void]$AddSkuIds.Add("$($License.SkuId)")
           }
         }
@@ -472,11 +456,11 @@ function Set-TeamsUserLicense {
             $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
             $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('ProductName')
             if ($RemoveSku -in $ObjectAssignedLicenses.SkuId) {
-              Write-Verbose -Message "Removing License '$RemoveLicName' - License assigned, adding to list"
+              Write-Verbose -Message "Account '$ID' - Removing License '$RemoveLicName' - License assigned, adding to list"
               [void]$RemoveSkuIds.Add("$RemoveSku")
             }
             else {
-              Write-Warning -Message "Removing License '$RemoveLicName' - License not assigned to the User, omitting!"
+              Write-Warning -Message "Account '$ID' - Removing License '$RemoveLicName' - License not assigned to the User, omitting!"
             }
           }
         }
@@ -512,13 +496,13 @@ function Set-TeamsUserLicense {
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
         "Function: $($MyInvocation.MyCommand.Name): LicenseObject:", ($LicenseObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
-      Write-Verbose -Message 'Creating License Object: Done'
+      Write-Verbose -Message 'Account '$ID' - Creating License Object: Done'
       #endregion
 
       # Executing Assignment
       if ($PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
         #Assign $LicenseObject to each User
-        Write-Verbose -Message "'$ID' - Setting Licenses"
+        Write-Verbose -Message "Account '$ID' - Applying new license Object (performs changes)"
         try {
           $null = Set-AzureADUserLicense -ObjectId "$ID" -AssignedLicenses $LicenseObject -ErrorAction Stop
         }
@@ -539,7 +523,7 @@ function Set-TeamsUserLicense {
             }
           }
         }
-        Write-Verbose -Message "'$ID' - Setting Licenses: Done"
+        Write-Verbose -Message "Account '$ID' - Setting Licenses: Done"
       }
 
       # Output

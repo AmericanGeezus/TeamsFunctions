@@ -5,7 +5,7 @@
 # Status:   Live
 
 #TODO After determining the Number type (TDR vs CP), add Check to see whether a CP license is there? Throw error if so
-
+#TODO ResourceAccounts: Allow all but PhoneNumber, make a Call to Set-TeamsRA to apply that?
 
 function Set-TeamsUserVoiceConfig {
   <#
@@ -151,6 +151,12 @@ function Set-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+  } #begin
+
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+    #region Preparation
     # Initialising $ErrorLog
     [System.Collections.ArrayList]$ErrorLog = @()
 
@@ -176,10 +182,8 @@ function Set-TeamsUserVoiceConfig {
 
     if ( $WriteErrorLog ) { $sMax++ }
     if ( $PassThru ) { $sMax++ }
-  } #begin
+    #endregion
 
-  process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "[PROCESS] Processing '$UserPrincipalName'"
     #region Information Gathering and Verification
     $Status = 'Information Gathering and Verification'
@@ -392,7 +396,8 @@ function Set-TeamsUserVoiceConfig {
     }
     else {
       #PhoneNumber is not provided
-      if ( -not $CurrentPhoneNumber -and -not $(Format-StringForUse $PhoneNumber -As LineUri) ) {
+      #if ( -not $CurrentPhoneNumber -and -not $(Format-StringForUse $PhoneNumber -As LineUri) ) {
+      if ( -not $CurrentPhoneNumber ) {
         Write-Warning -Message "User '$UserPrincipalName' - Phone Number not provided or present. User will not be able to use PhoneSystem"
       }
     }
