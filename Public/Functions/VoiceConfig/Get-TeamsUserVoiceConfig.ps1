@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK For RAs PhoneSystemVirtualUer does not trigger PhoneSytem True - Intentional?
+#CHECK For RAs PhoneSystemVirtualUer does not trigger PhoneSystem True - Intentional?
 
 function Get-TeamsUserVoiceConfig {
   <#
