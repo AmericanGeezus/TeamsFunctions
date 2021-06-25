@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
+
 
 function Remove-TeamsAutoAttendant {
   <#
@@ -18,6 +18,9 @@ function Remove-TeamsAutoAttendant {
   .EXAMPLE
     Remove-TeamsAutoAttendant -Name "My AutoAttendant"
     Prompts for removal for all Auto Attendant found with the string "My AutoAttendant"
+  .EXAMPLE
+    Remove-TeamsAutoAttendant -Name 00000000-0000-0000-0000-000000000000
+    Prompts for removal for all Auto Attendant found with the ObjectId 00000000-0000-0000-0000-000000000000
   .INPUTS
     System.String
   .OUTPUTS
@@ -41,7 +44,8 @@ function Remove-TeamsAutoAttendant {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Auto Attendant')]
-    [string]$Name
+    [Alias('Identity')]
+    [string[]]$Name
   ) #param
 
   begin {
@@ -73,8 +77,14 @@ function Remove-TeamsAutoAttendant {
       $DNCounter++
       try {
         Write-Information 'INFO: The listed Auto Attendants are being removed:'
-        $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
-        $AAToRemove = $AAToRemove | Where-Object Name -EQ "$DN"
+        #TEST matches ID and Name
+        if ( $DN.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+          $AAToRemove = Get-CsAutoAttendant -Identity $DN -WarningAction SilentlyContinue
+        }
+        else {
+          $AAToRemove = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue
+          $AAToRemove = $AAToRemove | Where-Object Name -EQ "$DN"
+        }
 
         if ( $AAToRemove ) {
           $AACounter = 0

@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
+
 
 function Remove-TeamsCallQueue {
   <#
@@ -73,8 +73,14 @@ function Remove-TeamsCallQueue {
       $DNCounter++
       try {
         Write-Information 'INFO: The listed Queues are being removed:'
-        $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
-        $QueueToRemove = $QueueToRemove | Where-Object Name -EQ "$DN"
+        #TEST matches ID and Name
+        if ( $DN.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+          $QueueToRemove = Get-CsCallQueue -Identity $DN -WarningAction SilentlyContinue
+        }
+        else {
+          $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue
+          $QueueToRemove = $QueueToRemove | Where-Object Name -EQ "$DN"
+        }
 
         if ( $QueueToRemove ) {
           $QueueCounter = 0

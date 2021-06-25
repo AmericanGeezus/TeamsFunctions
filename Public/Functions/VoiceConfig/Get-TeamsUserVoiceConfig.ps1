@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK For RAs PhoneSystemVirtualUer does not trigger PhoneSystem True - Intentional?
+
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -255,7 +255,17 @@ function Get-TeamsUserVoiceConfig {
         }
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $CsUserLicense.PhoneSystemStatus
-        $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
+        #TEST Application of PhoneSystemStatus for licensed Users, RA and unlicensed
+        #Alternative: If PhoneSystemStatus -contains "Success", TRUE, FALSE - too imprecise?
+        if ( $CsUserLicense.PhoneSystem ) {
+          $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem
+        }
+        elseif ( $CsUserLicense.PhoneSystemVirtualUser ) {
+          $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystemVirtualUser
+        }
+        else {
+          $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $false
+        }
       }
 
       # Adding Provisioning Parameters
