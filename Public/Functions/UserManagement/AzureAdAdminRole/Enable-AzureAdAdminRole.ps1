@@ -285,9 +285,9 @@ function Enable-AzureAdAdminRole {
         $RoleName = $AllRoles | Where-Object { $_.Id -eq $R.RoleDefinitionId } | Select-Object -ExpandProperty DisplayName
 
         # Not activating SfB Legacy admin for MicrosoftTeams v2.3.1 or higher
-        if ( $SfBRoleNotNeeded -and $RoleName -eq 'Skype for Business Administrator' ) {
+        if (-not $Force -and $SfBRoleNotNeeded -and $RoleName -eq 'Skype for Business Administrator' ) {
           # Skype For Business Administrator (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later
-          Write-Verbose -Message "Role 'Skype For Business Administrator' (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later"
+          Write-Output "Role 'Skype For Business Administrator' (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later. To activate this role too, please use -Force"
           continue
         }
         # Confirm every role if not Force
