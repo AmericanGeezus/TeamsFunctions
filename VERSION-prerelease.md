@@ -17,16 +17,16 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### New
 
 - `Set-TeamsUserVoiceMail`: ALPHA/Incubator - Setting Voicemail parameters for a Teams User
--
 
 ### Updated
 
 - General:
   - All CmdLets now have appropriate Links to their own online help-file as well as the corresponding `about_`-Files
+- `Connect-Me`: Added 'user cancelled operation' as a terminating condition.
 - `Set-TeamsUserLicense`: Improved feedback for 'Objects' (rather than for 'User')
 - `Enable-AzureAdAdminRole`:
-  - Skype For Business Legacy Admin Role is no longer needed for MicrosoftTeams v2.3.1 and higher. Role will only be enabled with switch `Force` or if older module versions have been detected (loaded)
-  -
+  - Skype For Business Legacy Admin Role is no longer needed for MicrosoftTeams v2.3.1 and higher.
+  - Role will now only be enabled if older module versions have been detected (loaded) or with switch `Force`
 - `Get-TeamsAutoAttendant`: Added parsing with ObjectId
 - `Get-TeamsCallQueue`: Added parsing with ObjectId
 - `Remove-TeamsAutoAttendant`: Added parsing with ObjectId

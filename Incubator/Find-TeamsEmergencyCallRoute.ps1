@@ -1,16 +1,16 @@
 # Module:   TeamsFunctions
 # Function: VoiceRouting
 # Author:   David Eberhardt
-# Updated:  28-DEC-2020
+# Updated:  26-JUN-2021
 # Status:   Live
 
 
 
 
-function Find-TeamsUserVoiceRoute {
+function Find-TeamsEmergencyCallRoute {
   <#
   .SYNOPSIS
-    Returns Voice Route for a User and a dialed number
+    Returns Voice Route for a User and a dialed emergency number
   .DESCRIPTION
     Returns a custom object detailing voice routing information for a User
     If a Dialed Number is provided, also normalises the number and returns the effective Tenant Dial Plan
@@ -22,13 +22,13 @@ function Find-TeamsUserVoiceRoute {
     If provided, number will be normalised and the effective Dial Plan queried. A matching Route will be found for this number will be queried
     Accepts multiple Numbers to dial - one object returned for each number dialed.
   .EXAMPLE
-    Find-TeamsUserVoiceRoute -Identity John@domain.com
+    Find-TeamsEmergencyCallRoute -Identity John@domain.com
     Finds the Voice Route any call for this user may take. First match (Voice Route with the highest priority) will be returned
   .EXAMPLE
-    Find-TeamsUserVoiceRoute -Identity John@domain.com -DialledNumber "+1(555) 1234-567"
+    Find-TeamsEmergencyCallRoute -Identity John@domain.com -DialledNumber "+1(555) 1234-567"
     Finds the Voice Route a call to the normalised Number +15551234567 for this user may take. The matching Voice Route will be returned
   .EXAMPLE
-    Find-TeamsUserVoiceRoute -Identity John@domain.com -DialledNumber "911","+1(555) 1234-567"
+    Find-TeamsEmergencyCallRoute -Identity John@domain.com -DialledNumber "911","+1(555) 1234-567"
     Finds the Voice Route a call to 911 and the normalised Number +15551234567 for this user may take. The matching Voice Route will be returned
     Returns one object for each number as they might be routed through different entities
   .INPUTS
@@ -43,9 +43,9 @@ function Find-TeamsUserVoiceRoute {
   .FUNCTIONALITY
     Voice Routing and Troubleshooting
   .LINK
-    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md
-  .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsEmergencyCallRoute.md
+  .LINK
+    https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md
   .LINK
@@ -53,21 +53,25 @@ function Find-TeamsUserVoiceRoute {
   #>
 
   [CmdletBinding()]
-  [Alias('Find-TeamsUVR')]
+  [Alias('Find-TeamsECR')]
   [OutputType([PSCustomObject])]
   param (
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s) to query routing for')]
     [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
-    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Phone Number to be normalised with the Dial Plan')]
+    [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = 'Phone Number to be normalised with the Dial Plan')]
     [Alias('Number')]
-    [String[]]$DialedNumber
+    [String]$DialedNumber,
+
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Network Site for the User')]
+    [Alias('Site')]
+    [String[]]$NetworkSite
 
   )
 
   begin {
-    Show-FunctionStatus -Level Live
+    Show-FunctionStatus -Level Beta
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -129,18 +133,11 @@ function Find-TeamsUserVoiceRoute {
     }
     #endregion
 
-    if (-not $DialedNumber) {
-      Write-Warning -Message 'Parameter DialedNumber was not provided, only basic routing path (first match) is shown'
-      $DialedNumber = 15551234567890555
+    if (-not $NetworkSite) {
+      Write-Warning -Message 'Parameter NetworkSite was not provided, only static assignment of Emergency Call Routing Policy can be queried'
+      $NetworkSite = '15551234567890555'
     }
-    else {
-      # Validating whether at least one of the numbers are supplied as a string
-      $NumberAsStrings = 0
-      foreach ($Number in $DialedNumber) { if ($Number -match '^0') { $NumberAsStrings++ } }
-      if ($DialedNumber.Count -gt 1 -and $NumberAsStrings -lt 1) {
-        Write-Warning -Message 'Parameter DialedNumber: Powershell converts numbers to integers, leading zeros are stripped if individual numbers are not wrapped in quotation marks'
-      }
-    }
+
   } #begin
 
   process {
@@ -172,7 +169,7 @@ function Find-TeamsUserVoiceRoute {
         "Function: $($MyInvocation.MyCommand.Name) - DialedNumber", ( $DialedNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
 
-      foreach ($Number in $DialedNumber) {
+      foreach ($Site in $NetworkSite) {
         # Populating User Information
         Write-Verbose -Message "[PROCESS] Processing '$Id' - Preparing Object"
         $UserVoiceRouting = $null
@@ -182,8 +179,13 @@ function Find-TeamsUserVoiceRoute {
         $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
 
         # Processing Number related information
-        Write-Verbose -Message "[PROCESS] Processing '$Id' - Number '$Number'"
-        if ($Number -eq 15551234567890555) { <# Exit Criteria for "no number provided "#> } else {
+        Write-Verbose -Message "[PROCESS] Processing '$Id' - Network Site '$Site'"
+        if ($Number -eq '15551234567890555') { <# Exit Criteria for "no number provided "#> } else {
+          #TODO build lookup for Site
+          #TODO Add Lookup for ECRP direct assignment
+          Get-CsTenantNetworksite
+          Get-CsTenantNetworkSubnet
+
           # Gently harmonising the Number if entered with unwanted characters (deliberately not using any of the Format-CmdLets)
           if ($Number.contains(' ') -or $Number.contains('(') -or $Number.contains(')') -or $Number.contains('-')) {
             Write-Verbose -Message "User '$Id' - Number was normalised to remove special characters (parenthesis, dash and space) to allow correct translation"
