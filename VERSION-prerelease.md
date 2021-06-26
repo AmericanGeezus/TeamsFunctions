@@ -16,11 +16,35 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
-- TBC
+- `Set-TeamsUserVoiceMail`: ALPHA/Incubator - Setting Voicemail parameters for a Teams User
+-
 
 ### Updated
 
-- TBC
+- General:
+  - All CmdLets now have appropriate Links to their own online help-file as well as the corresponding `about_`-Files
+- `Set-TeamsUserLicense`: Improved feedback for 'Objects' (rather than for 'User')
+- `Enable-AzureAdAdminRole`:
+  - Skype For Business Legacy Admin Role is no longer needed for MicrosoftTeams v2.3.1 and higher. Role will only be enabled with switch `Force` or if older module versions have been detected (loaded)
+  -
+- `Get-TeamsAutoAttendant`: Added parsing with ObjectId
+- `Get-TeamsCallQueue`: Added parsing with ObjectId
+- `Remove-TeamsAutoAttendant`: Added parsing with ObjectId
+- `Get-TeamsCallQueue`: Added parsing with ObjectId
+- `Get-TeamsUserVoiceConfig`:
+  - Reports `PhoneSystem` now as TRUE for Assignment of Phone System Virtual User License (Resource Accounts) for a more harmonious experience
+- `Set-TeamsUserVoiceConfig`:
+  - Fixed an issue which resulted in Phone Number being removed if switch `PhoneNumber` was not provided. Now only removed if Phonenumber is specified as empty or NULL.
+  - Refactored execution policy towards Resource Accounts. Allowed execution based on ObjectType. Supports Users & ResourceAccounts only.
+  - Execution against Resource Accounts now feeds back verbose information for non-applicable settings. Supports OVP & Number, but not HostedVoicemail and TDP
+  - Refactored script execution to provide better output for switch `WriteErrorLog`.
+  - Refactored error log file written to create one file per hour, rather than for each individual User Name (easier for bulk execution)
+  - Current performance for full application is between 15-30s per Object (averages around 2.5 Objects per min or 150 Objects per hour)
+- `Remove-TeamsUserVoiceConfig`:
+  - Quietened output of License Removals
+- `Find-TeamsUserVoiceRoute`:
+  - Refactored DialedNumber into an Array - Multiple numbers can now be provided. An object is returned for each Number
+  - Added validation and caveats (Warnings) for Emergency Services Numbers if detected (~95% coverage for 3-digit EMS numbers)
 
 ### Limitations
 
