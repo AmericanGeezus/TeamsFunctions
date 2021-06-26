@@ -206,16 +206,13 @@ function Find-TeamsUserVoiceRoute {
 
           # Warning / Caveat for Emergency Services Numbers
           #TEST Warning display and veracity of statements.
-          # Alt?: if ( $Number.Contains("911") -or $Number.Contains("112") -or $Number.Contains("000"))
-          # Alt?: if ( $Number -eq "911" -or $Number -eq "112" -or $Number -eq "000"))
-          # Alt?: if ( '911', '112', '000' -in $Number )
-          if ( $Number.matches('911|112|000|1(\d{2})')) {
-            Write-Warning -Message "$($MyInvocation.MyCommand) - Emergency Services Number discovered!"
+          if ( $Number -match '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
+            Write-Warning -Message "$($MyInvocation.MyCommand) - Emergency Services Number discovered! Route is calculated through Online Voice Routing Policy. This may not be the route an Emergnecy Services call takes!"
             if ( $UserVoiceRouting.MatchingPattern ) {
               Write-Warning -Message 'Emergency Services Number matched by the Effective Dial Plan. - E-9-1-1 configuration (effective Emergency Call Routing Policy) is most likely bypassed and call potentially routed through OnlineVoiceRoutingPolicy!'
             }
             else {
-              Write-Warning -Message 'Emergency Services Number NOT matched by the Effective Dial Plan. - Cmdlet cannot validate configured paths for Emergency Services numbers - Path measured as if routed through OnlineVoiceRoutingPolicy!'
+              Write-Warning -Message 'Emergency Services Number NOT matched by the Effective Dial Plan. - This Cmdlet cannot validate configured paths for Emergency Services numbers - Path measured as if routed through OnlineVoiceRoutingPolicy!'
             }
           }
         }
