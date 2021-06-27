@@ -173,7 +173,7 @@ Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot
 
 # Exporting Module Members (Aliases)
 Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-ServicePlan, #Connect-SkypeOnline, `
-New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
+New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Find-TeamsECR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   Grant-TeamsEA, `
   Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, `
@@ -189,8 +189,8 @@ New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-T
 # SIG # Begin signature block
 # MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjVySQ5JYTSU2byZqJzGW3Clh
-# rYygggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQULhdfuaAsvc7/5h2SkTPhuZMf
+# EcagggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
 # AQUFADAlMSMwIQYDVQQDDBpEYXZpZCBFYmVyaGFyZHQgLSBDb2RlU2lnbjAeFw0y
 # MDA2MTMxMTA4NTNaFw0yNDA2MTMwMDAwMDBaMCUxIzAhBgNVBAMMGkRhdmlkIEVi
 # ZXJoYXJkdCAtIENvZGVTaWduMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3
@@ -205,8 +205,8 @@ New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Get-TeamsUVC, Remove-T
 # YmVyaGFyZHQgLSBDb2RlU2lnbgIQa3i9Sh/NdbhOjG+ewKFPfjAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUSFXaJ67P5b4/4nWwM0ABkSPaUs0wDQYJKoZIhvcNAQEBBQAEgYCX9IEF
-# hamBIY5wQR6ZD9/P3vL2OPOd+zxko5ixguVve8+0Bc2/eUAdnj2xF6qt+cqFvKR0
-# SWENRPOSbdugq5Zv/5bO2LDPs4t+CbZVtuKaRNBoS3QkFs5ihjSh1vWYfufdMEZZ
-# OmHXsHCiWSMB1GDx4TPLiqOWTyRkU8yyFY+e6A==
+# CQQxFgQUrhg6KQGo2IN8Yv1cCuPzSksdqHMwDQYJKoZIhvcNAQEBBQAEgYCQdAhR
+# ipw06x7mZWI05mrfBRopROKbneVjVb5+kfpPdR9GJmJloc1ZU63nIpOvB4Zus8U6
+# JDp07ADdejBBhbeRmbs6umCCo1a1cOERacM8xWcFFCZn0hu+NW+Foqi6wqwFsZZg
+# A1q1TqTe7f4n8mhUvsvnBvUpiMOe/M/ybkhtmA==
 # SIG # End signature block

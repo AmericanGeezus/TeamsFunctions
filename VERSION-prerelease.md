@@ -16,6 +16,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
+- `Find-TeamsEmergencyCallRoute` (`Find-TeamsECR`):
+  - New CmdLet to determine the route for emergency Services calls.
+  - Validating configuration in Teams Network Topology (by Subnet or Site)
+  - Optionally validating user configuration and Tenant Dial Plan to find issues with effectiveness of Emergency Call Routing Policies.
 - `Set-TeamsUserVoiceMail`: ALPHA/Incubator - Setting Voicemail parameters for a Teams User
 
 ### Updated

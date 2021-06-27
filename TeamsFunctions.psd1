@@ -204,6 +204,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Assert-TeamsUserVoiceConfig',
     'Find-TeamsUserVoiceConfig',
     'Find-TeamsUserVoiceRoute',
+    'Find-TeamsEmergencyCallRoute',
     'Get-TeamsTenantVoiceConfig',
     'Get-TeamsUserVoiceConfig',
     'New-TeamsUserVoiceConfig',
@@ -222,7 +223,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport       = @(
     'con', 'dis', 'pol', 'ear', 'dar', 'gar', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
-    'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
+    'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Find-TeamsECR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
     'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 
     'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA',
@@ -233,7 +234,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'New-TeamsAAMenu', 'New-TeamsAAOption', 'New-TeamsAAFlow',
     'New-TeamsAAPrompt', 'New-TeamsAAScope', 'New-TeamsAASchedule',
     'New-TeamsAAEntity', 'New-TeamsAutoAttendantCallHandlingAssociation',
-    'Get-TeamsAASchedule', 
+    'Get-TeamsAASchedule',
     'Get-Channel'
 
   )

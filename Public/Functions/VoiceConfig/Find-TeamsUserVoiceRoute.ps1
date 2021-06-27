@@ -147,24 +147,22 @@ function Find-TeamsUserVoiceRoute {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     foreach ($Id in $UserPrincipalName) {
-      Write-Verbose -Message "[PROCESS] Processing '$Id'"
+      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - UserPrincipalName: '$Id'"
 
       # Query User and prepare object
       try {
         $User = $null
         $User = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
         if ( -not $User ) {
-          throw
+          throw "User '$Id' not found"
+        }
+        if ( -not $User.EnterpriseVoiceEnabled ) {
+          throw "User '$($User.UserPrincipalName)' - Found, but not enabled for Enterprise Voice"
         }
       }
       catch {
-        #throw [System.Data.ObjectNotFoundException]::New("User '$Id' not found")
-        Write-Error -Message "User '$Id' not found" -Category ResourceUnavailable
+        Write-Error -Message "$($_.Exception.Message)" -Category ResourceUnavailable
         continue
-      }
-
-      if ( -not $User.EnterpriseVoiceEnabled ) {
-        Write-Warning -Message "User '$Id' - Not enabled for Enterprise Voice"
       }
 
       # Number
@@ -174,7 +172,7 @@ function Find-TeamsUserVoiceRoute {
 
       foreach ($Number in $DialedNumber) {
         # Populating User Information
-        Write-Verbose -Message "[PROCESS] Processing '$Id' - Preparing Object"
+        Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Preparing Voice Routing Object"
         $UserVoiceRouting = $null
         $UserVoiceRouting = [TFVoiceRouting]::new('', '', '', '', '', '', '', '', '', $null, '', '', '')
         $UserVoiceRouting.UserPrincipalName = $User.UserPrincipalName
@@ -182,8 +180,8 @@ function Find-TeamsUserVoiceRoute {
         $UserVoiceRouting.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
 
         # Processing Number related information
-        Write-Verbose -Message "[PROCESS] Processing '$Id' - Number '$Number'"
         if ($Number -eq 15551234567890555) { <# Exit Criteria for "no number provided "#> } else {
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - User: '$($User.UserPrincipalName)' - Number: '$Number'"
           # Gently harmonising the Number if entered with unwanted characters (deliberately not using any of the Format-CmdLets)
           if ($Number.contains(' ') -or $Number.contains('(') -or $Number.contains(')') -or $Number.contains('-')) {
             Write-Verbose -Message "User '$Id' - Number was normalised to remove special characters (parenthesis, dash and space) to allow correct translation"
@@ -223,11 +221,11 @@ function Find-TeamsUserVoiceRoute {
           #VALIDATE veracity of statement.
           #TODO build Find-TeamsUserVoiceRouteForEmergencyCalls
           if ( $Number -match '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
-            Write-Warning -Message "$($MyInvocation.MyCommand) - Emergency Services Number discovered! Route is calculated as-if routed through Online Voice Routing Policy."
+            Write-Warning -Message "Emergency Services Number discovered! Route is calculated as-if routed through Online Voice Routing Policy."
             Write-Information 'INFO:    The actual route for Emergency Services Calls depends on a match in the Tenant Dial Plan for this number and the effective Emergency Call Routing Policy (if any!)'
             # Status of matching Dial Plan
             if ( $UserVoiceRouting.MatchingRule ) {
-              Write-Warning 'Effective Dial Plan - The number provided is matched - This bypasses Emergency Call Routing Policies. This call is most likely routed through the Online Voice Routing Policy' -Verbose
+              Write-Warning 'Effective Dial Plan - The number provided is matched - This bypasses Emergency Call Routing Policies. This call is most likely routed through the Online Voice Routing Policy'
             }
             else {
               Write-Verbose -Message 'Effective Dial Plan - The number provided is not matched - If configured, Emergency Call Routing Policies may be in effect.' -Verbose
