@@ -13,14 +13,14 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - Buildout of Holiday Set functionality. Creating a HolidaySet for Auto Attendants
 - Buildout of Set-TeamsAutoAttendant - for limited functions
 - `Assert-TeamsResourceAccount`: Querying ResourceAccount requirements are met based on Associated Entity functionality used (ExternalPstn, License, PhoneNumber, etc.)
+- `Set-TeamsUserVoiceMail`: Draft/ALPHA/Incubator - Setting Voicemail parameters for a Teams User
 
 ### New
 
-- `Find-TeamsEmergencyCallRoute` (`Find-TeamsECR`):
+- `Find-TeamsEmergencyCallRoute` (`Find-TeamsECR`): BETA
   - New CmdLet to determine the route for emergency Services calls.
   - Validating configuration in Teams Network Topology (by Subnet or Site)
   - Optionally validating user configuration and Tenant Dial Plan to find issues with effectiveness of Emergency Call Routing Policies.
-- `Set-TeamsUserVoiceMail`: ALPHA/Incubator - Setting Voicemail parameters for a Teams User
 
 ### Updated
 

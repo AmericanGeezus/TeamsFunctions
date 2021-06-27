@@ -2575,6 +2575,251 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Find-TeamsEmergencyCallRoute</command:name>
+      <command:verb>Find</command:verb>
+      <command:noun>TeamsEmergencyCallRoute</command:noun>
+      <maml:description>
+        <maml:para>Returns Voice Route for a Site or Subnet and a dialed emergency number</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Returns a custom object detailing voice routing information for one or more Sites or Subnets and a dialed Emergency number. User information also adds validation for static emergency calling options and validates configuration of the users Tenant Dial Plan.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Find-TeamsEmergencyCallRoute</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="ObjectId, Identity">
+          <maml:name>UserPrincipalName</maml:name>
+          <maml:description>
+            <maml:para>Optional. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan User must have a valid Voice Configuration applied for this script to return a valuable result If not provided, only dynamic assignment of Emergency Call Routing Policy (through Network Site) is queried.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number">
+          <maml:name>DialedNumber</maml:name>
+          <maml:description>
+            <maml:para>Required. Emergency Number as entered in the Dial Pad. The effective Dial Plan is queried as a start. Then, application of an Emergency Call Routing Policy is determined through static (User) or dynamic (Site/Subnet) assignment Accepts multiple Numbers to dial - one object is returned for each number dialed and each Site or Subnet provided.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Site">
+          <maml:name>NetworkSite</maml:name>
+          <maml:description>
+            <maml:para>Required for ParameterSet NetworkSite. Name of a Network Site configured in the Network Topology of the Teams Tenant One or more exact names (NetworkSiteId) are required.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Find-TeamsEmergencyCallRoute</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="ObjectId, Identity">
+          <maml:name>UserPrincipalName</maml:name>
+          <maml:description>
+            <maml:para>Optional. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan User must have a valid Voice Configuration applied for this script to return a valuable result If not provided, only dynamic assignment of Emergency Call Routing Policy (through Network Site) is queried.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number">
+          <maml:name>DialedNumber</maml:name>
+          <maml:description>
+            <maml:para>Required. Emergency Number as entered in the Dial Pad. The effective Dial Plan is queried as a start. Then, application of an Emergency Call Routing Policy is determined through static (User) or dynamic (Site/Subnet) assignment Accepts multiple Numbers to dial - one object is returned for each number dialed and each Site or Subnet provided.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Subnet">
+          <maml:name>NetworkSubnet</maml:name>
+          <maml:description>
+            <maml:para>Required for ParameterSet NetworkSubnet. Name of a Network Subnet configured in the Network Topology of the Teams Tenant One or more exact names (Subnet Id) are required to determine the corresponding Network Site(s). Site is used going forward.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="named" aliases="ObjectId, Identity">
+        <maml:name>UserPrincipalName</maml:name>
+        <maml:description>
+          <maml:para>Optional. Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan User must have a valid Voice Configuration applied for this script to return a valuable result If not provided, only dynamic assignment of Emergency Call Routing Policy (through Network Site) is queried.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number">
+        <maml:name>DialedNumber</maml:name>
+        <maml:description>
+          <maml:para>Required. Emergency Number as entered in the Dial Pad. The effective Dial Plan is queried as a start. Then, application of an Emergency Call Routing Policy is determined through static (User) or dynamic (Site/Subnet) assignment Accepts multiple Numbers to dial - one object is returned for each number dialed and each Site or Subnet provided.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Site">
+        <maml:name>NetworkSite</maml:name>
+        <maml:description>
+          <maml:para>Required for ParameterSet NetworkSite. Name of a Network Site configured in the Network Topology of the Teams Tenant One or more exact names (NetworkSiteId) are required.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Subnet">
+        <maml:name>NetworkSubnet</maml:name>
+        <maml:description>
+          <maml:para>Required for ParameterSet NetworkSubnet. Name of a Network Subnet configured in the Network Topology of the Teams Tenant One or more exact names (Subnet Id) are required to determine the corresponding Network Site(s). Site is used going forward.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This is an evolution to Find-TeamsUserVoiceRouting, focusing solely on Emergency Services calls. Inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www.lee-ford.co.uk</maml:para>
+        <maml:para>Emergency Call Routing can be performed multiple ways. This CmdLet tries to determine the effective state for the given combination of Dialed Emergency Number</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSite Bogota -DialedNumber 112</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Site Bogota. Only determines dynamic assignments</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSite Bogota -DialedNumber 112 -UserPrincipalName John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Site Bogota for the User John@domain.com. Determines dynamic assignments (ECRP assigned to Site) as well as static assignments (ECRP assigned to user)</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSubnet 10.1.15.0 -DialedNumber 112</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Site in which the Subnet 10.1.15.0 is linked in</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSubnet Bogota -DialedNumber 112 -UserPrincipalName John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Site in which the Subnet 10.1.15.0 is linked in for the User John@domain.com. Determines dynamic assignments (ECRP assigned to Site) as well as static assignments (ECRP assigned to user)</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSite Bogota,Lima,Quito -DialedNumber 112</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Sites Bogota, Lima &amp; Quito. Only determines dynamic assignments</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSubnet 10.1.15.0,10.1.20.0,10.1.27.0 -DialedNumber 112</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Sites each of these subnets are linked in. Only determines dynamic assignments</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSite Bogota,Lima,Quito -DialedNumber 112 -UserPrincipalName John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Sites Bogota, Lima &amp; Quito for the User John@domain.com. Determines dynamic assignments (ECRP assigned to Site) as well as static assignments (ECRP assigned to user)</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 8 --------------------------</maml:title>
+        <dev:code>Find-TeamsEmergencyCallRoute -NetworkSubnet 10.1.15.0,10.1.20.0,10.1.27.0 -DialedNumber 112 -UserPrincipalName John@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the route for an emergency call to 112 for the Sites each of these subnets are linked in for the User John@domain.com. Determines dynamic assignments (ECRP assigned to Site) as well as static assignments (ECRP assigned to user)</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsEmergencyCallRoute.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsEmergencyCallRoute.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Find-TeamsResourceAccount</command:name>
       <command:verb>Find</command:verb>
       <command:noun>TeamsResourceAccount</command:noun>
@@ -3107,11 +3352,11 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number">
           <maml:name>DialedNumber</maml:name>
           <maml:description>
-            <maml:para>Optional. Number entered in the Dial Pad. If not provided, the first Voice Route will be chosen. If provided, number will be normalised and the effective Dial Plan queried. A matching Route will be found for this number will be queried</maml:para>
+            <maml:para>Optional. Number entered in the Dial Pad. If not provided, the first Voice Route will be chosen. If provided, number will be normalised and the effective Dial Plan queried. A matching Route will be found for this number will be queried Accepts multiple Numbers to dial - one object returned for each number dialed.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -3134,11 +3379,11 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="Number">
         <maml:name>DialedNumber</maml:name>
         <maml:description>
-          <maml:para>Optional. Number entered in the Dial Pad. If not provided, the first Voice Route will be chosen. If provided, number will be normalised and the effective Dial Plan queried. A matching Route will be found for this number will be queried</maml:para>
+          <maml:para>Optional. Number entered in the Dial Pad. If not provided, the first Voice Route will be chosen. If provided, number will be normalised and the effective Dial Plan queried. A matching Route will be found for this number will be queried Accepts multiple Numbers to dial - one object returned for each number dialed.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -3184,11 +3429,22 @@
           <maml:para>Finds the Voice Route a call to the normalised Number +15551234567 for this user may take. The matching Voice Route will be returned</maml:para>
         </dev:remarks>
       </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Find-TeamsUserVoiceRoute -Identity John@domain.com -DialledNumber "911","+1(555) 1234-567"</dev:code>
+        <dev:remarks>
+          <maml:para>Finds the Voice Route a call to 911 and the normalised Number +15551234567 for this user may take. The matching Voice Route will be returned Returns one object for each number as they might be routed through different entities</maml:para>
+        </dev:remarks>
+      </command:example>
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsEmergencyCallRoute.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsEmergencyCallRoute.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md</maml:linkText>
@@ -14027,14 +14283,14 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Remove-TeamsAutoAttendant</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
           <maml:name>Name</maml:name>
           <maml:description>
             <maml:para>DisplayName of the Auto Attendant</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -14064,14 +14320,14 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
         <maml:name>Name</maml:name>
         <maml:description>
           <maml:para>DisplayName of the Auto Attendant</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -14132,6 +14388,13 @@
         <dev:code>Remove-TeamsAutoAttendant -Name "My AutoAttendant"</dev:code>
         <dev:remarks>
           <maml:para>Prompts for removal for all Auto Attendant found with the string "My AutoAttendant"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Remove-TeamsAutoAttendant -Name 00000000-0000-0000-0000-000000000000</dev:code>
+        <dev:remarks>
+          <maml:para>Prompts for removal for all Auto Attendant found with the ObjectId 00000000-0000-0000-0000-000000000000</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
