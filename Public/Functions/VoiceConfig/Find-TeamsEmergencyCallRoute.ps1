@@ -155,7 +155,6 @@ function Find-TeamsEmergencyCallRoute {
         [string]$MatchingPattern,
         [string]$TranslatedNumber,
         [bool]$NetworkConfigurationBypassed,
-        [string]$NetworkSubnet,
         [string]$NetworkSite,
         [string]$UserPrincipalName,
         [string]$SiteEmergencyCallingPolicy,
@@ -183,7 +182,6 @@ function Find-TeamsEmergencyCallRoute {
         $this.MatchingPattern = $MatchingPattern
         $this.TranslatedNumber = $TranslatedNumber
         $this.NetworkConfigurationBypassed = $NetworkConfigurationBypassed
-        $this.NetworkSubnet = $NetworkSubnet
         $this.NetworkSite = $NetworkSite
         $this.UserPrincipalName = $UserPrincipalName
         $this.SiteEmergencyCallingPolicy = $SiteEmergencyCallingPolicy
@@ -200,8 +198,8 @@ function Find-TeamsEmergencyCallRoute {
         $this.MatchedVoiceRoutes = $MatchedVoiceRoutes
         $this.OnlineVoiceRoute = $OnlineVoiceRoute
         $this.OnlinePstnGateway = $OnlinePstnGateway
-        $this.NumberPattern = $NumberPattern
         $this.OnlinePstnGatewayPidfLoSupported = $OnlinePstnGatewayPidfLoSupported
+        $this.NumberPattern = $NumberPattern
       }
     }
     #endregion
@@ -219,7 +217,7 @@ function Find-TeamsEmergencyCallRoute {
     switch ( $PSCmdlet.ParameterSetName ) {
       'Site' {
         Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - NetworkSites"
-        foreach ($Site in $NetworkSites) {
+        foreach ($Site in $NetworkSite) {
           try {
             $SiteObject = $null
             $SiteObject = Get-CsTenantNetworkSite -Identity "$Site" -ErrorAction Stop
@@ -227,8 +225,8 @@ function Find-TeamsEmergencyCallRoute {
               throw
             }
             else {
-              Write-Verbose -Message "$($MyInvocation.MyCommand) - NetworkSites: Site '$($SiteObject.NetworkSiteId)'' found"
-              $NetworkSites += "$SiteObject"
+              Write-Verbose -Message "$($MyInvocation.MyCommand) - NetworkSites: Site '$($SiteObject.NetworkSiteID)' found"
+              $NetworkSites += $SiteObject
             }
           }
           catch {
@@ -251,7 +249,7 @@ function Find-TeamsEmergencyCallRoute {
               $SiteObject = $null
               $SiteObject = Get-CsTenantNetworkSite -Identity "$($SubnetObject.NetworkSiteId)" -ErrorAction Stop
               Write-Verbose -Message "$($MyInvocation.MyCommand) - NetworkSubnets: Site '$($SiteObject.NetworkSiteId) found"
-              $NetworkSites += "$SiteObject"
+              $NetworkSites += $SiteObject
             }
           }
           catch {
@@ -292,7 +290,7 @@ function Find-TeamsEmergencyCallRoute {
           Write-Warning -Message "User '$Id' - Number '$Number' - Dialling with a leading plus bypasses the Dial Plan and normalisation!"
         }
         # Validating Number is an Emergency Number
-        if ( $Number -match '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
+        if ( $Number -notmatch '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
           Write-Verbose -Message "Number may not be an Emergency Services Number! Number expected to match: '000', '1xx', '9xx' or 'x11' which should cover 95% of all public emergency numbers. This is informational only." -Verbose
         }
         $EmergencyCallRoutingObject.DialedNumber = $Number
@@ -307,7 +305,7 @@ function Find-TeamsEmergencyCallRoute {
             Write-Verbose -Message "NetworkSite '$($Site.NetworkSiteId)' - Number used to find Voice Route match: '$VoiceRouteNumber'"
           }
           else {
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - UserPrincipalName: '$Id'"
+            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing UserPrincipalName: '$Id'"
             #region User Information
             try {
               $User = $null
@@ -375,6 +373,7 @@ function Find-TeamsEmergencyCallRoute {
           #endregion
 
           #region Determining Effective EmergencyCallRoutingPolicy & EmergencyCallingPolicy
+          #BODGE - Effective policy is the one that matches the Number, not the one that is triggered first (Site > User). Move determination below to get a better picture!
           $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy = if ( $Site.EmergencyCallRoutingPolicy ) { $Site.EmergencyCallRoutingPolicy }
           elseif ($User.EmergencyCallRoutingPolicy) { $User.EmergencyCallRoutingPolicy } else {}
           $EmergencyCallRoutingObject.EffectiveEmergencyCallingPolicy = if ( $Site.EmergencyCallingPolicy ) { $Site.EmergencyCallingPolicy }
@@ -386,7 +385,7 @@ function Find-TeamsEmergencyCallRoute {
           #Status of (statically assigned) Emergency Call Routing Policy
           if ( $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy -and -not $EmergencyCallRoutingObject.NetworkConfigurationBypassed ) {
             # if matched to Dial String
-            Write-Verbose -Message "Emergency Call Routing Policy - Policy assigned statically (directly to the User): '$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)'" -Verbose
+            Write-Verbose -Message "Effective Emergency Call Routing Policy (Site Policy): '$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)'" -Verbose
             $EmergencyNumbers = $null
             $EmergencyNumbers = (Get-CsTeamsEmergencyCallRoutingPolicy -Identity "$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)").EmergencyNumbers
             $EmergencyNumber = $null
@@ -402,7 +401,7 @@ function Find-TeamsEmergencyCallRoute {
               }
             }
             elseif ( $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy -ne $Site.EmergencyCallRoutingPolicy -and $User.EmergencyCallRoutingPolicy) {
-              Write-Verbose -Message "Effective Emergency Call Routing Policy '$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)' - The Number '$Number' is not a configured Emergency Services Number"
+              Write-Verbose -Message "Effective Emergency Call Routing Policy (User Policy) '$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)' - The Number '$Number' is not a configured Emergency Services Number"
               $EmergencyNumbers = (Get-CsTeamsEmergencyCallRoutingPolicy -Identity "$($EmergencyCallRoutingObject.UserEmergencyCallRoutingPolicy)").EmergencyNumbers
               $EmergencyNumber = $EmergencyNumbers | Where-Object { $_.EmergencyDialMask.Split(';').Contains($Number) }
               if ( $EmergencyNumber ) {
@@ -411,10 +410,15 @@ function Find-TeamsEmergencyCallRoute {
               }
             }
             else {
+              Write-Verbose "Effective Emergency Call Routing Policy: $($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)"
+              Write-Verbose "Network Configuration Bypassed: $($EmergencyCallRoutingObject.NetworkConfigurationBypassed)"
               $EmergencyCallRoutingObject.NetworkPathTaken = $null
             }
 
             # Populating EffectiveEmergencyDialString & MatchedEmergencyDialMask
+            if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+              "Function: $($MyInvocation.MyCommand.Name): EmergencyNumber:", ($EmergencyNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            }
             if ( $EmergencyNumber ) {
               $EmergencyCallRoutingObject.EffectiveEmergencyDialString = $EmergencyNumber.EmergencyDialString
               $EmergencyCallRoutingObject.MatchedEmergencyDialMask = $EmergencyNumber.EmergencyDialMask
@@ -483,18 +487,18 @@ function Find-TeamsEmergencyCallRoute {
               foreach ($MGW in $UsedVoiceRoute.OnlinePstnGatewayList ) {
                 $PidfLoSupported = (Get-CsOnlinePSTNGateway -Identity $MGW).PidfLoSupported
                 if (-not $PidfLoSupported) {
-                  Write-Warning -Message "Online Pstn Gateways '$MGW': Gateway not configured to transmit PIDF-LO information: The .xml body payload is not sent to the SBC with the location details of the user."
+                  Write-Warning -Message "Online Pstn Gateway '$MGW': Gateway not configured to transmit PIDF-LO information: The .xml body payload is not sent to the SBC with the location details of the user."
                 }
                 $OnlinePstnGatewayPidfLoSupported += $PidfLoSupported
               }
               $EmergencyCallRoutingObject.OnlinePstnGatewayPidfLoSupported = $OnlinePstnGatewayPidfLoSupported
             }
             else {
-              Write-Warning -Message "Routing Policy - No Online Voice Routes have been found"
+              Write-Warning -Message 'Routing Policy - No Online Voice Routes have been found'
             }
           }
           else {
-            Write-Warning -Message "Routing Policy - No Online PSTN Usages have been found"
+            Write-Warning -Message 'Routing Policy - No Online PSTN Usages have been found'
           }
           #endregion
 
