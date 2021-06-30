@@ -21,6 +21,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - New CmdLet to determine the route for emergency Services calls.
   - Validating configuration in Teams Network Topology (by Subnet or Site)
   - Optionally validating user configuration and Tenant Dial Plan to find issues with effectiveness of Emergency Call Routing Policies.
+- `New-TeamsResourceAccountLineIdentity` - New Script to create a new `CsCallingLineIdentity` Object for the Resource Account
 
 ### Updated
 
@@ -33,8 +34,9 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Role will now only be enabled if older module versions have been detected (loaded) or with switch `Force`
 - `Get-TeamsAutoAttendant`: Added parsing with ObjectId
 - `Get-TeamsCallQueue`: Added parsing with ObjectId
+- `Set-TeamsCallQueue`: Added parsing with ObjectId
+- `Remove-TeamsCallQueue`: Added parsing with ObjectId
 - `Remove-TeamsAutoAttendant`: Added parsing with ObjectId
-- `Get-TeamsCallQueue`: Added parsing with ObjectId
 - `Get-TeamsUserVoiceConfig`:
   - Reports `PhoneSystem` now as TRUE for Assignment of Phone System Virtual User License (Resource Accounts) for a more harmonious experience
 - `Set-TeamsUserVoiceConfig`:

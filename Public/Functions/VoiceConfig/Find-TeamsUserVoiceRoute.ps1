@@ -219,7 +219,6 @@ function Find-TeamsUserVoiceRoute {
 
           # Warning / Caveat for Emergency Services Numbers
           #VALIDATE veracity of statement.
-          #TODO build Find-TeamsUserVoiceRouteForEmergencyCalls
           if ( $Number -match '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
             Write-Warning -Message "Emergency Services Number discovered! Route is calculated as-if routed through Online Voice Routing Policy."
             Write-Information 'INFO:    The actual route for Emergency Services Calls depends on a match in the Tenant Dial Plan for this number and the effective Emergency Call Routing Policy (if any!)'
@@ -240,7 +239,7 @@ function Find-TeamsUserVoiceRoute {
             }
             else {
               Write-Verbose -Message 'Emergency Call Routing Policy - Not assigned statically (to the User) but may be assigned dynamically (via Subnet)'
-              Write-Verbose -Message 'This Cmdlet cannot consider this configuration without additional information (Network Site). This functionality is currently not (yet) built.' -Verbose
+              Write-Verbose -Message 'This Cmdlet cannot consider this configuration without additional information (Network Site). Please run Find-TeamsUserVoiceRouteForEmergencyCalls for details.' -Verbose
             }
           }
         }

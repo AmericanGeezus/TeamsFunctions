@@ -5,7 +5,7 @@
 # Status:   Live
 #TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
 #TEST MusicOnHold audio file does not throw stopping error any more
-#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
+#TEST lookup with identity (ObjectId)!
 #CHECK Once ID Lookup is done, check in the ForEach (for Pipeline with Get) whether an Object is present and bind/re-lookup to the correct instance!
 function Set-TeamsCallQueue {
   <#
@@ -372,9 +372,18 @@ function Set-TeamsCallQueue {
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
 
-    # Initial Query to determine unique result (single object)
-    $CallQueue = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue
-    $CallQueue = $CallQueue | Where-Object Name -EQ "$Name"
+    if ( $Name.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+      #Identity or ObjectId
+      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$Name'"
+      $CallQueue = Get-CsCallQueue -Identity "$Name" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+    }
+    else {
+      #Name
+      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$Name'"
+      # Initial Query to determine unique result (single object)
+      $CallQueue = Get-CsCallQueue -NameFilter "$Name" -WarningAction SilentlyContinue
+      $CallQueue = $CallQueue | Where-Object Name -EQ "$Name"
+    }
 
     if ($null -eq $CallQueue) {
       Write-Error "'$Name' No Object found" -Category ParserError -RecommendedAction "Please check 'Name' provided" -ErrorAction Stop

@@ -93,20 +93,21 @@ function Get-TeamsTeamChannel {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-
     #Looking up Team
     try {
+      Write-Verbose -Message "[PROCESS] Processing '$Team'"
       if ($Team -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') {
-        $TeamObj = Get-Team -GroupId $Team -ErrorAction Stop
+        $TeamObject = Get-Team -GroupId $Team -ErrorAction Stop
       }
       else {
-        #TODO This does not yet account for multiple Teams with this name
-        #TEST output for multiple teams with this name
-        #VALIDATE Breakout as Test-TeamsTeam and Assert-TeamsTeam too? #Spike with object input $Team.GroupId matches
-        $TeamObj = Get-Team -DisplayName "$Team" -ErrorAction Stop
+        $TeamObject = Get-Team -DisplayName "$Team" -ErrorAction Stop
+        Write-Verbose -Message "Team '$Team' - $($TeamObject.Count) Objects Found with '$Team' in the DisplayName"
+        $TeamObject = $TeamObject | Where-Object DisplayName -EQ "$Team"
+        Write-Verbose -Message "Team '$Team' - $($TeamObject.Count) Objects Found with '$Team' as the exact DisplayName"
 
-        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): Team:", ($TeamObj | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        if ($null -eq $TeamObject) {
+          Write-Error "No Object found for '$Team'!" -Category ParserError -RecommendedAction "Please check 'Name' provided" -ErrorAction Stop
+          return $null, $null # Stopping operation as no Team was found
         }
       }
     }
@@ -114,61 +115,44 @@ function Get-TeamsTeamChannel {
       throw "Error looking up Teams Team '$Team': $($_.Exception.Message)"
     }
 
-    #Feedback for multiple Teams found
-    if ($TeamObj.Count -gt 1) {
-      Write-Verbose -Message "$($MyInvocation.MyCommand) - No unique result found for Team '$Team'. Looking for Channel '$Channel'" -Verbose
-      Write-Debug 'BETA: Result is piped to Get-TeamChannel. Script might not return a proper result yet. Handle with Care!' -Debug
+    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+      "Function: $($MyInvocation.MyCommand.Name): TeamObject:", ($TeamObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
-    #Looking up Channel within the Team
-    try {
-      if ($Channel -match '^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$') {
-        $ChannelObj = $TeamObj | Get-TeamChannel | Where-Object Id -EQ "$Channel" -ErrorAction Stop
-      }
-      else {
-        $ChannelObj = $TeamObj | Get-TeamChannel | Where-Object DisplayName -EQ "$Channel" -ErrorAction Stop
-      }
-      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name): Channel:", ($ChannelObj | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
-      return $ChannelObj
+    if ($TeamObject.GetType().BaseType.Name -eq 'Array') {
+      Write-Warning -Message "Multiple Results found for '$Team' ($($TeamObject.Count)) - Searching for a unique match for the Channel '$Channel' within each team to determine a match! - First match is returned" -Verbose
     }
-    catch {
-      throw "Error looking up Channel '$Channel' in Teams Team '$Team': $($_.Exception.Message)"
-    }
-    <#
-    switch ($TeamObj) {
-      {$PSItem.Count -le 1} {
-        Write-Verbose -Message "$($MyInvocation.MyCommand) - No Team found for '$Team'" -Verbose
-        return
-      }
-      {$PSItem.Count -eq 1} {
-
-      }
-      {$PSItem.Count -gt 1} {
-        Write-Verbose -Message "$($MyInvocation.MyCommand) - No unique result found for Team '$Team'. Looking for Channel '$Channel'" -Verbose
-
-      }
+    else {
+      Write-Verbose -Message "Unique result found for '$Team' - Id: '$($TeamObject.GroupId)'"
     }
 
-    foreach ($Obj in $TeamObj) {
-      # Build Test-TeamsTeam and Test-TeamsTeamChannel & Assert-TeamsTeam and Assert-TeamsTeamChannel and feed them into this one?
-      if ($Channel -match "^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$") {
-        $ChannelObj = $Obj | Get-TeamChannel | Where-Object Id -eq "$Channel" -ErrorAction Stop
+    foreach ($TeamObj in $TeamObject) {
+      #Looking up Channel within the Team
+      Write-Verbose -Message "[PROCESS] Processing found object: '$($TeamObj.DisplayName)' - Channel '$Channel'"
+      try {
+        if ($Channel -match '^(19:)[0-9a-f]{32}(@thread.)(skype|tacv2|([0-9a-z]{5}))$') {
+          $ChannelObj = $TeamObj | Get-TeamChannel | Where-Object Id -EQ "$Channel" -ErrorAction Stop
+        }
+        else {
+          $ChannelObj = $TeamObj | Get-TeamChannel | Where-Object DisplayName -EQ "$Channel" -ErrorAction Stop
+        }
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          "Function: $($MyInvocation.MyCommand.Name): Channel:", ($ChannelObj | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
+
+        # Output
+        if ( $ChannelObj ) {
+          Write-Verbose -Message "Team '$($TeamObj.DisplayName)' - '$Channel' found"
+          return $TeamObj, $ChannelObj
+        }
+        else {
+          Write-Verbose -Message "Team '$($TeamObj.DisplayName)' - Channel '$Channel': No Channel found in Team with this Name ID"
+        }
       }
-      else {
-        $ChannelObj = $Obj | Get-TeamChannel | Where-Object DisplayName -eq "$Channel" -ErrorAction Stop
-    $ChannelsObj = @()
-        $ChannelsObj += $ChannelObj
+      catch {
+        Write-Error "Team '$($TeamObj.DisplayName)' - Channel '$Channel': $($_.Exception.Message)"
       }
     }
-
-    if ($ChannelsObj.Count -gt 1) { # Can't use .isArray() as we have defined it as an array at the start.
-      Write-Warning -Message "No unique result found for the Team Channel"
-      return $ChannelsObj
-    }
-#>
-
   } #process
 
   end {
