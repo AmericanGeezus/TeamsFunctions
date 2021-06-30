@@ -51,6 +51,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Find-TeamsUserVoiceRoute`:
   - Refactored DialedNumber into an Array - Multiple numbers can now be provided. An object is returned for each Number
   - Added validation and caveats (Warnings) for Emergency Services Numbers if detected (~95% coverage for 3-digit EMS numbers)
+- `Get-TeamsTeamChannel`: Updated to allow multiple exact name for Team-Name. Returns first result now.
 
 ### Limitations
 
