@@ -226,7 +226,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Find-TeamsECR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
     'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 
-    'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA',
+    'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA', 'New-TeamsRAIdentity', 'New-TeamsRACLI',
     'Get-TeamsRAA', 'New-TeamsRAA', 'Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance',
     'Get-TeamsCQ', 'New-TeamsCQ', 'Remove-TeamsCQ', 'Set-TeamsCQ',
     'Get-TeamsAA', 'New-TeamsAA', 'Remove-TeamsAA', 'Set-TeamsAA', 'Set-TeamsAutoAttendant',

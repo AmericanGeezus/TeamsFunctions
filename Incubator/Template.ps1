@@ -38,8 +38,6 @@ function Verb-Noun {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsFunctions.md
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
-  .LINK
-    Verb-Noun
   #>
 
   [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Low')]
