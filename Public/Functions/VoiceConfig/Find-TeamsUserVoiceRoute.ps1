@@ -245,7 +245,6 @@ function Find-TeamsUserVoiceRoute {
         }
 
         # Voice Routing
-        #TODO Add option to trace EMS calls via ECRP? - would require to establish full E-9-1-1 configuration! Requires Parameter Subnet? Validation of E911 configuration at all?
         if ($User.OnlineVoiceRoutingPolicy) {
           Write-Verbose "User '$Id' - Querying Voice Routing Path with Online Voice Routing Policy '$($User.OnlineVoiceRoutingPolicy)'"
           $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $User.OnlineVoiceRoutingPolicy).OnlinePstnUsages
