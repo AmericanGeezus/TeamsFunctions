@@ -89,8 +89,8 @@ function Get-RandomQuote {
     "The phrase 'Someone ought to do something' was not, by itself, a helpful one. People who used it never added the rider 'and that someone is me'. (Terry Pratchett - The Hogfather)", `
     'Always remember that the crowd that applauds your coronation is the same crowd that will applaud your beheading. People like a show. (Terry Pratchett - Going Postal)', `
     "It is well known that a vital ingredient of success is not knowing that what you're attempting can't be done. (Terry Pratchett - Equal Rites)", `
-
-  'There has ceased to be a difference between my awake clothes and my asleep clothes (Mindy Kaling)', `
+    "If its creator had meant it to survive he would have given it a fireproof skin. That's evolution for you. (Terry Ptratchett)", `
+    'There has ceased to be a difference between my awake clothes and my asleep clothes (Mindy Kaling)', `
     "If you don't stick to your values when they're being tested, they're not values: they're hobbies. (Jon Stewart)", `
     #endregion Added Julia
 

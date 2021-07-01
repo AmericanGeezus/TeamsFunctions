@@ -4,7 +4,7 @@
 # Updated:  15-MAY-2021
 # Status:   Live
 
-#TODO Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
+#IMPROVE Evaluate whether to integrate Find-TeamsUVC (Phone Number unique!) as a test
 
 
 function Assert-TeamsUserVoiceConfig {
