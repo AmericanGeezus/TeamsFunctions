@@ -5,8 +5,8 @@
 # Status:   Live
 
 
-#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
 #TODO Translate DialByNameResourceId
+
 function Get-TeamsAutoAttendant {
   <#
   .SYNOPSIS
@@ -115,10 +115,20 @@ function Get-TeamsAutoAttendant {
         # Lookup
         Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
         foreach ($DN in $Name) {
-          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-          $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          $AAByName = $AAByName | Where-Object Name -EQ "$DN"
-          $AutoAttendants += $AAByName
+          #TEST matches ID and Name
+          if ( $DN.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+            #Identity or ObjectId
+            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
+            $AAById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            $AutoAttendants += $AAById
+          }
+          else {
+            #Name
+            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
+            $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            $AAByName = $AAByName | Where-Object Name -EQ "$DN"
+            $AutoAttendants += $AAByName
+          }
         }
       }
 
@@ -128,8 +138,8 @@ function Get-TeamsAutoAttendant {
         $AAByString = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         $AutoAttendants += $AAByString
       }
+      #endregion
     }
-    #endregion
 
     # Parsing found Objects
     Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $AACount"

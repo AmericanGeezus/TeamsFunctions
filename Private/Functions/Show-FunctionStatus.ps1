@@ -62,7 +62,7 @@ function Show-FunctionStatus {
       'Beta' {
         $DebugPreference = 'Continue'
         $VerbosePreference = 'Continue'
-        Write-Debug -Message "$Function has [BETA] Status: Build is not completed, functionality may be missing. Please report issues via GitHub"
+        Write-Debug -Message "$Function has [BETA] Status: Build is not completed; functionality may be missing. Please report issues via GitHub"
       }
       'RC' {
         Write-Verbose -Message "$Function has [RC] Status: Testing still commences. Please report issues via GitHub" -Verbose

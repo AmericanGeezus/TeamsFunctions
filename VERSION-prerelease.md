@@ -4,7 +4,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## unreleased/vNext
 
-[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2145-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2184-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
 ### Draft - Look ahead
 
@@ -13,6 +13,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - Buildout of Holiday Set functionality. Creating a HolidaySet for Auto Attendants
 - Buildout of Set-TeamsAutoAttendant - for limited functions
 - `Assert-TeamsResourceAccount`: Querying ResourceAccount requirements are met based on Associated Entity functionality used (ExternalPstn, License, PhoneNumber, etc.)
+- `Set-TeamsUserVoiceMail`: Draft/ALPHA/Incubator - Setting Voicemail parameters for a Teams User
 
 ### New
 

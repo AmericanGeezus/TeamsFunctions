@@ -13,7 +13,7 @@ Returns Voice Route for a User and a dialed number
 ## SYNTAX
 
 ```
-Find-TeamsUserVoiceRoute [-UserPrincipalName] <String[]> [-DialedNumber <String>] [<CommonParameters>]
+Find-TeamsUserVoiceRoute [-UserPrincipalName] <String[]> [-DialedNumber <String[]>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,6 +37,15 @@ Find-TeamsUserVoiceRoute -Identity John@domain.com -DialledNumber "+1(555) 1234-
 
 Finds the Voice Route a call to the normalised Number +15551234567 for this user may take.
 The matching Voice Route will be returned
+
+### EXAMPLE 3
+```
+Find-TeamsUserVoiceRoute -Identity John@domain.com -DialledNumber "911","+1(555) 1234-567"
+```
+
+Finds the Voice Route a call to 911 and the normalised Number +15551234567 for this user may take.
+The matching Voice Route will be returned
+Returns one object for each number as they might be routed through different entities
 
 ## PARAMETERS
 
@@ -63,9 +72,10 @@ Number entered in the Dial Pad.
 If not provided, the first Voice Route will be chosen.
 If provided, number will be normalised and the effective Dial Plan queried.
 A matching Route will be found for this number will be queried
+Accepts multiple Numbers to dial - one object returned for each number dialed.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases: Number
 
@@ -92,6 +102,8 @@ Based on and inspired by Test-CsOnlineUserVoiceRouting by Lee Ford - https://www
 ## RELATED LINKS
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsUserVoiceRoute.md)
+
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsEmergencyCallRoute.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Find-TeamsEmergencyCallRoute.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 

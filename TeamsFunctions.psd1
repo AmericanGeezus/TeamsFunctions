@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.06.13'
+  ModuleVersion         = '21.07'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -108,6 +108,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsResourceAccountAssociation',
     'New-TeamsResourceAccount',
     'New-TeamsResourceAccountAssociation',
+    'New-TeamsResourceAccountLineIdentity',
     'Remove-TeamsResourceAccount',
     'Remove-TeamsResourceAccountAssociation',
     'Set-TeamsResourceAccount',
@@ -204,6 +205,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Assert-TeamsUserVoiceConfig',
     'Find-TeamsUserVoiceConfig',
     'Find-TeamsUserVoiceRoute',
+    'Find-TeamsEmergencyCallRoute',
     'Get-TeamsTenantVoiceConfig',
     'Get-TeamsUserVoiceConfig',
     'New-TeamsUserVoiceConfig',
@@ -222,10 +224,10 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport       = @(
     'con', 'dis', 'pol', 'ear', 'dar', 'gar', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
-    'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
+    'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Find-TeamsECR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
     'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 
-    'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA',
+    'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA', 'New-TeamsRAIdentity', 'New-TeamsRACLI',
     'Get-TeamsRAA', 'New-TeamsRAA', 'Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance',
     'Get-TeamsCQ', 'New-TeamsCQ', 'Remove-TeamsCQ', 'Set-TeamsCQ',
     'Get-TeamsAA', 'New-TeamsAA', 'Remove-TeamsAA', 'Set-TeamsAA', 'Set-TeamsAutoAttendant',
@@ -233,7 +235,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'New-TeamsAAMenu', 'New-TeamsAAOption', 'New-TeamsAAFlow',
     'New-TeamsAAPrompt', 'New-TeamsAAScope', 'New-TeamsAASchedule',
     'New-TeamsAAEntity', 'New-TeamsAutoAttendantCallHandlingAssociation',
-    'Get-TeamsAASchedule', 
+    'Get-TeamsAASchedule',
     'Get-Channel'
 
   )

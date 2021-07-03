@@ -269,6 +269,7 @@ function Connect-Me {
             $AzureAdParameters = $ConnectionParameters
             $AzureAdParameters += @{ 'AccountId' = $AccountId }
             $AzureAdFeedback = Connect-AzureAD @AzureAdParameters
+            Write-Information "SUCCESS: $Status - $Operation"
           }
           'Enabling eligible Admin Roles' {
             try {
@@ -282,6 +283,7 @@ function Connect-Me {
               else {
                 Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated' -Verbose
               }
+              Write-Information "SUCCESS: $Status - $Operation"
             }
             catch {
               if ($_.Exception.Message.Split('["')[2] -eq 'MfaRule') {
@@ -319,6 +321,7 @@ function Connect-Me {
                 # order is important here!
                 throw 'SkypeOnline - Connection to SkypeOnline not able to establish. Please run Connect-SkypeOnline manually'
               }
+              Write-Information "SUCCESS: $Status - $Operation"
             }
             catch {
               if ( $_.Exception.Message.Contains('does not have permission to manage this tenant') -or $_.Exception.Message.Contains('403')) {
@@ -349,10 +352,10 @@ function Connect-Me {
             catch {
               Write-Verbose -Message "$Status - $Operation - Try `#2 - Please confirm Account" -Verbose
               if ($AzureAdFeedback) {
-                $TeamsConnection = Connect-MicrosoftTeams -TenantId $AzureAdFeedback.TenantId
+                $TeamsConnection = Connect-MicrosoftTeams -TenantId $AzureAdFeedback.TenantId -ErrorAction Stop
               }
               else {
-                $TeamsConnection = Connect-MicrosoftTeams
+                $TeamsConnection = Connect-MicrosoftTeams -ErrorAction Stop
               }
             }
             #$null = Use-MicrosoftTeamsConnection
@@ -360,6 +363,7 @@ function Connect-Me {
               # order is important here!
               throw 'MicrosoftTeams - Connection to MicrosoftTeams established, but SkypeOnline Cmdlets not able to run. Please verify'
             }
+            Write-Information "SUCCESS: $Status - $Operation"
           }
           'ExchangeOnline' {
             $ExchangeOnlineParameters = $ConnectionParameters
@@ -367,12 +371,15 @@ function Connect-Me {
             $ExchangeOnlineParameters += @{ 'ShowProgress' = $true }
             $ExchangeOnlineParameters += @{ 'ShowBanner' = $false }
             $null = Connect-ExchangeOnline @ExchangeOnlineParameters
+            Write-Information "SUCCESS: $Status - $Operation"
           }
         }
-        Write-Information "SUCCESS: $Status - $Operation"
       }
       catch {
         Write-Error -Message "$($_.Exception.Message)"
+        if (($_.Exception.Message.Contains('User canceled authentication'))) {
+          return
+        }
       }
     }
 

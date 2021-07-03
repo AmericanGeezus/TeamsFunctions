@@ -3,6 +3,56 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.07 - Jul 2021 release
+
+More bugfixes and 2 new functions: `New-TeamsResourceAccountLineIdentity` and `Find-TeamsEmergencyCallRoute`, both in BETA status
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-105-blue.svg) ![Private](https://img.shields.io/badge/Private-13-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-52-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-88-blue.svg) ![RC](https://img.shields.io/badge/RC-6-green.svg) ![BETA](https://img.shields.io/badge/BETA-2-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-3-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2185-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Stability, Bugfixing, Emergency Services Voice Routing                                                                                                                                                                                                                      |
+
+### New
+
+- `Find-TeamsEmergencyCallRoute` (`Find-TeamsECR`): BETA
+  - New CmdLet to determine the route for emergency Services calls.
+  - Validating configuration in Teams Network Topology (by Subnet or Site)
+  - Optionally validating user configuration and Tenant Dial Plan to find issues with effectiveness of Emergency Call Routing Policies.
+- `New-TeamsResourceAccountLineIdentity`: BETA
+  - New Script to create a new `CsCallingLineIdentity` Object for the Resource Account
+
+### Updated
+
+- General:
+  - All CmdLets now have appropriate Links to their own online help-file as well as the corresponding `about_`-Files
+- `Connect-Me`: Added 'user cancelled operation' as a terminating condition.
+- `Set-TeamsUserLicense`: Improved feedback for 'Objects' (rather than for 'User')
+- `Enable-AzureAdAdminRole`:
+  - Skype For Business Legacy Admin Role is no longer needed for MicrosoftTeams v2.3.1 and higher.
+  - Role will now only be enabled if older module versions have been detected (loaded) or with switch `Force`
+- Added input for ObjectId and Name for the following CmdLets: `Get-TeamsAutoAttendant`, `Get-TeamsCallQueue`, `Set-TeamsCallQueue`, `Remove-TeamsCallQueue`, `Remove-TeamsAutoAttendant`
+- `Get-TeamsUserVoiceConfig`:
+  - Reports `PhoneSystem` now as TRUE for Assignment of Phone System Virtual User License (Resource Accounts) for a more harmonious experience
+- `Set-TeamsUserVoiceConfig`:
+  - Fixed an issue which resulted in Phone Number being removed if switch `PhoneNumber` was not provided. Now only removed if Phonenumber is specified as empty or NULL.
+  - Refactored execution policy towards Resource Accounts. Allowed execution based on ObjectType. Supports Users & ResourceAccounts only.
+  - Execution against Resource Accounts now feeds back verbose information for non-applicable settings. Supports OVP & Number, but not HostedVoicemail and TDP
+  - Refactored script execution to provide better output for switch `WriteErrorLog`.
+  - Refactored error log file written to create one file per hour, rather than for each individual User Name (easier for bulk execution)
+  - Current performance for full application is between 15-30s per Object (averages around 2.5 Objects per min or 150 Objects per hour)
+- `Remove-TeamsUserVoiceConfig`:
+  - Quietened output of License Removals
+- `Find-TeamsUserVoiceRoute`:
+  - Refactored DialedNumber into an Array - Multiple numbers can now be provided. An object is returned for each Number
+  - Added validation and caveats (Warnings) for Emergency Services Numbers if detected (~95% coverage for 3-digit EMS numbers)
+- `Get-TeamsTeamChannel`:
+  - Refactored Script to parse Channel for all Teams found with this Team name/ID. Returns first matching result now.
+  - Warnings are displayed if multiple matches have been found for the Team Name and that only the first matching result is returned
+
 ## v21.06.13 - Jun 2021 release 2
 
 With many functions come many bugs...- a few of which out of my control which made this release necessary.

@@ -5,7 +5,7 @@
 # Status:   Live
 
 #TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForChannelId (OboResourceAccountIds)
-#TODO enable lookup with identity (ObjectId) as well! (enabling Pipeline Input) - Add Regex Validation to ObjectId format to change how it is looked up!
+
 
 function Get-TeamsCallQueue {
   <#
@@ -113,10 +113,20 @@ function Get-TeamsCallQueue {
         # Lookup
         Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
         foreach ($DN in $Name) {
-          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-          $QueuesByName = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          $QueuesByName = $QueuesByName | Where-Object Name -EQ "$DN"
-          $Queues += $QueuesByName
+          #TEST matches ID and Name
+          if ( $DN.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+            #Identity or ObjectId
+            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
+            $QueuesById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            $Queues += $QueuesById
+          }
+          else {
+            #Name
+            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
+            $QueuesByName = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            $QueuesByName = $QueuesByName | Where-Object Name -EQ "$DN"
+            $Queues += $QueuesByName
+          }
         }
       }
 
@@ -126,8 +136,8 @@ function Get-TeamsCallQueue {
         $QueuesByString = Get-CsCallQueue -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         $Queues += $QueuesByString
       }
+      #endregion
     }
-    #endregion
 
     # Parsing found Objects
     Write-Verbose -Message "[PROCESS] Processing found Queues: $QueueCount"

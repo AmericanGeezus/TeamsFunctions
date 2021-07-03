@@ -206,8 +206,7 @@ function Remove-TeamsUserVoiceConfig {
             try {
               if ( $Force -or $PSCmdlet.ShouldProcess("$User", "Removing Licenses: $RemoveLicenses")) {
                 if ( $RemoveLicenses.Count -gt 0 ) {
-                  #CHECK remove parameter names for all calls to Set-TeamsUserLicense
-                  Set-TeamsUserLicense -Identity "$User" -RemoveLicenses $RemoveLicenses
+                  Set-TeamsUserLicense -Identity "$User" -Remove $RemoveLicenses
                   Write-Information "User '$User' - Removing Call Plan Licenses: OK"
                 }
                 else {

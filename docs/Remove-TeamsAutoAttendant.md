@@ -13,7 +13,7 @@ Removes an Auto Attendant
 ## SYNTAX
 
 ```
-Remove-TeamsAutoAttendant [-Name] <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-TeamsAutoAttendant [-Name] <String[]> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -28,15 +28,22 @@ Remove-TeamsAutoAttendant -Name "My AutoAttendant"
 
 Prompts for removal for all Auto Attendant found with the string "My AutoAttendant"
 
+### EXAMPLE 2
+```
+Remove-TeamsAutoAttendant -Name 00000000-0000-0000-0000-000000000000
+```
+
+Prompts for removal for all Auto Attendant found with the ObjectId 00000000-0000-0000-0000-000000000000
+
 ## PARAMETERS
 
 ### -Name
 DisplayName of the Auto Attendant
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
-Aliases:
+Aliases: Identity
 
 Required: True
 Position: 1
