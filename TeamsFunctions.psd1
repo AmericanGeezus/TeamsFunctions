@@ -108,6 +108,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsResourceAccountAssociation',
     'New-TeamsResourceAccount',
     'New-TeamsResourceAccountAssociation',
+    'New-TeamsResourceAccountLineIdentity',
     'Remove-TeamsResourceAccount',
     'Remove-TeamsResourceAccountAssociation',
     'Set-TeamsResourceAccount',

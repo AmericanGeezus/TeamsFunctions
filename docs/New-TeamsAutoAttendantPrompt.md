@@ -98,6 +98,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 Warning: The Automatic detection of the String depends on the last 4 characters of the String.
 This will break if the String ends in a supported File extension (WAV, WMA or MP3), for example.
+This Cmdlet does not allow use of the ActiveType Parameter as the the type is inferred by the string provided.
+Further development may see an addition of a secondary String (which would then make the provided -String the active type)
 
 ## RELATED LINKS
 

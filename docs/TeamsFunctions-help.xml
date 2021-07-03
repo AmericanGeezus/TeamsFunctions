@@ -11111,7 +11111,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Warning: The Automatic detection of the String depends on the last 4 characters of the String. This will break if the String ends in a supported File extension (WAV, WMA or MP3), for example.</maml:para>
+        <maml:para>Warning: The Automatic detection of the String depends on the last 4 characters of the String. This will break if the String ends in a supported File extension (WAV, WMA or MP3), for example. This Cmdlet does not allow use of the ActiveType Parameter as the the type is inferred by the string provided. Further development may see an addition of a secondary String (which would then make the provided -String the active type)</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -13816,6 +13816,236 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>New-TeamsResourceAccountLineIdentity</command:name>
+      <command:verb>New</command:verb>
+      <command:noun>TeamsResourceAccountLineIdentity</command:noun>
+      <maml:description>
+        <maml:para>Short description</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Long description</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>New-TeamsResourceAccountLineIdentity</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
+          <maml:name>UserPrincipalName</maml:name>
+          <maml:description>
+            <maml:para>Required. Identifies the Resource Account for which the Line Identity is being created</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>BlockIncomingPstnCallerID</maml:name>
+          <maml:description>
+            <maml:para>Blocks incoming PSTN Caller ID for inbound calls to the Call Queue or Auto Attendant</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>EnableUserOverride</maml:name>
+          <maml:description>
+            <maml:para>Allows the User to choose the Caller Line Id before placing the call.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+          <maml:name>CompanyName</maml:name>
+          <maml:description>
+            <maml:para>Sets the Company Name displayed for outbound calls.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
+        <maml:name>UserPrincipalName</maml:name>
+        <maml:description>
+          <maml:para>Required. Identifies the Resource Account for which the Line Identity is being created</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>BlockIncomingPstnCallerID</maml:name>
+        <maml:description>
+          <maml:para>Blocks incoming PSTN Caller ID for inbound calls to the Call Queue or Auto Attendant</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>EnableUserOverride</maml:name>
+        <maml:description>
+          <maml:para>Allows the User to choose the Caller Line Id before placing the call.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="named" aliases="none">
+        <maml:name>CompanyName</maml:name>
+        <maml:description>
+          <maml:para>Sets the Company Name displayed for outbound calls.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+        <maml:name>WhatIf</maml:name>
+        <maml:description>
+          <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+        <maml:name>Confirm</maml:name>
+        <maml:description>
+          <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>The Calling Line Identity is created with New-CsCallingLineIdentity. The Parameters Identity, Description and CallingIDSubstitute are populated by the Resource Account data Identity is populated with the UPN of the Resource Account Description is "CLI for RA: " plus the Display Name of the Resource Account CallingIDSubstitute is "Resource".</maml:para>
+        <maml:para>$ObjId = (Get-CsOnlineApplicationInstance -Identity dkcq@contoso.com).ObjectId New-CsCallingLineIdentity  -Identity DKCQ -CallingIDSubstitute Resource -EnableUserOverride $false -ResourceAccount $ObjId -CompanyName "Contoso" https://docs.microsoft.com/en-us/powershell/module/skype/new-cscallinglineidentity?view=skype-ps</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>New-TeamsResourceAccountLineIdentity -Identity ResourceAccount@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a new Line Identity for the Resource Account provided.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>New-TeamsResourceAccountLineIdentity -Identity ResourceAccount@domain.com -BlockIncomingPstnCallerID</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a new Line Identity for the Resource Account provided and suppresses the inbound Caller ID</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>New-TeamsResourceAccountLineIdentity -Identity ResourceAccount@domain.com -EnableUserOverride</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a new Line Identity for the Resource Account provided and allows the User to choose which Caller ID to display</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>New-TeamsResourceAccountLineIdentity -Identity ResourceAccount@domain.com -CompanyName "Contoso Domain Services"</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a new Line Identity for the Resource Account provided and sets the outbound display name to 'Contoso Domain Services'</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccountLineIdentity.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccountLineIdentity.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsFunctions.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsFunctions.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
