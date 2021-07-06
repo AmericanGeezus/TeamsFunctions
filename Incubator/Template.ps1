@@ -107,7 +107,7 @@ function Verb-Noun {
 
 
       #region Applying settings
-      Write-Verbose -Message '[PROCESS] User '$($CsUser.DisplayName)' - Action'
+      Write-Verbose -Message "[PROCESS] User '$($CsUser.DisplayName)' - Action"
       $Parameters = @{
         'Identity'       = $CsUser.ObjectId
         'PromptLanguage' = $Language

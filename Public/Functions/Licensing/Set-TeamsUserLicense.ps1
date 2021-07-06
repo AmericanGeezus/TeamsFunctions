@@ -496,7 +496,7 @@ function Set-TeamsUserLicense {
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
         "Function: $($MyInvocation.MyCommand.Name): LicenseObject:", ($LicenseObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
-      Write-Verbose -Message 'Account '$ID' - Creating License Object: Done'
+      Write-Verbose -Message "Account '$ID' - Creating License Object: Done"
       #endregion
 
       # Executing Assignment

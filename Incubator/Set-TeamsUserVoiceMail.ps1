@@ -111,7 +111,7 @@ function Set-TeamsUserVoiceMail {
 
 
       #region Setting Users Voicemail Settings - language
-      Write-Verbose -Message '[PROCESS] User '$($CsUser.DisplayName)' - Setting Voicemail language'
+      Write-Verbose -Message "[PROCESS] User '$($CsUser.DisplayName)' - Setting Voicemail language"
       #NOTE this could do more, but do not want to write a full wrapper for the CsOnlineVoicemailUserSettings yet.
       $CsOnlineVoicemailUserSettings = @{
         'Identity' = $CsUser.ObjectId
