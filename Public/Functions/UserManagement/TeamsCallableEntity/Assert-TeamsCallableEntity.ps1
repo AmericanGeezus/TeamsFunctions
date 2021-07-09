@@ -77,7 +77,7 @@ function Assert-TeamsCallableEntity {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     try {
-      $Object = Get-TeamsUserVoiceConfig -UserPrincipalName "$Identity" -WarningAction SilentlyContinue
+      $Object = Get-TeamsUserVoiceConfig -UserPrincipalName "$Identity" -WarningAction SilentlyContinue -InformationAction SilentlyContinue
       Write-Verbose -Message "User '$Identity' found"
     }
     catch {
