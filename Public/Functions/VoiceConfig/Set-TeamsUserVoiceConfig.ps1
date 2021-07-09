@@ -513,7 +513,7 @@ function Set-TeamsUserVoiceConfig {
           }
           else {
             if ( $CsUser.OnlineVoiceRoutingPolicy ) {
-              Write-Information "CURRENT: Object '$UserPrincipalName' - $Operation`: $($CsUser.OnlineVoiceRoutingPolicy)' assigned currently"
+              Write-Information "CURRENT: Object '$UserPrincipalName' - $Operation`: '$($CsUser.OnlineVoiceRoutingPolicy)' assigned currently"
             }
             else {
               Write-Warning -Message "Object '$UserPrincipalName' - $Operation`: Not assigned. Object will be able to receive inbound calls, but not make outbound calls!'"
