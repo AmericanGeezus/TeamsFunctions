@@ -116,7 +116,7 @@ function Get-TeamsAutoAttendant {
         Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
         foreach ($DN in $Name) {
           #TEST matches ID and Name
-          if ( $DN.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+          if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
             #Identity or ObjectId
             Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
             $AAById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue

@@ -372,7 +372,7 @@ function Set-TeamsCallQueue {
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
 
-    if ( $Name.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+    if ( $Name -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
       #Identity or ObjectId
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$Name'"
       $CallQueue = Get-CsCallQueue -Identity "$Name" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
