@@ -115,7 +115,7 @@ function New-TeamsResourceAccount {
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number to assign')]
     [ValidateScript( {
-        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
+        If ($_ -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
           $True
         }
         else {

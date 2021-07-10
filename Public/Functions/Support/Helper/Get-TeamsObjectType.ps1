@@ -82,8 +82,7 @@ function Get-TeamsObjectType {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($Id in $Identity) {
-      #if ($Id -match '^tel:\+\d') {
-      if ($Id -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$' -and -not ($Id -match '@')) {
+      if ($Id -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|([0-9][-\s]?){4,20})((x|;ext=)([0-9]{3,8}))?$' -and -not ($Id -match '@')) {
         Write-Verbose -Message "Callable Entity - Call Target '$Id' found: TelURI (ExternalPstn)"
         return 'TelURI'
       }

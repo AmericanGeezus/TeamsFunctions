@@ -339,7 +339,6 @@ function Set-TeamsUserVoiceConfig {
       Write-Verbose -Message "$Status - $Operation"
 
       if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
-        #TEST this. Was prior: if ($PhoneNumber -eq '' -or $null -eq $PhoneNumber) {
         if ($CurrentPhoneNumber) {
           Write-Warning -Message "Object '$UserPrincipalName' - PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
         }
@@ -349,7 +348,7 @@ function Set-TeamsUserVoiceConfig {
         $PhoneNumber = $null
       }
       else {
-        if ($PhoneNumber -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
+        if ($PhoneNumber -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$' ) {
           $E164Number = Format-StringForUse $PhoneNumber -As E164
           $LineUri = Format-StringForUse $PhoneNumber -As LineUri
           if ($CurrentPhoneNumber -eq $LineUri -and -not $force) {
