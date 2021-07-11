@@ -69,7 +69,7 @@ function Assert-SkypeOnlineConnection {
     }
     else {
       $Sessions = Get-PSSession -WarningAction SilentlyContinue
-      $SkypeSession = $Sessions | Where-Object { $_.Computername -match 'online.lync.com' -or $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+      $SkypeSession = $Sessions | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com|online.lync.com' }
       if ( $SkypeSession ) {
         Write-Verbose '[ASSERT] SkypeOnline Session found. Trying to reconnect... (authentication required)' -Verbose
         try {

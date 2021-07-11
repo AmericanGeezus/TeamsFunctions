@@ -115,10 +115,7 @@ function New-TeamsResourceAccount {
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number to assign')]
     [ValidateScript( {
-        If ($_ -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
-          $True
-        }
-        else {
+        If ($_ -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') { $True } else {
           throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. Must start with a + and 8 to 15 digits long'
           $false
         }

@@ -77,7 +77,8 @@ function Restore-TeamsEV {
       return
     }
 
-    If ((Get-PSSession -WarningAction SilentlyContinue | Where-Object -FilterScript { $_.Computername -match 'online.lync.com' -or $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }).State -eq 'Opened') {
+    #BODGE Not working for new sessions after MicrosoftTeams v2 - revisit
+    If ((Get-PSSession -WarningAction SilentlyContinue | Where-Object -FilterScript { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com|online.lync.com' }).State -eq 'Opened') {
       Write-Host -Object 'Using existing session credentials'
     }
     Else {

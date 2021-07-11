@@ -115,7 +115,6 @@ function Get-TeamsAutoAttendant {
         # Lookup
         Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
         foreach ($DN in $Name) {
-          #TEST matches ID and Name
           if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
             #Identity or ObjectId
             Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"

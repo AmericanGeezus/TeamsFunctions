@@ -273,7 +273,7 @@ function Get-AzureAdLicense {
 
       #Normalising "SKYPE FOR BUSINESS PSTN" from ProductName for Calling Plans
       $StringToCut = 'Skype For Business Pstn '
-      if ( $ProductName -match "$StringToCut" ) {
+      if ( $ProductName -match "^$StringToCut" ) {
         $ProductName = $ProductName.Substring($StringToCut.Length, $ProductName.Length - $StringToCut.Length)
       }
       $VerbosePreference = 'SilentlyContinue'
