@@ -247,8 +247,8 @@ function Set-TeamsCommonAreaPhone {
           $CurrentLicense = 'CommonAreaPhone'
         }
         elseif (Test-TeamsUserLicense -Identity "$UPN" -ServicePlan TEAMS1) {
+          #NOTE PhoneSystem is not validated here because no Phone numbers are applied with this CmdLet
           $CurrentLicense = 'Teams'
-          #CHECK add validation for PhoneSystem too (only needed when applying a number which we don't do here)
         }
         if ($null -ne $CurrentLicense) {
           Write-Verbose -Message "'$Name ($UPN)' Current License assigned: $CurrentLicense"

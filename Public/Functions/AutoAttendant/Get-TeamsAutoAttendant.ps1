@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO Translate DialByNameResourceId
+#TODO Translate DialByNameResourceId (should be a Group?)
 
 function Get-TeamsAutoAttendant {
   <#

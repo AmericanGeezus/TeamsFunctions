@@ -219,7 +219,7 @@ function New-TeamsCommonAreaPhone {
       $PasswordProfile.Password = $Password
     }
     else {
-      #VALIDATE Check for alternatives to the below
+      #BODGE Check for alternatives to the below
       $PasswordFormat = 'CAP-' + $(Get-Date -Format 'dd-MMM-yyyy')
       $PasswordProfile.Password = $PasswordFormat | ConvertTo-SecureString -AsPlainText -Force
     }

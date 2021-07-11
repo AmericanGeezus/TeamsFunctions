@@ -4,9 +4,9 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#VALIDATE whether Valued parameters are integers. Display warnings if above or below threshold.
 #TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
 #TEST MusicOnHold audio file does not throw stopping error any more
+
 function New-TeamsCallQueue {
   <#
   .SYNOPSIS

@@ -4,7 +4,7 @@
 # Updated:  01-JAN-2021
 # Status:   Live
 
-#TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForChannelId (OboResourceAccountIds)
+#TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForCallerId (OboResourceAccountIds)
 
 
 function Get-TeamsCallQueue {

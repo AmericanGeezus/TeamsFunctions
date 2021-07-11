@@ -159,8 +159,6 @@ function Get-TeamsCommonAreaPhone {
         #$CommonAreaPhones = Get-CsOnlineUser -WarningAction SilentlyContinue | Where-Object -Property DisplayName -Like -Value "*$DisplayName*"
       }
       'Number' {
-        #TEST New Search String normalisation based on new Matching pattern
-        #$SearchString = Format-StringRemoveSpecialCharacter "$PhoneNumber" | Format-StringForUse -SpecialChars 'tel'
         $SearchString = Format-StringForUse "$($PhoneNumber.split(';')[0].split('x')[0])" -SpecialChars 'telx:+() -'
         Write-Verbose -Message "PhoneNumber - Searching for normalised PhoneNumber '$SearchString'"
         $Filter = 'LineURI -like "*{0}*"' -f $SearchString

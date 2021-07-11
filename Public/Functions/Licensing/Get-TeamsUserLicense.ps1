@@ -124,12 +124,10 @@ function Get-TeamsUserLicense {
       foreach ($PartNumber in $assignedSkuPartNumbers) {
         $Lic = $null
         $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ $Partnumber
-        #VALIDATE filter RelevantForTeams directly here since Get-AzureAdUserLicense will do "all" anyway
         if ($null -ne $Lic -or $Lic.IncludesTeams -or $Lic.IncludesPhoneSystem -or $PSBoundParameters.ContainsKey('DisplayAll')) {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
-
           [void]$UserLicenses.Add($Lic)
         }
       }
@@ -141,8 +139,6 @@ function Get-TeamsUserLicense {
       foreach ($ServicePlan in $assignedServicePlans) {
         $Lic = $null
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
-        #VALIDATE filter RelevantForTeams directly here since Get-AzureAdUserLicense will do "all" anyway
-        #if ($null -ne $Lic -or $PSBoundParameters.ContainsKey('DisplayAll')) {
         if (($null -ne $Lic -and $Lic.RelevantForTeams) -or $PSBoundParameters.ContainsKey('DisplayAll')) {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
