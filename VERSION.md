@@ -3,6 +3,13 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.07.11 - Jul 2021 release 2
+
+### Update
+
+- `Set-TeamsUserLicense`: Fixed an issue with one verbose output inadvertently terminating the script without action (my bad!)
+- MULTIPLE: Fixed two issues issue with matching phone Numbers
+
 ## v21.07 - Jul 2021 release
 
 More bugfixes and 2 new functions: `New-TeamsResourceAccountLineIdentity` and `Find-TeamsEmergencyCallRoute`, both in BETA status
