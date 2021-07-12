@@ -33,6 +33,9 @@ function Set-TeamsUserLicense {
     If not provided, defaults to 'US'
   .PARAMETER PassThru
     Optional. Displays User License Object after action.
+  .PARAMETER Force
+    No effect for Add. For Remove Overrides the safeguard to only remove Licenses that are found assigned to the User.
+    This may lead to errors
   .EXAMPLE
     Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add MS365E5
     Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
@@ -137,6 +140,9 @@ function Set-TeamsUserLicense {
 
     [Parameter(HelpMessage = 'Usage Location to be set if not already applied')]
     [string]$UsageLocation = 'US',
+
+    [Parameter(HelpMessage = 'Suppresses confirmation prompt unless -Confirm is used explicitly')]
+    [switch]$Force,
 
     [Parameter(Mandatory = $false)]
     [switch]$PassThru
@@ -458,6 +464,10 @@ function Set-TeamsUserLicense {
               Write-Verbose -Message "Account '$ID' - Removing License '$RemoveLicName' - License assigned, adding to list"
               [void]$RemoveSkuIds.Add("$RemoveSku")
             }
+            elseif ($Force) {
+              Write-Verbose -Message "Account '$ID' - Removing License '$RemoveLicName' - License not assigned, but processing with Force"
+              [void]$RemoveSkuIds.Add("$RemoveSku")
+            }
             else {
               Write-Warning -Message "Account '$ID' - Removing License '$RemoveLicName' - License not assigned to the User, omitting!"
             }
@@ -499,7 +509,7 @@ function Set-TeamsUserLicense {
       #endregion
 
       # Executing Assignment
-      if ($PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
+      if ($Force -or $PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
         #Assign $LicenseObject to each User
         Write-Verbose -Message "Account '$ID' - Applying new license Object (performs changes)"
         try {
