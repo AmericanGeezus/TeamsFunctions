@@ -114,15 +114,19 @@ function Get-AzureAdLicense {
             "Function: $($MyInvocation.MyCommand.Name): Splitting at '<br/>': $_" | Write-Debug
           }
           try {
-            $NameString = $_
-            $planServicePlanName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
-            $planServicePlanId = $_.SubString($_.LastIndexOf('(') + 1)
-            if ($planServicePlanId.Contains(')')) {
-              $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+            if ($_ -eq '') {
+              Write-Verbose -Message "Entry '$srcServicePlan' has a trailing '<br/>', omitting entry"
+            }
+            else {
+              $planServicePlanName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
+              $planServicePlanId = $_.SubString($_.LastIndexOf('(') + 1)
+              if ($planServicePlanId.Contains(')')) {
+                $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+              }
             }
           }
           catch {
-            Write-Warning -Message "Cannot read Entry '$NameString' - malformed string. Reading this requires open and close parenthesis around ServicePlanId - please open issue against Documentation: https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference"
+            Write-Warning -Message "Cannot read Entry '$srcServicePlan' (Service Plan) - malformed string. Reading this requires open and close parenthesis around ServicePlanId - please open issue against Documentation: https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference"
           }
 
           if (-not $planServicePlanNames.ContainsKey($planServicePlanId)) {
@@ -133,15 +137,19 @@ function Get-AzureAdLicense {
         #get the included service plans
         $srcServicePlanName -split '<br.?>' | ForEach-Object {
           try {
-            $NameString = $_
-            $planProductName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
-            $planServicePlanId = $_.SubString($_.LastIndexOF('(') + 1)
-            if ($planServicePlanId.Contains(')')) {
-              $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+            if ($_ -eq '') {
+              Write-Verbose -Message "Entry '$srcServicePlanName' has a trailing '<br/>', omitting entry"
+            }
+            else {
+              $planProductName = ($_.SubString(0, $_.LastIndexOf('('))).Trim()
+              $planServicePlanId = $_.SubString($_.LastIndexOF('(') + 1)
+              if ($planServicePlanId.Contains(')')) {
+                $planServicePlanId = $planServicePlanId.SubString(0, $planServicePlanId.IndexOf(')'))
+              }
             }
           }
           catch {
-            Write-Warning -Message "Cannot read Entry '$NameString' - malformed string. Reading this requires open and close parenthesis around ServicePlanId - please open issue against Documentation: https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference"
+            Write-Warning -Message "Cannot read Entry '$srcServicePlanName' (Service Plan Name) - malformed string. Reading this requires open and close parenthesis around ServicePlanId - please open issue against Documentation: https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference"
           }
 
           # Add RelevantForTeams
