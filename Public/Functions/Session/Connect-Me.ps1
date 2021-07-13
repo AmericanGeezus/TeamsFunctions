@@ -186,6 +186,7 @@ function Connect-Me {
     $global:VerbosePreference = $SaveVerbosePreference
 
     # Determine Module Version loaded
+    #TODO Remove v1
     if ( $($TeamsModuleVersion.Major) -lt 2 ) {
       try {
         $null = Get-Command New-CsOnlineSession -ErrorAction Stop

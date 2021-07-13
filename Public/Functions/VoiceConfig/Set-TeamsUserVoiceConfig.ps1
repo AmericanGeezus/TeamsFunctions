@@ -578,7 +578,7 @@ function Set-TeamsUserVoiceConfig {
             elseif ($UserWTN.InterpretedUserType.Contains('User')) {
               if ($PSCmdlet.ShouldProcess("$($UserWTN.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
                 $UserWTN | Set-TeamsUserVoiceConfig -PhoneNumber $Null -WarningAction SilentlyContinue -ErrorAction Stop
-                Write-Information "SUCCESS: User '$($UserWTN.UserPrincipalName)' - $Operation`: OK"
+                Write-Information "SUCCESS: Object '$($UserWTN.UserPrincipalName)' - $Operation`: OK"
               }
             }
             else {
