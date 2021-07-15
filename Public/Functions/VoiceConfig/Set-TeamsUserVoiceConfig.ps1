@@ -358,7 +358,7 @@ function Set-TeamsUserVoiceConfig {
             Write-Verbose -Message "Object '$UserPrincipalName' - PhoneNumber '$LineUri' is in a usable format and will be applied"
             # Checking number is free
             Write-Verbose -Message "Object '$UserPrincipalName' - PhoneNumber - Finding Number assignments"
-            $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
+            $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number -WarningAction SilentlyContinue
             if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UserPrincipalName) {
               if ($Force) {
                 Write-Warning -Message "Object '$UserPrincipalName' - Number '$LineUri' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
