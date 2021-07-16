@@ -85,10 +85,7 @@ function Get-CurrentConnectionInfo {
       }
       $SessionInfo.ConnectedTo += 'MicrosoftTeams'
       if ($CsTenant.DisplayName) {
-        $SessionInfo.Tenant = $($SessionInfo.Tenant), $($CsTenant.DisplayName) -join ' - '
-      }
-      else {
-        $SessionInfo.Tenant = $CsTenant.DisplayName
+        $SessionInfo.Tenant = $($CsTenant.DisplayName)
       }
       $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
     }
