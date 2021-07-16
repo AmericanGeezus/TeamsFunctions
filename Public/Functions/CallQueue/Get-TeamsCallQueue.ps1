@@ -207,7 +207,6 @@ function Get-TeamsCallQueue {
         #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         $DLObject = Get-AzureADGroup -ObjectId "$DL" -WarningAction SilentlyContinue
         if ($DLObject) {
-          #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
           [void]$DLNames.Add($DLObject.DisplayName)
         }
       }

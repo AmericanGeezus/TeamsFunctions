@@ -13,6 +13,9 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 - `Find-TeamsUserVoiceConfig`: Fixed an issue normalising the PhoneNumber when not provided as a LineUri with extension.
 - `Get-TeamsUserVoiceConfig`: Added Parameter `CallingLineIdentity` to DiagnosticLevel 2 output
+- `Get-TeamsAutoAttendant`:
+  - Fixed an issue with lookup by ID (was querying Call Queues... oops)
+  - Fixed an issue with empty MenuOptions, Prompts or Greetings when building the detailed tree
 
 ### Removed
 

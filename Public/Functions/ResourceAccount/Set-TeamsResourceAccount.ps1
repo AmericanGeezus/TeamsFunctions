@@ -585,7 +585,6 @@ function Set-TeamsResourceAccount {
           Write-Verbose -Message "'$Name ($UPN)' ACTION: Removing Phone Number"
           try {
             $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName "$UPN" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorVariable Stop
-            #IMPROVE Set-CsOnlineApplicationInstance returns an Object - This can be used to validate the outcome!
             if ($null -ne ($UVCObject.TelephoneNumber)) {
               # Remove from VoiceApplicationInstance
               Write-Verbose -Message "'$Name ($UPN)' Removing Microsoft Number"

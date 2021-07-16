@@ -118,7 +118,7 @@ function Get-TeamsAutoAttendant {
           if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
             #Identity or ObjectId
             Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
-            $AAById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            $AAById = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
             $AutoAttendants += $AAById
           }
           else {
@@ -151,7 +151,7 @@ function Get-TeamsAutoAttendant {
       Write-Progress -Id 0 -Status "Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AACount * 100)
       $AACounter++
       [int]$step = 0
-      [int]$sMax = 4
+      [int]$sMax = 5
       if ( $Detailed ) { $sMax = $sMax + 5 }
 
       # Initialising Arrays
@@ -190,6 +190,35 @@ function Get-TeamsAutoAttendant {
         }
       }
       # Output: $AIObjects.UserPrincipalName
+
+      #region Inclusion & Exclusion Scope Groups
+      $Operation = 'Parsing Inclusion & Exclusion Scope Groups'
+      $step++
+      Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "'$($AA.Name)' - $Operation"
+      if ($AA.DirectoryLookupScope.InclusionScope) {
+        [System.Collections.ArrayList]$InclusionScopeDistributionLists = @()
+        foreach ($DL in $AA.DirectoryLookupScope.InclusionScope.GroupScope.GroupIds) {
+          #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $DLObject = $null
+          $DLObject = Get-AzureADGroup -ObjectId "$DL" -WarningAction SilentlyContinue
+          if ($DLObject) {
+            [void]$InclusionScopeDistributionLists.Add($DLObject.DisplayName)
+          }
+        }
+      }
+      if ($AA.DirectoryLookupScope.ExclusionScope) {
+        [System.Collections.ArrayList]$ExclusionScopeDistributionLists = @()
+        foreach ($DL in $AA.DirectoryLookupScope.ExclusionScope.GroupScope.GroupIds) {
+          #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $DLObject = $null
+          $DLObject = Get-AzureADGroup -ObjectId "$DL" -WarningAction SilentlyContinue
+          if ($DLObject) {
+            [void]$ExclusionScopeDistributionLists.Add($DLObject.DisplayName)
+          }
+        }
+      }
+      # Output: $InclusionScopeDistributionLists, $ExclusionScopeDistributionLists
       #endregion
 
 
@@ -213,8 +242,10 @@ function Get-TeamsAutoAttendant {
         CallFlowNames                   = $AA.CallFlows.Name
         ScheduleNames                   = $AA.Schedules.Name
         CallHandlingAssociationNames    = $AA.CallHandlingAssociations.Type
-        DirectoryLookupScope            = $AA.DirectoryLookupScope.Name
         DialByNameResourceId            = $AA.DialByNameResourceId
+        DirectoryLookupScope            = $AA.DirectoryLookupScope.Name
+        InclusionScopeDistributionLists = $InclusionScopeDistributionLists
+        ExclusionScopeDistributionLists = $ExclusionScopeDistributionLists
         GreetingsSettingAuthorizedUsers = $AA.GreetingsSettingAuthorizedUsers
       }
       #endregion
@@ -249,15 +280,20 @@ function Get-TeamsAutoAttendant {
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"
         # Default Call Flow Menu Prompts
-        if ($AA.DefaultCallFlow.Menu.Prompts) {
+        if ( $AA.DefaultCallFlow.Menu.Prompts ) {
           $AADefaultCallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.Prompts
         }
         else {
-          $AADefaultCallFlowMenuPrompts = $null
+          $AADefaultCallFlowMenuPrompts = ''
         }
 
         # Default Call Flow Menu Options
-        $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions
+        if ( $AA.DefaultCallFlow.Menu.MenuOptions ) {
+          $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions
+        }
+        else {
+          $AADefaultCallFlowMenuOptions = ''
+        }
 
         # Default Call Flow Menu
         $AADefaultCallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $AA.DefaultCallFlow.Menu -Prompts $AADefaultCallFlowMenuPrompts -MenuOptions $AADefaultCallFlowMenuOptions
@@ -267,7 +303,7 @@ function Get-TeamsAutoAttendant {
           $AADefaultCallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Greetings
         }
         else {
-          $AADefaultCallFlowGreetings = $null
+          $AADefaultCallFlowGreetings = ''
         }
 
         # Default Call Flow
@@ -286,11 +322,16 @@ function Get-TeamsAutoAttendant {
             $AACallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.Prompts
           }
           else {
-            $AACallFlowMenuPrompts = $null
+            $AACallFlowMenuPrompts = ''
           }
 
           # Call Flow Menu Options
-          $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions
+          if ($Flow.Menu.MenuOptions) {
+            $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions
+          }
+          else {
+            $AACallFlowMenuOptions = ''
+          }
 
           # Call Flow Menu
           $AACallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $Flow.Menu -Prompts $AACallFlowMenuPrompts -MenuOptions $AACallFlowMenuOptions
@@ -300,7 +341,7 @@ function Get-TeamsAutoAttendant {
             $AACallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Greetings
           }
           else {
-            $AACallFlowGreetings = $null
+            $AACallFlowGreetings = ''
           }
 
           # Call Flow
@@ -317,7 +358,6 @@ function Get-TeamsAutoAttendant {
         foreach ($Schedule in $AA.Schedules) {
           $AASchedule = Get-CsOnlineSchedule -Id $Schedule.Id
           $AASchedules += Merge-AutoAttendantArtefact -Type Schedule -Object $AASchedule
-
         }
         #endregion
 
@@ -330,7 +370,6 @@ function Get-TeamsAutoAttendant {
         foreach ($item in $AA.CallHandlingAssociations) {
           # Determine Call Flow Name
           $AACallHandlingAssociationCallFlowName = ($AA.CallFlows | Where-Object Id -EQ $item.CallFlowId).Name
-
           # CallHandlingAssociations
           $AACallHandlingAssociations += Merge-AutoAttendantArtefact -Type CallHandlingAssociation -Object $item -CallFlowName $AACallHandlingAssociationCallFlowName
         }
@@ -353,7 +392,6 @@ function Get-TeamsAutoAttendant {
       Write-Progress -Id 0 -Status "Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -Completed
       Write-Output $AAObject
     }
-
   } #process
 
   end {
