@@ -234,7 +234,7 @@ function Connect-Me {
                 Start-Sleep -Seconds $Seconds
               }
               else {
-                Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated' -Verbose
+                Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated - If Privileged Admin Groups are used, please activate via PIM: https://aka.ms/myroles ' -Verbose
               }
               Write-Information "SUCCESS: $Status - $Operation"
             }
@@ -243,7 +243,7 @@ function Connect-Me {
                 Write-Warning 'Enable-AzureAdAdminrole - No valid authentication via MFA is present. Please authenticate again and retry'
               }
               elseif ($_.Exception.Message.Split('["')[2] -eq 'TicketingRule') {
-                Write-Warning 'Enable-AzureAdAdminrole - Activating Admin roles failed: PIM requires a Ticket Number - please activate via Azure Admin Center'
+                Write-Warning 'Enable-AzureAdAdminrole - Activating Admin roles failed: PIM requires a Ticket Number - please activate via Azure Admin Center - https://aka.ms/myroles'
               }
               else {
                 Write-Verbose 'Enable-AzureAdAdminrole - Tenant may not be enabled for PIM' -Verbose
@@ -277,7 +277,7 @@ function Connect-Me {
             if (-not (Use-MicrosoftTeamsConnection) -and $TeamsConnection) {
               # order is important here!
               Write-Warning -Message "When activating roles with this CmdLet, propagation may not have completed. Please wait a few seconds and retry this command."
-              throw 'MicrosoftTeams - Connection to MicrosoftTeams established, but Cmdlets not able to run. Please verify'
+              throw 'MicrosoftTeams - Connection to MicrosoftTeams established, but Cmdlets not able to run. Please verify Admin Roles via https://aka.ms/myroles'
             }
             Write-Information "SUCCESS: $Status - $Operation"
           }

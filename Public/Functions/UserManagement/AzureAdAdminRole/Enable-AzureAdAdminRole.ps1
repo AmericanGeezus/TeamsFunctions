@@ -53,11 +53,10 @@ function Enable-AzureAdAdminRole {
     System.Object - With Switch PassThru
     Boolean - If called by other CmdLets
   .NOTES
-    Limitations: MFA must be authorised first
-    Currently no way to trigger it via PowerShell. If the activation fails, please sign into Office.com
+    Limitations: MFA must be authorised first - Current workaround triggers MFA auth upon login.
+    If the activation fails, please sign into Office.com or use  https://aka.ms/myroles
     Once Authorised, this command can be used to activate your eligible Admin Roles.
     AzureResources provider activation is not yet tested.
-
     Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1
   .COMPONENT
     UserManagement

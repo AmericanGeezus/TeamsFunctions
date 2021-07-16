@@ -221,7 +221,7 @@ function Disable-AzureAdAdminRole {
         Write-Verbose -Message "User '$Id' - No Privileged Access Groups are available that can be activated."
       #>
       if ($MyActiveRoles.Count -eq 0) {
-        Write-Warning -Message "User '$Id' - No active Privileged Access Roles availabe!"
+        Write-Warning -Message "User '$Id' - No active Privileged Access Roles availabe! - Privileged Access Groups must be enabled via Admin Center/PIM: https://aka.ms/myroles"
         continue
       }
       else {
