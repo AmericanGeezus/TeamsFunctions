@@ -48,14 +48,13 @@ function Assert-MicrosoftTeamsConnection {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
-    $TeamsModuleVersionMajor = (Get-Module MicrosoftTeams).Version.Major
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    if ($TeamsModuleVersionMajor -lt 2) {
-      Assert-SkypeOnlineConnection
+    if ( (Get-Module MicrosoftTeams).Version -lt '2.3.1' ) {
+      throw [System.NotImplementedException]::New('TeamsFunctions only supports connections with MicrosoftTeams v2.3.1 or higher.')
     }
     else {
       if (Test-MicrosoftTeamsConnection) {
