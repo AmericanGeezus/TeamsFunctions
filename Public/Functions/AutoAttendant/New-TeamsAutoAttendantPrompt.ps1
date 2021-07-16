@@ -77,7 +77,7 @@ function New-TeamsAutoAttendantPrompt {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Prompt = $null
 
-    if ($String -match '.wav' -or $String -match '.wma' -or $String -match '.mp3') {
+    if ($String -match '.(wav|wma|mp3)') {
       #Recording
       if (-not (Test-Path $String)) {
         Write-Error -Message 'Auto Attendant Prompt - AudioFile - File not found.' -ErrorAction Stop

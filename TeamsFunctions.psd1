@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.07'
+  ModuleVersion         = '21.07.18'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -106,6 +106,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Find-TeamsResourceAccount',
     'Get-TeamsResourceAccount',
     'Get-TeamsResourceAccountAssociation',
+    'Get-TeamsResourceAccountLineIdentity',
     'New-TeamsResourceAccount',
     'New-TeamsResourceAccountAssociation',
     'New-TeamsResourceAccountLineIdentity',
@@ -116,11 +117,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     # Session
     'Connect-Me',
     'Disconnect-Me',
-
-    # Temporary Re-Additions
-    'Connect-SkypeOnline',
-    'Assert-SkypeOnlineConnection',
-    'Test-SkypeOnlineConnection',
 
     #region Support
     ## AutoAttendant
@@ -139,7 +135,6 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-RegionFromCountryCode',
     'Get-TeamsObjectType',
     ## Licensing
-    #'Enable-AzureAdLicenseServicePlan',
     'New-AzureAdLicenseObject',
     'Test-TeamsUserHasCallPlan',
     'Test-TeamsUserLicense',
@@ -223,11 +218,13 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
 
   # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
   AliasesToExport       = @(
-    'con', 'dis', 'pol', 'ear', 'dar', 'gar', 'cur', 'Enable-Ev', 'Set-ServicePlan', #'Connect-SkypeOnline',
-    'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Find-TeamsUVR', 'Find-TeamsECR', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
+    'con', 'dis', 'pol', 'ear', 'dar', 'gar', 'cur', 'Enable-Ev', 'Set-ServicePlan',
+    'Set-TeamsUVC', 'New-TeamsUVC', 'Get-TeamsUVC', 'Find-TeamsUVC', 'Remove-TeamsUVC', 'Test-TeamsUVC', 'Assert-TeamsUVC',
+    'Find-TeamsUVR', 'Find-TeamsECR',
     'Get-TeamsCAP', 'New-TeamsCAP', 'Remove-TeamsCAP', 'Set-TeamsCAP',
 
-    'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA', 'New-TeamsRAIdentity', 'New-TeamsRACLI',
+    'New-TeamsRA', 'Find-TeamsRA', 'Get-TeamsRA', 'Remove-TeamsRA', 'Set-TeamsRA',
+    'Get-TeamsRAIdentity', 'Get-TeamsRACLI', 'New-TeamsRAIdentity', 'New-TeamsRACLI',
     'Get-TeamsRAA', 'New-TeamsRAA', 'Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance',
     'Get-TeamsCQ', 'New-TeamsCQ', 'Remove-TeamsCQ', 'Set-TeamsCQ',
     'Get-TeamsAA', 'New-TeamsAA', 'Remove-TeamsAA', 'Set-TeamsAA', 'Set-TeamsAutoAttendant',

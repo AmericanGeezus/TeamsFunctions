@@ -277,9 +277,9 @@ function Set-TeamsResourceAccount {
           }
           $PhoneNumber = $null
         }
-        elseif ($PhoneNumber -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
+        elseif ($PhoneNumber -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
           if ( $PhoneNumber -match 'ext' ) {
-            Write-Warning -Message "'$Name ($UPN)' PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions!"
+            Write-Warning -Message "'$Name ($UPN)' PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions! (EXT will be stripped)!"
           }
           $E164Number = Format-StringForUse $PhoneNumber -As E164
           if ($CurrentPhoneNumber -eq $E164Number -and -not $force) {
@@ -585,7 +585,6 @@ function Set-TeamsResourceAccount {
           Write-Verbose -Message "'$Name ($UPN)' ACTION: Removing Phone Number"
           try {
             $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName "$UPN" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorVariable Stop
-            #IMPROVE Set-CsOnlineApplicationInstance returns an Object - This can be used to validate the outcome!
             if ($null -ne ($UVCObject.TelephoneNumber)) {
               # Remove from VoiceApplicationInstance
               Write-Verbose -Message "'$Name ($UPN)' Removing Microsoft Number"

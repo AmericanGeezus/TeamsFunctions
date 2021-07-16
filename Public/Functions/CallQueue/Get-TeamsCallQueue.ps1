@@ -4,7 +4,7 @@
 # Updated:  01-JAN-2021
 # Status:   Live
 
-#TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForChannelId (OboResourceAccountIds)
+#TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForCallerId (OboResourceAccountIds)
 
 
 function Get-TeamsCallQueue {
@@ -113,8 +113,7 @@ function Get-TeamsCallQueue {
         # Lookup
         Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
         foreach ($DN in $Name) {
-          #TEST matches ID and Name
-          if ( $DN.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
+          if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
             #Identity or ObjectId
             Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
             $QueuesById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -208,7 +207,6 @@ function Get-TeamsCallQueue {
         #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         $DLObject = Get-AzureADGroup -ObjectId "$DL" -WarningAction SilentlyContinue
         if ($DLObject) {
-          #Add-Member -Force -InputObject $DLObject -MemberType ScriptMethod -Name ToString -Value [System.Environment]::NewLine + (($this | Select-Object DisplayName | Format-Table -HideTableHeaders | Out-String) -replace '^\s+|\s+$')
           [void]$DLNames.Add($DLObject.DisplayName)
         }
       }

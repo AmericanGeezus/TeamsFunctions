@@ -121,7 +121,7 @@ function Grant-TeamsEmergencyAddress {
       Write-Verbose -Message "[PROCESS] Processing '$Id'"
 
       # Determining type of Id
-      if ($Id -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
+      if ($Id -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
         $Number = Format-StringForUse $Id -As E164
         Write-Verbose -Message "Identity matches a Phone Number - Number normalised to '$Number'"
         $Parameters += @{'TelephoneNumber' = $Number }

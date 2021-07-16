@@ -77,7 +77,7 @@ function Get-CurrentConnectionInfo {
         $CsTenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Warning -Message 'Connection to MicrosoftTeams established, but Command not successful. Please validate your Admin Roles and reconnect'
+        Write-Warning -Message 'Connection to MicrosoftTeams established, but Command not successful. Please validate your Admin Roles and reconnect: https://aka.ms/myroles'
         if (-not $called) {
           Write-Error -Message "$($_.Exception.Message)"
         }
@@ -85,10 +85,7 @@ function Get-CurrentConnectionInfo {
       }
       $SessionInfo.ConnectedTo += 'MicrosoftTeams'
       if ($CsTenant.DisplayName) {
-        $SessionInfo.Tenant = $($SessionInfo.Tenant), $($CsTenant.DisplayName) -join ' - '
-      }
-      else {
-        $SessionInfo.Tenant = $CsTenant.DisplayName
+        $SessionInfo.Tenant = $($CsTenant.DisplayName)
       }
       $SessionInfo.TeamsUpgradeEffectiveMode = $CsTenant.TeamsUpgradeEffectiveMode
     }

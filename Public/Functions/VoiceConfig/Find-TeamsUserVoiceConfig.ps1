@@ -126,8 +126,8 @@ function Find-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = 'Tel', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'String to be found in any of the PhoneNumber fields')]
     [ValidateScript( {
-        If ($_ -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{3,15}))?((;( |-)?ext=[0-9]{3,8}))?$') { $True } else {
-          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number format. Expected min 3 digits, but multiple formats accepted. Extensions will be stripped'
+        If ($_ -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|([0-9][-\s]?){4,20})((x|;ext=)([0-9]{3,8}))?$') { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number format. Expected min 4 digits, but multiple formats accepted. Extensions will be stripped'
           $false
         }
       })]
@@ -222,14 +222,16 @@ function Find-TeamsUserVoiceConfig {
             Find-TeamsUserVoiceConfig -UserPrincipalName "$PhoneNr"
             continue
           }
-          elseif ($PhoneNr -match '(\d+);ext=(\d+)') {
-            $Number = $matches[1]
+          elseif ($PhoneNr -match '([0-9]{3,25});ext=([0-9]{3,8})') {
+            $Number = $matches[1] # Phone Number
+            # $Number = $matches[2] # Extension
           }
           else {
-            #CHECK Revisit this to see if that can't be stabilised... maybe needs another match to full TEL URI before normalising!
-            $Number = Format-StringRemoveSpecialCharacter "$PhoneNr" -SpecialCharacterToKeep 'tel:+;x='
+            $Number = Format-StringForUse "$($PhoneNr.split(';')[0].split('x')[0])" -SpecialChars 'telx:+() -'
+            # Alternative (working but not stripping/capturing extensions with x)
+            #$Number = Format-StringRemoveSpecialCharacter "$PhoneNr" | Format-StringForUse -SpecialChars 'tel'
           }
-          Write-Information "Finding all Users enabled for Teams with Phone Number '$PhoneNr': Searching..."
+          Write-Information "Finding all Users enabled for Teams with Phone Number string '$Number': Searching..."
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -257,7 +259,9 @@ function Find-TeamsUserVoiceConfig {
       'Ext' {
         foreach ($Ext in $Extension) {
           Write-Verbose -Message "Normalising Input for Extension '$Ext'"
-          if ($ext -match '(\d+);ext=(\d+)') {
+          if ($ext -match '([0-9]{3,15})?;?ext=([0-9]{3,8})') {
+            # $Number = $matches[1] # Phone Number
+            # $Number = $matches[2] # Extension
             $ExtN = 'ext=' + $matches[2]
           }
           else {

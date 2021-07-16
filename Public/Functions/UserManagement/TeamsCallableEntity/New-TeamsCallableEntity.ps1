@@ -106,7 +106,7 @@ function New-TeamsCallableEntity {
     $Parameters = $null
 
     # Normalising TelephoneNumber
-    If ($Identity -match '^(tel:)?\+?(([0-9]( |-)?)?(\(?[0-9]{3}\)?)( |-)?([0-9]{3}( |-)?[0-9]{4})|([0-9]{7,15}))?((;( |-)?ext=[0-9]{3,8}))?$') {
+    If ($Identity -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
       $Identity = Format-StringForUse $Identity -As E164 | Format-StringForUse -As LineURI
       Write-Verbose -Message "Callable Entity Type matches Phone Number - Number normalised to '$Identity'"
     }

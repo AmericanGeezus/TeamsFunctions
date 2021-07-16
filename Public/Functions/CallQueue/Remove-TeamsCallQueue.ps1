@@ -73,9 +73,8 @@ function Remove-TeamsCallQueue {
       $DNCounter++
       try {
         Write-Information 'INFO: The listed Queues are being removed:'
-        #TEST matches ID and Name
-        if ( $DN.matches('^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') ) {
-          $QueueToRemove = Get-CsCallQueue -Identity $DN -WarningAction SilentlyContinue
+        if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
+          $QueueToRemove = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue
         }
         else {
           $QueueToRemove = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue

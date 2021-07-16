@@ -3,6 +3,31 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.07.18 - Jul 2021 release 3
+
+### New
+
+- `Get-TeamsResourceAccountLineIdentity` (`Get-TeamsRACLI`): New Script to translate the Resource Account of a Calling Line Identity
+
+### Update
+
+- `Find-TeamsUserVoiceConfig`: Fixed an issue normalising the PhoneNumber when not provided as a LineUri with extension.
+- `Get-TeamsUserVoiceConfig`: Added Parameter `CallingLineIdentity` to DiagnosticLevel 2 output
+- `Get-TeamsAutoAttendant`:
+  - Fixed an issue with lookup by ID (was querying Call Queues... oops)
+  - Fixed an issue with empty MenuOptions, Prompts or Greetings when building the detailed tree
+
+### Removed
+
+- Connection to MicrosoftTeams with the v1 Module has been retired. `Connect-Me` requires MicrosoftTeams in Version 2.3.1 or higher.
+
+## v21.07.11 - Jul 2021 release 2
+
+### Update
+
+- `Set-TeamsUserLicense`: Fixed an issue with one verbose output inadvertently terminating the script without action (my bad!)
+- MULTIPLE: Fixed two issues issue with matching phone Numbers
+
 ## v21.07 - Jul 2021 release
 
 More bugfixes and 2 new functions: `New-TeamsResourceAccountLineIdentity` and `Find-TeamsEmergencyCallRoute`, both in BETA status
