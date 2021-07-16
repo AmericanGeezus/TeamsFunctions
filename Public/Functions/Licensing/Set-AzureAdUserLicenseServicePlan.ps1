@@ -197,7 +197,7 @@ function Set-AzureAdUserLicenseServicePlan {
                 "Function: $($MyInvocation.MyCommand.Name): Service Plan '$S':", ( $ServicePlanToEnable | Format-Table | Out-String).Trim() | Write-Debug
               }
               if ( -not $ServicePlanToEnable) {
-                #FIXME Check application. PhoneSystem on E5 should be found but returns "not present!" Add Warning if it should be there (baseline)
+                #BODGE Check application. PhoneSystem on E5 should be found but returns "not present!" Add Warning if it should be there (baseline)
                 Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
@@ -244,7 +244,7 @@ function Set-AzureAdUserLicenseServicePlan {
                 "Function: $($MyInvocation.MyCommand.Name): Service Plan '$S':", ( $ServicePlanToDisable | Format-Table | Out-String).Trim() | Write-Debug
               }
               if ( -not $ServicePlanToDisable) {
-                #FIXME - Not correct
+                #BODGE - Not correct - See above
                 Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }

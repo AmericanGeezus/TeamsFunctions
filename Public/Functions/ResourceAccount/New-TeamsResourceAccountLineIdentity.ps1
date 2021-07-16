@@ -2,7 +2,7 @@
 # Function: ResourceAccount Calling Line Identity
 # Author:	  David Eberhardt
 # Updated:  30-JUN-2021
-# Status:   Beta
+# Status:   RC
 
 
 
@@ -10,9 +10,9 @@
 function New-TeamsResourceAccountLineIdentity {
   <#
   .SYNOPSIS
-    Short description
+    Creates a new Calling Line Identity for a Resource Account
   .DESCRIPTION
-    Long description
+    Creates a CsCallingLineIdentity Object for the Phone Number assigned to a Resource Account
   .PARAMETER UserPrincipalName
     Required. Identifies the Resource Account for which the Line Identity is being created
   .PARAMETER BlockIncomingPstnCallerID
@@ -48,11 +48,10 @@ function New-TeamsResourceAccountLineIdentity {
     New-CsCallingLineIdentity  -Identity DKCQ -CallingIDSubstitute Resource -EnableUserOverride $false -ResourceAccount $ObjId -CompanyName "Contoso"
     https://docs.microsoft.com/en-us/powershell/module/skype/new-cscallinglineidentity?view=skype-ps
   .COMPONENT
-    xx
-  .ROLE
-    xx
+    TeamsResourceAccount
+    TeamsCallingLineIdentity
   .FUNCTIONALITY
-    xx
+    Creates a Line Identity for a Resource Account and its Phone Number
   .LINK
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/New-TeamsResourceAccountLineIdentity.md
   .LINK
@@ -87,7 +86,7 @@ function New-TeamsResourceAccountLineIdentity {
   )
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
@@ -149,7 +148,7 @@ function New-TeamsResourceAccountLineIdentity {
       Write-Warning -Message "Resource Account '$($Object.UserPrincipalName)' does not have an OnlineVoiceRoutingPolicy assigned."
     }
     if (  -not $Object.AssociatedTo ) {
-      Write-Warning -Message 'Caller Line Identity will be created, however, the Resource Account is currently not assigned to a Call Queue or Auto Attendant!'
+      Write-Warning -Message 'Caller Line Identity will be created, however, the Resource Account is currently not associated with a Call Queue or Auto Attendant!'
     }
     if (  -not $Object.PhoneNumber -or -not $Object.OnlineVoiceRoutingPolicy ) {
       Write-Verbose -Message 'Caller Line Identity will be created, however, outbound calls will not work for this Account without assigning a PhoneNumber and an OnlineVoiceRoutingPolicy to the Resource Account!' -Verbose

@@ -173,10 +173,12 @@ Export-ModuleMember -Function $(Get-ChildItem -Include *.ps1 -Path $PSScriptRoot
 
 # Exporting Module Members (Aliases)
 Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-ServicePlan, `
-  New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Find-TeamsUVR, Find-TeamsECR, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
+  New-TeamsUVC, Set-TeamsUVC, Find-TeamsUVC, Get-TeamsUVC, Remove-TeamsUVC, Test-TeamsUVC, Assert-TeamsUVC, `
+  Find-TeamsUVR, Find-TeamsECR, `
   Get-TeamsCAP, New-TeamsCAP, Remove-TeamsCAP, Set-TeamsCAP, `
   Grant-TeamsEA, `
-  Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, New-TeamsRAIdentity, New-TeamsRACLI, `
+  Find-TeamsRA, Get-TeamsRA, New-TeamsRA, Remove-TeamsRA, Set-TeamsRA, `
+  Get-TeamsRAIdentity, Get-TeamsRACLI, New-TeamsRAIdentity, New-TeamsRACLI, `
   Get-TeamsRAA, New-TeamsRAA, Remove-TeamsRAA, Remove-CsOnlineApplicationInstance, `
   Get-TeamsCQ, New-TeamsCQ, Remove-TeamsCQ, Set-TeamsCQ, `
   Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, `
