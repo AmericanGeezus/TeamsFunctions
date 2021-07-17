@@ -14,20 +14,20 @@ Changes the License of an AzureAD Object
 
 ### Add (Default)
 ```
-Set-TeamsUserLicense [-UserPrincipalName] <String[]> -Add <String[]> [-UsageLocation <String>] [-PassThru]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-TeamsUserLicense [-UserPrincipalName] <String[]> -Add <String[]> [-UsageLocation <String>] [-Force]
+ [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveAll
 ```
 Set-TeamsUserLicense [-UserPrincipalName] <String[]> [-Add <String[]>] [-RemoveAll] [-UsageLocation <String>]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Remove
 ```
 Set-TeamsUserLicense [-UserPrincipalName] <String[]> [-Add <String[]>] -Remove <String[]>
- [-UsageLocation <String>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-UsageLocation <String>] [-Force] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -186,6 +186,23 @@ Aliases:
 Required: False
 Position: Named
 Default value: US
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+No effect for Add.
+For Remove Overrides the safeguard to only remove Licenses that are found assigned to the User.
+This may lead to errors
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

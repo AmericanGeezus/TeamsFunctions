@@ -5,30 +5,49 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 
 ## v21.07.18 - Jul 2021 release 3
 
+Even more bugfixes. MicrosoftTeams v1 Connection Method (Connect-SkypeOnline) removed.
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-103-blue.svg) ![Private](https://img.shields.io/badge/Private-12-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-54-green.svg)                                                                                                         |
+| Status    | ![Live](https://img.shields.io/badge/Live-89-blue.svg) ![RC](https://img.shields.io/badge/RC-7-green.svg) ![BETA](https://img.shields.io/badge/BETA-1-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-0-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2141-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
+| Focus     | Stability, Bugfixing, Licensing                                                                                                                                                                                                                      |
+
 ### New
 
 - `Get-TeamsResourceAccountLineIdentity` (`Get-TeamsRACLI`): New Script to translate the Resource Account of a Calling Line Identity
 
 ### Update
 
+- `Connect-Me`:
+  - Validation for the MicrosoftTeams Module in v1 has been removed.
+  - Connection Method for SkypeOnline has been removed
+  - Minor changes to feedback text regarding Privileged Admin Groups
 - `Find-TeamsUserVoiceConfig`: Fixed an issue normalising the PhoneNumber when not provided as a LineUri with extension.
 - `Get-TeamsUserVoiceConfig`: Added Parameter `CallingLineIdentity` to DiagnosticLevel 2 output
 - `Get-TeamsAutoAttendant`:
   - Fixed an issue with lookup by ID (was querying Call Queues... oops)
   - Fixed an issue with empty MenuOptions, Prompts or Greetings when building the detailed tree
+  - Added enumeration for Inclusion Scope and Exclusion Scope (Groups) and display with the main Object
+- `New-TeamsResourceAccountAssociation`: Fixed an issue where multiple Error-Messages were displayed. Script now terminates when CQ/AA was found and when no Resource Accounts are parsed to manipulate
 - Licensing
+  - `Get-AzureAdLicense` & `Get-AzureAdLicenseServicePlan` now will ignore trailing line feeds and quietly continue
   - Refresh for License queries: All Licensing functions now query `Get-TeamsTenantLicense -Detailed`.
   - License variables are now cleanly written - an issue was observed that popuplated License consumption data into generic license output (produced by `Get-AzureAdLicense`)
   - Introduced a new Class: `TFTeamsTenantLicense` (subclass of `TFTeamsLicense`)
-- `New-TeamsCommonAreaPhone`, `Set-TeamsCommonAreaPhone`, `Set-TeamsResourceAccount`: License application was reworked (all licensing validation (remaining units check, etc.) is now deferred to `Set-TeamsUserLicense`)
-- `Set-TeamsUserLicense`: Fixed an issue with one verbose output inadvertently terminating the script without action (my bad!)
-- `Find-TeamsUserVoiceConfig`: Fixed two issues with matching phone Numbers
-- `New-TeamsResourceAccountAssociation`: Fixed an issue where multiple Error-Messages were displayed. Script now terminates when CQ/AA was found and when no Resource Accounts are parsed to manipulate
+  - `New-TeamsCommonAreaPhone`, `Set-TeamsCommonAreaPhone`, `Set-TeamsResourceAccount`: License application was reworked (all licensing validation (remaining units check, etc.) is now deferred to `Set-TeamsUserLicense`)
+  - `Set-TeamsUserLicense`:
+    - Fixed an issue with one verbose output inadvertently terminating the script without action (my bad!)
+    - Added Parameter `Force` to apply for removing Licenses that are not found on the User. This may be necessary but may lead to errors.
 - TBC
 
 ### Removed
 
 - Connection to MicrosoftTeams with the v1 Module has been retired. `Connect-Me` requires MicrosoftTeams in Version 2.3.1 or higher.
+- Three Deprecated Scripts were removed: Connect-SkypeOnline, Assert-SkypeOnlineConnection, Test-SkypeOnlineConnection
 
 ## v21.07 - Jul 2021 release
 
