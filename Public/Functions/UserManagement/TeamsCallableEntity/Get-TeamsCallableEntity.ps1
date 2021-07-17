@@ -4,7 +4,7 @@
 # Updated:    01-NOV-2020
 # Status:     Live
 
-#TODO Explore adding an option to pass an object to this function (to avoid duplicating Get-CsOnlineUser) and speed up lookup
+
 #TODO Add Announcement TTV and File
 
 function Get-TeamsCallableEntity {

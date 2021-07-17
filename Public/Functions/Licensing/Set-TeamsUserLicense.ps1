@@ -166,14 +166,6 @@ function Set-TeamsUserLicense {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-    # Loading License Array
-    if (-not $global:TeamsFunctionsMSAzureAdLicenses) {
-      $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue
-    }
-
-    $AllLicenses = $null
-    $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
-
     #region Input verification
     # All Main licenses are mutually exclusive
     # Domestic and International are mutually exclusive
@@ -357,6 +349,7 @@ function Set-TeamsUserLicense {
     # Querying licenses in the Tenant to compare SKUs
     try {
       Write-Verbose -Message 'Querying Licenses from the Tenant'
+      $TenantLicenses = $null
       $TenantLicenses = Get-TeamsTenantLicense -Detailed -ErrorAction STOP
     }
     catch {
@@ -415,7 +408,7 @@ function Set-TeamsUserLicense {
           # Creating Array of $AddSkuIds to pass to New-AzureAdLicenseObject
           [System.Collections.ArrayList]$AddSkuIds = @()
           foreach ($AddLic in $Add) {
-            $License = $AllLicenses | Where-Object ParameterName -EQ $AddLic
+            $License = $TenantLicenses | Where-Object ParameterName -EQ $AddLic
             if ($PSBoundParameters.ContainsKey('Debug')) {
               "Function: $($MyInvocation.MyCommand.Name): License:", ($License | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
@@ -458,8 +451,8 @@ function Set-TeamsUserLicense {
           # Creating Array of $RemoveSkuIds to pass to New-AzureAdLicenseObject
           [System.Collections.ArrayList]$RemoveSkuIds = @()
           foreach ($RemoveLic in $Remove) {
-            $RemoveSku = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
-            $RemoveLicName = ($AllLicenses | Where-Object ParameterName -EQ $RemoveLic).('ProductName')
+            $RemoveSku = ($TenantLicenses | Where-Object ParameterName -EQ $RemoveLic).('SkuId')
+            $RemoveLicName = ($TenantLicenses | Where-Object ParameterName -EQ $RemoveLic).('ProductName')
             if ($RemoveSku -in $ObjectAssignedLicenses.SkuId) {
               Write-Verbose -Message "Account '$ID' - Removing License '$RemoveLicName' - License assigned, adding to list"
               [void]$RemoveSkuIds.Add("$RemoveSku")

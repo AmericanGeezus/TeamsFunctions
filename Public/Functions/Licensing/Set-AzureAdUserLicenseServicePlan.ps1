@@ -205,14 +205,6 @@ function Set-AzureAdUserLicenseServicePlan {
               # Checking whether Service Plan is disabled
               #VALIDATE ELSE Statement may not be triggered correctly!
               if ( $ServicePlanToEnable.ServicePlanId -in $License.AddLicenses.DisabledPlans ) {
-                <# This works, but might not result in the correct outcome. Simplified below. Remove once verified working
-                if ( $($License.AddLicenses).DisabledPlans.Remove($ServicePlanToEnable.ServicePlanId) ) {
-                  $EnabledPlans++
-                  if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-                    "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ($($License.AddLicenses).DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
-                  }
-                }
-                #>
                 #CHECK application!
                 $null = $($License.AddLicenses).DisabledPlans.Remove($ServicePlanToEnable.ServicePlanId)
                 $EnabledPlans++

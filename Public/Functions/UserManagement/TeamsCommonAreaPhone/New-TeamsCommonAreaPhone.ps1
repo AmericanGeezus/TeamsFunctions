@@ -144,7 +144,7 @@ function New-TeamsCommonAreaPhone {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 9
+    [int]$sMax = 7
 
   } #begin
 
@@ -282,52 +282,21 @@ function New-TeamsCommonAreaPhone {
     $Status = 'Applying Settings'
     #region Licensing
     # Determining available Licenses from Tenant
-    $Operation = 'Querying Tenant Licenses'
+    $Operation = 'Processing License assignment'
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
-    $TenantLicenses = Get-TeamsTenantLicense
+    try {
+      if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+        $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
+        Write-Information -MessageData "INFO:    '$Name' License assignment - '$License' SUCCESS"
+      }
+    }
+    catch {
+      Write-Error -Message "'$Name' License assignment failed for '$License' with Exception: '$($_.Exception.Message)'"
+    }
 
-    # Verifying License is available
-    $Operation = 'Verifying License is available'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-    if ($License -eq 'CommonAreaPhone') {
-      $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'MCOCAP' }).Remaining
-      Write-Verbose -Message "$RemainingCAPLicenses Common Area Phone Licenses still available"
-      if ($RemainingCAPLicenses -lt 1) {
-        Write-Error -Message 'No free Common Area Phone Licenses remaining in the Tenant.' -ErrorAction Stop
-      }
-      else {
-        try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-            Write-Information -MessageData "INFO:    '$Name' License assignment - '$License' SUCCESS"
-          }
-        }
-        catch {
-          Write-Error -Message "'$Name' License assignment failed for '$License'"
-        }
-      }
-    }
-    else {
-      if ( $PSBoundParameters.ContainsKey('License')) {
-        try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-            Write-Information -MessageData "INFO:    '$Name' License assignment - '$License' SUCCESS"
-          }
-        }
-        catch {
-          Write-Error -Message "'$Name' License assignment failed for '$License'"
-        }
-      }
-      else {
-        Write-Warning -Message "'$Name' no License applied. Policies cannot be assigned in one step. Please use Set-TeamsCommonAreaPhone or Grant the policies directly"
-        $Licensed = $false
-      }
-    }
+
     #VALIDATE does this need to have a delay between license assignment and any future steps? If not, it might not even need a License!
     #TEST bug here pot. fixed by changing WHILE to DO/WHILE
     do {

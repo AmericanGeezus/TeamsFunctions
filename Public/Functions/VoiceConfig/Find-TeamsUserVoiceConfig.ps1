@@ -228,8 +228,6 @@ function Find-TeamsUserVoiceConfig {
           }
           else {
             $Number = Format-StringForUse "$($PhoneNr.split(';')[0].split('x')[0])" -SpecialChars 'telx:+() -'
-            # Alternative (working but not stripping/capturing extensions with x)
-            #$Number = Format-StringRemoveSpecialCharacter "$PhoneNr" | Format-StringForUse -SpecialChars 'tel'
           }
           Write-Information "Finding all Users enabled for Teams with Phone Number string '$Number': Searching..."
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)

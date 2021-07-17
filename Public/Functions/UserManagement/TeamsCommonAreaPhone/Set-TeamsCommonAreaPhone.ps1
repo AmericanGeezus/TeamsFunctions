@@ -240,22 +240,25 @@ function Set-TeamsCommonAreaPhone {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      if ($PSBoundParameters.ContainsKey('License')) {
-        $CurrentLicense = $null
-        # Determining license Status of Object
-        if (Test-TeamsUserLicense -Identity "$UPN" -License CommonAreaPhone) {
-          $CurrentLicense = 'CommonAreaPhone'
+      $CurrentLicense = $null
+      $IsLicensed = $false
+      # Determining license Status of Object
+      $UserLicense = Get-AzureAdUserLicense -Identity "$UPN"
+      if ( $UserLicense ) {
+        $CurrentLicense = $UserLicense.Licenses | Where-Object IncludesTeams
+        if ( $CurrentLicense ) {
+          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: $($CurrentLicense.ProductName -join ', ')"
+          if (($UserLicense.ServicePlans | Where-Object ServicePlanName -EQ 'TEAMS1').Provisioningstatus -eq 'Success' ) {
+            Write-Verbose -Message "'$Name ($UPN)' Service PlanTeams License is enabled successfully"
+            $IsLicensed = $true
+          }
         }
-        elseif (Test-TeamsUserLicense -Identity "$UPN" -ServicePlan TEAMS1) {
-          #NOTE PhoneSystem is not validated here because no Phone numbers are applied with this CmdLet
-          $CurrentLicense = 'Teams'
+        if ( $CurrentLicense.Count -gt 1 ) {
+          Write-Warning -Message "'$Name ($UPN)' - Multiple Licenses including Teams are assigned"
         }
-        if ($null -ne $CurrentLicense) {
-          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: $CurrentLicense"
-        }
-        else {
-          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: NONE"
-        }
+      }
+      else {
+        Write-Verbose -Message "'$Name ($UPN)' Current License assigned: NONE"
       }
       #endregion
 
@@ -294,51 +297,25 @@ function Set-TeamsCommonAreaPhone {
 
       #region Licensing
       if ($PSBoundParameters.ContainsKey('License')) {
-        # Verifying License is available to be assigned
-        # Determining available Licenses from Tenant
-        $Operation = 'Querying Tenant Licenses'
+        $Operation = 'Processing License assignment'
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
-        $TenantLicenses = Get-TeamsTenantLicense
-
-        if ($License -eq $CurrentLicense) {
-          #BODGE This does not properly catch Licenses that are already assigned as $CurrentLicense is either CAP or PhoneSystem
+        if ( $License -in $CurrentLicense.ParameterName -and $IsLicensed ) {
           # No action required
           Write-Information "'$Name ($UPN)' License '$License' already assigned."
           $IsLicensed = $true
         }
-        # Verifying License is available
-        elseif ($License -eq 'CommonAreaPhone') {
-          $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'MCOCAP' }).Remaining
-          Write-Verbose -Message "INFO: $RemainingCAPLicenses Common Area Phone Licenses remaining"
-          if ($RemainingCAPLicenses -lt 1) {
-            Write-Error -Message 'ERROR: No free Common Area Phone License remaining in the Tenant.' -ErrorAction Stop
-          }
-          else {
-            try {
-              if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add CommonAreaPhone')) {
-                $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-                Write-Information "'$Name' License assignment - '$License' SUCCESS"
-                $IsLicensed = $true
-              }
-            }
-            catch {
-              Write-Error -Message "'$Name' License assignment failed for '$License'"
-              Write-Debug $_
+        else {
+          try {
+            if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+              $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
+              Write-Information "'$Name' License assignment - '$License' SUCCESS"
+              $IsLicensed = $true
             }
           }
-          else {
-            try {
-              if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-                $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-                Write-Information "'$Name' License assignment - '$License' SUCCESS"
-                $IsLicensed = $true
-              }
-            }
-            catch {
-              Write-Error -Message "'$Name' License assignment failed for '$License'"
-            }
+          catch {
+            Write-Error -Message "'$Name' License assignment failed for '$License' with Exception: '$($_.Exception.Message)'"
           }
         }
       }

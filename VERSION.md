@@ -16,17 +16,19 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 - `Get-TeamsAutoAttendant`:
   - Fixed an issue with lookup by ID (was querying Call Queues... oops)
   - Fixed an issue with empty MenuOptions, Prompts or Greetings when building the detailed tree
+- Licensing
+  - Refresh for License queries: All Licensing functions now query `Get-TeamsTenantLicense -Detailed`.
+  - License variables are now cleanly written - an issue was observed that popuplated License consumption data into generic license output (produced by `Get-AzureAdLicense`)
+  - Introduced a new Class: `TFTeamsTenantLicense` (subclass of `TFTeamsLicense`)
+- `New-TeamsCommonAreaPhone`, `Set-TeamsCommonAreaPhone`, `Set-TeamsResourceAccount`: License application was reworked (all licensing validation (remaining units check, etc.) is now deferred to `Set-TeamsUserLicense`)
+- `Set-TeamsUserLicense`: Fixed an issue with one verbose output inadvertently terminating the script without action (my bad!)
+- `Find-TeamsUserVoiceConfig`: Fixed two issues with matching phone Numbers
+- `New-TeamsResourceAccountAssociation`: Fixed an issue where multiple Error-Messages were displayed. Script now terminates when CQ/AA was found and when no Resource Accounts are parsed to manipulate
+- TBC
 
 ### Removed
 
 - Connection to MicrosoftTeams with the v1 Module has been retired. `Connect-Me` requires MicrosoftTeams in Version 2.3.1 or higher.
-
-## v21.07.11 - Jul 2021 release 2
-
-### Update
-
-- `Set-TeamsUserLicense`: Fixed an issue with one verbose output inadvertently terminating the script without action (my bad!)
-- MULTIPLE: Fixed two issues issue with matching phone Numbers
 
 ## v21.07 - Jul 2021 release
 

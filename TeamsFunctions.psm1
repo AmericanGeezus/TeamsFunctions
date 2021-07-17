@@ -113,6 +113,42 @@ class TFTeamsLicense {
   }
 }
 
+class TFTeamsTenantLicense : TFTeamsLicense {
+  [int]$Available
+  [int]$Consumed
+  [int]$Remaining
+  [int]$Expiring
+
+  TFTeamsTenantLicense(
+    [string]$ProductName,
+    [string]$SkuPartNumber,
+    [string]$LicenseType,
+    [string]$ParameterName,
+    [bool]$IncludesTeams,
+    [bool]$IncludesPhoneSystem,
+    [string]$SkuId,
+    [object]$ServicePlans,
+    [int]$Available,
+    [int]$Consumed,
+    [int]$Remaining,
+    [int]$Expiring
+  ) : base (
+    $ProductName,
+    $SkuPartNumber,
+    $LicenseType,
+    $ParameterName,
+    $IncludesTeams,
+    $IncludesPhoneSystem,
+    $SkuId,
+    $ServicePlans
+  ) {
+    $this.Available = $Available
+    $this.Consumed = $Consumed
+    $this.Remaining = $Remaining
+    $this.Expiring = $Expiring
+  }
+}
+
 class TFCallableEntity {
   [string]$Entity
   [string]$Identity

@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#CHECK whether to add Identity to output Object? (enables it to be piped) Enable to find it with Get-TeamsUserVoiceConfig?
+
 #CHECK Removal of Counters for UserLicenses - not relevant here - might improve stack overall
 function Get-AzureAdUserLicense {
   <#
@@ -101,7 +101,7 @@ function Get-AzureAdUserLicense {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $UserPrincipalName) {
-      #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineUser
+      #TEST Piping with UserPrincipalName, Identity from Get-CsOnlineUser
       try {
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP

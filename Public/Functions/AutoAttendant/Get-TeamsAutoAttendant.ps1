@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#TODO Translate DialByNameResourceId (should be a Group?)
+#IMPROVE Unknown what DialByNameResourceId is or does (GUID, denoting what object exactly? - how to test/query/translate?)
 
 function Get-TeamsAutoAttendant {
   <#

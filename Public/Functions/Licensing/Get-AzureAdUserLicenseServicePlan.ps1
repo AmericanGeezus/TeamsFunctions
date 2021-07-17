@@ -2,7 +2,7 @@
 # Function: Licensing
 # Author:   David Eberhardt
 # Updated:  01-APR-2020
-# Status:   RC
+# Status:   Live
 
 
 
@@ -71,7 +71,7 @@ function Get-AzureAdUserLicenseServicePlan {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

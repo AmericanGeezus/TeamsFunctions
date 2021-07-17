@@ -345,26 +345,30 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region Current License
-      $Operation = 'License Assignment'
+      $Operation = 'License Query (current)'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
 
-      if ($PSBoundParameters.ContainsKey('License') -or $PSBoundParameters.ContainsKey('PhoneNumber')) {
-        $CurrentLicense = $null
-        # Determining license Status of Object
-        if (Test-TeamsUserLicense -Identity "$UPN" -ServicePlan MCOEV) {
-          $CurrentLicense = 'PhoneSystem'
+      $CurrentLicense = $null
+      $IsLicensed = $false
+      # Determining license Status of Object
+      $UserLicense = Get-AzureAdUserLicense -Identity "$UPN"
+      if ( $UserLicense ) {
+        $CurrentLicense = $UserLicense.Licenses | Where-Object IncludesTeams
+        if ( $CurrentLicense ) {
+          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: $($CurrentLicense.ProductName -join ', ')"
+          if (($UserLicense.ServicePlans | Where-Object ServicePlanName -EQ 'TEAMS1').Provisioningstatus -eq 'Success' ) {
+            Write-Verbose -Message "'$Name ($UPN)' Service PlanTeams License is enabled successfully"
+            $IsLicensed = $true
+          }
         }
-        elseif (Test-TeamsUserLicense -Identity "$UPN" -ServicePlan MCOEV_VIRTUALUSER) {
-          $CurrentLicense = 'PhoneSystemVirtualUser'
+        if ( $CurrentLicense.Count -gt 1 ) {
+          Write-Warning -Message "'$Name ($UPN)' - Multiple Licenses including Teams are assigned"
         }
-        if ($null -ne $CurrentLicense) {
-          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: $CurrentLicense"
-        }
-        else {
-          Write-Verbose -Message "'$Name ($UPN)' Current License assigned: NONE"
-        }
+      }
+      else {
+        Write-Verbose -Message "'$Name ($UPN)' Current License assigned: NONE"
       }
       #endregion
       #endregion
@@ -445,57 +449,25 @@ function Set-TeamsResourceAccount {
 
       #region Licensing
       if ($PSBoundParameters.ContainsKey('License')) {
-        # Verifying License is available to be assigned
-        # Determining available Licenses from Tenant
-        $Operation = 'Querying Licenses'
+        $Operation = 'Processing License assignment'
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
-        $TenantLicenses = Get-TeamsTenantLicense
-
-        # Changing License only if required
-        $Operation = 'License Assignment'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
-        if ($License -eq $CurrentLicense) {
+        if ( $License -in $CurrentLicense.ParameterName -and $IsLicensed ) {
           # No action required
           Write-Information "'$Name ($UPN)' License '$License' already assigned."
           $IsLicensed = $true
-        }
-        # Verifying License is available
-        elseif ($License -eq 'PhoneSystemVirtualUser') {
-          $RemainingPSVULicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'PHONESYSTEM_VIRTUALUSER' }).Remaining
-          Write-Verbose -Message "INFO: $RemainingPSVULicenses remaining in the Tenant."
-          if ($RemainingPSVULicenses -lt 1) {
-            Write-Error -Message 'ERROR: No free PhoneSystem Virtual User License remaining in the Tenant.'
-          }
-          else {
-            try {
-              if ($PSCmdlet.ShouldProcess("$UPN", 'Set-TeamsUserLicense -Add PhoneSystemVirtualUser')) {
-                $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-                Write-Information "'$Name ($UPN)' License assignment - '$License' SUCCESS"
-                $IsLicensed = $true
-              }
-            }
-            catch {
-              Write-Error -Message "'$Name ($UPN)' License assignment failed for '$License'"
-              Write-Debug $_
-            }
-          }
         }
         else {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
               $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-              Write-Information "'$Name ($UPN)' License assignment - '$License' SUCCESS"
+              Write-Information "'$Name' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
           }
           catch {
-            Write-Error -Message "'$Name ($UPN)' License assignment failed for '$License'"
-            Write-Debug $_
+            Write-Error -Message "'$Name' License assignment failed for '$License' with Exception: '$($_.Exception.Message)'"
           }
         }
       }
@@ -543,7 +515,6 @@ function Set-TeamsResourceAccount {
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
 
-        #VALIDATE scavenging of number from multiple users! (Requires ForEach Loop - for an array for $UserWithThisNumber)
         if ( $Force -and $PhoneNumber -and $UserWithThisNumber ) {
           # Removing number from previous Object
           try {
@@ -594,7 +565,7 @@ function Set-TeamsResourceAccount {
             if ($null -ne ($UVCObject.OnPremLineURI)) {
               # Remove from ApplicationInstance
               Write-Verbose -Message "'$Name ($UPN)' Removing Direct Routing Number"
-              #CHECK why does -OnPremPhoneNumber require -Force?
+              #TEST why does -OnPremPhoneNumber require -Force?
               $null = (Set-CsOnlineApplicationInstance -Identity "$UPN" -OnpremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
               Write-Verbose -Message 'SUCCESS'
             }
