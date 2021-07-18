@@ -68,9 +68,10 @@ function Set-AzureAdUserLicenseServicePlan {
 
     [Parameter(HelpMessage = 'Service Plan(s) to be enabled on this Object')]
     [ValidateScript( {
-        $ServicePlanNamesEnable = (Get-AzureAdLicenseServicePlan).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $ServicePlanNamesEnable) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Enable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)"
+        if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) { $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue }
+        $ServicePlanNames = ($global:TeamsFunctionsMSAzureAdLicenseServicePlans).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $ServicePlanNames) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'ServicePlan' - Invalid ServicePlan string. Supported Parameternames can be found with Get-AzureAdLicenseServicePlan (ServicePlanName)"
           return $false
         }
       })]
@@ -78,9 +79,10 @@ function Set-AzureAdUserLicenseServicePlan {
 
     [Parameter(HelpMessage = 'Service Plan(s) to be disabled on this Object')]
     [ValidateScript( {
-        $ServicePlanNamesDisable = (Get-AzureAdLicenseServicePlan).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $ServicePlanNamesDisable) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Disable' - Invalid Service Plan name. Supported Values can be found with Get-AzureAdLicenseServicePlan (Column ServicePlanName)"
+        if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) { $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue }
+        $ServicePlanNames = ($global:TeamsFunctionsMSAzureAdLicenseServicePlans).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $ServicePlanNames) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'ServicePlan' - Invalid ServicePlan string. Supported Parameternames can be found with Get-AzureAdLicenseServicePlan (ServicePlanName)"
           return $false
         }
       })]

@@ -33,9 +33,6 @@ function Set-TeamsUserLicense {
     If not provided, defaults to 'US'
   .PARAMETER PassThru
     Optional. Displays User License Object after action.
-  .PARAMETER Force
-    No effect for Add. For Remove Overrides the safeguard to only remove Licenses that are found assigned to the User.
-    This may lead to errors
   .EXAMPLE
     Set-TeamsUserLicense -UserPrincipalName Name@domain.com -Add MS365E5
     Applies the Microsoft 365 E5 License (SPE_E5) to Name@domain.com
@@ -114,9 +111,10 @@ function Set-TeamsUserLicense {
     [Parameter(ParameterSetName = 'Remove', HelpMessage = 'License(s) to be added to this Object')]
     [Parameter(ParameterSetName = 'RemoveAll', HelpMessage = 'License(s) to be added to this Object')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Add' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
@@ -125,9 +123,10 @@ function Set-TeamsUserLicense {
 
     [Parameter(ParameterSetName = 'Remove', Mandatory, HelpMessage = 'License(s) to be removed from this Object')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'Remove' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
@@ -141,8 +140,10 @@ function Set-TeamsUserLicense {
     [Parameter(HelpMessage = 'Usage Location to be set if not already applied')]
     [string]$UsageLocation = 'US',
 
+    <# Force removed as leading to errors
     [Parameter(HelpMessage = 'Suppresses confirmation prompt unless -Confirm is used explicitly')]
     [switch]$Force,
+    #>
 
     [Parameter(Mandatory = $false)]
     [switch]$PassThru
@@ -323,7 +324,7 @@ function Set-TeamsUserLicense {
       if ($PSBoundParameters.ContainsKey('Remove')) {
         Write-Verbose -Message 'Validating input for Removing (identifying inconsistencies)'
         # No checks needed that aren't captured by the Add and Remove check! - Leaving this here just in case.
-        Write-Verbose -Message 'NOTE: Currently no checks for Remove Licenses necessary'
+        Write-Verbose -Message 'NOTE: Currently no checks for Remove Licenses defined'
       }
 
       if ($PSBoundParameters.ContainsKey('RemoveAll') -and -not $PSBoundParameters.ContainsKey('Add')) {
@@ -457,10 +458,12 @@ function Set-TeamsUserLicense {
               Write-Verbose -Message "Account '$ID' - Removing License '$RemoveLicName' - License assigned, adding to list"
               [void]$RemoveSkuIds.Add("$RemoveSku")
             }
+            <# Force removed as resulting in errors: Message: User does not have a corresponding license.
             elseif ($Force) {
               Write-Verbose -Message "Account '$ID' - Removing License '$RemoveLicName' - License not assigned, but processing with Force"
               [void]$RemoveSkuIds.Add("$RemoveSku")
             }
+            #>
             else {
               Write-Warning -Message "Account '$ID' - Removing License '$RemoveLicName' - License not assigned to the User, omitting!"
             }
@@ -502,7 +505,8 @@ function Set-TeamsUserLicense {
       #endregion
 
       # Executing Assignment
-      if ($Force -or $PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
+      #if ($Force -or $PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
+      if ( $PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense') ) {
         #Assign $LicenseObject to each User
         Write-Verbose -Message "Account '$ID' - Applying new license Object (performs changes)"
         try {

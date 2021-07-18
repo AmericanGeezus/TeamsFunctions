@@ -102,16 +102,14 @@ function New-TeamsResourceAccount {
 
     [Parameter(HelpMessage = 'License to be assigned')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $LicenseParams) {
-          return $true
-        }
-        else {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) { return $true } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
-    [string]$License,
+    [string[]]$License,
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number to assign')]
     [ValidateScript( {
@@ -150,10 +148,33 @@ function New-TeamsResourceAccount {
     # Initialising counters for Progress bars
     [int]$step = 0
     [int]$sMax = 10
-    if ( $License ) { $sMax = $sMax + 2 }
+    if ( $License ) { $sMax = $sMax + 3 }
     if ( $License -and $PhoneNumber ) { $sMax++ }
     if ( $PhoneNumber ) { $sMax = $sMax + 2 }
 
+    #region Validating current and/or to be applied Licenses result in correct Licensing
+    if ( $PSBoundParameters.ContainsKey('License') ) {
+      $Status = 'Verifying input'
+      $Operation = 'Validating current and/or to be applied Licenses result in correct Licensing'
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      $IncludesPlan = 0
+      $PlanToTest = 'MCOEV'
+      foreach ($L in $License) {
+        $Included = Test-AzureAdLicenseContainsServicePlan -License "$L" -ServicePlan "$PlanToTest"
+        if ($Included) {
+          $IncludesPlan++
+          Write-Verbose -Message "License '$L' ServicePlan '$PlanToTest' - Included: OK"
+        }
+        else {
+          Write-Verbose -Message "License '$L' ServicePlan '$PlanToTest' - NOT included"
+        }
+      }
+      if ( $IncludesPlan -lt 1 ) {
+        Write-Warning -Message "None of the Licenses includes ServicePlan '$PlanToTest' - Account may not be operational!"
+      }
+    }
+    #endregion
   } #begin
 
   process {
@@ -247,18 +268,18 @@ function New-TeamsResourceAccount {
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
-        while ( -not (Test-AzureADUser $UPN)) {
+        do {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount'
             return
           }
-          Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
+          Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' `
             -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
           Start-Sleep -Milliseconds 1000
           $i++
         }
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
+        while ( -not (Test-AzureADUser "$UPN"))
 
         $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -322,18 +343,19 @@ function New-TeamsResourceAccount {
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
-      if ($License -eq 'PhoneSystemVirtualUser') {
+      if ('PhoneSystemVirtualUser' -in $License) {
         $ServicePlanName = 'MCOEV_VIRTUALUSER'
       }
       else {
         $ServicePlanName = 'MCOEV'
       }
+      Write-Verbose -Message "License '$License'- Expecting corresponding ServicePlan '$ServicePlanName'"
       $i = 0
       $iMax = 600
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
 
       $Status = 'Applying License'
-      $Operation = 'Waiting for Get-AzureAdUserLicenseDetail to return a Result'
+      $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result for ServicePlan '$ServicePlanName'"
       Write-Verbose -Message "$Status - $Operation"
       do {
         if ($i -gt $iMax) {

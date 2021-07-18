@@ -286,7 +286,6 @@ function Get-AzureAdLicense {
         'WACONEDRIVESTANDARD' { 'OneDriveForBusinessPlan1' }
         'WACONEDRIVEENTERPRISE' { 'OneDriveForBusinessPlan2' }
         'WIN_DEF_ATP' { 'WindowsDefenderForEndPoint' }
-        'WINDOWS_STORE' { 'WindowsStoreForBusiness' }
         'STREAM' { 'ThreatIntelligenceGov' }
         'TOPIC_EXPERIENCES' { 'TopicExperiences' }
         'POWERAPPS_INDIVIDUAL_USER' { 'PowerAppsAndLogicFlows' }
@@ -300,6 +299,7 @@ function Get-AzureAdLicense {
         'ATA' { 'AdvancedThreatAnalytics' }
         'ADALLOM_STANDALONE' { 'MicrosoftCloudAppSecurity' }
         'RMSBASIC' { 'AzureRMSBasic' }
+        #'WINDOWS_STORE' { 'WindowsStoreForBusiness' } # License cannot be assigned to a user
         #endregion
 
 

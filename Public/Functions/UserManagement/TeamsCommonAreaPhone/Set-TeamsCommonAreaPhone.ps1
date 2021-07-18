@@ -93,13 +93,14 @@ function Set-TeamsCommonAreaPhone {
 
     [Parameter(HelpMessage = 'License to be assigned')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
-    [string]$License,
+    [string[]]$License,
 
     [Parameter(HelpMessage = 'IP Phone Policy')]
     [string]$IPPhonePolicy,
@@ -139,7 +140,7 @@ function Set-TeamsCommonAreaPhone {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Parameters = @{}
 
-    ForEach ($User in $UserPrincipalName) {
+    ForEach ($UPN in $UserPrincipalName) {
       # Initialising counters for Progress bars
       [int]$step = 0
       [int]$sMax = 2
@@ -157,26 +158,26 @@ function Set-TeamsCommonAreaPhone {
 
       try {
         #Trying to query the Account
-        $CsOnlineUser = (Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction STOP)
+        $CsOnlineUser = (Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
         $CurrentDisplayName = $CsOnlineUser.DisplayName
-        Write-Verbose -Message "'$User' Teams Object found: '$CurrentDisplayName'"
+        Write-Verbose -Message "'$UPN' Teams Object found: '$CurrentDisplayName'"
         $Parameters += @{ 'ObjectId' = $CsOnlineUser.ObjectId }
       }
       catch {
         # If CsOnlineUser not found, trying AzureAdUser
         try {
-          Write-Verbose -Message "'$User' - Querying User Account (AzureAdUser)"
-          $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+          Write-Verbose -Message "'$UPN' - Querying User Account (AzureAdUser)"
+          $AdUser = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
           $CsOnlineUser = $AdUser
           $CurrentDisplayName = $AdUser.DisplayName
-          Write-Warning -Message "'$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
+          Write-Warning -Message "'$UPN' - found in AzureAd but not in Teams (CsOnlineUser)!"
         }
         catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-          Write-Error -Message "'$User' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$User' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
+          Write-Error -Message "'$UPN' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$UPN' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
           continue
         }
         catch {
-          Write-Error -Message "'$User' not found. Error encountered: $($_.Exception.Message)" -Category ObjectNotFound
+          Write-Error -Message "'$UPN' not found. Error encountered: $($_.Exception.Message)" -Category ObjectNotFound
           continue
         }
       }
@@ -184,8 +185,8 @@ function Set-TeamsCommonAreaPhone {
 
       #region Normalising $DisplayName
       if ($PSBoundParameters.ContainsKey('DisplayName')) {
-        if ($User.IsArray) {
-          Write-Warning -Message "'$User' Changing DisplayName for Array input disabled to avoid accidents."
+        if ($UPN.IsArray) {
+          Write-Warning -Message "'$UPN' Changing DisplayName for Array input disabled to avoid accidents."
         }
         else {
           $Operation = 'Normalising DisplayName'
@@ -235,7 +236,7 @@ function Set-TeamsCommonAreaPhone {
       #endregion
 
       #region Current License
-      $Operation = 'License Query (current)'
+      $Operation = 'Querying current License and Testing Licensing Scope (Should contain Teams)'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -259,6 +260,26 @@ function Set-TeamsCommonAreaPhone {
       }
       else {
         Write-Verbose -Message "'$Name ($UPN)' Current License assigned: NONE"
+      }
+
+      # Validating current and/or to be applied Licenses result in correct Licensing
+      if ( $License ) {
+        $IncludesPlan = 0
+        $PlanToTest = 'TEAMS1'
+        foreach ($L in $License) {
+          $Included = Test-AzureAdLicenseContainsServicePlan -License "$L" -ServicePlan "$PlanToTest"
+          if ($Included) {
+            $IncludesPlan++
+            Write-Verbose -Message "License '$L' ServicePlan '$PlanToTest' - Included: OK"
+          }
+          else {
+            Write-Verbose -Message "License '$L' ServicePlan '$PlanToTest' - NOT included"
+          }
+
+        }
+      }
+      if ( $IncludesPlan -lt 1 -and -not $IsLicensed ) {
+        Write-Warning -Message "None of the Licenses includes ServicePlan '$PlanToTest' - Account may not be operational!"
       }
       #endregion
 

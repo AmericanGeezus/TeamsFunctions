@@ -64,11 +64,20 @@ function Test-TeamsUserLicense {
     [string]$UserPrincipalName,
 
     [Parameter(Mandatory, ParameterSetName = 'ServicePlan', HelpMessage = 'AzureAd Service Plan')]
+    [ValidateScript( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) { $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue }
+        $ServicePlanNames = ($global:TeamsFunctionsMSAzureAdLicenseServicePlans).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $ServicePlanNames) { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'ServicePlan' - Invalid ServicePlan string. Supported Parameternames can be found with Get-AzureAdLicenseServicePlan (ServicePlanName)"
+          return $false
+        }
+      })]
     [string]$ServicePlan,
 
-    [Parameter(Mandatory, ParameterSetName = 'License', HelpMessage = 'Teams License Package: E5,E3,S2')]
+    [Parameter(Mandatory, ParameterSetName = 'License', HelpMessage = 'License to be tested')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
@@ -141,7 +150,7 @@ function Test-TeamsUserLicense {
         'License' {
           Write-Verbose -Message "'$DisplayName' Testing against '$License'"
           $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
-          $Sku = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
+          $Sku = ($AllLicenses | Where-Object ParameterName -EQ "$License").SkuPartNumber
           if ($Sku -in $UserLicenseSKU) {
             return $true
           }

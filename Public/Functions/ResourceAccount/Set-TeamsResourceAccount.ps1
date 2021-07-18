@@ -95,7 +95,7 @@ function Set-TeamsResourceAccount {
   [Alias('Set-TeamsRA')]
   [OutputType([System.Void])]
   param (
-    #CHECK Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
+    #TEST Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
         if ($_ -match '@' -or $_ -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') { $True } else {
@@ -118,16 +118,14 @@ function Set-TeamsResourceAccount {
 
     [Parameter(HelpMessage = 'License to be assigned')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $LicenseParams) {
-          return $true
-        }
-        else {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) { return $true } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
-    [string]$License,
+    [string[]]$License,
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number to assign')]
     [Alias('Tel', 'Number', 'TelephoneNumber')]
@@ -345,7 +343,7 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region Current License
-      $Operation = 'License Query (current)'
+      $Operation = 'Querying current License and Testing Licensing Scope (Should contain PhoneSystem or PhoneSystemVirtualUser)'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
@@ -355,20 +353,39 @@ function Set-TeamsResourceAccount {
       # Determining license Status of Object
       $UserLicense = Get-AzureAdUserLicense -Identity "$UPN"
       if ( $UserLicense ) {
-        $CurrentLicense = $UserLicense.Licenses | Where-Object IncludesTeams
+        $CurrentLicense = $UserLicense.Licenses | Where-Object IncludesPhoneSystem
         if ( $CurrentLicense ) {
           Write-Verbose -Message "'$Name ($UPN)' Current License assigned: $($CurrentLicense.ProductName -join ', ')"
-          if (($UserLicense.ServicePlans | Where-Object ServicePlanName -EQ 'TEAMS1').Provisioningstatus -eq 'Success' ) {
+          if (($UserLicense.ServicePlans | Where-Object ServicePlanName -EQ 'MCOEV').Provisioningstatus -eq 'Success' ) {
             Write-Verbose -Message "'$Name ($UPN)' Service PlanTeams License is enabled successfully"
             $IsLicensed = $true
           }
         }
         if ( $CurrentLicense.Count -gt 1 ) {
-          Write-Warning -Message "'$Name ($UPN)' - Multiple Licenses including Teams are assigned"
+          Write-Warning -Message "'$Name ($UPN)' - Multiple Licenses including PhoneSystem are assigned"
         }
       }
       else {
         Write-Verbose -Message "'$Name ($UPN)' Current License assigned: NONE"
+      }
+
+      # Validating current and/or to be applied Licenses result in correct Licensing
+      if ( $License ) {
+        $IncludesPlan = 0
+        $PlanToTest = 'MCOEV'
+        foreach ($L in $License) {
+          $Included = Test-AzureAdLicenseContainsServicePlan -License "$L" -ServicePlan "$PlanToTest"
+          if ($Included) {
+            $IncludesPlan++
+            Write-Verbose -Message "License '$L' ServicePlan '$PlanToTest' - Included: OK"
+          }
+          else {
+            Write-Verbose -Message "License '$L' ServicePlan '$PlanToTest' - NOT included"
+          }
+        }
+      }
+      if ( $IncludesPlan -lt 1 -and -not $IsLicensed ) {
+        Write-Warning -Message "None of the Licenses includes ServicePlan '$PlanToTest' - Account may not be operational!"
       }
       #endregion
       #endregion
@@ -437,10 +454,10 @@ function Set-TeamsResourceAccount {
           }
           catch {
             if ($PSBoundParameters.ContainsKey('License')) {
-              Write-Error -Message "'$Name ($UPN)' Usage Location could not be set. Please apply manually before applying license" -Category NotSpecified -RecommendedAction 'Apply manually, then run Set-TeamsResourceAccount to apply license and phone number'
+              Write-Error -Message "'$Name ($UPN)' Usage Location could not be set. Please apply before applying license" -Category NotSpecified -RecommendedAction 'Apply manually, then run Set-TeamsResourceAccount to apply license and phone number'
             }
             else {
-              Write-Warning -Message "'$Name ($UPN)' Usage Location cannot be set. If a license is needed, please assign UsageLocation manually beforehand"
+              Write-Warning -Message "'$Name ($UPN)' Usage Location cannot be set. If a license is needed, please assign UsageLocation beforehand"
             }
           }
         }
@@ -479,21 +496,21 @@ function Set-TeamsResourceAccount {
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
-
-        if ($License -eq 'PhoneSystemVirtualUser') {
+        if ('PhoneSystemVirtualUser' -in $License) {
           $ServicePlanName = 'MCOEV_VIRTUALUSER'
         }
         else {
           $ServicePlanName = 'MCOEV'
         }
+        Write-Verbose -Message "License '$License'- Expecting corresponding ServicePlan '$ServicePlanName'"
         $i = 0
         $iMax = 600
         Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
 
         $Status = 'Applying License'
-        $Operation = 'Waiting for Get-AzureAdUserLicenseDetail to return a Result'
+        $Operation = "Waiting for Get-AzureAdUserLicenseDetail to return a Result for ServicePlan '$ServicePlanName'"
         Write-Verbose -Message "$Status - $Operation"
-        while (-not (Test-TeamsUserLicense -Identity "$UPN" -ServicePlan $ServicePlanName)) {
+        do {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount'
             return
@@ -503,8 +520,9 @@ function Set-TeamsResourceAccount {
 
           Start-Sleep -Milliseconds 1000
           $i++
+          $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UPN" -ServicePlan $ServicePlanName
         }
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
+        while ( -not $TeamsUserLicenseNotYetAssigned )
       }
       #endregion
 

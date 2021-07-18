@@ -155,7 +155,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             $Status = 'Enable User For Enterprise Voice'
             $Operation = 'Waiting for Get-CsOnlineUser to return a Result'
             Write-Verbose -Message "$Status - $Operation"
-            while ( -not $(Get-CsOnlineUser -Identity "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled) {
+            do {
               if ($i -gt $iMax) {
                 Write-Error -Message "User '$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false
@@ -166,6 +166,7 @@ function Enable-TeamsUserForEnterpriseVoice {
               Start-Sleep -Milliseconds 1000
               $i++
             }
+            while ( -not $(Get-CsOnlineUser -Identity "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled )
 
             if ($Called) {
               return $true
