@@ -293,7 +293,7 @@ function New-TeamsCommonAreaPhone {
           $i++
         }
         while ( -not (Test-AzureADUser "$UPN"))
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
+        Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' -Status $Status -Completed
       }
       else {
         return
@@ -338,6 +338,7 @@ function New-TeamsCommonAreaPhone {
       $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlanName 'TEAMS1'
     }
     while (-not $TeamsUserLicenseNotYetAssigned)
+    Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
     #endregion
 
     #region Policies

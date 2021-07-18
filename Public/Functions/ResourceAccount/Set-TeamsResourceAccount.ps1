@@ -523,6 +523,7 @@ function Set-TeamsResourceAccount {
           $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UPN" -ServicePlan $ServicePlanName
         }
         while ( -not $TeamsUserLicenseNotYetAssigned )
+        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
       }
       #endregion
 

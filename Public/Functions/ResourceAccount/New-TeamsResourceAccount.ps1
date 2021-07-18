@@ -280,6 +280,7 @@ function New-TeamsResourceAccount {
           $i++
         }
         while ( -not (Test-AzureADUser "$UPN"))
+        Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' -Status $Status -Completed
 
         $ResourceAccountCreated = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -370,6 +371,7 @@ function New-TeamsResourceAccount {
         $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlan $ServicePlanName
       }
       while (-not $TeamsUserLicenseNotYetAssigned)
+      Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
     }
     #endregion
 

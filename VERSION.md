@@ -19,6 +19,7 @@ Even more bugfixes. MicrosoftTeams v1 Connection Method (Connect-SkypeOnline) re
 ### New
 
 - `Get-TeamsResourceAccountLineIdentity` (`Get-TeamsRACLI`): New Script to translate the Resource Account of a Calling Line Identity
+- `Test-AzureAdLicenseContainsServicePlan`: New Helper function to validate whether a specific License contains a specific Service Plan
 
 ### Update
 
@@ -33,7 +34,9 @@ Even more bugfixes. MicrosoftTeams v1 Connection Method (Connect-SkypeOnline) re
   - Fixed an issue with empty MenuOptions, Prompts or Greetings when building the detailed tree
   - Added enumeration for Inclusion Scope and Exclusion Scope (Groups) and display with the main Object
 - `New-TeamsResourceAccountAssociation`: Fixed an issue where multiple Error-Messages were displayed. Script now terminates when CQ/AA was found and when no Resource Accounts are parsed to manipulate
-- Licensing
+- General: All WHILE functions now reworked into a DO/WHILE for more stability
+- Licensing CmdLets
+  - General: Harmonised License validation upon entry - increasing validation and execution times by a bit.
   - `Get-AzureAdLicense` & `Get-AzureAdLicenseServicePlan` now will ignore trailing line feeds and quietly continue
   - Refresh for License queries: All Licensing functions now query `Get-TeamsTenantLicense -Detailed`.
   - License variables are now cleanly written - an issue was observed that popuplated License consumption data into generic license output (produced by `Get-AzureAdLicense`)
@@ -41,8 +44,26 @@ Even more bugfixes. MicrosoftTeams v1 Connection Method (Connect-SkypeOnline) re
   - `New-TeamsCommonAreaPhone`, `Set-TeamsCommonAreaPhone`, `Set-TeamsResourceAccount`: License application was reworked (all licensing validation (remaining units check, etc.) is now deferred to `Set-TeamsUserLicense`)
   - `Set-TeamsUserLicense`:
     - Fixed an issue with one verbose output inadvertently terminating the script without action (my bad!)
-    - Added Parameter `Force` to apply for removing Licenses that are not found on the User. This may be necessary but may lead to errors.
-- TBC
+- `New-TeamsResourceAccount`:
+  - Simplified License validation upon entry, enabled application of multiple licenses.
+  - Added Validation of Licenses whether they include a License with ServicePlan MCOEV/PhoneSystem (Warning only if not!)
+  - Reworked loop to wait for Account creation
+  - Reworked loop to wait for License application
+- `Set-TeamsResourceAccount`:
+  - Simplified License validation upon entry, enabled application of multiple licenses.
+  - Added Validation of Licenses whether they include a License with ServicePlan MCOEV/PhoneSystem (Warning only if not!)
+  - Reworked loop to wait for License application
+- `New-TeamsCommonAreaPhone`:
+  - Simplified License validation upon entry, enabled application of multiple licenses.
+  - Added Validation of Licenses whether they include a License with ServicePlan TEAMS1 (Warning only if not!)
+  - Reworked loop to wait for Account creation
+  - Reworked loop to wait for License application
+- `Set-TeamsCommonAreaPhone`:
+  - Simplified License validation upon entry, enabled application of multiple licenses.
+  - Added Validation of Licenses whether they include a License with ServicePlan TEAMS1 (Warning only if not!)
+  - Reworked loop to wait for License application
+- `Enable-TeamsUserForEnterpriseVoice`:
+  - Reworked loop to wait for License application
 
 ### Removed
 
