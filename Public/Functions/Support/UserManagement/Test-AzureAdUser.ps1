@@ -45,7 +45,7 @@ function Test-AzureAdUser {
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'This is the UserID (UPN)')]
     [Alias('ObjectId', 'Identity')]
-    [string]$UserPrincipalName
+    [string[]]$UserPrincipalName
   ) #param
 
   begin {
@@ -62,8 +62,8 @@ function Test-AzureAdUser {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $UserPrincipalName) {
+      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Testing: '$User'"
       try {
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         if ( $null -ne $UserObject ) {

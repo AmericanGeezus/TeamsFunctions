@@ -203,35 +203,33 @@ function Remove-TeamsUserVoiceConfig {
             $step++
             Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
             Write-Verbose -Message $Operation
-            try {
-              if ( $Force -or $PSCmdlet.ShouldProcess("$UPN", "Removing Licenses: $RemoveLicenses")) {
-                if ( $RemoveLicenses.Count -gt 0 ) {
-                  $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
+            if ( $RemoveLicenses.Count -gt 0 ) {
+              try {
+                if ( $PSCmdlet.ShouldProcess("$UPN", "Removing Licenses: $RemoveLicenses")) {
+                  $null = (Set-TeamsUserLicense -Identity "$UPN" -Remove $RemoveLicenses -ErrorAction STOP)
                   Write-Information "User '$UPN' - Removing Call Plan Licenses: OK"
                 }
                 else {
                   Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
                 }
               }
+              catch {
+                Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: Failed" -Verbose
+                Write-Error -Message "Error:  $($_.Exception.Message)"
+              }
             }
-            catch {
-              Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: Failed" -Verbose
-              Write-Error -Message "Error:  $($_.Exception.Message)"
+            else {
+              Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
             }
           }
           else {
-            $step++
-            Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
-          }
-
-        }
-        else {
-          if ( $CsUser.TelephoneNumber ) {
-            Write-Error -Message "User '$UPN' - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
-          }
-          else {
-            Write-Verbose -Message "User '$UPN' - Removing TelephoneNumber: Not assigned"
-            Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
+            if ( $CsUser.TelephoneNumber ) {
+              Write-Error -Message "User '$UPN' - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
+            }
+            else {
+              Write-Verbose -Message "User '$UPN' - Removing TelephoneNumber: Not assigned"
+              Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
+            }
           }
         }
       }

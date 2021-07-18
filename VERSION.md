@@ -47,7 +47,7 @@ Even more bugfixes. MicrosoftTeams v1 Connection Method (Connect-SkypeOnline) re
 - `New-TeamsResourceAccount`:
   - Simplified License validation upon entry, enabled application of multiple licenses.
   - Added Validation of Licenses whether they include a License with ServicePlan MCOEV/PhoneSystem (Warning only if not!)
-  - Reworked loop to wait for Account creation
+  - Reworked loop to wait for Account creation (45s)
   - Reworked loop to wait for License application
 - `Set-TeamsResourceAccount`:
   - Simplified License validation upon entry, enabled application of multiple licenses.
@@ -55,15 +55,16 @@ Even more bugfixes. MicrosoftTeams v1 Connection Method (Connect-SkypeOnline) re
   - Reworked loop to wait for License application
 - `New-TeamsCommonAreaPhone`:
   - Simplified License validation upon entry, enabled application of multiple licenses.
-  - Added Validation of Licenses whether they include a License with ServicePlan TEAMS1 (Warning only if not!)
-  - Reworked loop to wait for Account creation
+  - Added Validation of Licenses whether they include a License with ServicePlan TEAMS1 & MCOEV/PhoneSystem (Warning only if not!)
+  - Reworked loop to wait for Account creation (45s)
   - Reworked loop to wait for License application
 - `Set-TeamsCommonAreaPhone`:
   - Simplified License validation upon entry, enabled application of multiple licenses.
-  - Added Validation of Licenses whether they include a License with ServicePlan TEAMS1 (Warning only if not!)
+  - Added Validation of Licenses whether they include a License with ServicePlan TEAMS1 & MCOEV/PhoneSystem (Warning only if not!)
   - Reworked loop to wait for License application
 - `Enable-TeamsUserForEnterpriseVoice`:
   - Reworked loop to wait for License application
+- `Remove-TeamsUserVoiceConfig`: Fixed an issue with License Removal for Calling Plan Licenses and further processing of Calling Plan removal
 
 ### Removed
 
