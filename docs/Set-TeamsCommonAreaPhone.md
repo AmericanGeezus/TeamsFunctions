@@ -14,7 +14,7 @@ Changes settings for a Common Area Phone
 
 ```
 Set-TeamsCommonAreaPhone [-UserPrincipalName] <String[]> [-DisplayName <String>] [-UsageLocation <String>]
- [-License <String>] [-IPPhonePolicy <String>] [-TeamsCallingPolicy <String>] [-TeamsCallParkPolicy <String>]
+ [-License <String[]>] [-IPPhonePolicy <String>] [-TeamsCallingPolicy <String>] [-TeamsCallParkPolicy <String>]
  [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -120,7 +120,7 @@ PhoneSystem is an add-on license and cannot be assigned on its own.
 it has therefore been deactivated for now.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 

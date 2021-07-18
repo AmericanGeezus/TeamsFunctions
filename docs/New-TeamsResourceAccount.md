@@ -14,7 +14,7 @@ Creates a new Resource Account
 
 ```
 New-TeamsResourceAccount [-UserPrincipalName] <String> [-DisplayName <String>] -ApplicationType <String>
- -UsageLocation <String> [-License <String>] [-PhoneNumber <String>] [-OnlineVoiceRoutingPolicy <String>]
+ -UsageLocation <String> [-License <String[]>] [-PhoneNumber <String>] [-OnlineVoiceRoutingPolicy <String>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -137,7 +137,7 @@ PhoneSystem is an add-on license and cannot be assigned on its own.
 it has therefore been deactivated for now.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 

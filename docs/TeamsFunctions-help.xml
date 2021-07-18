@@ -3769,7 +3769,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip</maml:para>
+        <maml:para>Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip This CmdLet can assign one of 123 Azure Ad Licenses. (see ParameterName) Please raise an issue on Github if you require additional Licenses for assignment</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -12719,9 +12719,9 @@
           <maml:description>
             <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -12840,9 +12840,9 @@
         <maml:description>
           <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -13245,9 +13245,9 @@
           <maml:description>
             <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -13354,9 +13354,9 @@
         <maml:description>
           <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -17025,9 +17025,9 @@
           <maml:description>
             <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -17145,9 +17145,9 @@
         <maml:description>
           <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -17367,9 +17367,9 @@
           <maml:description>
             <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -17498,9 +17498,9 @@
         <maml:description>
           <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -17722,17 +17722,6 @@
           <dev:defaultValue>US</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
-          <maml:description>
-            <maml:para>No effect for Add. For Remove Overrides the safeguard to only remove Licenses that are found assigned to the User. This may lead to errors</maml:para>
-          </maml:description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
           <maml:description>
             <maml:para>Optional. Displays User License Object after action.</maml:para>
@@ -17814,17 +17803,6 @@
             <maml:uri />
           </dev:type>
           <dev:defaultValue>US</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
-          <maml:description>
-            <maml:para>No effect for Add. For Remove Overrides the safeguard to only remove Licenses that are found assigned to the User. This may lead to errors</maml:para>
-          </maml:description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
@@ -17909,17 +17887,6 @@
             <maml:uri />
           </dev:type>
           <dev:defaultValue>US</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Force</maml:name>
-          <maml:description>
-            <maml:para>No effect for Add. For Remove Overrides the safeguard to only remove Licenses that are found assigned to the User. This may lead to errors</maml:para>
-          </maml:description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>PassThru</maml:name>
@@ -18016,18 +17983,6 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>US</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Force</maml:name>
-        <maml:description>
-          <maml:para>No effect for Add. For Remove Overrides the safeguard to only remove Licenses that are found assigned to the User. This may lead to errors</maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>PassThru</maml:name>
@@ -18822,6 +18777,122 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Test-AzureAdLicenseContainsServicePlan</command:name>
+      <command:verb>Test</command:verb>
+      <command:noun>AzureAdLicenseContainsServicePlan</command:noun>
+      <maml:description>
+        <maml:para>Tests whether a specific ServicePlan is included in an AzureAd License</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>If an AzureAd License contains a specific Service Plan thi function will return $TRUE, otherwise $FALSE</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Test-AzureAdLicenseContainsServicePlan</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>License</maml:name>
+          <maml:description>
+            <maml:para>Mandatory. The License to test</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>ServicePlan</maml:name>
+          <maml:description>
+            <maml:para>AzureAd Service Plan</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>License</maml:name>
+        <maml:description>
+          <maml:para>Mandatory. The License to test</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>ServicePlan</maml:name>
+        <maml:description>
+          <maml:para>AzureAd Service Plan</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This CmdLet is a helper function to delegate validation tasks</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Test-AzureAdLicenseContainsServicePlan -License Office365E5 -ServicePlan MCOEV</dev:code>
+        <dev:remarks>
+          <maml:para>Will Return $TRUE only if the ServicePlan is part of the License 'Office365E5'</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdLicenseContainsServicePlan.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdLicenseContainsServicePlan.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Test-AzureAdUser</command:name>
       <command:verb>Test</command:verb>
       <command:noun>AzureAdUser</command:noun>
@@ -18840,9 +18911,9 @@
           <maml:description>
             <maml:para>Mandatory. The sign-in address, User Principal Name or Object Id of the Object.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -18855,9 +18926,9 @@
         <maml:description>
           <maml:para>Mandatory. The sign-in address, User Principal Name or Object Id of the Object.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -19595,14 +19666,14 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Test-TeamsUserLicense -Identity User@domain.com -ServicePlan MCOEV</dev:code>
         <dev:remarks>
-          <maml:para>Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS! This can be a part of a License.</maml:para>
+          <maml:para>Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Test-TeamsUserLicense -Identity User@domain.com -License Microsoft365E5</dev:code>
         <dev:remarks>
-          <maml:para>Will Return $TRUE only if the license Package is assigned. Specific Names have been assigned to these Licenses</maml:para>
+          <maml:para>Will Return $TRUE only if the license Package is assigned.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

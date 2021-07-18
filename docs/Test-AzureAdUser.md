@@ -13,7 +13,7 @@ Tests whether a User exists in Azure AD (record found)
 ## SYNTAX
 
 ```
-Test-AzureAdUser [-UserPrincipalName] <String> [<CommonParameters>]
+Test-AzureAdUser [-UserPrincipalName] <String[]> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -36,7 +36,7 @@ Mandatory.
 The sign-in address, User Principal Name or Object Id of the Object.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases: ObjectId, Identity
 
