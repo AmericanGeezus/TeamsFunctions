@@ -97,18 +97,19 @@ function New-TeamsCommonAreaPhone {
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Display Name for this Object')]
     [string]$DisplayName,
 
-    [Parameter(Mandatory = $true, HelpMessage = 'Usage Location to assign')]
+    [Parameter(Mandatory, HelpMessage = 'Usage Location to assign')]
     [string]$UsageLocation,
 
     [Parameter(HelpMessage = 'License to be assigned')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
         }
       })]
-    [string]$License,
+    [string[]]$License,
 
     [Parameter(HelpMessage = 'Password to be assigned to the account. Min 8 characters')]
     [SecureString]$Password,
@@ -144,8 +145,40 @@ function New-TeamsCommonAreaPhone {
 
     # Initialising counters for Progress bars
     [int]$step = 0
-    [int]$sMax = 9
+    [int]$sMax = 6
+    if ( $License ) { $sMax = $sMax + 2 }
 
+    #region Validating Licenses to be applied result in correct Licensing (contains Teams & PhoneSystem)
+    $PlansToTest = 'TEAMS1', 'MCOEV'
+    if ( $PSBoundParameters.ContainsKey('License') ) {
+      $Status = 'Verifying input'
+      $Operation = 'Validating Licenses to be applied result in correct Licensing'
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      $step++
+      $IncludesTeams = 0
+      $IncludesPhoneSystem = 0
+      foreach ($L in $License) {
+        if (Test-AzureAdLicenseContainsServicePlan -License "$L" -ServicePlan $PlansToTest[0]) {
+          $IncludesTeams++
+          Write-Verbose -Message "License '$L' ServicePlan '$($PlansToTest[0])' - Included: OK"
+        }
+        else {
+          Write-Verbose -Message "License '$L' ServicePlan '$($PlansToTest[0])' - NOT included"
+        }
+        if (Test-AzureAdLicenseContainsServicePlan -License "$L" -ServicePlan $PlansToTest[1]) {
+          $IncludesPhoneSystem++
+          Write-Verbose -Message "License '$L' ServicePlan '$($PlansToTest[1])' - Included: OK"
+        }
+        else {
+          Write-Verbose -Message "License '$L' ServicePlan '$($PlansToTest[1])' - NOT included"
+        }
+      }
+      if ( $IncludesTeams -lt 1 -and $IncludesPhoneSystem -lt 1 ) {
+        Write-Warning -Message "ServicePlan validation - None of the Licenses include both of the required ServicePlans '$PlansToTest' - Account may not be operational!"
+      }
+    }
+    #endregion
   } #begin
 
   process {
@@ -251,23 +284,26 @@ function New-TeamsCommonAreaPhone {
           "Function: $($MyInvocation.MyCommand.Name) - AzureAdUser created", ($AzureAdUser | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         $i = 0
-        $iMax = 30
+        $iMax = 45
         Write-Information -MessageData "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
-        while ( -not (Test-AzureADUser "$UPN")) {
+        do {
           if ($i -gt $iMax) {
-            Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsCommonAreaPhone'
+            Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount'
             return
           }
-          Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
+          Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' `
             -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
           Start-Sleep -Milliseconds 1000
           $i++
+
+          $UserCreated = Test-AzureADUser "$UPN"
         }
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
+        while ( -not $UserCreated )
+        Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' -Status $Status -Completed
       }
       else {
         return
@@ -281,98 +317,84 @@ function New-TeamsCommonAreaPhone {
 
     $Status = 'Applying Settings'
     #region Licensing
-    # Determining available Licenses from Tenant
-    $Operation = 'Querying Tenant Licenses'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-    $TenantLicenses = Get-TeamsTenantLicense
-
-    # Verifying License is available
-    $Operation = 'Verifying License is available'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-    if ($License -eq 'CommonAreaPhone') {
-      $RemainingCAPLicenses = ($TenantLicenses | Where-Object { $_.SkuPartNumber -eq 'MCOCAP' }).Remaining
-      Write-Verbose -Message "$RemainingCAPLicenses Common Area Phone Licenses still available"
-      if ($RemainingCAPLicenses -lt 1) {
-        Write-Error -Message 'No free Common Area Phone Licenses remaining in the Tenant.' -ErrorAction Stop
-      }
-      else {
-        try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-            Write-Information -MessageData "INFO:    '$Name' License assignment - '$License' SUCCESS"
-          }
-        }
-        catch {
-          Write-Error -Message "'$Name' License assignment failed for '$License'"
-        }
-      }
-    }
-    else {
-      if ( $PSBoundParameters.ContainsKey('License')) {
-        try {
-          if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
-            $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-            Write-Information -MessageData "INFO:    '$Name' License assignment - '$License' SUCCESS"
-          }
-        }
-        catch {
-          Write-Error -Message "'$Name' License assignment failed for '$License'"
-        }
-      }
-      else {
-        Write-Warning -Message "'$Name' no License applied. Policies cannot be assigned in one step. Please use Set-TeamsCommonAreaPhone or Grant the policies directly"
-        $Licensed = $false
-      }
-    }
-    #VALIDATE does this need to have a delay between license assignment and any future steps? If not, it might not even need a License!
-    #TEST bug here pot. fixed by changing WHILE to DO/WHILE
-    do {
-      if ($i -gt $iMax) {
-        Write-Error -Message "Could not find Successful Provisioning Status of the License '$ServicePlanName' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
-      }
-      Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
-        -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
-
-      Start-Sleep -Milliseconds 1000
-      $i++
-
-      #$TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -License $License
-      $TeamsUserLicenseNotYetAssigned = Test-TeamsUserLicense -Identity "$UserPrincipalName" -ServicePlanName 'TEAMS1'
-    }
-    while (-not $TeamsUserLicenseNotYetAssigned)
-    #endregion
-
-    #region Policies
-    if ($Licensed) {
-      $Operation = 'Applying Policies'
+    if ($PSBoundParameters.ContainsKey('License')) {
+      $Operation = 'Processing License assignment'
       $step++
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
+      try {
+        if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
+          $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
+          Write-Information "'$Name' License assignment - '$License' SUCCESS"
+          $IsLicensed = $true
+        }
+      }
+      catch {
+        Write-Error -Message "'$Name' License assignment failed for '$License' with Exception: '$($_.Exception.Message)'"
+      }
+    }
+    #endregion
 
+    #NOTE This will currently never be executed as PhoneNumber is not a parameter on the CmdLet - left here for future expansion
+    #region Waiting for License Application
+    if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
+      $Operation = 'Waiting for AzureAd to write Object'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+      $i = 0
+      $iMax = 600
+      Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
+      Write-Verbose -Message "License '$License'- Expecting corresponding ServicePlan '$PlanToTest'"
+      do {
+        if ($i -gt $iMax) {
+          Write-Error -Message "Could not find Successful Provisioning Status of ServicePlan '$PlanToTest' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
+        }
+        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
+          -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+
+        Start-Sleep -Milliseconds 1000
+        $i++
+
+        $AllTests = $false
+        $AllTests = foreach ($PlanToTest in $PlansToTest) { Test-TeamsUserLicense -Identity "$UPN" -ServicePlan "$PlanToTest" }
+        $TeamsUserLicenseNotYetAssigned = if ( $AllTests ) { $true } else { $false }
+      }
+      while (-not $TeamsUserLicenseNotYetAssigned)
+      Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
+    }
+    #endregion
+
+    #region Policies
+    $Operation = 'Applying Policies'
+    $step++
+    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Verbose -Message "$Status - $Operation"
+
+    if (-not $IsLicensed) {
+      Write-Error -Message 'Policies can only be assigned to licensed objects. Please wait for propagation or apply a license before assigning policies. Set-TeamsCommonAreaPhone can be used to do both'
+    }
+    else {
       #IP Phone Policy
       if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
         Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
       }
       else {
-        Write-Verbose -Message 'No IP Phone Policy supplied - Global Policy is in effect!'
+        Write-Verbose -Message "Object '$($CsOnlineUser.UserPrincipalName)' - IP Phone Policy 'Global' is in effect!"
       }
       #Teams Calling Policy
       if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
         Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
       }
       else {
-        Write-Verbose -Message 'No Calling Policy supplied - Global Policy is in effect!'
+        Write-Verbose -Message "Object '$($CsOnlineUser.UserPrincipalName)' - Calling Policy 'Global' is in effect!"
       }
       #Teams Call Park Policy
       if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
         Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
       }
       else {
-        Write-Verbose -Message 'No Call Park Policy supplied - Global Policy is in effect!'
+        Write-Verbose -Message "Object '$($CsOnlineUser.UserPrincipalName)' - Call Park Policy 'Global' is in effect!"
       }
     }
 

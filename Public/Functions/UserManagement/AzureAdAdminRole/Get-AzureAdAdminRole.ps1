@@ -141,7 +141,7 @@ function Get-AzureAdAdminRole {
       }
       if ($QueryGroupsOnly) {
         # Querying active roles only with Group Membership
-        $MyMemberships = Get-AzureADUserMembership -ObjectId $AzureAdUser.ObjectId #-All $true #CHECK Test Performance and reliability without "all!"
+        $MyMemberships = Get-AzureADUserMembership -ObjectId $AzureAdUser.ObjectId #-All $true #IMPROVE Test Performance and reliability without "all!"
         $MyAdminRoles = $MyMemberships | Where-Object ObjectType -EQ Role
         $Scope = 'Group'
       }

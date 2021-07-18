@@ -13,7 +13,7 @@ Connect to AzureAd, MicrosoftTeams and optionally also to Exchange
 ## SYNTAX
 
 ```
-Connect-Me [-AccountId] <String> [-ExchangeOnline] [-UseV1Module] [-NoFeedback] [<CommonParameters>]
+Connect-Me [-AccountId] <String> [-ExchangeOnline] [-NoFeedback] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -88,25 +88,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -UseV1Module
-Optional.
-Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x
-This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module.
-Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors.
-Handle with care.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: v1
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -NoFeedback
 Optional.
 Suppresses output session information about established sessions.
@@ -140,8 +121,9 @@ Each Service has different requirements for connection, query (Get-CmdLets), and
 For AzureAD, no particular role is needed for connection and query.
 Get-CmdLets are available without an Admin-role.
 For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator)
-Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline.
-The Skype for Business Legacy Administrator Roles are still required to create the PsSession.
+Module MicrosoftTeams v2.3.1 now fully supercedes previous connection methods.
+The Legcay role
+'Skype for Business Legacy Administrator' is no longer required if connected via MicrosoftTeams v2.3.1 or higher.
 Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output)
 Disconnects current sessions (if found) in order to establish a clean new session to each desired service.
 

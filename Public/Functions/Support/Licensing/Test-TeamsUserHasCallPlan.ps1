@@ -4,6 +4,9 @@
 # Updated:  01-OCT-2020
 # Status:   Live
 
+
+
+
 function Test-TeamsUserHasCallPlan {
   <#
   .SYNOPSIS

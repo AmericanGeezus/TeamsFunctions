@@ -8,7 +8,7 @@ schema: 2.0.0
 # New-TeamsResourceAccountLineIdentity
 
 ## SYNOPSIS
-Short description
+Creates a new Calling Line Identity for a Resource Account
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ New-TeamsResourceAccountLineIdentity [-UserPrincipalName] <String> [-BlockIncomi
 ```
 
 ## DESCRIPTION
-Long description
+Creates a CsCallingLineIdentity Object for the Phone Number assigned to a Resource Account
 
 ## EXAMPLES
 

@@ -543,7 +543,7 @@ function Set-TeamsUserVoiceConfig {
           # Apply $CallingPlanLicense
           if ($CallingPlanLicense) {
             try {
-              $null = Set-TeamsUserLicense -Identity "$UserPrincipalName" -Add $CallingPlanLicense -ErrorAction Stop
+              $null = (Set-TeamsUserLicense -Identity "$UserPrincipalName" -Add $CallingPlanLicense -ErrorAction STOP)
               Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$CallingPlanLicense'"
             }
             catch {

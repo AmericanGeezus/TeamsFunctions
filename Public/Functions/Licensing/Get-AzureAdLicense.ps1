@@ -19,14 +19,16 @@ function Get-AzureAdLicense {
   .EXAMPLE
     Get-AzureAdLicense
     Returns 39 Azure AD Licenses that relate to Teams for use in other commands
-  .INPUTS
+    .INPUTS
     System.String
-  .OUTPUTS
+    .OUTPUTS
     System.Object
-  .NOTES
+    .NOTES
     Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
     Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html
     With very special thanks to Philip
+    This CmdLet can assign one of 123 Azure Ad Licenses. (see ParameterName)
+    Please raise an issue on Github if you require additional Licenses for assignment
   .COMPONENT
     Licensing
   .FUNCTIONALITY
@@ -189,13 +191,16 @@ function Get-AzureAdLicense {
       #region Reworking Parameters
       # Adding ParameterName
       $ParameterName = switch ($srcSkuPartNumber) {
-        # Main Licenses
+        #region Main Licenses
+        'M365EDU_A1' { 'Microsoft365A1' }
         'M365EDU_A3_FACULTY' { 'Microsoft365A3faculty' }
         'M365EDU_A3_STUDENT' { 'Microsoft365A3students' }
         'M365EDU_A5_FACULTY' { 'Microsoft365A5faculty' }
         'M365EDU_A5_STUDENT' { 'Microsoft365A5students' }
+        'SMB_BUSINESS' { 'Microsoft365AppsForBusiness' }
         'SMB_BUSINESS_ESSENTIALS' { 'Microsoft365BusinessBasic' }
         'SMB_BUSINESS_PREMIUM' { 'Microsoft365BusinessStandard' }
+        'MIDSIZEPACK' { 'Office365MidsizeBusiness' }
         'SPB' { 'Microsoft365BusinessPremium' }
         'SPE_E3' { 'Microsoft365E3' }
         'SPE_E5' { 'Microsoft365E5' }
@@ -211,48 +216,139 @@ function Get-AzureAdLicense {
         'ENTERPRISEPREMIUM' { 'Office365E5' }
         'ENTERPRISEPREMIUM_NOPSTNCONF' { 'Office365E5NoAudioConferencing' }
         'DESKLESSPACK' { 'Office365F1' }
-        'SPE_E3_USGOV_DOD' { 'Microsoft365E3USGOVDOD' }
-        'SPE_E3_USGOV_GCCHIGH' { 'Microsoft365E3USGOVGCCHIGH' }
-        'ENTERPRISEPACK_USGOV_DOD' { 'Office365E3USGOVDOD' }
-        'ENTERPRISEPACK_USGOV_GCCHIGH' { 'Office365E3USGOVGCCHIGH' }
+        #endregion
 
+        #region Government Licenses
+        'SPE_E3_USGOV_DOD' { 'Microsoft365E3USGovDoD' }
+        'SPE_E3_USGOV_GCCHIGH' { 'Microsoft365E3USGovGCCHigh' }
+        'ENTERPRISEPACK_GOV' { 'Office365G3GCC' }
+        'ENTERPRISEPACK_USGOV_DOD' { 'Office365E3USGovDoD' }
+        'ENTERPRISEPACK_USGOV_GCCHIGH' { 'Office365E3USGovGCCHigh' }
+        'ENTERPRISEPREMIUM_GOV' { 'Office365E5Gov' }
+        'MCOCAP_GOV' { 'CommonAreaPhoneGov' }
+        'MCOEV_GOV' { 'PhoneSystemGov' }
+        'MCOPSTN_1_GOV' { 'DomesticCallingPlanGov' }
+        'PHONESYSTEM_VIRTUALUSER_GOV' { 'PhoneSystemVirtualUserGov' }
+        'EMS_GOV' { 'EnterpriseMobilitySecurityE3Gov' }
+        'EMSPREMIUM_GOV' { 'EnterpriseMobilitySecurityE5Gov' }
+        'M365_G3_GOV' { 'Microsoft365G3GCC' }
+        'INTUNE_A_D_GOV' { 'IntuneDeviceGov' }
+        #endregion
+
+        #region Apps & Additional Licenses (addresses part of Issue #80)
+        'EMS' { 'EnterpriseMobilitySecurityE3' }
+        'EMSPREMIUM' { 'EnterpriseMobilitySecurityE5' }
+        'VISIOONLINE_PLAN1' { 'VisioOnlinePlan1' }
+        'VISIOCLIENT' { 'VisioOnlinePlan2' }
+        'VISIOCLIENT_GOV' { 'VisioOnlinePlan2Gov' }
+        'PROJECT_P1' { 'ProjectPlan1' }
+        'PROJECTONLINE_PLAN_1' { 'ProjectOnlinePlan1' }
+        'PROJECTONLINE_PLAN_2' { 'ProjectOnlinePlan2' }
+        'PROJECT_P1' { 'ProjectPlan1' }
+        'PROJECTESSENTIALS' { 'ProjectEssentials' }
+        'PROJECTPROFESSIONAL' { 'ProjectPro' }
+        'PROJECTPROFESSIONAL_GOV' { 'ProjectProGov' }
+        'PROJECTPREMIUM' { 'ProjectPremium' }
+        'PROJECTPREMIUM_GOV' { 'ProjectPremiumGov' }
+        'CRMPLAN2' { 'DynamicsCrmOnlineBasic' }
+        'CRMSTANDARD' { 'DynamicsCrmOnline' }
+        'Dynamics_365_for_Operations' { 'Dynamics365Operations' }
+        'DYN365_FINANCIALS_BUSINESS_SKU' { 'Dynamics365Financials' }
+        'DYN365_TEAM_MEMBERS' { 'Dynamics365TeamMembers' }
+        'DYN365_ENTERPRISE_TEAM_MEMBERS' { 'Dynamics365EnterpriseTeamMembers' }
+        'DYN365_ENTERPRISE_P1_IW' { 'Dynamics365EnterpriseP1' }
+        'DYN365_ENTERPRISE_PLAN1' { 'Dynamics365Enterprise' }
+        'DYN365_ENTERPRISE_SALES_CUSTOMERSERVICE' { 'Dynamics365EnterpriseSalesAndCustServ' }
+        'DYN365_ENTERPRISE_CUSTOMER_SERVICE' { 'Dynamics365EnterpriseCustServ' }
+        'DYN365_ENTERPRISE_SALES' { 'Dynamics365EnterpriseSales' }
+        'DYN365_SCM' { 'Dynamics365SupplyChain' }
+        'DYNAMICS_365_ONBOARDING_SKU' { 'Dynamics365TalentOnboard' }
+        'POWER_BI_ADDON' { 'PowerBIAddOn' }
+        'POWER_BI_PRO' { 'PowerBIPro' }
+        'POWER_BI_STANDARD' { 'PowerBIStd' }
+        'WIN10_PRO_ENT_SUB' { 'Win10EnterpriseE3Pro' }
+        'WIN10_VDA_E3' { 'Win10EnterpriseE3' }
+        'WIN10_VDA_E5' { 'Win10EnterpriseE5' }
+        'O365_BUSINESS_ESSENTIALS' { 'Office365BusinessEssentials' }
+        'O365_BUSINESS_PREMIUM' { 'Office365BusinessPremium' }
+        'O365_BUSINESS' { 'Microsoft365AppsForBusiness' }
+        'OFFICESUBSCRIPTION' { 'Microsoft365AppsForEnterprise' }
+        'EQUIVIO_ANALYTICS' { 'Office365AdvCompliance' }
+        'AAD_BASIC' { 'AzureAdBasic' }
+        'AAD_PREMIUM' { 'AzureAdPremiumP1' }
+        'AAD_PREMIUM_P2' { 'AzureAdPremiumP2' }
+        'ATP_ENTERPRISE' { 'AdvancedThreatProtectionEnterprise' }
+        'FLOW_FREE' { 'MicrosoftFlowFree' }
+        'M365_SECURITY_COMPLIANCE_FOR_FLW' { 'Microsoft365SecurityComplianceForFlw' }
+        'IDENTITY_THREAT_PROTECTION' { 'Microsoft365E5Security' }
+        'IDENTITY_THREAT_PROTECTION_FOR_EMS_E5' { 'Microsoft365E5SecurityForEMS' }
+        'INFORMATION_PROTECTION_COMPLIANCE' { 'Microsoft365E5Compliance' }
+        'WACONEDRIVESTANDARD' { 'OneDriveForBusinessPlan1' }
+        'WACONEDRIVEENTERPRISE' { 'OneDriveForBusinessPlan2' }
+        'WIN_DEF_ATP' { 'WindowsDefenderForEndPoint' }
+        'STREAM' { 'ThreatIntelligenceGov' }
+        'TOPIC_EXPERIENCES' { 'TopicExperiences' }
+        'POWERAPPS_INDIVIDUAL_USER' { 'PowerAppsAndLogicFlows' }
+        'MICROSOFT_BUSINESS_CENTER' { 'MicrosoftBusinessCenter' }
+        'SPZA_IW' { 'AppConnectIw' }
+        'LITEPACK' { 'Office365SmallBusiness' }
+        'LITEPACK_P2' { 'Office365SmallBusinessPremium' }
+        'RIGHTSMANAGEMENT' { 'AzureInformationProtectionPlan1' }
+        'TEAMS_FREE' { 'MicrosoftTeamsFree' }
+        'TEAMS_EXPLORATORY' { 'MicrosoftTeamsExploratory' }
+        'ATA' { 'AdvancedThreatAnalytics' }
+        'ADALLOM_STANDALONE' { 'MicrosoftCloudAppSecurity' }
+        'RMSBASIC' { 'AzureRMSBasic' }
+        #'WINDOWS_STORE' { 'WindowsStoreForBusiness' } # License cannot be assigned to a user
+        #endregion
+
+
+        #region Standalone, Add-On & Calling Plans Licenses
         # Standalone Licenses
+        'MCOIMP' { 'SkypeOnlinePlan1' }
         'MCOCAP' { 'CommonAreaPhone' }
         'PHONESYSTEM_VIRTUALUSER' { 'PhoneSystemVirtualUser' }
         'MCOSTANDARD' { 'SkypeOnlinePlan2' }
+        'EXCHANGESTANDARD' { 'ExchangeOnlinePlan1' }
+        'EXCHANGEENTERPRISE' { 'ExchangeOnlinePlan2' }
+        'EXCHANGEARCHIVE' { 'ExchangeOnlineArchivingForOnPrem' }
+        'EXCHANGEARCHIVE_ADDON' { 'ExchangeOnlineArchivingForOnline' }
+        'SHAREPOINTENTERPRISE' { 'SharePointEnterprise' }
+        'SHAREPOINTSTANDARD' { 'SharePointStd' }
+        'SHAREPOINTSTORAGE_GOV' { 'SharePointStorageGov' }
+        'PROJECTCLIENT' { 'ProjectClient' }
+        'EXCHANGETELCO' { 'ExchangeOnlinePop' }
+        'INTUNE_A' { 'Intune' }
+        'INTUNE_SMB' { 'IntuneSMB' }
+        'IT_ACADEMY_AD' { 'MSImagineAcademy' }
 
         # Add-on Licenses
         'MCOEV' { 'PhoneSystem' }
         'MCOMEETADV' { 'AudioConferencing' }
+        'MCOMEETADV_GOC' { 'AudioConferencingGOC' }
+        'MCOMEETADV_GOV' { 'AudioConferencingGov' }
+
+        'MCOEV_STUDENT' { 'PhoneSystemStudent' }
+        'MCOEV_USGOV_GCCHIGH' { 'PhoneSystemUSGovGCCHigh' }
+        'MCOEV_USGOV_DOD' { 'PhoneSystemUSGovDoD' }
+        'MCOEV_TELSTRA' { 'PhoneSystemTestra' }
+        'MCOEV_FACULTY' { 'PhoneSystemFaculty' }
+        'MCOEV_DOD' { 'PhoneSystemDoD' }
+        'MCOEVSMB_1' { 'PhoneSystemSMB' }
+        'MCOEV_GCCHIGH' { 'PhoneSystemGCCHigh' }
 
         # Microsoft Calling Plans
+        'MCOPSTNEAU2' { 'TelstraCallingForO365' }
         'MCOPSTN2' { 'InternationalCallingPlan' }
         'MCOPSTN1' { 'DomesticCallingPlan' }
         'MCOPSTN5' { 'DomesticCallingPlan120' }
         'MCOPSTN_5' { 'DomesticCallingPlan120b' }
         'MCOPSTNC' { 'CommunicationCredits' }
+        #endregion
 
-
-        # Parameter names for Government Licenses #80
-        'MCOCAP_GOV' { 'CommonAreaPhoneGov' }
-        'MCOEV_GOV' { 'PhoneSystemGov' }
-        'MCOMEETADV_GOV' { 'AudioConferencingGov' }
-        'MCOPSTN_1_GOV' { 'DomesticCallingPlanGov' }
-        'PHONESYSTEM_VIRTUALUSER_GOV' { 'PhoneSystemVirtualUserGov' }
-        'VISIOCLIENT_GOV' { '' }
+        <# Parameter names missing for Government Licenses #80
         'WINE5_GCC_COMPAT' { '' }
-        'PROJECTPREMIUM_GOV' { '' }
-        'WINDOWS_STORE' { '' }
-        'SHAREPOINTSTORAGE_GOV' { '' }
-        'EMS_GOV' { '' }
-        'ENTERPRISEPREMIUM_GOV' { '' }
-        'ADALLOM_STANDALONE' { '' }
-        'ATA' { '' }
-        'THREAT_INTELLIGENCE_GOV' { '' }
-        'RMSBASIC' { '' }
-        'ENTERPRISEPACK_GOV' { '' }
-        'PROJECTPROFESSIONAL_GOV' { '' }
-        'EMSPREMIUM_GOV' { '' }
+        #>
 
         default { '' }
       }
@@ -264,11 +360,13 @@ function Get-AzureAdLicense {
         $IncludesPhoneSystem = ( $srcProductPlans.ServicePlanName -like 'MCOEV*')
       }
       else {
+        $LicenseType = 'Standalone'
         $LicenseType = switch -Regex ( $srcProductPlans.ServicePlanName ) {
-          'MCOEV_VIRTUALUSER' { 'Standalone'; break }
+          'PHONESYSTEM_VIRTUALUSER' { 'Standalone'; break }
           'MCOPSTN' { 'CallingPlan'; break }
           'MCOEV' { 'Add-On'; break }
           'MCOMEETADV' { 'Add-On'; break }
+          'ADDON' { 'Add-On'; break }
           default { 'Standalone' }
         }
         $IncludesTeams = ($srcProductPlans.ServicePlanName -like 'Teams*')

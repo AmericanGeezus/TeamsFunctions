@@ -70,7 +70,8 @@ function Get-TeamsTenantLicense {
 
     [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
     [ValidateScript( {
-        $LicenseParams = (Get-AzureAdLicense -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
           return $false
@@ -103,12 +104,6 @@ function Get-TeamsTenantLicense {
     $AllLicenses = $null
     $AllLicenses = $global:TeamsFunctionsMSAzureAdLicenses
 
-    $AllLicenses | Add-Member -NotePropertyName Available -NotePropertyValue 0 -Force
-    $AllLicenses | Add-Member -NotePropertyName Consumed -NotePropertyValue 0 -Force
-    $AllLicenses | Add-Member -NotePropertyName Remaining -NotePropertyValue 0 -Force
-    $AllLicenses | Add-Member -NotePropertyName Expiring -NotePropertyValue 0 -Force
-
-
     try {
       if ($PSBoundParameters.ContainsKey('License')) {
         $SkuPartNumber = ($AllLicenses | Where-Object ParameterName -EQ $License).SkuPartNumber
@@ -119,8 +114,7 @@ function Get-TeamsTenantLicense {
       }
     }
     catch {
-      Write-Warning $_
-      return
+      Write-Error $_
     }
 
   } #begin
@@ -138,44 +132,21 @@ function Get-TeamsTenantLicense {
         "Function: $($MyInvocation.MyCommand.Name): tenantSKU", $tenantSKU | Write-Debug
       }
 
-      #VALIDATE segmentation: Available = Enabled + Warning?; understand Suspended
+      # Current segmentation: Available = Enabled + Warning?; understand Suspended
       $LicUnitsAvailable = $tenantSKU.PrepaidUnits.Enabled + $tenantSKU.PrepaidUnits.Warning # + $tenantSKU.PrepaidUnits.Suspended # Omitted Suspended ones for now
       $LicUnitsConsumed = $tenantSKU.ConsumedUnits
       $LicUnitsRemaining = $LicUnitsAvailable - $LicUnitsConsumed
       $LicUnitsExpiring = $tenantSKU.PrepaidUnits.Warning
 
       if ($null -ne $Lic) {
-        $Lic | Add-Member -NotePropertyName Available -NotePropertyValue $LicUnitsAvailable -Force
-        $Lic | Add-Member -NotePropertyName Consumed -NotePropertyValue $LicUnitsConsumed -Force
-        $Lic | Add-Member -NotePropertyName Remaining -NotePropertyValue $LicUnitsRemaining -Force
-        $Lic | Add-Member -NotePropertyName Expiring -NotePropertyValue $LicUnitsExpiring -Force
-        [void]$TenantLicenses.Add($Lic)
+        [void]$TenantLicenses.Add([TFTeamsTenantLicense]::new("$($Lic.ProductName)", "$($Lic.SkuPartNumber)", "$($Lic.LicenseType)", $Lic.ParameterName, $Lic.IncludesTeams, $Lic.IncludesPhoneSystem, $($Lic.SkuId), $Lic.ServicePlans, $LicUnitsAvailable, $LicUnitsConsumed, $LicUnitsRemaining, $LicUnitsExpiring))
       }
       else {
+        Write-Verbose "No published License (Get-AzureAdLicense) found for SkuId '$($tenantSKU.SkuId)', SkuPartNumber '$($tenantSKU.SkuPartNumber)'"
         if ($PSBoundParameters.ContainsKey('DisplayAll')) {
-          $NewLic = [PSCustomObject][ordered]@{
-            ProductName         = 'Unknown'
-            SkuPartNumber       = $tenantSKU.SkuPartNumber
-            LicenseType         = 'Unknown'
-            ParameterName       = $null
-            IncludesTeams       = $null
-            IncludesPhoneSystem = $null
-            SkuId               = $tenantSKU.SkuId
-            ServicePlans        = 'Unknown'
-            Available           = $LicUnitsAvailable
-            Consumed            = $LicUnitsConsumed
-            Remaining           = $LicUnitsRemaining
-            Expiring            = $LicUnitsExpiring
-          }
-          [void]$TenantLicenses.Add($NewLic)
-        }
-        else {
-          if (!$PSBoundParameters.ContainsKey('Detailed')) {
-            Write-Verbose "No entry found for '$($tenantSKU.SkuId)'"
-          }
+          [void]$TenantLicenses.Add([TFTeamsTenantLicense]::new('Unknown', "$($tenantSKU.SkuPartNumber)", 'Unknown', $null, $null, $null, $($tenantSKU.SkuId), 'Unknown', $LicUnitsAvailable, $LicUnitsConsumed, $LicUnitsRemaining, $LicUnitsExpiring))
         }
       }
-
     }
 
     # Output
@@ -183,7 +154,7 @@ function Get-TeamsTenantLicense {
       Write-Output $TenantLicenses | Sort-Object ProductName
     }
     else {
-      Write-Output $TenantLicenses | Sort-Object ProductName | Select-Object ProductName, SkuPartNumber, LicenseType, Available, Consumed, Remaining, Expiring
+      Write-Output $TenantLicenses | Sort-Object ProductName | Select-Object Available, Consumed, Remaining, ProductName, SkuPartNumber, LicenseType, ParameterName
     }
   } #process
 

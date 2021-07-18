@@ -136,6 +136,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsObjectType',
     ## Licensing
     'New-AzureAdLicenseObject',
+    'Test-AzureAdLicenseContainsServicePlan',
     'Test-TeamsUserHasCallPlan',
     'Test-TeamsUserLicense',
     ## Other

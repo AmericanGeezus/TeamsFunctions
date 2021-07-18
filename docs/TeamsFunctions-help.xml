@@ -304,73 +304,6 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
-      <command:name>Assert-SkypeOnlineConnection</command:name>
-      <command:verb>Assert</command:verb>
-      <command:noun>SkypeOnlineConnection</command:noun>
-      <maml:description>
-        <maml:para>Asserts an established Connection to SkypeOnline</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>Tests and tries to reconnect to a SkypeOnline connection already established.</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Assert-SkypeOnlineConnection</maml:name>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters />
-    <command:inputTypes>
-      <command:inputType>
-        <dev:type>
-          <maml:name>System.Void</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:inputType>
-    </command:inputTypes>
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>System.Boolean</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>Calls Test-SkypeOnlineConnection to ascertain session.</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Assert-SkypeOnlineConnection</dev:code>
-        <dev:remarks>
-          <maml:para>Will run Test-SkypeOnlineConnection and, if successful, stops. If unsuccessful, tries to reconnect by running Get-CsTenant to prompt for reconnection. If that too is unsuccessful, displays request to reconnect with Connect-Me.</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-SkypeOnlineConnection.md</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Assert-SkypeOnlineConnection.md</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
       <command:name>Assert-TeamsCallableEntity</command:name>
       <command:verb>Assert</command:verb>
       <command:noun>TeamsCallableEntity</command:noun>
@@ -908,17 +841,6 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="v1">
-          <maml:name>UseV1Module</maml:name>
-          <maml:description>
-            <maml:para>Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module. Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors. Handle with care.</maml:para>
-          </maml:description>
-          <dev:type>
-            <maml:name>SwitchParameter</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>False</dev:defaultValue>
-        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>NoFeedback</maml:name>
           <maml:description>
@@ -949,18 +871,6 @@
         <maml:name>ExchangeOnline</maml:name>
         <maml:description>
           <maml:para>Optional. Connects to Exchange Online Management. Requires Exchange Admin Role</maml:para>
-        </maml:description>
-        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
-        <dev:type>
-          <maml:name>SwitchParameter</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="v1">
-        <maml:name>UseV1Module</maml:name>
-        <maml:description>
-          <maml:para>Optional. Instructs Connect-Me to use MicrosoftTeams v1.x instead of the newer v2.x This is a temporary measure to circumvent reported performance issues when connecting with v2 of the module. Please note, that since publishing v2.3.0 connections with New-CsOnlineSession may produce Warnings and errors. Handle with care.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -1012,7 +922,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) Module MicrosoftTeams v2.0.0 now provides the CmdLets that required a Session to SkypeOnline. The Skype for Business Legacy Administrator Roles are still required to create the PsSession. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
+        <maml:para>This CmdLet can be used to establish a session to: AzureAD, MicrosoftTeams and ExchangeOnline Each Service has different requirements for connection, query (Get-CmdLets), and action (other CmdLets) For AzureAD, no particular role is needed for connection and query. Get-CmdLets are available without an Admin-role. For MicrosoftTeams, a Teams Administrator Role is required (ideally Teams Communication or Service Administrator) Module MicrosoftTeams v2.3.1 now fully supercedes previous connection methods. The Legcay role 'Skype for Business Legacy Administrator' is no longer required if connected via MicrosoftTeams v2.3.1 or higher. Actual administrative capabilities are dependent on actual Office 365 admin role assignments (displayed as output) Disconnects current sessions (if found) in order to establish a clean new session to each desired service.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -1042,168 +952,6 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-Me.md</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-Me.md</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
-      <command:name>Connect-SkypeOnline</command:name>
-      <command:verb>Connect</command:verb>
-      <command:noun>SkypeOnline</command:noun>
-      <maml:description>
-        <maml:para>Creates a remote PowerShell session to Teams (SkypeOnline)</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>The Connect-SkypeOnline cmdlet connects an account to use for Microsoft Teams (SkypeOnline) cmdlet requests. Establishing a remote PowerShell session to Microsoft Teams (SkypeOnline) A SkypeOnline Session requires the SkypeForBusiness Legacy Admin role to connect and execute GET-commands. To execute other commands against Teams, a Teams Admin roles with appropriate rights is required.</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Connect-SkypeOnline</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
-          <maml:name>AccountId</maml:name>
-          <maml:description>
-            <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection. If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId. Please see Notes for a detailed example</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
-          <maml:name>OverrideAdminDomain</maml:name>
-          <maml:description>
-            <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records. If a Session to AzureAd exists, the TenantDomain will be used as the OverrideAdminDomain. Please see notes for details</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
-          <maml:name>IdleTimeout</maml:name>
-          <maml:description>
-            <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs. By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins! Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-          <dev:type>
-            <maml:name>Int32</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>4</dev:defaultValue>
-        </command:parameter>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="Username">
-        <maml:name>AccountId</maml:name>
-        <maml:description>
-          <maml:para>Optional String. The Username or sign-in address to use when making the remote PowerShell session connection. If the AccountId is provided, the OverrideAdminDomain is constructed from the domain part of the AccountId. Please see Notes for a detailed example</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
-        <maml:name>OverrideAdminDomain</maml:name>
-        <maml:description>
-          <maml:para>Optional. Only required if managing multiple Tenants or Skype On-Premesis Hybrid configuration uses DNS records. If a Session to AzureAd exists, the TenantDomain will be used as the OverrideAdminDomain. Please see notes for details</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
-        <maml:name>IdleTimeout</maml:name>
-        <maml:description>
-          <maml:para>Optional. Defines the IdleTimeout of the session in full hours between 1 and 8. Default is 4 hrs. By default, creating a session with New-CsOnlineSession results in a Timeout of 15mins! Please note that this setting could not be verified working. SessionOptions seem to be ignored by the CmdLet.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
-        <dev:type>
-          <maml:name>Int32</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>4</dev:defaultValue>
-      </command:parameter>
-    </command:parameters>
-    <command:inputTypes>
-      <command:inputType>
-        <dev:type>
-          <maml:name>System.String</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:inputType>
-    </command:inputTypes>
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>System.Object</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>Connection to SkypeOnline is done by creating a Session with New-CsOnlineSession, which later needs to be imported. A temporary Module "tmp_*" will be loaded, importing all CmdLets to administer the Teams Tenant (i.E. SkypeOnline)</maml:para>
-        <maml:para>New-CsOnlineSession is available in the Module MicrosoftTeams or the MSI-Installer SkypeOnlineConnector which is now deprecated and no longer actively supported. This CmdLet uses the Command from the Module MicrosoftTeams, which always establishes a connection to both Teams and SkypeOnline!</maml:para>
-        <maml:para>Background: In order to retire the SkypeOnlineConnector, the CmdLet New-CsOnlineSession was ported to MicrosoftTeams (in v1.1.6) However, not all functionality was made available: The Parameter Username has been retired, resulting in seamless single-sign-on currently not being available. Multiple connection prompts will be displayed, but already signed-in accounts can be used (Password required only once) Enable-CsOnlineSessionForReconnection is not available in MicrosoftTeams either, but thanks to the original author Andrés Gorzelany, the command is now offered with this module and is available consistently. Established Sessions will now always be enabled for reconnection. The ability to reconnect a session depends on the settings in the Tenant. Re-Authentication may be required.</maml:para>
-        <maml:para>OverrideAdminDomain Handling and Example: AccountId John@domain.com - If a Session to AzureAd is already established, the TenantDomain from Get-AzureAdCurrentSessionInfo is used. If no Session to AzureAd exists, 'Domain.com' is tried first as the OverrideAdminDomain If unsuccessful, 'domain.onmicrosoft.com' is tried. If this too is unsuccessful, the OverrideAdminDomain is queried from the User for input.</maml:para>
-        <maml:para>Session Timeout &amp; Reconnection: The session timeout is currently not adhered to correctly and does not work as intended! It has therefore been disabled. The parameter IdleTimeout is without effect.</maml:para>
-        <maml:para>To help reconnect sessions, Assert-SkypeOnlineConnection is integrated into every CmdLet in the module. It can be triggered manually as well, with the alias 'pol' (Ping-of-life) to trigger the reconnection. This will require re-authentication and its success is dependent on the Tenant settings. Sometimes even the reconnection fails, if so, please disconnect the current session (Disconnect-SkypeOnline) and re-run Connect-SkypeOnline to recreate the session cleanly. Please note that hanging sessions can cause lockout (session exhaustion)</maml:para>
-        <maml:para>This CmdLet is preforming the following Tasks: - Prompting for Username and password to establish the session</maml:para>
-        <maml:para>- Prompting for MFA if required</maml:para>
-        <maml:para>- Prompting for OverrideAdminDomain ONLY if connection fails to establish (connection attempt is retried afterwards)</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Connect-SkypeOnline</dev:code>
-        <dev:remarks>
-          <maml:para>Prompt for the Username and password of an administrator with permissions to connect to Microsoft Teams (SkypeOnline). Additional prompts for Multi Factor Authentication are displayed as required</maml:para>
-        </dev:remarks>
-      </command:example>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com</dev:code>
-        <dev:remarks>
-          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline). When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually. The OverrideAdminDomain is not provided, so it is constructed from the domain part. Please see Notes for details. Additional prompts for Multi Factor Authentication are displayed as required.</maml:para>
-        </dev:remarks>
-      </command:example>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Connect-SkypeOnline -AccountId admin@contoso.com -OverrideAdminDomain contoso.onmicrosoft.com</dev:code>
-        <dev:remarks>
-          <maml:para>When using the Module SkypeOnlineConnector, will pre-fill the authentication prompt with admin@contoso.com and only ask for the password for the account to connect out to Microsoft Teams (SkypeOnline). When using the Module MicrosoftTeams, the Username cannot be passed on and has to be entered manually. The provided OverrideAdminDomain will be used to establish the connection. If not provided, it is constructed.</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-SkypeOnline.md</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Connect-SkypeOnline.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:linkText>
@@ -1929,8 +1677,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Limitations: MFA must be authorised first Currently no way to trigger it via PowerShell. If the activation fails, please sign into Office.com Once Authorised, this command can be used to activate your eligible Admin Roles. AzureResources provider activation is not yet tested.</maml:para>
-        <maml:para>Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1</maml:para>
+        <maml:para>Limitations: MFA must be authorised first - Current workaround triggers MFA auth upon login. If the activation fails, please sign into Office.com or use  https://aka.ms/myroles Once Authorised, this command can be used to activate your eligible Admin Roles. AzureResources provider activation is not yet tested. Thanks to Nathan O'Bryan, MVP|MCSM - nathan@mcsmlab.com for inspiring this script through Activate-PIMRole.ps1</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4022,7 +3769,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip</maml:para>
+        <maml:para>Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip This CmdLet can assign one of 123 Azure Ad Licenses. (see ParameterName) Please raise an issue on Github if you require additional Licenses for assignment</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -7330,6 +7077,166 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsResourceAccount.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Get-TeamsResourceAccountLineIdentity</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsResourceAccountLineIdentity</command:noun>
+      <maml:description>
+        <maml:para>Queries Calling Line Identity Objects for Resource Accounts</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Get-CsCallingLineIdentity with resolving Resource Account Ids to Names and displaying the underlying Phone Number</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsResourceAccountLineIdentity</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="ResourceAccount">
+          <maml:name>UserPrincipalName</maml:name>
+          <maml:description>
+            <maml:para>Required. Identifies the Resource Account for which the Line Identity was created</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsResourceAccountLineIdentity</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>Identity</maml:name>
+          <maml:description>
+            <maml:para>Required - Parameter set CLI. Identifies the CsCallingLineIdentity to be queried</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsResourceAccountLineIdentity</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>Filter</maml:name>
+          <maml:description>
+            <maml:para>Filter String for the Calling Line Identity</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="ResourceAccount">
+        <maml:name>UserPrincipalName</maml:name>
+        <maml:description>
+          <maml:para>Required. Identifies the Resource Account for which the Line Identity was created</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <maml:name>Identity</maml:name>
+        <maml:description>
+          <maml:para>Required - Parameter set CLI. Identifies the CsCallingLineIdentity to be queried</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <maml:name>Filter</maml:name>
+        <maml:description>
+          <maml:para>Filter String for the Calling Line Identity</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>The Calling Line Identity is created with New-TeamsResourceAccountLineIdentity (or with New-CsCallingLineIdentity). This CmdLet queries these objects and (provided the CallingIDSubstitute is 'Resource') resolves Resource Account ID to the Display Name and displays the Resource Accounts Phone Number. https://docs.microsoft.com/en-us/powershell/module/skype/Get-cscallinglineidentity?view=skype-ps</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsResourceAccountLineIdentity -UserPrincipalName ResourceAccount@domain.com</dev:code>
+        <dev:remarks>
+          <maml:para>Queries a Line Identity for the Resource Account provided and displays this Object - Default</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsResourceAccountLineIdentity -Identity 'My Calling Line Identity'</dev:code>
+        <dev:remarks>
+          <maml:para>Queries a Line Identity with the Name 'My Calling Line Identity'.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsResourceAccountLineIdentity -Filter '*Calling*'</dev:code>
+        <dev:remarks>
+          <maml:para>Queries all Line Identities with 'Calling' in the Name.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccountLineIdentity.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsResourceAccountLineIdentity.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsFunctions.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsFunctions.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
@@ -12812,9 +12719,9 @@
           <maml:description>
             <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -12933,9 +12840,9 @@
         <maml:description>
           <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -13338,9 +13245,9 @@
           <maml:description>
             <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -13447,9 +13354,9 @@
         <maml:description>
           <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -13829,11 +13736,11 @@
       <command:verb>New</command:verb>
       <command:noun>TeamsResourceAccountLineIdentity</command:noun>
       <maml:description>
-        <maml:para>Short description</maml:para>
+        <maml:para>Creates a new Calling Line Identity for a Resource Account</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Long description</maml:para>
+      <maml:para>Creates a CsCallingLineIdentity Object for the Phone Number assigned to a Resource Account</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -17118,9 +17025,9 @@
           <maml:description>
             <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -17238,9 +17145,9 @@
         <maml:description>
           <maml:para>Optional. Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -17460,9 +17367,9 @@
           <maml:description>
             <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -17591,9 +17498,9 @@
         <maml:description>
           <maml:para>Specifies the License to be assigned: PhoneSystem or PhoneSystem_VirtualUser If not provided, will default to PhoneSystem_VirtualUser Unlicensed Objects can exist, but cannot be assigned a phone number If a license already exists, it will try to swap the license to the specified one. PhoneSystem is an add-on license and cannot be assigned on its own. it has therefore been deactivated for now.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -18870,6 +18777,122 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Test-AzureAdLicenseContainsServicePlan</command:name>
+      <command:verb>Test</command:verb>
+      <command:noun>AzureAdLicenseContainsServicePlan</command:noun>
+      <maml:description>
+        <maml:para>Tests whether a specific ServicePlan is included in an AzureAd License</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>If an AzureAd License contains a specific Service Plan thi function will return $TRUE, otherwise $FALSE</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Test-AzureAdLicenseContainsServicePlan</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>License</maml:name>
+          <maml:description>
+            <maml:para>Mandatory. The License to test</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>ServicePlan</maml:name>
+          <maml:description>
+            <maml:para>AzureAd Service Plan</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>License</maml:name>
+        <maml:description>
+          <maml:para>Mandatory. The License to test</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>ServicePlan</maml:name>
+        <maml:description>
+          <maml:para>AzureAd Service Plan</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>Boolean</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This CmdLet is a helper function to delegate validation tasks</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Test-AzureAdLicenseContainsServicePlan -License Office365E5 -ServicePlan MCOEV</dev:code>
+        <dev:remarks>
+          <maml:para>Will Return $TRUE only if the ServicePlan is part of the License 'Office365E5'</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdLicenseContainsServicePlan.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-AzureAdLicenseContainsServicePlan.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Test-AzureAdUser</command:name>
       <command:verb>Test</command:verb>
       <command:noun>AzureAdUser</command:noun>
@@ -18888,9 +18911,9 @@
           <maml:description>
             <maml:para>Mandatory. The sign-in address, User Principal Name or Object Id of the Object.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>String[]</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -18903,9 +18926,9 @@
         <maml:description>
           <maml:para>Mandatory. The sign-in address, User Principal Name or Object Id of the Object.</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>String[]</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -19087,73 +19110,6 @@
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-MicrosoftTeamsConnection.md</maml:linkText>
         <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-MicrosoftTeamsConnection.md</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
-      </maml:navigationLink>
-    </command:relatedLinks>
-  </command:command>
-  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-    <command:details>
-      <command:name>Test-SkypeOnlineConnection</command:name>
-      <command:verb>Test</command:verb>
-      <command:noun>SkypeOnlineConnection</command:noun>
-      <maml:description>
-        <maml:para>Tests whether a valid PS Session exists for SkypeOnline (Teams)</maml:para>
-      </maml:description>
-    </command:details>
-    <maml:description>
-      <maml:para>A connection established via Connect-SkypeOnline is parsed. This connection must be valid (Available and Opened)</maml:para>
-    </maml:description>
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>Test-SkypeOnlineConnection</maml:name>
-      </command:syntaxItem>
-    </command:syntax>
-    <command:parameters />
-    <command:inputTypes>
-      <command:inputType>
-        <dev:type>
-          <maml:name>System.Void</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:inputType>
-    </command:inputTypes>
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>System.Boolean</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
-    <maml:alertSet>
-      <maml:alert>
-        <maml:para>Added check for Open Session to err on the side of caution. Use with Disconnect-SkypeOnline when tested negative, then Connect-SkypeOnline</maml:para>
-      </maml:alert>
-    </maml:alertSet>
-    <command:examples>
-      <command:example>
-        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Test-SkypeOnlineConnection</dev:code>
-        <dev:remarks>
-          <maml:para>Will Return $TRUE only if a valid and open session is found.</maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    <command:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-SkypeOnlineConnection.md</maml:linkText>
-        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Test-SkypeOnlineConnection.md</maml:uri>
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsSession.md</maml:linkText>
@@ -19710,14 +19666,14 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Test-TeamsUserLicense -Identity User@domain.com -ServicePlan MCOEV</dev:code>
         <dev:remarks>
-          <maml:para>Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS! This can be a part of a License.</maml:para>
+          <maml:para>Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Test-TeamsUserLicense -Identity User@domain.com -License Microsoft365E5</dev:code>
         <dev:remarks>
-          <maml:para>Will Return $TRUE only if the license Package is assigned. Specific Names have been assigned to these Licenses</maml:para>
+          <maml:para>Will Return $TRUE only if the license Package is assigned.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

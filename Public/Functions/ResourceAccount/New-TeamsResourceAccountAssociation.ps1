@@ -133,17 +133,14 @@ function New-TeamsResourceAccountAssociation {
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
     if ($null -eq $EntityObject) {
-      #throw "$DesiredType '$Entity' - Not found, please check entity exists with this Name"
-      Write-Error -Exception 'ObjectNotFound' -Message "$DesiredType '$Entity' - Not found, please check entity exists with this Name"
-      return
+      throw [System.Exception]::New("$DesiredType '$Entity' - Not found, please check entity exists with this Name" )
     }
     elseif ($EntityObject -is [Array]) {
       $EntityObject = $EntityObject | Where-Object Name -EQ "$Entity"
       Write-Verbose -Message "'$Entity' - Multiple results found! This script is based on lookup via Name, which requires, for safety reasons, a unique Name to process." -Verbose
       Write-Verbose -Message 'Listing all objects found with the Name. Please use the correct Identity to run New-CsOnlineApplicationInstanceAssociation!' -Verbose
       $EntityObject | Select-Object Identity, Name | Format-Table
-      Write-Error "$DesiredType '$Entity' - Multiple Results found! Cannot determine unique result. Please use New-CsOnlineApplicationInstanceAssociation!" -Category ParserError -RecommendedAction 'Please use New-CsOnlineApplicationInstanceAssociation!'
-      return
+      throw [System.Exception]::New("$DesiredType '$Entity' - Multiple Results found! Cannot determine unique result. Please provide GUID or use New-CsOnlineApplicationInstanceAssociation!" )
     }
     else {
       Write-Verbose -Message "$DesiredType '$Entity' - Unique result found: $($EntityObject.Name)"
@@ -160,7 +157,6 @@ function New-TeamsResourceAccountAssociation {
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
-    #TEST If AA or RA are not found, should not throw multiple errors, but skip this Entity or RA
     foreach ($UPN in $UserPrincipalName) {
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {

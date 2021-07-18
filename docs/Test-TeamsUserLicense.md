@@ -36,7 +36,6 @@ Test-TeamsUserLicense -Identity User@domain.com -ServicePlan MCOEV
 ```
 
 Will Return $TRUE only if the ServicePlan is assigned and ProvisioningStatus is SUCCESS!
-This can be a part of a License.
 
 ### EXAMPLE 2
 ```
@@ -44,7 +43,6 @@ Test-TeamsUserLicense -Identity User@domain.com -License Microsoft365E5
 ```
 
 Will Return $TRUE only if the license Package is assigned.
-Specific Names have been assigned to these Licenses
 
 ## PARAMETERS
 
