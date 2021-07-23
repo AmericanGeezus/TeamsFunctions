@@ -68,10 +68,7 @@ function Import-TeamsAudioFile {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Testing File
-    if ( -not (Assert-TeamsAudioFile "$File")) {
-      return
-    }
-
+    if ( -not (Assert-TeamsAudioFile "$File")) { return }
     $FileName = Split-Path $File -Leaf
 
     # remodelling ApplicationType to ApplicationId

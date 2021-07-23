@@ -103,7 +103,7 @@ function New-TeamsAutoAttendantPrompt {
           try {
             $audioFile = Import-TeamsAudioFile -ApplicationType AutoAttendant -File "$String"
             $Parameters += @{'ActiveType' = 'AudioFile' }
-            $Parameters += @{'AudioFilePrompt' = "$audioFile" }
+            $Parameters += @{'AudioFilePrompt' = $audioFile }
           }
           catch {
             Write-Error -Message "Importing Audio File failed: $($_.Exception.Message)" -ErrorAction Stop
@@ -138,8 +138,8 @@ function New-TeamsAutoAttendantPrompt {
               Write-Verbose -Message '[PROCESS] Creating Alternative Auto Attendant Prompt - AudioFile'
               if ($PSCmdlet.ShouldProcess("$Prompt", 'New-CsAutoAttendantPrompt')) {
                 try {
-                  $audioFile = Import-TeamsAudioFile -ApplicationType AutoAttendant -File "$AlternativeString"
-                  $Parameters += @{'AudioFilePrompt' = "$audioFile" }
+                  $audioFile2 = Import-TeamsAudioFile -ApplicationType AutoAttendant -File "$AlternativeString"
+                  $Parameters += @{'AudioFilePrompt' = $audioFile2 }
                 }
                 catch {
                   Write-Warning -Message "Importing Audio File failed: $($_.Exception.Message) - Omitting alternative method" -ErrorAction Stop

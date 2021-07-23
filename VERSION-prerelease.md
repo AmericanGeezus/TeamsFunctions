@@ -37,6 +37,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - `Merge-TeamsAutoAttendantArtefact`:
   - Refactored code to populate with a failsafe (Original Object is retained if no translation happened). Improves visibility
   - Added support for Prompts on MenuOptions (enables display of configured Announcements in Get-TeamsAutoAttendant )
+- `Assert-TeamsAudioFile`: Fixed an issue with proper termination if all conditions are met.
+- `New-TeamsAutoAttendantPrompt`: Fixed an issue with AudioFiles being passed properly to the Prompt CmdLet.
 
 ### Limitations
 
