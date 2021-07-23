@@ -299,9 +299,14 @@ function Get-AzureAdLicense {
         'ATA' { 'AdvancedThreatAnalytics' }
         'ADALLOM_STANDALONE' { 'MicrosoftCloudAppSecurity' }
         'RMSBASIC' { 'AzureRMSBasic' }
-        #'WINDOWS_STORE' { 'WindowsStoreForBusiness' } # License cannot be assigned to a user
         #endregion
 
+        <# Deliberately omitted
+        'EXCHANGEESSENTIALS' { 'ExchangeOnlineEssentials' } # Duplicate/Incongruent
+        'EXCHANGE_S_ESSENTIALS' { 'ExchangeOnlineEssentialsS' } # Duplicate/Incongruent
+        'POWERAPPS_VIRAL' { 'PowerAppsPlan2Trial' } # Promotional?
+        'WINDOWS_STORE' { 'WindowsStoreForBusiness' } # License cannot be assigned to a user
+        #>
 
         #region Standalone, Add-On & Calling Plans Licenses
         # Standalone Licenses
@@ -309,6 +314,7 @@ function Get-AzureAdLicense {
         'MCOCAP' { 'CommonAreaPhone' }
         'PHONESYSTEM_VIRTUALUSER' { 'PhoneSystemVirtualUser' }
         'MCOSTANDARD' { 'SkypeOnlinePlan2' }
+        'EXCHANGEDESKLESS' { 'ExchangeOnlineKiosk' }
         'EXCHANGESTANDARD' { 'ExchangeOnlinePlan1' }
         'EXCHANGEENTERPRISE' { 'ExchangeOnlinePlan2' }
         'EXCHANGEARCHIVE' { 'ExchangeOnlineArchivingForOnPrem' }

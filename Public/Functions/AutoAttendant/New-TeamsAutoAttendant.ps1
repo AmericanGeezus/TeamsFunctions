@@ -144,6 +144,7 @@ function New-TeamsAutoAttendant {
   [Alias('New-TeamsAA')]
   [OutputType([System.Object])]
   param(
+    #region General Parameters
     [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'Name of the Auto Attendant')]
     [string]$Name,
 
@@ -155,9 +156,14 @@ function New-TeamsAutoAttendant {
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
     [string]$LanguageId = 'en-US',
 
+    [Parameter(HelpMessage = 'Voice Responses')]
+    [switch]$EnableVoiceResponse,
+
     [Parameter(Mandatory = $false, HelpMessage = 'Target String for the Operator (UPN, Group Name or Tel URI')]
     [string]$Operator,
+    #endregion
 
+    #region Business Hours Parameters
     [Parameter(HelpMessage = 'Business Hours Greeting - Text String or Recording')]
     [string]$BusinessHoursGreeting,
 
@@ -170,7 +176,27 @@ function New-TeamsAutoAttendant {
 
     [Parameter(HelpMessage = 'Business Hours Call Target - BusinessHoursCallFlowOption = Menu')]
     [object]$BusinessHoursMenu,
+    #endregion
 
+    #region Holiday Set Parameters
+    [Parameter(HelpMessage = 'Holiday Set Greeting - Text String or Recording')]
+    [string]$HolidaySetGreeting,
+
+    [Parameter(HelpMessage = 'Holiday Set Call Flow - Default options')]
+    [ValidateSet('Disconnect', 'TransferCallToTarget', 'Menu')]
+    [string]$HolidaySetCallFlowOption,
+
+    [Parameter(HelpMessage = 'Holiday Set Call Target - HolidaySetCallFlowOption = TransferCallToTarget')]
+    [string]$HolidaySetCallTarget,
+
+    [Parameter(HelpMessage = 'Holiday Set Call Target - HolidaySetCallFlowOption = Menu')]
+    [object]$HolidaySetMenu,
+
+    [Parameter(HelpMessage = 'Default Schedule to apply, can be a 2-digit CountryCode a ScheduleObject or an ID of one')]
+    [string]$HolidaySetSchedule,
+    #endregion
+
+    #region After Hours Parameters
     [Parameter(HelpMessage = 'After Hours Greeting - Text String or Recording')]
     [string]$AfterHoursGreeting,
 
@@ -187,13 +213,11 @@ function New-TeamsAutoAttendant {
     [Parameter(HelpMessage = 'Default Schedule to apply')]
     [ValidateSet('Open24x7', 'MonToFri9to5', 'MonToFri8to12and13to18')]
     [string]$AfterHoursSchedule,
+    #endregion
 
+    #region Default Parameters of New-CsAutoAttendant for Pass-through application
     [Parameter(HelpMessage = 'Schedule Object created with New-TeamsAutoAttendantSchedule to apply')]
     [object]$Schedule,
-
-    #Default Parameters of New-CsAutoAttendant for Pass-through application
-    [Parameter(HelpMessage = 'Voice Responses')]
-    [switch]$EnableVoiceResponse,
 
     [Parameter(HelpMessage = 'Default Call Flow')]
     [object]$DefaultCallFlow,
@@ -203,6 +227,7 @@ function New-TeamsAutoAttendant {
 
     [Parameter(HelpMessage = 'CallHandlingAssociations')]
     [object]$CallHandlingAssociations,
+    #endregion
 
     [Parameter(HelpMessage = 'Groups defining the Inclusion Scope')]
     [object]$InclusionScope,
@@ -235,19 +260,6 @@ function New-TeamsAutoAttendant {
     if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
-
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 8
-    if ( -not $DefaultCallFlow ) {
-      $sMax++
-      if ( $BusinessHoursGreeting ) { $sMax++ }
-    }
-    if ( -not $CallFlows ) {
-      $sMax++
-      if ( $AfterHoursGreeting ) { $sMax++ }
-      if ( -not $Schedule ) { $sMax++ }
-    }
 
     #region Parameter validation
     $Status = 'Verifying input'
@@ -329,17 +341,21 @@ function New-TeamsAutoAttendant {
     }
     #endregion
 
-    #region AfterHours
+    #region Default Parameters VS AfterHours & HolidaySet Parameters
     # Call Flows & Call Handling Associations
-    if ($CallFlows -or $CallHandlingAssociations) {
+    if ($PSBoundParameters.ContainsKey('CallFlows') -or $PSBoundParameters.ContainsKey('CallHandlingAssociations')) {
       # Custom Call Flows
-      Write-Information 'CallFlows - Overriding all AfterHours-Parameters'
+      Write-Information 'CallFlows - Overriding all AfterHours- & HolidaySet-Parameters'
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) { $PSBoundParameters.Remove('AfterHoursGreeting') }
       if ($PSBoundParameters.ContainsKey('AfterHoursCallFlowOption')) { $PSBoundParameters.Remove('AfterHoursCallFlowOption') }
       if ($PSBoundParameters.ContainsKey('AfterHoursCallTarget')) { $PSBoundParameters.Remove('AfterHoursCallTarget') }
       if ($PSBoundParameters.ContainsKey('AfterHoursSchedule')) { $PSBoundParameters.Remove('AfterHoursSchedule') }
       if ($PSBoundParameters.ContainsKey('Schedule')) { $PSBoundParameters.Remove('Schedule') }
-
+      # Removing HolidaySet
+      if ($PSBoundParameters.ContainsKey('HolidaySetGreeting')) { $PSBoundParameters.Remove('HolidaySetGreeting') }
+      if ($PSBoundParameters.ContainsKey('HolidaySetCallFlowOption')) { $PSBoundParameters.Remove('HolidaySetCallFlowOption') }
+      if ($PSBoundParameters.ContainsKey('HolidaySetCallTarget')) { $PSBoundParameters.Remove('HolidaySetCallTarget') }
+      if ($PSBoundParameters.ContainsKey('HolidaySetSchedule')) { $PSBoundParameters.Remove('HolidaySetSchedule') }
 
       if ($CallFlows -and -not $CallHandlingAssociations) {
         Write-Error -Message 'CallFlows - Parameter requires CallHandlingAssociation to be specified'
@@ -368,7 +384,7 @@ function New-TeamsAutoAttendant {
       }
     }
     else {
-      # AfterHours Parameters
+      #region Processing AfterHours Parameters
       if (-not $PSBoundParameters.ContainsKey('AfterHoursCallFlowOption')) {
         Write-Warning -Message "AfterHoursCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'AfterHours'-Parameters are processed!"
         $AfterHoursCallFlowOption = 'Disconnect'
@@ -404,9 +420,10 @@ function New-TeamsAutoAttendant {
           Write-Verbose -Message "AfterHoursCallFlowOption (Menu) - Parameter 'AfterHoursCallTarget' cannot be used and will be omitted!"-Verbose
           $PSBoundParameters.Remove('AfterHoursCallTarget')
         }
-      } # AfterHours Parameters
+      }
+      #endregion
 
-      #region Schedule & AfterHoursSchedule
+      #region Processing Schedule & AfterHoursSchedule
       if ($Schedule) {
         if ($AfterHoursSchedule) {
           Write-Information 'Schedule - Custom Schedule Object overrides AfterHoursSchedule provided'
@@ -425,6 +442,7 @@ function New-TeamsAutoAttendant {
         }
         else {
           $AfterHoursSchedule = 'MonToFri9to5'
+          Write-Information "Schedule - AfterHoursSchedule not provided, Using: '$AfterHoursSchedule'"
         }
 
         # Creating Schedule
@@ -446,12 +464,90 @@ function New-TeamsAutoAttendant {
         }
         Write-Verbose -Message "Schedule - Schedule created: '$AfterHoursSchedule'"
       }
+      #endregion
+
+      #region Processing HolidaySet Parameters
+      if (-not $PSBoundParameters.ContainsKey('HolidaySetCallFlowOption')) {
+        Write-Warning -Message "HolidaySetCallFlowOption - Parameter not specified. Defaulting to 'Disconnect' No other 'HolidaySet'-Parameters are processed!"
+        $HolidaySetCallFlowOption = 'Disconnect'
+      }
+      elseif ($HolidaySetCallFlowOption -eq 'TransferCallToTarget') {
+        # Must contain Target
+        if (-not $PSBoundParameters.ContainsKey('HolidaySetCallTarget')) {
+          Write-Error -Message "HolidaySetCallFlowOption (TransferCallToTarget) - Parameter 'HolidaySetCallTarget' missing"
+          break
+        }
+
+        # Must not contain a Menu
+        if ($PSBoundParameters.ContainsKey('HolidaySetMenu')) {
+          Write-Verbose -Message 'HolidaySetCallFlowOption (TransferCallToTarget) - Parameter HolidaySetMenu cannot be used and will be omitted!' -Verbose
+          $PSBoundParameters.Remove('HolidaySetMenu')
+        }
+      }
+      elseif ($HolidaySetCallFlowOption -eq 'Menu') {
+        # Must contain a Menu
+        if (-not $PSBoundParameters.ContainsKey('HolidaySetMenu')) {
+          Write-Error -Message 'HolidaySetCallFlowOption (Menu) - HolidaySetMenu missing'
+          break
+        }
+        else {
+          if (($HolidaySetMenu | Get-Member | Select-Object -First 1).TypeName -ne 'Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.Menu') {
+            Write-Error -Message "HolidaySetCallFlowOption (Menu) - HolidaySetMenu not of the Type 'Microsoft.Rtc.Management.Hosted.OAA.Models.Menu'" -Category InvalidType
+            break
+          }
+        }
+
+        # Must not contain Target
+        if ($PSBoundParameters.ContainsKey('HolidaySetCallTarget')) {
+          Write-Verbose -Message "HolidaySetCallFlowOption (Menu) - Parameter 'HolidaySetCallTarget' cannot be used and will be omitted!"-Verbose
+          $PSBoundParameters.Remove('HolidaySetCallTarget')
+        }
+      }
+      #endregion
+
+      #region Processing HolidaySetSchedule
+      if ( $HolidaySetSchedule -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
+        # Holiday Schedule provided as ID of existing Schedule in the Tenant - Taken as is.
+        $HolidaySchedule = $HolidaySetSchedule
+      }
+      elseif ( $HolidaySetSchedule.Id -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') {
+        # Holiday Schedule provided as Schedule Object in the Tenant
+        $HolidaySchedule = $HolidaySetSchedule.Id
+      }
+      elseif ( $HolidaySetSchedule -match '^[a-z][a-z]$') {
+        # Holiday Schedule provided is a Country for which a Schedule Object will be created
+        [int]$CurrentYear = Get-Date -Format yyyy
+        $Year = $CurrentYear, $($CurrentYear + 1), $($CurrentYear + 2)
+        $HolidaySchedule = New-TeamsHolidaySchedule -CountryCode $HolidaySetSchedule -Year $Year
+      }
+      else {
+        Write-Warning -Message 'HolidaySchedule provided does not match an ID, Object or CountryCode! Creating empty Schedule'
+        $HolidaySchedule = New-CsOnlineSchedule -Name "$CallFlowNamePrefix - NotInEffect" -FixedSchedule -InformationAction SilentlyContinue -ErrorAction Stop
+      }
+      #endregion
     }
     #endregion
-
-    #endregion
     #endregion
 
+    #region Initialising counters for Progress bars
+    [int]$step = 0
+    [int]$sMax = 8
+    if ( -not $DefaultCallFlow ) {
+      $sMax++
+      if ( $BusinessHoursGreeting ) { $sMax++ }
+    }
+    if ( -not $CallFlows ) {
+      if ( $AfterHoursCallFlowOption ) {
+        $sMax = $sMax + 3
+        if ( $AfterHoursGreeting ) { $sMax++ }
+        if ( -not $Schedule ) { $sMax++ }
+      }
+      if ( $HolidaySetCallFlowOption ) {
+        $sMax = $sMax + 3
+        if ( $HolidaySetGreeting ) { $sMax++ }
+      }
+    }
+    #endregion
   } #begin
 
   process {
@@ -630,24 +726,28 @@ function New-TeamsAutoAttendant {
     }
     #endregion
 
-    #region After Hours (Call Flow, Schedule & Call Handling Association)
+    #region Processing provided CallFlows and CallHandlingAssociations Objects
+    if ($PSBoundParameters.ContainsKey('CallFlows')) {
+      # Custom Option provided - Using As-Is
+      Write-Information "'$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')"
+      $Parameters += @{'CallFlows' = $CallFlows }
+      $Parameters += @{'CallHandlingAssociations' = $CallHandlingAssociations }
+    }
+    #endregion
+
+    # Processing custom Call Flows - creating Call Flow, Schedule & Call Handling Association manually
     #region After Hours Call Flow
     #Initialising Variables for Call Handling Association
     $AfterHoursCallHandlingAssociationParams = @{}
     $AfterHoursCallHandlingAssociationParams.Type = 'AfterHours'
 
     # Processing CallFlow
-    $Operation = 'After Hours Call Flow - Call Flows & Call Flow Option'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    if ($AfterHoursCallFlowOption -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
+      $Operation = 'After Hours Call Flow - Call Flows & Call Flow Option'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
 
-    if ($PSBoundParameters.ContainsKey('CallFlows')) {
-      # Custom Option provided - Using As-Is
-      Write-Information "'$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')"
-      $Parameters += @{'CallFlows' = $CallFlows }
-    }
-    else {
       # Option Selected
       Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'AfterHoursCallFlowOption'..."
       $AfterHoursCallFlowParameters = @{}
@@ -706,7 +806,6 @@ function New-TeamsAutoAttendant {
       #endregion
 
       #region AfterHoursGreeting
-      # Adding AfterHoursGreeting
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) {
         $Operation = 'After Hours Call Flow - Greeting'
         $step++
@@ -736,9 +835,16 @@ function New-TeamsAutoAttendant {
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       Write-Information "'$NameNormalised' After Hours Call Flow - Call Flow created"
-      $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
-
       #TODO when HolidaySet is added, this needs to be array-proof (see processing of CallFlows Objects for code samples)
+      #TEST new validation as it is to be re-used for HolidaySets
+      if ($Parameters.ContainsKey('CallFlows')) {
+        $Parameters.CallFlows.Add($AfterHoursCallFlow)
+      }
+      else {
+        $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
+      }
+
+      # Adding Call Flow ID(s) to Call handling Associations
       #$AfterHoursCallHandlingAssociationParams.CallFlowId = $AfterHoursCallFlow.Id # This works, but want to try whether arraying works too
       $AfterHoursCallHandlingAssociationParams.CallFlowId += $AfterHoursCallFlow.Id
       #endregion
@@ -752,11 +858,150 @@ function New-TeamsAutoAttendant {
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
       #TODO when HolidaySet is added, a second CHA will need to be added here! +=?
+      #TEST new validation as it is to be re-used for HolidaySets
       Write-Information "'$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
-      $Parameters += @{'CallHandlingAssociation' = @($AfterHoursCallHandlingAssociation) }
+      if ($Parameters.ContainsKey('CallHandlingAssociation')) {
+        $Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
+      }
+      else {
+        $Parameters += @{'CallHandlingAssociation' = @($AfterHoursCallHandlingAssociation) }
+      }
       #endregion
     }
     #endregion
+
+    #region HolidaySet Call Flow
+    #Initialising Variables for Call Handling Association
+    $HolidaySetCallHandlingAssociationParams = @{}
+    $HolidaySetCallHandlingAssociationParams.Type = 'HolidaySet'
+
+    # Processing HolidaySetsCallFlowOption
+    if ($HolidaySetCallFlowOption -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
+      $Operation = 'Holiday Set Call Flow - Call Flows & Call Flow Option'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
+      # Option Selected
+      Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'HolidaySetCallFlowOption'..."
+      $HolidaySetCallFlowParameters = @{}
+      $HolidaySetCallFlowParameters.Name = "$CallFlowNamePrefix - Holiday Set CF"
+
+      #region Processing HolidaySetCallFlowOption
+      switch ($HolidaySetCallFlowOption) {
+        'TransferCallToTarget' {
+          Write-Verbose -Message "'$NameNormalised' CallFlow - Transferring to Target"
+
+          # Process HolidaySetCallTarget
+          try {
+            $HolidaySetCallTargetEntity = New-TeamsCallableEntity "$HolidaySetCallTarget" -ErrorAction Stop
+
+            # Building Menu Only if Successful
+            if ($HolidaySetCallTargetEntity) {
+              $HolidaySetMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $HolidaySetCallTargetEntity -DtmfResponse Automatic
+              $HolidaySetMenuObject = New-CsAutoAttendantMenu -Name 'Holiday Set Menu' -MenuOptions @($HolidaySetMenuOptionTransfer)
+              Write-Information "'$NameNormalised' Holiday Set Call Flow - Menu (TransferCallToTarget) created"
+              break
+            }
+            else {
+              # Reverting to Disconnect
+              Write-Warning -Message "'$NameNormalised' Call Flow - Holiday Set Menu not created properly. Reverting to Disconnect"
+              $HolidaySetMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
+              $HolidaySetMenuObject = New-CsAutoAttendantMenu -Name 'Holiday Set Menu' -MenuOptions @($HolidaySetMenuOptionDefault)
+            }
+          }
+          catch {
+            Write-Warning -Message 'HolidaySetCallTarget - Error creating Call Target - Defaulting to disconnect'
+            $HolidaySetMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
+            $HolidaySetMenuObject = New-CsAutoAttendantMenu -Name 'Business Hours Menu' -MenuOptions @($HolidaySetMenuOptionDefault)
+          }
+        }
+
+        'Menu' {
+          Write-Verbose -Message "'$NameNormalised' CallFlow - HolidaySetCallFlow - Menu"
+          if ($PSBoundParameters.ContainsKey('HolidaySetMenu')) {
+            # Menu is passed on as-is - $HolidaySetMenu is defined and attached
+            $HolidaySetMenuObject = $HolidaySetMenu
+            Write-Information "'$NameNormalised' Holiday Set Call Flow - Menu (BusinessHoursMenu) used"
+          }
+          else {
+            # No custom / default Menu is currently created
+            # $HolidaySetMenu is Mandatory. If this is built out, the check against this must also be removed!
+          }
+        }
+
+        default {
+          # Defaulting to Disconnect
+          Write-Verbose -Message "'$NameNormalised' CallFlow - HolidaySetCallFlow not provided or Disconnect. Using default (Disconnect)"
+          $HolidaySetMenuOptionDefault = New-CsAutoAttendantMenuOption -Action DisconnectCall -DtmfResponse Automatic
+          $HolidaySetMenuObject = New-CsAutoAttendantMenu -Name 'Business Hours Menu' -MenuOptions @($HolidaySetMenuOptionDefault)
+        }
+      }
+      #endregion
+
+      #region HolidaySetGreeting
+      if ($PSBoundParameters.ContainsKey('HolidaySetGreeting')) {
+        $Operation = 'Holiday Set Call Flow - Greeting'
+        $step++
+        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
+
+        try {
+          $HolidaySetGreetingObject = New-TeamsAutoAttendantPrompt -String "$HolidaySetGreeting"
+          if ($HolidaySetGreetingObject) {
+            Write-Information "'$NameNormalised' Holiday Set Call Flow - Greeting created"
+            $HolidaySetCallFlowParameters.Greetings = @($HolidaySetGreetingObject)
+          }
+        }
+        catch {
+          Write-Warning -Message "'$NameNormalised' CallFlow - HolidaySetCallFlow - Greeting not enumerated. Omitting Greeting"
+        }
+      }
+      #endregion
+
+      #region Building Call Flow
+      $Operation = 'Holiday Set Call Flow - Building Call Flow'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
+      # Adding Holiday Set Call Flow
+      $HolidaySetCallFlowParameters.Menu = $HolidaySetMenuObject
+      $HolidaySetCallFlow = New-CsAutoAttendantCallFlow @HolidaySetCallFlowParameters
+      Write-Information "'$NameNormalised' Holiday Set Call Flow - Call Flow created"
+      #TODO when HolidaySet is added, this needs to be array-proof (see processing of CallFlows Objects for code samples)
+      #TEST new validation as it is to be re-used for HolidaySets
+      if ($Parameters.ContainsKey('CallFlows')) {
+        $Parameters.CallFlows.Add($HolidaySetCallFlow)
+      }
+      else {
+        $Parameters += @{'CallFlows' = $HolidaySetCallFlow }
+      }
+
+      # Adding Call Flow ID(s) to Call handling Associations
+      #$HolidaySetCallHandlingAssociationParams.CallFlowId = $HolidaySetCallFlow.Id # This works, but want to try whether arraying works too
+      $HolidaySetCallHandlingAssociationParams.CallFlowId += $HolidaySetCallFlow.Id
+      #endregion
+
+      #region Holiday Set Schedule & Call Handling Association
+      $Operation = 'Holiday Set Schedule & Call Handling Association'
+      $step++
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
+
+      $HolidaySetCallHandlingAssociationParams.ScheduleId = $HolidaySchedule.Id
+      $HolidaySetCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @HolidaySetCallHandlingAssociationParams
+      #TODO when HolidaySet is added, a second CHA will need to be added here! +=?
+      #TEST new validation as it is to be re-used for HolidaySets
+      Write-Information "'$NameNormalised' Holiday Set Call Flow - Call Handling Association created with Holiday Schedule"
+      if ($Parameters.ContainsKey('CallHandlingAssociation')) {
+        $Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)
+      }
+      else {
+        $Parameters += @{'CallHandlingAssociation' = @($HolidaySetCallHandlingAssociation) }
+      }
+      #endregion
+    }
     #endregion
 
 
