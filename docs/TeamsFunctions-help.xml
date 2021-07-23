@@ -8883,9 +8883,9 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="none">
-          <maml:name>AfterHoursCallFlowOption</maml:name>
+          <maml:name>AfterHoursCallTarget</maml:name>
           <maml:description>
-            <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires AfterHoursCallTarget. Menu requires AfterHoursMenu If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+            <maml:para>Optional. Requires AfterHoursCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -8895,21 +8895,9 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
-          <maml:name>AfterHoursCallTarget</maml:name>
-          <maml:description>
-            <maml:para>Optional. Requires AfterHoursCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="12" aliases="none">
           <maml:name>AfterHoursMenu</maml:name>
           <maml:description>
-            <maml:para>Optional. Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+            <maml:para>Optional. Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -8918,10 +8906,22 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="12" aliases="none">
           <maml:name>AfterHoursSchedule</maml:name>
           <maml:description>
-            <maml:para>Optional. Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7 A more granular Schedule can be used with the Parameter -Schedule If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+            <maml:para>Optional. Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7 A more granular Schedule can be used with the Parameter -Schedule If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="none">
+          <maml:name>HolidaySetGreeting</maml:name>
+          <maml:description>
+            <maml:para>Optional. Creates a Greeting for the Holiday Set Call Flow utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -8931,33 +8931,33 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="none">
-          <maml:name>Schedule</maml:name>
+          <maml:name>HolidaySetCallFlowOption</maml:name>
           <maml:description>
-            <maml:para>Optional. Custom Schedule object to apply for After Hours Call Flow Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored. Using this parameter to define the Schedule will override the Parameter -AfterHoursSchedule</maml:para>
+            <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires HolidaySetCallTarget. Menu requires HolidaySetMenu If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
-            <maml:name>Object</maml:name>
+            <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="none">
-          <maml:name>DefaultCallFlow</maml:name>
+          <maml:name>HolidaySetCallTarget</maml:name>
           <maml:description>
-            <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant (used as the Default Call Flow) Using this parameter to define the default Call Flow overrides all -BusinessHours Parameters</maml:para>
+            <maml:para>Optional. Requires HolidaySetCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
-            <maml:name>Object</maml:name>
+            <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="16" aliases="none">
-          <maml:name>CallFlows</maml:name>
+          <maml:name>HolidaySetMenu</maml:name>
           <maml:description>
-            <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours Parameters Requires Parameter CallHandlingAssociations in conjunction</maml:para>
+            <maml:para>Optional. Requires HolidaySetCallFlowOption to be Menu and a HolidaySetCallTarget If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -8967,21 +8967,21 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="17" aliases="none">
-          <maml:name>CallHandlingAssociations</maml:name>
+          <maml:name>HolidaySetSchedule</maml:name>
           <maml:description>
-            <maml:para>Optional. Call Handling Associations Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours Parameters Requires Parameter CallFlows in conjunction</maml:para>
+            <maml:para>Optional. Default Schedule to apply: Either a 2-digit Country Code to create the schedule for the next three years for, a Schedule Object created beforehand or an existing Schedule Object ID already created in the Tenant If not provided, an empty Schedule Object will be created which will never be in effect. If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
-            <maml:name>Object</maml:name>
+            <maml:name>String</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="18" aliases="none">
-          <maml:name>InclusionScope</maml:name>
+          <maml:name>Schedule</maml:name>
           <maml:description>
-            <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
+            <maml:para>Optional. Custom Schedule object to apply for After Hours Call Flow Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored. Using this parameter to provide a Schedule Object will override the Parameter -AfterHoursSchedule</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -8991,9 +8991,9 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="19" aliases="none">
-          <maml:name>ExclusionScope</maml:name>
+          <maml:name>DefaultCallFlow</maml:name>
           <maml:description>
-            <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
+            <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant (used as the Default Call Flow) Using this parameter to define the default Call Flow overrides all -BusinessHours Parameters</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -9014,6 +9014,66 @@
           </dev:type>
           <dev:defaultValue>UTC</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="20" aliases="none">
+          <maml:name>CallFlows</maml:name>
+          <maml:description>
+            <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours &amp; -HolidaySet Parameters Requires Parameter CallHandlingAssociations in conjunction</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <dev:type>
+            <maml:name>Object</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="21" aliases="none">
+          <maml:name>CallHandlingAssociations</maml:name>
+          <maml:description>
+            <maml:para>Optional. Call Handling Associations Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours &amp; -HolidaySet Parameters Requires Parameter CallFlows in conjunction</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <dev:type>
+            <maml:name>Object</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="22" aliases="none">
+          <maml:name>Operator</maml:name>
+          <maml:description>
+            <maml:para>Optional. Creates a Callable entity for the Operator Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="23" aliases="none">
+          <maml:name>InclusionScope</maml:name>
+          <maml:description>
+            <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <dev:type>
+            <maml:name>Object</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="24" aliases="none">
+          <maml:name>ExclusionScope</maml:name>
+          <maml:description>
+            <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+          <dev:type>
+            <maml:name>Object</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
           <maml:name>LanguageId</maml:name>
           <maml:description>
@@ -9027,18 +9087,6 @@
           <dev:defaultValue>En-US</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
-          <maml:name>Operator</maml:name>
-          <maml:description>
-            <maml:para>Optional. Creates a Callable entity for the Operator Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)</maml:para>
-          </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-          <dev:type>
-            <maml:name>String</maml:name>
-            <maml:uri />
-          </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
-        </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
           <maml:name>BusinessHoursGreeting</maml:name>
           <maml:description>
             <maml:para>Optional. Creates a Greeting for the Default Call Flow (during business hours) utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9050,7 +9098,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
           <maml:name>BusinessHoursCallFlowOption</maml:name>
           <maml:description>
             <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires BusinessHoursCallTarget. Menu requires BusinessHoursMenu If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9062,7 +9110,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
           <maml:name>BusinessHoursCallTarget</maml:name>
           <maml:description>
             <maml:para>Optional. Requires BusinessHoursCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target. Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9074,7 +9122,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
           <maml:name>BusinessHoursMenu</maml:name>
           <maml:description>
             <maml:para>Optional. Requires BusinessHoursCallFlowOption to be Menu and a BusinessHoursCallTarget If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9086,10 +9134,22 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
           <maml:name>AfterHoursGreeting</maml:name>
           <maml:description>
-            <maml:para>Optional. Creates a Greeting for the After Hours Call Flow utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+            <maml:para>Optional. Creates a Greeting for the After Hours Call Flow utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
+          <maml:name>AfterHoursCallFlowOption</maml:name>
+          <maml:description>
+            <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires AfterHoursCallTarget. Menu requires AfterHoursMenu If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -9193,18 +9253,6 @@
         <dev:defaultValue>En-US</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
-        <maml:name>Operator</maml:name>
-        <maml:description>
-          <maml:para>Optional. Creates a Callable entity for the Operator Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
         <maml:name>BusinessHoursGreeting</maml:name>
         <maml:description>
           <maml:para>Optional. Creates a Greeting for the Default Call Flow (during business hours) utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9216,7 +9264,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
         <maml:name>BusinessHoursCallFlowOption</maml:name>
         <maml:description>
           <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires BusinessHoursCallTarget. Menu requires BusinessHoursMenu If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9228,7 +9276,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
         <maml:name>BusinessHoursCallTarget</maml:name>
         <maml:description>
           <maml:para>Optional. Requires BusinessHoursCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target. Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9240,7 +9288,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
         <maml:name>BusinessHoursMenu</maml:name>
         <maml:description>
           <maml:para>Optional. Requires BusinessHoursCallFlowOption to be Menu and a BusinessHoursCallTarget If DefaultCallFlow is provided, this parameter will be ignored.</maml:para>
@@ -9252,10 +9300,22 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="8" aliases="none">
         <maml:name>AfterHoursGreeting</maml:name>
         <maml:description>
-          <maml:para>Optional. Creates a Greeting for the After Hours Call Flow utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+          <maml:para>Optional. Creates a Greeting for the After Hours Call Flow utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="9" aliases="none">
+        <maml:name>AfterHoursCallFlowOption</maml:name>
+        <maml:description>
+          <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires AfterHoursCallTarget. Menu requires AfterHoursMenu If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -9265,9 +9325,9 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="10" aliases="none">
-        <maml:name>AfterHoursCallFlowOption</maml:name>
+        <maml:name>AfterHoursCallTarget</maml:name>
         <maml:description>
-          <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires AfterHoursCallTarget. Menu requires AfterHoursMenu If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+          <maml:para>Optional. Requires AfterHoursCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -9277,21 +9337,9 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
-        <maml:name>AfterHoursCallTarget</maml:name>
-        <maml:description>
-          <maml:para>Optional. Requires AfterHoursCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="12" aliases="none">
         <maml:name>AfterHoursMenu</maml:name>
         <maml:description>
-          <maml:para>Optional. Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+          <maml:para>Optional. Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
@@ -9300,10 +9348,22 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="12" aliases="none">
         <maml:name>AfterHoursSchedule</maml:name>
         <maml:description>
-          <maml:para>Optional. Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7 A more granular Schedule can be used with the Parameter -Schedule If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+          <maml:para>Optional. Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7 A more granular Schedule can be used with the Parameter -Schedule If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="none">
+        <maml:name>HolidaySetGreeting</maml:name>
+        <maml:description>
+          <maml:para>Optional. Creates a Greeting for the Holiday Set Call Flow utilising New-TeamsAutoAttendantPrompt A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3' If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -9313,9 +9373,129 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="none">
+        <maml:name>HolidaySetCallFlowOption</maml:name>
+        <maml:description>
+          <maml:para>Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect. TransferCallToTarget requires HolidaySetCallTarget. Menu requires HolidaySetMenu If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="none">
+        <maml:name>HolidaySetCallTarget</maml:name>
+        <maml:description>
+          <maml:para>Optional. Requires HolidaySetCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail) If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="16" aliases="none">
+        <maml:name>HolidaySetMenu</maml:name>
+        <maml:description>
+          <maml:para>Optional. Requires HolidaySetCallFlowOption to be Menu and a HolidaySetCallTarget If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="17" aliases="none">
+        <maml:name>HolidaySetSchedule</maml:name>
+        <maml:description>
+          <maml:para>Optional. Default Schedule to apply: Either a 2-digit Country Code to create the schedule for the next three years for, a Schedule Object created beforehand or an existing Schedule Object ID already created in the Tenant If not provided, an empty Schedule Object will be created which will never be in effect. If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="18" aliases="none">
         <maml:name>Schedule</maml:name>
         <maml:description>
-          <maml:para>Optional. Custom Schedule object to apply for After Hours Call Flow Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored. Using this parameter to define the Schedule will override the Parameter -AfterHoursSchedule</maml:para>
+          <maml:para>Optional. Custom Schedule object to apply for After Hours Call Flow Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored. Using this parameter to provide a Schedule Object will override the Parameter -AfterHoursSchedule</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="19" aliases="none">
+        <maml:name>DefaultCallFlow</maml:name>
+        <maml:description>
+          <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant (used as the Default Call Flow) Using this parameter to define the default Call Flow overrides all -BusinessHours Parameters</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="20" aliases="none">
+        <maml:name>CallFlows</maml:name>
+        <maml:description>
+          <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours &amp; -HolidaySet Parameters Requires Parameter CallHandlingAssociations in conjunction</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="21" aliases="none">
+        <maml:name>CallHandlingAssociations</maml:name>
+        <maml:description>
+          <maml:para>Optional. Call Handling Associations Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours &amp; -HolidaySet Parameters Requires Parameter CallFlows in conjunction</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="22" aliases="none">
+        <maml:name>Operator</maml:name>
+        <maml:description>
+          <maml:para>Optional. Creates a Callable entity for the Operator Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="23" aliases="none">
+        <maml:name>InclusionScope</maml:name>
+        <maml:description>
+          <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
+        <dev:type>
+          <maml:name>Object</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="24" aliases="none">
+        <maml:name>ExclusionScope</maml:name>
+        <maml:description>
+          <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
@@ -9335,66 +9515,6 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="15" aliases="none">
-        <maml:name>DefaultCallFlow</maml:name>
-        <maml:description>
-          <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant (used as the Default Call Flow) Using this parameter to define the default Call Flow overrides all -BusinessHours Parameters</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
-        <dev:type>
-          <maml:name>Object</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="16" aliases="none">
-        <maml:name>CallFlows</maml:name>
-        <maml:description>
-          <maml:para>Optional. Call Flow Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours Parameters Requires Parameter CallHandlingAssociations in conjunction</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
-        <dev:type>
-          <maml:name>Object</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="17" aliases="none">
-        <maml:name>CallHandlingAssociations</maml:name>
-        <maml:description>
-          <maml:para>Optional. Call Handling Associations Object to pass to New-CsAutoAttendant Using this parameter to define additional Call Flows overrides all -AfterHours Parameters Requires Parameter CallFlows in conjunction</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
-        <dev:type>
-          <maml:name>Object</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="18" aliases="none">
-        <maml:name>InclusionScope</maml:name>
-        <maml:description>
-          <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
-        <dev:type>
-          <maml:name>Object</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="19" aliases="none">
-        <maml:name>ExclusionScope</maml:name>
-        <maml:description>
-          <maml:para>Optional. DialScope Object to pass to New-CsAutoAttendant Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope</maml:para>
-        </maml:description>
-        <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
-        <dev:type>
-          <maml:name>Object</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>EnableTranscription</maml:name>
@@ -9467,7 +9587,8 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>None</maml:para>
+        <maml:para>BusinessHours Parameters aim to simplify input for the Default Call Flow AfterHours Parameters aim to simplify input for the After Hours Call Flow HolidaySet Parameters aim to simplify input for the Holiday Set Call Flow Use of CsAutoAttendant Parameters will override the respective '-BusinessHours', '-AfterHours' and '-HolidaySet' Parameters</maml:para>
+        <maml:para>InclusionScope and ExclusionScope Objects can be created with New-TeamsAutoAttendantDialScope and the Group Names This was deliberately not integrated into this CmdLet</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -9501,13 +9622,9 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
-        <dev:code>New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -InclusionScope $InGroups -ExclusionScope $OutGroups</dev:code>
+        <dev:code>New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -CallHandlingAssociations $CallHandlingAssociations -InclusionScope $InGroups -ExclusionScope $OutGroups</dev:code>
         <dev:remarks>
-          <maml:para>Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are passed on through tto New-CsAutoAttendant and override other respective Parmeters provided: - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters</maml:para>
-          <maml:para>- One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters</maml:para>
-          <maml:para>- One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters</maml:para>
-          <maml:para>- An InclusionScope and an ExclusionScope are defined.</maml:para>
-          <maml:para>These are passed on as-is All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.</maml:para>
+          <maml:para>Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are passed on through tto New-CsAutoAttendant and override other respective Parmeters provided: A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters. One or more CallFlows and one or more CallHandlingAssociation Objects are passed on overriding all "-AfterHours" and "-HolidaySet" Parameters An InclusionScope and an ExclusionScope are defined. These are passed on as-is All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>

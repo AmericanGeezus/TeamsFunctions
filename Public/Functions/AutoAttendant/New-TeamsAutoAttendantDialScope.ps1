@@ -74,14 +74,17 @@ function New-TeamsAutoAttendantDialScope {
       Write-Verbose -Message "[PROCESS] Processing '$Group'"
       $Object = $null
       $Object = Get-TeamsCallableEntity -Identity "$Group"
-      if ($Object) {
-
-        $GroupIds += $Object.Identity
+      if ( $Object ) {
+        if ( $Object.ObjectType -eq 'Group') {
+          $GroupIds += $Object.Identity
+        }
+        else {
+          Write-Warning -Message 'Call Target found, but is not a Group - Skipping'
+        }
       }
       else {
-        Write-Warning -Message "Group not found: '$Group' - Skipping"
+        Write-Warning -Message "Call Target not found: '$Group' - Skipping"
       }
-
     }
 
     # Create dial Scope

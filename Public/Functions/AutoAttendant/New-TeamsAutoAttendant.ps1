@@ -50,39 +50,58 @@ function New-TeamsAutoAttendant {
     Optional. Creates a Greeting for the After Hours Call Flow utilising New-TeamsAutoAttendantPrompt
     A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified
     The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3'
-    If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
   .PARAMETER AfterHoursCallFlowOption
     Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect.
     TransferCallToTarget requires AfterHoursCallTarget. Menu requires AfterHoursMenu
-    If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
   .PARAMETER AfterHoursCallTarget
     Optional. Requires AfterHoursCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target
     Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
-    If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
   .PARAMETER AfterHoursMenu
     Optional. Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget
-    If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
   .PARAMETER AfterHoursSchedule
     Optional. Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7
     A more granular Schedule can be used with the Parameter -Schedule
-    If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
   .PARAMETER Schedule
     Optional. Custom Schedule object to apply for After Hours Call Flow
     Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule
-    If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
-    Using this parameter to define the Schedule will override the Parameter -AfterHoursSchedule
-  .PARAMETER EnableVoiceResponse
-    Optional Switch to be passed to New-CsAutoAttendant
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+    Using this parameter to provide a Schedule Object will override the Parameter -AfterHoursSchedule
+  .PARAMETER HolidaySetGreeting
+    Optional. Creates a Greeting for the Holiday Set Call Flow utilising New-TeamsAutoAttendantPrompt
+    A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified
+    The last 4 digits will determine the type. For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3'
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+  .PARAMETER HolidaySetCallFlowOption
+    Optional. Disconnect, TransferCallToTarget, Menu. Default is Disconnect.
+    TransferCallToTarget requires HolidaySetCallTarget. Menu requires HolidaySetMenu
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+  .PARAMETER HolidaySetCallTarget
+    Optional. Requires HolidaySetCallFlowOption to be TransferCallToTarget. Creates a Callable entity for this Call Target
+    Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+  .PARAMETER HolidaySetMenu
+    Optional. Requires HolidaySetCallFlowOption to be Menu and a HolidaySetCallTarget
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+  .PARAMETER HolidaySetSchedule
+    Optional. Default Schedule to apply: Either a 2-digit Country Code to create the schedule for the next three years for,
+    a Schedule Object created beforehand or an existing Schedule Object ID already created in the Tenant
+    If not provided, an empty Schedule Object will be created which will never be in effect.
+    If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
   .PARAMETER DefaultCallFlow
     Optional. Call Flow Object to pass to New-CsAutoAttendant (used as the Default Call Flow)
     Using this parameter to define the default Call Flow overrides all -BusinessHours Parameters
   .PARAMETER CallFlows
     Optional. Call Flow Object to pass to New-CsAutoAttendant
-    Using this parameter to define additional Call Flows overrides all -AfterHours Parameters
+    Using this parameter to define additional Call Flows overrides all -AfterHours & -HolidaySet Parameters
     Requires Parameter CallHandlingAssociations in conjunction
   .PARAMETER CallHandlingAssociations
     Optional. Call Handling Associations Object to pass to New-CsAutoAttendant
-    Using this parameter to define additional Call Flows overrides all -AfterHours Parameters
+    Using this parameter to define additional Call Flows overrides all -AfterHours & -HolidaySet Parameters
     Requires Parameter CallFlows in conjunction
   .PARAMETER InclusionScope
     Optional. DialScope Object to pass to New-CsAutoAttendant
@@ -90,6 +109,8 @@ function New-TeamsAutoAttendant {
   .PARAMETER ExclusionScope
     Optional. DialScope Object to pass to New-CsAutoAttendant
     Object created with New-TeamsAutoAttendantDialScope or New-CsAutoAttendantDialScope
+  .PARAMETER EnableVoiceResponse
+    Optional Switch to be passed to New-CsAutoAttendant
   .PARAMETER EnableTranscription
     Optional. Where possible, tries to enable Voicemail Transcription.
     Effective only for SharedVoicemail Targets as an Operator or MenuOption. Otherwise has no effect.
@@ -114,20 +135,25 @@ function New-TeamsAutoAttendant {
     The CallTarget is queried based on input and created as required. UserPrincipalname for Users or ResourceAccount, Group Name for SharedVoicemail, provided as a string in the Variable $UPN
     This example is equally applicable to AfterHours.
   .EXAMPLE
-    New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -InclusionScope $InGroups -ExclusionScope $OutGroups
-    Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided. In this example, provided Objects are
-    passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
-    - A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters
-    - One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters
-    - One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters
-    - An InclusionScope and an ExclusionScope are defined. These are passed on as-is
+    New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -CallHandlingAssociations $CallHandlingAssociations -InclusionScope $InGroups -ExclusionScope $OutGroups
+    Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided.
+    In this example, provided Objects are passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
+    A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters. One or more CallFlows and
+    one or more CallHandlingAssociation Objects are passed on overriding all "-AfterHours" and "-HolidaySet" Parameters
+    An InclusionScope and an ExclusionScope are defined. These are passed on as-is
     All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.
   .INPUTS
     System.String
   .OUTPUTS
     System.Object
   .NOTES
-    None
+    BusinessHours Parameters aim to simplify input for the Default Call Flow
+    AfterHours Parameters aim to simplify input for the After Hours Call Flow
+    HolidaySet Parameters aim to simplify input for the Holiday Set Call Flow
+    Use of CsAutoAttendant Parameters will override the respective '-BusinessHours', '-AfterHours' and '-HolidaySet' Parameters
+
+    InclusionScope and ExclusionScope Objects can be created with New-TeamsAutoAttendantDialScope and the Group Names
+    This was deliberately not integrated into this CmdLet
   .COMPONENT
     TeamsAutoAttendant
   .FUNCTIONALITY
@@ -144,7 +170,7 @@ function New-TeamsAutoAttendant {
   [Alias('New-TeamsAA')]
   [OutputType([System.Object])]
   param(
-    #region General Parameters
+    #region Required Parameters
     [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'Name of the Auto Attendant')]
     [string]$Name,
 
@@ -155,12 +181,6 @@ function New-TeamsAutoAttendant {
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
     [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
     [string]$LanguageId = 'en-US',
-
-    [Parameter(HelpMessage = 'Voice Responses')]
-    [switch]$EnableVoiceResponse,
-
-    [Parameter(Mandatory = $false, HelpMessage = 'Target String for the Operator (UPN, Group Name or Tel URI')]
-    [string]$Operator,
     #endregion
 
     #region Business Hours Parameters
@@ -176,24 +196,6 @@ function New-TeamsAutoAttendant {
 
     [Parameter(HelpMessage = 'Business Hours Call Target - BusinessHoursCallFlowOption = Menu')]
     [object]$BusinessHoursMenu,
-    #endregion
-
-    #region Holiday Set Parameters
-    [Parameter(HelpMessage = 'Holiday Set Greeting - Text String or Recording')]
-    [string]$HolidaySetGreeting,
-
-    [Parameter(HelpMessage = 'Holiday Set Call Flow - Default options')]
-    [ValidateSet('Disconnect', 'TransferCallToTarget', 'Menu')]
-    [string]$HolidaySetCallFlowOption,
-
-    [Parameter(HelpMessage = 'Holiday Set Call Target - HolidaySetCallFlowOption = TransferCallToTarget')]
-    [string]$HolidaySetCallTarget,
-
-    [Parameter(HelpMessage = 'Holiday Set Call Target - HolidaySetCallFlowOption = Menu')]
-    [object]$HolidaySetMenu,
-
-    [Parameter(HelpMessage = 'Default Schedule to apply, can be a 2-digit CountryCode a ScheduleObject or an ID of one')]
-    [string]$HolidaySetSchedule,
     #endregion
 
     #region After Hours Parameters
@@ -215,6 +217,24 @@ function New-TeamsAutoAttendant {
     [string]$AfterHoursSchedule,
     #endregion
 
+    #region Holiday Set Parameters
+    [Parameter(HelpMessage = 'Holiday Set Greeting - Text String or Recording')]
+    [string]$HolidaySetGreeting,
+
+    [Parameter(HelpMessage = 'Holiday Set Call Flow - Default options')]
+    [ValidateSet('Disconnect', 'TransferCallToTarget', 'Menu')]
+    [string]$HolidaySetCallFlowOption,
+
+    [Parameter(HelpMessage = 'Holiday Set Call Target - HolidaySetCallFlowOption = TransferCallToTarget')]
+    [string]$HolidaySetCallTarget,
+
+    [Parameter(HelpMessage = 'Holiday Set Call Target - HolidaySetCallFlowOption = Menu')]
+    [object]$HolidaySetMenu,
+
+    [Parameter(HelpMessage = 'Default Schedule to apply, can be a 2-digit CountryCode a ScheduleObject or an ID of one')]
+    [string]$HolidaySetSchedule,
+    #endregion
+
     #region Default Parameters of New-CsAutoAttendant for Pass-through application
     [Parameter(HelpMessage = 'Schedule Object created with New-TeamsAutoAttendantSchedule to apply')]
     [object]$Schedule,
@@ -229,11 +249,17 @@ function New-TeamsAutoAttendant {
     [object]$CallHandlingAssociations,
     #endregion
 
+    [Parameter(Mandatory = $false, HelpMessage = 'Target String for the Operator (UPN, Group Name or Tel URI')]
+    [string]$Operator,
+
     [Parameter(HelpMessage = 'Groups defining the Inclusion Scope')]
     [object]$InclusionScope,
 
     [Parameter(HelpMessage = 'Groups defining the Exclusion Scope')]
     [object]$ExclusionScope,
+
+    [Parameter(HelpMessage = 'Voice Responses')]
+    [switch]$EnableVoiceResponse,
 
     [Parameter(HelpMessage = 'Tries to Enable Transcription wherever possible')]
     [switch]$EnableTranscription,

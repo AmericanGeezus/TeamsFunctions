@@ -21,7 +21,11 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- TBC
+- `New-TeamsAutoAttendant`: Now fully featured.
+  - Added HolidaySet-Parameters.
+  - Optimised validation of CallFlows and CallHandlingAssociations
+  - Updated help and optimised order of Parameters
+- `New-TeamsAutoAttendantDialScope`: Added small verification for Groups (previously only validated Call Targets)
 
 ### Limitations
 
