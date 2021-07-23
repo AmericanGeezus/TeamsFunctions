@@ -289,7 +289,14 @@ function Get-TeamsAutoAttendant {
 
         # Default Call Flow Menu Options
         if ( $AA.DefaultCallFlow.Menu.MenuOptions ) {
-          $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions
+          if ($AA.DefaultCallFlow.Menu.MenuOptions.Prompt) {
+            # Announcements: Processing Call Flow Prompts
+            $AADefaultCallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.MenuOptions.Prompt
+            $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions -Prompts $AADefaultCallFlowMenuOptionPrompt
+          }
+          else {
+            $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions
+          }
         }
         else {
           $AADefaultCallFlowMenuOptions = ''
@@ -327,7 +334,14 @@ function Get-TeamsAutoAttendant {
 
           # Call Flow Menu Options
           if ($Flow.Menu.MenuOptions) {
-            $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions
+            if ($Flow.Menu.MenuOptions.Prompt) {
+              # Announcements: Processing Call Flow Prompts
+              $AACallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.MenuOptions.Prompt
+              $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions -Prompts $AACallFlowMenuOptionPrompt
+            }
+            else {
+              $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions
+            }
           }
           else {
             $AACallFlowMenuOptions = ''

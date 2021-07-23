@@ -185,7 +185,7 @@ function Set-TeamsCallQueue {
 
     #region OverflowAction = SharedVoiceMail
     # if OverflowAction is SharedVoicemail one of the following two have to be provided
-    [Parameter(HelpMessage = 'Text-to-speech Message. This will require the LanguageId Parameter')]
+    [Parameter(HelpMessage = 'Text-to-Voice Message. This will require the LanguageId Parameter')]
     [Alias('OfSVmTTS')]
     [string]$OverflowSharedVoicemailTextToSpeechPrompt,
 
@@ -225,7 +225,7 @@ function Set-TeamsCallQueue {
 
     #region TimeoutAction = SharedVoiceMail
     # if TimeoutAction is SharedVoicemail one of the following two have to be provided
-    [Parameter(HelpMessage = 'Text-to-speech Message. This will require the LanguageId Parameter')]
+    [Parameter(HelpMessage = 'Text-to-Voice Message. This will require the LanguageId Parameter')]
     [Alias('ToSVmTTS')]
     [string]$TimeoutSharedVoicemailTextToSpeechPrompt,
 
@@ -563,7 +563,7 @@ function Set-TeamsCallQueue {
         ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) -or `
         ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')))) {
 
-      Write-Error "'$NameNormalised' LanguageId is not set and not provided. This is required for using Text-to-speech prompts or Transcription." -ErrorAction Stop -RecommendedAction 'Add Parameter LanguageId'
+      Write-Error "'$NameNormalised' LanguageId is not set and not provided. This is required for using Text-to-Voice prompts or Transcription." -ErrorAction Stop -RecommendedAction 'Add Parameter LanguageId'
       return
     }
     #endregion
@@ -757,7 +757,7 @@ function Set-TeamsCallQueue {
 
             #region OverflowAction SharedVoicemail - Processing Greeting
             if (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Speech are present
+              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Voice are present
               Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing"
               #Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction 'Add one of the two parameters'
               #return
@@ -1028,7 +1028,7 @@ function Set-TeamsCallQueue {
 
             #region OverflowAction SharedVoicemail - Processing Greeting
             if (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Speech are present
+              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Voice are present
               Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing"
               #Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction 'Add one of the two parameters'
               #return

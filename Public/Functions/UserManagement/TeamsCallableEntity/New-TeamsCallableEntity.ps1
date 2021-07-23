@@ -67,12 +67,15 @@ function New-TeamsCallableEntity {
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, HelpMessage = 'Identity of the Call Target')]
     [string]$Identity,
 
-    [Parameter(HelpMessage = 'Enables Transcription (for Shared Voicemail only)')]
-    [switch]$EnableTranscription,
-
     [Parameter(HelpMessage = 'Callable Entity type: ExternalPstn, User, SharedVoiceMail, ApplicationEndpoint')]
     [ValidateSet('User', 'ExternalPstn', 'SharedVoicemail', 'ApplicationEndpoint')]
     [string]$Type,
+
+    [Parameter(HelpMessage = 'Enables Transcription (for Shared Voicemail only)')]
+    [switch]$EnableTranscription,
+
+    [Parameter(HelpMessage = 'Enables Suppression of System Messages (for Shared Voicemail only)')]
+    [switch]$EnableSharedVoicemailSystemPromptSuppression,
 
     [Parameter(HelpMessage = 'Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified')]
     [switch]$Force
@@ -147,14 +150,24 @@ function New-TeamsCallableEntity {
 
 
     # EnableTranscription
-    if ( $EnableTranscription ) {
-      if ($CEObject.Type -eq 'SharedVoicemail') {
+    if ($CEObject.Type -eq 'SharedVoicemail') {
+      if ( $EnableTranscription ) {
         Write-Information 'EnableTranscription - Transcription is activated for SharedVoicemail'
         $Parameters += @{'EnableTranscription' = $true }
       }
       else {
         Write-Verbose -Message 'EnableTranscription - Transcription can only be activated for SharedVoicemail.' -Verbose
       }
+      if ( $EnableSharedVoicemailSystemPromptSuppression ) {
+        Write-Information 'EnableSharedVoicemailSystemPromptSuppression - Transcription is activated for SharedVoicemail'
+        $Parameters += @{'EnableSharedVoicemailSystemPromptSuppression' = $true }
+      }
+    }
+    elseif ( $EnableTranscription ) {
+      Write-Verbose -Message 'EnableTranscription - Transcription can only be activated for SharedVoicemail.' -Verbose
+    }
+    elseif ( $EnableSharedVoicemailSystemPromptSuppression ) {
+      Write-Verbose -Message 'EnableSharedVoicemailSystemPromptSuppression - Parameter can only be activated for SharedVoicemail.' -Verbose
     }
     #endregion
 

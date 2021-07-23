@@ -4,9 +4,9 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add new Switches: ChannelId & Suppress Shared Voicemail System messages
-#IMPROVE? Evaluate better display: ToString manipulation. , to Line feed ; Reordering of objects (Menu Option: DtmfResponse, VoiceResponse, Action, Call Target)
-#  Add TimeZone to main output (UTC+/-) and detailed output
+#TODO Add TimeZone to main output (UTC+/-) and detailed output
+
+
 function New-TeamsAutoAttendant {
   <#
   .SYNOPSIS
@@ -861,8 +861,7 @@ function New-TeamsAutoAttendant {
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       Write-Information "'$NameNormalised' After Hours Call Flow - Call Flow created"
-      #TODO when HolidaySet is added, this needs to be array-proof (see processing of CallFlows Objects for code samples)
-      #TEST new validation as it is to be re-used for HolidaySets
+      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       if ($Parameters.ContainsKey('CallFlows')) {
         $Parameters.CallFlows.Add($AfterHoursCallFlow)
       }
@@ -883,8 +882,7 @@ function New-TeamsAutoAttendant {
 
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
-      #TODO when HolidaySet is added, a second CHA will need to be added here! +=?
-      #TEST new validation as it is to be re-used for HolidaySets
+      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       Write-Information "'$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
         $Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
@@ -995,8 +993,7 @@ function New-TeamsAutoAttendant {
       $HolidaySetCallFlowParameters.Menu = $HolidaySetMenuObject
       $HolidaySetCallFlow = New-CsAutoAttendantCallFlow @HolidaySetCallFlowParameters
       Write-Information "'$NameNormalised' Holiday Set Call Flow - Call Flow created"
-      #TODO when HolidaySet is added, this needs to be array-proof (see processing of CallFlows Objects for code samples)
-      #TEST new validation as it is to be re-used for HolidaySets
+      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       if ($Parameters.ContainsKey('CallFlows')) {
         $Parameters.CallFlows.Add($HolidaySetCallFlow)
       }
@@ -1017,8 +1014,7 @@ function New-TeamsAutoAttendant {
 
       $HolidaySetCallHandlingAssociationParams.ScheduleId = $HolidaySchedule.Id
       $HolidaySetCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @HolidaySetCallHandlingAssociationParams
-      #TODO when HolidaySet is added, a second CHA will need to be added here! +=?
-      #TEST new validation as it is to be re-used for HolidaySets
+      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       Write-Information "'$NameNormalised' Holiday Set Call Flow - Call Handling Association created with Holiday Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
         $Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)

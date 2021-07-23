@@ -202,7 +202,7 @@ function New-TeamsCallQueue {
 
     #region OverflowAction = SharedVoiceMail
     # if OverflowAction is SharedVoicemail one of the following two have to be provided
-    [Parameter(HelpMessage = 'Text-to-speech Message. This will require the LanguageId Parameter')]
+    [Parameter(HelpMessage = 'Text-to-Voice Message. This will require the LanguageId Parameter')]
     [Alias('OfSVmTTS')]
     [string]$OverflowSharedVoicemailTextToSpeechPrompt,
 
@@ -243,7 +243,7 @@ function New-TeamsCallQueue {
 
     #region TimeoutAction = SharedVoiceMail
     # if TimeoutAction is SharedVoicemail one of the following two have to be provided
-    [Parameter(HelpMessage = 'Text-to-speech Message. This will require the LanguageId Parameter')]
+    [Parameter(HelpMessage = 'Text-to-Voice Message. This will require the LanguageId Parameter')]
     [Alias('ToSVmTTS')]
     [string]$TimeoutSharedVoicemailTextToSpeechPrompt,
 
@@ -367,7 +367,7 @@ function New-TeamsCallQueue {
         ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) -or `
         ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription'))) {
 
-        Write-Error 'Parameter LanguageId is required and missing. Text-to-speech prompts or Transcription require specification of a Language. No default is available.' -ErrorAction Stop -RecommendedAction 'Add Parameter LanguageId'
+        Write-Error 'Parameter LanguageId is required and missing. Text-to-Voice prompts or Transcription require specification of a Language. No default is available.' -ErrorAction Stop -RecommendedAction 'Add Parameter LanguageId'
         return
       }
     }
@@ -556,7 +556,7 @@ function New-TeamsCallQueue {
       $Parameters += @{'LanguageId' = $Language }
     }
 
-    # Checking for Text-to-speech prompts without providing LanguageId
+    # Checking for Text-to-Voice prompts without providing LanguageId
     # This is already done in the BEGIN block
     #endregion
     #endregion
@@ -716,7 +716,7 @@ function New-TeamsCallQueue {
             # For SET, we process them TimeoutActionTarget, Greeting & EnableTimeoutSharedVoicemailTranscription separately!
 
             if (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Speech are present
+              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Voice are present
               Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing"
               #Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction 'Add one of the two parameters'
               #return
@@ -971,7 +971,7 @@ function New-TeamsCallQueue {
             # For SET, we process them TimeoutActionTarget, Greeting & EnableTimeoutSharedVoicemailTranscription separately!
 
             if (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Speech are present
+              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Voice are present
               Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing"
               #Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction 'Add one of the two parameters'
               #return

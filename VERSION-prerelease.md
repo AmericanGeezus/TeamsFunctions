@@ -26,6 +26,17 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
   - Optimised validation of CallFlows and CallHandlingAssociations
   - Updated help and optimised order of Parameters
 - `New-TeamsAutoAttendantDialScope`: Added small verification for Groups (previously only validated Call Targets)
+- `New-TeamsAutoAttendantMenuOption`:
+  - Added support for Announcements - both Text-to-Voice as well as AudioFile with Parameter `Announcement`
+  - Refactored processing of Press/Say as it is now used in all but one Option
+  - Optimised processing for Option 10
+- `New-TeamsAutoAttendantPrompt`: Added parameter `AlternativeString` - Processing both strings if different (dual prompt)
+- `New-TeamsCallableEntity`: Added parameter `EnableSharedVoicemailSystemPromptSuppression`
+- `Get-TeamsObjectType`: Optimised code to have less duplication, caught an error if AzureAdUser was not found.
+- `Get-TeamsAutoAttendant`: Added support for Announcements for switch Detailed (Prompts on MenuOptions)
+- `Merge-TeamsAutoAttendantArtefact`:
+  - Refactored code to populate with a failsafe (Original Object is retained if no translation happened). Improves visibility
+  - Added support for Prompts on MenuOptions (enables display of configured Announcements in Get-TeamsAutoAttendant )
 
 ### Limitations
 
