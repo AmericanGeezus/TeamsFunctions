@@ -3,8 +3,8 @@
 # Author:   David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
+
 #TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
-#TEST MusicOnHold audio file does not throw stopping error any more
 #TEST lookup with identity (ObjectId)!
 #CHECK Once ID Lookup is done, check in the ForEach (for Pipeline with Get) whether an Object is present and bind/re-lookup to the correct instance!
 function Set-TeamsCallQueue {

@@ -245,7 +245,7 @@ function Set-TeamsUserVoiceConfig {
         if ( $CsUser.PhoneSystemStatus.Contains(',')) {
           Write-Warning -Message "Object '$UserPrincipalName' - PhoneSystem License: Multiple assignments found. Please verify License assignment."
           Write-Verbose -Message 'All licenses assigned to the User:' -Verbose
-          #VALIDATE Output temporarily reduced with Select-Object - may be easier if output for Get-AzureAdUserLicense is reduced!
+          #Output reduced with Select-Object for better visibility
           Write-Output $UserLic.Licenses | Select-Object ProductName, SkuPartNumber, LicenseType, IncludesTeams, IncludesPhoneSystem, ServicePlans
         }
       }
@@ -277,12 +277,12 @@ function Set-TeamsUserVoiceConfig {
       # Validating License assignment
       try {
         if ( -not $CallingPlanLicense ) {
-          #TEST Calling Plan License - Can also be queried via Test-TeamsUserHasCallingPlan -Identity $UserPrincipalName
           $Operation = 'Testing Object for Calling Plan License'
           $step++
           Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
           Write-Verbose -Message "$Status - $Operation"
           if ( -not $CsUser.LicensesAssigned.Contains('Calling')) {
+            # This could be done with Test-TeamsUserHasCallingPlan
             throw "Object '$UserPrincipalName' - User is not licensed correctly. Please check License assignment. A Calling Plan License is required"
           }
         }
@@ -565,7 +565,6 @@ function Set-TeamsUserVoiceConfig {
         $step++
         Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
-        #TEST ForEach Loop - for $UserWithThisNumber
         foreach ($UserWTN in $UserWithThisNumber) {
           try {
             Write-Verbose -Message "Object '$UserPrincipalName' - $Operation FROM '$($UserWTN.UserPrincipalName)'"

@@ -122,7 +122,7 @@ function Enable-AzureAdAdminRole {
 
     # Importing Module
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
-    #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
+    #IMPROVE To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
     try {
       Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
       $SaveVerbosePreference = $global:VerbosePreference;
@@ -153,7 +153,7 @@ function Enable-AzureAdAdminRole {
     # Reason & Ticket Number
     if ( -not $Reason ) { $Reason = 'Administration' }
     if ( $TicketNr ) {
-      #TODO Where to build in TicketNr?
+      #IMPROVE TicketNr is not yet available
       #$Parameters += @{'$TicketNr' = $TicketNr }
       $Reason = "Ticket: $TicketNr - $Reason"
     }

@@ -87,8 +87,8 @@ function Disable-AzureAdAdminRole {
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
-    $Stack = Get-PSCallStack
-    $Called = ($stack.length -ge 3)
+    #$Stack = Get-PSCallStack
+    #$Called = ($stack.length -ge 3)
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -99,7 +99,7 @@ function Disable-AzureAdAdminRole {
 
     # Importing Module
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
-    #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
+    #IMPROVE To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
     try {
       Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
       $SaveVerbosePreference = $global:VerbosePreference;
@@ -125,7 +125,7 @@ function Disable-AzureAdAdminRole {
     # Reason & Ticket Number
     if ( -not $Reason ) { $Reason = 'Administration' }
     if ( $TicketNr ) {
-      #TODO Where to build in TicketNr?
+      #IMPROVE TicketNr is not available yet
       #$Parameters += @{'$TicketNr' = $TicketNr }
       $Reason = "Ticket: $TicketNr - $Reason"
     }

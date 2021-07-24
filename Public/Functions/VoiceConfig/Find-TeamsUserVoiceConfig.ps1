@@ -301,7 +301,7 @@ function Find-TeamsUserVoiceConfig {
             if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
               Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
             }
-            #CHECK Revisit this based on Test-TeamsUserVoiceConfig
+            #CHECK Revisit this based on Test-TeamsUserVoiceConfig - Evaluate whether to move this to Test- or Assert instead of Find!
             foreach ($U in $CsUsers) {
               if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
                 if ($PSBoundParameters.ContainsKey('ValidateLicense')) {

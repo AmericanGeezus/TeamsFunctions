@@ -5,7 +5,7 @@
 # Status:   Live
 
 #TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
-#TEST MusicOnHold audio file does not throw stopping error any more
+
 
 function New-TeamsCallQueue {
   <#
