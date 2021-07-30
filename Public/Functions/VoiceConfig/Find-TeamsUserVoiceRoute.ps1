@@ -221,7 +221,8 @@ function Find-TeamsUserVoiceRoute {
           #VALIDATE veracity of statement.
           if ( $Number -match '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
             Write-Warning -Message "Emergency Services Number discovered! Route is calculated as-if routed through Online Voice Routing Policy."
-            Write-Information 'INFO:    The actual route for Emergency Services Calls depends on a match in the Tenant Dial Plan for this number and the effective Emergency Call Routing Policy (if any!)'
+            Write-Information 'INFO:    The actual route for Emergency Services Calls depends on the effective Emergency Call Routing Policy (if any!)'
+            <# Commented out as no longer valid:
             # Status of matching Dial Plan
             if ( $UserVoiceRouting.MatchingRule ) {
               Write-Warning 'Effective Dial Plan - The number provided is matched - This bypasses Emergency Call Routing Policies. This call is most likely routed through the Online Voice Routing Policy'
@@ -229,6 +230,7 @@ function Find-TeamsUserVoiceRoute {
             else {
               Write-Verbose -Message 'Effective Dial Plan - The number provided is not matched - If configured, Emergency Call Routing Policies may be in effect.' -Verbose
             }
+            #>
             # Status of (statically assigned) Emergency Call Routing Policy
             if ( $User.EmergencyCallRoutingPolicy ) {
               Write-Verbose -Message "Emergency Call Routing Policy - Policy assigned statically (directly to the User): '$($User.EmergencyCallRoutingPolicy)'" -Verbose
@@ -238,9 +240,9 @@ function Find-TeamsUserVoiceRoute {
               }
             }
             else {
-              Write-Verbose -Message 'Emergency Call Routing Policy - Not assigned statically (to the User) but may be assigned dynamically (via Subnet)'
-              Write-Verbose -Message 'This Cmdlet cannot consider this configuration without additional information (Network Site). Please run Find-TeamsUserVoiceRouteForEmergencyCalls for details.' -Verbose
+              Write-Verbose -Message 'Emergency Call Routing Policy - Not assigned statically (to the User) but may be assigned dynamically (via Subnet)' -Verbose
             }
+            Write-Verbose -Message 'This Cmdlet cannot consider make an accurate statement for how this call may be routed without additional information (Network Site). Please run Find-TeamsEmergencyCallRoute for details.' -Verbose
           }
         }
 

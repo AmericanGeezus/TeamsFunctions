@@ -2,7 +2,7 @@
 # Function: VoiceRouting
 # Author:   David Eberhardt
 # Updated:  26-JUN-2021
-# Status:   Beta
+# Status:   RC
 
 
 
@@ -105,7 +105,7 @@ function Find-TeamsEmergencyCallRoute {
   )
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -227,7 +227,7 @@ function Find-TeamsEmergencyCallRoute {
             }
           }
           catch {
-            Write-Error -Message "Site '$($Site.NetworkSiteId)' not found" -Category ResourceUnavailable
+            Write-Error -Message "Site '$Site' not found" -Category ResourceUnavailable
             continue
           }
         }

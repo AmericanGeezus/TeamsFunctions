@@ -352,8 +352,8 @@ function Enable-AzureAdAdminRole {
             catch {
               if ($_.Exception.Message.Contains('ExpirationRule')) {
                 # Amending Schedule
-                if ($Duration -eq 4) { $Duration = 2 } else { $Duration = 4 }
-                Write-Warning -Message "Specified Duration is not allowed, re-trying with $Duration hours"
+                if ($Duration -eq 4) { $Duration = 1 } else { $Duration = 4 }
+                Write-Warning -Message "Specified Duration is not allowed, re-trying for $Duration hour(s)"
                 $end = $Date.AddHours($Duration).ToUniversalTime()
 
                 $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
