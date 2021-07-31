@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add TimeZone to main output (UTC+/-) and detailed output
+
 
 
 function New-TeamsAutoAttendant {
@@ -179,12 +179,28 @@ function New-TeamsAutoAttendant {
     [string]$TimeZone = 'UTC',
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
-    [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
+    [ValidateScript( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
+          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
+        }
+        if ($_ -in $TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $TeamsFunctionsCsAutoAttendantSupportedLanguageIds"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
+          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
+        }
+        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
+        }
+      })]
     [string]$LanguageId = 'en-US',
     #endregion
 
     #region Business Hours Parameters
     [Parameter(HelpMessage = 'Business Hours Greeting - Text String or Recording')]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
     [string]$BusinessHoursGreeting,
 
     [Parameter(HelpMessage = 'Business Hours Call Flow - Default options')]
@@ -200,6 +216,7 @@ function New-TeamsAutoAttendant {
 
     #region After Hours Parameters
     [Parameter(HelpMessage = 'After Hours Greeting - Text String or Recording')]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
     [string]$AfterHoursGreeting,
 
     [Parameter(HelpMessage = 'After Hours Call Flow - Default options')]
@@ -219,6 +236,7 @@ function New-TeamsAutoAttendant {
 
     #region Holiday Set Parameters
     [Parameter(HelpMessage = 'Holiday Set Greeting - Text String or Recording')]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
     [string]$HolidaySetGreeting,
 
     [Parameter(HelpMessage = 'Holiday Set Call Flow - Default options')]

@@ -18,11 +18,11 @@ function Set-AzureAdUserLicenseServicePlan {
     The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER Enable
     Optional. Service Plans to be enabled (main function)
-    Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
+    Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
     No action is taken for any Licenses not containing this Service Plan
   .PARAMETER Disable
     Optional. Service Plans to be disabled (alternative function)
-    Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
+    Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
     No action is taken for any Licenses not containing this Service Plan
   .PARAMETER PassThru
     Optional. Displays User License Object after action.
@@ -71,8 +71,14 @@ function Set-AzureAdUserLicenseServicePlan {
         if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) { $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue }
         $ServicePlanNames = ($global:TeamsFunctionsMSAzureAdLicenseServicePlans).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $ServicePlanNames) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'ServicePlan' - Invalid ServicePlan string. Supported Parameternames can be found with Get-AzureAdLicenseServicePlan (ServicePlanName)"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'ServicePlan' - Invalid ServicePlan string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicenseServicePlan (ServicePlanName)"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) { $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue }
+        $ServicePlanNames = ($global:TeamsFunctionsMSAzureAdLicenseServicePlans).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $ServicePlanNames | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($ServicePlanNames.Count) records available")
         }
       })]
     [string[]]$Enable,
@@ -82,8 +88,14 @@ function Set-AzureAdUserLicenseServicePlan {
         if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) { $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue }
         $ServicePlanNames = ($global:TeamsFunctionsMSAzureAdLicenseServicePlans).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $ServicePlanNames) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'ServicePlan' - Invalid ServicePlan string. Supported Parameternames can be found with Get-AzureAdLicenseServicePlan (ServicePlanName)"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'ServicePlan' - Invalid ServicePlan string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicenseServicePlan (ServicePlanName)"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenseServicePlans) { $global:TeamsFunctionsMSAzureAdLicenseServicePlans = Get-AzureAdLicenseServicePlan -WarningAction SilentlyContinue }
+        $ServicePlanNames = ($global:TeamsFunctionsMSAzureAdLicenseServicePlans).ServicePlanName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $ServicePlanNames | Sort-Object | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($ServicePlanNames.Count) records available")
         }
       })]
     [string[]]$Disable,
@@ -199,15 +211,14 @@ function Set-AzureAdUserLicenseServicePlan {
                 "Function: $($MyInvocation.MyCommand.Name): Service Plan '$S':", ( $ServicePlanToEnable | Format-Table | Out-String).Trim() | Write-Debug
               }
               if ( -not $ServicePlanToEnable) {
-                #BODGE Check application. PhoneSystem on E5 should be found but returns "not present!" Add Warning if it should be there (baseline)
+                #VALIDATE Check application. PhoneSystem on E5 should be found but returns "not present!" Add Warning if it should be there (baseline)
                 Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
 
               # Checking whether Service Plan is disabled
-              #VALIDATE ELSE Statement may not be triggered correctly!
               if ( $ServicePlanToEnable.ServicePlanId -in $License.AddLicenses.DisabledPlans ) {
-                #CHECK application!
+                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Flaggin Service Plan for activation: '$($ServicePlanToEnable.ServicePlanId)'"
                 $null = $($License.AddLicenses).DisabledPlans.Remove($ServicePlanToEnable.ServicePlanId)
                 $EnabledPlans++
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -238,12 +249,12 @@ function Set-AzureAdUserLicenseServicePlan {
                 "Function: $($MyInvocation.MyCommand.Name): Service Plan '$S':", ( $ServicePlanToDisable | Format-Table | Out-String).Trim() | Write-Debug
               }
               if ( -not $ServicePlanToDisable) {
-                #BODGE - Not correct - See above
                 Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
               # Checking whether Service Plan is disabled
               if (-not ($ServicePlanToDisable.ServicePlanId -in $License.AddLicenses.DisabledPlans)) {
+                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Flaggin Service Plan for deactivation: '$($ServicePlanToEnable.ServicePlanId)'"
                 $($License.AddLicenses).DisabledPlans += $ServicePlanToDisable.ServicePlanId
                 $DisabledPlans++
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {

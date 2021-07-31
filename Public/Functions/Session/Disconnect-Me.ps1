@@ -63,7 +63,8 @@ function Disconnect-Me {
     # Assuming Modules are already imported
 
     # Cleanup of global Variables set
-    Remove-TeamsFunctionsGlobalVariable
+    #Remove-TeamsFunctionsGlobalVariable # Removed as dynamic replacement is working as intended
+    $null = (Remove-Variable -Name TeamsFunctions* -Scope Global -ErrorAction SilentlyContinue)
 
     [bool]$sessionFound = $false
 

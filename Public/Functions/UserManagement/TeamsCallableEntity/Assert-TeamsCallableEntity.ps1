@@ -125,7 +125,7 @@ function Assert-TeamsCallableEntity {
         Write-Verbose -Message "Target '$Identity' found and licensed (Pending Input)"
       }
       else {
-        #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet?
+        #TEST whether this would work. Might take some time b/c Object cannot be used in 'PendingInput' just yet?
         <#
         try {
           Write-Information "Target '$Identity' found and licensed, but PhoneSystem is disabled. Trying to Enable"

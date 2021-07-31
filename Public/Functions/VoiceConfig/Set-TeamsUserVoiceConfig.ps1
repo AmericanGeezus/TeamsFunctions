@@ -85,6 +85,7 @@ function Set-TeamsUserVoiceConfig {
   #>
 
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'Colourful feedback required to emphasise feedback for script executors')]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'Required for performance. Removed with Disconnect-Me')]
   [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'DirectRouting', ConfirmImpact = 'Medium')]
   [Alias('Set-TeamsUVC')]
   [OutputType([System.Object])]
@@ -115,9 +116,17 @@ function Set-TeamsUserVoiceConfig {
 
     [Parameter(ParameterSetName = 'CallingPlans', HelpMessage = 'Calling Plan License to assign to the Object')]
     [ValidateScript( {
-        $CallingPlanLicenseValues = (Get-AzureAdLicense | Where-Object LicenseType -EQ 'CallingPlan').ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        if ($_ -in $CallingPlanLicenseValues) { $True } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CallingPlanLicense' must be of the set: $CallingPlanLicenseValues"
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses | Where-Object LicenseType -EQ 'CallingPlan').ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        if ($_ -in $LicenseParams) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CallingPlanLicense' must be of the set: $LicenseParams"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses | Where-Object LicenseType -EQ 'CallingPlan').ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
     [string[]]$CallingPlanLicense,
@@ -216,7 +225,7 @@ function Set-TeamsUserVoiceConfig {
     #endregion
 
     #region Querying User Licenses
-    #VALIDATE - This works, but could be replaced with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
+    #IMPROVE This works, but could be replaced with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
     try {
       $Operation = 'Querying User License'
       $step++
@@ -517,7 +526,7 @@ function Set-TeamsUserVoiceConfig {
             else {
               Write-Warning -Message "Object '$UserPrincipalName' - $Operation`: Not assigned. Object will be able to receive inbound calls, but not make outbound calls!'"
               if ( $ObjectType -eq 'ApplicationEndpoint' ) {
-                Write-Verbose -Message "Resource Accounts only require an Online Voice Routing Policy if the associated Call Queue or Auto Attendant forwards to PSTN" -Verbose
+                Write-Verbose -Message 'Resource Accounts only require an Online Voice Routing Policy if the associated Call Queue or Auto Attendant forwards to PSTN' -Verbose
               }
             }
           }

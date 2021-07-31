@@ -62,19 +62,25 @@ function Get-TeamsTenantLicense {
   [Alias('Get-TeamsTenantLicence')]
   [OutputType([Object[]])]
   param(
-    [Parameter(Mandatory = $false, HelpMessage = 'Displays all Parameters')]
+    [Parameter(HelpMessage = 'Displays all Parameters')]
     [switch]$Detailed,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Displays all ServicePlans')]
+    [Parameter(HelpMessage = 'Displays all ServicePlans')]
     [switch]$DisplayAll,
 
-    [Parameter(Mandatory = $false, HelpMessage = 'License to be queried from the Tenant')]
+    [Parameter(HelpMessage = 'License to be queried from the Tenant')]
     [ValidateScript( {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicense"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
     [string]$License

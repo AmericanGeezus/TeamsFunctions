@@ -24,10 +24,9 @@ function Grant-TeamsEmergencyAddress {
     This is done by Name (Description) of the Address instead of the Id
   .PARAMETER Identity
     Required. UserPrincipalName or ObjectId of the User Object or a TelephoneNumber
-  .PARAMETER Enable
-    Optional. Service Plans to be enabled (main function)
-    Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
-    No action is taken for any Licenses not containing this Service Plan
+  .PARAMETER Address
+    Required. Friendly name of the Address as specified in the Tenant or LocationId of the Address.
+    LocationIds are taken as-is, friendly names are queried against Get-CsOnlineLisLocation for a defined Location
   .PARAMETER PassThru
     Optional. Displays Object after action.
   .EXAMPLE
@@ -35,7 +34,7 @@ function Grant-TeamsEmergencyAddress {
     Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and assigns this Address to the User
 
   .EXAMPLE
-    Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"
+    Grant-TeamsEmergencyAddress -Identity +15551234567 -Address "3rd Floor Cafe"
     Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and
     assigns this Address to the Number +15551234567 if found in the Business Voice Directory
     AddressDescription is an Alias for Address

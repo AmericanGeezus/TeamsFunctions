@@ -130,6 +130,7 @@ function New-TeamsAutoAttendantMenu {
 
     [Parameter(Mandatory, ParameterSetName = 'MenuOptions', HelpMessage = 'Prompt object, Text-To-Voice String or Full path to AudioFile')]
     [Parameter(Mandatory, ParameterSetName = 'CallTargetsToProcess', HelpMessage = 'Prompt object, Text-To-Voice String or Full path to AudioFile')]
+    [ArgumentCompleter( { '<Prompts-Object>', '<Your Text-to-speech-string>', 'C:\Temp\' })]
     $Prompts,
 
     [Parameter(Mandatory, ParameterSetName = 'MenuOptions', HelpMessage = 'MenuOptions Object')]

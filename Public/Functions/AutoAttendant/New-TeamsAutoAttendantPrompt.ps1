@@ -60,9 +60,11 @@ function New-TeamsAutoAttendantPrompt {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory, HelpMessage = 'Main String. Path the the recording OR Text-to-Voice string')]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
     [string]$String,
 
     [Parameter(HelpMessage = 'Alternative (secondary) String. Path the the recording OR Text-to-Voice string')]
+    [ArgumentCompleter( { 'C:\Temp\', '<Your Text-to-speech-string>' })]
     [string]$AlternativeString
 
   ) #param

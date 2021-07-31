@@ -5,8 +5,8 @@
 # Status:     Live
 
 #TODO: Privileged Admin Groups buildout
-#TODO: Suppress error for Skype one (or ingore Skype for Business Admin Role completely) - also for get!
 #TODO: Change validation of Request to return validated setting via GET-AzureADMSRoleAssignment
+
 function Enable-AzureAdAdminRole {
   <#
   .SYNOPSIS

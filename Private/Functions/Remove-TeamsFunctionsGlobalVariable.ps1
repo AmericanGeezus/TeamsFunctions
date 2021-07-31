@@ -28,13 +28,16 @@ function Remove-TeamsFunctionsGlobalVariable {
   param ()
   #Show-FunctionStatus -Level Live
 
+  <# Previous implementation, removal of all variables by name, now removing all that are starting with "TeamsFunctions"
   $VariableNames = @(
     #"TeamsFunctionsMSTelephoneNumbers", # Used for Microsoft TelephoneNumbers from the Tenant - no longer used.
-    "TeamsFunctionsMSAzureAdLicenses", # Used for all Licensing commands
-    "TeamsFunctionsMSAzureAdLicenseServicePlans", # Used for all Licensing commands
-    "TeamsFunctionsTenantAzureAdGroups" # Used for CallableEntity cmdLets that query groups
+    'TeamsFunctionsMSAzureAdLicenses', # Used for all Licensing commands
+    'TeamsFunctionsMSAzureAdLicenseServicePlans', # Used for all Licensing commands
+    'TeamsFunctionsTenantAzureAdGroups' # Used for CallableEntity cmdLets that query groups
   )
 
   $null = (Remove-Variable -Name $VariableNames -Scope Global -ErrorAction SilentlyContinue)
+  #>
+  $null = (Remove-Variable -Name TeamsFunctions* -Scope Global -ErrorAction SilentlyContinue)
 
 } #Remove-TeamsFunctionsGlobalVariable

@@ -144,8 +144,8 @@ function Get-TeamsAutoAttendant {
     Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $AACount"
     $AACounter = 0
     [int]$AACount = $AutoAttendants.Count
-    #CHECK Explore Workflows with Parallel parsing:
-    #foreach -parallel ($DN in $Name) {
+    #IMPROVE Explore Workflows with Parallel parsing:
+    #foreach -parallel ($AA in $AutoAttendants) {
     foreach ($AA in $AutoAttendants) {
       # Initialising counters for Progress bars
       Write-Progress -Id 0 -Status "Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AACount * 100)

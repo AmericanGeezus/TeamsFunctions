@@ -107,6 +107,7 @@ function New-TeamsAutoAttendantMenuOption {
     [string]$CallTarget,
 
     [Parameter(ParameterSetName = 'Announcement', HelpMessage = 'Path the the recording OR Text-to-Voice string')]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
     [string]$Announcement
 
   ) #param

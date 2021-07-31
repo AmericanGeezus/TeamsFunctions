@@ -47,6 +47,7 @@ function Import-TeamsAudioFile {
   [OutputType([System.Object])]
   param(
     [Parameter(Mandatory)]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$File,
 
     [Parameter(Mandatory)]

@@ -19,11 +19,11 @@ function Get-AzureAdLicense {
   .EXAMPLE
     Get-AzureAdLicense
     Returns 39 Azure AD Licenses that relate to Teams for use in other commands
-    .INPUTS
+  .INPUTS
     System.String
-    .OUTPUTS
+  .OUTPUTS
     System.Object
-    .NOTES
+  .NOTES
     Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
     Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html
     With very special thanks to Philip

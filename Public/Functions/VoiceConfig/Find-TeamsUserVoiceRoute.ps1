@@ -218,7 +218,6 @@ function Find-TeamsUserVoiceRoute {
           $UserVoiceRouting.EffectiveDialPlan = if ( $TDP ) { $User.TenantDialPlan } elseif ( $DP ) { $User.DialPlan } else {}
 
           # Warning / Caveat for Emergency Services Numbers
-          #VALIDATE veracity of statement.
           if ( $Number -match '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
             Write-Warning -Message "Emergency Services Number discovered! Route is calculated as-if routed through Online Voice Routing Policy."
             Write-Information 'INFO:    The actual route for Emergency Services Calls depends on the effective Emergency Call Routing Policy (if any!)'

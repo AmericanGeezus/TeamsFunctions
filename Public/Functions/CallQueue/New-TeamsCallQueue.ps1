@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
+
 
 
 function New-TeamsCallQueue {
@@ -208,6 +208,7 @@ function New-TeamsCallQueue {
 
     [Parameter(HelpMessage = 'Path to Audio File for the SharedVoiceMail Message')]
     [Alias('OfVMFile')]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$OverflowSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = 'Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox')]
@@ -249,6 +250,7 @@ function New-TeamsCallQueue {
 
     [Parameter(HelpMessage = 'Path to Audio File for the SharedVoiceMail Message')]
     [Alias('ToVMFile')]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$TimeoutSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = 'Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox')]
@@ -287,10 +289,12 @@ function New-TeamsCallQueue {
     #region Music files
     [Parameter(HelpMessage = 'Path to Audio File for Welcome Message')]
     [AllowNull()]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
     [string]$WelcomeMusicAudioFile,
 
     [Parameter(HelpMessage = 'Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)')]
     [AllowNull()]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$MusicOnHoldAudioFile,
     #endregion
 
@@ -313,7 +317,22 @@ function New-TeamsCallQueue {
     #endregion
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
-    [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
+    [ValidateScript( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
+          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
+        }
+        if ($_ -in $TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $TeamsFunctionsCsAutoAttendantSupportedLanguageIds"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
+          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
+        }
+        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
+        }
+      })]
     [string]$LanguageId,
 
     [Parameter(HelpMessage = 'Suppresses confirmation prompt to enable Users for Enterprise Voice, if Users are specified')]
