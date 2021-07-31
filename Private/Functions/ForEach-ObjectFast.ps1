@@ -1,4 +1,13 @@
-﻿function Foreach-ObjectFast {
+﻿# Module:   TeamsFunctions
+# Function: Private Function for Testing purposes
+# Author:	  Dr. Tobias Weltner / PowerShellOne
+# Updated:  N/A
+# Status:   Unmanaged
+
+
+
+
+function Foreach-ObjectFast {
   <#
       .SYNOPSIS
       Faster Foreach-Object
