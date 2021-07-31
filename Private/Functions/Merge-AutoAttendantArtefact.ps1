@@ -53,8 +53,9 @@ function Merge-AutoAttendantArtefact {
     [ValidateSet('Prompt', 'MenuOption', 'Menu', 'CallFlow', 'Schedule', 'CallHandlingAssociation')]
     [string]$Type,
 
-    [Parameter(Mandatory, ParameterSetName = 'Menu', HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
     [Parameter(Mandatory, ParameterSetName = 'CallFlow', HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
+    [Parameter(Mandatory, ParameterSetName = 'Menu', HelpMessage = "Merged Object of 'Prompts' to be added to Call Flows or Menus")]
+    [Parameter(ParameterSetName = 'MenuOption', HelpMessage = "Merged Object of 'Prompts' to be added to Menu Options")]
     [AllowNull()]
     [object[]]$Prompts,
 
@@ -128,9 +129,9 @@ function Merge-AutoAttendantArtefact {
           $SingleObject = [PsCustomObject][ordered]@{
             'DtmfResponse'   = $O.DtmfResponse
             'VoiceResponses' = $O.VoiceResponses
-            'Prompt'         = $O.Prompt
+            'Prompt'         = if ( $Prompts ) { $Prompts } else { $O.Prompt }
             'Action'         = $O.Action
-            'CallTarget'     = $CallTarget
+            'CallTarget'     = if ( $CallTarget ) { $CallTarget } else { $O.Prompt } # $CallTarget
           }
 
           Add-Member -Force -InputObject $SingleObject -MemberType ScriptMethod -Name ToString -Value {
@@ -148,8 +149,8 @@ function Merge-AutoAttendantArtefact {
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
             'Name'                  = $O.Name
-            'Prompts'               = $Prompts
-            'MenuOptions'           = $MenuOptions
+            'Prompts'               = if ( $Prompts ) { $Prompts } else { $O.Prompt } # $Prompts
+            'MenuOptions'           = if ( $MenuOptions ) { $MenuOptions } else { $O.MenuOptions } # $MenuOptions
             'DialByNameEnabled'     = $O.DialByNameEnabled
             'DirectorySearchMethod' = $O.DirectorySearchMethod
           }
@@ -170,7 +171,7 @@ function Merge-AutoAttendantArtefact {
           $SingleObject = [PsCustomObject][ordered]@{
             'Name'      = $O.Name
             'Id'        = $O.Id
-            'Greetings' = $Prompts
+            'Greetings' = if ( $Prompts ) { $Prompts } else { $O.Greetings } # $Prompts
             'Menu'      = $Menu
           }
 
@@ -217,8 +218,8 @@ function Merge-AutoAttendantArtefact {
           $SingleObject = [PsCustomObject][ordered]@{
             'Name'                    = $O.Name
             'Type'                    = $O.Type
-            'WeeklyRecurrentSchedule' = $WeeklyRecurrentSchedule
-            'FixedSchedule'           = $FixedSchedule
+            'WeeklyRecurrentSchedule' = if ( $WeeklyRecurrentSchedule ) { $WeeklyRecurrentSchedule } else { $O.WeeklyRecurrentSchedule } # $WeeklyRecurrentSchedule
+            'FixedSchedule'           = if ( $FixedSchedule ) { $FixedSchedule } else { $O.FixedSchedule } # $FixedSchedule
             'Id'                      = $O.Id
           }
 

@@ -6,7 +6,7 @@
 
 
 
-#CHECK Removal of Counters for UserLicenses - not relevant here - might improve stack overall
+
 function Get-AzureAdUserLicense {
   <#
   .SYNOPSIS
@@ -101,7 +101,6 @@ function Get-AzureAdUserLicense {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $UserPrincipalName) {
-      #TEST Piping with UserPrincipalName, Identity from Get-CsOnlineUser
       try {
         $UserObject = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         $UserLicenseDetail = Get-AzureADUserLicenseDetail -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP

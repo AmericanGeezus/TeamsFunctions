@@ -95,7 +95,6 @@ function Set-TeamsResourceAccount {
   [Alias('Set-TeamsRA')]
   [OutputType([System.Void])]
   param (
-    #TEST Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'UPN of the Object to change')]
     [ValidateScript( {
         if ($_ -match '@' -or $_ -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') { $True } else {
@@ -121,8 +120,14 @@ function Set-TeamsResourceAccount {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicense"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
     [string[]]$License,
@@ -218,6 +223,7 @@ function Set-TeamsResourceAccount {
       Write-Verbose -Message "$Status - $Operation"
 
       try {
+        #TEST Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
         #Trying to query the Resource Account
         $Object = (Get-CsOnlineApplicationInstance -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
         $CurrentDisplayName = $Object.DisplayName
@@ -575,7 +581,7 @@ function Set-TeamsResourceAccount {
             if ($null -ne ($UVCObject.OnPremLineURI)) {
               # Remove from ApplicationInstance
               Write-Verbose -Message "'$Name ($UPN)' Removing Direct Routing Number"
-              #TEST why does -OnPremPhoneNumber require -Force?
+              #Switch -OnPremPhoneNumber requires -Force - Reason unknown
               $null = (Set-CsOnlineApplicationInstance -Identity "$UPN" -OnpremPhoneNumber $null -Force -WarningAction SilentlyContinue -ErrorAction STOP)
               Write-Verbose -Message 'SUCCESS'
             }

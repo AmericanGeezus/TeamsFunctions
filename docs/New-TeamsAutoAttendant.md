@@ -13,13 +13,16 @@ Support function wrapping around New-CsAutoAttendant
 ## SYNTAX
 
 ```
-New-TeamsAutoAttendant [-Name] <String> [[-TimeZone] <String>] [[-LanguageId] <String>] [[-Operator] <String>]
+New-TeamsAutoAttendant [-Name] <String> [[-TimeZone] <String>] [[-LanguageId] <String>]
  [[-BusinessHoursGreeting] <String>] [[-BusinessHoursCallFlowOption] <String>]
  [[-BusinessHoursCallTarget] <String>] [[-BusinessHoursMenu] <Object>] [[-AfterHoursGreeting] <String>]
  [[-AfterHoursCallFlowOption] <String>] [[-AfterHoursCallTarget] <String>] [[-AfterHoursMenu] <Object>]
- [[-AfterHoursSchedule] <String>] [[-Schedule] <Object>] [-EnableVoiceResponse] [[-DefaultCallFlow] <Object>]
- [[-CallFlows] <Object>] [[-CallHandlingAssociations] <Object>] [[-InclusionScope] <Object>]
- [[-ExclusionScope] <Object>] [-EnableTranscription] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-AfterHoursSchedule] <String>] [[-HolidaySetGreeting] <String>] [[-HolidaySetCallFlowOption] <String>]
+ [[-HolidaySetCallTarget] <String>] [[-HolidaySetMenu] <Object>] [[-HolidaySetSchedule] <String>]
+ [[-Schedule] <Object>] [[-DefaultCallFlow] <Object>] [[-CallFlows] <Object>]
+ [[-CallHandlingAssociations] <Object>] [[-Operator] <String>] [[-InclusionScope] <Object>]
+ [[-ExclusionScope] <Object>] [-EnableVoiceResponse] [-EnableTranscription] [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -67,16 +70,15 @@ This example is equally applicable to AfterHours.
 
 ### EXAMPLE 5
 ```
-New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -InclusionScope $InGroups -ExclusionScope $OutGroups
+New-TeamsAutoAttendant -Name "My Auto Attendant" -DefaultCallFlow $DefaultCallFlow -CallFlows $CallFlows -CallHandlingAssociations $CallHandlingAssociations -InclusionScope $InGroups -ExclusionScope $OutGroups
 ```
 
 Creates a new Auto Attendant "My Auto Attendant" and passes through all objects provided.
-In this example, provided Objects are
-passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
-- A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters
-- One or more CallFlows Objects are passed on which override all "-AfterHours"-Parameters
-- One or more CallHandlingAssociation Objects are passed on which override all "-AfterHours"-Parameters
-- An InclusionScope and an ExclusionScope are defined.
+In this example, provided Objects are passed on through tto New-CsAutoAttendant and override other respective Parmeters provided:
+A DefaultCallFlow Object is passed on which overrides all "-BusinessHours"-Parmeters.
+One or more CallFlows and
+one or more CallHandlingAssociation Objects are passed on overriding all "-AfterHours" and "-HolidaySet" Parameters
+An InclusionScope and an ExclusionScope are defined.
 These are passed on as-is
 All other values, like Language and TimeZone are defined with their defaults and can still be defined with the Objects.
 
@@ -135,23 +137,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Operator
-Optional.
-Creates a Callable entity for the Operator
-Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 4
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -BusinessHoursGreeting
 Optional.
 Creates a Greeting for the Default Call Flow (during business hours) utilising New-TeamsAutoAttendantPrompt
@@ -166,7 +151,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 5
+Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -186,7 +171,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 6
+Position: 5
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -205,7 +190,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 7
+Position: 6
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -222,7 +207,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 8
+Position: 7
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -234,7 +219,27 @@ Creates a Greeting for the After Hours Call Flow utilising New-TeamsAutoAttendan
 A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified
 The last 4 digits will determine the type.
 For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3'
-If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 8
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -AfterHoursCallFlowOption
+Optional.
+Disconnect, TransferCallToTarget, Menu.
+Default is Disconnect.
+TransferCallToTarget requires AfterHoursCallTarget.
+Menu requires AfterHoursMenu
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
 
 ```yaml
 Type: String
@@ -248,13 +253,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -AfterHoursCallFlowOption
+### -AfterHoursCallTarget
 Optional.
-Disconnect, TransferCallToTarget, Menu.
-Default is Disconnect.
-TransferCallToTarget requires AfterHoursCallTarget.
-Menu requires AfterHoursMenu
-If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+Requires AfterHoursCallFlowOption to be TransferCallToTarget.
+Creates a Callable entity for this Call Target
+Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
 
 ```yaml
 Type: String
@@ -268,15 +272,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -AfterHoursCallTarget
+### -AfterHoursMenu
 Optional.
-Requires AfterHoursCallFlowOption to be TransferCallToTarget.
-Creates a Callable entity for this Call Target
-Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
-If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
 
 ```yaml
-Type: String
+Type: Object
 Parameter Sets: (All)
 Aliases:
 
@@ -287,13 +289,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -AfterHoursMenu
+### -AfterHoursSchedule
 Optional.
-Requires AfterHoursCallFlowOption to be Menu and a AfterHoursCallTarget
-If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7
+A more granular Schedule can be used with the Parameter -Schedule
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
 
 ```yaml
-Type: Object
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -304,11 +307,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -AfterHoursSchedule
+### -HolidaySetGreeting
 Optional.
-Default Schedule to apply: One of: MonToFri9to5 (default), MonToFri8to12and13to18, Open24x7
-A more granular Schedule can be used with the Parameter -Schedule
-If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
+Creates a Greeting for the Holiday Set Call Flow utilising New-TeamsAutoAttendantPrompt
+A supported Audio File or a text string that is parsed by the text-to-voice engine in the Language specified
+The last 4 digits will determine the type.
+For an AudioFile they are expected to be the file extension: '.wav', '.wma' or 'mp3'
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
 
 ```yaml
 Type: String
@@ -322,15 +327,16 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Schedule
+### -HolidaySetCallFlowOption
 Optional.
-Custom Schedule object to apply for After Hours Call Flow
-Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule
-If CallFlows or CallHandlingAssociations are provided, this parameter will be ignored.
-Using this parameter to define the Schedule will override the Parameter -AfterHoursSchedule
+Disconnect, TransferCallToTarget, Menu.
+Default is Disconnect.
+TransferCallToTarget requires HolidaySetCallTarget.
+Menu requires HolidaySetMenu
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
 
 ```yaml
-Type: Object
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -341,17 +347,76 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -EnableVoiceResponse
-Optional Switch to be passed to New-CsAutoAttendant
+### -HolidaySetCallTarget
+Optional.
+Requires HolidaySetCallFlowOption to be TransferCallToTarget.
+Creates a Callable entity for this Call Target
+Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
 
 ```yaml
-Type: SwitchParameter
+Type: String
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
-Default value: False
+Position: 15
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -HolidaySetMenu
+Optional.
+Requires HolidaySetCallFlowOption to be Menu and a HolidaySetCallTarget
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 16
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -HolidaySetSchedule
+Optional.
+Default Schedule to apply: Either a 2-digit Country Code to create the schedule for the next three years for,
+a Schedule Object created beforehand or an existing Schedule Object ID already created in the Tenant
+If not provided, an empty Schedule Object will be created which will never be in effect.
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 17
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Schedule
+Optional.
+Custom Schedule object to apply for After Hours Call Flow
+Object created with New-TeamsAutoAttendantSchedule or New-CsAutoAttendantSchedule
+If CallFlows and CallHandlingAssociations are provided, this parameter will be ignored.
+Using this parameter to provide a Schedule Object will override the Parameter -AfterHoursSchedule
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 18
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -367,7 +432,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 15
+Position: 19
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -376,7 +441,7 @@ Accept wildcard characters: False
 ### -CallFlows
 Optional.
 Call Flow Object to pass to New-CsAutoAttendant
-Using this parameter to define additional Call Flows overrides all -AfterHours Parameters
+Using this parameter to define additional Call Flows overrides all -AfterHours & -HolidaySet Parameters
 Requires Parameter CallHandlingAssociations in conjunction
 
 ```yaml
@@ -385,7 +450,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 16
+Position: 20
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -394,7 +459,7 @@ Accept wildcard characters: False
 ### -CallHandlingAssociations
 Optional.
 Call Handling Associations Object to pass to New-CsAutoAttendant
-Using this parameter to define additional Call Flows overrides all -AfterHours Parameters
+Using this parameter to define additional Call Flows overrides all -AfterHours & -HolidaySet Parameters
 Requires Parameter CallFlows in conjunction
 
 ```yaml
@@ -403,7 +468,24 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 17
+Position: 21
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Operator
+Optional.
+Creates a Callable entity for the Operator
+Expected are UserPrincipalName (User, ApplicationEndPoint), a TelURI (ExternalPstn), an Office 365 Group Name (SharedVoicemail)
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 22
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -420,7 +502,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 18
+Position: 23
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -437,8 +519,23 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 19
+Position: 24
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -EnableVoiceResponse
+Optional Switch to be passed to New-CsAutoAttendant
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -518,7 +615,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
-None
+BusinessHours Parameters aim to simplify input for the Default Call Flow
+AfterHours Parameters aim to simplify input for the After Hours Call Flow
+HolidaySet Parameters aim to simplify input for the Holiday Set Call Flow
+Use of CsAutoAttendant Parameters will override the respective '-BusinessHours', '-AfterHours' and '-HolidaySet' Parameters
+
+InclusionScope and ExclusionScope Objects can be created with New-TeamsAutoAttendantDialScope and the Group Names
+This was deliberately not integrated into this CmdLet
 
 ## RELATED LINKS
 

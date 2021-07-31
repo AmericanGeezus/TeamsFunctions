@@ -96,8 +96,14 @@ function Set-TeamsCommonAreaPhone {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicense"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
     [string[]]$License,
@@ -278,8 +284,8 @@ function Set-TeamsCommonAreaPhone {
         $ServicePlan1 = $UserLicense.ServicePlans | Where-Object ServicePlanName -EQ "$($PlansToTest[0])"
         $ServicePlan2 = $UserLicense.ServicePlans | Where-Object ServicePlanName -EQ "$($PlansToTest[1])"
         if ($ServicePlan1.Provisioningstatus -eq 'Success' -and $ServicePlan2.Provisioningstatus -eq 'Success' ) {
-            Write-Verbose -Message "'$Name ($UPN)' Service Plans for Teams & PhoneSystem are enabled successfully"
-            $IsLicensed = $true
+          Write-Verbose -Message "'$Name ($UPN)' Service Plans for Teams & PhoneSystem are enabled successfully"
+          $IsLicensed = $true
         }
       }
       else {
@@ -346,7 +352,7 @@ function Set-TeamsCommonAreaPhone {
       }
       #endregion
 
-      #NOTE This will currently never be executed as PhoneNumber is not a parameter on the CmdLet - left here for future expansion
+      <# Commented out as it will currently never be executed as PhoneNumber is not a parameter on the CmdLet - left here for future expansion
       #region Waiting for License Application
       if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
         $Operation = 'Waiting for AzureAd to write Object'
@@ -375,6 +381,7 @@ function Set-TeamsCommonAreaPhone {
         Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
       }
       #endregion
+      #>
 
       #region Policies
       $Operation = 'Applying Policies'

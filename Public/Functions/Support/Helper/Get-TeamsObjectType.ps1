@@ -91,29 +91,34 @@ function Get-TeamsObjectType {
         return 'Channel'
       }
       else {
-        $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        if ( $User ) {
-          if ($User[0].Department -eq 'Microsoft Communication Application Instance') {
-            #if ( Test-TeamsResourceAccount $Id ) {
-            Write-Verbose -Message "Callable Entity - Call Target '$Id' found: ResourceAccount (ApplicationEndpoint), (VoiceApp)"
-            return 'ApplicationEndpoint'
-          }
-          else {
-            Write-Verbose -Message "Callable Entity - Call Target '$Id' found: User (Forward, Voicemail)"
-            return 'User'
-          }
-        }
-        else {
-          if ( Test-AzureADGroup $Id ) {
-            Write-Verbose -Message "Callable Entity - Call Target '$Id' found: Group (SharedVoicemail)"
-            return 'Group'
-          }
-          else {
-            # Catch neither
-            Write-Information 'ObjectType cannot be determined.'
-            return
+        try {
+          $User = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
+          if ( $User ) {
+            if ($User[0].Department -eq 'Microsoft Communication Application Instance') {
+              #if ( Test-TeamsResourceAccount $Id ) {
+              Write-Verbose -Message "Callable Entity - Call Target '$Id' found: ResourceAccount (ApplicationEndpoint), (VoiceApp)"
+              return 'ApplicationEndpoint'
+            }
+            else {
+              Write-Verbose -Message "Callable Entity - Call Target '$Id' found: User (Forward, Voicemail)"
+              return 'User'
+            }
           }
         }
+        catch {
+          Write-Verbose -Message "Callable Entity - Call Target '$Id' is not a TelUri, Channel, User (Forward, Voicemail), ApplicationEndPoint - Trying to find an AzureAdGroup"
+        }
+      }
+
+      # Last resort - Try AzureAdGroup
+      if ( Test-AzureADGroup $Id ) {
+        Write-Verbose -Message "Callable Entity - Call Target '$Id' found: Group (SharedVoicemail)"
+        return 'Group'
+      }
+      else {
+        # Catch neither
+        Write-Verbose -Message 'Callable Entity - ObjectType cannot be determined. (Neither TelURI, nor Channel, AzureAdUser, ApplicationEndPoint or Group)'
+        return 'Unknown'
       }
     }
   }

@@ -18,7 +18,7 @@ New-TeamsAutoAttendantMenu [-Name <String>] -Action <String> [-EnableDialByName]
  [-DirectorySearchMethod <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
-### MenuOptions2
+### CallTargetsToProcess
 ```
 New-TeamsAutoAttendantMenu [-Name <String>] -Action <String> -Prompts <Object> -CallTargetsInOrder <String[]>
  [-AddOperatorOnZero] [-EnableDialByName] [-DirectorySearchMethod <String>] [-WhatIf] [-Confirm]
@@ -66,7 +66,7 @@ DirectorySearchMethod is set to ByExtension
 
 ### EXAMPLE 3
 ```
-New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "C:\temp\Menu.wav" -CallTargetsInOrder "MyCQ@domain.com","MyAA@domain.com","$null","tel:+15551234567"
+New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "C:\temp\Menu.wav" -CallTargetsInOrder "MyCQ@domain.com","MyAA@domain.com","$null","tel:+15551234567","Please listen for our opening hours..."
 ```
 
 Creates a Menu with a Prompt and MenuOptions.
@@ -74,12 +74,13 @@ Creates a Prompts Object with the provided Path to the Audio File.
 Creates a Menu Object with the Call Targets provided in order of application depending on identified ObjectType:
 Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively.
 Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn)
+Option 5 will be an Announcement (Text-to-Voice) - returns to main menu afterwards.
 Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
 This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
 
 ### EXAMPLE 4
 ```
-New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group"
+New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group","C:\temp\OpeningHours.wav"
 ```
 
 Creates a Menu with a Prompt and MenuOptions.
@@ -87,6 +88,7 @@ Creates a Prompts Object with the provided Text-to-voice string.
 Creates a Menu with MenuOptions Objects provided in order with the Parameter CallTargetsInOrder depending on identified ObjectType:
 Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string),
 Option 3 is TransferToCallTarget (Shared Voicemail)
+Option 4 will be an Announcement (AudioFile) - returns to main menu afterwards.
 Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
 This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
 
@@ -157,7 +159,7 @@ A File path ending in .wav, .mp3 or .wma will be used to create a recording.
 
 ```yaml
 Type: Object
-Parameter Sets: MenuOptions2, MenuOptions
+Parameter Sets: CallTargetsToProcess, MenuOptions
 Aliases:
 
 Required: True
@@ -194,7 +196,7 @@ See Examples for details
 
 ```yaml
 Type: String[]
-Parameter Sets: MenuOptions2
+Parameter Sets: CallTargetsToProcess
 Aliases: MenuOptionsInOrder
 
 Required: True
@@ -230,7 +232,7 @@ Creating or Updating an Auto Attendant with an Operator that is not defined will
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: MenuOptions2
+Parameter Sets: CallTargetsToProcess
 Aliases:
 
 Required: False

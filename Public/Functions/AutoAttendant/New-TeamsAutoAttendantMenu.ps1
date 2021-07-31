@@ -4,8 +4,8 @@
 # Updated:  12-DEC-2020
 # Status:   Live
 
-#TODO Add Announcement TTS and Announcement AudioFile & Disconnect
-#TODO Add Switch for Suppress Shared Voicemail System messages
+
+
 
 function New-TeamsAutoAttendantMenu {
   <#
@@ -56,19 +56,21 @@ function New-TeamsAutoAttendantMenu {
     Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Text-to-voice string.
     Creates Menu with the MenuOptions Objects provided. DirectorySearchMethod is set to ByExtension
   .EXAMPLE
-    New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "C:\temp\Menu.wav" -CallTargetsInOrder "MyCQ@domain.com","MyAA@domain.com","$null","tel:+15551234567"
+    New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "C:\temp\Menu.wav" -CallTargetsInOrder "MyCQ@domain.com","MyAA@domain.com","$null","tel:+15551234567","Please listen for our opening hours..."
     Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Path to the Audio File.
     Creates a Menu Object with the Call Targets provided in order of application depending on identified ObjectType:
     Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively.
     Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn)
+    Option 5 will be an Announcement (Text-to-Voice) - returns to main menu afterwards.
     Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
     This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
   .EXAMPLE
-    New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group"
+    New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group","C:\temp\OpeningHours.wav"
     Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Text-to-voice string.
     Creates a Menu with MenuOptions Objects provided in order with the Parameter CallTargetsInOrder depending on identified ObjectType:
     Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string),
     Option 3 is TransferToCallTarget (Shared Voicemail)
+    Option 4 will be an Announcement (AudioFile) - returns to main menu afterwards.
     Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored.
     This method does not allow specifying User Object that are intended to forward to the Users Voicemail!
   .EXAMPLE
@@ -127,13 +129,14 @@ function New-TeamsAutoAttendantMenu {
     [string]$Action,
 
     [Parameter(Mandatory, ParameterSetName = 'MenuOptions', HelpMessage = 'Prompt object, Text-To-Voice String or Full path to AudioFile')]
-    [Parameter(Mandatory, ParameterSetName = 'MenuOptions2', HelpMessage = 'Prompt object, Text-To-Voice String or Full path to AudioFile')]
+    [Parameter(Mandatory, ParameterSetName = 'CallTargetsToProcess', HelpMessage = 'Prompt object, Text-To-Voice String or Full path to AudioFile')]
+    [ArgumentCompleter( { '<Prompts-Object>', '<Your Text-to-speech-string>', 'C:\Temp\' })]
     $Prompts,
 
     [Parameter(Mandatory, ParameterSetName = 'MenuOptions', HelpMessage = 'MenuOptions Object')]
     [object[]]$MenuOptions,
 
-    [Parameter(Mandatory, ParameterSetName = 'MenuOptions2', HelpMessage = 'Up to 9 Call Targets in order to be applied as MenuOptions')]
+    [Parameter(Mandatory, ParameterSetName = 'CallTargetsToProcess', HelpMessage = 'Up to 9 Call Targets in order to be applied as MenuOptions')]
     [AllowNull()]
     [AllowEmptyString()]
     [Alias('MenuOptionsInOrder')]
@@ -142,7 +145,7 @@ function New-TeamsAutoAttendantMenu {
     [Parameter(Mandatory, ParameterSetName = 'TransferToCallTarget', HelpMessage = 'Up to 9 Call Targets in order to be applied as MenuOptions')]
     [string]$CallTarget,
 
-    [Parameter(ParameterSetName = 'MenuOptions2', HelpMessage = 'Adds a Menu Option for option 0 to Transfer to Operator')]
+    [Parameter(ParameterSetName = 'CallTargetsToProcess', HelpMessage = 'Adds a Menu Option for option 0 to Transfer to Operator')]
     [switch]$AddOperatorOnZero,
 
     [Parameter(HelpMessage = 'Enables directory search by recipient name and get transferred to the party')]
@@ -197,7 +200,7 @@ function New-TeamsAutoAttendantMenu {
             try {
               $PromptsObject = New-TeamsAutoAttendantPrompt -String "$Prompts"
               if ($PromptsObject) {
-                Write-Verbose -Message 'Prompts - Adding 1 Prompts created (Greeting)'
+                Write-Verbose -Message 'Prompts - Adding 1 Prompt (Greeting)'
                 $Parameters += @{'Prompts' = $PromptsObject }
               }
             }
@@ -216,23 +219,9 @@ function New-TeamsAutoAttendantMenu {
         #region MenuOptions or CallTargetsInOrder
         switch ($PSCmdlet.ParameterSetName) {
           'MenuOptions' {
-            # Determine Type
-            <# NOTE Commented out as this doesn't work - Type is Selected.System.Management.Automation.PSCustomObject
-            No Checks are performed for the Type. This relies for New-CsOnlineAutoAttendant to accept the Object as-is.
-            foreach ($MenuOption in $MenuOptions) {
-              $MenuOptionType = $null
-              $MenuOptionType = ($MenuOption | Get-Member | Select-Object TypeName -First 1).TypeName
-              if ($MenuOptionType -eq "Deserialized.Microsoft.Rtc.Management.Hosted.OAA.Models.MenuOption") {
-                Write-Verbose -Message "Menu Option - Provided Object is a Menu Object. Adding Menu Option"
-              }
-              else {
-                Write-Error -Message "Menu Option - Provided Object not of correct Object Type. Please create a Menu with New-TeamsAutoAttendantMenuOption or New-CsAutoAttendantMenuOption" -ErrorAction Stop
-              }
-            }
-            #>
+            # No Action required
           }
-
-          'MenuOptions2' {
+          'CallTargetsToProcess' {
             # Process Ordered
             Write-Verbose -Message 'MenuOptions - Creating Menu Options for Call Targets as provided (CallTargetsInOrder)'
             $Option = 1
@@ -247,14 +236,18 @@ function New-TeamsAutoAttendantMenu {
               if ($Option -le $CallTargetsInOrder.Count -and $Option -le $MaxOptions) {
                 if ( $Target ) {
                   $MenuOptionToAdd = $null
+                  #Identifying the Target is delegated to New-TeamsAutoAttendantMenuOption for all but Announcement
                   try {
-                    if ( $Option -ne 10 ) {
-                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press $Option -CallTarget $Target
+                    $CallableEntity = Get-TeamsObjectType "$Target"
+                    if ($CallableEntity -eq 'Unknown') {
+                      # Assume it is an announcement
+                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press $Option -Announcement "$Target" -ErrorAction Stop
                     }
                     else {
-                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press 0 -CallTarget $Target
+                      # Process as a Call Target
+                      if ($Option -eq 10) { $Option = 0 }
+                      $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press $Option -CallTarget "$Target" -ErrorAction Stop
                     }
-
                     if ($MenuOptionToAdd) {
                       Write-Information "MenuOptions - Creating Option 'Press $Option' to '$Target' - OK"
                       [void]$CreatedMenuOptions.Add($MenuOptionToAdd)
@@ -267,7 +260,6 @@ function New-TeamsAutoAttendantMenu {
                 else {
                   Write-Verbose -Message "MenuOptions - Creating Option 'Press $Option' not provided, is empty or NULL - OK (omitted)" -Verbose
                 }
-
                 $Option++
               }
             }

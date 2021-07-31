@@ -196,7 +196,6 @@ function Get-TeamsUserVoiceConfig {
       $null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
 
       #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
-      #TEST Application for normal operations ('' -eq $CsUser.TenantDialPlan -and -not $AdUser) results in $TRUE when CsUser found!
       if ( $CsUser.SipAddress -and -not $CsUser.TenantDialPlan -and $ObjectType -ne 'ApplicationEndpoint' ) {
         Write-Information -MessageData "User '$User' - No Dial Plan is assigned"
       }
@@ -255,7 +254,6 @@ function Get-TeamsUserVoiceConfig {
         }
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $CsUserLicense.PhoneSystemStatus
-        #TEST Application of PhoneSystemStatus for licensed Users, RA and unlicensed
         #Alternative: If PhoneSystemStatus -contains "Success", TRUE, FALSE - too imprecise?
         if ( $CsUserLicense.PhoneSystem ) {
           $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystem -Value $CsUserLicense.PhoneSystem

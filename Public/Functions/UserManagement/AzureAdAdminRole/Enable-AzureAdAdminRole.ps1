@@ -5,8 +5,8 @@
 # Status:     Live
 
 #TODO: Privileged Admin Groups buildout
-#TODO: Suppress error for Skype one (or ingore Skype for Business Admin Role completely) - also for get!
 #TODO: Change validation of Request to return validated setting via GET-AzureADMSRoleAssignment
+
 function Enable-AzureAdAdminRole {
   <#
   .SYNOPSIS
@@ -122,7 +122,7 @@ function Enable-AzureAdAdminRole {
 
     # Importing Module
     #R#equires -Modules @{ ModuleName="AzureADpreview"; ModuleVersion="2.0.2.24" }
-    #TODO To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
+    #IMPROVE To be removed once AzureAd is updated containing the PIM functions and made part of the Requirements for this Module
     try {
       Write-Verbose -Message "Removing Module 'AzureAd', Importing Module 'AzureAdPreview'"
       $SaveVerbosePreference = $global:VerbosePreference;
@@ -153,7 +153,7 @@ function Enable-AzureAdAdminRole {
     # Reason & Ticket Number
     if ( -not $Reason ) { $Reason = 'Administration' }
     if ( $TicketNr ) {
-      #TODO Where to build in TicketNr?
+      #IMPROVE TicketNr is not yet available
       #$Parameters += @{'$TicketNr' = $TicketNr }
       $Reason = "Ticket: $TicketNr - $Reason"
     }
@@ -352,8 +352,8 @@ function Enable-AzureAdAdminRole {
             catch {
               if ($_.Exception.Message.Contains('ExpirationRule')) {
                 # Amending Schedule
-                if ($Duration -eq 4) { $Duration = 2 } else { $Duration = 4 }
-                Write-Warning -Message "Specified Duration is not allowed, re-trying with $Duration hours"
+                if ($Duration -eq 4) { $Duration = 1 } else { $Duration = 4 }
+                Write-Warning -Message "Specified Duration is not allowed, re-trying for $Duration hour(s)"
                 $end = $Date.AddHours($Duration).ToUniversalTime()
 
                 $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')

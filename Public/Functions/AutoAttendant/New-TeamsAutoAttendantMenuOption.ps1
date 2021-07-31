@@ -5,8 +5,8 @@
 # Status:   Live
 
 
-#TODO Evaluate Announcement Text/Announcement File to MenuOption
-#TODO Evaluate Suppress Voicemail System Message & Transcription for Shared Voicemail
+
+
 function New-TeamsAutoAttendantMenuOption {
   <#
   .SYNOPSIS
@@ -17,8 +17,8 @@ function New-TeamsAutoAttendantMenuOption {
   .PARAMETER DisconnectCall
     Required to create a basic 'Disconnect' option. Switch. Default.
   .PARAMETER Press
-    Required for Option TransferToOperator and TransferToCallTarget. Integer.
-    Dtmf Tone (digit) to be pressed for this option
+    Required for binding a specific Dial Key. Integer.
+    Dtmf Tone (digit) to be pressed for this option. Set to Automatic if not provided.
   .PARAMETER OrSay
     Optional for Option TransferToCallTarget. String.
     Voice Response to be used for this option. Expected: Single word
@@ -29,6 +29,8 @@ function New-TeamsAutoAttendantMenuOption {
   .PARAMETER ToCallTarget
     Required for Option TransferToCallTarget. String identifying the Call Target:
     UserPrincipalName (User, ApplicationEndpoint), Group Name (Shared Voicemail), Tel Uri (ExternalPstn)
+  .PARAMETER Announcement
+    Required for Option Announcement. String for the Audio File OR Text-to-Voice
   .EXAMPLE
     New-TeamsAutoAttendantMenuOption -Disconnect
     Creates a default Menu Option to be used for disconnecting the call.
@@ -51,6 +53,13 @@ function New-TeamsAutoAttendantMenuOption {
   .EXAMPLE
     New-TeamsAutoAttendantMenuOption -Press 5 -CallTarget "tel:+15551234567" -OrSay "Engineer"
     Creates a Menu Option on pressing 5 or saying 'Engineer' to Transfer to the Call Target (ExternalPstn).
+  .EXAMPLE
+    New-TeamsAutoAttendantMenuOption -Press 6 -Announcement "We are open Monday to Friday from 9 AM to 5 PM" -OrSay "Hours"
+    Creates a Menu Option on pressing 6 or saying 'Hours' to play an Announcement (Text-to-Voice) and return to the main menu.
+  .EXAMPLE
+    New-TeamsAutoAttendantMenuOption -Press 7 -Announcement "C:\Temp\AudioFile-OpeningHours.wav" -OrSay "Hours"
+    Creates a Menu Option on pressing 7 or saying 'Hours' to play an Announcement (Audio File) and return to the main menu.
+    The File must exist in the specified
   .INPUTS
     System.String
   .OUTPUTS
@@ -78,6 +87,7 @@ function New-TeamsAutoAttendantMenuOption {
 
     [Parameter(ParameterSetName = 'Operator', HelpMessage = 'Number to press on the Dial Pad')]
     [Parameter(ParameterSetName = 'CallTarget', HelpMessage = 'Number to press on the Dial Pad')]
+    [Parameter(ParameterSetName = 'Announcement', HelpMessage = 'Number to press on the Dial Pad')]
     [Alias('DtmfResponseTone')]
     [ValidateRange(0, 9)]
     [int]$Press,
@@ -88,12 +98,17 @@ function New-TeamsAutoAttendantMenuOption {
 
     [Parameter(ParameterSetName = 'Operator', HelpMessage = 'Alternative voice Response')]
     [Parameter(ParameterSetName = 'CallTarget', HelpMessage = 'Alternative voice Response')]
+    [Parameter(ParameterSetName = 'Announcement', HelpMessage = 'Alternative voice Response')]
     [Alias('VoiceResponses', 'Say')]
     [ValidateScript( { if ($_ -match '^[^\W_]+$') { $true } else { Write-Error -Message 'Voice Response must be one word without spaces or symbols.' } })]
     [string]$OrSay,
 
     [Parameter(ParameterSetName = 'CallTarget', HelpMessage = 'CallTarget')]
-    [string]$CallTarget
+    [string]$CallTarget,
+
+    [Parameter(ParameterSetName = 'Announcement', HelpMessage = 'Path the the recording OR Text-to-Voice string')]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
+    [string]$Announcement
 
   ) #param
 
@@ -122,50 +137,54 @@ function New-TeamsAutoAttendantMenuOption {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    if ( $PSCmdlet.ParameterSetName -ne 'DisconnectCall') {
+      # Process Press & Say if specified
+      if ($Press) {
+        $DtmfResponse = 'Tone' + $Press
+        if ($OrSay) {
+          $Parameters += @{'VoiceResponses' = $OrSay }
+        }
+      }
+      else {
+        $DtmfResponse = 'Automatic'
+        if ($OrSay) {
+          Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
+        }
+      }
+    }
+
     switch ($PSCmdlet.ParameterSetName) {
       'DisconnectCall' {
         $Parameters += @{'DtmfResponse' = 'Automatic' }
         $Parameters += @{'Action' = 'DisconnectCall' }
       }
       'Operator' {
-        if ($Press) {
-          $DtmfResponse = 'Tone' + $Press
-          if ($OrSay) {
-            Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
-          }
-        }
-        else {
-          $DtmfResponse = 'Automatic'
-          if ($OrSay) {
-            Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
-          }
-        }
         $Parameters += @{'DtmfResponse' = $DtmfResponse }
         $Parameters += @{'Action' = 'TransferCallToOperator' }
       }
-
+      'Announcement' {
+        # Creating Prompt
+        try {
+          $Prompt = New-TeamsAutoAttendantPrompt -String "$Announcement" -ErrorAction Stop
+          if ( $Prompt ) {
+            $Parameters += @{'Prompt' = $Prompt }
+          }
+          $Parameters += @{'DtmfResponse' = $DtmfResponse }
+          $Parameters += @{'Action' = 'Announcement' }
+        }
+        catch {
+          Write-Error -Message "Error Creating Prompt: $($_.Exception.Message)" -ErrorAction Stop
+        }
+      }
       'CallTarget' {
-        if ($Press) {
-          $DtmfResponse = 'Tone' + $Press
-          if ($OrSay) {
-            $Parameters += @{'VoiceResponses' = $OrSay }
-          }
-        }
-        else {
-          $DtmfResponse = 'Automatic'
-          if ($OrSay) {
-            Write-Warning -Message "Parameter 'OrSay' can only be used together with 'Press' - omitted."
-          }
-        }
-        $Parameters += @{'DtmfResponse' = $DtmfResponse }
-        $Parameters += @{'Action' = 'TransferCallToTarget' }
-
         # Determine Call Target
         try {
-          $CallableEntity = New-TeamsCallableEntity -Identity "$CallTarget"
+          $CallableEntity = New-TeamsCallableEntity -Identity "$CallTarget" -ErrorAction Stop
           if ( $CallableEntity ) {
             $Parameters += @{'CallTarget' = $CallableEntity }
           }
+          $Parameters += @{'DtmfResponse' = $DtmfResponse }
+          $Parameters += @{'Action' = 'TransferCallToTarget' }
         }
         catch {
           Write-Error -Message "Error Creating Call Target: $($_.Exception.Message)" -ErrorAction Stop

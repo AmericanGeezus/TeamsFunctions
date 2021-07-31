@@ -2,7 +2,7 @@
 # Function: VoiceRouting
 # Author:   David Eberhardt
 # Updated:  26-JUN-2021
-# Status:   Beta
+# Status:   RC
 
 
 
@@ -105,7 +105,7 @@ function Find-TeamsEmergencyCallRoute {
   )
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -127,7 +127,6 @@ function Find-TeamsEmergencyCallRoute {
       [string]$MatchingRule
       [string]$MatchingPattern
       [string]$TranslatedNumber
-      [bool]$NetworkConfigurationBypassed
       [string]$NetworkSite
       [string]$UserPrincipalName
       [string]$SiteEmergencyCallingPolicy
@@ -154,7 +153,6 @@ function Find-TeamsEmergencyCallRoute {
         [string]$MatchingRule,
         [string]$MatchingPattern,
         [string]$TranslatedNumber,
-        [bool]$NetworkConfigurationBypassed,
         [string]$NetworkSite,
         [string]$UserPrincipalName,
         [string]$SiteEmergencyCallingPolicy,
@@ -181,7 +179,6 @@ function Find-TeamsEmergencyCallRoute {
         $this.MatchingRule = $MatchingRule
         $this.MatchingPattern = $MatchingPattern
         $this.TranslatedNumber = $TranslatedNumber
-        $this.NetworkConfigurationBypassed = $NetworkConfigurationBypassed
         $this.NetworkSite = $NetworkSite
         $this.UserPrincipalName = $UserPrincipalName
         $this.SiteEmergencyCallingPolicy = $SiteEmergencyCallingPolicy
@@ -230,7 +227,7 @@ function Find-TeamsEmergencyCallRoute {
             }
           }
           catch {
-            Write-Error -Message "Site '$($Site.NetworkSiteId)' not found" -Category ResourceUnavailable
+            Write-Error -Message "Site '$Site' not found" -Category ResourceUnavailable
             continue
           }
         }
@@ -270,7 +267,7 @@ function Find-TeamsEmergencyCallRoute {
       #region Preparing Object
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Preparing Emergency Voice Routing Object"
       $EmergencyCallRoutingObject = $null
-      $EmergencyCallRoutingObject = [TFEmergencyVoiceRouting]::new('', '', '', '', '', '', $null, '', '', '', '', '', '', '', '', '', '', '', '', '', $null, '', '', $null, '')
+      $EmergencyCallRoutingObject = [TFEmergencyVoiceRouting]::new('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', $null, '', '', $null, '')
       $EmergencyCallRoutingObject.NetworkSite = $Site.NetworkSiteId
       $EmergencyCallRoutingObject.SiteEmergencyCallRoutingPolicy = $Site.EmergencyCallRoutingPolicy
       $EmergencyCallRoutingObject.SiteEmergencyCallingPolicy = $Site.EmergencyCallingPolicy
@@ -358,61 +355,49 @@ function Find-TeamsEmergencyCallRoute {
             $DP = (Get-CsDialPlan $($User.DialPlan)).NormalizationRules | Where-Object Name -EQ $EmergencyCallRoutingObject.MatchingRule
             $EmergencyCallRoutingObject.EffectiveDialPlan = if ( $TDP ) { $User.TenantDialPlan } elseif ( $DP ) { $User.DialPlan } else {}
             #endregion
-
-            #region Determining influence of Tenant Dial Plan & statically assigned ECRP
-            # Status of matching Dial Plan
-            if ( $EmergencyCallRoutingObject.MatchingRule ) {
-              Write-Verbose -Message 'Effective Dial Plan - The number provided is matched by the Dial Plan - This bypasses Emergency Call Routing Policies. This call is most likely routed through the Online Voice Routing Policy'
-              $EmergencyCallRoutingObject.NetworkConfigurationBypassed = $true
-            }
-            else {
-              $EmergencyCallRoutingObject.NetworkConfigurationBypassed = $false
-            }
-            #endregion
           }
           #endregion
 
           #region Determining Effective EmergencyCallRoutingPolicy & EmergencyCallingPolicy
-          #BODGE - Effective policy is the one that matches the Number, not the one that is triggered first (Site > User). Move determination below to get a better picture!
-          $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy = if ( $Site.EmergencyCallRoutingPolicy ) { $Site.EmergencyCallRoutingPolicy }
-          elseif ($User.EmergencyCallRoutingPolicy) { $User.EmergencyCallRoutingPolicy } else {}
+          # Effective Call Routing Policy
+          if ( $User.EmergencyCallRoutingPolicy ) {
+            $UserECRP = Get-CsTeamsEmergencyCallRoutingPolicy $User.EmergencyCallRoutingPolicy
+            if ( $DialedNumber -in $UserECRP.EmergencyNumbers.EmergencyDialMask -or $DialedNumber -in $UserECRP.EmergencyNumbers.EmergencyDialString ) {
+              $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy = $User.EmergencyCallRoutingPolicy
+              $EmergencyCallRoutingObject.NetworkPathTaken = 'UserEmergencyCallRoutingPolicy'
+            }
+          }
+          if ( $Site.EmergencyCallRoutingPolicy ) {
+            $SiteECRP = Get-CsTeamsEmergencyCallRoutingPolicy $Site.EmergencyCallRoutingPolicy
+            if ( $DialedNumber -in $SiteECRP.EmergencyNumbers.EmergencyDialMask -or $DialedNumber -in $SiteECRP.EmergencyNumbers.EmergencyDialString ) {
+              $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy = $Site.EmergencyCallRoutingPolicy
+            }
+          }
+          $EmergencyCallRoutingObject.NetworkPathTaken = 'SiteEmergencyCallRoutingPolicy'
+
+          # Effective Calling Policy
           $EmergencyCallRoutingObject.EffectiveEmergencyCallingPolicy = if ( $Site.EmergencyCallingPolicy ) { $Site.EmergencyCallingPolicy }
-          elseif ($User.EmergencyCallingPolicy) { $User.EmergencyCallingPolicy } else {}
+          elseif ($User.EmergencyCallingPolicy) { $User.EmergencyCallingPolicy } else { $null }
           #endregion
 
           #region NetworkPathTaken & effective OPU
           $OPUs = $null
-          #Status of (statically assigned) Emergency Call Routing Policy
-          if ( $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy -and -not $EmergencyCallRoutingObject.NetworkConfigurationBypassed ) {
-            # if matched to Dial String
-            Write-Verbose -Message "Effective Emergency Call Routing Policy (Site Policy): '$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)'" -Verbose
+          if ( $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy ) {
             $EmergencyNumbers = $null
-            $EmergencyNumbers = (Get-CsTeamsEmergencyCallRoutingPolicy -Identity "$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)").EmergencyNumbers
+            $EmergencyNumbers = switch ( $EmergencyCallRoutingObject.NetworkPathTaken ) {
+              'SiteEmergencyCallRoutingPolicy' { $SiteECRP.EmergencyNumbers }
+              'UserEmergencyCallRoutingPolicy' { $UserECRP.EmergencyNumbers }
+            }
             $EmergencyNumber = $null
-            $EmergencyNumber = $EmergencyNumbers | Where-Object { $_.EmergencyDialMask.Split(';').Contains($Number) }
-            # Previous match - fails with multiple numbers? - if ( $Number -in $EmergencyNumbers.EmergencyDialMask.Split(';') -or $EmergencyNumbers.EmergencyDialString -eq $Number ) {
+            $EmergencyNumber = $EmergencyNumbers | Where-Object EmergencyDialString -EQ $DialledNumber
+            if ( -not $EmergencyNumber ) {
+              $EmergencyNumber = $EmergencyNumbers | Where-Object EmergencyDialMask -Like "*$DialledNumber*"
+            }
             if ( $EmergencyNumber ) {
               Write-Verbose -Message "Effective Emergency Call Routing Policy '$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)' - The Number '$Number' is a configured Emergency Services Number"
-              if ( $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy -eq $Site.EmergencyCallRoutingPolicy ) {
-                $EmergencyCallRoutingObject.NetworkPathTaken = 'SiteEmergencyCallRoutingPolicy'
-              }
-              elseif ( $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy -eq $User.EmergencyCallRoutingPolicy ) {
-                $EmergencyCallRoutingObject.NetworkPathTaken = 'UserEmergencyCallRoutingPolicy'
-              }
-            }
-            elseif ( $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy -ne $Site.EmergencyCallRoutingPolicy -and $User.EmergencyCallRoutingPolicy) {
-              Write-Verbose -Message "Effective Emergency Call Routing Policy (User Policy) '$($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)' - The Number '$Number' is not a configured Emergency Services Number"
-              $EmergencyNumbers = (Get-CsTeamsEmergencyCallRoutingPolicy -Identity "$($EmergencyCallRoutingObject.UserEmergencyCallRoutingPolicy)").EmergencyNumbers
-              $EmergencyNumber = $EmergencyNumbers | Where-Object { $_.EmergencyDialMask.Split(';').Contains($Number) }
-              if ( $EmergencyNumber ) {
-                Write-Verbose -Message "User Emergency Call Routing Policy '$($EmergencyCallRoutingObject.UserEmergencyCallRoutingPolicy)' - The Number '$Number' is a configured Emergency Services Number"
-                $EmergencyCallRoutingObject.NetworkPathTaken = 'UserEmergencyCallRoutingPolicy'
-              }
             }
             else {
-              Write-Verbose "Effective Emergency Call Routing Policy: $($EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy)"
-              Write-Verbose "Network Configuration Bypassed: $($EmergencyCallRoutingObject.NetworkConfigurationBypassed)"
-              $EmergencyCallRoutingObject.NetworkPathTaken = $null
+              $EmergencyCallRoutingObject.NetworkPathTaken = 'OnlineVoiceRoutingPolicy'
             }
 
             # Populating EffectiveEmergencyDialString & MatchedEmergencyDialMask
@@ -424,10 +409,16 @@ function Find-TeamsEmergencyCallRoute {
               $EmergencyCallRoutingObject.MatchedEmergencyDialMask = $EmergencyNumber.EmergencyDialMask
               $OPUs = $EmergencyNumber.OnlinePstnUsage
             }
+            else {
+              Write-Verbose 'Effective Emergency Call Routing Policy: None - No match for Emergency Number found'
+            }
+          }
+          else {
+            $EmergencyCallRoutingObject.NetworkPathTaken = 'OnlineVoiceRoutingPolicy'
           }
 
           # Catching ECRP defined, but no match in either Site or User Policy
-          if ( -not $EmergencyCallRoutingObject.NetworkPathTaken ) {
+          if ( $EmergencyCallRoutingObject.NetworkPathTaken -eq 'OnlineVoiceRoutingPolicy' ) {
             if ( $EmergencyCallRoutingObject.OnlineVoiceRoutingPolicy ) {
               $EmergencyCallRoutingObject.NetworkPathTaken = 'OnlineVoiceRoutingPolicy'
               Write-Verbose -Message 'Network Path Taken: OnlineVoiceRoutingPolicy - Emergency Call Routing Policy is not triggered'

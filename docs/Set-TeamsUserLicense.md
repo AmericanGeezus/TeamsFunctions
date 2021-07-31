@@ -112,7 +112,7 @@ Accept wildcard characters: False
 ### -Add
 Optional.
 Licenses to be added (main function)
-Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
+Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)
 
 ```yaml
 Type: String[]
@@ -141,7 +141,7 @@ Accept wildcard characters: False
 ### -Remove
 Optional.
 Licenses to be removed (alternative function)
-Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
+Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)
 
 ```yaml
 Type: String[]

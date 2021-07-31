@@ -16,7 +16,7 @@
   - [x] .FUNCTIONALITY - Describe what the function does
   - [x] .LINK - Add ABOUT_ Topic
   - [x] .LINK - Verify linked function is correct across all of the same breed
-  - [ ] .LINK to specific file, rather than to /docs?
+  - [x] .LINK to specific file, rather than to /docs?
 - [ ] Populate about-help
   - [x] Write Licensing
   - [x] Write SupportFunctions
@@ -55,12 +55,12 @@
   - [x] Operator
   - [x] Call target
   - [x] Default Schedules
-  - [ ] Default HolidaySets for a Country (this year/next year)
+  - [x] Default HolidaySets for a Country (this year/next year)
 - [ ] Evaluate integration Scripts
   - [ ] Default forward to CQ (wrapper for New-AA, with Menu to Forward to CallTarget Queue)
   - [ ] Construct of 1 AA and 1 CQ, 2 RA, 2 RAA? (order!)
 - [ ] Continue to test Scripts
-- [ ] Add Argument Completer for all AudioFiles to expect them in C:\Temp: [ArgumentCompleter(C:\Temp\)]
+- [x] Add Argument Completer for all AudioFiles to expect them in C:\Temp: [ArgumentCompleter( { 'C:\Temp\' } )]
 
 ## TeamsCallQueue
 
@@ -70,7 +70,7 @@
 ## Licenses
 
 - [x] Figure out how to enable disabled plans
-- [ ] Evaluate Enable/Disable CmdLet rather (or in addition to) Set-AzureAdUserLicenseServicePlan
+- [ ] Evaluate adding Enable/Disable CmdLet in addition to Set-AzureAdUserLicenseServicePlan
 - [x] Figure out ScriptMethod ToString
 
 ## Code Improvements
@@ -99,7 +99,7 @@
 
 ### Aliases
 
-- [ ] Rethink shorthands following three letter model: GCQ, GAA, GRA, etc.
+- [ ] Add shorthands following three letter model: GCQ, GAA, GRA, etc.
 - [ ] Aliases for Parameters (Identity, UserPrincipalName, UPN, Username, etc. - make uniform)
 
 ### Evaluate Export to CLIXML

@@ -105,8 +105,14 @@ function New-TeamsCommonAreaPhone {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicense"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
     [string[]]$License,
@@ -252,7 +258,7 @@ function New-TeamsCommonAreaPhone {
       $PasswordProfile.Password = $Password
     }
     else {
-      #BODGE Check for alternatives to the below
+      #IMPROVE Check for alternatives to the below
       $PasswordFormat = 'CAP-' + $(Get-Date -Format 'dd-MMM-yyyy')
       $PasswordProfile.Password = $PasswordFormat | ConvertTo-SecureString -AsPlainText -Force
     }
@@ -335,7 +341,7 @@ function New-TeamsCommonAreaPhone {
     }
     #endregion
 
-    #NOTE This will currently never be executed as PhoneNumber is not a parameter on the CmdLet - left here for future expansion
+    <# This will currently never be executed as PhoneNumber is not a parameter on the CmdLet - left here for future expansion
     #region Waiting for License Application
     if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
       $Operation = 'Waiting for AzureAd to write Object'
@@ -364,6 +370,7 @@ function New-TeamsCommonAreaPhone {
       Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
     }
     #endregion
+    #>
 
     #region Policies
     $Operation = 'Applying Policies'

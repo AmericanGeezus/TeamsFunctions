@@ -36,7 +36,8 @@
 #Requires -Version 5.1
 #Req#uires -Modules MicrosoftTeams
 
-# Addressing Limitations
+#region Addressing Limitations
+# Strict Mode
 function Get-StrictMode {
   # returns the currently set StrictMode version 1, 2, 3
   # or 0 if StrictMode is off.
@@ -57,8 +58,33 @@ if ((Get-StrictMode) -gt 0) {
   Set-StrictMode -Off
 }
 
-# Defining Help URL Base string:
-$global:TeamsFunctionsHelpURLBase = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/docs/'
+# Allows use of [ArgumentCompletions] block native to PowerShell 6 and later!
+if ($PSVersionTable.PSEdition -ne 'Core') {
+  # add the attribute [ArgumentCompletions()]:
+  $code = @'
+using System;
+using System.Collections.Generic;
+using System.Management.Automation;
+
+    public class ArgumentCompletionsAttribute : ArgumentCompleterAttribute
+    {
+
+        private static ScriptBlock _createScriptBlock(params string[] completions)
+        {
+            string text = "\"" + string.Join("\",\"", completions) + "\"";
+            string code = "param($Command, $Parameter, $WordToComplete, $CommandAst, $FakeBoundParams);@(" + text + ") -like \"*$WordToComplete*\" | Foreach-Object { [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_) }";
+            return ScriptBlock.Create(code);
+        }
+
+        public ArgumentCompletionsAttribute(params string[] completions) : base(_createScriptBlock(completions))
+        {
+        }
+    }
+'@
+
+  $null = Add-Type -TypeDefinition $code *>&1
+}
+#endregion
 
 #region Classes
 class TFTeamsServicePlan {
@@ -191,6 +217,9 @@ class TFCallableEntityConnection {
 }
 #endregion
 
+# Defining Help URL Base string:
+$global:TeamsFunctionsHelpURLBase = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/docs/'
+
 # DotSourcing PS1 Files
 Get-ChildItem -Filter *.ps1 -Path $PSScriptRoot\Public\Functions, $PSScriptRoot\Private\Functions -Recurse | ForEach-Object {
   . $_.FullName
@@ -225,11 +254,12 @@ Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-Ser
 
 
 
+
 # SIG # Begin signature block
 # MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUI4P98ywx+ch54yZFZEzvWVYq
-# kQCgggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU6dxLjWjaRtpRtHxVIdibvRIr
+# 4XigggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
 # AQUFADAlMSMwIQYDVQQDDBpEYXZpZCBFYmVyaGFyZHQgLSBDb2RlU2lnbjAeFw0y
 # MDA2MTMxMTA4NTNaFw0yNDA2MTMwMDAwMDBaMCUxIzAhBgNVBAMMGkRhdmlkIEVi
 # ZXJoYXJkdCAtIENvZGVTaWduMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3
@@ -244,8 +274,8 @@ Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-Ser
 # YmVyaGFyZHQgLSBDb2RlU2lnbgIQa3i9Sh/NdbhOjG+ewKFPfjAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUgknqVA1mjJICV9GhFXsHD+U4lRcwDQYJKoZIhvcNAQEBBQAEgYBowrWR
-# 7VV8AJTTL5Z1hx3eAbPuG115lWSorFqEMrFY29Vl9ZVxgJW/xldSEufjqeIUQ/2j
-# +ORqsTgBxlPx8Ofl7BWSKiB3uR0lfJ+X+EW38amgC/+MnprJRQKLM2vn1AMucwRT
-# A0ucnpEzNRc+JUuRunWMDcXPkpbWqF9U1wUNPA==
+# CQQxFgQUD6dh31OsioPQxoPl56snLt/0gDgwDQYJKoZIhvcNAQEBBQAEgYC2JLsn
+# kKpJBkvlMBcmIcaoeGNHXTMkAiSGlyKkw9ppw+jMvFYGoE4sQ7ysin2vpC+KQ2dT
+# yCt8/w3MZfqiQfi2fcOPxuYXeBGQVUCjwpt4UHHZWvPEBac6GY6wxHQv3Jzib+Aj
+# mm+bN11FLFyTSQhbyTCu+yYjkkCwKZ+j6tsTmw==
 # SIG # End signature block

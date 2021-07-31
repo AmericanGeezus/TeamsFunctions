@@ -4,13 +4,11 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## unreleased/vNext
 
-[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2184-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2195-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
 ### Draft - Look ahead
 
 - `Disable-AzureAdUserLicense`: Draft Status
-- Adding more (GOV) Licenses to Get-AzureAdLicense - Issue #80
-- Buildout of Holiday Set functionality. Creating a HolidaySet for Auto Attendants
 - Buildout of Set-TeamsAutoAttendant - for limited functions
 - `Assert-TeamsResourceAccount`: Querying ResourceAccount requirements are met based on Associated Entity functionality used (ExternalPstn, License, PhoneNumber, etc.)
 - `Set-TeamsUserVoiceMail`: Draft/ALPHA/Incubator - Setting Voicemail parameters for a Teams User
@@ -22,7 +20,6 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### Updated
 
 - TBC
-
 ### Limitations
 
 - `Connect-MicrosoftTeams`: Scenario observed where a Session has been opened, but Skype Commands cannot be used.

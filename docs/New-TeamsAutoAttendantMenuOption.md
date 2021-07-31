@@ -17,6 +17,12 @@ Creates a Menu Options Object
 New-TeamsAutoAttendantMenuOption [-DisconnectCall] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### Announcement
+```
+New-TeamsAutoAttendantMenuOption [-Press <Int32>] [-OrSay <String>] [-Announcement <String>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
+```
+
 ### CallTarget
 ```
 New-TeamsAutoAttendantMenuOption [-Press <Int32>] [-OrSay <String>] [-CallTarget <String>] [-WhatIf] [-Confirm]
@@ -85,6 +91,21 @@ New-TeamsAutoAttendantMenuOption -Press 5 -CallTarget "tel:+15551234567" -OrSay 
 
 Creates a Menu Option on pressing 5 or saying 'Engineer' to Transfer to the Call Target (ExternalPstn).
 
+### EXAMPLE 8
+```
+New-TeamsAutoAttendantMenuOption -Press 6 -Announcement "We are open Monday to Friday from 9 AM to 5 PM" -OrSay "Hours"
+```
+
+Creates a Menu Option on pressing 6 or saying 'Hours' to play an Announcement (Text-to-Voice) and return to the main menu.
+
+### EXAMPLE 9
+```
+New-TeamsAutoAttendantMenuOption -Press 7 -Announcement "C:\Temp\AudioFile-OpeningHours.wav" -OrSay "Hours"
+```
+
+Creates a Menu Option on pressing 7 or saying 'Hours' to play an Announcement (Audio File) and return to the main menu.
+The File must exist in the specified
+
 ## PARAMETERS
 
 ### -DisconnectCall
@@ -105,13 +126,14 @@ Accept wildcard characters: False
 ```
 
 ### -Press
-Required for Option TransferToOperator and TransferToCallTarget.
+Required for binding a specific Dial Key.
 Integer.
-Dtmf Tone (digit) to be pressed for this option
+Dtmf Tone (digit) to be pressed for this option.
+Set to Automatic if not provided.
 
 ```yaml
 Type: Int32
-Parameter Sets: CallTarget, Operator
+Parameter Sets: Announcement, CallTarget, Operator
 Aliases: DtmfResponseTone
 
 Required: False
@@ -144,7 +166,7 @@ Expected: Single word
 
 ```yaml
 Type: String
-Parameter Sets: CallTarget, Operator
+Parameter Sets: Announcement, CallTarget, Operator
 Aliases: VoiceResponses, Say
 
 Required: False
@@ -160,6 +182,22 @@ CallTarget
 ```yaml
 Type: String
 Parameter Sets: CallTarget
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Announcement
+Required for Option Announcement.
+String for the Audio File OR Text-to-Voice
+
+```yaml
+Type: String
+Parameter Sets: Announcement
 Aliases:
 
 Required: False

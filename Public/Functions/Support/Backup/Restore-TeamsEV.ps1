@@ -54,6 +54,7 @@ function Restore-TeamsEV {
   [CmdletBinding(ConfirmImpact = 'Medium', SupportsShouldProcess)]
   param(
     [Parameter(Mandatory, ValueFromPipelineByPropertyName, HelpMessage = 'Path to the zip file containing the backed up Teams EV config to restore')]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$File,
 
     [switch]$KeepExisting,

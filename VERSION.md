@@ -3,18 +3,71 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.08 - Aug 2021 release
+
+A slight change of tactics - Due to volume (and the increased likelyhood of even more bugs), I now make a tactical stop.
+The last few releases should have been pre-releases really, but glaring bugs didn't sit too well for me to leave in for up to a month...
+This version contains even more bugfixes and some more tested code that should make things easier.
+Going forward, I will stick to monthly releases, provided there are any changes to publish. I will also take a short break to recharge
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-105-blue.svg) ![Private](https://img.shields.io/badge/Private-15-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-54-green.svg)                                                                                                                                                                            |
+| Status    | ![Live](https://img.shields.io/badge/Live-91-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-0-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2195-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | Stability, Bugfixing, Licensing, Intellisense, Performance & Functional refresh for some cmdlets                                                                                                                                                                                                                                                                  |
+
+### New
+
+- `Get-ISO3166Country`:
+  - An adaptation of a C# Script from Github that creates an Object for all Countries.
+  - Helper Function for querying ISO3166-1 Country information (Alpha2/Alpha3/Numeric-Code)
+- `Find-TeamsEmergencyCallRoute`:
+  - Finding the Route a call to an emergency number takes, be it through the Emergency Call Routing Policies, or the Online Voice Routing Policy
+  - This builds on `Find-TeamsUserVoiceRoute` which was updated in conjunction
+- Better Parameter value set validation for Licenses, ServicePlanNames, LanguageId, TimeZone, CallingPlanName
+  - ValidateSet or ValidateScript parameters now consistently query supported values directly from a Cmdlet
+  - This will speed up loading, increases consistence and reduces potential drift for static configuration
+  - Direct feedback with the `[ArgumentCompleter]` has been added, Intellisense is now available for these Parameters
+- Added support for 'Announcements' (Prompts) in Auto Attendants.
+
+### Updated
+
+- `New-TeamsAutoAttendant`: Now fully featured.
+  - Added HolidaySet-Parameters.
+  - Optimised validation of CallFlows and CallHandlingAssociations
+  - Updated help and optimised order of Parameters
+- `New-TeamsAutoAttendantDialScope`: Added small verification for Groups (previously only validated Call Targets)
+- `New-TeamsAutoAttendantMenuOption`:
+  - Added support for Announcements - both Text-to-Voice as well as AudioFile with Parameter `Announcement`
+  - Refactored processing of Press/Say as it is now used in all but one Option
+  - Optimised processing for Option 10
+- `New-TeamsAutoAttendantPrompt`: Added parameter `AlternativeString` - Processing both strings if different (dual prompt)
+- `New-TeamsCallableEntity`: Added parameter `EnableSharedVoicemailSystemPromptSuppression`
+- `Get-TeamsObjectType`: Optimised code to have less duplication, caught an error if AzureAdUser was not found.
+- `Get-TeamsAutoAttendant`: Added support for Announcements for switch Detailed (Prompts on MenuOptions)
+- `Find-TeamsUserVoiceRoute`: Refresh for calls to Emergency Numbers and highlighting of limitations for this CmdLet for these numbers
+- `Merge-TeamsAutoAttendantArtefact`:
+  - Refactored code to populate with a failsafe (Original Object is retained if no translation happened). Improves visibility
+  - Added support for Prompts on MenuOptions (enables display of configured Announcements in Get-TeamsAutoAttendant )
+- `Assert-TeamsAudioFile`: Fixed an issue with proper termination if all conditions are met.
+- `New-TeamsAutoAttendantPrompt`: Fixed an issue with AudioFiles being passed properly to the Prompt CmdLet.
+- Adding -Fast CmdLets by Dr. Tobias Weltner/TobiasPSP/powershell.one for use in testing with performance
+
 ## v21.07.18 - Jul 2021 release 3
 
 Even more bugfixes. MicrosoftTeams v1 Connection Method (Connect-SkypeOnline) removed.
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                                                                              |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-103-blue.svg) ![Private](https://img.shields.io/badge/Private-12-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-54-green.svg)                                                                                                         |
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-103-blue.svg) ![Private](https://img.shields.io/badge/Private-12-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-54-green.svg)                                                                                                                                                                            |
 | Status    | ![Live](https://img.shields.io/badge/Live-90-blue.svg) ![RC](https://img.shields.io/badge/RC-7-green.svg) ![BETA](https://img.shields.io/badge/BETA-1-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-0-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-2141-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
-| Focus     | Stability, Bugfixing, Licensing                                                                                                                                                                                                                      |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2141-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | Stability, Bugfixing, Licensing                                                                                                                                                                                                                                                                                                                                   |
 
 ### New
 
@@ -77,12 +130,12 @@ More bugfixes and 2 new functions: `New-TeamsResourceAccountLineIdentity` and `F
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                                                                              |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-105-blue.svg) ![Private](https://img.shields.io/badge/Private-13-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-52-green.svg)                                                                                                         |
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-105-blue.svg) ![Private](https://img.shields.io/badge/Private-13-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-52-green.svg)                                                                                                                                                                            |
 | Status    | ![Live](https://img.shields.io/badge/Live-88-blue.svg) ![RC](https://img.shields.io/badge/RC-6-green.svg) ![BETA](https://img.shields.io/badge/BETA-2-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-3-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-2185-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
-| Focus     | Stability, Bugfixing, Emergency Services Voice Routing                                                                                                                                                                                                                      |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2185-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | Stability, Bugfixing, Emergency Services Voice Routing                                                                                                                                                                                                                                                                                                            |
 
 ### New
 
@@ -127,12 +180,12 @@ With many functions come many bugs...- a few of which out of my control which ma
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                                                                              |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-103-blue.svg) ![Private](https://img.shields.io/badge/Private-13-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                         |
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-103-blue.svg) ![Private](https://img.shields.io/badge/Private-13-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                                                                                            |
 | Status    | ![Live](https://img.shields.io/badge/Live-87-blue.svg) ![RC](https://img.shields.io/badge/RC-7-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-3-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-2053-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
-| Focus     | Stability, Bugfixing, Auto Attendant Holiday Schedule                                                                                                                                                                                                                      |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2053-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | Stability, Bugfixing, Auto Attendant Holiday Schedule                                                                                                                                                                                                                                                                                                             |
 
 ### New
 
@@ -242,12 +295,12 @@ Nevertheless, please use the most recent release-version of MicrosoftTeams publi
 
 ### Component Status
 
-|           |                                                                                                                                                                                                                                                                                              |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Functions | ![Public](https://img.shields.io/badge/Public-99-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                         |
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-99-blue.svg) ![Private](https://img.shields.io/badge/Private-8-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-45-green.svg)                                                                                                                                                                              |
 | Status    | ![Live](https://img.shields.io/badge/Live-83-blue.svg) ![RC](https://img.shields.io/badge/RC-5-green.svg) ![BETA](https://img.shields.io/badge/BETA-2-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-3-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
-| Pester    | ![Passed](https://img.shields.io/badge/Passed-2053-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                |
-| Focus     | Stability, Feedback, Bugfixing, CommonAreaPhone, CallQueue (Channel)                                                                                                                                                                                                                      |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2053-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | Stability, Feedback, Bugfixing, CommonAreaPhone, CallQueue (Channel)                                                                                                                                                                                                                                                                                              |
 
 ### New
 
@@ -1107,21 +1160,21 @@ The first goal was to refresh what needs adding (for example, License names for 
 
 This now moved from the PSM1 file to here:
 
-| Version | Release | Description |
-| ------- | ------- | ----------- |
-| 1.0         | 02-OCT-2017 | Initial Version (as SkypeFunctions)
-| 20.04.17.1  | 17-APR-2020 | Initial Version (as TeamsFunctions)
-| 20.05.03.1  | MAY 2020 | First Publication - Refresh for Teams |
-| 20.06.09.1  | JUN 2020 | Added Session Connection & TeamsCallQueue Functions |
-| 20.06.29.1  | JUL 2020 | Added TeamsResourceAccount & TeamsResourceAccountAssociation Functions |
-| 20.08       | AUG 2020 | Added new License Functions, Shared Voicemail Support for TeamsCalLQueue |
-| 20.09       | SEP 2020 | Bugfixes |
-| 20.10       | OCT 2020 | Added TeamsUserVoiceConfig & TeamsAutoAttendant Functions |
-| 20.11       | NOV 2020 | Restructuring, Bugfixes and general overhaul. Also more Pester-Testing |
-| 20.12       | DEC 2020 | Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes |
-| 21.01       | JAN 2021 | Updated Session connection, improved Auto Attendants, etc. |
-| 21.02       | FEB 2021 | Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector |
-| 21.03       | MAR 2021 | Switched to support for MicrosoftTeams v2.0.0 - Removed SkypeOnline, Bugfixes |
-| 21.04       | APR 2021 | Improved stability to Connect Scripts, Added more query scripts (Licensing, Policies), Script improvements, Bugfixes |
-| 21.05       | MAY 2021 | Re-introduced support for MicrosoftTeams v1, Bugfixes and minor improvements |
-| 21.06       | JUN 2021 | Bugfixes. Improvements for TeamsCommonAreaPhone and TeamsUserVoiceConfig cmdLets |
+| Version    | Release     | Description                                                                                                          |
+| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1.0        | 02-OCT-2017 | Initial Version (as SkypeFunctions)                                                                                  |
+| 20.04.17.1 | 17-APR-2020 | Initial Version (as TeamsFunctions)                                                                                  |
+| 20.05.03.1 | MAY 2020    | First Publication - Refresh for Teams                                                                                |
+| 20.06.09.1 | JUN 2020    | Added Session Connection & TeamsCallQueue Functions                                                                  |
+| 20.06.29.1 | JUL 2020    | Added TeamsResourceAccount & TeamsResourceAccountAssociation Functions                                               |
+| 20.08      | AUG 2020    | Added new License Functions, Shared Voicemail Support for TeamsCalLQueue                                             |
+| 20.09      | SEP 2020    | Bugfixes                                                                                                             |
+| 20.10      | OCT 2020    | Added TeamsUserVoiceConfig & TeamsAutoAttendant Functions                                                            |
+| 20.11      | NOV 2020    | Restructuring, Bugfixes and general overhaul. Also more Pester-Testing                                               |
+| 20.12      | DEC 2020    | Added more Licensing & CallableEntity Functions, Progress bars, Performance improvements and bugfixes                |
+| 21.01      | JAN 2021    | Updated Session connection, improved Auto Attendants, etc.                                                           |
+| 21.02      | FEB 2021    | Added Help and Docs, Updated Requirements (MicrosoftTeams), retired SkypeOnlineConnector                             |
+| 21.03      | MAR 2021    | Switched to support for MicrosoftTeams v2.0.0 - Removed SkypeOnline, Bugfixes                                        |
+| 21.04      | APR 2021    | Improved stability to Connect Scripts, Added more query scripts (Licensing, Policies), Script improvements, Bugfixes |
+| 21.05      | MAY 2021    | Re-introduced support for MicrosoftTeams v1, Bugfixes and minor improvements                                         |
+| 21.06      | JUN 2021    | Bugfixes. Improvements for TeamsCommonAreaPhone and TeamsUserVoiceConfig cmdLets                                     |

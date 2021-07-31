@@ -4,7 +4,7 @@
 # Updated:  01-JAN-2021
 # Status:   Live
 
-#TEST Switch ChannelUsers (ChannelUserObjectId), ResourceAccountsForCallerId (OboResourceAccountIds)
+
 
 
 function Get-TeamsCallQueue {
@@ -142,7 +142,7 @@ function Get-TeamsCallQueue {
     Write-Verbose -Message "[PROCESS] Processing found Queues: $QueueCount"
     $QueueCounter = 0
     [int]$QueueCount = $Queues.Count
-    #CHECK Explore Workflows with Parallel parsing:
+    #IMPROVE Explore Workflows with Parallel parsing:
     #foreach -parallel ($Q in $Queues) {
     foreach ($Q in $Queues) {
       # Initialising counters for Progress bars

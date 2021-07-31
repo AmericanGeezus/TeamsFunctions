@@ -69,7 +69,7 @@ function New-TeamsAutoAttendantCallFlow {
     [string]$Name,
 
     [Parameter(HelpMessage = 'Prompt Object, Text-To-Voice String or Full path to AudioFile')]
-    #Type is determined in BEGIN block
+    [ArgumentCompleter( { '<Prompts-Object>', '<Your Text-to-speech-string>', 'C:\Temp\' })]
     $Greeting,
 
     [Parameter(ParameterSetName = 'Menu', HelpMessage = 'Menu Object to be used')]

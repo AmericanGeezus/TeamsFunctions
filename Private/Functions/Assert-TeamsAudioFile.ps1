@@ -52,6 +52,7 @@ function Assert-TeamsAudioFile {
   [OutputType([System.Boolean])]
   param(
     [Parameter(Mandatory)]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$File
 
   ) #param
@@ -70,12 +71,13 @@ function Assert-TeamsAudioFile {
       Write-Error -Message "AudioFile: '$File': not found!"
       return $false
     }
-
-    If ( -not ((Get-Item $File).length -le 5242880 -and ($File -match '.mp3' -or $File -match '.wav' -or $File -match '.wma'))) {
+    elseif ( -not ((Get-Item $File).length -le 5242880 -and ($File -match '.mp3' -or $File -match '.wav' -or $File -match '.wma'))) {
       Write-Error -Message "AudioFile: '$File': Format check not passed. Provide MP3/WAV/WMA with max 5MB in size!"
       return $false
     }
-
+    else {
+      return $true
+    }
   } #process
 
   end {

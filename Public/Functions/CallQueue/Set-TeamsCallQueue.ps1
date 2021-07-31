@@ -3,10 +3,10 @@
 # Author:   David Eberhardt
 # Updated:  01-OCT-2020
 # Status:   Live
-#TEST Switch ChannelUsers (ChannelUserObjectId) & ResourceAccountsForCallerId (OboResourceAccountIds)
-#TEST MusicOnHold audio file does not throw stopping error any more
-#TEST lookup with identity (ObjectId)!
-#CHECK Once ID Lookup is done, check in the ForEach (for Pipeline with Get) whether an Object is present and bind/re-lookup to the correct instance!
+
+
+
+
 function Set-TeamsCallQueue {
   <#
   .SYNOPSIS
@@ -185,12 +185,13 @@ function Set-TeamsCallQueue {
 
     #region OverflowAction = SharedVoiceMail
     # if OverflowAction is SharedVoicemail one of the following two have to be provided
-    [Parameter(HelpMessage = 'Text-to-speech Message. This will require the LanguageId Parameter')]
+    [Parameter(HelpMessage = 'Text-to-Voice Message. This will require the LanguageId Parameter')]
     [Alias('OfSVmTTS')]
     [string]$OverflowSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = 'Path to Audio File for Overflow SharedVoiceMail Message')]
     [Alias('OfVMFile')]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$OverflowSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = 'Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox')]
@@ -225,12 +226,13 @@ function Set-TeamsCallQueue {
 
     #region TimeoutAction = SharedVoiceMail
     # if TimeoutAction is SharedVoicemail one of the following two have to be provided
-    [Parameter(HelpMessage = 'Text-to-speech Message. This will require the LanguageId Parameter')]
+    [Parameter(HelpMessage = 'Text-to-Voice Message. This will require the LanguageId Parameter')]
     [Alias('ToSVmTTS')]
     [string]$TimeoutSharedVoicemailTextToSpeechPrompt,
 
     [Parameter(HelpMessage = 'Path to Audio File for the SharedVoiceMail Message')]
     [Alias('ToVMFile')]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$TimeoutSharedVoicemailAudioFile,
 
     [Parameter(HelpMessage = 'Using this Parameter will make a Transcription of the Voicemail message available in the Mailbox')]
@@ -268,10 +270,12 @@ function Set-TeamsCallQueue {
     #region Music files
     [Parameter(HelpMessage = 'Path to Audio File for Welcome Message')]
     [AllowNull()]
+    [ArgumentCompleter( { '<Your Text-to-speech-string>', 'C:\Temp\' })]
     [string]$WelcomeMusicAudioFile,
 
     [Parameter(HelpMessage = 'Path to Audio File for MusicOnHold (cannot be used with UseDefaultMusicOnHold switch!)')]
     [AllowNull()]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$MusicOnHoldAudioFile,
     #endregion
 
@@ -287,6 +291,7 @@ function Set-TeamsCallQueue {
 
     [Parameter(HelpMessage = "Team and Channel in the format 'Team\Channel'")]
     [ValidateScript( { $_ -match '\\' })]
+    [ArgumentCompleter( { '<Team Name or ID>\<Channel Name or ID>' })]
     [string]$TeamAndChannel,
 
     [Parameter(HelpMessage = 'UPN of one or more Resource Accounts used for Caller Id')]
@@ -294,7 +299,18 @@ function Set-TeamsCallQueue {
     #endregion
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
-    [ValidateScript( { $_ -in (Get-CsAutoAttendantSupportedLanguage).Id })]
+    [ValidateScript( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
+        if ($_ -in $TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $TeamsFunctionsCsAutoAttendantSupportedLanguageIds"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
+        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
+        }
+      })]
     [string]$LanguageId,
 
 
@@ -563,7 +579,7 @@ function Set-TeamsCallQueue {
         ($PSBoundParameters.ContainsKey('EnableOverflowSharedVoicemailTranscription')) -or `
         ($PSBoundParameters.ContainsKey('EnableTimeoutSharedVoicemailTranscription')))) {
 
-      Write-Error "'$NameNormalised' LanguageId is not set and not provided. This is required for using Text-to-speech prompts or Transcription." -ErrorAction Stop -RecommendedAction 'Add Parameter LanguageId'
+      Write-Error "'$NameNormalised' LanguageId is not set and not provided. This is required for using Text-to-Voice prompts or Transcription." -ErrorAction Stop -RecommendedAction 'Add Parameter LanguageId'
       return
     }
     #endregion
@@ -757,7 +773,7 @@ function Set-TeamsCallQueue {
 
             #region OverflowAction SharedVoicemail - Processing Greeting
             if (-not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('OverflowSharedVoicemailTextToSpeechPrompt')) {
-              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Speech are present
+              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Voice are present
               Write-Warning -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing"
               #Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter OverflowSharedVoicemailAudioFile or OverflowSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction 'Add one of the two parameters'
               #return
@@ -1028,7 +1044,7 @@ function Set-TeamsCallQueue {
 
             #region OverflowAction SharedVoicemail - Processing Greeting
             if (-not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailAudioFile') -and -not $PSBoundParameters.ContainsKey('TimeoutSharedVoicemailTextToSpeechPrompt')) {
-              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Speech are present
+              # Not processing SharedVoicemail parameters if - after validation - neither AudioFile nor Text-to-Voice are present
               Write-Warning -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing"
               #Write-Error -Message "'$NameNormalised' OverflowAction '$OverflowAction': Parameter TimeoutSharedVoicemailAudioFile or TimeoutSharedVoicemailTextToSpeechPrompt missing" -ErrorAction Stop -RecommendedAction 'Add one of the two parameters'
               #return
@@ -1320,7 +1336,7 @@ function Set-TeamsCallQueue {
     $step++
     Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message "$Status - $Operation"
-    if ($PSCmdlet.ShouldProcess("$Name", 'Set-CsCallQueue')) {
+    if ($PSCmdlet.ShouldProcess("$NameNormalised", 'Set-CsCallQueue')) {
       $null = (Set-CsCallQueue @Parameters)
       Write-Verbose -Message "SUCCESS: '$NameNormalised' Call Queue settings applied"
     }

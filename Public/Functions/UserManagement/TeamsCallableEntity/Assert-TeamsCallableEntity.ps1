@@ -4,8 +4,8 @@
 # Updated:  15-DEC-2020
 # Status:   Live
 
-#VALIDATE whether adding the Channel as a Callable Entity is desirable
-#TODO Add Announcement TTV and File
+
+
 
 function Assert-TeamsCallableEntity {
   <#
@@ -29,6 +29,7 @@ function Assert-TeamsCallableEntity {
     Boolean
   .NOTES
     Returns Boolean Result
+    This CmdLet does verify User Objects only - Channels are not validated
   .COMPONENT
     UserManagement
     TeamsAutoAttendant
@@ -124,7 +125,7 @@ function Assert-TeamsCallableEntity {
         Write-Verbose -Message "Target '$Identity' found and licensed (Pending Input)"
       }
       else {
-        #TEST whether this works. Might take some time b/c Object cannot be used in 'PendingInput' just yet?
+        #TEST whether this would work. Might take some time b/c Object cannot be used in 'PendingInput' just yet?
         <#
         try {
           Write-Information "Target '$Identity' found and licensed, but PhoneSystem is disabled. Trying to Enable"

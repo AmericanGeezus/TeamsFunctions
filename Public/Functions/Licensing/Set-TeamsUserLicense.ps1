@@ -21,10 +21,10 @@ function Set-TeamsUserLicense {
     The UserPrincipalName, ObjectId or Identity of the Object.
   .PARAMETER Add
     Optional. Licenses to be added (main function)
-    Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
+    Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)
   .PARAMETER Remove
     Optional. Licenses to be removed (alternative function)
-    Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)
+    Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)
   .PARAMETER RemoveAll
     Optional Switch. Removes all licenses currently assigned (intended for replacements)
   .PARAMETER UsageLocation
@@ -114,8 +114,14 @@ function Set-TeamsUserLicense {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicense"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
     [Alias('License', 'AddLicense', 'AddLicenses')]
@@ -126,8 +132,14 @@ function Set-TeamsUserLicense {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
         if ($_ -in $LicenseParams) { return $true } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Get-AzureAdLicense"
-          return $false
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'License' - Invalid license string. Supported Parameternames can be found with Intellisense or Get-AzureAdLicense"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
+        $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
+        $LicenseParams | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
     [Alias('RemoveLicense', 'RemoveLicenses')]
@@ -138,6 +150,18 @@ function Set-TeamsUserLicense {
     [Switch]$RemoveAll,
 
     [Parameter(HelpMessage = 'Usage Location to be set if not already applied')]
+    [ValidateScript( {
+        if (-not $global:TeamsFunctionsCountryTable) { $global:TeamsFunctionsCountryTable = (Get-ISO3166Country).TwoLetterCode }
+        if ($_ -in $TeamsFunctionsCountryTable) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CountryCode' must be of the set: $TeamsFunctionsCountryTable"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsCountryTable) { $global:TeamsFunctionsCountryTable = (Get-ISO3166Country).TwoLetterCode }
+        $TeamsFunctionsCountryTable | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCountryTable.Count) records available")
+        }
+      })]
     [string]$UsageLocation = 'US',
 
     <# Force removed as leading to errors

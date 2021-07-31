@@ -109,6 +109,7 @@ function New-TeamsAutoAttendantSchedule {
     [ValidateSet('9to6', '9to5', '9to4', '8to6', '8to5', '8to4', '7to6', '7to5', '7to4', '6to6', '10to6', '0830to1700', '0830to1730', '0800to1730', '0830to1800', '0900to1730', '0930to1730', '0930to1800', '8to12and13to17', '8to12and13to18', '9to12and13to17', '9to12and13to18', '9to13and14to18', '8to12and14to18', 'AllDay')]
     [string]$BusinessHours,
 
+    #IMPROVE This does not allow for AM/PM notation, but for 12:00 and 1200 - improve?
     [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours2')]
     [ValidatePattern( { '^(?:[01]?\d|2[0-3])(?::)(00|15|30|45)' })]
     [string]$BusinessHoursStart,
