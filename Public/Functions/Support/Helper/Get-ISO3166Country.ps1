@@ -44,7 +44,7 @@ function Get-ISO3166Country {
   #>
 
   [CmdletBinding()]
-  [OutputType([System.Object])]
+  [OutputType([System.Object[]])]
   param (
   )
 
