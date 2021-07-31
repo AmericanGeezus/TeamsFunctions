@@ -10,7 +10,7 @@
 function Get-RegionFromCountryCode {
   <#
   .SYNOPSIS
-    Ever wondered in which Region a ZW is?
+    Ever wondered in which Region ZW is?
   .DESCRIPTION
     Returns a Global Region or Country Name for any given CountryCode
   .PARAMETER CountryCode

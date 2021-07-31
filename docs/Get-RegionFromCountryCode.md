@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-RegionFromCountryCode
 
 ## SYNOPSIS
-Ever wondered in which Region a ZW is?
+Ever wondered in which Region ZW is?
 
 ## SYNTAX
 

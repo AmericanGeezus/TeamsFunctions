@@ -65,7 +65,7 @@ Accept wildcard characters: False
 ### -Enable
 Optional.
 Service Plans to be enabled (main function)
-Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
+Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
 No action is taken for any Licenses not containing this Service Plan
 
 ```yaml
@@ -83,7 +83,7 @@ Accept wildcard characters: False
 ### -Disable
 Optional.
 Service Plans to be disabled (alternative function)
-Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
+Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName)
 No action is taken for any Licenses not containing this Service Plan
 
 ```yaml

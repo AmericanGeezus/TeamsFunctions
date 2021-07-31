@@ -13,8 +13,8 @@ Creates a Callable Entity for Auto Attendants
 ## SYNTAX
 
 ```
-New-TeamsCallableEntity [-Identity] <String> [-EnableTranscription] [-Type <String>] [-Force] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+New-TeamsCallableEntity [-Identity] <String> [-Type <String>] [-EnableTranscription]
+ [-EnableSharedVoicemailSystemPromptSuppression] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -55,6 +55,24 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
+### -Type
+Optional.
+Type of Callable Entity to create.
+Expected User, ExternalPstn, SharedVoicemail, ApplicationEndPoint
+If not provided, the Type is queried with Get-TeamsCallableEntity
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -EnableTranscription
 Optional.
 Enables Transcription.
@@ -72,20 +90,17 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Type
-Optional.
-Type of Callable Entity to create.
-Expected User, ExternalPstn, SharedVoicemail, ApplicationEndPoint
-If not provided, the Type is queried with Get-TeamsCallableEntity
+### -EnableSharedVoicemailSystemPromptSuppression
+Enables Suppression of System Messages (for Shared Voicemail only)
 
 ```yaml
-Type: String
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -390,7 +390,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Returns Boolean Result</maml:para>
+        <maml:para>Returns Boolean Result This CmdLet does verify User Objects only - Channels are not validated</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -4274,6 +4274,87 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Get-ISO3166Country</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>ISO3166Country</command:noun>
+      <maml:description>
+        <maml:para>ISO 3166 Country table. Period.</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Returns the full ISO3166 Country table with Name, -alpha2, -alpha3 &amp; NUM code.</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-ISO3166Country</maml:name>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters />
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.Void</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>This CmdLet is created based on the C# definition of https://github.com/schourode/iso3166 Manually translated into PowerShell from source file https://raw.githubusercontent.com/schourode/iso3166/master/Country.cs Dataset last queried 31 JUL 2021 (based on last update of Github repo 08 JAN 2020) ISO3166-alpha2 is used as the Usage Location in Office 365</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-ISO3166Country</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the full table of Countries including TwoLetterCode (alpha2) &amp; ThreeLetterCode (alpha3) and NumericCode (NUM)</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-ISO3166Country | Where-Object TwoLetterCode -eq "AW"</dev:code>
+        <dev:remarks>
+          <maml:para>Returns entry for Country "Aruba" queried from the TwoLetterCode (ISO3166-Alpha2) AW</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>(Get-ISO3166Country).TwoLetterCode</dev:code>
+        <dev:remarks>
+          <maml:para>Returns the column TwoLetterCode (ISO3166-Alpha2) for all countries</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-ISO3166Country.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-ISO3166Country.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Get-MyAzureAdAdminRole</command:name>
       <command:verb>Get</command:verb>
       <command:noun>MyAzureAdAdminRole</command:noun>
@@ -4568,7 +4649,7 @@
       <command:verb>Get</command:verb>
       <command:noun>RegionFromCountryCode</command:noun>
       <maml:description>
-        <maml:para>Ever wondered in which Region a ZW is?</maml:para>
+        <maml:para>Ever wondered in which Region ZW is?</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
@@ -8436,7 +8517,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none">
           <maml:name>Address</maml:name>
           <maml:description>
-            <maml:para>Type of Object presented. Determines Output</maml:para>
+            <maml:para>Required. Friendly name of the Address as specified in the Tenant or LocationId of the Address. LocationIds are taken as-is, friendly names are queried against Get-CsOnlineLisLocation for a defined Location</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -8496,7 +8577,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="2" aliases="none">
         <maml:name>Address</maml:name>
         <maml:description>
-          <maml:para>Type of Object presented. Determines Output</maml:para>
+          <maml:para>Required. Friendly name of the Address as specified in the Tenant or LocationId of the Address. LocationIds are taken as-is, friendly names are queried against Get-CsOnlineLisLocation for a defined Location</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -8577,7 +8658,7 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"</dev:code>
+        <dev:code>Grant-TeamsEmergencyAddress -Identity +15551234567 -Address "3rd Floor Cafe"</dev:code>
         <dev:remarks>
           <maml:para>Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and assigns this Address to the Number +15551234567 if found in the Business Voice Directory AddressDescription is an Alias for Address</maml:para>
         </dev:remarks>
@@ -10619,16 +10700,16 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "C:\temp\Menu.wav" -CallTargetsInOrder "MyCQ@domain.com","MyAA@domain.com","$null","tel:+15551234567"</dev:code>
+        <dev:code>New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "C:\temp\Menu.wav" -CallTargetsInOrder "MyCQ@domain.com","MyAA@domain.com","$null","tel:+15551234567","Please listen for our opening hours..."</dev:code>
         <dev:remarks>
-          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Path to the Audio File. Creates a Menu Object with the Call Targets provided in order of application depending on identified ObjectType: Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively. Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn) Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
+          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Path to the Audio File. Creates a Menu Object with the Call Targets provided in order of application depending on identified ObjectType: Option 1 and 2 will be TransferToCallTarget (ApplicationEndpoint), Call Queue and Auto Attendant respectively. Option 3 will not be assigned ($null), Option 4 will be TransferToCallTarget (ExternalPstn) Option 5 will be an Announcement (Text-to-Voice) - returns to main menu afterwards. Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
-        <dev:code>New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group"</dev:code>
+        <dev:code>New-TeamsAutoAttendantMenu -Action MenuOptions -Prompts "Press 1 for John, Press 3 for My Group" -CallTargetsInOrder "John@domain.com","","My Group","C:\temp\OpeningHours.wav"</dev:code>
         <dev:remarks>
-          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Text-to-voice string. Creates a Menu with MenuOptions Objects provided in order with the Parameter CallTargetsInOrder depending on identified ObjectType: Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string), Option 3 is TransferToCallTarget (Shared Voicemail) Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
+          <maml:para>Creates a Menu with a Prompt and MenuOptions. Creates a Prompts Object with the provided Text-to-voice string. Creates a Menu with MenuOptions Objects provided in order with the Parameter CallTargetsInOrder depending on identified ObjectType: Option 1 will be TransferToCallTarget (User), Option 2 is unassigned (empty string), Option 3 is TransferToCallTarget (Shared Voicemail) Option 4 will be an Announcement (AudioFile) - returns to main menu afterwards. Maximum 10 options are supported, if more than 9 are provided, the Switch AddOperatorOnZero (if used) is ignored. This method does not allow specifying User Object that are intended to forward to the Users Voicemail!</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -10730,7 +10811,68 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="DtmfResponseTone">
           <maml:name>Press</maml:name>
           <maml:description>
-            <maml:para>Required for Option TransferToOperator and TransferToCallTarget. Integer. Dtmf Tone (digit) to be pressed for this option</maml:para>
+            <maml:para>Required for binding a specific Dial Key. Integer. Dtmf Tone (digit) to be pressed for this option. Set to Automatic if not provided.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="VoiceResponses, Say">
+          <maml:name>OrSay</maml:name>
+          <maml:description>
+            <maml:para>Optional for Option TransferToCallTarget. String. Voice Response to be used for this option. Expected: Single word</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Announcement</maml:name>
+          <maml:description>
+            <maml:para>Required for Option Announcement. String for the Audio File OR Text-to-Voice</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>New-TeamsAutoAttendantMenuOption</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="DtmfResponseTone">
+          <maml:name>Press</maml:name>
+          <maml:description>
+            <maml:para>Required for binding a specific Dial Key. Integer. Dtmf Tone (digit) to be pressed for this option. Set to Automatic if not provided.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -10791,7 +10933,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="DtmfResponseTone">
           <maml:name>Press</maml:name>
           <maml:description>
-            <maml:para>Required for Option TransferToOperator and TransferToCallTarget. Integer. Dtmf Tone (digit) to be pressed for this option</maml:para>
+            <maml:para>Required for binding a specific Dial Key. Integer. Dtmf Tone (digit) to be pressed for this option. Set to Automatic if not provided.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -10863,7 +11005,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="DtmfResponseTone">
         <maml:name>Press</maml:name>
         <maml:description>
-          <maml:para>Required for Option TransferToOperator and TransferToCallTarget. Integer. Dtmf Tone (digit) to be pressed for this option</maml:para>
+          <maml:para>Required for binding a specific Dial Key. Integer. Dtmf Tone (digit) to be pressed for this option. Set to Automatic if not provided.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -10900,6 +11042,18 @@
         <maml:name>CallTarget</maml:name>
         <maml:description>
           <maml:para>CallTarget</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Announcement</maml:name>
+        <maml:description>
+          <maml:para>Required for Option Announcement. String for the Audio File OR Text-to-Voice</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -11008,6 +11162,20 @@
           <maml:para>Creates a Menu Option on pressing 5 or saying 'Engineer' to Transfer to the Call Target (ExternalPstn).</maml:para>
         </dev:remarks>
       </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 8 --------------------------</maml:title>
+        <dev:code>New-TeamsAutoAttendantMenuOption -Press 6 -Announcement "We are open Monday to Friday from 9 AM to 5 PM" -OrSay "Hours"</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a Menu Option on pressing 6 or saying 'Hours' to play an Announcement (Text-to-Voice) and return to the main menu.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 9 --------------------------</maml:title>
+        <dev:code>New-TeamsAutoAttendantMenuOption -Press 7 -Announcement "C:\Temp\AudioFile-OpeningHours.wav" -OrSay "Hours"</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a Menu Option on pressing 7 or saying 'Hours' to play an Announcement (Audio File) and return to the main menu. The File must exist in the specified</maml:para>
+        </dev:remarks>
+      </command:example>
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
@@ -11051,6 +11219,18 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>AlternativeString</maml:name>
+          <maml:description>
+            <maml:para>Optional. Alternative (secondary) String as a Path for a Recording or a Greeting (Text-to-Voice) Must be the opposite type of the main String</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
           <maml:name>WhatIf</maml:name>
           <maml:description>
@@ -11080,6 +11260,18 @@
         <maml:name>String</maml:name>
         <maml:description>
           <maml:para>Required. String as a Path for a Recording or a Greeting (Text-to-Voice)</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>AlternativeString</maml:name>
+        <maml:description>
+          <maml:para>Optional. Alternative (secondary) String as a Path for a Recording or a Greeting (Text-to-Voice) Must be the opposite type of the main String</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -11151,6 +11343,20 @@
         <dev:code>New-TeamsAutoAttendantPrompt -String "myAudioFile.mp3"</dev:code>
         <dev:remarks>
           <maml:para>Verifies the file exists, then imports it (with Import-TeamsAudioFile) Creates a Audio File Prompt after import.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>New-TeamsAutoAttendantPrompt -String "Welcome to Contoso" -AlternativeString "myAudioFile.mp3"</dev:code>
+        <dev:remarks>
+          <maml:para>Creates a Text-to-Voice Prompt for the String and the AudioFile, but will play the Text-to-Voice one Warning: This will break if the String ends in a supported File extension</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>New-TeamsAutoAttendantPrompt -String "myAudioFile.mp3"</dev:code>
+        <dev:remarks>
+          <maml:para>Verifies the file exists, then imports it (with Import-TeamsAudioFile) Creates a Audio File Prompt after import and for Text-to-Voice, but will play the AudioFile</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -11736,6 +11942,18 @@
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Type</maml:name>
+          <maml:description>
+            <maml:para>Optional. Type of Callable Entity to create. Expected User, ExternalPstn, SharedVoicemail, ApplicationEndPoint If not provided, the Type is queried with Get-TeamsCallableEntity</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>EnableTranscription</maml:name>
           <maml:description>
             <maml:para>Optional. Enables Transcription. Available only for Groups (Type SharedVoicemail)</maml:para>
@@ -11747,16 +11965,15 @@
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-          <maml:name>Type</maml:name>
+          <maml:name>EnableSharedVoicemailSystemPromptSuppression</maml:name>
           <maml:description>
-            <maml:para>Optional. Type of Callable Entity to create. Expected User, ExternalPstn, SharedVoicemail, ApplicationEndPoint If not provided, the Type is queried with Get-TeamsCallableEntity</maml:para>
+            <maml:para>Enables Suppression of System Messages (for Shared Voicemail only)</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
-            <maml:name>String</maml:name>
+            <maml:name>SwitchParameter</maml:name>
             <maml:uri />
           </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
+          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
@@ -11807,6 +12024,18 @@
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Type</maml:name>
+        <maml:description>
+          <maml:para>Optional. Type of Callable Entity to create. Expected User, ExternalPstn, SharedVoicemail, ApplicationEndPoint If not provided, the Type is queried with Get-TeamsCallableEntity</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>EnableTranscription</maml:name>
         <maml:description>
           <maml:para>Optional. Enables Transcription. Available only for Groups (Type SharedVoicemail)</maml:para>
@@ -11819,16 +12048,16 @@
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
-        <maml:name>Type</maml:name>
+        <maml:name>EnableSharedVoicemailSystemPromptSuppression</maml:name>
         <maml:description>
-          <maml:para>Optional. Type of Callable Entity to create. Expected User, ExternalPstn, SharedVoicemail, ApplicationEndPoint If not provided, the Type is queried with Get-TeamsCallableEntity</maml:para>
+          <maml:para>Enables Suppression of System Messages (for Shared Voicemail only)</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
-          <maml:name>String</maml:name>
+          <maml:name>SwitchParameter</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Force</maml:name>
@@ -16014,7 +16243,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Enable</maml:name>
           <maml:description>
-            <maml:para>Optional. Service Plans to be enabled (main function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+            <maml:para>Optional. Service Plans to be enabled (main function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -16026,7 +16255,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Disable</maml:name>
           <maml:description>
-            <maml:para>Optional. Service Plans to be disabled (alternative function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+            <maml:para>Optional. Service Plans to be disabled (alternative function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -16086,7 +16315,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Enable</maml:name>
         <maml:description>
-          <maml:para>Optional. Service Plans to be enabled (main function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+          <maml:para>Optional. Service Plans to be enabled (main function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -16098,7 +16327,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>Disable</maml:name>
         <maml:description>
-          <maml:para>Optional. Service Plans to be disabled (alternative function) Accepted Values can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
+          <maml:para>Optional. Service Plans to be disabled (alternative function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicenseServicePlan (Column ServicePlanName) No action is taken for any Licenses not containing this Service Plan</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -17817,7 +18046,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="License, AddLicense, AddLicenses">
           <maml:name>Add</maml:name>
           <maml:description>
-            <maml:para>Optional. Licenses to be added (main function) Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
+            <maml:para>Optional. Licenses to be added (main function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -17889,7 +18118,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="License, AddLicense, AddLicenses">
           <maml:name>Add</maml:name>
           <maml:description>
-            <maml:para>Optional. Licenses to be added (main function) Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
+            <maml:para>Optional. Licenses to be added (main function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -17972,7 +18201,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="License, AddLicense, AddLicenses">
           <maml:name>Add</maml:name>
           <maml:description>
-            <maml:para>Optional. Licenses to be added (main function) Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
+            <maml:para>Optional. Licenses to be added (main function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -17984,7 +18213,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="RemoveLicense, RemoveLicenses">
           <maml:name>Remove</maml:name>
           <maml:description>
-            <maml:para>Optional. Licenses to be removed (alternative function) Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
+            <maml:para>Optional. Licenses to be removed (alternative function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -18056,7 +18285,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="License, AddLicense, AddLicenses">
         <maml:name>Add</maml:name>
         <maml:description>
-          <maml:para>Optional. Licenses to be added (main function) Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
+          <maml:para>Optional. Licenses to be added (main function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -18068,7 +18297,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="RemoveLicense, RemoveLicenses">
         <maml:name>Remove</maml:name>
         <maml:description>
-          <maml:para>Optional. Licenses to be removed (alternative function) Accepted Values can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
+          <maml:para>Optional. Licenses to be removed (alternative function) Accepted Values are available with Intellisense and can be retrieved with Get-AzureAdLicense (Column ParameterName)</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>

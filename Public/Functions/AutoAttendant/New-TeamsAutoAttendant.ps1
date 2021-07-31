@@ -174,23 +174,35 @@ function New-TeamsAutoAttendant {
     [Parameter(Mandatory, ValueFromPipeline, HelpMessage = 'Name of the Auto Attendant')]
     [string]$Name,
 
-    [Parameter(HelpMessage = 'TimeZone Identifier')]
-    [ValidateSet('UTC-12:00', 'UTC-11:00', 'UTC-10:00', 'UTC-09:00', 'UTC-08:00', 'UTC-07:00', 'UTC-06:00', 'UTC-05:00', 'UTC-04:30', 'UTC-04:00', 'UTC-03:30', 'UTC-03:00', 'UTC-02:00', 'UTC-01:00', 'UTC', 'UTC+01:00', 'UTC+02:00', 'UTC+03:00', 'UTC+03:30', 'UTC+04:00', 'UTC+04:30', 'UTC+05:00', 'UTC+05:30', 'UTC+05:45', 'UTC+06:00', 'UTC+06:30', 'UTC+07:00', 'UTC+08:00', 'UTC+09:00', 'UTC+09:30', 'UTC+10:00', 'UTC+11:00', 'UTC+12:00', 'UTC+13:00', 'UTC+14:00')]
+    [Parameter(HelpMessage = 'TimeZone Identifier from Get-CsAutoAttendantSupportedTimeZone')]
+    #[ValidateSet('UTC-12:00', 'UTC-11:00', 'UTC-10:00', 'UTC-09:00', 'UTC-08:00', 'UTC-07:00', 'UTC-06:00', 'UTC-05:00', 'UTC-04:30', 'UTC-04:00', 'UTC-03:30', 'UTC-03:00', 'UTC-02:00', 'UTC-01:00', 'UTC', 'UTC+01:00', 'UTC+02:00', 'UTC+03:00', 'UTC+03:30', 'UTC+04:00', 'UTC+04:30', 'UTC+05:00', 'UTC+05:30', 'UTC+05:45', 'UTC+06:00', 'UTC+06:30', 'UTC+07:00', 'UTC+08:00', 'UTC+09:00', 'UTC+09:30', 'UTC+10:00', 'UTC+11:00', 'UTC+12:00', 'UTC+13:00', 'UTC+14:00')]
+    [ValidateScript( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone }
+        [System.Collections.Arraylist]$TimeZoneUTCStrings = ($TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -NotLike '(UTC)*').DisplayName.Substring(1, 9) | Get-Unique
+        [void]$TimeZoneUTCStrings.Add('UTC')
+        if ($_ -in $TimeZoneUTCStrings) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'TimeZone' must be of the set: $($TimeZoneUTCStrings -join ',')"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone }
+        [System.Collections.Arraylist]$TimeZoneUTCStrings = ($TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -NotLike '(UTC)*').DisplayName.Substring(1, 9) | Get-Unique
+        [void]$TimeZoneUTCStrings.Add('UTC')
+        $TimeZoneUTCStrings | Sort-Object | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TimeZoneUTCStrings.Count) records available")
+        }
+      })]
     [string]$TimeZone = 'UTC',
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
     [ValidateScript( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
-          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
-        }
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
         if ($_ -in $TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $True } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $TeamsFunctionsCsAutoAttendantSupportedLanguageIds"
         }
       })]
     [ArgumentCompleter( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
-          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
-        }
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
         $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
         }
@@ -267,7 +279,7 @@ function New-TeamsAutoAttendant {
     [object]$CallHandlingAssociations,
     #endregion
 
-    [Parameter(Mandatory = $false, HelpMessage = 'Target String for the Operator (UPN, Group Name or Tel URI')]
+    [Parameter(HelpMessage = 'Target String for the Operator (UPN, Group Name or Tel URI')]
     [string]$Operator,
 
     [Parameter(HelpMessage = 'Groups defining the Inclusion Scope')]
@@ -322,6 +334,7 @@ function New-TeamsAutoAttendant {
       $TimeZoneId = $TimeZone
     }
     else {
+      #TODO Add variable of queried TimeZones to speed things up
       $TimeZoneId = (Get-CsAutoAttendantSupportedTimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
       Write-Verbose -Message "TimeZone - Found! Using: '$TimeZoneId'"
       Write-Information 'TimeZone - This is a correct match for the Time Zone, but might not be fully precise. - Please fine-tune Time Zone in the Admin Center if needed.'

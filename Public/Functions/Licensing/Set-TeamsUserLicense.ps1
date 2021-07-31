@@ -150,6 +150,18 @@ function Set-TeamsUserLicense {
     [Switch]$RemoveAll,
 
     [Parameter(HelpMessage = 'Usage Location to be set if not already applied')]
+    [ValidateScript( {
+        if (-not $global:TeamsFunctionsCountryTable) { $global:TeamsFunctionsCountryTable = (Get-ISO3166Country).TwoLetterCode }
+        if ($_ -in $TeamsFunctionsCountryTable) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'CountryCode' must be of the set: $TeamsFunctionsCountryTable"
+        }
+      })]
+    [ArgumentCompleter( {
+        if (-not $global:TeamsFunctionsCountryTable) { $global:TeamsFunctionsCountryTable = (Get-ISO3166Country).TwoLetterCode }
+        $TeamsFunctionsCountryTable | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCountryTable.Count) records available")
+        }
+      })]
     [string]$UsageLocation = 'US',
 
     <# Force removed as leading to errors

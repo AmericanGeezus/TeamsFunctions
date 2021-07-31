@@ -13,7 +13,8 @@ Creates a prompt
 ## SYNTAX
 
 ```
-New-TeamsAutoAttendantPrompt [-String] <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+New-TeamsAutoAttendantPrompt [-String] <String> [[-AlternativeString] <String>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,6 +38,22 @@ New-TeamsAutoAttendantPrompt -String "myAudioFile.mp3"
 Verifies the file exists, then imports it (with Import-TeamsAudioFile)
 Creates a Audio File Prompt after import.
 
+### EXAMPLE 3
+```
+New-TeamsAutoAttendantPrompt -String "Welcome to Contoso" -AlternativeString "myAudioFile.mp3"
+```
+
+Creates a Text-to-Voice Prompt for the String and the AudioFile, but will play the Text-to-Voice one
+Warning: This will break if the String ends in a supported File extension
+
+### EXAMPLE 4
+```
+New-TeamsAutoAttendantPrompt -String "myAudioFile.mp3"
+```
+
+Verifies the file exists, then imports it (with Import-TeamsAudioFile)
+Creates a Audio File Prompt after import and for Text-to-Voice, but will play the AudioFile
+
 ## PARAMETERS
 
 ### -String
@@ -50,6 +67,23 @@ Aliases:
 
 Required: True
 Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -AlternativeString
+Optional.
+Alternative (secondary) String as a Path for a Recording or a Greeting (Text-to-Voice)
+Must be the opposite type of the main String
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

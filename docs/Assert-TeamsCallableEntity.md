@@ -76,6 +76,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Boolean
 ## NOTES
 Returns Boolean Result
+This CmdLet does verify User Objects only - Channels are not validated
 
 ## RELATED LINKS
 

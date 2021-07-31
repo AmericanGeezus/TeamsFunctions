@@ -52,6 +52,7 @@ function Assert-TeamsAudioFile {
   [OutputType([System.Boolean])]
   param(
     [Parameter(Mandatory)]
+    [ArgumentCompleter( { 'C:\Temp\' })]
     [string]$File
 
   ) #param

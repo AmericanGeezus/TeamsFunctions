@@ -32,7 +32,7 @@ Searches for the Civic Address with the Exact description of "3rd Floor Cafe" an
 
 ### EXAMPLE 2
 ```
-Grant-TeamsEmergencyAddress -Identity +15551234567 -AddressDescription "3rd Floor Cafe"
+Grant-TeamsEmergencyAddress -Identity +15551234567 -Address "3rd Floor Cafe"
 ```
 
 Searches for the Civic Address with the Exact description of "3rd Floor Cafe" and
@@ -75,8 +75,9 @@ Accept wildcard characters: False
 ```
 
 ### -Address
-Type of Object presented.
-Determines Output
+Required.
+Friendly name of the Address as specified in the Tenant or LocationId of the Address.
+LocationIds are taken as-is, friendly names are queried against Get-CsOnlineLisLocation for a defined Location
 
 ```yaml
 Type: String

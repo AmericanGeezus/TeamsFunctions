@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.07.25'
+  ModuleVersion         = '21.08'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -132,6 +132,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Assert-Module',
     'Format-StringForUse',
     'Format-StringRemoveSpecialCharacter',
+    'Get-ISO3166Country',
     'Get-RegionFromCountryCode',
     'Get-TeamsObjectType',
     ## Licensing

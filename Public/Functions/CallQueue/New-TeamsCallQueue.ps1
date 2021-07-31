@@ -318,17 +318,13 @@ function New-TeamsCallQueue {
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
     [ValidateScript( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
-          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
-        }
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
         if ($_ -in $TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $True } else {
           throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $TeamsFunctionsCsAutoAttendantSupportedLanguageIds"
         }
       })]
     [ArgumentCompleter( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) {
-          $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id
-        }
+        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
         $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
         }
