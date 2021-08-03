@@ -20,6 +20,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 ### Updated
 
 - TBC
+
 ### Limitations
 
 - `Connect-MicrosoftTeams`: Scenario observed where a Session has been opened, but Skype Commands cannot be used.

@@ -31,13 +31,13 @@ Going forward, I will stick to monthly releases, provided there are any changes 
   - ValidateSet or ValidateScript parameters now consistently query supported values directly from a Cmdlet
   - This will speed up loading, increases consistence and reduces potential drift for static configuration
   - Direct feedback with the `[ArgumentCompleter]` has been added, Intellisense is now available for these Parameters
-- Added support for 'Announcements' (Prompts) in Auto Attendants.
 
 ### Updated
 
 - `New-TeamsAutoAttendant`: Now fully featured.
   - Added HolidaySet-Parameters.
   - Optimised validation of CallFlows and CallHandlingAssociations
+  - Added support for 'Announcements' (Prompts) in Auto Attendants.
   - Updated help and optimised order of Parameters
 - `New-TeamsAutoAttendantDialScope`: Added small verification for Groups (previously only validated Call Targets)
 - `New-TeamsAutoAttendantMenuOption`:
