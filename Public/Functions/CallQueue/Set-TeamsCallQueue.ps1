@@ -307,7 +307,7 @@ function Set-TeamsCallQueue {
       })]
     [ArgumentCompleter( {
         if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
-        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
+        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | Sort-Object | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
         }
       })]
@@ -1174,7 +1174,7 @@ function Set-TeamsCallQueue {
           # Asserting Object - Validation of Type
           $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
-            Write-Information "User '$ChannelUser' will be added to CallQueue"
+            Write-Information "INFO:    User '$ChannelUser' will be added to CallQueue"
             [void]$ChannelUsersIdList.Add($CallTarget.Identity)
           }
           else {
@@ -1218,7 +1218,7 @@ function Set-TeamsCallQueue {
           # Asserting Object - Validation of Type
           $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
-            Write-Information "User '$User' will be added to CallQueue"
+            Write-Information "INFO:    User '$User' will be added to CallQueue"
             [void]$UserIdList.Add($CallTarget.Identity)
           }
           else {

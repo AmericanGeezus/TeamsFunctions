@@ -253,7 +253,7 @@ function Enable-AzureAdAdminRole {
           Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
         }
         else {
-          Write-Information "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) active Roles"
+          Write-Information "INFO:    User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) active Roles"
           return $(if ($Called) { $true })
         }
 

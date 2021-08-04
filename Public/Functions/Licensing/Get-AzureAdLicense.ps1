@@ -4,7 +4,7 @@
 # Updated:  14-FEB-2021
 # Status:   Live
 
-
+#TODO Add Parameter LicenseName and/or SearchString to query?
 
 
 function Get-AzureAdLicense {

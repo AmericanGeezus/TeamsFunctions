@@ -117,7 +117,7 @@ function Assert-TeamsUserVoiceConfig {
         continue
       }
       if ($CsOnlineUser.InterpretedUserType -notlike '*User*') {
-        Write-Information "User '$User' not a User"
+        Write-Information "INFO:    User '$User' not a User"
         continue
       }
       else {
@@ -133,7 +133,7 @@ function Assert-TeamsUserVoiceConfig {
             Write-Output $TestFull
           }
           else {
-            Write-Information "User '$User' is correctly configured"
+            Write-Information "INFO:    User '$User' is correctly configured"
             continue
           }
         }

@@ -19,7 +19,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- TBC
+- `Find-TeamsUserVoiceConfig`: Addressed an issue with search by VP, OVP & TDP
+- All `TeamsCallQueue` CmdLets: Added "INFO: " for informational output
+- Some `TeamsUserVoiceConfig` CmdLets: Added "INFO: " for informational output
+- `[ArgumentCompleter]` now returns values sorted. For some reason, I missed this, sorry.
 
 ### Limitations
 
