@@ -85,11 +85,25 @@ function Merge-AutoAttendantArtefact {
     switch ($Type) {
       'Prompt' {
         foreach ($O in $Object) {
+          if ( $O.HasAudioFilePromptData ) {
+            #FIXME DownloadUri and FileName does not populate properly!
+            Write-Verbose -Message 'Parsing Prompt: AudioFilePrompt: FileName and DownloadUri currently do not populate correctly, sorry!' -Verbose
+            $AudioFilePrompt = @()
+            $AudioFilePrompt = [PsCustomObject][ordered]@{
+              'Id'                = $O.AudioFilePrompt.Id
+              'FileName'          = $O.AudioFilePrompt.FileName
+              'DownloadUri'       = $O.AudioFilePrompt.DownloadUri
+              'MarkedForDeletion' = $O.AudioFilePrompt.MarkedForDeletion
+            }
+            Add-Member -Force -InputObject $AudioFilePrompt -MemberType ScriptMethod -Name ToString -Value {
+              [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
+            }
+          }
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
             'ActiveType'         = $O.ActiveType
             'TextToSpeechPrompt' = $O.TextToSpeechPrompt
-            'AudioFilePrompt'    = $O.AudioFilePrompt
+            'AudioFilePrompt'    = $AudioFilePrompt
             # More boolean parameters are available with | FL *:
             # HasTextToSpeechPromptData, HasAudioFilePromptData, IsAudioFileAlreadyUploaded, IsDisabled, HasDualPromptData
           }
