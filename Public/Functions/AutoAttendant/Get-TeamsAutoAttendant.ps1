@@ -91,6 +91,8 @@ function Get-TeamsAutoAttendant {
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
@@ -280,6 +282,7 @@ function Get-TeamsAutoAttendant {
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"
         # Default Call Flow Menu Prompts
+        Write-Verbose -Message "'$($AA.Name)' - $Operation - Prompts"
         if ( $AA.DefaultCallFlow.Menu.Prompts ) {
           $AADefaultCallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.Prompts
         }
@@ -288,10 +291,14 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow Menu Options
+        Write-Verbose -Message "'$($AA.Name)' - $Operation - MenuOptions"
         if ( $AA.DefaultCallFlow.Menu.MenuOptions ) {
+          #BODGE Empty Objects without content will lead to issues on this - need to catch
           if ($AA.DefaultCallFlow.Menu.MenuOptions.Prompt) {
             # Announcements: Processing Call Flow Prompts
+            Write-Verbose -Message "'$($AA.Name)' - $Operation - MenuOptions - Prompt"
             $AADefaultCallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.MenuOptions.Prompt
+            Write-Verbose -Message "'$($AA.Name)' - $Operation - MenuOptions - MenuOptions"
             $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions -Prompts $AADefaultCallFlowMenuOptionPrompt
           }
           else {
@@ -303,6 +310,7 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow Menu
+        Write-Verbose -Message "'$($AA.Name)' - $Operation - Menu"
         $AADefaultCallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $AA.DefaultCallFlow.Menu -Prompts $AADefaultCallFlowMenuPrompts -MenuOptions $AADefaultCallFlowMenuOptions
 
         # Default Call Flow Greetings
@@ -314,6 +322,7 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow
+        Write-Verbose -Message "'$($AA.Name)' - $Operation - Call Flow"
         $AADefaultCallFlow = Merge-AutoAttendantArtefact -Type CallFlow -Object $AA.DefaultCallFlow -Prompts $AADefaultCallFlowGreetings -Menu $AADefaultCallFlowMenu
         #endregion
 
@@ -325,6 +334,7 @@ function Get-TeamsAutoAttendant {
         $AACallFlows = @()
         foreach ($Flow in $AA.CallFlows) {
           # Call Flow Prompts
+          Write-Verbose -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Prompts"
           if ($Flow.Menu.Prompts) {
             $AACallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.Prompts
           }
@@ -333,6 +343,7 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow Menu Options
+          Write-Verbose -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - MenuOptions"
           if ($Flow.Menu.MenuOptions) {
             if ($Flow.Menu.MenuOptions.Prompt) {
               # Announcements: Processing Call Flow Prompts
@@ -348,9 +359,11 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow Menu
+          Write-Verbose -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Menu"
           $AACallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $Flow.Menu -Prompts $AACallFlowMenuPrompts -MenuOptions $AACallFlowMenuOptions
 
           # Call Flow Greetings
+          Write-Verbose -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Greetings"
           if ($Flow.Greetings) {
             $AACallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Greetings
           }
@@ -359,6 +372,7 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow
+          Write-Verbose -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Call Flow"
           $AACallFlows += Merge-AutoAttendantArtefact -Type CallFlow -Object $Flow -Prompts $AACallFlowGreetings -Menu $AACallFlowMenu
         }
         #endregion

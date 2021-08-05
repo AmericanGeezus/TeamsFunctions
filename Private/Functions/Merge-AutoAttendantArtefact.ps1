@@ -60,9 +60,11 @@ function Merge-AutoAttendantArtefact {
     [object[]]$Prompts,
 
     [Parameter(Mandatory, ParameterSetName = 'Menu', HelpMessage = "Merged Object of 'MenuOptions' to be added to Menus")]
+    [AllowNull()]
     [object[]]$MenuOptions,
 
     [Parameter(Mandatory, ParameterSetName = 'CallFlow', HelpMessage = "Merged Object of 'Menu' to be added to Call Flows")]
+    [AllowNull()]
     [object]$Menu,
 
     [Parameter(Mandatory, ParameterSetName = 'CallHandlingAssociation', HelpMessage = 'CallHandling Association only: Name of the Call Flow')]
