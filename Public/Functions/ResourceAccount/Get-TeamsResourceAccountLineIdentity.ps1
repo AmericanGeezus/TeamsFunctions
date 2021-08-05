@@ -102,7 +102,7 @@ function Get-TeamsResourceAccountLineIdentity {
             [void]$ResourceAccounts.Add($RA)
           }
           catch {
-            Write-Information "Resource Account '$UPN' - Not found!"
+            Write-Information "INFO:    Resource Account '$UPN' - Not found!"
           }
         }
         [System.Collections.ArrayList]$CallingLineIdentities = @()
@@ -113,7 +113,7 @@ function Get-TeamsResourceAccountLineIdentity {
             [void]$CallingLineIdentities.Add($CLI)
           }
           catch {
-            Write-Information "Calling Line Identity '$($CLI.Identity)' - Not found!"
+            Write-Information "INFO:    Calling Line Identity '$($CLI.Identity)' - Not found!"
             continue
           }
         }
@@ -134,7 +134,7 @@ function Get-TeamsResourceAccountLineIdentity {
             }
           }
           catch {
-            Write-Information "Calling Line Identity '$($CLI.Identity)' - Not found!"
+            Write-Information "INFO:    Calling Line Identity '$($CLI.Identity)' - Not found!"
             continue
           }
         }
@@ -156,7 +156,7 @@ function Get-TeamsResourceAccountLineIdentity {
           }
         }
         catch {
-          Write-Information "Calling Line Identity '$Filter' - Not found!"
+          Write-Information "INFO:    Calling Line Identity '$Filter' - Not found!"
           return
         }
       }

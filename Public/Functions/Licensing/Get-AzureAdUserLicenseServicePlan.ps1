@@ -146,7 +146,7 @@ function Get-AzureAdUserLicenseServicePlan {
       }
       $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
 
-      Write-Information "'$User' - Service Plans for User '$DisplayName':"
+      Write-Information "INFO:    User '$User' - Service Plans for User '$DisplayName':"
       Write-Output $UserServicePlansSorted
     }
   } #process

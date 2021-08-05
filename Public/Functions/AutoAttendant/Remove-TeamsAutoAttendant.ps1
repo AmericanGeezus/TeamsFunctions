@@ -76,7 +76,7 @@ function Remove-TeamsAutoAttendant {
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
       $DNCounter++
       try {
-        Write-Information 'INFO: The listed Auto Attendants are being removed:'
+        Write-Information 'INFO:    The listed Auto Attendants are being removed:'
         if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
           $AAToRemove = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue
         }
@@ -90,7 +90,7 @@ function Remove-TeamsAutoAttendant {
           $AAs = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
             Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AAs * 100)
-            Write-Information "Removing Auto Attendant: '$($AA.Name)'"
+            Write-Information "INFO:    Removing Auto Attendant: '$($AA.Name)'"
             $AACounter++
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity "$($AA.Identity)" -ErrorAction STOP

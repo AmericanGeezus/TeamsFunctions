@@ -139,7 +139,7 @@ function Get-TeamsAutoAttendantSchedule {
     # Parsing Associated Auto Attendants where appropriate
     if ($ParseAutoAttendants) {
       if (-not $UnAssociatedOnly) {
-        Write-Information "$($MyInvocation.MyCommand) - Parsing Associated Auto Attendants. This will take some time for bigger datasets..."
+        Write-Information "INFO:    $($MyInvocation.MyCommand) - Parsing Associated Auto Attendants. This will take some time for bigger datasets..."
       }
       foreach ($S in $Schedules) {
         Write-Verbose -Message "[FOREACH] $($MyInvocation.MyCommand) - Schedule '$($S.Name)'"

@@ -331,7 +331,7 @@ function New-TeamsCommonAreaPhone {
       try {
         if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
           $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-          Write-Information "'$Name' License assignment - '$License' SUCCESS"
+          Write-Information "INFO:    User '$Name' License assignment - '$License' SUCCESS"
           $IsLicensed = $true
         }
       }

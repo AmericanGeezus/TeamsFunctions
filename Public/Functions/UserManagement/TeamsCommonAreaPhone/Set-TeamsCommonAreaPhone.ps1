@@ -334,14 +334,14 @@ function Set-TeamsCommonAreaPhone {
         Write-Verbose -Message "$Status - $Operation"
         if ( $License -in $UserLicense.Licenses.ParameterName -and $IsLicensed ) {
           # No action required
-          Write-Information "'$Name ($UPN)' License '$License' already assigned."
+          Write-Information "INFO:    User '$Name ($UPN)' License '$License' already assigned."
           $IsLicensed = $true
         }
         else {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
               $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-              Write-Information "'$Name' License assignment - '$License' SUCCESS"
+              Write-Information "INFO:    User '$Name' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
           }

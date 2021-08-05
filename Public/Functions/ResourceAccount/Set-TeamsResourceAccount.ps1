@@ -477,14 +477,14 @@ function Set-TeamsResourceAccount {
         Write-Verbose -Message "$Status - $Operation"
         if ( $License -in $UserLicense.Licenses.ParameterName -and $IsLicensed ) {
           # No action required
-          Write-Information "'$Name ($UPN)' License '$License' already assigned."
+          Write-Information "INFO:    Resource Account '$Name ($UPN)' License '$License' already assigned."
           $IsLicensed = $true
         }
         else {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
               $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-              Write-Information "'$Name' License assignment - '$License' SUCCESS"
+              Write-Information "INFO:    Resource Account '$Name' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
           }
@@ -614,14 +614,14 @@ function Set-TeamsResourceAccount {
               if ($PhoneNumberIsMSNumber) {
                 # Set in VoiceApplicationInstance
                 if ($force -or $PSCmdlet.ShouldProcess("$UPN", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
-                  Write-Information "'$Name ($UPN)' Number '$Number' found in Tenant, provisioning Microsoft for: Microsoft Calling Plans"
+                  Write-Information "INFO:    Resource Account '$Name ($UPN)' Number '$Number' found in Tenant, provisioning Microsoft for: Microsoft Calling Plans"
                   $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$UPN" -TelephoneNumber $E164Number -ErrorAction STOP)
                 }
               }
               else {
                 # Set in ApplicationInstance
                 if ($force -or $PSCmdlet.ShouldProcess("$UPN", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
-                  Write-Information "'$Name ($UPN)' Number '$E164Number' not found in Tenant, provisioning for: Direct Routing"
+                  Write-Information "INFO:    Resource Account '$Name ($UPN)' Number '$E164Number' not found in Tenant, provisioning for: Direct Routing"
                   $null = (Set-CsOnlineApplicationInstance -Identity "$UPN" -OnpremPhoneNumber $E164Number -Force -ErrorAction STOP)
                 }
               }

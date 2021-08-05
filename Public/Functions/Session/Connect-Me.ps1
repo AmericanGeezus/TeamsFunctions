@@ -176,7 +176,7 @@ function Connect-Me {
       }
     }
     catch {
-      Write-Information "Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
+      Write-Information "INFO:    Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
       Write-Verbose -Message 'AzureAd & MicrosoftTeams: Establishing a connection will work, though only GET-commands will be able to be executed'
     }
     #endregion
@@ -195,7 +195,7 @@ function Connect-Me {
 
     #region Connections
     $Status = 'Establishing Connection'
-    Write-Information "Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
+    Write-Information "INFO:    Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     $ConnectionOrder = @('AzureAd')
     if ( $PIMavailable ) {
       $ConnectionOrder += 'Enabling eligible Admin Roles'

@@ -174,7 +174,7 @@ function Disable-AzureAdAdminRole {
     # Identity is not mandatory, using connected Session
     if ( -not $PSBoundParameters.ContainsKey('Identity') ) {
       $Identity = (Get-AzureADCurrentSessionInfo).Account.Id
-      Write-Information "No Identity Provided, using user currently connected to AzureAd: '$Identity'"
+      Write-Information "INFO:    No Identity Provided, using user currently connected to AzureAd: '$Identity'"
     }
 
   } #begin

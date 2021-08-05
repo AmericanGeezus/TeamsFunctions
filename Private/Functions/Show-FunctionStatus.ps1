@@ -74,10 +74,10 @@ function Show-FunctionStatus {
         Write-Verbose -Message "$Function is [LIVE] but [UNMANAGED] and comes as-is."
       }
       'Deprecated' {
-        Write-Information "$Function is [LIVE] but [DEPRECATED]!"
+        Write-Information "INFO:    $Function is [LIVE] but [DEPRECATED]!"
       }
       'Archived' {
-        Write-Information "$Function is [ARCHIVED]!"
+        Write-Information "INFO:    $Function is [ARCHIVED]!"
       }
     }
 

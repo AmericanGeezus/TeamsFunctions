@@ -93,7 +93,7 @@ function New-TeamsHolidaySchedule {
       If ($Today.Month -eq 12) {
         $Year++
       }
-      Write-Information "$($MyInvocation.MyCommand) - Parameter Year not provided, as it is $($matches[1]), using year: $Year"
+      Write-Information "INFO:    $($MyInvocation.MyCommand) - Parameter Year not provided, as it is $($matches[1]), using year: $Year"
     }
 
   } #begin
@@ -133,7 +133,7 @@ function New-TeamsHolidaySchedule {
         if ($PSCmdlet.ShouldProcess("Creating Online Schedule '$Cname $Y' with $($Holidays.Count) Holidays", "$($Schedule.Name)", 'New-TeamsAutoAttendantSchedule')) {
           try {
             $Schedule = New-TeamsAutoAttendantSchedule -Name "$Cname $Y" -Fixed -DateTimeRanges $Holidays -InformationAction SilentlyContinue -ErrorAction Stop
-            Write-Information "Schedule '$($Schedule.Name)' created with $($Holidays.Count) entries"
+            Write-Information "INFO:    Schedule '$($Schedule.Name)' created with $($Holidays.Count) entries"
             return $Schedule
           }
           catch {

@@ -163,7 +163,7 @@ function New-TeamsResourceAccountLineIdentity {
       try {
         $CallingLineIdentity = New-CsCallingLineIdentity @Parameters
         if ($Called) {
-          Write-Information "Line Identity with Identity '$($CallingLineIdentity.Identity)' created successfully"
+          Write-Information "SUCCESS: Line Identity with Identity '$($CallingLineIdentity.Identity)' created successfully"
         }
         return $CallingLineIdentity
       }

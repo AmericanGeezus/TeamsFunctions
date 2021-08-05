@@ -131,7 +131,7 @@ function Get-TeamsResourceAccount {
           [void]$ResourceAccounts.Add($RA)
         }
         catch {
-          Write-Information "Resource Account '$I' - Not found!"
+          Write-Information "INFO:    Resource Account '$I' - Not found!"
         }
       }
     }
@@ -151,7 +151,7 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
     }
     else {
-      Write-Information 'Listing UserPrincipalName only. To query individual items, please provide Identity'
+      Write-Information 'INFO:    Resource Account: Listing UserPrincipalName only. To query individual items, please provide Identity'
       Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Select-Object UserPrincipalName
       return
     }
