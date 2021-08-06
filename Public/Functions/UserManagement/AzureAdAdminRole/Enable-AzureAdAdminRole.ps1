@@ -136,7 +136,7 @@ function Enable-AzureAdAdminRole {
       return
     }
 
-    # Evaluating requriement for SfB Legacy Role
+    # Evaluating requirement for SfB Legacy Role
     $SfBRoleNotNeeded = $(Get-Module MicrosoftTeams -WarningAction SilentlyContinue).Version -ge 2.3.1
 
     # preparing Splatting Object
@@ -229,57 +229,65 @@ function Enable-AzureAdAdminRole {
         continue
       }
 
-      # Query current Admin Roles
-
-      <# Commented out for Admin Groups are not yet available via PowerShell
-      $TenantRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId #-Filter "subjectId eq '$SubjectId'"
-      $MyEligibleGroups = $TenantRoles | Where-Object MemberType -EQ "Group"
-      $MyRoles = $TenantRoles | Where-Object SubjectId -EQ $SubjectId
-      #>
+      # Determining Direct assignments
+      Write-Verbose -Message "User '$Id' Determining direct assignments"
       $MyRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
-
-
       $MyActiveRoles = $MyRoles | Where-Object AssignmentState -EQ 'Active'
       $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ 'Eligible'
       Write-Verbose -Message "User '$Id' has currently $($MyActiveRoles.Count) of $($MyEligibleRoles.Count) activated"
 
-      [System.Collections.ArrayList]$RolesAndGroups = @()
-      <# Commented out for Admin Groups are not yet available via PowerShell
-      if ($MyEligibleGroups.Count -eq 0) {
-        Write-Verbose -Message "User '$Id' - No Privileged Access Groups are available that can be activated."
+      <#
+      # Determining Group Assignments
+      Write-Verbose -Message "User '$Id' Determining group assignments"
+      $MyGroups = (Get-AzureADUserMembership -ObjectId $SubjectId).ObjectId
+      foreach ($Group in $MyGroups) {
+        Write-Debug "Querying AzureADMSPrivilegedRoleAssignment for $Group"
+        $PIMGroup = $null
+        $PIMGroup = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$Group'"
+        if ($PIMGroup) {
+          Write-Debug "Querying AzureADMSPrivilegedRoleAssignment for $Group - Adding $($PIMGroup.RoleDefinitionId)"
+          $MyGroupRoles += $PIMGroup
+        }
+      }
+
+      $MyActivePIMRoles = $MyGroups | ForEach-Object { $MyGroupRoles | Where-Object AssignmentState -EQ 'Active' }
+      $MyEligiblePIMRoles = $MyGroups | ForEach-Object { $MyGroupRoles | Where-Object AssignmentState -EQ 'Eligible' }
+      Write-Verbose -Message "User '$Id' is a member of $($MyGroups.Count) Groups; $($MyActivePIMRoles.Count) Active Roles and $($MyEligiblePIMRoles.Count) Eligible Roles"
+
+      $MyActiveRoles += $MyActivePIMRoles
+      $MyEligibleRoles += $MyEligiblePIMRoles
       #>
-      if ($MyEligibleRoles.Count -eq 0) {
-        if ($MyActiveRoles.Count -eq 0) {
+
+      [System.Collections.ArrayList]$Roles = @()
+      if ( $MyEligibleRoles.Count -eq 0 ) {
+        if ( $MyActiveRoles.Count -eq 0 ) {
           Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
         }
         else {
           Write-Information "INFO:    User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) active Roles"
           return $(if ($Called) { $true })
         }
-
         Continue
       }
 
-      <# Commented out for Admin Groups are not yet available via PowerShell
-      }
-      else {
-        # Adding Groups
-        foreach ($Role in $MyEligibleGroups) {
-          [void]$RolesAndGroups.Add($Role)
-        }
-      }
-    #>
       if ($MyEligibleRoles.Count -gt 0) {
         # Adding Roles
         foreach ($Role in $MyEligibleRoles) {
-          [void]$RolesAndGroups.Add($Role)
+          [void]$Roles.Add($Role)
         }
       }
+      <#
+      elseif ( $MyEligiblePIMRoles.Count -gt 0) {
+        # Adding Groups
+        foreach ($Role in $MyEligiblePIMRoles) {
+          [void]$Roles.Add($Role)
+        }
+      }
+      #>
 
       # Activating Role
       [System.Collections.ArrayList]$ActivatedRoles = @()
-
-      foreach ($R in $RolesAndGroups) {
+      foreach ($R in $Roles) {
         # Querying Role Display Name
         $RoleName = $AllRoles | Where-Object { $_.Id -eq $R.RoleDefinitionId } | Select-Object -ExpandProperty DisplayName
 
