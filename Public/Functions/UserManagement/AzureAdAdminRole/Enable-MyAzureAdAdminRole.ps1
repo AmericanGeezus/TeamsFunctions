@@ -84,6 +84,8 @@ function Enable-MyAzureAdAdminRole {
         catch {
           $Exception = $_.Exception.Message
           return $(if ($Called) { $false } else {
+              Write-Error -Message "Activating Admin Roles failed with Exception: $Exception"
+              <#
               if ($Exception -contains 'The following policy rules failed: ["MfaRule"]') {
                 Write-Information "INFO:    $($MyInvocation.MyCommand) - No valid authentication via MFA is present. Please authenticate again and retry" -InformationAction Continue
               }
@@ -91,6 +93,7 @@ function Enable-MyAzureAdAdminRole {
                 Write-Information "INFO:    $($MyInvocation.MyCommand) - Privileged Identity Management could not be contacted" -InformationAction Continue
                 throw "$($Exception)"
               }
+              #>
             })
         }
       }
