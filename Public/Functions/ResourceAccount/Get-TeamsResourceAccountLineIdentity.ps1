@@ -185,23 +185,28 @@ function Get-TeamsResourceAccountLineIdentity {
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing CLI: '$($CLI.Identity)'"
       try {
         if (-not $CLI.ResourceAccount) {
-          throw 'Resource Account not assigned!'
+          if ( $All ) {
+            Write-Warning -Message "Calling Line Identity Object '$($CLI.Identity)' is not of type Resource."
+          }
+          else {
+            throw 'Resource Account not assigned!'
+          }
         }
         else {
           $ResourceAccount = Get-TeamsResourceAccount $CLI.ResourceAccount -ErrorAction Stop
-        }
 
-        # Validating Resource Account Settings
-        # Check for Line URI - only allow if PhoneNumber is set!
-        if ( -not $ResourceAccount.PhoneNumber ) {
-          Write-Warning -Message "Resource Account '$($ResourceAccount.UserPrincipalName)' does not have a Phone Number assigned."
-        }
-        # Check for OVP - if not set, write warning
-        if ( -not $ResourceAccount.OnlineVoiceRoutingPolicy ) {
-          Write-Warning -Message "Resource Account '$($ResourceAccount.UserPrincipalName)' does not have an OnlineVoiceRoutingPolicy assigned."
-        }
-        if (  -not $ResourceAccount.AssociatedTo ) {
-          Write-Warning -Message 'Resource Account '$($ResourceAccount.UserPrincipalName)' is currently not associated with a Call Queue or Auto Attendant!'
+          # Validating Resource Account Settings
+          # Check for Line URI - only allow if PhoneNumber is set!
+          if ( -not $ResourceAccount.PhoneNumber ) {
+            Write-Warning -Message "Resource Account '$($ResourceAccount.UserPrincipalName)' does not have a Phone Number assigned."
+          }
+          # Check for OVP - if not set, write warning
+          if ( -not $ResourceAccount.OnlineVoiceRoutingPolicy ) {
+            Write-Warning -Message "Resource Account '$($ResourceAccount.UserPrincipalName)' does not have an OnlineVoiceRoutingPolicy assigned."
+          }
+          if (  -not $ResourceAccount.AssociatedTo ) {
+            Write-Warning -Message 'Resource Account '$($ResourceAccount.UserPrincipalName)' is currently not associated with a Call Queue or Auto Attendant!'
+          }
         }
 
         # creating new PS Object (synchronous with Get and Set)
@@ -216,6 +221,7 @@ function Get-TeamsResourceAccountLineIdentity {
           ResourceAccount            = $ResourceAccount.UserPrincipalName
           PhoneNumberType            = $ResourceAccount.PhoneNumberType
           PhoneNumber                = $ResourceAccount.PhoneNumber
+          OnlineVoiceRoutingPolicy   = $ResourceAccount.OnlineVoiceRoutingPolicy
         }
         Write-Output $CLIObject
       }
