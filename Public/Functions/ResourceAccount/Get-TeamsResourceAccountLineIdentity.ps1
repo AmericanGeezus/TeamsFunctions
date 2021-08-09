@@ -1,8 +1,8 @@
 ﻿# Module:   TeamsFunctions
 # Function: ResourceAccount Calling Line Identity
 # Author:	  David Eberhardt
-# Updated:  16-JUL-2021
-# Status:   RC
+# Updated:  09-AUG-2021
+# Status:   Live
 
 
 
@@ -80,7 +80,7 @@ function Get-TeamsResourceAccountLineIdentity {
   )
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
 
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
@@ -151,7 +151,7 @@ function Get-TeamsResourceAccountLineIdentity {
             continue
           }
           else {
-            Write-Verbose -Message "CallingLineIdentity '$($C.Identity)' is of Type 'Resource' - adding to list"
+            Write-Verbose -Message "Calling Line Identity '$($C.Identity)' is of Type 'Resource' - adding to list"
             [void]$CallingLineIdentities.Add($C)
           }
         }
@@ -186,50 +186,47 @@ function Get-TeamsResourceAccountLineIdentity {
       try {
         if (-not $CLI.ResourceAccount) {
           if ( $All ) {
-            Write-Warning -Message "Calling Line Identity Object '$($CLI.Identity)' is not of type Resource."
+            Write-Warning -Message "CLI Object '$($CLI.Identity)' is not of type Resource."
           }
           else {
-            throw 'Resource Account not assigned!'
+            throw "CLI Object '$($CLI.Identity)' does not have a Resource Account assigned!"
           }
         }
         else {
           $ResourceAccount = Get-TeamsResourceAccount $CLI.ResourceAccount -ErrorAction Stop
-
           # Validating Resource Account Settings
           # Check for Line URI - only allow if PhoneNumber is set!
           if ( -not $ResourceAccount.PhoneNumber ) {
-            Write-Warning -Message "Resource Account '$($ResourceAccount.UserPrincipalName)' does not have a Phone Number assigned."
+            Write-Warning -Message "CLI Object '$($CLI.Identity)' Resource Account '$($ResourceAccount.UserPrincipalName)' does not have a Phone Number assigned."
           }
           # Check for OVP - if not set, write warning
           if ( -not $ResourceAccount.OnlineVoiceRoutingPolicy ) {
-            Write-Warning -Message "Resource Account '$($ResourceAccount.UserPrincipalName)' does not have an OnlineVoiceRoutingPolicy assigned."
+            Write-Warning -Message "CLI Object '$($CLI.Identity)' Resource Account '$($ResourceAccount.UserPrincipalName)' does not have an OnlineVoiceRoutingPolicy assigned."
           }
           if (  -not $ResourceAccount.AssociatedTo ) {
-            Write-Warning -Message 'Resource Account '$($ResourceAccount.UserPrincipalName)' is currently not associated with a Call Queue or Auto Attendant!'
+            Write-Warning -Message "CLI Object '$($CLI.Identity)' Resource Account '$($ResourceAccount.UserPrincipalName)' is currently not associated with a Call Queue or Auto Attendant!"
           }
         }
-
-        # creating new PS Object (synchronous with Get and Set)
-        $CLIObject = [PSCustomObject][ordered]@{
-          Identity                   = $CLI.Identity
-          Description                = $CLI.Description
-          CallingIDSubstitute        = $CLI.CallingIDSubstitute
-          EnableUserOverride         = $CLI.EnableUserOverride
-          BlockIncomingPstnCallerID  = $CLI.BlockIncomingPstnCallerID
-          CompanyName                = $CLI.CompanyName
-          ResourceAccountDisplayName = $ResourceAccount.DisplayName
-          ResourceAccount            = $ResourceAccount.UserPrincipalName
-          PhoneNumberType            = $ResourceAccount.PhoneNumberType
-          PhoneNumber                = $ResourceAccount.PhoneNumber
-          OnlineVoiceRoutingPolicy   = $ResourceAccount.OnlineVoiceRoutingPolicy
-        }
-        Write-Output $CLIObject
       }
       catch {
         Write-Error -Message "Error querying Resource Account: $_"
-        Write-Verbose -Message 'Displaying Calling Line Identity Object as-is' -Verbose
-        Write-Output $CLI
       }
+
+      # creating new PS Object (synchronous with Get and Set)
+      $CLIObject = [PSCustomObject][ordered]@{
+        Identity                   = $CLI.Identity
+        Description                = $CLI.Description
+        CallingIDSubstitute        = $CLI.CallingIDSubstitute
+        EnableUserOverride         = $CLI.EnableUserOverride
+        BlockIncomingPstnCallerID  = $CLI.BlockIncomingPstnCallerID
+        CompanyName                = $CLI.CompanyName
+        ResourceAccountDisplayName = $ResourceAccount.DisplayName
+        ResourceAccount            = $ResourceAccount.UserPrincipalName
+        PhoneNumberType            = $ResourceAccount.PhoneNumberType
+        PhoneNumber                = $ResourceAccount.PhoneNumber
+        OnlineVoiceRoutingPolicy   = $ResourceAccount.OnlineVoiceRoutingPolicy
+      }
+      Write-Output $CLIObject
     }
   } #process
 
