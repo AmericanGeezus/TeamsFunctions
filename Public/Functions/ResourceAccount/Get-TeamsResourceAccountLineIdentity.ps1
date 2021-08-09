@@ -14,15 +14,20 @@ function Get-TeamsResourceAccountLineIdentity {
   .DESCRIPTION
     Get-CsCallingLineIdentity with resolving Resource Account Ids to Names and displaying the underlying Phone Number
   .PARAMETER Identity
-    Required - Parameter set CLI. Identifies the CsCallingLineIdentity to be queried
+    Required - Parameter set ID. Identifies the CsCallingLineIdentity by name.
+    Default Parameter Set. If not specified, lists all of the type Resource
   .PARAMETER UserPrincipalName
-    Required. Identifies the Resource Account for which the Line Identity was created
-  .EXAMPLE
-    Get-TeamsResourceAccountLineIdentity -UserPrincipalName ResourceAccount@domain.com
-    Queries a Line Identity for the Resource Account provided and displays this Object - Default
+    Required - Parameter set RA. Identifies the CsCallingLineIdentity created for a specific Resource Account
+  .PARAMETER Filter
+    Required. Searches for CsCallingLineIdentity by name
+  .PARAMETER All
+    Optional Switch. If not provided, will only display CsCallingLineIdentity Objects of the type Resource.
   .EXAMPLE
     Get-TeamsResourceAccountLineIdentity -Identity 'My Calling Line Identity'
-    Queries a Line Identity with the Name 'My Calling Line Identity'.
+    Queries a Line Identity with the Name 'My Calling Line Identity'. - Default
+  .EXAMPLE
+    Get-TeamsResourceAccountLineIdentity -UserPrincipalName ResourceAccount@domain.com
+    Queries a Line Identity for the Resource Account provided and displays this Object
   .EXAMPLE
     Get-TeamsResourceAccountLineIdentity -Filter '*Calling*'
     Queries all Line Identities with 'Calling' in the Name.
@@ -48,7 +53,7 @@ function Get-TeamsResourceAccountLineIdentity {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
-  [CmdletBinding(DefaultParameterSetName = 'RA', ConfirmImpact = 'Low')]
+  [CmdletBinding(DefaultParameterSetName = 'Id', ConfirmImpact = 'Low')]
   [Alias('Get-TeamsRAIdentity', 'Get-TeamsRACLI')]
   [OutputType([PSCustomObject])]
   param (
@@ -62,11 +67,15 @@ function Get-TeamsResourceAccountLineIdentity {
     [Alias('ResourceAccount')]
     [string[]]$UserPrincipalName,
 
-    [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Id', HelpMessage = 'Identity of the Calling Line Identity')]
+    [Parameter(ValueFromPipelineByPropertyName, ParameterSetName = 'Id', HelpMessage = 'Identity of the Calling Line Identity')]
+    [AllowNull()]
     [string[]]$Identity,
 
     [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'Filter', HelpMessage = 'Filter String for the Calling Line Identity')]
-    [string]$Filter
+    [string]$Filter,
+
+    [Parameter(HelpMessage = 'Will select all Caller Line Identities, not only Resource Account ones.')]
+    [switch]$All
 
   )
 
@@ -92,24 +101,24 @@ function Get-TeamsResourceAccountLineIdentity {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     #region Input query and validation
+    [System.Collections.ArrayList]$CallingLineIdentities = @()
     switch ($PSCmdlet.ParameterSetName) {
       'RA' {
         [System.Collections.ArrayList]$ResourceAccounts = @()
         foreach ($UPN in $UserPrincipalName) {
           Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$UPN'"
           try {
-            $RA = Get-CsOnlineApplicationInstance -Identity "$UPN" -ErrorAction Stop
+            $RA = Get-CsOnlineApplicationInstance -Identity "$UPN" -ErrorAction Stop -WarningAction SilentlyContinue
             [void]$ResourceAccounts.Add($RA)
           }
           catch {
             Write-Information "INFO:    Resource Account '$UPN' - Not found!"
           }
         }
-        [System.Collections.ArrayList]$CallingLineIdentities = @()
         foreach ($RA in $ResourceAccounts) {
           Write-Verbose -Message "Querying Calling Line Identities for Resource Account '$($RA.UserPrincipalName)'"
           try {
-            $CLI = Get-CsCallingLineIdentity | Where-Object ResourceAccount -EQ $RA.ObjectId -ErrorAction Stop
+            $CLI = Get-CsCallingLineIdentity | Where-Object ResourceAccount -EQ $RA.ObjectId -ErrorAction Stop -WarningAction SilentlyContinue
             [void]$CallingLineIdentities.Add($CLI)
           }
           catch {
@@ -120,32 +129,40 @@ function Get-TeamsResourceAccountLineIdentity {
       }
       'Id' {
         [System.Collections.ArrayList]$CallingLineIdentities = @()
-        foreach ($Id in $Identity) {
-          Write-Verbose -Message "Querying Calling Line Identities for provided ID '$Id'"
-          try {
-            $CLI = Get-CsCallingLineIdentity -Identity "$Id"
-            if ($CLI.CallingIDSubstitute -ne 'Resource') {
-              Write-Warning -Message "Calling Line Identity '$($CLI.Identity)' is not of Type 'Resource' - omiting object"
+        if ($null -eq $Identity) {
+          Write-Verbose -Message 'Querying Calling Line Identities (all)'
+          $CLI = Get-CsCallingLineIdentity -WarningAction SilentlyContinue
+        }
+        else {
+          foreach ($Id in $Identity) {
+            Write-Verbose -Message "Querying Calling Line Identities for provided ID '$Id'"
+            try {
+              $CLI = Get-CsCallingLineIdentity -Identity "$Id" -WarningAction SilentlyContinue
+            }
+            catch {
+              Write-Information "INFO:    Calling Line Identity '$($CLI.Identity)' - Not found!"
               continue
             }
-            else {
-              Write-Verbose -Message "CallingLineIdentity '$($CLI.Identity)' is of Type 'Resource' - adding to list"
-              [void]$CallingLineIdentities.Add($CLI)
-            }
           }
-          catch {
-            Write-Information "INFO:    Calling Line Identity '$($CLI.Identity)' - Not found!"
+        }
+        foreach ($C in $CLI) {
+          if ($C.CallingIDSubstitute -ne 'Resource' -and -not $All) {
+            Write-Warning -Message "Calling Line Identity '$($C.Identity)' is not of Type 'Resource' - omiting object"
             continue
+          }
+          else {
+            Write-Verbose -Message "CallingLineIdentity '$($C.Identity)' is of Type 'Resource' - adding to list"
+            [void]$CallingLineIdentities.Add($C)
           }
         }
       }
       'Filter' {
         Write-Verbose -Message "Querying Calling Line Identities for provided FilterString '$Filter'"
         try {
-          $FilteredCLIs = Get-CsCallingLineIdentity -Filter "$Filter"
+          $FilteredCLIs = Get-CsCallingLineIdentity -Filter "$Filter" -WarningAction SilentlyContinue
           [System.Collections.ArrayList]$CallingLineIdentities = @()
           foreach ($CLI in $FilteredCLIs) {
-            if ($CLI.CallingIDSubstitute -ne 'Resource') {
+            if ($CLI.CallingIDSubstitute -ne 'Resource' -and -not $All) {
               Write-Warning -Message "CallingLineIdentity '$($CLI.Identity)' is not of Type 'Resource' - omiting object"
               continue
             }
