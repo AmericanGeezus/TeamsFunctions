@@ -223,7 +223,7 @@ function Get-TeamsCallQueue {
           [void]$UserObjects.Add($UserObject)
         }
         catch {
-          $Message = $_ | Get-ErrorMessageFromErrorString
+          [string]$Message = $_ | Get-ErrorMessageFromErrorString
           Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
         }
       }
@@ -241,7 +241,7 @@ function Get-TeamsCallQueue {
             [void]$ChannelUserObjects.Add($ChannelUserObject)
           }
           catch {
-            $Message = $_ | Get-ErrorMessageFromErrorString
+            [string]$Message = $_ | Get-ErrorMessageFromErrorString
             Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
           }
         }
@@ -259,7 +259,7 @@ function Get-TeamsCallQueue {
             [void]$AgentObjects.Add($AgentObject)
           }
           catch {
-            $Message = $_ | Get-ErrorMessageFromErrorString
+            [string]$Message = $_ | Get-ErrorMessageFromErrorString
             Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
           }
         }
@@ -346,16 +346,22 @@ function Get-TeamsCallQueue {
 
       # Adding Agent Information
       $QueueObject | Add-Member -MemberType NoteProperty -Name TeamAndChannel -Value $TeamAndChannelName
-      $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
-      $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
+      if ($PSBoundParameters.ContainsKey('Detailed')) {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $($UserObjects.UserPrincipalName -join ', ')
+        $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $($DLNames -join ', ')
+      }
+      else {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
+        $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
+      }
       $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
       $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
       $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped
 
       if ($PSBoundParameters.ContainsKey('Detailed')) {
         # Displays Agents
-        $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
-        $QueueObject | Add-Member -MemberType NoteProperty -Name ChannelUsers -Value $ChannelUserObjects.UserPrincipalName
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $($AgentObjects.UserPrincipalName -join ', ')
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ChannelUsers -Value $($ChannelUserObjects.UserPrincipalName -join ', ')
         # Displays all except reserved Parameters (Microsoft Internal)
         $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
         $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId
@@ -364,9 +370,14 @@ function Get-TeamsCallQueue {
         $QueueObject | Add-Member -MemberType NoteProperty -Name Description -Value $Q.Description
       }
 
-      # Adding Resource Accounts
-      $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsAssociated -Value $AIObjects.Userprincipalname
-      $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsForCallerId -Value $OboObjects.Userprincipalname
+      if ($PSBoundParameters.ContainsKey('Detailed')) {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsAssociated -Value $($AIObjects.Userprincipalname -join ', ')
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsForCallerId -Value $($OboObjects.Userprincipalname -join ', ')
+      }
+      else {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsAssociated -Value $AIObjects.Userprincipalname
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsForCallerId -Value $OboObjects.Userprincipalname
+      }
       #endregion
 
       # Output

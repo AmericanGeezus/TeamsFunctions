@@ -126,7 +126,7 @@ function Test-TeamsUserLicense {
         $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
       }
       catch {
-        $Message = $_ | Get-ErrorMessageFromErrorString
+        [string]$Message = $_ | Get-ErrorMessageFromErrorString
         Write-Warning -Message "User '$ID': GetUser$($Message.Split(':')[1])"
         return
       }

@@ -75,7 +75,7 @@ function Test-TeamsResourceAccount {
           $User = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
         }
         catch {
-          $Message = $_ | Get-ErrorMessageFromErrorString
+          [string]$Message = $_ | Get-ErrorMessageFromErrorString
           Write-Warning -Message "User '$User': GetUser$($Message.Split(':')[1])"
         }
 

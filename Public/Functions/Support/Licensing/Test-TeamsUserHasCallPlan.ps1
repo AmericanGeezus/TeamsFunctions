@@ -82,7 +82,7 @@ function Test-TeamsUserHasCallPlan {
         $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
       }
       catch {
-        $Message = $_ | Get-ErrorMessageFromErrorString
+        [string]$Message = $_ | Get-ErrorMessageFromErrorString
         Write-Warning -Message "User '$ID': GetUser$($Message.Split(':')[1])"
       }
 
