@@ -73,10 +73,18 @@ function Get-RandomQuote {
     "What is normal? Normal was yesterday. If you lose a leg, one day you're hopping around on one leg, so you know the difference. (Terry Pratchett)", `
     'Do you know that a man is not dead while his name is still spoken? (Terry Pratchett) -- GNU Sir Terry.', `
     "It's not worth doing something unless someone, somewhere, would much rather you weren't doing it (Terry Pratchett)", `
+    "Fear is the mind-killer. Fear is the little-death that brings total obliteration. I will face my fear. I will permit it to pass over me and through me. (Frank Herbert, Dune)", `
+    'Deep in the human unconscious is a pervasive need for a logical universe that makes sense. But the real universe is always one step beyond logic. (Frank Herbert, Dune)', `
+    'The concept of progress acts as a protective mechanism to shield us from the terrors of the future. (Frank Herbert, Dune)', `
+    'Just as individuals are born, mature, breed, and die, so do societies and civilizations and governments. (Frank Herbert, Dune)', `
+    'A process cannot be understood by stopping it. Understanding must move with the flow of the process, must join it and flow with it. (Frank Herbert, Dune)', `
+    "The mystery of life isn't a problem to solve, but a reality to experience. (Frank Herbert, Dune)", `
+    "It's shocking to find how many people do not believe they can learn, and how many more believe learning to be difficult. (Frank Herbert, Dune)", `
+    'And when it has gone past I will turn the inner eye to see its path. Where the fear has gone there will be nothing. Only I will remain. (Frank Herbert, Dune)', `
     #endregion Addded David
 
-  #region Added Julia
-  "Give a man a fire and he's warm for a day, but set fire to him and he's warm for the rest of his life. (Terry Pratchett)", `
+    #region Added Julia
+    "Give a man a fire and he's warm for a day, but set fire to him and he's warm for the rest of his life. (Terry Pratchett)", `
     'In ancient times cats were worshipped as gods; they have not forgotten this. (Terry Pratchett)', `
     'In the beginning there was nothing, which exploded. (Terry Pratchett)', `
     'Real stupidity beats artificial intelligence every time. (Terry Pratchett)', `
@@ -89,13 +97,13 @@ function Get-RandomQuote {
     "The phrase 'Someone ought to do something' was not, by itself, a helpful one. People who used it never added the rider 'and that someone is me'. (Terry Pratchett - The Hogfather)", `
     'Always remember that the crowd that applauds your coronation is the same crowd that will applaud your beheading. People like a show. (Terry Pratchett - Going Postal)', `
     "It is well known that a vital ingredient of success is not knowing that what you're attempting can't be done. (Terry Pratchett - Equal Rites)", `
-    "If its creator had meant it to survive he would have given it a fireproof skin. That's evolution for you. (Terry Ptratchett)", `
+    "If its creator had meant it to survive he would have given it a fireproof skin. That's evolution for you. (Terry Pratchett)", `
     'There has ceased to be a difference between my awake clothes and my asleep clothes (Mindy Kaling)', `
     "If you don't stick to your values when they're being tested, they're not values: they're hobbies. (Jon Stewart)", `
     #endregion Added Julia
 
-  #region Imported
-  'People say nothing is impossible, but I do nothing every day. (A. A. Milne)', `
+    #region Imported
+    'People say nothing is impossible, but I do nothing every day. (A. A. Milne)', `
     'The best thing about the future is that it comes one day at a time. (Abraham Lincoln)', `
     'Light travels faster than sound. This is why some people appear bright until you hear them speak. (Alan Dundes)', `
     'The difference between stupidity and genius is that genius has its limits. (Albert Einstein)', `
