@@ -291,7 +291,7 @@ function New-TeamsCommonAreaPhone {
         }
         $i = 0
         $iMax = 45
-        Write-Information -MessageData "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
+        Write-Information "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"

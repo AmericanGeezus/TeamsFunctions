@@ -197,7 +197,7 @@ function Get-TeamsUserVoiceConfig {
 
       #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
       if ( $CsUser.SipAddress -and -not $CsUser.TenantDialPlan -and $ObjectType -ne 'ApplicationEndpoint' ) {
-        Write-Information -MessageData "User '$User' - No Dial Plan is assigned"
+        Write-Information "INFO:    User '$User' - No Dial Plan is assigned"
       }
       #endregion
 
