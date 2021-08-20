@@ -2,10 +2,10 @@
 # Function: AutoAttendant
 # Author:   David Eberhardt
 # Updated:  01-SEP-2021
-# Status:   Beta
+# Status:   RC
 
 
-#TODO Buildout
+
 
 function Get-TeamsAutoAttendantAudioFile {
   <#
@@ -72,7 +72,7 @@ function Get-TeamsAutoAttendantAudioFile {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Beta
+    Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
