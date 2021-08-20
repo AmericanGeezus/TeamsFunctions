@@ -120,15 +120,27 @@ function Get-TeamsAutoAttendant {
           if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
             #Identity or ObjectId
             Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
-            $AAById = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $AutoAttendants += $AAById
+            $AAByName = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+            if ($PSBoundParameters.ContainsKey('Detailed')) {
+              $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
+              $AutoAttendants += $AAById
+            }
+            else {
+              $AutoAttendants += $AAByName
+            }
           }
           else {
             #Name
             Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
             $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
             $AAByName = $AAByName | Where-Object Name -EQ "$DN"
-            $AutoAttendants += $AAByName
+            if ($PSBoundParameters.ContainsKey('Detailed')) {
+              $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
+              $AutoAttendants += $AAById
+            }
+            else {
+              $AutoAttendants += $AAByName
+            }
           }
         }
       }
@@ -136,8 +148,14 @@ function Get-TeamsAutoAttendant {
       if ($PSBoundParameters.ContainsKey('SearchString')) {
         # Search
         Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
-        $AAByString = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        $AutoAttendants += $AAByString
+        $AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        if ($PSBoundParameters.ContainsKey('Detailed')) {
+          $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
+          $AutoAttendants += $AAById
+        }
+        else {
+          $AutoAttendants += $AAByName
+        }
       }
       #endregion
     }
@@ -354,15 +372,15 @@ function Get-TeamsAutoAttendant {
           if ($Flow.Menu.MenuOptions) {
             try {
               if ($Flow.Menu.MenuOptions.Prompt) {
-              # Announcements: Processing Call Flow Prompts
-              $AACallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.MenuOptions.Prompt
-              $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions -Prompts $AACallFlowMenuOptionPrompt
+                # Announcements: Processing Call Flow Prompts
+                $AACallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.MenuOptions.Prompt
+                $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions -Prompts $AACallFlowMenuOptionPrompt
+              }
+              else {
+                throw
+              }
             }
-            else {
-              throw
-            }
-          }
-          catch {
+            catch {
               $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions
             }
           }

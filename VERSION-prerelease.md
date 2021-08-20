@@ -15,7 +15,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
-- TBC
+- `Get-TeamsAutoAttendantAudioFile` (`Get-TeamsAAAudioFile`): New Support function for Auto Attendants, parsing Audio Files for an Auto Attendant.
 
 ### Updated
 
@@ -23,6 +23,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 - All `TeamsCallQueue` CmdLets: Added "INFO: " for informational output
 - Some `TeamsUserVoiceConfig` CmdLets: Added "INFO: " for informational output
 - `[ArgumentCompleter]` now returns values sorted. For some reason, I missed this, sorry.
+- `Get-TeamsAutoAttendant` circumvented a bug in parsing the Auto Attendant entity by Name (nested Objects display differently)
 
 ### Limitations
 

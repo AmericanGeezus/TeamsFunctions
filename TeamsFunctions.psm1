@@ -246,7 +246,7 @@ Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-Ser
   Get-TeamsRAIdentity, Get-TeamsRACLI, New-TeamsRAIdentity, New-TeamsRACLI, `
   Get-TeamsRAA, New-TeamsRAA, Remove-TeamsRAA, Remove-CsOnlineApplicationInstance, `
   Get-TeamsCQ, New-TeamsCQ, Remove-TeamsCQ, Set-TeamsCQ, `
-  Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, `
+  Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, Get-TeamsAAAudioFile, `
   New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAAPrompt, New-TeamsAAScope, New-TeamsAASchedule, `
   New-TeamsAAEntity, New-TeamsAutoAttendantCallHandlingAssociation , `
   Get-TeamsAASchedule, Remove-TeamsAASchedule, Remove-TeamsAutoAttendantSchedule, `

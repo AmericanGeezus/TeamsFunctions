@@ -86,8 +86,6 @@ function Merge-AutoAttendantArtefact {
       'Prompt' {
         foreach ($O in $Object) {
           if ( $O.HasAudioFilePromptData ) {
-            #FIXME DownloadUri and FileName does not populate properly!
-            Write-Verbose -Message 'Parsing Prompt: AudioFilePrompt: FileName and DownloadUri currently do not populate correctly, sorry!' -Verbose
             $AudioFilePrompt = @()
             $AudioFilePrompt = [PsCustomObject][ordered]@{
               'Id'                = $O.AudioFilePrompt.Id
