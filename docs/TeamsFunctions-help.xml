@@ -5035,6 +5035,166 @@
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
+      <command:name>Get-TeamsAutoAttendantAudioFile</command:name>
+      <command:verb>Get</command:verb>
+      <command:noun>TeamsAutoAttendantAudioFile</command:noun>
+      <maml:description>
+        <maml:para>Queries Auto Attendants and displays all Audio Files found on the Object</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>Managing Audio Files for an Auto Attendant is limited in the Admin Center. Files cannot be downloaded there. This CmdLet tries to plug that gap by exposing Download Links for all Audio Files linked on a given Auto Attendant</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsAutoAttendantAudioFile</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+          <maml:name>Name</maml:name>
+          <maml:description>
+            <maml:para>Optional. Finds all Auto Attendants with this name (unique results).</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <dev:type>
+            <maml:name>String[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+          <maml:name>SearchString</maml:name>
+          <maml:description>
+            <maml:para>Optional. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Detailed</maml:name>
+          <maml:description>
+            <maml:para>Optional Switch. Displays all information for the nested Audio File Objects of the Auto Attendant By default, only Names and Download URI of nested Objects are shown.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <maml:name>Name</maml:name>
+        <maml:description>
+          <maml:para>Optional. Finds all Auto Attendants with this name (unique results).</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <dev:type>
+          <maml:name>String[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+        <maml:name>SearchString</maml:name>
+        <maml:description>
+          <maml:para>Optional. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Detailed</maml:name>
+        <maml:description>
+          <maml:para>Optional Switch. Displays all information for the nested Audio File Objects of the Auto Attendant By default, only Names and Download URI of nested Objects are shown.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Object</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Managing Audio Files for an Auto Attendant is limited in the Admin Center. Files cannot be downloaded there. This CmdLet tries to plug that gap by exposing Download Links for all Audio Files linked on a given Auto Attendant</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantAudioFile -Name "My AutoAttendant"</dev:code>
+        <dev:remarks>
+          <maml:para>Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantAudioFile -Name "My AutoAttendant" -Detailed</dev:code>
+        <dev:remarks>
+          <maml:para>Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" Detailed view will display all nested Objects indented as a tree</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantAudioFile -Name "My AutoAttendant" -SearchString "My AutoAttendant"</dev:code>
+        <dev:remarks>
+          <maml:para>Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" and Returns an Object for every Auto Attendant matching the String "My AutoAttendant"</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Get-TeamsAutoAttendantAudioFile -SearchString "My AutoAttendant"</dev:code>
+        <dev:remarks>
+          <maml:para>Returns an Object for every Auto Attendant matching the String "My AutoAttendant" Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output shown differently.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantAudioFile.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantAudioFile.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
       <command:name>Get-TeamsAutoAttendantSchedule</command:name>
       <command:verb>Get</command:verb>
       <command:noun>TeamsAutoAttendantSchedule</command:noun>
@@ -7183,7 +7343,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="ResourceAccount">
           <maml:name>UserPrincipalName</maml:name>
           <maml:description>
-            <maml:para>Required. Identifies the Resource Account for which the Line Identity was created</maml:para>
+            <maml:para>Required - Parameter set RA. Identifies the CsCallingLineIdentity created for a specific Resource Account</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -7192,13 +7352,24 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>All</maml:name>
+          <maml:description>
+            <maml:para>Optional Switch. If not provided, will only display CsCallingLineIdentity Objects of the type Resource.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Get-TeamsResourceAccountLineIdentity</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Identity</maml:name>
           <maml:description>
-            <maml:para>Required - Parameter set CLI. Identifies the CsCallingLineIdentity to be queried</maml:para>
+            <maml:para>Required - Parameter set ID. Identifies the CsCallingLineIdentity by name. Default Parameter Set. If not specified, lists all of the type Resource</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -7206,6 +7377,17 @@
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>All</maml:name>
+          <maml:description>
+            <maml:para>Optional Switch. If not provided, will only display CsCallingLineIdentity Objects of the type Resource.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
@@ -7213,7 +7395,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
           <maml:name>Filter</maml:name>
           <maml:description>
-            <maml:para>Filter String for the Calling Line Identity</maml:para>
+            <maml:para>Required. Searches for CsCallingLineIdentity by name</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -7222,13 +7404,24 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>All</maml:name>
+          <maml:description>
+            <maml:para>Optional Switch. If not provided, will only display CsCallingLineIdentity Objects of the type Resource.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="ResourceAccount">
         <maml:name>UserPrincipalName</maml:name>
         <maml:description>
-          <maml:para>Required. Identifies the Resource Account for which the Line Identity was created</maml:para>
+          <maml:para>Required - Parameter set RA. Identifies the CsCallingLineIdentity created for a specific Resource Account</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -7237,10 +7430,10 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Identity</maml:name>
         <maml:description>
-          <maml:para>Required - Parameter set CLI. Identifies the CsCallingLineIdentity to be queried</maml:para>
+          <maml:para>Required - Parameter set ID. Identifies the CsCallingLineIdentity by name. Default Parameter Set. If not specified, lists all of the type Resource</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -7252,7 +7445,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
         <maml:name>Filter</maml:name>
         <maml:description>
-          <maml:para>Filter String for the Calling Line Identity</maml:para>
+          <maml:para>Required. Searches for CsCallingLineIdentity by name</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -7260,6 +7453,18 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>All</maml:name>
+        <maml:description>
+          <maml:para>Optional Switch. If not provided, will only display CsCallingLineIdentity Objects of the type Resource.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -7290,16 +7495,16 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Get-TeamsResourceAccountLineIdentity -UserPrincipalName ResourceAccount@domain.com</dev:code>
+        <dev:code>Get-TeamsResourceAccountLineIdentity -Identity 'My Calling Line Identity'</dev:code>
         <dev:remarks>
-          <maml:para>Queries a Line Identity for the Resource Account provided and displays this Object - Default</maml:para>
+          <maml:para>Queries a Line Identity with the Name 'My Calling Line Identity'. - Default</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
-        <dev:code>Get-TeamsResourceAccountLineIdentity -Identity 'My Calling Line Identity'</dev:code>
+        <dev:code>Get-TeamsResourceAccountLineIdentity -UserPrincipalName ResourceAccount@domain.com</dev:code>
         <dev:remarks>
-          <maml:para>Queries a Line Identity with the Name 'My Calling Line Identity'.</maml:para>
+          <maml:para>Queries a Line Identity for the Resource Account provided and displays this Object</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
