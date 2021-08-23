@@ -38,7 +38,7 @@ function Use-MicrosoftTeamsConnection {
   begin {
     #Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    $TeamsModuleVersionMajor = (Get-Module MicrosoftTeams).Version.Major
+    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
 
     #region Functions copied from SfBoRemotePowerShellModule.psm1
     $script:GetCsOnlineSession = $null
@@ -69,13 +69,20 @@ function Use-MicrosoftTeamsConnection {
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      if ($TeamsModuleVersionMajor -lt 2) {
+      if ($TeamsModuleVersion.Major -lt 2) {
         if (Test-SkypeOnlineConnection) {
           return $true
         }
         else {
           return $false
         }
+      }
+      elseif ($TeamsModuleVersion -gt 2.3.1) {
+        # MEASUREMENTS This currently takes about half a second (486ms on average)
+        #$null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        # MEASUREMENTS This currently takes about half a second (467ms on average)
+        $Tenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        if ( $Tenant ) { return $true } else { return $false }
       }
       else {
         $RemotingSession = Get-PSImplicitRemotingSession Get-CsPresencePolicy -ErrorAction SilentlyContinue
