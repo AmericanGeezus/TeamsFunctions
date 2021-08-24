@@ -18,7 +18,7 @@ function Get-AzureAdLicenseServicePlan {
     Using this switch, shows only Service Plans relevant for Teams
   .EXAMPLE
     Get-AzureAdLicenseServicePlan
-    Returns 39 Azure AD Licenses that relate to Teams for use in other commands
+    Returns Azure AD Licenses that relate to Teams for use in other commands
   .NOTES
     Source
     https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html

@@ -18,7 +18,7 @@ function Get-AzureAdLicense {
     Using this switch, shows only Licenses relevant for Teams
   .EXAMPLE
     Get-AzureAdLicense
-    Returns 39 Azure AD Licenses that relate to Teams for use in other commands
+    Returns Azure AD Licenses that relate to Teams for use in other commands
   .INPUTS
     System.String
   .OUTPUTS
@@ -27,7 +27,7 @@ function Get-AzureAdLicense {
     Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
     Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html
     With very special thanks to Philip
-    This CmdLet can assign one of 123 Azure Ad Licenses. (see ParameterName)
+    This CmdLet can assign one of Azure Ad Licenses. (see ParameterName)
     Please raise an issue on Github if you require additional Licenses for assignment
   .COMPONENT
     Licensing
@@ -193,18 +193,27 @@ function Get-AzureAdLicense {
       $ParameterName = switch ($srcSkuPartNumber) {
         #region Main Licenses
         'M365EDU_A1' { 'Microsoft365A1' }
+        'ENTERPRISEPACKPLUS_FACULTY' { 'Office365A3faculty' }
         'M365EDU_A3_FACULTY' { 'Microsoft365A3faculty' }
         'M365EDU_A3_STUDENT' { 'Microsoft365A3students' }
+        'M365EDU_A3_STUUSEBNFT' { 'Microsoft365A3studentsUseBenefit' }
+        'M365EDU_A3_STUUSEBNFT_RPA1' { 'Microsoft365A3studentsUseBenefitUnattended' }
         'M365EDU_A5_FACULTY' { 'Microsoft365A5faculty' }
         'M365EDU_A5_STUDENT' { 'Microsoft365A5students' }
+        'M365EDU_A5_STUUSEBNFT' { 'Microsoft365A5studentsUseBenefit' }
+        'M365EDU_A5_NOPSTNCONF_STUUSEBNFT' { 'Microsoft365A5studentsUseBenefitNoAudiConferencing' }
+        'SMB_APPS' { 'Microsoft365AppsForBusinessFree' }
         'SMB_BUSINESS' { 'Microsoft365AppsForBusiness' }
         'SMB_BUSINESS_ESSENTIALS' { 'Microsoft365BusinessBasic' }
         'SMB_BUSINESS_PREMIUM' { 'Microsoft365BusinessStandard' }
         'MIDSIZEPACK' { 'Office365MidsizeBusiness' }
         'SPB' { 'Microsoft365BusinessPremium' }
         'SPE_E3' { 'Microsoft365E3' }
+        'SPE_E3_RPA1' { 'Microsoft365E3Unattended' }
         'SPE_E5' { 'Microsoft365E5' }
+        'M365_E5_SUITE_COMPONENTS' { 'Microsoft365E5SuiteFeatures' }
         'M365_F1' { 'Microsoft365F1' }
+        'M365_F1_COMM' { 'Microsoft365F1Comm' }
         'SPE_F1' { 'Microsoft365F3' }
         'ENTERPRISEPREMIUM_FACULTY' { 'Office365A5faculty' }
         'ENTERPRISEPREMIUM_STUDENT' { 'Office365A5students' }
@@ -232,19 +241,21 @@ function Get-AzureAdLicense {
         'EMS_GOV' { 'EnterpriseMobilitySecurityE3Gov' }
         'EMSPREMIUM_GOV' { 'EnterpriseMobilitySecurityE5Gov' }
         'M365_G3_GOV' { 'Microsoft365G3GCC' }
-        'INTUNE_A_D_GOV' { 'IntuneDeviceGov' }
         #endregion
 
         #region Apps & Additional Licenses (addresses part of Issue #80)
         'EMS' { 'EnterpriseMobilitySecurityE3' }
         'EMSPREMIUM' { 'EnterpriseMobilitySecurityE5' }
+        'VISIO_PLAN1_DEPT' { 'VisioPlan1' }
+        'VISIO_PLAN2_DEPT' { 'VisioPlan2' }
         'VISIOONLINE_PLAN1' { 'VisioOnlinePlan1' }
         'VISIOCLIENT' { 'VisioOnlinePlan2' }
         'VISIOCLIENT_GOV' { 'VisioOnlinePlan2Gov' }
         'PROJECT_P1' { 'ProjectPlan1' }
+        'PROJECT_PLAN1_DEPT' { 'ProjectPlan1forDept' }
+        'PROJECT_PLAN3_DEPT' { 'ProjectPlan3forDept' }
         'PROJECTONLINE_PLAN_1' { 'ProjectOnlinePlan1' }
         'PROJECTONLINE_PLAN_2' { 'ProjectOnlinePlan2' }
-        'PROJECT_P1' { 'ProjectPlan1' }
         'PROJECTESSENTIALS' { 'ProjectEssentials' }
         'PROJECTPROFESSIONAL' { 'ProjectPro' }
         'PROJECTPROFESSIONAL_GOV' { 'ProjectProGov' }
@@ -263,12 +274,22 @@ function Get-AzureAdLicense {
         'DYN365_ENTERPRISE_SALES' { 'Dynamics365EnterpriseSales' }
         'DYN365_SCM' { 'Dynamics365SupplyChain' }
         'DYNAMICS_365_ONBOARDING_SKU' { 'Dynamics365TalentOnboard' }
+        'PBI_PREMIUM_P1_ADDON' { 'PowerBIPremiumP1Addon' }
+        'PBI_PREMIUM_PER_USER' { 'PowerBIPremiumUser' }
+        'PBI_PREMIUM_PER_USER_ADDON' { 'PowerBIPremiumUserAddOn' }
+        'PBI_PREMIUM_PER_USER_DEPT' { 'PowerBIPremiumUserDept' }
+        'POWER_BI_INDIVIDUAL_USER' { 'PowerBI' }
         'POWER_BI_ADDON' { 'PowerBIAddOn' }
         'POWER_BI_PRO' { 'PowerBIPro' }
+        'POWER_BI_PRO_CE' { 'PowerBIProCE' }
+        'POWER_BI_PRO_Dept' { 'PowerBIProDept' }
         'POWER_BI_STANDARD' { 'PowerBIStd' }
         'WIN10_PRO_ENT_SUB' { 'Win10EnterpriseE3Pro' }
         'WIN10_VDA_E3' { 'Win10EnterpriseE3' }
         'WIN10_VDA_E5' { 'Win10EnterpriseE5' }
+        'WINE5_GCC_COMPAT' { 'Win10EnterpriseE5CommercialGccCompatible' }
+        'WIN10_ENT_A3_STU' { 'Win10EnterpriseA3Student' }
+        'WIN10_ENT_A3_FAC' { 'Win10EnterpriseA3Faculty' }
         'O365_BUSINESS_ESSENTIALS' { 'Office365BusinessEssentials' }
         'O365_BUSINESS_PREMIUM' { 'Office365BusinessPremium' }
         'O365_BUSINESS' { 'Microsoft365AppsForBusiness' }
@@ -282,18 +303,24 @@ function Get-AzureAdLicense {
         'M365_SECURITY_COMPLIANCE_FOR_FLW' { 'Microsoft365SecurityComplianceForFlw' }
         'IDENTITY_THREAT_PROTECTION' { 'Microsoft365E5Security' }
         'IDENTITY_THREAT_PROTECTION_FOR_EMS_E5' { 'Microsoft365E5SecurityForEMS' }
+        'THREAT_INTELLIGENCE_GOV' { 'DefenderForOffice365Plan2GCC' }
         'INFORMATION_PROTECTION_COMPLIANCE' { 'Microsoft365E5Compliance' }
         'WACONEDRIVESTANDARD' { 'OneDriveForBusinessPlan1' }
         'WACONEDRIVEENTERPRISE' { 'OneDriveForBusinessPlan2' }
         'WIN_DEF_ATP' { 'WindowsDefenderForEndPoint' }
-        'STREAM' { 'ThreatIntelligenceGov' }
-        'TOPIC_EXPERIENCES' { 'TopicExperiences' }
+        'STREAM' { 'Stream' }
+        'STREAM_P2' { 'StreamPlan2' }
+        'STREAM_STORAGE' { 'StreamStorageAddon' }
+        'TOPIC_EXPERIENCES' { 'VivaTopicExperiences' }
+        'UNIVERSAL_PRINT' { 'UniversalPrint' }
+        'VIRTUAL_AGENT_BASE' { 'PowerVirtualAgent' }
         'POWERAPPS_INDIVIDUAL_USER' { 'PowerAppsAndLogicFlows' }
         'MICROSOFT_BUSINESS_CENTER' { 'MicrosoftBusinessCenter' }
         'SPZA_IW' { 'AppConnectIw' }
         'LITEPACK' { 'Office365SmallBusiness' }
         'LITEPACK_P2' { 'Office365SmallBusinessPremium' }
         'RIGHTSMANAGEMENT' { 'AzureInformationProtectionPlan1' }
+        'TEAMS_COMMERCIAL_TRIAL' { 'MicrosoftTeamsCommercialTrial' }
         'TEAMS_FREE' { 'MicrosoftTeamsFree' }
         'TEAMS_EXPLORATORY' { 'MicrosoftTeamsExploratory' }
         'ATA' { 'AdvancedThreatAnalytics' }
@@ -302,18 +329,21 @@ function Get-AzureAdLicense {
         #endregion
 
         <# Deliberately omitted
-        'EXCHANGEESSENTIALS' { 'ExchangeOnlineEssentials' } # Duplicate/Incongruent
-        'EXCHANGE_S_ESSENTIALS' { 'ExchangeOnlineEssentialsS' } # Duplicate/Incongruent
         'POWERAPPS_VIRAL' { 'PowerAppsPlan2Trial' } # Promotional?
         'WINDOWS_STORE' { 'WindowsStoreForBusiness' } # License cannot be assigned to a user
         #>
 
         #region Standalone, Add-On & Calling Plans Licenses
         # Standalone Licenses
+        'ADV_COMMS' { 'AdvancedCommunications' }
         'MCOIMP' { 'SkypeOnlinePlan1' }
+        'MEETING_ROOM' { 'TeamsRoomsStandard' }
+        'MTR_PREM' { 'TeamsRoomsPremium' }
         'MCOCAP' { 'CommonAreaPhone' }
         'PHONESYSTEM_VIRTUALUSER' { 'PhoneSystemVirtualUser' }
         'MCOSTANDARD' { 'SkypeOnlinePlan2' }
+        'EXCHANGE_S_ESSENTIALS' { 'ExchangeOnlineEssentials' }
+        'EXCHANGEESSENTIALS' { 'ExchangeOnlineEssentialsP1based' }
         'EXCHANGEDESKLESS' { 'ExchangeOnlineKiosk' }
         'EXCHANGESTANDARD' { 'ExchangeOnlinePlan1' }
         'EXCHANGEENTERPRISE' { 'ExchangeOnlinePlan2' }
@@ -321,12 +351,18 @@ function Get-AzureAdLicense {
         'EXCHANGEARCHIVE_ADDON' { 'ExchangeOnlineArchivingForOnline' }
         'SHAREPOINTENTERPRISE' { 'SharePointEnterprise' }
         'SHAREPOINTSTANDARD' { 'SharePointStd' }
+        'SHAREPOINTSTORAGE' { 'SharePointStorage' }
         'SHAREPOINTSTORAGE_GOV' { 'SharePointStorageGov' }
+        'Intelligent_Content_Services' { 'SharePointSyntex' }
         'PROJECTCLIENT' { 'ProjectClient' }
         'EXCHANGETELCO' { 'ExchangeOnlinePop' }
         'INTUNE_A' { 'Intune' }
+        'INTUNE_A_D' { 'IntuneDevice' }
+        'INTUNE_A_D_GOV' { 'IntuneDeviceGov' }
         'INTUNE_SMB' { 'IntuneSMB' }
         'IT_ACADEMY_AD' { 'MSImagineAcademy' }
+        'MICROSOFT_REMOTE_ASSIST' { 'RemoteAssist' }
+        'MICROSOFT_REMOTE_ASSIST_HOLOLENS' { 'RemoteAssistHololens' }
 
         # Add-on Licenses
         'MCOEV' { 'PhoneSystem' }
@@ -353,7 +389,25 @@ function Get-AzureAdLicense {
         #endregion
 
         <# Parameter names missing for Government Licenses #80
-        'WINE5_GCC_COMPAT' { '' }
+        # parked
+        'EXPERTS_ON_DEMAND' { '' }
+        'FLOW_BUSINESS_PROCESS' { '' }
+        'FLOW_P2' { '' }
+        'FLOW_PER_USER' { '' }
+        'FLOW_PER_USER_DEPT' { '' }
+        'FORMS_PRO' { '' } # Dynamics 365 Customer Voice Trial
+        'Forms_Pro_AddOn' { '' } # Dynamics 365 Customer Voice Additional Responses
+        'Forms_Pro_USL' { '' } # Dynamics 365 Customer Voice Usl
+        'GUIDES_USER' { '' }
+        'MDATP_Server' { '' }
+
+
+        # deliberately omitted
+        'OFFICE365_MULTIGEO' { '' }
+        'RIGHTSMANAGEMENT_ADHOC' { '' }
+        'SKU_Dynamics_365_for_HCM_Trial' { '' }
+        'WORKPLACE_ANALYTICS' { '' }
+        'WINDOWS_STORE' { '' } # Cannot be assigned directly!
         #>
 
         default { '' }
@@ -362,17 +416,24 @@ function Get-AzureAdLicense {
       # determining LicenseType
       if ( $srcProductPlans.Count -gt 1 ) {
         $LicenseType = 'Package'
+        $LicenseType = switch -Regex ( $srcSkuPartNumber ) {
+          'MCOPSTN' { 'CallingPlan'; break }
+          'MCOEV' { 'Add-On'; break }
+          '_ADDON' { 'Add-On'; break }
+          'STREAM_STORAGE' { 'Add-On'; break }
+          default { 'Package' }
+        }
         $IncludesTeams = ($srcProductPlans.ServicePlanName -like 'Teams*')
         $IncludesPhoneSystem = ( $srcProductPlans.ServicePlanName -like 'MCOEV*')
       }
       else {
         $LicenseType = 'Standalone'
-        $LicenseType = switch -Regex ( $srcProductPlans.ServicePlanName ) {
+        $LicenseType = switch -Regex ( $srcSkuPartNumber ) {
           'PHONESYSTEM_VIRTUALUSER' { 'Standalone'; break }
           'MCOPSTN' { 'CallingPlan'; break }
           'MCOEV' { 'Add-On'; break }
           'MCOMEETADV' { 'Add-On'; break }
-          'ADDON' { 'Add-On'; break }
+          '_ADDON' { 'Add-On'; break }
           default { 'Standalone' }
         }
         $IncludesTeams = ($srcProductPlans.ServicePlanName -like 'Teams*')
