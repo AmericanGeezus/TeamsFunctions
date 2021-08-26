@@ -50,33 +50,37 @@ function Test-MicrosoftTeamsConnection {
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
+      <#
       if ($TeamsModuleVersion -gt 2.3.1) {
+        $VerbosePreference = 'SilentlyContinue'
+        $DebugPreference = 'Continue'
         $Tenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
         if ( $Tenant ) { return $true } else { return $false }
       }
       else {
-        $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
-        if ($Sessions.Count -lt 1) {
-          Write-Verbose 'No Teams Session found, not assuming a connection to MicrosoftTeams has been established.'
-          return $false
+        #>
+      $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+      if ($Sessions.Count -lt 1) {
+        Write-Verbose 'No Teams Session found, not assuming a connection to MicrosoftTeams has been established.'
+        return $false
+      }
+      if ($Sessions.Count -ge 1) {
+        if (-not $Called) {
+          Write-Verbose 'Teams Session found'
         }
+        $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
         if ($Sessions.Count -ge 1) {
           if (-not $Called) {
-            Write-Verbose 'Teams Session found'
+            Write-Verbose 'Teams Session found, open and valid'
           }
-          $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
-          if ($Sessions.Count -ge 1) {
-            if (-not $Called) {
-              Write-Verbose 'Teams Session found, open and valid'
-            }
-            return $true
-          }
-          else {
-            Write-Verbose 'Teams Session found, but not open and valid'
-            return $false
-          }
+          return $true
+        }
+        else {
+          Write-Verbose 'Teams Session found, but not open and valid'
+          return $false
         }
       }
+      #}
       else {
         return $false
       }

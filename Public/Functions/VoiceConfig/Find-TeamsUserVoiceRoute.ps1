@@ -212,14 +212,24 @@ function Find-TeamsUserVoiceRoute {
           $VoiceRouteNumber = $UserVoiceRouting.TranslatedNumber
 
           if ( $User.TenantDialPlan ) {
-            $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
+            #NOTE In MicrosoftTeams v2.5.0, policies are now nested Objects!
+            try {
+              $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan) -ErrorAction Stop).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
+            }
+            catch {
+              if ( $User.TenantDialPlan.Name ) {
+                $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan.Name)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
+              }
+            }
           }
-          $DP = (Get-CsDialPlan $($User.DialPlan)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
+          #BODGE for v2.5.0 - works and is correct, but may not be good!
+          #$DP = (Get-CsDialPlan $($User.DialPlan)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
+          $DP = (Get-CsDialPlan $($User.UsageLocation)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
           $UserVoiceRouting.EffectiveDialPlan = if ( $TDP ) { $User.TenantDialPlan } elseif ( $DP ) { $User.DialPlan } else {}
 
           # Warning / Caveat for Emergency Services Numbers
           if ( $Number -match '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
-            Write-Warning -Message "Emergency Services Number discovered! Route is calculated as-if routed through Online Voice Routing Policy."
+            Write-Warning -Message 'Emergency Services Number discovered! Route is calculated as-if routed through Online Voice Routing Policy.'
             Write-Information 'INFO:    The actual route for Emergency Services Calls depends on the effective Emergency Call Routing Policy (if any!)'
             <# Commented out as no longer valid:
             # Status of matching Dial Plan
@@ -248,7 +258,16 @@ function Find-TeamsUserVoiceRoute {
         # Voice Routing
         if ($User.OnlineVoiceRoutingPolicy) {
           Write-Verbose "User '$Id' - Querying Voice Routing Path with Online Voice Routing Policy '$($User.OnlineVoiceRoutingPolicy)'"
-          $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $User.OnlineVoiceRoutingPolicy).OnlinePstnUsages
+            #NOTE In MicrosoftTeams v2.5.0, policies are now nested Objects!
+            try {
+              $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $User.OnlineVoiceRoutingPolicy -ErrorAction Stop).OnlinePstnUsages
+            }
+            catch {
+              if ( $User.TenantDialPlan.Name ) {
+                $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $User.OnlineVoiceRoutingPolicy.Name).OnlinePstnUsages
+              }
+            }
+
 
           if ($OPUs) {
             [System.Collections.ArrayList]$VoiceRoutes = @()

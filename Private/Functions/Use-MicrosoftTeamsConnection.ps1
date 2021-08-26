@@ -46,7 +46,7 @@ function Use-MicrosoftTeamsConnection {
     function Get-CsOnlineSessionCommand {
       if ($null -eq $script:GetCsOnlineSession) {
         $module = [Microsoft.Teams.ConfigApi.Cmdlets.PowershellUtils]::GetRootModule()
-        $script:GetCsOnlineSession = [Microsoft.Teams.ConfigApi.Cmdlets.PowershellUtils]::GetCmdletInfo($module, "Microsoft.Teams.ConfigAPI.Cmdlets.private", "Get-CsOnlineSession")
+        $script:GetCsOnlineSession = [Microsoft.Teams.ConfigApi.Cmdlets.PowershellUtils]::GetCmdletInfo($module, 'Microsoft.Teams.ConfigAPI.Cmdlets.private', 'Get-CsOnlineSession')
       }
 
       return $script:GetCsOnlineSession;
@@ -77,6 +77,7 @@ function Use-MicrosoftTeamsConnection {
           return $false
         }
       }
+      <#
       elseif ($TeamsModuleVersion -gt 2.3.1) {
         # MEASUREMENTS This currently takes about half a second (486ms on average)
         #$null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -84,15 +85,19 @@ function Use-MicrosoftTeamsConnection {
         $Tenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         if ( $Tenant ) { return $true } else { return $false }
       }
+      #>
       else {
-        $RemotingSession = Get-PSImplicitRemotingSession Get-CsPresencePolicy -ErrorAction SilentlyContinue
+        <#
+        $RemotingSession = Get-PSImplicitRemotingSession Get-CsCallingLineIdentity -ErrorAction SilentlyContinue
         if ( -not $RemotingSession) {
           return $false
         }
         else {
           # MEASUREMENTS This currently takes about half a second (486ms on average)
-          $null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
+        #>
+        $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
 
         #Write-Verbose -Message "$($MyInvocation.MyCommand) - No Teams session found"
         #Start-Sleep -Seconds 1

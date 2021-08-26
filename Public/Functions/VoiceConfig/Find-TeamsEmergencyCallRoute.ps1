@@ -350,7 +350,15 @@ function Find-TeamsEmergencyCallRoute {
             Write-Verbose -Message "User: '$($User.UserPrincipalName)' - Number used to find Voice Route match: '$VoiceRouteNumber'"
 
             if ( $User.TenantDialPlan ) {
-              $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan)).NormalizationRules | Where-Object Name -EQ $EmergencyCallRoutingObject.MatchingRule
+              #NOTE In MicrosoftTeams v2.5.0, policies are now nested Objects!
+              try {
+                $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule -ErrorAction Stop
+              }
+              catch {
+                if ( $User.TenantDialPlan.Name ) {
+                  $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan.Name)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
+                }
+              }
             }
             $DP = (Get-CsDialPlan $($User.DialPlan)).NormalizationRules | Where-Object Name -EQ $EmergencyCallRoutingObject.MatchingRule
             $EmergencyCallRoutingObject.EffectiveDialPlan = if ( $TDP ) { $User.TenantDialPlan } elseif ( $DP ) { $User.DialPlan } else {}

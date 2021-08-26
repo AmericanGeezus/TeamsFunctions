@@ -130,7 +130,7 @@ function Get-TeamsUserVoiceConfig {
       #region Information Gathering
       Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
       Write-Verbose -Message "[PROCESS] Processing '$User'"
-      # Querying Identity
+      #region Querying Identity
       try {
         Write-Verbose -Message "User '$User' - Querying User Account (CsOnlineUser)"
         $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
@@ -153,8 +153,10 @@ function Get-TeamsUserVoiceConfig {
           continue
         }
       }
+      #endregion
 
-      # Constructing InterpretedVoiceConfigType
+      #FIXME This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
+      #region Constructing InterpretedVoiceConfigType
       $Operation = 'Verification, Testing InterpretedVoiceConfigType'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -178,8 +180,9 @@ function Get-TeamsUserVoiceConfig {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'Unknown' (undetermined)"
         $InterpretedVoiceConfigType = 'Unknown'
       }
+      #endregion
 
-      # Testing ObjectType
+      #region Testing ObjectType
       $Operation = 'Verification, Testing ObjectType'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -188,16 +191,33 @@ function Get-TeamsUserVoiceConfig {
       #$ObjectType = (Get-TeamsCallableEntity -Identity "$($CsUser.UserPrincipalName)").ObjectType
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
 
-      # Testing for Misconfiguration
+      #endregion
+
+      #region Testing for Misconfiguration
       $Operation = 'Testing for Misconfiguration'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
+      #$null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
+      $null = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue
 
       #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
       if ( $CsUser.SipAddress -and -not $CsUser.TenantDialPlan -and $ObjectType -ne 'ApplicationEndpoint' ) {
         Write-Information "INFO:    User '$User' - No Dial Plan is assigned"
+      }
+      #endregion
+      #endregion
+
+      #FIXME This does not work for v2.5.0 - Parameter ObjectId seems to be removed?
+      #region Refactoring ObjectId for v2.5.0 for backward compatibility
+      "Function: $($MyInvocation.MyCommand.Name): ObjectId:", ($CsUser.ObjectId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+
+      if ( $CsUser.ObjectId -is [object] ) {
+        # $CsUser.Identity -match 'CN=(?<Guid>[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}),*';  $matches.Guid
+        $UserObjectId = $CsUser.ObjectId.Guid
+      }
+      else {
+        $UserObjectId = $CsUser.ObjectId
       }
       #endregion
 
@@ -212,7 +232,7 @@ function Get-TeamsUserVoiceConfig {
         UserPrincipalName          = $CsUser.UserPrincipalName
         SipAddress                 = $CsUser.SipAddress
         DisplayName                = $CsUser.DisplayName
-        ObjectId                   = $CsUser.ObjectId
+        ObjectId                   = $UserObjectId
         Identity                   = $CsUser.Identity
         HostingProvider            = $CsUser.HostingProvider
         ObjectType                 = $ObjectType
