@@ -193,8 +193,9 @@ function Set-TeamsCommonAreaPhone {
       Write-Verbose -Message "$Status - $Operation"
 
       try {
-        #Trying to query the Account
-        $CsOnlineUser = (Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsOnlineUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
+        $CsOnlineUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
         $CurrentDisplayName = $CsOnlineUser.DisplayName
         Write-Verbose -Message "'$UPN' Teams Object found: '$CurrentDisplayName'"
         $Parameters += @{ 'ObjectId' = $CsOnlineUser.ObjectId }

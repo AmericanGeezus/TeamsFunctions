@@ -41,6 +41,7 @@ function Use-MicrosoftTeamsConnection {
     $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
 
     #region Functions copied from SfBoRemotePowerShellModule.psm1
+    <#
     $script:GetCsOnlineSession = $null
 
     function Get-CsOnlineSessionCommand {
@@ -62,6 +63,7 @@ function Use-MicrosoftTeamsConnection {
 
       return $remoteSession
     }
+    #>
     #endregion
 
   } #begin
@@ -77,15 +79,6 @@ function Use-MicrosoftTeamsConnection {
           return $false
         }
       }
-      <#
-      elseif ($TeamsModuleVersion -gt 2.3.1) {
-        # MEASUREMENTS This currently takes about half a second (486ms on average)
-        #$null = Get-CsPresencePolicy -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        # MEASUREMENTS This currently takes about half a second (467ms on average)
-        $Tenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        if ( $Tenant ) { return $true } else { return $false }
-      }
-      #>
       else {
         <#
         $RemotingSession = Get-PSImplicitRemotingSession Get-CsCallingLineIdentity -ErrorAction SilentlyContinue

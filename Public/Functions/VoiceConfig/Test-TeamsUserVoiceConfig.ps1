@@ -4,7 +4,7 @@
 # Updated:  15-MAY-2021
 # Status:   Live
 
-#TODO Refactor to accept input object already queried and compare values from there rather than from lookup
+
 
 
 function Test-TeamsUserVoiceConfig {
@@ -108,10 +108,17 @@ function Test-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-    $TestTDP = if ($IncludeTenantDialPlan.IsPresent) { $true } else { $false }
-    $TestPartial = if ($Partial.IsPresent) { $true } else { $false }
+    # Preparing Splatting Object
+    $parameters = $null
+    $Parameters = @{
+      'IncludeTDP'         = if ($IncludeTenantDialPlan.IsPresent) { $true } else { $false }
+      'Partial'            = if ($Partial.IsPresent) { $true } else { $false }
+      'ExtensionState'     = "$ExtensionState"
+      'Called'             = $Called
+      'CalledByAssertTUVC' = $CalledByAssertTUVC
+    }
 
-    function TestUser ($CsUser, $IncludeTDP, $Partial, $ExtensionState) {
+    function TestUser ($CsUser, $IncludeTDP, $Partial, $ExtensionState, $Called, $CalledByAssertTUVC) {
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
         Write-Debug "Parameter validation - Test for Tenant Dial Plan performed: $IncludeTDP"
         Write-Debug "Parameter validation - Test for partial configuration performed: $Partial"
@@ -120,7 +127,7 @@ function Test-TeamsUserVoiceConfig {
 
       #region Testing Interpreted UserType
       $IUT = $CsUser.InterpretedUserType
-      $TestObject = "Interpreted User Type"
+      $TestObject = 'Interpreted User Type'
       $IUTMisconfigured = ($IUT -match 'Disabled|OnPrem|NotLicensedForService|WithNoService|WithMCOValidationError|NotInPDL|Failed|PendingDeletionFromAD' -or `
         ($IUT -match 'SfB' -and -not $IUT -match 'Teams'))
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -354,13 +361,15 @@ function Test-TeamsUserVoiceConfig {
             Write-Error "User '$User' not found" -Category ObjectNotFound
             continue
           }
-          TestUser -CsUser $CsUser -IncludeTDP $TestTDP -Partial $TestPartial -ExtensionState "$ExtensionState"
+          #$Parameters += @{ 'CsUser' =  }
+          TestUser -CsUser $CsUser @Parameters
         }
       }
       'Object' {
         foreach ($O in $Object) {
-        Write-Verbose -Message '[PROCESS] Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)''
-        TestUser -CsUser $O -IncludeTDP $TestTDP -Partial $TestPartial -ExtensionState "$ExtensionState"
+          Write-Verbose -Message "[PROCESS] Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)'"
+          #$Parameters += @{ 'CsUser' = $O }
+          TestUser -CsUser $O @Parameters
         }
       }
     }

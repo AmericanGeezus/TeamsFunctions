@@ -201,7 +201,14 @@ function Get-TeamsUserVoiceConfig {
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       #$null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
-      $null = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue
+      if ( $AdUser -ne $CsUser ) {
+        # Necessary as Test-TeamsUserVoiceConfig expects a CsOnlineUser Object
+        $null = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue
+      }
+      else {
+        Write-Verbose -Message "No validation can be performed for the Object as CsOnlineUser Object not found!"
+      }
+
 
       #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
       if ( $CsUser.SipAddress -and -not $CsUser.TenantDialPlan -and $ObjectType -ne 'ApplicationEndpoint' ) {
@@ -210,13 +217,14 @@ function Get-TeamsUserVoiceConfig {
       #endregion
       #endregion
 
-      #FIXME This does not work for v2.5.0 - Parameter ObjectId seems to be removed?
+      #TEST rework based on Identity (needed for v2.5.0) - Parameter ObjectId seems to be removed?
       #region Refactoring ObjectId for v2.5.0 for backward compatibility
       "Function: $($MyInvocation.MyCommand.Name): ObjectId:", ($CsUser.ObjectId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
 
       if ( $CsUser.ObjectId -is [object] ) {
-        # $CsUser.Identity -match 'CN=(?<Guid>[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}),*';  $matches.Guid
-        $UserObjectId = $CsUser.ObjectId.Guid
+        #$UserObjectId = $CsUser.ObjectId.Guid
+        $CsUser.Identity -match 'CN=(?<Guid>[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}),*';
+        $UserObjectId = $matches.Guid
       }
       else {
         $UserObjectId = $CsUser.ObjectId

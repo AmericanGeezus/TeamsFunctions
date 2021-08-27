@@ -19,6 +19,10 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
+- Updated all Functions calling `Get-CsOnlineUser` without the Identity switch so that they are compatible with MicrosoftTeams v2.5.0
+- Minor refactoring of called CmdLets (for example Licensing commandlets used by `Get-TeamsUserVoiceConfig`) to display less verbose output when called with `-Verbose`
+- `Enable-TeamsUserForEnterpriseVoice`: Refactored script to also accept Object for reduced query time.
+- `Test-TeamsUserVoiceConfig`: Refactored script to also accept Object for reduced query time.
 - `Find-TeamsUserVoiceConfig`: Addressed an issue with search by VP, OVP & TDP
 - All `TeamsCallQueue` CmdLets: Added "INFO: " for informational output
 - Some `TeamsUserVoiceConfig` CmdLets: Added "INFO: " for informational output
