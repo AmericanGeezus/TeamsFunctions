@@ -14,7 +14,9 @@ function Enable-TeamsUserForEnterpriseVoice {
   .DESCRIPTION
     Enables a User for Enterprise Voice and verifies its status
   .PARAMETER UserPrincipalName
-    UserPrincipalName of the User to be enabled.
+    Required for Parameterset UserPrincipalName. UserPrincipalName of the User to be enabled.
+  .PARAMETER Object
+    Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.
   .PARAMETER Force
     Suppresses confirmation prompt unless -Confirm is used explicitly
   .EXAMPLE
@@ -28,6 +30,7 @@ function Enable-TeamsUserForEnterpriseVoice {
   .NOTES
     Simple helper function to enable and verify a User is enabled for Enterprise Voice
     Returns boolean result and less communication if called by another function
+    Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object
   .COMPONENT
     VoiceConfiguration
   .FUNCTIONALITY

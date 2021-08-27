@@ -15,7 +15,9 @@ function Test-TeamsUserVoiceConfig {
     For Microsoft Call Plans: Tests for EnterpriseVoice enablement, License AND Phone Number
     For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
   .PARAMETER UserPrincipalName
-    Required. UserPrincipalName or ObjectId of the Object
+    Required for Parameterset UserPrincipalName. UserPrincipalName or ObjectId of the Object
+  .PARAMETER Object
+    Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.
   .PARAMETER Partial
     Optional. By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
     Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
@@ -45,6 +47,7 @@ function Test-TeamsUserVoiceConfig {
   .OUTPUTS
     Boolean
   .NOTES
+    Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object
     All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
     Partial configuration provides insight for incorrectly provisioned configuration.
     Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI

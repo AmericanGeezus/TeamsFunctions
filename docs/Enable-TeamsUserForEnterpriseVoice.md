@@ -12,9 +12,15 @@ Enables a User for Enterprise Voice
 
 ## SYNTAX
 
+### UserPrincipalName (Default)
 ```
 Enable-TeamsUserForEnterpriseVoice [-UserPrincipalName] <String[]> [-Force] [-WhatIf] [-Confirm]
  [<CommonParameters>]
+```
+
+### Object
+```
+Enable-TeamsUserForEnterpriseVoice [-Object] <Object[]> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,12 +37,29 @@ Enables John for Enterprise Voice
 
 ## PARAMETERS
 
+### -Object
+Required for Parameterset Object.
+CsOnlineUser Object passed to the function to reduce query time.
+
+```yaml
+Type: Object[]
+Parameter Sets: Object
+Aliases:
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
 ### -UserPrincipalName
+Required for Parameterset UserPrincipalName.
 UserPrincipalName of the User to be enabled.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: UserPrincipalName
 Aliases: ObjectId, Identity
 
 Required: True
@@ -105,6 +128,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 Simple helper function to enable and verify a User is enabled for Enterprise Voice
 Returns boolean result and less communication if called by another function
+Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object
 
 ## RELATED LINKS
 

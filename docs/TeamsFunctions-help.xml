@@ -1815,10 +1815,58 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Enable-TeamsUserForEnterpriseVoice</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+          <maml:name>Object</maml:name>
+          <maml:description>
+            <maml:para>Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
+          <dev:type>
+            <maml:name>Object[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Force</maml:name>
+          <maml:description>
+            <maml:para>Suppresses confirmation prompt unless -Confirm is used explicitly</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
+          <maml:name>WhatIf</maml:name>
+          <maml:description>
+            <maml:para>Shows what would happen if the cmdlet runs. The cmdlet is not run.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="cf">
+          <maml:name>Confirm</maml:name>
+          <maml:description>
+            <maml:para>Prompts you for confirmation before running the cmdlet.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Enable-TeamsUserForEnterpriseVoice</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
           <maml:name>UserPrincipalName</maml:name>
           <maml:description>
-            <maml:para>UserPrincipalName of the User to be enabled.</maml:para>
+            <maml:para>Required for Parameterset UserPrincipalName. UserPrincipalName of the User to be enabled.</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -1863,10 +1911,22 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+        <maml:name>Object</maml:name>
+        <maml:description>
+          <maml:para>Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
+        <dev:type>
+          <maml:name>Object[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
         <maml:name>UserPrincipalName</maml:name>
         <maml:description>
-          <maml:para>UserPrincipalName of the User to be enabled.</maml:para>
+          <maml:para>Required for Parameterset UserPrincipalName. UserPrincipalName of the User to be enabled.</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -1942,7 +2002,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Simple helper function to enable and verify a User is enabled for Enterprise Voice Returns boolean result and less communication if called by another function</maml:para>
+        <maml:para>Simple helper function to enable and verify a User is enabled for Enterprise Voice Returns boolean result and less communication if called by another function Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -3769,7 +3829,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip This CmdLet can assign one of 123 Azure Ad Licenses. (see ParameterName) Please raise an issue on Github if you require additional Licenses for assignment</maml:para>
+        <maml:para>Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html With very special thanks to Philip This CmdLet can assign one of Azure Ad Licenses. (see ParameterName) Please raise an issue on Github if you require additional Licenses for assignment</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -3777,7 +3837,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-AzureAdLicense</dev:code>
         <dev:remarks>
-          <maml:para>Returns 39 Azure AD Licenses that relate to Teams for use in other commands</maml:para>
+          <maml:para>Returns Azure AD Licenses that relate to Teams for use in other commands</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -3872,7 +3932,7 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-AzureAdLicenseServicePlan</dev:code>
         <dev:remarks>
-          <maml:para>Returns 39 Azure AD Licenses that relate to Teams for use in other commands</maml:para>
+          <maml:para>Returns Azure AD Licenses that relate to Teams for use in other commands</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -20258,10 +20318,59 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Test-TeamsUserVoiceConfig</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+          <maml:name>Object</maml:name>
+          <maml:description>
+            <maml:para>Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
+          <dev:type>
+            <maml:name>Object[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Partial</maml:name>
+          <maml:description>
+            <maml:para>Optional. By default, returns TRUE only if all required Parameters are configured (User is fully provisioned) Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTenantDialPlan</maml:name>
+          <maml:description>
+            <maml:para>Optional. By default, only the core requirements for Voice Routing are verified. This extends the requirements to also include the Tenant Dial Plan. Returns FALSE if no or only a TenantDialPlan is assigned</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ExtensionState</maml:name>
+          <maml:description>
+            <maml:para>Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured No effect for Microsoft Calling Plans</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>NotMeasured</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Test-TeamsUserVoiceConfig</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
           <maml:name>UserPrincipalName</maml:name>
           <maml:description>
-            <maml:para>Required. UserPrincipalName or ObjectId of the Object</maml:para>
+            <maml:para>Required for Parameterset UserPrincipalName. UserPrincipalName or ObjectId of the Object</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -20307,10 +20416,22 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+        <maml:name>Object</maml:name>
+        <maml:description>
+          <maml:para>Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
+        <dev:type>
+          <maml:name>Object[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
         <maml:name>UserPrincipalName</maml:name>
         <maml:description>
-          <maml:para>Required. UserPrincipalName or ObjectId of the Object</maml:para>
+          <maml:para>Required for Parameterset UserPrincipalName. UserPrincipalName or ObjectId of the Object</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -20378,7 +20499,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE) Partial configuration provides insight for incorrectly provisioned configuration. Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy</maml:para>
+        <maml:para>Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE) Partial configuration provides insight for incorrectly provisioned configuration. Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI Tested Parameters for CallPlans: EnterpriseVoiceEnabled, VoicePolicy, User License (Domestic or International Calling Plan), TelephoneNumber Tested Parameters for SkypeHybridPSTN: EnterpriseVoiceEnabled, VoicePolicy, VoiceRoutingPolicy, OnlineVoiceRoutingPolicy</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>

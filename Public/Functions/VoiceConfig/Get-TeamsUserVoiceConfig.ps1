@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Check output for Diagnosticlevel 1-4 to ascertain removed output if CsOnlineObject is called with -Identity Switch!
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -206,7 +206,7 @@ function Get-TeamsUserVoiceConfig {
         $null = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue
       }
       else {
-        Write-Verbose -Message "No validation can be performed for the Object as CsOnlineUser Object not found!"
+        Write-Verbose -Message 'No validation can be performed for the Object as CsOnlineUser Object not found!'
       }
 
 
