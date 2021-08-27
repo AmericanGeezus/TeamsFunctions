@@ -94,6 +94,7 @@ function Get-TeamsTenant {
 
       #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
       $Domains = $TenantObject.Domains
+      <#
       #$DomainsOnMicrosoft = ($Domains | Where-Object Name -Match '.onmicrosoft.com').Name -join ', '
       $DomainsOnMicrosoft = ($Domains | Where-Object Name -Match '.onmicrosoft.com').Name -join '
 '
@@ -104,6 +105,16 @@ function Get-TeamsTenant {
       $Object | Add-Member -MemberType NoteProperty -Name ManagedSipDomains -Value $DomainsForTeams -Force
       #$Object.DomainsOnMicrosoft | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Name } -Force
       #$Object.DomainsForTeams | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Name } -Force
+      #>
+
+      $ManagedOnMicrosoftDomains = $Domains | Where-Object Name -Match '.onmicrosoft.com'
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedOnMicrosoftDomains -Value $ManagedOnMicrosoftDomains.Name -Force
+
+      $ManagedCommunicationsDomains = $Domains | Where-Object Capability -Match 'OfficeCommunicationsOnline'
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedCommunicationsDomains -Value $ManagedCommunicationsDomains.Name -Force
+
+      $SipDomains = Get-CsOnlineSipDomain -WarningAction SilentlyContinue
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedSipDomains -Value $SipDomains.Name -Force
     }
     else {
       $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `

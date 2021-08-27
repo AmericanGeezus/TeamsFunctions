@@ -69,7 +69,7 @@ function Test-TeamsUserVoiceConfig {
   [OutputType([Boolean])]
   param(
     [Parameter(Mandatory, Position = 0, ParameterSetName = 'Object', ValueFromPipeline)]
-    [Object]$Object,
+    [Object[]]$Object,
 
     [Parameter(Mandatory, Position = 0, ParameterSetName = 'UserPrincipalName', ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [Alias('ObjectId', 'Identity')]
@@ -175,7 +175,7 @@ function Test-TeamsUserVoiceConfig {
       }
       #endregion
 
-      #FIXME This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
+      #VALIDATE This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
       #region Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
@@ -346,7 +346,9 @@ function Test-TeamsUserVoiceConfig {
         foreach ($User in $UserPrincipalName) {
           Write-Verbose -Message "[PROCESS] Processing '$User'"
           try {
-            $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+            #$CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
           }
           catch {
             Write-Error "User '$User' not found" -Category ObjectNotFound
@@ -356,8 +358,10 @@ function Test-TeamsUserVoiceConfig {
         }
       }
       'Object' {
-        Write-Verbose -Message '[PROCESS] Processing provided CsOnlineUser Object'
-        TestUser -CsUser $Object -IncludeTDP $TestTDP -Partial $TestPartial -ExtensionState "$ExtensionState"
+        foreach ($O in $Object) {
+        Write-Verbose -Message '[PROCESS] Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)''
+        TestUser -CsUser $O -IncludeTDP $TestTDP -Partial $TestPartial -ExtensionState "$ExtensionState"
+        }
       }
     }
   } #process

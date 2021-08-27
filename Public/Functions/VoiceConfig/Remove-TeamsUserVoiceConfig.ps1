@@ -139,7 +139,9 @@ function Remove-TeamsUserVoiceConfig {
       # Querying Identity
       try {
         Write-Verbose -Message "User '$UPN' - Querying User Account"
-        $CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$UPN' not found: $($_.Exception.Message)" -Category ObjectNotFound

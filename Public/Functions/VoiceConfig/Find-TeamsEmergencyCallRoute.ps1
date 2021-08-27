@@ -280,11 +280,11 @@ function Find-TeamsEmergencyCallRoute {
         #region DialedNumber
         # Gently harmonising the Number if entered with unwanted characters (deliberately not using any of the Format-CmdLets)
         if ($Number.contains(' ') -or $Number.contains('(') -or $Number.contains(')') -or $Number.contains('-')) {
-          Write-Verbose -Message "User '$Id' - Number was normalised to remove special characters (parenthesis, dash and space) to allow correct translation"
+          Write-Verbose -Message "User '$UPN' - Number was normalised to remove special characters (parenthesis, dash and space) to allow correct translation"
           $Number = $Number.replace('(', '').replace(')', '').replace('-', '').replace(' ', '')
         }
         elseif ($Number.contains('+')) {
-          Write-Warning -Message "User '$Id' - Number '$Number' - Dialling with a leading plus bypasses the Dial Plan and normalisation!"
+          Write-Warning -Message "User '$UPN' - Number '$Number' - Dialling with a leading plus bypasses the Dial Plan and normalisation!"
         }
         # Validating Number is an Emergency Number
         if ( $Number -notmatch '^(000|1(\d{2})|9(\d{2})|\d{1}11)$' ) {
@@ -293,25 +293,27 @@ function Find-TeamsEmergencyCallRoute {
         $EmergencyCallRoutingObject.DialedNumber = $Number
         #endregion
 
-        foreach ($Id in $UserPrincipalName) {
+        foreach ($UPN in $UserPrincipalName) {
           #region Querying Users and populating related User information
-          if ($Id -eq 'John@domain.com') {
+          if ($UPN -eq 'John@domain.com') {
             <# Exit Criteria for "no user provided "#>
             # Populating required Parameters for further queries
             $VoiceRouteNumber = $Number
             Write-Verbose -Message "NetworkSite '$($Site.NetworkSiteId)' - Number used to find Voice Route match: '$VoiceRouteNumber'"
           }
           else {
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing UserPrincipalName: '$Id'"
+            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing UserPrincipalName: '$UPN'"
             #region User Information
             try {
-              $User = $null
-              $User = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
-              if ( -not $User ) {
-                throw "User '$Id' not found"
+              $CsUser = $null
+              #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+              #$CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+              $CsUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+              if ( -not $CsUser ) {
+                throw "User '$UPN' not found"
               }
-              if ( -not $User.EnterpriseVoiceEnabled ) {
-                throw "User '$($User.UserPrincipalName)' - Found, but not enabled for Enterprise Voice"
+              if ( -not $CsUser.EnterpriseVoiceEnabled ) {
+                throw "User '$($CsUser.UserPrincipalName)' - Found, but not enabled for Enterprise Voice"
               }
             }
             catch {
@@ -320,25 +322,25 @@ function Find-TeamsEmergencyCallRoute {
             }
 
             # Populating User Information
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing Site: '$($Site.NetworkSiteId)' - Number: $Number - User: '$($User.UserPrincipalName)'"
-            $EmergencyCallRoutingObject.UserPrincipalName = $User.UserPrincipalName
-            $EmergencyCallRoutingObject.TenantDialPlan = $User.TenantDialPlan
-            $EmergencyCallRoutingObject.OnlineVoiceRoutingPolicy = $User.OnlineVoiceRoutingPolicy
-            $EmergencyCallRoutingObject.UserEmergencyCallRoutingPolicy = $User.EmergencyCallRoutingPolicy
-            $EmergencyCallRoutingObject.UserEmergencyCallingPolicy = $User.EmergencyCallingPolicy
+            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing Site: '$($Site.NetworkSiteId)' - Number: $Number - User: '$($CsUser.UserPrincipalName)'"
+            $EmergencyCallRoutingObject.UserPrincipalName = $CsUser.UserPrincipalName
+            $EmergencyCallRoutingObject.TenantDialPlan = $CsUser.TenantDialPlan
+            $EmergencyCallRoutingObject.OnlineVoiceRoutingPolicy = $CsUser.OnlineVoiceRoutingPolicy
+            $EmergencyCallRoutingObject.UserEmergencyCallRoutingPolicy = $CsUser.EmergencyCallRoutingPolicy
+            $EmergencyCallRoutingObject.UserEmergencyCallingPolicy = $CsUser.EmergencyCallingPolicy
             #endregion
 
             #region Query Effective Tenant Dial Plan
-            Write-Verbose -Message "User: '$($User.UserPrincipalName)' - Determining Effective DialPlan"
-            $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$($User.UserPrincipalName)"
+            Write-Verbose -Message "User: '$($CsUser.UserPrincipalName)' - Determining Effective DialPlan"
+            $EffectiveTDP = Get-CsEffectiveTenantDialPlan -Identity "$($CsUser.UserPrincipalName)"
             $EffectiveTranslation = $EffectiveTDP | Test-CsEffectiveTenantDialPlan -DialedNumber "$Number"
             if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
               "Function: $($MyInvocation.MyCommand.Name) - EffectiveTranslation", ( $EffectiveTranslation | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
 
             if ( $EffectiveTranslation.TranslatedNumber ) {
-              Write-Verbose "User '$($User.UserPrincipalName)' - Dialed Number '$Number' translated to '$($EffectiveTranslation.TranslatedNumber)'"
-              Write-Verbose "User '$($User.UserPrincipalName)' - Normalization rule '$($EffectiveTranslation.MatchingRule -replace ';', "`n"))"
+              Write-Verbose "User '$($CsUser.UserPrincipalName)' - Dialed Number '$Number' translated to '$($EffectiveTranslation.TranslatedNumber)'"
+              Write-Verbose "User '$($CsUser.UserPrincipalName)' - Normalization rule '$($EffectiveTranslation.MatchingRule -replace ';', "`n"))"
               $EmergencyCallRoutingObject.MatchingRule = $EffectiveTranslation.MatchingRule.Name
               $EmergencyCallRoutingObject.MatchingPattern = $EffectiveTranslation.MatchingRule.Pattern
               $EmergencyCallRoutingObject.TranslatedNumber = $EffectiveTranslation.TranslatedNumber
@@ -347,31 +349,31 @@ function Find-TeamsEmergencyCallRoute {
               $EmergencyCallRoutingObject.TranslatedNumber = $Number
             }
             $VoiceRouteNumber = $EmergencyCallRoutingObject.TranslatedNumber
-            Write-Verbose -Message "User: '$($User.UserPrincipalName)' - Number used to find Voice Route match: '$VoiceRouteNumber'"
+            Write-Verbose -Message "User: '$($CsUser.UserPrincipalName)' - Number used to find Voice Route match: '$VoiceRouteNumber'"
 
-            if ( $User.TenantDialPlan ) {
+            if ( $CsUser.TenantDialPlan ) {
               #NOTE In MicrosoftTeams v2.5.0, policies are now nested Objects!
               try {
-                $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule -ErrorAction Stop
+                $TDP = (Get-CsTenantDialPlan $($CsUser.TenantDialPlan)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule -ErrorAction Stop
               }
               catch {
-                if ( $User.TenantDialPlan.Name ) {
-                  $TDP = (Get-CsTenantDialPlan $($User.TenantDialPlan.Name)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
+                if ( $CsUser.TenantDialPlan.Name ) {
+                  $TDP = (Get-CsTenantDialPlan $($CsUser.TenantDialPlan.Name)).NormalizationRules | Where-Object Name -EQ $UserVoiceRouting.MatchingRule
                 }
               }
             }
-            $DP = (Get-CsDialPlan $($User.DialPlan)).NormalizationRules | Where-Object Name -EQ $EmergencyCallRoutingObject.MatchingRule
-            $EmergencyCallRoutingObject.EffectiveDialPlan = if ( $TDP ) { $User.TenantDialPlan } elseif ( $DP ) { $User.DialPlan } else {}
+            $DP = (Get-CsDialPlan $($CsUser.DialPlan)).NormalizationRules | Where-Object Name -EQ $EmergencyCallRoutingObject.MatchingRule
+            $EmergencyCallRoutingObject.EffectiveDialPlan = if ( $TDP ) { $CsUser.TenantDialPlan } elseif ( $DP ) { $CsUser.DialPlan } else {}
             #endregion
           }
           #endregion
 
           #region Determining Effective EmergencyCallRoutingPolicy & EmergencyCallingPolicy
           # Effective Call Routing Policy
-          if ( $User.EmergencyCallRoutingPolicy ) {
-            $UserECRP = Get-CsTeamsEmergencyCallRoutingPolicy $User.EmergencyCallRoutingPolicy
+          if ( $CsUser.EmergencyCallRoutingPolicy ) {
+            $UserECRP = Get-CsTeamsEmergencyCallRoutingPolicy $CsUser.EmergencyCallRoutingPolicy
             if ( $DialedNumber -in $UserECRP.EmergencyNumbers.EmergencyDialMask -or $DialedNumber -in $UserECRP.EmergencyNumbers.EmergencyDialString ) {
-              $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy = $User.EmergencyCallRoutingPolicy
+              $EmergencyCallRoutingObject.EffectiveEmergencyCallRoutingPolicy = $CsUser.EmergencyCallRoutingPolicy
               $EmergencyCallRoutingObject.NetworkPathTaken = 'UserEmergencyCallRoutingPolicy'
             }
           }
@@ -385,7 +387,7 @@ function Find-TeamsEmergencyCallRoute {
 
           # Effective Calling Policy
           $EmergencyCallRoutingObject.EffectiveEmergencyCallingPolicy = if ( $Site.EmergencyCallingPolicy ) { $Site.EmergencyCallingPolicy }
-          elseif ($User.EmergencyCallingPolicy) { $User.EmergencyCallingPolicy } else { $null }
+          elseif ($CsUser.EmergencyCallingPolicy) { $CsUser.EmergencyCallingPolicy } else { $null }
           #endregion
 
           #region NetworkPathTaken & effective OPU
@@ -430,7 +432,7 @@ function Find-TeamsEmergencyCallRoute {
             if ( $EmergencyCallRoutingObject.OnlineVoiceRoutingPolicy ) {
               $EmergencyCallRoutingObject.NetworkPathTaken = 'OnlineVoiceRoutingPolicy'
               Write-Verbose -Message 'Network Path Taken: OnlineVoiceRoutingPolicy - Emergency Call Routing Policy is not triggered'
-              $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $User.OnlineVoiceRoutingPolicy).OnlinePstnUsages
+              $OPUs = (Get-CsOnlineVoiceRoutingPolicy -Identity $CsUser.OnlineVoiceRoutingPolicy).OnlinePstnUsages
             }
             else {
               if ( $EmergencyCallRoutingObject.UserPrincipalName ) {

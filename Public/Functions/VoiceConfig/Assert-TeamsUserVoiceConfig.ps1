@@ -105,15 +105,17 @@ function Assert-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    foreach ($Id in $UserPrincipalName) {
-      Write-Verbose -Message "[PROCESS] Processing '$Id'"
+    foreach ($UPN in $UserPrincipalName) {
+      Write-Verbose -Message "[PROCESS] Processing '$UPN'"
 
       try {
-        $CsUser = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue -ErrorAction STOP
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
         $User = $CsUser.UserPrincipalName
       }
       catch {
-        Write-Error -Message "User '$Id' not found"
+        Write-Error -Message "User '$UPN' not found"
         continue
       }
       if ($CsUser.InterpretedUserType -notlike '*User*') {

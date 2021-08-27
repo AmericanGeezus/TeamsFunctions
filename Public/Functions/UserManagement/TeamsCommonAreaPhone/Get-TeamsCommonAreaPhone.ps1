@@ -128,7 +128,9 @@ function Get-TeamsCommonAreaPhone {
           Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$User'"
           try {
             $CAP = $null
-            $CAP = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+            #$CAP = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            $CAP = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
             [void]$CommonAreaPhones.Add($CAP)
           }
           catch {
