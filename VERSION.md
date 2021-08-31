@@ -8,8 +8,9 @@ Pre-releases are documented in VERSION-PreRelease.md and will be transferred her
 MicrosoftTeams has been released in v2.5.1 which includes a change for the returned Object for `Get-CsTenant` and `Get-CsOnlineUser` (and others!). Microsoft has started refurbishing the CmdLet calls using REST-method/Graph instead of a remoting call. This impacts on Teamsfunctions on two major areas:
 
 - Cmdlets upgraded to use an `AutoRest` call will no longer create a `PSSession`-Object. Testing against this Session object therefore fails. Fixed, see below.
-- Cmdlet `Get-CsTenant` - New object output is used when MicrosoftTeams is installed in v2.5.1 or higher. Workaround does not work for this CmdLet. See [#8260](https://github.com/MicrosoftDocs/office-docs-powershell/issues/8260)
-- CmdLet `Get-CsOnlineUser` - Workaround is used when calling `Get-CsOnlineUser` to enable compatibility with all TeamsFunctions CmdLets (more testing and refinement is required before the new Object can be used - see: [#8261](https://github.com/MicrosoftDocs/office-docs-powershell/issues/8261) ) - More information coming soon.
+- Output Objects require extensive retesting:
+  - Cmdlet `Get-CsTenant` - New object output is used when MicrosoftTeams is installed in v2.5.1 or higher. Workaround does not work for this CmdLet. See [#8260](https://github.com/MicrosoftDocs/office-docs-powershell/issues/8260)
+  - CmdLet `Get-CsOnlineUser` - Workaround is used when calling `Get-CsOnlineUser` to enable compatibility with all TeamsFunctions CmdLets (more testing and refinement is required before the new Object can be used - see: [#8261](https://github.com/MicrosoftDocs/office-docs-powershell/issues/8261) ) - More information coming soon.
 
 ### Component Status
 
