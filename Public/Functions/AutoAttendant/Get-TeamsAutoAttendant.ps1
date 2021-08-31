@@ -16,9 +16,10 @@ function Get-TeamsAutoAttendant {
     like UserPrincipalName or DisplayName for the following connected Objects
     Operator and ApplicationInstances (Resource Accounts)
   .PARAMETER Name
-    Optional. Finds all Auto Attendants with this name (unique results).
-  .PARAMETER SearchString
-    Optional. Searches all Auto Attendants for this string (multiple results possible).
+    Required for ParameterSet Name. Finds all Auto Attendants with this name (unique results).
+    If not provided, all Auto Attendants are queried, returning only the name
+    .PARAMETER SearchString
+    Required for ParameterSet Search. Searches all Auto Attendants for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays nested Objects for all Parameters of the Auto Attendant
     By default, only Names of nested Objects are shown.
@@ -63,15 +64,16 @@ function Get-TeamsAutoAttendant {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = 'Name')]
   [Alias('Get-TeamsAA')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Auto Attendant')]
+    [Parameter(ParameterSetName = 'Name', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Auto Attendant')]
     [AllowNull()]
+    [Alias('Identity')]
     [string[]]$Name,
 
-    [Parameter(HelpMessage = 'Partial or full Name of the Auto Attendant to search')]
+    [Parameter(ParameterSetName = 'Search', HelpMessage = 'Partial or full Name of the Auto Attendant to search')]
     [Alias('NameFilter')]
     [string]$SearchString,
 
@@ -113,48 +115,45 @@ function Get-TeamsAutoAttendant {
     else {
       #region Query objects
       $AutoAttendants = @()
-      if ($PSBoundParameters.ContainsKey('Name')) {
-        # Lookup
-        Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
-        foreach ($DN in $Name) {
-          if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
-            #Identity or ObjectId
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
-            $AAByName = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            if ($PSBoundParameters.ContainsKey('Detailed')) {
-              $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
-              $AutoAttendants += $AAById
-            }
-            else {
+      switch ($PSCmdlet.ParameterSetName) {
+        'Name' {
+          # Lookup
+          Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
+          foreach ($DN in $Name) {
+            if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
+              #Identity or ObjectId
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
+              $AAByName = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
               $AutoAttendants += $AAByName
             }
+            else {
+              #Name
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
+              $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AAByName = $AAByName | Where-Object Name -EQ "$DN"
+              if ($PSBoundParameters.ContainsKey('Detailed')) {
+                #NOTE This gets around an issue with Get-CsAutoAttendant which only displays Download URIs when queried with Identity
+                $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
+                $AutoAttendants += $AAById
+              }
+              else {
+                $AutoAttendants += $AAByName
+              }
+            }
+          }
+        }
+        'Search' {
+          # Search
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
+          $AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          if ($PSBoundParameters.ContainsKey('Detailed')) {
+            #NOTE This gets around an issue with Get-CsAutoAttendant which only displays Download URIs when queried with Identity
+            $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
+            $AutoAttendants += $AAById
           }
           else {
-            #Name
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-            $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $AAByName = $AAByName | Where-Object Name -EQ "$DN"
-            if ($PSBoundParameters.ContainsKey('Detailed')) {
-              $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
-              $AutoAttendants += $AAById
-            }
-            else {
-              $AutoAttendants += $AAByName
-            }
+            $AutoAttendants += $AAByName
           }
-        }
-      }
-
-      if ($PSBoundParameters.ContainsKey('SearchString')) {
-        # Search
-        Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
-        $AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        if ($PSBoundParameters.ContainsKey('Detailed')) {
-          $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
-          $AutoAttendants += $AAById
-        }
-        else {
-          $AutoAttendants += $AAByName
         }
       }
       #endregion
