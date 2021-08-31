@@ -16,10 +16,10 @@ function Get-TeamsCallQueue {
     like UserPrincipalName or DisplayName for the following connected Objects
     OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
   .PARAMETER Name
-    Optional. Searches all Call Queues for this name (unique results).
-    If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+    Required for ParameterSet Name. Searches all Call Queues for this name (unique results).
+    If not provided, all Call Queues are queried, returning only the name
   .PARAMETER SearchString
-    Optional. Searches all Call Queues for this string (multiple results possible).
+    Required for ParameterSet Search. Searches all Call Queues for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays all Parameters of the CallQueue
     This also shows parameters relating to Ids and Diagnostic Parameters.
@@ -62,15 +62,15 @@ function Get-TeamsCallQueue {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = 'Name')]
   [Alias('Get-TeamsCQ')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Call Queue')]
+    [Parameter(ParameterSetName = 'Name', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Call Queue')]
     [AllowNull()]
     [string[]]$Name,
 
-    [Parameter(HelpMessage = 'Partial or full Name of the Call Queue to search')]
+    [Parameter(ParameterSetName = 'Search', HelpMessage = 'Partial or full Name of the Call Queue to search')]
     [Alias('NameFilter')]
     [string]$SearchString,
 
@@ -100,6 +100,7 @@ function Get-TeamsCallQueue {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    #region Query objects
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
       Write-Information 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString'
@@ -107,36 +108,36 @@ function Get-TeamsCallQueue {
       return
     }
     else {
-      #region Query objects
       $Queues = @()
-      if ($PSBoundParameters.ContainsKey('Name')) {
-        # Lookup
-        Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
-        foreach ($DN in $Name) {
-          if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
-            #Identity or ObjectId
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
-            $QueuesById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $Queues += $QueuesById
-          }
-          else {
-            #Name
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-            $QueuesByName = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $QueuesByName = $QueuesByName | Where-Object Name -EQ "$DN"
-            $Queues += $QueuesByName
+      switch ($PSCmdlet.ParameterSetName) {
+        'Name' {
+          # Lookup
+          Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
+          foreach ($DN in $Name) {
+            if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
+              #Identity or ObjectId
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
+              $QueuesById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $Queues += $QueuesById
+            }
+            else {
+              #Name
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
+              $QueuesByName = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $QueuesByName = $QueuesByName | Where-Object Name -EQ "$DN"
+              $Queues += $QueuesByName
+            }
           }
         }
+        'Search' {
+          # Search
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
+          $QueuesByString = Get-CsCallQueue -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $Queues += $QueuesByString
+        }
       }
-
-      if ($PSBoundParameters.ContainsKey('SearchString')) {
-        # Search
-        Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
-        $QueuesByString = Get-CsCallQueue -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        $Queues += $QueuesByString
-      }
-      #endregion
     }
+    #endregion
 
     # Parsing found Objects
     Write-Verbose -Message "[PROCESS] Processing found Queues: $QueueCount"

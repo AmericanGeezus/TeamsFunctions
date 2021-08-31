@@ -117,7 +117,7 @@ function Get-TeamsAutoAttendantAudioFile {
 
     #region Query objects
     # Capturing no input
-    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') -and -not $PSBoundParameters.ContainsKey('Object')) {
+    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') ) {
       Write-Information 'No Parameters - Querying ALL Auto Attendants. This could take a while. To query individual items, please provide Parameter Name or SearchString'
       $AAQuery = Get-CsAutoAttendant -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       $AutoAttendants += $AAQuery

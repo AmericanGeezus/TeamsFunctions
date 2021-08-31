@@ -18,7 +18,7 @@ function Get-TeamsAutoAttendant {
   .PARAMETER Name
     Required for ParameterSet Name. Finds all Auto Attendants with this name (unique results).
     If not provided, all Auto Attendants are queried, returning only the name
-    .PARAMETER SearchString
+  .PARAMETER SearchString
     Required for ParameterSet Search. Searches all Auto Attendants for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays nested Objects for all Parameters of the Auto Attendant
@@ -108,7 +108,7 @@ function Get-TeamsAutoAttendant {
 
     #region Query objects
     # Capturing no input
-    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') -and -not $PSBoundParameters.ContainsKey('Object')) {
+    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') ) {
       Write-Information 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString'
       Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object Name
       return
