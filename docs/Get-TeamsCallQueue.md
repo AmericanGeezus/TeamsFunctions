@@ -12,8 +12,14 @@ Queries Call Queues and displays friendly Names (UPN or Displayname)
 
 ## SYNTAX
 
+### Name (Default)
 ```
-Get-TeamsCallQueue [[-Name] <String[]>] [[-SearchString] <String>] [-Detailed] [<CommonParameters>]
+Get-TeamsCallQueue [[-Name] <String[]>] [-Detailed] [<CommonParameters>]
+```
+
+### Search
+```
+Get-TeamsCallQueue [-SearchString <String>] [-Detailed] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -64,13 +70,13 @@ Returns an Object for every Call Queue matching the String "My CallQueue"
 ## PARAMETERS
 
 ### -Name
-Optional.
+Required for ParameterSet Name.
 Searches all Call Queues for this name (unique results).
-If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+If not provided, all Call Queues are queried, returning only the name
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: Name
 Aliases:
 
 Required: False
@@ -81,16 +87,16 @@ Accept wildcard characters: False
 ```
 
 ### -SearchString
-Optional.
+Required for ParameterSet Search.
 Searches all Call Queues for this string (multiple results possible).
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: Search
 Aliases: NameFilter
 
 Required: False
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

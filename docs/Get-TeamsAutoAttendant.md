@@ -12,8 +12,14 @@ Queries Auto Attendants and displays friendly Names (UPN or DisplayName)
 
 ## SYNTAX
 
+### Name (Default)
 ```
-Get-TeamsAutoAttendant [[-Name] <String[]>] [[-SearchString] <String>] [-Detailed] [<CommonParameters>]
+Get-TeamsAutoAttendant [[-Name] <String[]>] [-Detailed] [<CommonParameters>]
+```
+
+### Search
+```
+Get-TeamsAutoAttendant [-SearchString <String>] [-Detailed] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -64,13 +70,14 @@ Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output s
 ## PARAMETERS
 
 ### -Name
-Optional.
+Required for ParameterSet Name.
 Finds all Auto Attendants with this name (unique results).
+If not provided, all Auto Attendants are queried, returning only the name
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
-Aliases:
+Parameter Sets: Name
+Aliases: Identity
 
 Required: False
 Position: 1
@@ -80,16 +87,16 @@ Accept wildcard characters: False
 ```
 
 ### -SearchString
-Optional.
+Required for ParameterSet Search.
 Searches all Auto Attendants for this string (multiple results possible).
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: Search
 Aliases: NameFilter
 
 Required: False
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

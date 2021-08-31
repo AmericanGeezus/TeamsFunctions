@@ -4941,10 +4941,10 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsAutoAttendant</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>Optional. Finds all Auto Attendants with this name (unique results).</maml:para>
+            <maml:para>Required for ParameterSet Name. Finds all Auto Attendants with this name (unique results). If not provided, all Auto Attendants are queried, returning only the name</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -4953,10 +4953,24 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Detailed</maml:name>
+          <maml:description>
+            <maml:para>Optional Switch. Displays nested Objects for all Parameters of the Auto Attendant By default, only Names of nested Objects are shown.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsAutoAttendant</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NameFilter">
           <maml:name>SearchString</maml:name>
           <maml:description>
-            <maml:para>Optional. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
+            <maml:para>Required for ParameterSet Search. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -4979,10 +4993,10 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>Optional. Finds all Auto Attendants with this name (unique results).</maml:para>
+          <maml:para>Required for ParameterSet Name. Finds all Auto Attendants with this name (unique results). If not provided, all Auto Attendants are queried, returning only the name</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -4991,10 +5005,10 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NameFilter">
         <maml:name>SearchString</maml:name>
         <maml:description>
-          <maml:para>Optional. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
+          <maml:para>Required for ParameterSet Search. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -5108,10 +5122,10 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-TeamsAutoAttendantAudioFile</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>Optional. Finds all Auto Attendants with this name (unique results).</maml:para>
+            <maml:para>Required for ParameterSet Name. Finds all Auto Attendants with this name (unique results).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -5120,10 +5134,24 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Detailed</maml:name>
+          <maml:description>
+            <maml:para>Optional Switch. Displays all information for the nested Audio File Objects of the Auto Attendant By default, only Names and Download URI of nested Objects are shown.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsAutoAttendantAudioFile</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NameFilter">
           <maml:name>SearchString</maml:name>
           <maml:description>
-            <maml:para>Optional. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
+            <maml:para>Required for ParameterSet Search. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -5146,10 +5174,10 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="Identity">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>Optional. Finds all Auto Attendants with this name (unique results).</maml:para>
+          <maml:para>Required for ParameterSet Name. Finds all Auto Attendants with this name (unique results).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -5158,10 +5186,10 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NameFilter">
         <maml:name>SearchString</maml:name>
         <maml:description>
-          <maml:para>Optional. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
+          <maml:para>Required for ParameterSet Search. Searches all Auto Attendants for this string (multiple results possible).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -5693,7 +5721,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
           <maml:name>Name</maml:name>
           <maml:description>
-            <maml:para>Optional. Searches all Call Queues for this name (unique results). If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)</maml:para>
+            <maml:para>Required for ParameterSet Name. Searches all Call Queues for this name (unique results). If not provided, all Call Queues are queried, returning only the name</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -5702,10 +5730,24 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Detailed</maml:name>
+          <maml:description>
+            <maml:para>Optional Switch. Displays all Parameters of the CallQueue This also shows parameters relating to Ids and Diagnostic Parameters.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Get-TeamsCallQueue</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NameFilter">
           <maml:name>SearchString</maml:name>
           <maml:description>
-            <maml:para>Optional. Searches all Call Queues for this string (multiple results possible).</maml:para>
+            <maml:para>Required for ParameterSet Search. Searches all Call Queues for this string (multiple results possible).</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -5731,7 +5773,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
         <maml:name>Name</maml:name>
         <maml:description>
-          <maml:para>Optional. Searches all Call Queues for this name (unique results). If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)</maml:para>
+          <maml:para>Required for ParameterSet Name. Searches all Call Queues for this name (unique results). If not provided, all Call Queues are queried, returning only the name</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -5740,10 +5782,10 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="NameFilter">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="NameFilter">
         <maml:name>SearchString</maml:name>
         <maml:description>
-          <maml:para>Optional. Searches all Call Queues for this string (multiple results possible).</maml:para>
+          <maml:para>Required for ParameterSet Search. Searches all Call Queues for this string (multiple results possible).</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
