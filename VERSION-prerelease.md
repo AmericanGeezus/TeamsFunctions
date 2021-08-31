@@ -15,31 +15,23 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### New
 
-- `Get-TeamsAutoAttendantAudioFile` (`Get-TeamsAAAudioFile`): New Support function for Auto Attendants, parsing Audio Files for an Auto Attendant.
+- TBC
 
 ### Updated
 
-- Updated all Functions calling `Get-CsOnlineUser` without the Identity switch so that they are compatible with MicrosoftTeams v2.5.0
-- Minor refactoring of called CmdLets (for example Licensing commandlets used by `Get-TeamsUserVoiceConfig`) to display less verbose output when called with `-Verbose`
-- `Enable-TeamsUserForEnterpriseVoice`: Refactored script to also accept Object for reduced query time.
-- `Test-TeamsUserVoiceConfig`: Refactored script to also accept Object for reduced query time.
-- `Find-TeamsUserVoiceConfig`: Addressed an issue with search by VP, OVP & TDP
-- All `TeamsCallQueue` CmdLets: Added "INFO: " for informational output
-- Some `TeamsUserVoiceConfig` CmdLets: Added "INFO: " for informational output
-- `[ArgumentCompleter]` now returns values sorted. For some reason, I missed this, sorry.
-- `Get-TeamsAutoAttendant` circumvented a bug in parsing the Auto Attendant entity by Name (nested Objects display differently)
+- TBC
 
 ### Limitations
 
+- Azure Ad Admin Role activation for Groups does not work - Currently not possible due to missing command in AzureAdPreview/AzureAd
 - `Connect-MicrosoftTeams`: Scenario observed where a Session has been opened, but Skype Commands cannot be used.
 <br />Mitigation: Disconnect, then close PowerShell session completely, ensure Admin Roles are activated and re-run `Connect-Me`
+<br />NOTE: This behaviour was not observed in v2.3.1 and later!
 
 ### ToDo
 
-- Pipeline tests:
-  - Test piping objects with UserprincipalName and Identity to GET-CmdLets and SET-CmdLets
-  - Test output of objects with and without Identity against Microsoft CmdLets
-- Rework Get-TeamsCallQueue and Get-TeamsAutoAttendant to also accept the ObjectId as input
+- Pipeline tests: More
+- Pester tests: More
 - Refactoring use of Switches across the board (using ".IsPresent" instead of the variable only)
 
 ---------------------------------------------

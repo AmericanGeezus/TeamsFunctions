@@ -2,7 +2,7 @@
 # Function: AutoAttendant
 # Author:   David Eberhardt
 # Updated:  01-SEP-2021
-# Status:   RC
+# Status:   Live
 
 
 
@@ -74,7 +74,7 @@ function Get-TeamsAutoAttendantAudioFile {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
+    Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 

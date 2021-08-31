@@ -3,6 +3,61 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.09 - Sep 2021 release
+
+MicrosoftTeams has been released in v2.5.1 which includes a change for the returned Object for `Get-CsTenant` and `Get-CsOnlineUser` (and others!). Microsoft has started refurbishing the CmdLet calls using REST-method/Graph instead of a remoting call. This impacts on Teamsfunctions on two major areas:
+
+- Cmdlets upgraded to use an `AutoRest` call will no longer create a `PSSession`-Object. Testing against this Session object therefore fails. Fixed, see below.
+- Cmdlet `Get-CsTenant` - New object output is used when MicrosoftTeams is installed in v2.5.1 or higher. Workaround does not work for this CmdLet. See [#8260](https://github.com/MicrosoftDocs/office-docs-powershell/issues/8260)
+- CmdLet `Get-CsOnlineUser` - Workaround is used when calling `Get-CsOnlineUser` to enable compatibility with all TeamsFunctions CmdLets (more testing and refinement is required before the new Object can be used - see: [#8261](https://github.com/MicrosoftDocs/office-docs-powershell/issues/8261) ) - More information coming soon.
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-106-blue.svg) ![Private](https://img.shields.io/badge/Private-15-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-55-green.svg)                                                                                                                                                                            |
+| Status    | ![Live](https://img.shields.io/badge/Live-93-blue.svg) ![RC](https://img.shields.io/badge/RC-7-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-0-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2195-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | MicrosoftTeams v2.5.1 (initial support), Stability, Bugfixing                                                                                                                                                                                                                                                                  |
+
+### New
+
+- `Get-TeamsAutoAttendantAudioFile` (`Get-TeamsAAAudioFile`): New Support function for Auto Attendants, parsing Audio Files for an Auto Attendant.Exposing DownloadUri for attached Audio Files
+
+### Updated
+
+- Updated all Functions calling `Get-CsOnlineUser` to implement workaround (removal of Identity switch) so that they are compatible with MicrosoftTeams v2.5.0 and higher
+- Minor refactoring of called CmdLets (for example Licensing commandlets used by `Get-TeamsUserVoiceConfig`) to display less verbose output when called from another CmdLet with the `-Verbose` switch.
+- `Get-AzureAdLicense`:
+  - Now provides 223 Licenses. The source file on docs.microsoft.com has been updated to include a delta query from multiple tenants.
+  - Now provides 174 ParameterNames for these licenses. ParameterNames are added manually.
+  - Some Licenses are deliberately without a ParameterName to retain (some) clarity and visibility
+  - The recently added `[ArgumentCompleter]` now returns values sorted. For some reason, I missed this, sorry.
+- `Enable-AzureAdAdminRole`: Improvements on Error handling
+- `Enable-TeamsUserForEnterpriseVoice`: Refactored script to also accept Object for reduced query time.
+- `Test-TeamsUserVoiceConfig`: Refactored script to also accept Object for reduced query time.
+- `Find-TeamsUserVoiceConfig`: Addressed an issue with search by VP, OVP & TDP
+- All `TeamsCallQueue` CmdLets: Added "INFO: " for informational output
+- Some `TeamsUserVoiceConfig` CmdLets: Added "INFO: " for informational output
+- `Get-TeamsUserVoiceConfig`:
+  - Updated query without Identity switch
+  - Improved handling for when `CsOnlineUser` Object was not found (no Test against object any longer)
+  - Call of `Test-TeamsUserVoiceConfig` now performed with handing through the queried CsOnlineUser-Object
+- `Get-TeamsTenant`:
+  - Utilising new output Object as no workaround available
+  - Adding Parameters `ManagedOnMicrosoftDomains`, `ManagedCommunicationsDomains`, `ManagedSipDomains` for more versatility.
+- `Get-TeamsAutoAttendant`:
+  - Circumvented a bug in parsing the Auto Attendant entity by Name (nested Objects display differently)
+  - Updated to refine initial query
+- `Get-TeamsCallQueue`: Updated to refine initial query
+- `New-TeamsCallQueue`: Fixing an issue with TimeoutActionTarget
+- `Set-TeamsCallQueue`: Fixing an issue with TimeoutActionTarget
+- `Get-TeamsResourceAccountLineIdentity`: Improvements
+- `Test-MicrosoftTeamsConnection` now calls `Get-CsTenant` and if it returns an object, the Session is considered established
+- `User-MicrosoftTeamsConnection`
+- Fixed an issue when calling `Get-ErrorMessageFromErrorString`: A string is now provided to the Cmdlet
+- Added my favourite quotes from Dune, hope you enjoy :)
+
 ## v21.08 - Aug 2021 release
 
 A slight change of tactics - Due to volume (and the increased likelyhood of even more bugs), I now make a tactical stop.
