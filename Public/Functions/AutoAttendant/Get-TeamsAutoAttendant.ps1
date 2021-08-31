@@ -68,7 +68,7 @@ function Get-TeamsAutoAttendant {
   [Alias('Get-TeamsAA')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ParameterSetName = 'Name', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Auto Attendant')]
+    [Parameter(ParameterSetName = 'Name', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Auto Attendant')]
     [AllowNull()]
     [Alias('Identity')]
     [string[]]$Name,

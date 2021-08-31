@@ -66,7 +66,7 @@ function Get-TeamsCallQueue {
   [Alias('Get-TeamsCQ')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ParameterSetName = 'Name', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Call Queue')]
+    [Parameter(ParameterSetName = 'Name', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Call Queue')]
     [AllowNull()]
     [string[]]$Name,
 
