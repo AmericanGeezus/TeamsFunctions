@@ -106,14 +106,14 @@ function Get-TeamsAutoAttendant {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    #region Query objects
     # Capturing no input
-    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
+    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') -and -not $PSBoundParameters.ContainsKey('Object')) {
       Write-Information 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString'
       Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object Name
       return
     }
     else {
-      #region Query objects
       $AutoAttendants = @()
       switch ($PSCmdlet.ParameterSetName) {
         'Name' {
@@ -122,6 +122,7 @@ function Get-TeamsAutoAttendant {
           foreach ($DN in $Name) {
             if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
               #Identity or ObjectId
+              #NOTE DO NOT use `-IncludeStatus` with Identity, it generates an error ParameterBindingException
               Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
               $AAByName = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
               $AutoAttendants += $AAByName
@@ -129,35 +130,23 @@ function Get-TeamsAutoAttendant {
             else {
               #Name
               Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-              $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              #$AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
               $AAByName = $AAByName | Where-Object Name -EQ "$DN"
-              if ($PSBoundParameters.ContainsKey('Detailed')) {
-                #NOTE This gets around an issue with Get-CsAutoAttendant which only displays Download URIs when queried with Identity
-                $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
-                $AutoAttendants += $AAById
-              }
-              else {
-                $AutoAttendants += $AAByName
-              }
+              $AutoAttendants += $AAByName
             }
           }
         }
         'Search' {
           # Search
           Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
-          $AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          if ($PSBoundParameters.ContainsKey('Detailed')) {
-            #NOTE This gets around an issue with Get-CsAutoAttendant which only displays Download URIs when queried with Identity
-            $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
-            $AutoAttendants += $AAById
-          }
-          else {
-            $AutoAttendants += $AAByName
-          }
+          #$AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AutoAttendants += $AAByName
         }
       }
-      #endregion
     }
+    #endregion
 
     # Parsing found Objects
     Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $AACount"

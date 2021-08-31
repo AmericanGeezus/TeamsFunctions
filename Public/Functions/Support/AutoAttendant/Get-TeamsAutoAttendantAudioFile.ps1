@@ -62,6 +62,7 @@ function Get-TeamsAutoAttendantAudioFile {
   [OutputType([System.Object[]])]
   param(
     [Parameter(ParameterSetName = 'Name', ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Auto Attendant')]
+    [AllowNull()]
     [Alias('Identity')]
     [string[]]$Name,
 
@@ -102,7 +103,7 @@ function Get-TeamsAutoAttendantAudioFile {
         else {
           Write-Debug "FileName:    $($Prompt.FileName)"
           Write-Debug "DownloadUri: $($Prompt.DownloadUri)"
-          Write-Output $Prompt | Select-Object Id,FileName,DownloadUri
+          Write-Output $Prompt | Select-Object Id, FileName, DownloadUri
         }
       }
       else {
@@ -114,13 +115,14 @@ function Get-TeamsAutoAttendantAudioFile {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    #region Query objects
     # Capturing no input
-    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
-      Write-Information 'INFO:    No Parameters specified - No action taken. Please provide Parameter Name or SearchString'
-      return
+    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') -and -not $PSBoundParameters.ContainsKey('Object')) {
+      Write-Information 'No Parameters - Querying ALL Auto Attendants. This could take a while. To query individual items, please provide Parameter Name or SearchString'
+      $AAQuery = Get-CsAutoAttendant -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      $AutoAttendants += $AAQuery
     }
     else {
-      #region Query objects
       $AutoAttendants = @()
       switch ($PSCmdlet.ParameterSetName) {
         'Name' {
@@ -129,30 +131,32 @@ function Get-TeamsAutoAttendantAudioFile {
           foreach ($DN in $Name) {
             if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
               #Identity or ObjectId
+              #NOTE DO NOT use `-IncludeStatus` with Identity, it generates an error ParameterBindingException
               Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
-              $AAByName = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-              $AutoAttendants += $AAByName
+              $AAQuery = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AutoAttendants += $AAQuery
             }
             else {
               #Name
               Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-              $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-              $AAByName = $AAByName | Where-Object Name -EQ "$DN"
-              $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
-              $AutoAttendants += $AAById
+              #$AAQuery = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AAQuery = Get-CsAutoAttendant -NameFilter "$DN" -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AAQuery = $AAQuery | Where-Object Name -EQ "$DN"
+              $AutoAttendants += $AAQuery
             }
           }
         }
         'Search' {
           # Search
           Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
-          $AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          $AAById = Get-CsAutoAttendant -Identity $AAbyName.Identity
-          $AutoAttendants += $AAById
+          #$AAQuery = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AAQuery = Get-CsAutoAttendant -NameFilter "$SearchString" -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AutoAttendants += $AAQuery
         }
       }
-      #endregion
     }
+    #endregion
+
 
     # Parsing found Objects
     Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $AACount"
