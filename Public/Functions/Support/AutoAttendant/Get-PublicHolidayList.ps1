@@ -86,7 +86,7 @@ function Get-PublicHolidayList {
       If ($Today.Month -eq 12) {
         $Year++
       }
-      Write-Information "$($MyInvocation.MyCommand) - Parameter Year not provided, as it is $($matches[1]), using year: $Year"
+      Write-Information "INFO:    $($MyInvocation.MyCommand) - Parameter Year not provided, as it is $($matches[1]), using year: $Year"
     }
 
   } #begin

@@ -131,7 +131,7 @@ function Get-TeamsResourceAccount {
           [void]$ResourceAccounts.Add($RA)
         }
         catch {
-          Write-Information "Resource Account '$I' - Not found!"
+          Write-Information "INFO:    Resource Account '$I' - Not found!"
         }
       }
     }
@@ -151,7 +151,7 @@ function Get-TeamsResourceAccount {
       $ResourceAccounts = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object -Property PhoneNumber -Like -Value "*$SearchString*"
     }
     else {
-      Write-Information 'Listing UserPrincipalName only. To query individual items, please provide Identity'
+      Write-Information 'INFO:    Resource Account: Listing UserPrincipalName only. To query individual items, please provide Identity'
       Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Select-Object UserPrincipalName
       return
     }
@@ -193,7 +193,9 @@ function Get-TeamsResourceAccount {
       Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
-        $CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsOnlineUser = Get-CsOnlineUser "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Verbose -Message "'$($ResourceAccount.DisplayName)' Parsing: Online Voice Routing Policy FAILED. CsOnlineUser not found" -Verbose

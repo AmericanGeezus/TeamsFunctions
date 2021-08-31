@@ -72,6 +72,8 @@ function Get-AzureAdUserLicenseServicePlan {
 
   begin {
     Show-FunctionStatus -Level Live
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -127,10 +129,10 @@ function Get-AzureAdUserLicenseServicePlan {
             "Function: $($MyInvocation.MyCommand.Name): ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
 
-          if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not $Lic.RelevantForTeams) {
+          if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not $Lic.RelevantForTeams -and -not $Called) {
             Write-Verbose -Message "Switch FilterRelevantForTeams: ServicePlan marked not relevant for Teams: '$($ServicePlan.ServicePlanName)'"
           }
-          elseif ($PSBoundParameters.ContainsKey('FilterUnsuccessful') -and $ServicePlan.ProvisioningStatus -eq 'Success') {
+          elseif ($PSBoundParameters.ContainsKey('FilterUnsuccessful') -and $ServicePlan.ProvisioningStatus -eq 'Success' -and -not $Called) {
             Write-Verbose -Message "Switch FilterUnsuccessful: ServicePlan successfully provisioned: '$($ServicePlan.ServicePlanName)'"
           }
           else {
@@ -146,7 +148,7 @@ function Get-AzureAdUserLicenseServicePlan {
       }
       $UserServicePlansSorted = $UserServicePlans | Sort-Object ProductName, ProvisioningStatus, ServicePlanName
 
-      Write-Information "'$User' - Service Plans for User '$DisplayName':"
+      Write-Information "INFO:    User '$User' - Service Plans for User '$DisplayName':"
       Write-Output $UserServicePlansSorted
     }
   } #process

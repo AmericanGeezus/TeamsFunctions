@@ -139,7 +139,9 @@ function Remove-TeamsUserVoiceConfig {
       # Querying Identity
       try {
         Write-Verbose -Message "User '$UPN' - Querying User Account"
-        $CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         Write-Error "User '$UPN' not found: $($_.Exception.Message)" -Category ObjectNotFound
@@ -182,7 +184,7 @@ function Remove-TeamsUserVoiceConfig {
             if ( $Force -or $CsUser.TelephoneNumber ) {
               try {
                 Set-CsOnlineVoiceUser -Identity "$UPN" -TelephoneNumber $Null -ErrorAction Stop
-                Write-Information "User '$UPN' - Removing TelephoneNumber: OK"
+                Write-Information "INFO:    User '$UPN' - Removing TelephoneNumber: OK"
               }
               catch {
                 if ( 'Your tenant is Disabled for this service. You are not permitted to use this cmdlet.' -in $_.Exception.Message) {
@@ -207,7 +209,7 @@ function Remove-TeamsUserVoiceConfig {
               try {
                 if ( $PSCmdlet.ShouldProcess("$UPN", "Removing Licenses: $RemoveLicenses")) {
                   $null = (Set-TeamsUserLicense -Identity "$UPN" -Remove $RemoveLicenses -ErrorAction STOP)
-                  Write-Information "User '$UPN' - Removing Call Plan Licenses: OK"
+                  Write-Information "INFO:    User '$UPN' - Removing Call Plan Licenses: OK"
                 }
                 else {
                   Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
@@ -245,7 +247,7 @@ function Remove-TeamsUserVoiceConfig {
         if ( $Force -or $CsUser.OnPremLineURI ) {
           try {
             $CsUser | Set-CsUser -OnPremLineURI $Null
-            Write-Information "User '$UPN' - Removing OnPremLineURI: OK"
+            Write-Information "INFO:    User '$UPN' - Removing OnPremLineURI: OK"
           }
           catch {
             Write-Verbose -Message "User '$UPN' - Removing OnPremLineURI: Failed" -Verbose
@@ -265,7 +267,7 @@ function Remove-TeamsUserVoiceConfig {
         if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy ) {
           try {
             $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
-            Write-Information "User '$UPN' - Removing Online Voice Routing Policy: OK"
+            Write-Information "INFO:    User '$UPN' - Removing Online Voice Routing Policy: OK"
           }
           catch {
             Write-Verbose -Message "User '$UPN' - Removing Online Voice Routing Policy: Failed" -Verbose
@@ -288,7 +290,7 @@ function Remove-TeamsUserVoiceConfig {
       if ( $Force -or $CsUser.TenantDialPlan ) {
         try {
           $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
-          Write-Information "User '$UPN' - Removing Tenant Dial Plan: OK"
+          Write-Information "INFO:    User '$UPN' - Removing Tenant Dial Plan: OK"
         }
         catch {
           Write-Verbose -Message "User '$UPN' - Removing Tenant Dial Plan: Failed" -Verbose
@@ -310,7 +312,7 @@ function Remove-TeamsUserVoiceConfig {
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$UPN", 'Disabling EnterpriseVoice')) {
               $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
-              Write-Information "User '$UPN' - Disabling EnterpriseVoice: OK"
+              Write-Information "INFO:    User '$UPN' - Disabling EnterpriseVoice: OK"
             }
             else {
               Write-Verbose -Message "User '$UPN' - Disabling EnterpriseVoice: Skipped (Not confirmed)"

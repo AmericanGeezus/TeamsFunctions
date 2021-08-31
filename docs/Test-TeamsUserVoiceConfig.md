@@ -12,9 +12,16 @@ Tests whether any Voice Configuration has been applied to one or more Users
 
 ## SYNTAX
 
+### UserPrincipalName (Default)
 ```
 Test-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-Partial] [-IncludeTenantDialPlan]
  [-ExtensionState <String>] [<CommonParameters>]
+```
+
+### Object
+```
+Test-TeamsUserVoiceConfig [-Object] <Object[]> [-Partial] [-IncludeTenantDialPlan] [-ExtensionState <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -55,13 +62,29 @@ This will treat any Object that only has a Tenant Dial Plan also as partially co
 
 ## PARAMETERS
 
+### -Object
+Required for Parameterset Object.
+CsOnlineUser Object passed to the function to reduce query time.
+
+```yaml
+Type: Object[]
+Parameter Sets: Object
+Aliases:
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
 ### -UserPrincipalName
-Required.
+Required for Parameterset UserPrincipalName.
 UserPrincipalName or ObjectId of the Object
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: UserPrincipalName
 Aliases: ObjectId, Identity
 
 Required: True
@@ -134,6 +157,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### Boolean
 ## NOTES
+Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object
 All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
 Partial configuration provides insight for incorrectly provisioned configuration.
 Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI

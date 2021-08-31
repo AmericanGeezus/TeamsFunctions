@@ -226,7 +226,7 @@ function Set-AzureAdUserLicenseServicePlan {
                 }
               }
               else {
-                Write-Information -MessageData "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already enabled"
+                Write-Information "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already enabled"
                 continue
               }
             }
@@ -262,7 +262,7 @@ function Set-AzureAdUserLicenseServicePlan {
                 }
               }
               else {
-                Write-Information -MessageData "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already disabled"
+                Write-Information "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already disabled"
                 continue
               }
             }
@@ -299,7 +299,7 @@ function Set-AzureAdUserLicenseServicePlan {
       #Feedback of operation for this Object
       $ChangedLicenseCount = $ObjectAssignedLicenses.Count - $NoChanges
       if ( $ChangedLicenseCount -gt 0 ) {
-        Write-Information -MessageData "INFO:    '$ID' - Operation performed: $ChangedLicenseCount Assigned Licenses changed"
+        Write-Information "INFO:    '$ID' - Operation performed: $ChangedLicenseCount Assigned Licenses changed"
       }
       else {
         Write-Warning 'INFO:    '$ID' - No Licenses changed. Please validate License Assignments with Get-TeamsUserLicense or use switch PassThru'

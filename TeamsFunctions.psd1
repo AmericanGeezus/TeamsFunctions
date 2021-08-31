@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.08'
+  ModuleVersion         = '21.09'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -123,6 +123,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-PublicHolidayCountry',
     'Get-PublicHolidayList',
     'Get-TeamsAutoAttendantSchedule',
+    'Get-TeamsAutoAttendantAudioFile',
     'New-TeamsHolidaySchedule',
     ## Backup
     'Backup-TeamsEV',
@@ -229,7 +230,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsRAIdentity', 'Get-TeamsRACLI', 'New-TeamsRAIdentity', 'New-TeamsRACLI',
     'Get-TeamsRAA', 'New-TeamsRAA', 'Remove-TeamsRAA', 'Remove-CsOnlineApplicationInstance',
     'Get-TeamsCQ', 'New-TeamsCQ', 'Remove-TeamsCQ', 'Set-TeamsCQ',
-    'Get-TeamsAA', 'New-TeamsAA', 'Remove-TeamsAA', 'Set-TeamsAA', 'Set-TeamsAutoAttendant',
+    'Get-TeamsAA', 'New-TeamsAA', 'Remove-TeamsAA', 'Set-TeamsAA', 'Set-TeamsAutoAttendant', 'Get-TeamsAAAudioFile'
 
     'New-TeamsAAMenu', 'New-TeamsAAOption', 'New-TeamsAAFlow',
     'New-TeamsAAPrompt', 'New-TeamsAAScope', 'New-TeamsAASchedule',

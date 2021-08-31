@@ -102,7 +102,7 @@ function Set-TeamsCommonAreaPhone {
     [ArgumentCompleter( {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        $LicenseParams | ForEach-Object {
+        $LicenseParams | Sort-Object | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
@@ -193,8 +193,9 @@ function Set-TeamsCommonAreaPhone {
       Write-Verbose -Message "$Status - $Operation"
 
       try {
-        #Trying to query the Account
-        $CsOnlineUser = (Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsOnlineUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
+        $CsOnlineUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
         $CurrentDisplayName = $CsOnlineUser.DisplayName
         Write-Verbose -Message "'$UPN' Teams Object found: '$CurrentDisplayName'"
         $Parameters += @{ 'ObjectId' = $CsOnlineUser.ObjectId }
@@ -334,14 +335,14 @@ function Set-TeamsCommonAreaPhone {
         Write-Verbose -Message "$Status - $Operation"
         if ( $License -in $UserLicense.Licenses.ParameterName -and $IsLicensed ) {
           # No action required
-          Write-Information "'$Name ($UPN)' License '$License' already assigned."
+          Write-Information "INFO:    User '$Name ($UPN)' License '$License' already assigned."
           $IsLicensed = $true
         }
         else {
           try {
             if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
               $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-              Write-Information "'$Name' License assignment - '$License' SUCCESS"
+              Write-Information "INFO:    User '$Name' License assignment - '$License' SUCCESS"
               $IsLicensed = $true
             }
           }

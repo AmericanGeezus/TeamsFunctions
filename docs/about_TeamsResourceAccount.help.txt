@@ -74,6 +74,12 @@ CmdLets for Association
     | -----------------------------------------------------------------: |
     ------------------- | ---------------------------------------------------- |
     |
+    `Get-TeamsResourceAccountLineIdentity`
+    | Get-CsCallingLineIdentity | Queries Line Identity Objects created for a
+    Resource Account | |
+    `New-TeamsResourceAccountLineIdentity`
+    | New-CsCallingLineIdentity | Creates a Line Identity Object for a Resource
+    Account | |
     `Test-TeamsResourceAccount`
     |                     | Testing whether a Resource Account exists in AzureAd
     |

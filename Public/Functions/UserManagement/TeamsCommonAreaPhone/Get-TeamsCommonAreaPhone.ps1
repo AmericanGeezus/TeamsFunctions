@@ -128,7 +128,9 @@ function Get-TeamsCommonAreaPhone {
           Write-Verbose -Message "Querying Resource Account with UserPrincipalName '$User'"
           try {
             $CAP = $null
-            $CAP = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+            #$CAP = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            $CAP = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
             [void]$CommonAreaPhones.Add($CAP)
           }
           catch {
@@ -206,13 +208,28 @@ function Get-TeamsCommonAreaPhone {
       }
       else {
         $UserIpPhonePolicy = $null
-        $UserIpPhonePolicy = Get-CsTeamsIPPhonePolicy $CommonAreaPhone.TeamsIPPhonePolicy -WarningAction SilentlyContinue
-        $UserSignInMode = $UserIpPhonePolicy.SignInMode
-        if ( $UserIpPhonePolicy.SignInMode -ne 'CommonAreaPhoneSignIn' ) {
-          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set, but the Sign-in mode set not set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please change the TeamsIpPhonePolicy!"
+        #NOTE In MicrosoftTeams v2.5.0, policies are now nested Objects!
+        try {
+          $UserIpPhonePolicy = Get-CsTeamsIPPhonePolicy $CommonAreaPhone.TeamsIPPhonePolicy -WarningAction SilentlyContinue -ErrorAction Stop
+          $UserSignInMode = $UserIpPhonePolicy.SignInMode
+          if ( $UserIpPhonePolicy.SignInMode -ne 'CommonAreaPhoneSignIn' ) {
+            Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set, but the Sign-in mode set not set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please change the TeamsIpPhonePolicy!"
+          }
+          else {
+            Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set and Sign-In Mode is set to 'CommonAreaPhoneSignIn'"
+          }
         }
-        else {
-          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy)' is set and Sign-In Mode is set to 'CommonAreaPhoneSignIn'"
+        catch {
+          if ($CommonAreaPhone.TeamsIPPhonePolicy.Name) {
+            $UserIpPhonePolicy = Get-CsTeamsIPPhonePolicy $CommonAreaPhone.TeamsIPPhonePolicy.Name -WarningAction SilentlyContinue
+            $UserSignInMode = $UserIpPhonePolicy.SignInMode
+            if ( $UserIpPhonePolicy.SignInMode -ne 'CommonAreaPhoneSignIn' ) {
+              Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy.Name)' is set, but the Sign-in mode set not set to 'CommonAreaPhoneSignIn'. To enable Common Area phones to sign in with the best experience, please change the TeamsIpPhonePolicy!"
+            }
+            else {
+              Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsIpPhonePolicy '$($CommonAreaPhone.TeamsIPPhonePolicy.Name)' is set and Sign-In Mode is set to 'CommonAreaPhoneSignIn'"
+            }
+          }
         }
       }
 
@@ -228,13 +245,28 @@ function Get-TeamsCommonAreaPhone {
       }
       else {
         $UserTeamsCallingPolicy = $null
-        $UserTeamsCallingPolicy = Get-CsTeamsCallingPolicy $CommonAreaPhone.TeamsCallingPolicy -WarningAction SilentlyContinue
-        $UserAllowPrivateCalling = $UserTeamsCallingPolicy.AllowPrivateCalling
-        if ( -not $UserTeamsCallingPolicy.AllowPrivateCalling ) {
-          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set, but does not Allow Private Calling. To enable ANY calling functionality for this phone, please change the TeamsCallingPolicy!"
+        #NOTE In MicrosoftTeams v2.5.0, policies are now nested Objects!
+        try {
+          $UserTeamsCallingPolicy = Get-CsTeamsCallingPolicy $CommonAreaPhone.TeamsCallingPolicy -WarningAction SilentlyContinue -ErrorAction Stop
+          $UserAllowPrivateCalling = $UserTeamsCallingPolicy.AllowPrivateCalling
+          if ( -not $UserTeamsCallingPolicy.AllowPrivateCalling ) {
+            Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set, but does not Allow Private Calling. To enable ANY calling functionality for this phone, please change the TeamsCallingPolicy!"
+          }
+          else {
+            Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set and does Allow Private Calling"
+          }
         }
-        else {
-          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy)' is set and does Allow Private Calling"
+        catch {
+          if ($CommonAreaPhone.TeamsCallingPolicy.Name) {
+            $UserTeamsCallingPolicy = Get-CsTeamsCallingPolicy $CommonAreaPhone.TeamsCallingPolicy.Name -WarningAction SilentlyContinue
+            $UserAllowPrivateCalling = $UserTeamsCallingPolicy.AllowPrivateCalling
+            if ( -not $UserTeamsCallingPolicy.AllowPrivateCalling ) {
+              Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy.Name)' is set, but does not Allow Private Calling. To enable ANY calling functionality for this phone, please change the TeamsCallingPolicy!"
+            }
+            else {
+              Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallingPolicy '$($CommonAreaPhone.TeamsCallingPolicy.Name)' is set and does Allow Private Calling"
+            }
+          }
         }
       }
 
@@ -250,13 +282,28 @@ function Get-TeamsCommonAreaPhone {
       }
       else {
         $UserCallParkPolicy = $null
-        $UserCallParkPolicy = Get-CsTeamsCallParkPolicy $CommonAreaPhone.TeamsCallParkPolicy -WarningAction SilentlyContinue
-        $UserAllowCallPark = $UserTeamsCallingPolicy.AllowCallPark
-        if ( -not $UserCallParkPolicy.AllowCallPark ) {
-          Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set, but does not allow Call Parking. To enable Call Parking, please change the TeamsCallParkPolicy!"
+        #NOTE In MicrosoftTeams v2.5.0, policies are now nested Objects!
+        try {
+          $UserCallParkPolicy = Get-CsTeamsCallParkPolicy $CommonAreaPhone.TeamsCallParkPolicy -WarningAction SilentlyContinue -ErrorAction Stop
+          $UserAllowCallPark = $UserTeamsCallingPolicy.AllowCallPark
+          if ( -not $UserCallParkPolicy.AllowCallPark ) {
+            Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set, but does not allow Call Parking. To enable Call Parking, please change the TeamsCallParkPolicy!"
+          }
+          else {
+            Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set and does allow Call Parking"
+          }
         }
-        else {
-          Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy)' is set and does allow Call Parking"
+        catch {
+          if ($CommonAreaPhone.TeamsCallParkPolicy.Name) {
+            $UserCallParkPolicy = Get-CsTeamsCallParkPolicy $CommonAreaPhone.TeamsCallParkPolicy.Name -WarningAction SilentlyContinue
+            $UserAllowCallPark = $UserTeamsCallingPolicy.AllowCallPark
+            if ( -not $UserCallParkPolicy.AllowCallPark ) {
+              Write-Warning -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy.Name)' is set, but does not allow Call Parking. To enable Call Parking, please change the TeamsCallParkPolicy!"
+            }
+            else {
+              Write-Verbose -Message "Phone '$($CommonAreaPhone.UserPrincipalName)' - TeamsCallParkPolicy '$($CommonAreaPhone.TeamsCallParkPolicy.Name)' is set and does allow Call Parking"
+            }
+          }
         }
       }
       #endregion

@@ -105,25 +105,28 @@ function Assert-TeamsUserVoiceConfig {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    foreach ($Id in $UserPrincipalName) {
-      Write-Verbose -Message "[PROCESS] Processing '$Id'"
+    foreach ($UPN in $UserPrincipalName) {
+      Write-Verbose -Message "[PROCESS] Processing '$UPN'"
 
       try {
-        $CsOnlineUser = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue -ErrorAction STOP
-        $User = $CsOnlineUser.UserPrincipalName
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
+        $User = $CsUser.UserPrincipalName
       }
       catch {
-        Write-Error -Message "User '$Id' not found"
+        Write-Error -Message "User '$UPN' not found"
         continue
       }
-      if ($CsOnlineUser.InterpretedUserType -notlike '*User*') {
-        Write-Information "User '$User' not a User"
+      if ($CsUser.InterpretedUserType -notlike '*User*') {
+        Write-Information "INFO:    User '$User' not a User"
         continue
       }
       else {
         # Testing Full Configuration
         Write-Verbose -Message "User '$User' - User Voice Configuration (Full)"
-        $TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState
+        #$TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState
+        $TestFull = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name): TestFull:", ($TestFull | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
@@ -133,14 +136,15 @@ function Assert-TeamsUserVoiceConfig {
             Write-Output $TestFull
           }
           else {
-            Write-Information "User '$User' is correctly configured"
+            Write-Information "INFO:    User '$User' is correctly configured"
             continue
           }
         }
         else {
           # Testing Partial Configuration
           Write-Verbose -Message "User '$User' - User Voice Configuration (Partial)"
-          $TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState -WarningAction SilentlyContinue
+          #$TestPart = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -Partial -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState -WarningAction SilentlyContinue
+          $TestPart = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue -Partial -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState -WarningAction SilentlyContinue
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             "Function: $($MyInvocation.MyCommand.Name): TestPart:", ($TestPart | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }

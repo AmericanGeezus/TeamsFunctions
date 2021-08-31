@@ -44,11 +44,21 @@ function Test-MicrosoftTeamsConnection {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
+    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
+      <#
+      if ($TeamsModuleVersion -gt 2.3.1) {
+        $VerbosePreference = 'SilentlyContinue'
+        $DebugPreference = 'Continue'
+        $Tenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop
+        if ( $Tenant ) { return $true } else { return $false }
+      }
+      else {
+        #>
       $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
       if ($Sessions.Count -lt 1) {
         Write-Verbose 'No Teams Session found, not assuming a connection to MicrosoftTeams has been established.'
@@ -70,6 +80,7 @@ function Test-MicrosoftTeamsConnection {
           return $false
         }
       }
+      #}
       else {
         return $false
       }

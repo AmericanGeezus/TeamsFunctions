@@ -38,6 +38,8 @@ Connecting these Resource Accounts to their Call Queues or Auto Attendants, whil
 
 | Function                                                          | Underlying Function | Description                                          |
 | -----------------------------------------------------------------: | ------------------- | ---------------------------------------------------- |
+| [`Get-TeamsResourceAccountLineIdentity`](Get-TeamsResourceAccountLineIdentity.md) | Get-CsCallingLineIdentity | Queries Line Identity Objects created for a Resource Account |
+| [`New-TeamsResourceAccountLineIdentity`](New-TeamsResourceAccountLineIdentity.md) | New-CsCallingLineIdentity | Creates a Line Identity Object for a Resource Account |
 | [`Test-TeamsResourceAccount`](Test-TeamsResourceAccount.md) |                     | Testing whether a Resource Account exists in AzureAd |
 
 ## EXAMPLES

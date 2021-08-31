@@ -39,6 +39,8 @@ List of Aliases and their Functions
     `Get-TeamsTeamChannel`
     | | Get-TeamsAA                                   |
     `Get-AutoAttendant`
+    | | Get-TeamsAAAudioFile                          |
+    `Get-AutoAttendantAudioFile`
     | | Get-TeamsAASchedule                           |
     `Get-AutoAttendantSchedule`
     | | Get-TeamsCAP                                  |

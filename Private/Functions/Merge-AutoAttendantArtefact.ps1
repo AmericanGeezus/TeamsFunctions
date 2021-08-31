@@ -60,9 +60,11 @@ function Merge-AutoAttendantArtefact {
     [object[]]$Prompts,
 
     [Parameter(Mandatory, ParameterSetName = 'Menu', HelpMessage = "Merged Object of 'MenuOptions' to be added to Menus")]
+    [AllowNull()]
     [object[]]$MenuOptions,
 
     [Parameter(Mandatory, ParameterSetName = 'CallFlow', HelpMessage = "Merged Object of 'Menu' to be added to Call Flows")]
+    [AllowNull()]
     [object]$Menu,
 
     [Parameter(Mandatory, ParameterSetName = 'CallHandlingAssociation', HelpMessage = 'CallHandling Association only: Name of the Call Flow')]
@@ -83,11 +85,23 @@ function Merge-AutoAttendantArtefact {
     switch ($Type) {
       'Prompt' {
         foreach ($O in $Object) {
+          if ( $O.HasAudioFilePromptData ) {
+            $AudioFilePrompt = @()
+            $AudioFilePrompt = [PsCustomObject][ordered]@{
+              'Id'                = $O.AudioFilePrompt.Id
+              'FileName'          = $O.AudioFilePrompt.FileName
+              'DownloadUri'       = $O.AudioFilePrompt.DownloadUri
+              'MarkedForDeletion' = $O.AudioFilePrompt.MarkedForDeletion
+            }
+            Add-Member -Force -InputObject $AudioFilePrompt -MemberType ScriptMethod -Name ToString -Value {
+              [System.Environment]::NewLine + (($this | Format-List * | Out-String) -replace '^\s+|\s+$') + [System.Environment]::NewLine
+            }
+          }
           $SingleObject = @()
           $SingleObject = [PsCustomObject][ordered]@{
             'ActiveType'         = $O.ActiveType
             'TextToSpeechPrompt' = $O.TextToSpeechPrompt
-            'AudioFilePrompt'    = $O.AudioFilePrompt
+            'AudioFilePrompt'    = $AudioFilePrompt
             # More boolean parameters are available with | FL *:
             # HasTextToSpeechPromptData, HasAudioFilePromptData, IsAudioFileAlreadyUploaded, IsDisabled, HasDualPromptData
           }

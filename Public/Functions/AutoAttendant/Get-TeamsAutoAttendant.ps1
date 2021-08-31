@@ -16,9 +16,10 @@ function Get-TeamsAutoAttendant {
     like UserPrincipalName or DisplayName for the following connected Objects
     Operator and ApplicationInstances (Resource Accounts)
   .PARAMETER Name
-    Optional. Finds all Auto Attendants with this name (unique results).
+    Required for ParameterSet Name. Finds all Auto Attendants with this name (unique results).
+    If not provided, all Auto Attendants are queried, returning only the name
   .PARAMETER SearchString
-    Optional. Searches all Auto Attendants for this string (multiple results possible).
+    Required for ParameterSet Search. Searches all Auto Attendants for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays nested Objects for all Parameters of the Auto Attendant
     By default, only Names of nested Objects are shown.
@@ -63,15 +64,16 @@ function Get-TeamsAutoAttendant {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = 'Name')]
   [Alias('Get-TeamsAA')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Auto Attendant')]
+    [Parameter(ParameterSetName = 'Name', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Auto Attendant')]
     [AllowNull()]
+    [Alias('Identity')]
     [string[]]$Name,
 
-    [Parameter(HelpMessage = 'Partial or full Name of the Auto Attendant to search')]
+    [Parameter(ParameterSetName = 'Search', HelpMessage = 'Partial or full Name of the Auto Attendant to search')]
     [Alias('NameFilter')]
     [string]$SearchString,
 
@@ -91,6 +93,8 @@ function Get-TeamsAutoAttendant {
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
@@ -102,43 +106,47 @@ function Get-TeamsAutoAttendant {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    #region Query objects
     # Capturing no input
-    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
+    if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') ) {
       Write-Information 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString'
       Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object Name
       return
     }
     else {
-      #region Query objects
       $AutoAttendants = @()
-      if ($PSBoundParameters.ContainsKey('Name')) {
-        # Lookup
-        Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
-        foreach ($DN in $Name) {
-          if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
-            #Identity or ObjectId
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
-            $AAById = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $AutoAttendants += $AAById
-          }
-          else {
-            #Name
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-            $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $AAByName = $AAByName | Where-Object Name -EQ "$DN"
-            $AutoAttendants += $AAByName
+      switch ($PSCmdlet.ParameterSetName) {
+        'Name' {
+          # Lookup
+          Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
+          foreach ($DN in $Name) {
+            if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
+              #Identity or ObjectId
+              #NOTE DO NOT use `-IncludeStatus` with Identity, it generates an error ParameterBindingException
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
+              $AAByName = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AutoAttendants += $AAByName
+            }
+            else {
+              #Name
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
+              #$AAByName = Get-CsAutoAttendant -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AAByName = Get-CsAutoAttendant -NameFilter "$DN" -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $AAByName = $AAByName | Where-Object Name -EQ "$DN"
+              $AutoAttendants += $AAByName
+            }
           }
         }
+        'Search' {
+          # Search
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
+          #$AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AAbyName = Get-CsAutoAttendant -NameFilter "$SearchString" -IncludeStatus -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $AutoAttendants += $AAByName
+        }
       }
-
-      if ($PSBoundParameters.ContainsKey('SearchString')) {
-        # Search
-        Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
-        $AAByString = Get-CsAutoAttendant -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        $AutoAttendants += $AAByString
-      }
-      #endregion
     }
+    #endregion
 
     # Parsing found Objects
     Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $AACount"
@@ -280,6 +288,7 @@ function Get-TeamsAutoAttendant {
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($AA.Name)' - $Operation"
         # Default Call Flow Menu Prompts
+        Write-Debug -Message "'$($AA.Name)' - $Operation - Prompts"
         if ( $AA.DefaultCallFlow.Menu.Prompts ) {
           $AADefaultCallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.Prompts
         }
@@ -288,13 +297,21 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow Menu Options
+        Write-Debug -Message "'$($AA.Name)' - $Operation - MenuOptions"
         if ( $AA.DefaultCallFlow.Menu.MenuOptions ) {
-          if ($AA.DefaultCallFlow.Menu.MenuOptions.Prompt) {
-            # Announcements: Processing Call Flow Prompts
-            $AADefaultCallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.MenuOptions.Prompt
-            $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions -Prompts $AADefaultCallFlowMenuOptionPrompt
+          try {
+            if ($AA.DefaultCallFlow.Menu.MenuOptions.Prompt) {
+              # Announcements: Processing Call Flow Prompts
+              Write-Debug -Message "'$($AA.Name)' - $Operation - MenuOptions - Prompt"
+              $AADefaultCallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.MenuOptions.Prompt
+              Write-Debug -Message "'$($AA.Name)' - $Operation - MenuOptions - MenuOptions"
+              $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions -Prompts $AADefaultCallFlowMenuOptionPrompt
+            }
+            else {
+              throw
+            }
           }
-          else {
+          catch {
             $AADefaultCallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $AA.DefaultCallFlow.Menu.MenuOptions
           }
         }
@@ -303,6 +320,7 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow Menu
+        Write-Debug -Message "'$($AA.Name)' - $Operation - Menu"
         $AADefaultCallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $AA.DefaultCallFlow.Menu -Prompts $AADefaultCallFlowMenuPrompts -MenuOptions $AADefaultCallFlowMenuOptions
 
         # Default Call Flow Greetings
@@ -314,6 +332,7 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow
+        Write-Debug -Message "'$($AA.Name)' - $Operation - Call Flow"
         $AADefaultCallFlow = Merge-AutoAttendantArtefact -Type CallFlow -Object $AA.DefaultCallFlow -Prompts $AADefaultCallFlowGreetings -Menu $AADefaultCallFlowMenu
         #endregion
 
@@ -325,6 +344,8 @@ function Get-TeamsAutoAttendant {
         $AACallFlows = @()
         foreach ($Flow in $AA.CallFlows) {
           # Call Flow Prompts
+          $AACallFlowMenuPrompts = $null
+          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Prompts"
           if ($Flow.Menu.Prompts) {
             $AACallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.Prompts
           }
@@ -333,13 +354,21 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow Menu Options
+          $AACallFlowMenuOptionPrompt = $null
+          $AACallFlowMenuOptions = $null
+          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - MenuOptions"
           if ($Flow.Menu.MenuOptions) {
-            if ($Flow.Menu.MenuOptions.Prompt) {
-              # Announcements: Processing Call Flow Prompts
-              $AACallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.MenuOptions.Prompt
-              $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions -Prompts $AACallFlowMenuOptionPrompt
+            try {
+              if ($Flow.Menu.MenuOptions.Prompt) {
+                # Announcements: Processing Call Flow Prompts
+                $AACallFlowMenuOptionPrompt = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.MenuOptions.Prompt
+                $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions -Prompts $AACallFlowMenuOptionPrompt
+              }
+              else {
+                throw
+              }
             }
-            else {
+            catch {
               $AACallFlowMenuOptions = Merge-AutoAttendantArtefact -Type MenuOption -Object $Flow.Menu.MenuOptions
             }
           }
@@ -348,9 +377,13 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow Menu
+          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Menu"
+          $AACallFlowMenu = $null
           $AACallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $Flow.Menu -Prompts $AACallFlowMenuPrompts -MenuOptions $AACallFlowMenuOptions
 
           # Call Flow Greetings
+          $AACallFlowGreetings = $null
+          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Greetings"
           if ($Flow.Greetings) {
             $AACallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Greetings
           }
@@ -359,6 +392,7 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow
+          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Call Flow"
           $AACallFlows += Merge-AutoAttendantArtefact -Type CallFlow -Object $Flow -Prompts $AACallFlowGreetings -Menu $AACallFlowMenu
         }
         #endregion
@@ -367,7 +401,7 @@ function Get-TeamsAutoAttendant {
         $Operation = 'Switch Detailed - Parsing Schedules'
         $step++
         Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "'$($AA.Name)' - $Operation"
+        Write-Debug -Message "'$($AA.Name)' - $Operation"
         $AASchedules = @()
         foreach ($Schedule in $AA.Schedules) {
           $AASchedule = Get-CsOnlineSchedule -Id $Schedule.Id

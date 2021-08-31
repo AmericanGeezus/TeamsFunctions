@@ -15,10 +15,10 @@ In particular assignment and enablement of the PhoneSystem Service Plan.
 
 | Function                                                                  | Description                                                                                                    |
 | -------------------------------------------------------------------------: | -------------------------------------------------------------------------------------------------------------- |
-| [`Get-AzureAdLicenseServicePlan`](Get-AzureAdLicenseServicePlan.md) | A Script to query all published Licenses, but displaying Service Plans only.<br />Displays all Licenses unless instructed to filter Teams relevant only             |
 | [`Get-AzureAdLicense`](Get-AzureAdLicense.md)                       | A Script to query all published Licenses and their Service Plans.<br />Displays all Licenses unless instructed to filter Teams relevant only |
-| [`Get-AzureAdUserLicenseServicePlan`](Get-AzureAdUserLicenseServicePlan.md) | Queries licenses assigned to a User and displays visual output<br />Displays all Licenses unless instructed to filter Teams relevant only                                                 |
+| [`Get-AzureAdLicenseServicePlan`](Get-AzureAdLicenseServicePlan.md) | A Script to query all published Licenses, but displaying Service Plans only.<br />Displays all Licenses unless instructed to filter Teams relevant only             |
 | [`Get-AzureAdUserLicense`](Get-AzureAdUserLicense.md)                   | Queries licenses assigned to a User and displays visual output<br />Displays all Licenses unless instructed to filter Teams relevant only                                                 |
+| [`Get-AzureAdUserLicenseServicePlan`](Get-AzureAdUserLicenseServicePlan.md) | Queries licenses assigned to a User and displays visual output<br />Displays all Licenses unless instructed to filter Teams relevant only                                                 |
 | [`Get-TeamsTenantLicense`](Get-TeamsTenantLicense.md)               | Queries licenses present on the Tenant. Switches are available for better at-a-glance visibility               |
 | [`Get-TeamsUserLicenseServicePlan`](Get-TeamsUserLicenseServicePlan.md)                   | Queries licenses assigned to a User and displays visual output<br />Displays only Teams relevant licenses unless instructed to display all                                                 |
 | [`Get-TeamsUserLicense`](Get-TeamsUserLicense.md)                   | Queries licenses assigned to a User and displays visual output<br />Displays only Teams relevant licenses unless instructed to display all                                                 |
@@ -33,6 +33,7 @@ In particular assignment and enablement of the PhoneSystem Service Plan.
 | -----------------------------------------------------------------: | ----------------------------------------------------------------------------------- |
 | [`Test-TeamsUserLicense`](Test-TeamsUserLicense.md)         | Tests an individual Service Plan or a License Package against the provided Identity |
 | [`Test-TeamsUserHasCallPlan`](Test-TeamsUserHasCallPlan.md) | Tests an individual Calling Plains assigned against the provided Identity           |
+| [`Test-AzureAdUserLicenseContainsServicePlan`](Test-AzureAdUserLicenseContainsServicePlan.md) | Tests whether a License contains a specific Service Plan           |
 | [`New-AzureAdLicenseObject`](New-AzureAdLicenseObject.md)   | Creates a License Object for application. Generic helper function.                  |
 
 ## EXAMPLES

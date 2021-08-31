@@ -103,8 +103,10 @@ function Remove-TeamsCommonAreaPhone {
       Write-Verbose -Message "Processing: $UPN"
       try {
         #Trying to query the Common Area Phone
-        #$Object = (Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
-        $Object = (Get-AzureAdUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$Object = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
+        #$Object = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
+        $Object = Get-AzureAdUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
         $DisplayName = $Object.DisplayName
       }
       catch {

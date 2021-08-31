@@ -26,7 +26,7 @@ Returns an Object containing all Teams related Licenses
 Get-AzureAdLicense
 ```
 
-Returns 39 Azure AD Licenses that relate to Teams for use in other commands
+Returns Azure AD Licenses that relate to Teams for use in other commands
 
 ## PARAMETERS
 
@@ -60,7 +60,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Reads:  https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
 Source: https://scripting.up-in-the.cloud/licensing/o365-license-names-its-a-mess.html
 With very special thanks to Philip
-This CmdLet can assign one of 123 Azure Ad Licenses.
+This CmdLet can assign one of Azure Ad Licenses.
 (see ParameterName)
 Please raise an issue on Github if you require additional Licenses for assignment
 

@@ -15,7 +15,9 @@ function Test-TeamsUserVoiceConfig {
     For Microsoft Call Plans: Tests for EnterpriseVoice enablement, License AND Phone Number
     For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing Policy AND Phone Number
   .PARAMETER UserPrincipalName
-    Required. UserPrincipalName or ObjectId of the Object
+    Required for Parameterset UserPrincipalName. UserPrincipalName or ObjectId of the Object
+  .PARAMETER Object
+    Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.
   .PARAMETER Partial
     Optional. By default, returns TRUE only if all required Parameters are configured (User is fully provisioned)
     Using this switch, returns TRUE if some of the voice Parameters are configured (User has some or full configuration)
@@ -45,6 +47,7 @@ function Test-TeamsUserVoiceConfig {
   .OUTPUTS
     Boolean
   .NOTES
+    Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object
     All conditions require EnterpriseVoiceEnabled to be TRUE (disabled Users will always return FALSE)
     Partial configuration provides insight for incorrectly provisioned configuration.
     Tested Parameters for DirectRouting: EnterpriseVoiceEnabled, VoicePolicy, OnlineVoiceRoutingPolicy, OnPremLineURI
@@ -64,11 +67,14 @@ function Test-TeamsUserVoiceConfig {
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = 'UserPrincipalName')]
   [Alias('Test-TeamsUVC')]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Object', ValueFromPipeline)]
+    [Object[]]$Object,
+
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'UserPrincipalName', ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
@@ -105,40 +111,45 @@ function Test-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    # Preparing Splatting Object
+    $parameters = $null
+    $Parameters = @{
+      'IncludeTDP'         = if ($IncludeTenantDialPlan.IsPresent) { $true } else { $false }
+      'Partial'            = if ($Partial.IsPresent) { $true } else { $false }
+      'ExtensionState'     = "$ExtensionState"
+      'Called'             = $Called
+      'CalledByAssertTUVC' = $CalledByAssertTUVC
+    }
 
-  } #begin
-
-  process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    foreach ($User in $UserPrincipalName) {
-      Write-Verbose -Message "[PROCESS] Processing '$User'"
-      try {
-        $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+    function TestUser ($CsUser, $IncludeTDP, $Partial, $ExtensionState, $Called, $CalledByAssertTUVC) {
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        Write-Debug "Parameter validation - Test for Tenant Dial Plan performed: $IncludeTDP"
+        Write-Debug "Parameter validation - Test for partial configuration performed: $Partial"
+        Write-Debug "Parameter validation - Test for Extension: $ExtensionState"
       }
-      catch {
-        Write-Error "User '$User' not found" -Category ObjectNotFound
-        continue
-      }
 
-      # Testing Interpreted UserType
+      #region Testing Interpreted UserType
       $IUT = $CsUser.InterpretedUserType
-      $TestObject = "Interpreted User Type is '$IUT'"
+      $TestObject = 'Interpreted User Type'
       $IUTMisconfigured = ($IUT -match 'Disabled|OnPrem|NotLicensedForService|WithNoService|WithMCOValidationError|NotInPDL|Failed|PendingDeletionFromAD' -or `
         ($IUT -match 'SfB' -and -not $IUT -match 'Teams'))
-
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        Write-Debug "General - UserType: $IUT"
+      }
       if ( -not $IUTMisconfigured) {
         Write-Verbose -Message "User '$User' - $TestObject - Value looks OK, no immediate error-states found"
         if ( -not $Called) {
-          Write-Information "INFO:    User '$User' - $TestObject"
+          Write-Information "INFO:    User '$User' - $TestObject is '$IUT'"
         }
       }
       else {
-        Write-Warning -Message "User '$User' - $TestObject"
+        Write-Warning -Message "User '$User' - $TestObject is '$IUT'"
         Write-Verbose -Message "Potential misconfiguration detected - Contains 'Disabled', 'OnPrem', 'Failed' or any other error-state. Please investigate!"
       }
+      #endregion
 
 
-      # Testing EV Enablement as hard requirement
+      #region Testing EV Enablement as hard requirement
       $TestObject = 'Enterprise Voice Enabled'
       $EVenabled = $CsUser.EnterpriseVoiceEnabled
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -153,17 +164,15 @@ function Test-TeamsUserVoiceConfig {
       else {
         Write-Warning -Message "User '$User' - $TestObject - Not enabled"
       }
+      #endregion
 
-
-
-
-      # Testing Tenant Dial Plan Enablement
+      #region Testing Tenant Dial Plan Enablement
       $TestObject = 'Tenant Dial Plan'
       $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
         Write-Debug "General - TDPPresent: $TDPPresent"
       }
-      if ($IncludeTenantDialPlan.IsPresent) {
+      if ($IncludeTDP) {
         if ($TDPPresent) {
           Write-Verbose -Message "User '$User' - $TestObject - OK"
           if ( -not $Called) {
@@ -174,8 +183,10 @@ function Test-TeamsUserVoiceConfig {
           Write-Warning -Message "User '$User' - $TestObject - Not assigned"
         }
       }
+      #endregion
 
-      # Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
+      #VALIDATE This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
+      #region Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
         $TestObject = 'BusinessVoice - Calling Plan License'
@@ -213,14 +224,14 @@ function Test-TeamsUserVoiceConfig {
 
         #Defining Fully Configured
         $FullyConfigured = ($CallPlanPresent -and $EVenabled -and $TelPresent `
-            -and $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $true }))
+            -and $(if ($IncludeTDP) { $TDPPresent } else { $true }))
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           Write-Debug "BusinessVoice - FullyConfigured: $FullyConfigured"
         }
 
-        if ($PSBoundParameters.ContainsKey('Partial')) {
+        if ($Partial) {
           $PartiallyConfigured = (($CallPlanPresent -or $EVenabled -or $TelPresent `
-                -or $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $false })) -and -not $FullyConfigured)
+                -or $(if ($IncludeTDP) { $TDPPresent } else { $false })) -and -not $FullyConfigured)
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             Write-Debug "BusinessVoice - PartiallyConfigured: $PartiallyConfigured"
           }
@@ -285,7 +296,7 @@ function Test-TeamsUserVoiceConfig {
         else {
           $TestObject = "HybridVoice - Extension State '$ExtensionState'"
           Write-Verbose -Message "ExtensionState: Validating Extension '$ExtensionState' for HybridVoice"
-          switch ($ExtensionState) {
+          switch ($ExtState) {
             'MustBePopulated' {
               $EXTState = $($CsUser.LineUri -contains ';ext=')
             }
@@ -310,14 +321,14 @@ function Test-TeamsUserVoiceConfig {
 
         #Defining Fully Configured
         $FullyConfigured = ($Routing -and $EVenabled -and $TelPresent -and $EXTState `
-            -and $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $true }))
+            -and $(if ($IncludeTDP) { $TDPPresent } else { $true }))
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           Write-Debug "HybridVoice - FullyConfigured: $FullyConfigured"
         }
 
-        if ($PSBoundParameters.ContainsKey('Partial')) {
+        if ($Partial) {
           $PartiallyConfigured = (($Routing -or $EVenabled -or $TelPresent `
-                -or $(if ($IncludeTenantDialPlan.IsPresent) { $TDPPresent } else { $false }) `
+                -or $(if ($IncludeTDP) { $TDPPresent } else { $false }) `
                 -or $(if ($ExtensionState -ne 'NotMeasured') { $EXTState } else { $false })) -and -not $FullyConfigured)
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             Write-Debug "HybridVoice - PartiallyConfigured: $PartiallyConfigured"
@@ -334,7 +345,36 @@ function Test-TeamsUserVoiceConfig {
           return $false
         }
       }
+      #endregion
+    }
+  } #begin
 
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    switch ($PSCmdlet.ParameterSetName) {
+      'UserprincipalName' {
+        foreach ($User in $UserPrincipalName) {
+          Write-Verbose -Message "[PROCESS] Processing '$User'"
+          try {
+            #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+            #$CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+          }
+          catch {
+            Write-Error "User '$User' not found" -Category ObjectNotFound
+            continue
+          }
+          #$Parameters += @{ 'CsUser' =  }
+          TestUser -CsUser $CsUser @Parameters
+        }
+      }
+      'Object' {
+        foreach ($O in $Object) {
+          Write-Verbose -Message "[PROCESS] Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)'"
+          #$Parameters += @{ 'CsUser' = $O }
+          TestUser -CsUser $O @Parameters
+        }
+      }
     }
   } #process
 

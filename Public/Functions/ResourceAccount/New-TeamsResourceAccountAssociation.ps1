@@ -250,7 +250,7 @@ function New-TeamsResourceAccountAssociation {
             continue
           }
           else {
-            Write-Information "'$($Account.UserPrincipalName)' - Changing Application Type to '$DesiredType': SUCCESS"
+            Write-Information "SUCCESS: Resource Account '$($Account.UserPrincipalName)' - Changing Application Type to '$DesiredType'"
           }
         }
         else {

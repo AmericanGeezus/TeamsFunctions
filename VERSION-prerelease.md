@@ -23,15 +23,15 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Limitations
 
+- Azure Ad Admin Role activation for Groups does not work - Currently not possible due to missing command in AzureAdPreview/AzureAd
 - `Connect-MicrosoftTeams`: Scenario observed where a Session has been opened, but Skype Commands cannot be used.
 <br />Mitigation: Disconnect, then close PowerShell session completely, ensure Admin Roles are activated and re-run `Connect-Me`
+<br />NOTE: This behaviour was not observed in v2.3.1 and later!
 
 ### ToDo
 
-- Pipeline tests:
-  - Test piping objects with UserprincipalName and Identity to GET-CmdLets and SET-CmdLets
-  - Test output of objects with and without Identity against Microsoft CmdLets
-- Rework Get-TeamsCallQueue and Get-TeamsAutoAttendant to also accept the ObjectId as input
+- Pipeline tests: More
+- Pester tests: More
 - Refactoring use of Switches across the board (using ".IsPresent" instead of the variable only)
 
 ---------------------------------------------

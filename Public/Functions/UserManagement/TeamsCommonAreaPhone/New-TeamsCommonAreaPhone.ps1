@@ -111,7 +111,7 @@ function New-TeamsCommonAreaPhone {
     [ArgumentCompleter( {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        $LicenseParams | ForEach-Object {
+        $LicenseParams | Sort-Object | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
@@ -291,7 +291,7 @@ function New-TeamsCommonAreaPhone {
         }
         $i = 0
         $iMax = 45
-        Write-Information -MessageData "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
+        Write-Information "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
@@ -331,7 +331,7 @@ function New-TeamsCommonAreaPhone {
       try {
         if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
           $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-          Write-Information "'$Name' License assignment - '$License' SUCCESS"
+          Write-Information "INFO:    User '$Name' License assignment - '$License' SUCCESS"
           $IsLicensed = $true
         }
       }

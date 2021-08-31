@@ -55,14 +55,20 @@ Support CmdLets
     ------------------------------------------ |
     -----------------------------------------------------------------------------------------------------------------
     | |
-    `Import-TeamsAudioFile`
-    | Import-CsOnlineAudioFile                   | Imports an Audio File for use
-    within Call Queues or Auto Attendants                                       
-           | |
     `Get-PublicHolidayCountry`
     | |
     `Get-PublicHolidayList`
     | |
+    `Get-TeamsAutoAttendantAudioFile`
+    |                 | Queries all AudioFiles in an Auto Attendant Object      
+      | |
+    `Get-TeamsAutoAttendantSchedule`
+    |                 | Queries a `Schedule` Object in an Auto Attendant Object 
+       | |
+    `Import-TeamsAudioFile`
+    | Import-CsOnlineAudioFile                   | Imports an Audio File for use
+    within Call Queues or Auto Attendants                                       
+           | |
     `New-TeamsAutoAttendantCallFlow`
     | New-CsAutoAttendantCallFlow                | Creates a `CallFlow` Object
     with a Prompt and Menu and some default options.                            
@@ -75,14 +81,14 @@ Support CmdLets
     | New-CsAutoAttendantDialScope               | Creates a `DialScope` Object
     for provided Office 365 Group Names                                         
             | |
-    `New-TeamsAutoAttendantMenu`
-    | New-CsAutoAttendantMenu                    | Creates a `Menu` Object for
-    Menu Options in two possible inputs                                         
-             | |
     `New-TeamsAutoAttendantMenuOption`
     | New-CsAutoAttendantMenuOption              | Creates a `MenuOption` Object
     for easier use                                                              
            | |
+    `New-TeamsAutoAttendantMenu`
+    | New-CsAutoAttendantMenu                    | Creates a `Menu` Object for
+    Menu Options in two possible inputs                                         
+             | |
     `New-TeamsAutoAttendantPrompt`
     | New-CsAutoAttendantPrompt                  | Creates a `Prompt` Object and
     simplifies usage as it determines the type based on the input string.       

@@ -72,7 +72,7 @@ function Remove-TeamsCallQueue {
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
       $DNCounter++
       try {
-        Write-Information 'INFO: The listed Queues are being removed:'
+        Write-Information 'INFO:    The listed Queues are being removed:'
         if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
           $QueueToRemove = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue
         }
@@ -86,7 +86,7 @@ function Remove-TeamsCallQueue {
           $Queues = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
           foreach ($Q in $QueueToRemove) {
             Write-Progress -Id 1 -Status "Removing Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $Queues * 100)
-            Write-Information "Removing Queue: '$($Q.Name)'"
+            Write-Information "INFO:    Removing Queue: '$($Q.Name)'"
             $QueueCounter++
             if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
               Remove-CsCallQueue -Identity "$($Q.Identity)" -ErrorAction STOP

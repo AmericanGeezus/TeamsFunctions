@@ -5,7 +5,7 @@
 # Status:     Live
 
 
-
+#TEST Refactoring of CmdLet to handing Object to this Cmdlet and working it with a worker function (like Test-TeamsUVC)
 
 function Enable-TeamsUserForEnterpriseVoice {
   <#
@@ -14,7 +14,9 @@ function Enable-TeamsUserForEnterpriseVoice {
   .DESCRIPTION
     Enables a User for Enterprise Voice and verifies its status
   .PARAMETER UserPrincipalName
-    UserPrincipalName of the User to be enabled.
+    Required for Parameterset UserPrincipalName. UserPrincipalName of the User to be enabled.
+  .PARAMETER Object
+    Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.
   .PARAMETER Force
     Suppresses confirmation prompt unless -Confirm is used explicitly
   .EXAMPLE
@@ -28,6 +30,7 @@ function Enable-TeamsUserForEnterpriseVoice {
   .NOTES
     Simple helper function to enable and verify a User is enabled for Enterprise Voice
     Returns boolean result and less communication if called by another function
+    Can be used providing either the UserPrincipalName or the already queried CsOnlineUser Object
   .COMPONENT
     VoiceConfiguration
   .FUNCTIONALITY
@@ -44,11 +47,14 @@ function Enable-TeamsUserForEnterpriseVoice {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
-  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+  [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'UserPrincipalName')]
   [Alias('Enable-Ev')]
   [OutputType([Boolean])]
   param(
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Object', ValueFromPipeline)]
+    [Object[]]$Object,
+
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'UserPrincipalName', ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
@@ -72,24 +78,18 @@ function Enable-TeamsUserForEnterpriseVoice {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
-  } #begin
+    # Preparing Splatting Object
+    $parameters = $null
+    $Parameters = @{
+      'Called' = $Called
+      'Force'  = $Force
+    }
 
-  process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-
-    foreach ($Id in $UserPrincipalName) {
-      Write-Verbose -Message "[PROCESS] $Id"
-      # Querying Identity
-      try {
-        Write-Verbose -Message "User '$Id' - Querying User Account"
-        $UserObject = Get-CsOnlineUser -Identity "$Id" -WarningAction SilentlyContinue
-        $UserLicense = Get-AzureAdUserLicense "$Id"
-        $IsEVenabled = $UserObject.EnterpriseVoiceEnabled
-      }
-      catch {
-        Write-Error -Message "User '$Id' not found: $($_.Exception.Message)" -Category ObjectNotFound
-        continue
-      }
+    #region Worker Function
+    function EnableEV ($UserObject, $UserLicense, $Called, $Force) {
+      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+      $Id = $($UserObject.UserPrincipalName)
+      Write-Verbose -Message "[PROCESS] Enabling User '$Id' for Enterprise Voice"
 
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
@@ -135,14 +135,14 @@ function Enable-TeamsUserForEnterpriseVoice {
           throw [System.InvalidOperationException]::New("$Message")
         }
       }
-      elseif ($IsEVenabled) {
+      elseif ( $UserObject.EnterpriseVoiceEnabled ) {
         if ($Called) {
           return $true
         }
         else {
           Write-Verbose -Message "User '$Id' Enterprise Voice Status: User is already enabled!" -Verbose
           #Enabling HostedVoicemail is done silently (just in case)
-          $null = Set-CsUser $Id -HostedVoiceMail $TRUE -ErrorAction SilentlyContinue
+          $null = Set-CsUser $Id -HostedVoiceMail $TRUE -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
       }
       else {
@@ -188,7 +188,38 @@ function Enable-TeamsUserForEnterpriseVoice {
         }
       }
     }
+    #endregion
+  } #begin
 
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    switch ($PSCmdlet.ParameterSetName) {
+      'UserprincipalName' {
+        foreach ($User in $UserPrincipalName) {
+          Write-Verbose -Message "[PROCESS] Processing '$User'"
+          try {
+            #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+            #$CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            $UserLicense = Get-AzureAdUserLicense "$User"
+          }
+          catch {
+            Write-Error "User '$User' not found" -Category ObjectNotFound
+            continue
+          }
+          $Parameters += @{ 'UserObject' = $CsUser }
+          EnableEV @Parameters
+          EnableEV -UserObject $CsUser -UserLicense $UserLicense @Parameters
+        }
+      }
+      'Object' {
+        foreach ($O in $Object) {
+          Write-Verbose -Message "[PROCESS] Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)'"
+          $UserLicense = Get-AzureAdUserLicense "$($O.UserPrincipalName)"
+          EnableEV -UserObject $O -UserLicense $UserLicense @Parameters
+        }
+      }
+    }
   } #process
 
   end {

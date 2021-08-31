@@ -1,67 +1,61 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendant.md
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantAudioFile.md
 schema: 2.0.0
 ---
 
-# Get-TeamsAutoAttendant
+# Get-TeamsAutoAttendantAudioFile
 
 ## SYNOPSIS
-Queries Auto Attendants and displays friendly Names (UPN or DisplayName)
+Queries Auto Attendants and displays all Audio Files found on the Object
 
 ## SYNTAX
 
 ### Name (Default)
 ```
-Get-TeamsAutoAttendant [[-Name] <String[]>] [-Detailed] [<CommonParameters>]
+Get-TeamsAutoAttendantAudioFile [[-Name] <String[]>] [-Detailed] [<CommonParameters>]
 ```
 
 ### Search
 ```
-Get-TeamsAutoAttendant [-SearchString <String>] [-Detailed] [<CommonParameters>]
+Get-TeamsAutoAttendantAudioFile [-SearchString <String>] [-Detailed] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Same functionality as Get-CsAutoAttendant, but display reveals friendly Names,
-like UserPrincipalName or DisplayName for the following connected Objects
-Operator and ApplicationInstances (Resource Accounts)
+Managing Audio Files for an Auto Attendant is limited in the Admin Center.
+Files cannot be downloaded there.
+This CmdLet tries to plug that gap by exposing Download Links for all Audio Files
+linked on a given Auto Attendant
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsAutoAttendant
-```
-
-Same result as Get-CsAutoAttendant
-
-### EXAMPLE 2
-```
-Get-TeamsAutoAttendant -Name "My AutoAttendant"
+Get-TeamsAutoAttendantAudioFile -Name "My AutoAttendant"
 ```
 
 Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"
 
-### EXAMPLE 3
+### EXAMPLE 2
 ```
-Get-TeamsAutoAttendant -Name "My AutoAttendant" -Detailed
+Get-TeamsAutoAttendantAudioFile -Name "My AutoAttendant" -Detailed
 ```
 
 Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant"
 Detailed view will display all nested Objects indented as a tree
 
-### EXAMPLE 4
+### EXAMPLE 3
 ```
-Get-TeamsAutoAttendant -Name "My AutoAttendant" -SearchString "My AutoAttendant"
+Get-TeamsAutoAttendantAudioFile -Name "My AutoAttendant" -SearchString "My AutoAttendant"
 ```
 
 Returns an Object for every Auto Attendant found with the exact Name "My AutoAttendant" and
 Returns an Object for every Auto Attendant matching the String "My AutoAttendant"
 
-### EXAMPLE 5
+### EXAMPLE 4
 ```
-Get-TeamsAutoAttendant -SearchString "My AutoAttendant"
+Get-TeamsAutoAttendantAudioFile -SearchString "My AutoAttendant"
 ```
 
 Returns an Object for every Auto Attendant matching the String "My AutoAttendant"
@@ -72,7 +66,6 @@ Synonymous with Get-CsAutoAttendant -NameFilter "My AutoAttendant", but output s
 ### -Name
 Required for ParameterSet Name.
 Finds all Auto Attendants with this name (unique results).
-If not provided, all Auto Attendants are queried, returning only the name
 
 ```yaml
 Type: String[]
@@ -104,8 +97,8 @@ Accept wildcard characters: False
 
 ### -Detailed
 Optional Switch.
-Displays nested Objects for all Parameters of the Auto Attendant
-By default, only Names of nested Objects are shown.
+Displays all information for the nested Audio File Objects of the Auto Attendant
+By default, only Names and Download URI of nested Objects are shown.
 
 ```yaml
 Type: SwitchParameter
@@ -129,17 +122,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 ## NOTES
-Without any parameters, Get-TeamsAutoAttendant will show names only.
-Operator and Resource Accounts, etc.
-are displayed with friendly name.
-Main difference to Get-CsAutoAttendant (apart from the friendly names) is how the Objects are shown.
-The connected Objects DefaultCallFlow, CallFlows, Schedules, CallHandlingAssociations and DirectoryLookups
-are all shown with Name only, but can be queried with .\<ObjectName\>
-This also works with Get-CsAutoAttendant, but with the help of "Display" Parameters.
+Managing Audio Files for an Auto Attendant is limited in the Admin Center.
+Files cannot be downloaded there.
+This CmdLet tries to plug that gap by exposing Download Links for all Audio Files
+linked on a given Auto Attendant
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendant.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantAudioFile.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsAutoAttendantAudioFile.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_TeamsAutoAttendant.md)
 

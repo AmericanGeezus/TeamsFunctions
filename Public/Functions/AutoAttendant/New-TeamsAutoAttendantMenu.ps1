@@ -228,7 +228,7 @@ function New-TeamsAutoAttendantMenu {
             $MaxOptions = 10
             #$MaxOptions = if ($AddOperatorOnZero) { 9 } else { 10 }
             if ($CallTargetsInOrder.Count -gt 10) {
-              Write-Warning -Message 'MenuOptions - Max 10 options are supported as Call Targets. Additional Objects are ignored (CallTargetsInOrder)'
+              Write-Warning -Message 'Auto Attendant '$NameNormalised' MenuOptions - Max 10 options are supported as Call Targets. Additional Objects are ignored (CallTargetsInOrder)'
             }
 
             [System.Collections.ArrayList]$CreatedMenuOptions = @()
@@ -249,16 +249,16 @@ function New-TeamsAutoAttendantMenu {
                       $MenuOptionToAdd = New-TeamsAutoAttendantMenuOption -Press $Option -CallTarget "$Target" -ErrorAction Stop
                     }
                     if ($MenuOptionToAdd) {
-                      Write-Information "MenuOptions - Creating Option 'Press $Option' to '$Target' - OK"
+                      Write-Information "INFO:    Auto Attendant '$NameNormalised' MenuOptions - Creating Option 'Press $Option' to '$Target' - OK"
                       [void]$CreatedMenuOptions.Add($MenuOptionToAdd)
                     }
                   }
                   catch {
-                    Write-Warning -Message "MenuOptions - Creating Option 'Press $Option' to '$Target' - Creation unsuccessful! Omitting Call Target"
+                    Write-Warning -Message "Auto Attendant '$NameNormalised' MenuOptions - Creating Option 'Press $Option' to '$Target' - Creation unsuccessful! Omitting Call Target"
                   }
                 }
                 else {
-                  Write-Verbose -Message "MenuOptions - Creating Option 'Press $Option' not provided, is empty or NULL - OK (omitted)" -Verbose
+                  Write-Verbose -Message "Auto Attendant '$NameNormalised' MenuOptions - Creating Option 'Press $Option' not provided, is empty or NULL - OK (omitted)" -Verbose
                 }
                 $Option++
               }
@@ -309,7 +309,7 @@ function New-TeamsAutoAttendantMenu {
       $Name = "Menu with $($Parameters.MenuOptions.Count) Options" + $(if ($Parameters.Prompts) { ' and Greeting' })
     }
     $Parameters += @{'Name' = "$Name" }
-    Write-Information "Menu Name selected: '$Name'"
+    Write-Information "INFO:    Auto Attendant '$NameNormalised' Menu Name selected: '$Name'"
 
     if ($EnableDialByName) {
       $Parameters += @{'EnableDialByName' = $true }

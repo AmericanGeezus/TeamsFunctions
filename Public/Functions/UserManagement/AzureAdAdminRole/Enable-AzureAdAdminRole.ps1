@@ -136,7 +136,7 @@ function Enable-AzureAdAdminRole {
       return
     }
 
-    # Evaluating requriement for SfB Legacy Role
+    # Evaluating requirement for SfB Legacy Role
     $SfBRoleNotNeeded = $(Get-Module MicrosoftTeams -WarningAction SilentlyContinue).Version -ge 2.3.1
 
     # preparing Splatting Object
@@ -202,7 +202,7 @@ function Enable-AzureAdAdminRole {
     # Identity is not mandatory, using connected Session
     if ( -not $PSBoundParameters.ContainsKey('Identity') ) {
       $Identity = (Get-AzureADCurrentSessionInfo).Account.Id
-      Write-Information "No Identity Provided, using user currently connected to AzureAd: '$Identity'"
+      Write-Information "INFO:    No Identity Provided, using user currently connected to AzureAd: '$Identity'"
     }
 
   } #begin
@@ -215,87 +215,83 @@ function Enable-AzureAdAdminRole {
       Write-Verbose -Message "Processing User '$Id'"
       try {
         $SubjectId = (Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction STOP).ObjectId
-
-        # Adding SubjectId to Parameters
-        if ($Parameters.SubjectId) {
-          $Parameters.SubjectId = $SubjectId
-        }
-        else {
-          $Parameters += @{'SubjectId' = $SubjectId }
-        }
       }
       catch {
         Write-Error -Message 'User Account not valid' -Category ObjectNotFound -RecommendedAction 'Verify Identity/UserPrincipalName'
         continue
       }
 
-      # Query current Admin Roles
+      # Determining Direct assignments
+      Write-Verbose -Message "User '$Id' Querying all AzureADMSPrivilegedRoleAssignment"
+      $TenantRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId
 
-      <# Commented out for Admin Groups are not yet available via PowerShell
-      $TenantRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId #-Filter "subjectId eq '$SubjectId'"
-      $MyEligibleGroups = $TenantRoles | Where-Object MemberType -EQ "Group"
-      $MyRoles = $TenantRoles | Where-Object SubjectId -EQ $SubjectId
-      #>
-      $MyRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
-
-
+      # Determining Direct assignments
+      Write-Verbose -Message "User '$Id' Determining direct assignments"
+      #$MyRoles = Get-AzureADMSPrivilegedRoleAssignment -ProviderId $ProviderId -ResourceId $ResourceId -Filter "subjectId eq '$SubjectId'"
+      $MyRoles = $TenantRoles | Where-Object SubjectId -EQ "$SubjectId"
       $MyActiveRoles = $MyRoles | Where-Object AssignmentState -EQ 'Active'
       $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ 'Eligible'
       Write-Verbose -Message "User '$Id' has currently $($MyActiveRoles.Count) of $($MyEligibleRoles.Count) activated"
 
-      [System.Collections.ArrayList]$RolesAndGroups = @()
-      <# Commented out for Admin Groups are not yet available via PowerShell
-      if ($MyEligibleGroups.Count -eq 0) {
-        Write-Verbose -Message "User '$Id' - No Privileged Access Groups are available that can be activated."
-      #>
-      if ($MyEligibleRoles.Count -eq 0) {
-        if ($MyActiveRoles.Count -eq 0) {
-          Write-Warning -Message "User '$Id' - No eligible Privileged Access Roles availabe!"
+      # Determining Group Assignments
+      Write-Verbose -Message "User '$Id' Determining group assignments"
+      #BODGE This assumes Teams Service Admin (Teams Administrator) - may require multiple brushes Try/Catch with "Teams Communications Administrator" as well.
+      $Role = Get-AzureADDirectoryRole -Filter "DisplayName eq 'Teams Administrator'"
+      $MyGroups = (Get-AzureADDirectoryRoleMember -ObjectId $Role.ObjectId | Where-Object ObjectType -EQ 'Group').ObjectId
+      foreach ($Group in $MyGroups) {
+        Write-Debug "Querying AzureADMSPrivilegedRoleAssignment for $Group"
+        $PIMGroup = $null
+        $PIMGroup = $TenantRoles | Where-Object SubjectId -EQ "$Group"
+        if ($PIMGroup) {
+          Write-Debug "Querying AzureADMSPrivilegedRoleAssignment for '$Group' - Adding $($PIMGroup.RoleDefinitionId)"
+          $MyGroupRoles += $PIMGroup
+        }
+      }
+      Write-Verbose -Message "User '$Id' is a member of $($MyGroups.Count) Groups with $($MyGroupRoles.Count) assigned roles"
+
+      [System.Collections.ArrayList]$Roles = @()
+      # Adding Direct assigned Roles
+      if ($MyEligibleRoles.Count -gt 0) { foreach ($Role in $MyEligibleRoles) { [void]$Roles.Add($Role) } }
+      # Adding Group assigned Roles
+      if ( $MyGroupRoles.Count -gt 0) { foreach ($Role in $MyGroupRoles) { [void]$Roles.Add($Role) } }
+
+      if ( $MyEligibleRoles.Count -eq 0 ) {
+        if ( $MyGroupRoles.Count -eq 0 ) {
+          if ( $MyActiveRoles.Count -eq 0 ) {
+            Write-Warning -Message "User '$Id' No eligible Privileged Access Roles availabe!"
+          }
+          else {
+            Write-Information "INFO:    User '$Id' No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) active Roles"
+            return $(if ($Called) { $true })
+          }
+          Continue
         }
         else {
-          Write-Information "User '$Id' - No eligible Privileged Access Roles availabe, but User has $($MyActiveRoles.Count) active Roles"
-          return $(if ($Called) { $true })
+          Write-Verbose "User '$Id' is a member of a group which has $($MyGroupRoles.Count) roles available"
         }
-
-        Continue
-      }
-
-      <# Commented out for Admin Groups are not yet available via PowerShell
       }
       else {
-        # Adding Groups
-        foreach ($Role in $MyEligibleGroups) {
-          [void]$RolesAndGroups.Add($Role)
-        }
-      }
-    #>
-      if ($MyEligibleRoles.Count -gt 0) {
-        # Adding Roles
-        foreach ($Role in $MyEligibleRoles) {
-          [void]$RolesAndGroups.Add($Role)
-        }
+        Write-Verbose "User '$Id' has direct assignments for $($MyEligibleRoles.Count) roles"
       }
 
       # Activating Role
       [System.Collections.ArrayList]$ActivatedRoles = @()
-
-      foreach ($R in $RolesAndGroups) {
+      foreach ($R in $Roles) {
         # Querying Role Display Name
         $RoleName = $AllRoles | Where-Object { $_.Id -eq $R.RoleDefinitionId } | Select-Object -ExpandProperty DisplayName
 
         # Not activating SfB Legacy admin for MicrosoftTeams v2.3.1 or higher
         if (-not $Force -and $SfBRoleNotNeeded -and $RoleName -eq 'Skype for Business Administrator' ) {
           # Skype For Business Administrator (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later
-          Write-Output "Role 'Skype For Business Administrator' (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later. To activate this role too, please use -Force"
+          Write-Information "INFO:    Role 'Skype For Business Administrator' (Lync Administrator) is not activated as it is no longer needed with MicrosoftTeams v2.3.1 or later. To activate this role too, please use -Force" -InformationAction Continue
           continue
         }
         # Confirm every role if not Force
         if ($PSCmdlet.ShouldProcess("$RoleName")) {
-          if (-not ($Force -or $PSCmdlet.ShouldContinue("Eligible Role '$RoleName' found - Activate Role?", 'Enable-AzureAdAdminRole'))) {
+          if (-not ($Force -or $PSCmdlet.ShouldContinue("Eligible Role '$RoleName' found. Activate Role?", 'Enable-AzureAdAdminRole'))) {
             continue # user replied no
           }
           else {
-
             # Preparing Output object
             $ActivatedRole = @()
             $ActivatedRole = [PsCustomObject][ordered]@{
@@ -306,20 +302,15 @@ function Enable-AzureAdAdminRole {
             }
 
             # Adding Role Definition Id
-            if ($Parameters.RoleDefinitionId) {
-              $Parameters.RoleDefinitionId = $R.RoleDefinitionId
-            }
-            else {
-              $Parameters += @{'RoleDefinitionId' = $R.RoleDefinitionId }
-            }
+            if ($Parameters.RoleDefinitionId) { $Parameters.RoleDefinitionId = $R.RoleDefinitionId }
+            else { $Parameters += @{'RoleDefinitionId' = $R.RoleDefinitionId } }
 
             # Determining Activation Type (UserAdd VS UserRenew)
-            <#
-            The value for the Request type can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
-            more options could be provided than UserExtend (Request) and UserAdd. Bears investigation
+            # NOTE The value for the Request type can be AdminAdd, UserAdd, AdminUpdate, AdminRemove, UserRemove, UserExtend, UserRenew, AdminRenew and AdminExtend.
+            # NOTE More options could be provided than UserExtend (Request) and UserAdd. Bears investigation
             #>
             if ( $PSBoundParameters.ContainsKey('Extend') -and $R.RoleDefinitionId -in $MyActiveRoles.RoleDefinitionId ) {
-              Write-Verbose -Message "User '$Id' - '$RoleName' is already active and will be extended"
+              Write-Verbose -Message "User '$Id' Role '$RoleName' is already active and will be extended"
               $ActivatedRole.Type = 'UserExtend'
               if ($Parameters.Type) {
                 $Parameters.Type = 'UserExtend'
@@ -329,7 +320,7 @@ function Enable-AzureAdAdminRole {
               }
             }
             else {
-              Write-Verbose -Message "User '$Id' - '$RoleName' is currently not active and will be activated"
+              Write-Verbose -Message "User '$Id' Role '$RoleName' is currently not active and will be activated"
               $ActivatedRole.Type = 'UserAdd'
               if ($Parameters.Type) {
                 $Parameters.Type = 'UserAdd'
@@ -339,9 +330,13 @@ function Enable-AzureAdAdminRole {
               }
             }
 
+            # Adding SubjectId to Parameters
+            #if ($Parameters.SubjectId) { $Parameters.SubjectId = $SubjectId } else { $Parameters += @{'SubjectId' = $SubjectId } }
+            if ($Parameters.SubjectId) { $Parameters.SubjectId = $Role.SubjectId } else { $Parameters += @{'SubjectId' = $Role.SubjectId } }
+
             #Activating the Role
             try {
-              Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
+              Write-Verbose -Message "User '$Id' Role '$RoleName': Activating Role"
               $ActivatedRole.ActiveUntil = $schedule.endDateTime
               if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
                 "Function: $($MyInvocation.MyCommand.Name) - Parameters for Open-AzureADMSPrivilegedRoleAssignmentRequest", ( $Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
@@ -355,13 +350,11 @@ function Enable-AzureAdAdminRole {
                 if ($Duration -eq 4) { $Duration = 1 } else { $Duration = 4 }
                 Write-Warning -Message "Specified Duration is not allowed, re-trying for $Duration hour(s)"
                 $end = $Date.AddHours($Duration).ToUniversalTime()
-
                 $schedule.endDateTime = $end.ToString('yyyy-MM-ddTHH:mm:ss.fffZ')
                 Write-Verbose -Message "Admin Roles will be active for $Duration hours, until: $($end.ToString())"
                 $Parameters.Schedule = $schedule
-
                 try {
-                  Write-Verbose -Message "User '$Id' - '$RoleName' - Activating Role"
+                  Write-Verbose -Message "User '$Id' Role '$RoleName': Activating Role"
                   $ActivatedRole.ActiveUntil = $schedule.endDateTime
                   $null = Open-AzureADMSPrivilegedRoleAssignmentRequest @Parameters
                   [void]$ActivatedRoles.Add($ActivatedRole)
@@ -370,10 +363,31 @@ function Enable-AzureAdAdminRole {
                   if ($_.Exception.Message.Contains('ExpirationRule')) {
                     Write-Error -Message 'Specified Duration is not allowed, please try again with a lower number.' -Category InvalidData
                   }
+                  elseif ($_.Exception.Message.Contains('EligibilityRule')) {
+                    Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
+                  }
+                  elseif ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
+                    Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
+                  }
+                  elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
+                    Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
+                  }
                   else {
                     Write-Error -Message $_.Exception.Message
                   }
                 }
+              }
+              elseif ($_.Exception.Message.Contains('EligibilityRule')) {
+                Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
+                Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
+                Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
+              }
+              else {
+                Write-Error -Message $_.Exception.Message
               }
               else {
                 Write-Error -Message $_.Exception.Message
@@ -384,7 +398,7 @@ function Enable-AzureAdAdminRole {
       }
     }
 
-    # Re-Query and output (for all Users!)
+    # Output
     if ( $PassThru ) {
       return $ActivatedRoles
     }

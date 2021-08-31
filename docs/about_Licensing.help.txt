@@ -17,18 +17,18 @@ CmdLets
     -------------------------------------------------------------------------: |
     --------------------------------------------------------------------------------------------------------------
     | |
+    `Get-AzureAdLicense`
+    | A Script to query all published Licenses and their Service Plans.<br
+    />Displays all Licenses unless instructed to filter Teams relevant only | |
     `Get-AzureAdLicenseServicePlan`
     | A Script to query all published Licenses, but displaying Service Plans
     only.<br />Displays all Licenses unless instructed to filter Teams relevant
     only             | |
-    `Get-AzureAdLicense`
-    | A Script to query all published Licenses and their Service Plans.<br
-    />Displays all Licenses unless instructed to filter Teams relevant only | |
-    `Get-AzureAdUserLicenseServicePlan`
+    `Get-AzureAdUserLicense`
     | Queries licenses assigned to a User and displays visual output<br
     />Displays all Licenses unless instructed to filter Teams relevant only     
                                                | |
-    `Get-AzureAdUserLicense`
+    `Get-AzureAdUserLicenseServicePlan`
     | Queries licenses assigned to a User and displays visual output<br
     />Displays all Licenses unless instructed to filter Teams relevant only     
                                                | |
@@ -69,6 +69,8 @@ CmdLets
     `Test-TeamsUserHasCallPlan`
     | Tests an individual Calling Plains assigned against the provided Identity 
              | |
+    `Test-AzureAdUserLicenseContainsServicePlan`
+    | Tests whether a License contains a specific Service Plan           | |
     `New-AzureAdLicenseObject`
     | Creates a License Object for application. Generic helper function.        
              |

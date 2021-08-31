@@ -201,7 +201,7 @@ function Set-TeamsUserVoiceMail {
           #TEST what output is received - if object is returned, can use that instead of manually using PassThru (and integrate PassThru into $CsOnlineVoicemailUserSettings)
           $null = Set-CsOnlineVoicemailUserSettings @CsOnlineVoicemailUserSettings
           if ($Called) {
-            Write-Information "User '$($CsUser.DisplayName)' Voicemail language set to '$Language'"
+            Write-Information "INFO:    User '$($CsUser.DisplayName)' Voicemail language set to '$Language'"
           }
         }
         catch {

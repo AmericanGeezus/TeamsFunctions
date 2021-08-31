@@ -125,7 +125,7 @@ function Set-TeamsUserVoiceConfig {
     [ArgumentCompleter( {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses | Where-Object LicenseType -EQ 'CallingPlan').ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        $LicenseParams | ForEach-Object {
+        $LicenseParams | Sort-Object | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
@@ -213,7 +213,6 @@ function Set-TeamsUserVoiceConfig {
       Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "$Status - $Operation"
       $CsUser = Get-TeamsUserVoiceConfig -UserPrincipalName "$UserPrincipalName" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
-      $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
       $ObjectType = $CsUser.ObjectType
     }
@@ -253,6 +252,7 @@ function Set-TeamsUserVoiceConfig {
 
         if ( $CsUser.PhoneSystemStatus.Contains(',')) {
           Write-Warning -Message "Object '$UserPrincipalName' - PhoneSystem License: Multiple assignments found. Please verify License assignment."
+          $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue
           Write-Verbose -Message 'All licenses assigned to the User:' -Verbose
           #Output reduced with Select-Object for better visibility
           Write-Output $UserLic.Licenses | Select-Object ProductName, SkuPartNumber, LicenseType, IncludesTeams, IncludesPhoneSystem, ServicePlans
@@ -268,6 +268,9 @@ function Set-TeamsUserVoiceConfig {
         Write-Warning -Message "Object '$UserPrincipalName' - PhoneSystem License is not correctly licensed. PhoneSystem Service Plan status must be 'Success'. Assignment will continue, though will be only partially successful."
       }
       else {
+        if ( -not $UserLic ) {
+          $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue
+        }
         Write-Verbose -Message 'License Status:' -Verbose
         $UserLic.Licenses
         Write-Verbose -Message 'Service Plan Status (PhoneSystem):' -Verbose

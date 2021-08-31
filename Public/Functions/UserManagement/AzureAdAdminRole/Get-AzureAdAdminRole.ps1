@@ -129,7 +129,7 @@ function Get-AzureAdAdminRole {
         $AzureAdUser = Get-AzureADUser -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        $Message = $_ | Get-ErrorMessageFromErrorString
+        [string]$Message = $_ | Get-ErrorMessageFromErrorString
         Write-Warning -Message "User '$Id': GetUser$($Message.Split(':')[1])"
       }
 

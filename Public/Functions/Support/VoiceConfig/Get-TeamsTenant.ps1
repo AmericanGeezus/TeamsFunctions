@@ -48,6 +48,13 @@ function Get-TeamsTenant {
     # Asserting MicrosoftTeams Connection
     if (-not (Assert-MicrosoftTeamsConnection)) { break }
 
+    # Querying Version Number for
+    #TODO put this in a Global variable for all TF cmdlets!
+    $TeamsModuleVersion = (Get-Module MicrosoftTeams -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Version
+
+    # Format enumeration
+    $FormatEnumerationLimit = -1 # Unlimited (for Domains)
+
     # preparing Output Field Separator
     $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
 
@@ -60,36 +67,72 @@ function Get-TeamsTenant {
     $TenantObject = Get-CsTenant -WarningAction SilentlyContinue # This should trigger a reconnect as well.
 
     #Determining OverrideURL
-    $TenantId = $TenantObject | Select-Object -ExpandProperty identity
-
-    if ($TenantId -match '.*DC\=lync(.*)001\,DC=local') {
-      $Id = $TenantId.Substring($TenantId.IndexOf('lync') + 4, 2)
-      $OverrideURL = "https://admin$Id.online.lync.com/HostedMigration/hostedmigrationService.svc"
+    if ( $TeamsModuleVersion -gt 2.3.1 ) {
+      $OverrideURL = $(Get-AzureADCurrentSessionInfo).TenantDomain
     }
     else {
-      Write-Warning -Message "Override Admin URL could not be determined, please Read from Identity manually (2 digits after 'DC\=lync')"
-      $OverrideURL = $null
+      $TenantId = $TenantObject | Select-Object -ExpandProperty Identity
+
+      if ($TenantId -match '.*DC\=lync(.*)001\,DC=local') {
+        $Id = $TenantId.Substring($TenantId.IndexOf('lync') + 4, 2)
+        $OverrideURL = "https://admin$Id.online.lync.com/HostedMigration/hostedmigrationService.svc"
+      }
+      else {
+        Write-Warning -Message "Override Admin URL could not be determined, please Read from Identity manually (2 digits after 'DC\=lync')"
+        $OverrideURL = $null
+      }
     }
 
     # Adding OverrideURL
     $TenantObject | Add-Member -MemberType NoteProperty -Name HostedMigrationOverrideURL -Value $OverrideURL -Force
 
     #Filtering Object
-    $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
-      TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
-      ExperiencePolicy, DirSyncEnabled, LastSyncTimeStamp, IsValid, WhenCreated, WhenChanged, TenantPoolExtension, HostedMigrationOverrideURL
+    if ( $TeamsModuleVersion -gt 2.3.1 ) {
+      $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
+        TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
+        DefaultDataLocation, DirSyncEnabled, WhenCreated, HostedMigrationOverrideURL, Domains
 
-    #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
-    $Domains = $TenantObject.Domains.Split(',') #| Select-Object -First 10
-    [psCustomObject]$DomainsOnMicrosoft = @()
-    foreach ($D in $Domains) {
-      if ($D.EndsWith('.onmicrosoft.com')) {
-        $DomainsOnMicrosoft += "$D"
-      }
+      #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
+      $Domains = $TenantObject.Domains
+      <#
+      #$DomainsOnMicrosoft = ($Domains | Where-Object Name -Match '.onmicrosoft.com').Name -join ', '
+      $DomainsOnMicrosoft = ($Domains | Where-Object Name -Match '.onmicrosoft.com').Name -join '
+'
+      #$DomainsForTeams = ($Domains | Where-Object Capability -Match 'OfficeCommunicationsOnline').Name -join ', '
+      $DomainsForTeams = ($Domains | Where-Object Capability -Match 'OfficeCommunicationsOnline').Name -join '
+'
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedOnMicrosoftDomains -Value $DomainsOnMicrosoft -Force
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedSipDomains -Value $DomainsForTeams -Force
+      #$Object.DomainsOnMicrosoft | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Name } -Force
+      #$Object.DomainsForTeams | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Name } -Force
+      #>
+
+      $ManagedOnMicrosoftDomains = $Domains | Where-Object Name -Match '.onmicrosoft.com'
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedOnMicrosoftDomains -Value $ManagedOnMicrosoftDomains.Name -Force
+
+      $ManagedCommunicationsDomains = $Domains | Where-Object Capability -Match 'OfficeCommunicationsOnline'
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedCommunicationsDomains -Value $ManagedCommunicationsDomains.Name -Force
+
+      $SipDomains = Get-CsOnlineSipDomain -WarningAction SilentlyContinue
+      $Object | Add-Member -MemberType NoteProperty -Name ManagedSipDomains -Value $SipDomains.Name -Force
     }
-    $Object | Add-Member -MemberType NoteProperty -Name DomainsOnMicrosoft -Value $DomainsOnMicrosoft -Force
-    $Object | Add-Member -MemberType NoteProperty -Name Domains -Value $Domains -Force
-    $Object.Domains | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Domains } -Force
+    else {
+      $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
+        TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
+        ExperiencePolicy, DirSyncEnabled, LastSyncTimeStamp, IsValid, WhenCreated, WhenChanged, TenantPoolExtension, HostedMigrationOverrideURL
+
+      #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
+      $Domains = $TenantObject.Domains.Split(',') #| Select-Object -First 10
+      [psCustomObject]$DomainsOnMicrosoft = @()
+      foreach ($D in $Domains) {
+        if ($D.EndsWith('.onmicrosoft.com')) {
+          $DomainsOnMicrosoft += "$D"
+        }
+      }
+      $Object | Add-Member -MemberType NoteProperty -Name DomainsOnMicrosoft -Value $DomainsOnMicrosoft -Force
+      $Object | Add-Member -MemberType NoteProperty -Name Domains -Value $Domains -Force
+      $Object.Domains | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Domains } -Force
+    }
 
     return $Object
   } #process

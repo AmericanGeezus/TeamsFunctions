@@ -203,7 +203,7 @@ function New-TeamsAutoAttendant {
       })]
     [ArgumentCompleter( {
         if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
-        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
+        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | Sort-Object | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
         }
       })]
@@ -495,11 +495,11 @@ function New-TeamsAutoAttendant {
       }
       else {
         if ( $AfterHoursSchedule) {
-          Write-Information "Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'"
+          Write-Information "INFO:    Auto Attendant '$NameNormalised' Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'"
         }
         else {
           $AfterHoursSchedule = 'MonToFri9to5'
-          Write-Information "Schedule - AfterHoursSchedule not provided, Using: '$AfterHoursSchedule'"
+          Write-Information "INFO:    Auto Attendant '$NameNormalised' Schedule - AfterHoursSchedule not provided, Using: '$AfterHoursSchedule'"
         }
 
         # Creating Schedule
@@ -686,7 +686,7 @@ function New-TeamsAutoAttendant {
 
     if ( $DefaultCallFlow ) {
       # Using As-Is
-      Write-Information "'$NameNormalised' DefaultCallFlow - Custom Object provided. Over-riding other options (like switch 'BusinessHoursCallFlow')"
+      Write-Information "INFO:    Auto Attendant '$NameNormalised' DefaultCallFlow - Custom Object provided. Over-riding other options (like switch 'BusinessHoursCallFlow')"
       $Parameters += @{'DefaultCallFlow' = $DefaultCallFlow }
 
     }
@@ -708,7 +708,7 @@ function New-TeamsAutoAttendant {
             if ($BusinessHoursCallTargetEntity) {
               $BusinessHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $BusinessHoursCallTargetEntity -DtmfResponse Automatic
               $BusinessHoursMenuObject = New-CsAutoAttendantMenu -Name 'Business Hours Menu' -MenuOptions @($BusinessHoursMenuOptionTransfer)
-              Write-Information "'$NameNormalised' Business Hours Call Flow - Menu (TransferCallToTarget) created"
+              Write-Information "INFO:    Auto Attendant '$NameNormalised' Business Hours Call Flow - Menu (TransferCallToTarget) created"
               break
             }
             else {
@@ -730,7 +730,7 @@ function New-TeamsAutoAttendant {
           if ($PSBoundParameters.ContainsKey('BusinessHoursMenu')) {
             # Menu is passed on as-is - $BusinessHoursMenu is defined and attached
             $BusinessHoursMenuObject = $BusinessHoursMenu
-            Write-Information "'$NameNormalised' Business Hours Call Flow - Menu (BusinessHoursMenu) used"
+            Write-Information "INFO:    Auto Attendant '$NameNormalised' Business Hours Call Flow - Menu (BusinessHoursMenu) used"
           }
           else {
             # No custom / default Menu is currently created
@@ -758,7 +758,7 @@ function New-TeamsAutoAttendant {
         try {
           $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$BusinessHoursGreeting"
           if ($BusinessHoursGreetingObject) {
-            Write-Information "'$NameNormalised' Business Hours Call Flow - Greeting created"
+            Write-Information "INFO:    Auto Attendant '$NameNormalised' Business Hours Call Flow - Greeting created"
             $BusinessHoursCallFlowParameters.Greetings = @($BusinessHoursGreetingObject)
           }
         }
@@ -777,7 +777,7 @@ function New-TeamsAutoAttendant {
       # Adding Business Hours Call Flow
       $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenuObject
       $BusinessHoursCallFlow = New-CsAutoAttendantCallFlow @BusinessHoursCallFlowParameters
-      Write-Information "'$NameNormalised' Business Hours Call Flow - Call Flow created"
+      Write-Information "INFO:    Auto Attendant '$NameNormalised' Business Hours Call Flow - Call Flow created"
       $Parameters += @{'DefaultCallFlow' = $BusinessHoursCallFlow }
       #endregion
     }
@@ -786,7 +786,7 @@ function New-TeamsAutoAttendant {
     #region Processing provided CallFlows and CallHandlingAssociations Objects
     if ($PSBoundParameters.ContainsKey('CallFlows')) {
       # Custom Option provided - Using As-Is
-      Write-Information "'$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')"
+      Write-Information "INFO:    Auto Attendant '$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')"
       $Parameters += @{'CallFlows' = $CallFlows }
       $Parameters += @{'CallHandlingAssociations' = $CallHandlingAssociations }
     }
@@ -823,7 +823,7 @@ function New-TeamsAutoAttendant {
             if ($AfterHoursCallTargetEntity) {
               $AfterHoursMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $AfterHoursCallTargetEntity -DtmfResponse Automatic
               $AfterHoursMenuObject = New-CsAutoAttendantMenu -Name 'After Hours Menu' -MenuOptions @($AfterHoursMenuOptionTransfer)
-              Write-Information "'$NameNormalised' After Hours Call Flow - Menu (TransferCallToTarget) created"
+              Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Menu (TransferCallToTarget) created"
               break
             }
             else {
@@ -845,7 +845,7 @@ function New-TeamsAutoAttendant {
           if ($PSBoundParameters.ContainsKey('AfterHoursMenu')) {
             # Menu is passed on as-is - $AfterHoursMenu is defined and attached
             $AfterHoursMenuObject = $AfterHoursMenu
-            Write-Information "'$NameNormalised' After Hours Call Flow - Menu (BusinessHoursMenu) used"
+            Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Menu (BusinessHoursMenu) used"
           }
           else {
             # No custom / default Menu is currently created
@@ -872,7 +872,7 @@ function New-TeamsAutoAttendant {
         try {
           $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$AfterHoursGreeting"
           if ($AfterHoursGreetingObject) {
-            Write-Information "'$NameNormalised' After Hours Call Flow - Greeting created"
+            Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Greeting created"
             $AfterHoursCallFlowParameters.Greetings = @($AfterHoursGreetingObject)
           }
         }
@@ -891,7 +891,7 @@ function New-TeamsAutoAttendant {
       # Adding After Hours Call Flow
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
-      Write-Information "'$NameNormalised' After Hours Call Flow - Call Flow created"
+      Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Flow created"
       #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       if ($Parameters.ContainsKey('CallFlows')) {
         $Parameters.CallFlows.Add($AfterHoursCallFlow)
@@ -914,7 +914,7 @@ function New-TeamsAutoAttendant {
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
       #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
-      Write-Information "'$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
+      Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
         $Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
       }
@@ -955,7 +955,7 @@ function New-TeamsAutoAttendant {
             if ($HolidaySetCallTargetEntity) {
               $HolidaySetMenuOptionTransfer = New-CsAutoAttendantMenuOption -Action TransferCallToTarget -CallTarget $HolidaySetCallTargetEntity -DtmfResponse Automatic
               $HolidaySetMenuObject = New-CsAutoAttendantMenu -Name 'Holiday Set Menu' -MenuOptions @($HolidaySetMenuOptionTransfer)
-              Write-Information "'$NameNormalised' Holiday Set Call Flow - Menu (TransferCallToTarget) created"
+              Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Menu (TransferCallToTarget) created"
               break
             }
             else {
@@ -977,7 +977,7 @@ function New-TeamsAutoAttendant {
           if ($PSBoundParameters.ContainsKey('HolidaySetMenu')) {
             # Menu is passed on as-is - $HolidaySetMenu is defined and attached
             $HolidaySetMenuObject = $HolidaySetMenu
-            Write-Information "'$NameNormalised' Holiday Set Call Flow - Menu (BusinessHoursMenu) used"
+            Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Menu (BusinessHoursMenu) used"
           }
           else {
             # No custom / default Menu is currently created
@@ -1004,7 +1004,7 @@ function New-TeamsAutoAttendant {
         try {
           $HolidaySetGreetingObject = New-TeamsAutoAttendantPrompt -String "$HolidaySetGreeting"
           if ($HolidaySetGreetingObject) {
-            Write-Information "'$NameNormalised' Holiday Set Call Flow - Greeting created"
+            Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Greeting created"
             $HolidaySetCallFlowParameters.Greetings = @($HolidaySetGreetingObject)
           }
         }
@@ -1023,7 +1023,7 @@ function New-TeamsAutoAttendant {
       # Adding Holiday Set Call Flow
       $HolidaySetCallFlowParameters.Menu = $HolidaySetMenuObject
       $HolidaySetCallFlow = New-CsAutoAttendantCallFlow @HolidaySetCallFlowParameters
-      Write-Information "'$NameNormalised' Holiday Set Call Flow - Call Flow created"
+      Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Flow created"
       #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       if ($Parameters.ContainsKey('CallFlows')) {
         $Parameters.CallFlows.Add($HolidaySetCallFlow)
@@ -1046,7 +1046,7 @@ function New-TeamsAutoAttendant {
       $HolidaySetCallHandlingAssociationParams.ScheduleId = $HolidaySchedule.Id
       $HolidaySetCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @HolidaySetCallHandlingAssociationParams
       #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
-      Write-Information "'$NameNormalised' Holiday Set Call Flow - Call Handling Association created with Holiday Schedule"
+      Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Handling Association created with Holiday Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
         $Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)
       }
@@ -1111,7 +1111,7 @@ function New-TeamsAutoAttendant {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
         $null = (New-CsAutoAttendant @Parameters)
-        Write-Information "Auto Attendant '$NameNormalised' created with all Parameters"
+        Write-Information "INFO:    Auto Attendant '$NameNormalised' created with all Parameters"
       }
       catch {
         Write-Error -Message "Error creating the Auto Attendant: $($_.Exception.Message)" -Category InvalidResult

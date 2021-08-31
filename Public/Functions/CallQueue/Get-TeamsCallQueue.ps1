@@ -16,10 +16,10 @@ function Get-TeamsCallQueue {
     like UserPrincipalName or DisplayName for the following connected Objects
     OverflowActionTarget, TimeoutActionTarget, Agents, DistributionLists and ApplicationInstances (Resource Accounts)
   .PARAMETER Name
-    Optional. Searches all Call Queues for this name (unique results).
-    If omitted, Get-TeamsCallQueue acts like an Alias to Get-CsCallQueue (no friendly names)
+    Required for ParameterSet Name. Searches all Call Queues for this name (unique results).
+    If not provided, all Call Queues are queried, returning only the name
   .PARAMETER SearchString
-    Optional. Searches all Call Queues for this string (multiple results possible).
+    Required for ParameterSet Search. Searches all Call Queues for this string (multiple results possible).
   .PARAMETER Detailed
     Optional Switch. Displays all Parameters of the CallQueue
     This also shows parameters relating to Ids and Diagnostic Parameters.
@@ -62,15 +62,15 @@ function Get-TeamsCallQueue {
     https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = 'Name')]
   [Alias('Get-TeamsCQ')]
   [OutputType([System.Object[]])]
   param(
-    [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Call Queue')]
+    [Parameter(ParameterSetName = 'Name', Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Full Name of the Call Queue')]
     [AllowNull()]
     [string[]]$Name,
 
-    [Parameter(HelpMessage = 'Partial or full Name of the Call Queue to search')]
+    [Parameter(ParameterSetName = 'Search', HelpMessage = 'Partial or full Name of the Call Queue to search')]
     [Alias('NameFilter')]
     [string]$SearchString,
 
@@ -100,6 +100,7 @@ function Get-TeamsCallQueue {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    #region Query objects
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
       Write-Information 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString'
@@ -107,36 +108,36 @@ function Get-TeamsCallQueue {
       return
     }
     else {
-      #region Query objects
       $Queues = @()
-      if ($PSBoundParameters.ContainsKey('Name')) {
-        # Lookup
-        Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
-        foreach ($DN in $Name) {
-          if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
-            #Identity or ObjectId
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
-            $QueuesById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $Queues += $QueuesById
-          }
-          else {
-            #Name
-            Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
-            $QueuesByName = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-            $QueuesByName = $QueuesByName | Where-Object Name -EQ "$DN"
-            $Queues += $QueuesByName
+      switch ($PSCmdlet.ParameterSetName) {
+        'Name' {
+          # Lookup
+          Write-Verbose -Message "Parameter 'Name' - Querying unique result for each provided Name"
+          foreach ($DN in $Name) {
+            if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
+              #Identity or ObjectId
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - ID - '$DN'"
+              $QueuesById = Get-CsCallQueue -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $Queues += $QueuesById
+            }
+            else {
+              #Name
+              Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Name - '$DN'"
+              $QueuesByName = Get-CsCallQueue -NameFilter "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+              $QueuesByName = $QueuesByName | Where-Object Name -EQ "$DN"
+              $Queues += $QueuesByName
+            }
           }
         }
+        'Search' {
+          # Search
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
+          $QueuesByString = Get-CsCallQueue -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $Queues += $QueuesByString
+        }
       }
-
-      if ($PSBoundParameters.ContainsKey('SearchString')) {
-        # Search
-        Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - SearchString - '$SearchString'"
-        $QueuesByString = Get-CsCallQueue -NameFilter "$SearchString" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        $Queues += $QueuesByString
-      }
-      #endregion
     }
+    #endregion
 
     # Parsing found Objects
     Write-Verbose -Message "[PROCESS] Processing found Queues: $QueueCount"
@@ -223,7 +224,7 @@ function Get-TeamsCallQueue {
           [void]$UserObjects.Add($UserObject)
         }
         catch {
-          $Message = $_ | Get-ErrorMessageFromErrorString
+          [string]$Message = $_ | Get-ErrorMessageFromErrorString
           Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
         }
       }
@@ -241,7 +242,7 @@ function Get-TeamsCallQueue {
             [void]$ChannelUserObjects.Add($ChannelUserObject)
           }
           catch {
-            $Message = $_ | Get-ErrorMessageFromErrorString
+            [string]$Message = $_ | Get-ErrorMessageFromErrorString
             Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
           }
         }
@@ -259,7 +260,7 @@ function Get-TeamsCallQueue {
             [void]$AgentObjects.Add($AgentObject)
           }
           catch {
-            $Message = $_ | Get-ErrorMessageFromErrorString
+            [string]$Message = $_ | Get-ErrorMessageFromErrorString
             Write-Warning -Message "'$($Q.Name)' - $Operation`: GetUser$($Message.Split(':')[1])"
           }
         }
@@ -346,16 +347,22 @@ function Get-TeamsCallQueue {
 
       # Adding Agent Information
       $QueueObject | Add-Member -MemberType NoteProperty -Name TeamAndChannel -Value $TeamAndChannelName
-      $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
-      $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
+      if ($PSBoundParameters.ContainsKey('Detailed')) {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $($UserObjects.UserPrincipalName -join ', ')
+        $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $($DLNames -join ', ')
+      }
+      else {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Users -Value $UserObjects.UserPrincipalName
+        $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionLists -Value $DLNames
+      }
       $QueueObject | Add-Member -MemberType NoteProperty -Name DistributionListsLastExpanded -Value $Q.DistributionListsLastExpanded
       $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsInSyncWithDistributionLists -Value $Q.AgentsInSyncWithDistributionLists
       $QueueObject | Add-Member -MemberType NoteProperty -Name AgentsCapped -Value $Q.AgentsCapped
 
       if ($PSBoundParameters.ContainsKey('Detailed')) {
         # Displays Agents
-        $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $AgentObjects.UserPrincipalName
-        $QueueObject | Add-Member -MemberType NoteProperty -Name ChannelUsers -Value $ChannelUserObjects.UserPrincipalName
+        $QueueObject | Add-Member -MemberType NoteProperty -Name Agents -Value $($AgentObjects.UserPrincipalName -join ', ')
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ChannelUsers -Value $($ChannelUserObjects.UserPrincipalName -join ', ')
         # Displays all except reserved Parameters (Microsoft Internal)
         $QueueObject | Add-Member -MemberType NoteProperty -Name MusicOnHoldAudioFileId -Value $Q.MusicOnHoldAudioFileId
         $QueueObject | Add-Member -MemberType NoteProperty -Name WelcomeMusicAudioFileId -Value $Q.WelcomeMusicAudioFileId
@@ -364,9 +371,14 @@ function Get-TeamsCallQueue {
         $QueueObject | Add-Member -MemberType NoteProperty -Name Description -Value $Q.Description
       }
 
-      # Adding Resource Accounts
-      $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsAssociated -Value $AIObjects.Userprincipalname
-      $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsForCallerId -Value $OboObjects.Userprincipalname
+      if ($PSBoundParameters.ContainsKey('Detailed')) {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsAssociated -Value $($AIObjects.Userprincipalname -join ', ')
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsForCallerId -Value $($OboObjects.Userprincipalname -join ', ')
+      }
+      else {
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsAssociated -Value $AIObjects.Userprincipalname
+        $QueueObject | Add-Member -MemberType NoteProperty -Name ResourceAccountsForCallerId -Value $OboObjects.Userprincipalname
+      }
       #endregion
 
       # Output

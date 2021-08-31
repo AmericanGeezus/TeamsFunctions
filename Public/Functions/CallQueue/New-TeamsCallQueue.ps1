@@ -325,7 +325,7 @@ function New-TeamsCallQueue {
       })]
     [ArgumentCompleter( {
         if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
-        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | ForEach-Object {
+        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | Sort-Object | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
         }
       })]
@@ -409,7 +409,7 @@ function New-TeamsCallQueue {
 
     # Normalising $Name
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
-    Write-Information "'$Name' DisplayName normalised to: '$NameNormalised'"
+    Write-Information "INFO:    Call Queue '$Name' DisplayName normalised to: '$NameNormalised'"
     $Parameters += @{'Name' = $NameNormalised }
     #endregion
 
@@ -430,7 +430,7 @@ function New-TeamsCallQueue {
         Write-Verbose -Message "'$NameNormalised' MusicOnHoldAudioFile:  Parsing: '$MOHFileName'"
         try {
           $MOHFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$MusicOnHoldAudioFile" -ErrorAction STOP
-          Write-Information "'$NameNormalised' MusicOnHoldAudioFile:  Using:   '$($MOHFile.FileName)'"
+          Write-Information "INFO:    Call Queue '$NameNormalised' MusicOnHoldAudioFile:  Using:   '$($MOHFile.FileName)'"
           $Parameters += @{'MusicOnHoldAudioFileId' = $MOHFile.Id }
         }
         catch {
@@ -465,7 +465,7 @@ function New-TeamsCallQueue {
         Write-Verbose -Message "'$NameNormalised' WelcomeMusicAudioFile: Parsing: '$WMFileName'"
         try {
           $WMFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$WelcomeMusicAudioFile" -ErrorAction STOP
-          Write-Information "'$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
+          Write-Information "INFO:    Call Queue '$NameNormalised' WelcomeMusicAudioFile: Using:   '$($WMFile.FileName)"
           $Parameters += @{'WelcomeMusicAudioFileId' = $WMFile.Id }
         }
         catch {
@@ -530,7 +530,7 @@ function New-TeamsCallQueue {
     #region Valued Parameters
     # AgentAlertTime
     if ($PSBoundParameters.ContainsKey('AgentAlertTime')) {
-      Write-Information "'$NameNormalised' AgentAlertTime: $AgentAlertTime"
+      Write-Information "INFO:    Call Queue '$NameNormalised' AgentAlertTime: $AgentAlertTime"
       $Parameters += @{'AgentAlertTime' = $AgentAlertTime }
     }
 
@@ -766,7 +766,7 @@ function New-TeamsCallQueue {
                   Write-Verbose -Message "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Parsing: '$OfSVmFileName'"
                   try {
                     $OfSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$OverflowSharedVoicemailAudioFile" -ErrorAction STOP
-                    Write-Information "'$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OfSVmFile.FileName)'"
+                    Write-Information "INFO:    Call Queue '$NameNormalised' OverflowSharedVoicemailAudioFile:  Using:   '$($OfSVmFile.FileName)'"
                     $Parameters += @{'OverflowSharedVoicemailAudioFilePrompt' = $OfSVmFile.Id }
                   }
                   catch {
@@ -819,13 +819,13 @@ function New-TeamsCallQueue {
     }
     else {
       if ($Parameters.ContainsKey('OverflowAction')) {
-        Write-Information "'$NameNormalised' OverflowAction used: '$OverflowAction'"
+        Write-Information "INFO:    Call Queue '$NameNormalised' OverflowAction used: '$OverflowAction'"
       }
     }
     # For NEW: We remove all SharedVoicemail Parameters if no Target is present
     # For SET: Parameters may be applied individually (no removal of SharedVoicemail parameters)
     if ( $Parameters.OverflowActionTarget) {
-      Write-Information "'$NameNormalised' OverflowActionTarget: '$OverflowActionTarget'"
+      Write-Information "INFO:    Call Queue '$NameNormalised' OverflowActionTarget: '$OverflowActionTarget'"
     }
     else {
       [void]$Parameters.Remove('OverflowSharedVoicemailTextToSpeechPrompt')
@@ -1021,7 +1021,7 @@ function New-TeamsCallQueue {
                   Write-Verbose -Message "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Parsing: '$ToSVmFileName'"
                   try {
                     $ToSVmFile = Import-TeamsAudioFile -ApplicationType CallQueue -File "$TimeoutSharedVoicemailAudioFile" -ErrorAction STOP
-                    Write-Information "'$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($ToSVmFile.FileName)'"
+                    Write-Information "INFO:    Call Queue '$NameNormalised' TimeoutSharedVoicemailAudioFile:  Using:   '$($ToSVmFile.FileName)'"
                     $Parameters += @{'TimeoutSharedVoicemailAudioFilePrompt' = $ToSVmFile.Id }
                   }
                   catch {
@@ -1068,19 +1068,19 @@ function New-TeamsCallQueue {
     if ($Parameters.TimeoutActionTarget -eq '') {
       [void]$Parameters.Remove('TimeoutActionTarget')
     }
-    if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'DisconnectWithBusy')) {
+    if ($Parameters.ContainsKey('TimeoutAction') -and (-not $Parameters.ContainsKey('TimeoutActionTarget')) -and ($TimeoutAction -ne 'Disconnect')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction': Action not set as TimeoutActionTarget was not correctly enumerated" -Verbose
       [void]$Parameters.Remove('TimeoutAction')
     }
     else {
       if ($Parameters.ContainsKey('TimeoutAction')) {
-        Write-Information "'$NameNormalised' TimeoutAction: '$TimeoutAction'"
+        Write-Information "INFO:    Call Queue '$NameNormalised' TimeoutAction: '$TimeoutAction'"
       }
     }
     # For NEW: We remove all SharedVoicemail Parameters if no Target is present
     # For SET: Parameters may be applied individually (no removal of SharedVoicemail parameters)
     if ($Parameters.TimeoutActionTarget) {
-      Write-Information "'$NameNormalised' TimeoutActionTarget: '$TimeoutActionTarget'"
+      Write-Information "INFO:    Call Queue '$NameNormalised' TimeoutActionTarget: '$TimeoutActionTarget'"
     }
     else {
       [void]$Parameters.Remove('TimeoutSharedVoicemailTextToSpeechPrompt')
@@ -1102,7 +1102,7 @@ function New-TeamsCallQueue {
       Write-Verbose -Message "'$NameNormalised' Parsing Team and Channel" -Verbose
       try {
         $Team, $Channel = Get-TeamAndChannel -String "$FullChannelId"
-        Write-Information "TeamAndChannel: Team '$($Team.DisplayName)' - Channel '$($Channel.DisplayName)' will be added to the Call Queue"
+        Write-Information "INFO:    Call Queue '$NameNormalised' TeamAndChannel: Team '$($Team.DisplayName)' - Channel '$($Channel.DisplayName)' will be added to the Call Queue"
         $Parameters += @{'ChannelId' = $Channel.Id }
       }
       catch {
@@ -1132,7 +1132,7 @@ function New-TeamsCallQueue {
           # Asserting Object - Validation of Type
           $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
-            Write-Information "User '$ChannelUser' will be added to CallQueue"
+            Write-Information "INFO:    User '$ChannelUser' will be added to CallQueue"
             [void]$ChannelUsersIdList.Add($CallTarget.Identity)
           }
           else {
@@ -1176,7 +1176,7 @@ function New-TeamsCallQueue {
           # Asserting Object - Validation of Type
           $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
-            Write-Information "User '$User' will be added to CallQueue"
+            Write-Information "INFO:    User '$User' will be added to CallQueue"
             [void]$UserIdList.Add($CallTarget.Identity)
           }
           else {
@@ -1211,7 +1211,7 @@ function New-TeamsCallQueue {
         $DLObject = $null
         $DLObject = Get-TeamsCallableEntity -Identity "$DL"
         if ($DLObject) {
-          Write-Information "Group '$DL' will be added to the Call Queue"
+          Write-Information "INFO:    Call Queue '$NameNormalised' Group '$DL' will be added to the Call Queue"
           # Test whether Users in DL are enabled for EV and/or licensed?
 
           # Add to List
@@ -1252,7 +1252,7 @@ function New-TeamsCallQueue {
           # Asserting Object - Validation of Type
           $Assertion = Assert-TeamsCallableEntity -Identity "$($CallTarget.Entity)" -Terminate -WarningAction SilentlyContinue -ErrorAction Stop
           if ( $Assertion ) {
-            Write-Information "Resource Account '$RA' will be added to CallQueue"
+            Write-Information "INFO:    Call Queue '$NameNormalised' Resource Account '$RA' will be added to CallQueue"
             [void]$RAIdList.Add($CallTarget.Identity)
           }
           else {

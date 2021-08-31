@@ -56,8 +56,8 @@ function Get-ErrorMessageFromErrorString {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
-    $Stack = Get-PSCallStack
-    $Called = ($stack.length -ge 3)
+    #$Stack = Get-PSCallStack
+    #$Called = ($stack.length -ge 3)
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }

@@ -99,7 +99,7 @@ function Verb-Noun {
           #TEST what output is received before throwing it away
           $null = Set-Command @Parameters
           if ($Called) {
-            Write-Information "User '$($CsUser.DisplayName)' Action successful"
+            Write-Information "INFO:    User '$($CsUser.DisplayName)' Action successful"
           }
         }
         catch {

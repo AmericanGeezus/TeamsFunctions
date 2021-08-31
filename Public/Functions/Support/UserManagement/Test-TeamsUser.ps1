@@ -62,7 +62,9 @@ function Test-TeamsUser {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($User in $UserPrincipalName) {
       try {
-        $CsOnlineUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsOnlineUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction STOP
+        $CsOnlineUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction STOP
         if ( $null -ne $CsOnlineUser ) {
           return $true
         }

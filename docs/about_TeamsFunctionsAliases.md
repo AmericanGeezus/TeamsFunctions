@@ -29,9 +29,10 @@ All Aliases recorded here manually as the generated DOCS are not captured automa
 | Find-TeamsRA                                  | [`Find-TeamsResourceAccount`](Find-TeamsResourceAccount.md)                                     |
 | Find-TeamsUVC                                 | [`Find-TeamsUserVoiceConfig`](Find-TeamsUserVoiceConfig.md)                                     |
 | Find-TeamsUVR                                 | [`Find-TeamsUserVoiceRouting`](Find-TeamsUserVoiceRouting.md)                                   |
-| Get-Channel                                   | [`Get-TeamsTeamChannel`](Get-TeamsTeamChannel.md)                                                     |
+| Get-Channel                                   | [`Get-TeamsTeamChannel`](Get-TeamsTeamChannel.md)                                               |
 | Get-TeamsAA                                   | [`Get-AutoAttendant`](Get-AutoAttendant.md)                                                     |
-| Get-TeamsAASchedule                           | [`Get-AutoAttendantSchedule`](Get-AutoAttendantSchedule.md)                                       |
+| Get-TeamsAAAudioFile                          | [`Get-AutoAttendantAudioFile`](Get-AutoAttendantAudioFile.md)                                   |
+| Get-TeamsAASchedule                           | [`Get-AutoAttendantSchedule`](Get-AutoAttendantSchedule.md)                                     |
 | Get-TeamsCAP                                  | [`Get-TeamsCommonAreaPhone`](Get-TeamsCommonAreaPhone.md)                                       |
 | Get-TeamsCQ                                   | [`Get-TeamsCallQueue`](Get-TeamsCallQueue.md)                                                   |
 | Get-TeamsRA                                   | [`Get-TeamsResourceAccount`](Get-TeamsResourceAccount.md)                                       |

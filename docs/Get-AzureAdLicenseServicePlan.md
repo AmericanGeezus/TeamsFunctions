@@ -26,7 +26,7 @@ Returns an Object containing all Teams related License Service Plans
 Get-AzureAdLicenseServicePlan
 ```
 
-Returns 39 Azure AD Licenses that relate to Teams for use in other commands
+Returns Azure AD Licenses that relate to Teams for use in other commands
 
 ## PARAMETERS
 

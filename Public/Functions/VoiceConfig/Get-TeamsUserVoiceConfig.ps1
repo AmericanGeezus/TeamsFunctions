@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Check output for Diagnosticlevel 1-4 to ascertain removed output if CsOnlineObject is called with -Identity Switch!
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -130,10 +130,12 @@ function Get-TeamsUserVoiceConfig {
       #region Information Gathering
       Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
       Write-Verbose -Message "[PROCESS] Processing '$User'"
-      # Querying Identity
+      #region Querying Identity
       try {
         Write-Verbose -Message "User '$User' - Querying User Account (CsOnlineUser)"
-        $CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+        #$CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+        $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
         # If CsOnlineUser not found, trying AzureAdUser
@@ -153,8 +155,10 @@ function Get-TeamsUserVoiceConfig {
           continue
         }
       }
+      #endregion
 
-      # Constructing InterpretedVoiceConfigType
+      #FIXME This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
+      #region Constructing InterpretedVoiceConfigType
       $Operation = 'Verification, Testing InterpretedVoiceConfigType'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -178,8 +182,9 @@ function Get-TeamsUserVoiceConfig {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'Unknown' (undetermined)"
         $InterpretedVoiceConfigType = 'Unknown'
       }
+      #endregion
 
-      # Testing ObjectType
+      #region Testing ObjectType
       $Operation = 'Verification, Testing ObjectType'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
@@ -188,16 +193,41 @@ function Get-TeamsUserVoiceConfig {
       #$ObjectType = (Get-TeamsCallableEntity -Identity "$($CsUser.UserPrincipalName)").ObjectType
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
 
-      # Testing for Misconfiguration
+      #endregion
+
+      #region Testing for Misconfiguration
       $Operation = 'Testing for Misconfiguration'
       $step++
       Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
-      $null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
+      #$null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
+      if ( $AdUser -ne $CsUser ) {
+        # Necessary as Test-TeamsUserVoiceConfig expects a CsOnlineUser Object
+        $null = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue
+      }
+      else {
+        Write-Verbose -Message 'No validation can be performed for the Object as CsOnlineUser Object not found!'
+      }
+
 
       #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
       if ( $CsUser.SipAddress -and -not $CsUser.TenantDialPlan -and $ObjectType -ne 'ApplicationEndpoint' ) {
-        Write-Information -MessageData "User '$User' - No Dial Plan is assigned"
+        Write-Information "INFO:    User '$User' - No Dial Plan is assigned"
+      }
+      #endregion
+      #endregion
+
+      #TEST rework based on Identity (needed for v2.5.0) - Parameter ObjectId seems to be removed?
+      #region Refactoring ObjectId for v2.5.0 for backward compatibility
+      "Function: $($MyInvocation.MyCommand.Name): ObjectId:", ($CsUser.ObjectId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+
+      if ( $CsUser.ObjectId -is [object] ) {
+        #$UserObjectId = $CsUser.ObjectId.Guid
+        $CsUser.Identity -match 'CN=(?<Guid>[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}),*' | Out-Null
+        $UserObjectId = $matches.Guid
+      }
+      else {
+        $UserObjectId = $CsUser.ObjectId
       }
       #endregion
 
@@ -212,7 +242,7 @@ function Get-TeamsUserVoiceConfig {
         UserPrincipalName          = $CsUser.UserPrincipalName
         SipAddress                 = $CsUser.SipAddress
         DisplayName                = $CsUser.DisplayName
-        ObjectId                   = $CsUser.ObjectId
+        ObjectId                   = $UserObjectId
         Identity                   = $CsUser.Identity
         HostingProvider            = $CsUser.HostingProvider
         ObjectType                 = $ObjectType

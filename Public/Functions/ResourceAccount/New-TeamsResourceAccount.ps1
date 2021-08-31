@@ -111,7 +111,7 @@ function New-TeamsResourceAccount {
     [ArgumentCompleter( {
         if (-not $global:TeamsFunctionsMSAzureAdLicenses) { $global:TeamsFunctionsMSAzureAdLicenses = Get-AzureAdLicense -WarningAction SilentlyContinue }
         $LicenseParams = ($global:TeamsFunctionsMSAzureAdLicenses).ParameterName.Split('', [System.StringSplitOptions]::RemoveEmptyEntries)
-        $LicenseParams | ForEach-Object {
+        $LicenseParams | Sort-Object | ForEach-Object {
           [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($LicenseParams.Count) records available")
         }
       })]
@@ -339,7 +339,7 @@ function New-TeamsResourceAccount {
       try {
         if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
           $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
-          Write-Information "'$Name' License assignment - '$License' SUCCESS"
+          Write-Information "INFO:    Resource Account '$Name' License assignment - '$License' SUCCESS"
           $IsLicensed = $true
         }
       }
@@ -499,7 +499,7 @@ function New-TeamsResourceAccount {
         PhoneNumber       = $ResourceAccount.PhoneNumber
       }
 
-      Write-Information "Resource Account '$($ResourceAccountObject.UserPrincipalName)' created"
+      Write-Information "SUCCESS: Resource Account '$($ResourceAccountObject.UserPrincipalName)' created"
       if ($PSBoundParameters.ContainsKey('PhoneNumber') -and $IsLicensed -and $ResourceAccount.PhoneNumber -eq '') {
         Write-Warning -Message 'Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount to verify'
       }

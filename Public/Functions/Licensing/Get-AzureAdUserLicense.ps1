@@ -65,6 +65,8 @@ function Get-AzureAdUserLicense {
 
   begin {
     Show-FunctionStatus -Level Live
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
@@ -124,7 +126,7 @@ function Get-AzureAdUserLicense {
             "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
 
-          if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not ($Lic.IncludesTeams -or $Lic.IncludesPhoneSystem)) {
+          if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not ($Lic.IncludesTeams -or $Lic.IncludesPhoneSystem) -and -not $Called) {
             Write-Verbose -Message "Switch FilterRelevantForTeams: License not relevant for Teams: '$($Lic.ProductName)'"
           }
           else {
@@ -148,7 +150,7 @@ function Get-AzureAdUserLicense {
             "Function: $($MyInvocation.MyCommand.Name): ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
 
-          if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not $Lic.RelevantForTeams) {
+          if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not $Lic.RelevantForTeams -and -not $Called) {
             Write-Verbose -Message "Switch FilterRelevantForTeams: ServicePlan not relevant for Teams: '$($ServicePlan.ServicePlanName)'"
           }
           else {

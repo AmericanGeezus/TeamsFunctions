@@ -246,20 +246,18 @@ Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-Ser
   Get-TeamsRAIdentity, Get-TeamsRACLI, New-TeamsRAIdentity, New-TeamsRACLI, `
   Get-TeamsRAA, New-TeamsRAA, Remove-TeamsRAA, Remove-CsOnlineApplicationInstance, `
   Get-TeamsCQ, New-TeamsCQ, Remove-TeamsCQ, Set-TeamsCQ, `
-  Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, `
+  Get-TeamsAA, New-TeamsAA, Remove-TeamsAA, Set-TeamsAA, Set-TeamsAutoAttendant, Get-TeamsAAAudioFile, `
   New-TeamsAAMenu, New-TeamsAAOption, New-TeamsAAFlow, New-TeamsAAPrompt, New-TeamsAAScope, New-TeamsAASchedule, `
   New-TeamsAAEntity, New-TeamsAutoAttendantCallHandlingAssociation , `
   Get-TeamsAASchedule, Remove-TeamsAASchedule, Remove-TeamsAutoAttendantSchedule, `
   Get-Channel
 
-
-
-
+  
 # SIG # Begin signature block
 # MIIECAYJKoZIhvcNAQcCoIID+TCCA/UCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU6dxLjWjaRtpRtHxVIdibvRIr
-# 4XigggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUM5rauk8H9ltvrScRcjl8R91H
+# Wg2gggIZMIICFTCCAX6gAwIBAgIQa3i9Sh/NdbhOjG+ewKFPfjANBgkqhkiG9w0B
 # AQUFADAlMSMwIQYDVQQDDBpEYXZpZCBFYmVyaGFyZHQgLSBDb2RlU2lnbjAeFw0y
 # MDA2MTMxMTA4NTNaFw0yNDA2MTMwMDAwMDBaMCUxIzAhBgNVBAMMGkRhdmlkIEVi
 # ZXJoYXJkdCAtIENvZGVTaWduMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3
@@ -274,8 +272,8 @@ Export-ModuleMember -Alias con, dis, pol, ear, dar, gar, cur, Enable-Ev, Set-Ser
 # YmVyaGFyZHQgLSBDb2RlU2lnbgIQa3i9Sh/NdbhOjG+ewKFPfjAJBgUrDgMCGgUA
 # oHgwGAYKKwYBBAGCNwIBDDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYB
 # BAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAjBgkqhkiG9w0B
-# CQQxFgQUD6dh31OsioPQxoPl56snLt/0gDgwDQYJKoZIhvcNAQEBBQAEgYC2JLsn
-# kKpJBkvlMBcmIcaoeGNHXTMkAiSGlyKkw9ppw+jMvFYGoE4sQ7ysin2vpC+KQ2dT
-# yCt8/w3MZfqiQfi2fcOPxuYXeBGQVUCjwpt4UHHZWvPEBac6GY6wxHQv3Jzib+Aj
-# mm+bN11FLFyTSQhbyTCu+yYjkkCwKZ+j6tsTmw==
+# CQQxFgQUxUTvvtNKTJyoVEid3vnJ7HlQFMIwDQYJKoZIhvcNAQEBBQAEgYBHhXe9
+# uu1WGN1bb9aXPIHMoVMsWJMwtExSpjuA+r1AiEa11lzDMW+zErvv5o1Q0dydlkCH
+# lqniU/9i3aoF2Rnqsf1br9rmT7+jKM7LYfnKeDnYZ2xZmfGjOl3iCf4cS+U36rOq
+# nDNzZCgXvAeHJgW/7qmmyZznsKit4GYiWaIt/w==
 # SIG # End signature block
