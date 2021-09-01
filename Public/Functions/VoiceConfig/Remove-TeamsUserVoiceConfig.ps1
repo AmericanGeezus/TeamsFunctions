@@ -73,6 +73,7 @@ function Remove-TeamsUserVoiceConfig {
   [OutputType([System.Void])]
   param(
     [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
     [Parameter(HelpMessage = 'Defines Type of Voice Configuration to remove')]
