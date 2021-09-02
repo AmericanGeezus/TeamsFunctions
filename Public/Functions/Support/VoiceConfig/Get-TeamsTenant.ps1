@@ -68,6 +68,7 @@ function Get-TeamsTenant {
 
     #Determining OverrideURL
     if ( $TeamsModuleVersion -gt 2.3.1 ) {
+      #BODGE may need addressing with Get-CsHostedMigrationURL
       $OverrideURL = $(Get-AzureADCurrentSessionInfo).TenantDomain
     }
     else {

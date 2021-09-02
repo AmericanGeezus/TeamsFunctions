@@ -207,8 +207,6 @@ function Enable-TeamsUserForEnterpriseVoice {
             Write-Error "User '$User' not found" -Category ObjectNotFound
             continue
           }
-          $Parameters += @{ 'UserObject' = $CsUser }
-          EnableEV @Parameters
           EnableEV -UserObject $CsUser -UserLicense $UserLicense @Parameters
         }
       }

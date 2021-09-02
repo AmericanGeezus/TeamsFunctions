@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.09'
+  ModuleVersion         = '21.09.02'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
