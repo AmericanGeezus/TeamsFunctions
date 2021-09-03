@@ -91,6 +91,11 @@ function Enable-TeamsUserForEnterpriseVoice {
       $Id = $($UserObject.UserPrincipalName)
       Write-Verbose -Message "[PROCESS] Enabling User '$Id' for Enterprise Voice"
 
+      $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
+      if ( $TeamsModuleVersion -gt 2.3.1 -and -not $Called) {
+        Write-Warning -Message 'Due to recent changes to Module MicrosoftTeams (v2.5.0 and later), not all functionality could yet be tested, your mileage may vary'
+      }
+
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
         if ($Called) {
@@ -135,21 +140,21 @@ function Enable-TeamsUserForEnterpriseVoice {
           throw [System.InvalidOperationException]::New("$Message")
         }
       }
-      elseif ( $UserObject.EnterpriseVoiceEnabled ) {
+      elseif ( $UserObject.EnterpriseVoiceEnabled -and -not $Force ) {
         if ($Called) {
           return $true
         }
         else {
           Write-Verbose -Message "User '$Id' Enterprise Voice Status: User is already enabled!" -Verbose
           #Enabling HostedVoicemail is done silently (just in case)
-          $null = Set-CsUser $Id -HostedVoiceMail $TRUE -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $null = Set-CsUser -Identity $Id -HostedVoiceMail $TRUE -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
       }
       else {
         Write-Information "TRYING:  User '$Id' - Enterprise Voice Status: Not enabled, trying to enable"
         try {
           if ($Force -or $PSCmdlet.ShouldProcess("$Id", 'Enabling User for EnterpriseVoice')) {
-            $null = Set-CsUser $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
+            $null = Set-CsUser -Identity $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
             $i = 0
             $iMax = 20
             $Status = 'Enable User For Enterprise Voice'
@@ -166,7 +171,7 @@ function Enable-TeamsUserForEnterpriseVoice {
               Start-Sleep -Milliseconds 1000
               $i++
             }
-            while ( -not $(Get-CsOnlineUser -Identity "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled )
+            while ( -not $(Get-CsOnlineUser "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled )
 
             if ($Called) {
               return $true

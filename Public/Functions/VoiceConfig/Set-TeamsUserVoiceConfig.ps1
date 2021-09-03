@@ -160,6 +160,11 @@ function Set-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
+    if ( $TeamsModuleVersion -gt 2.3.1 ) {
+      Write-Warning -Message 'Due to recent changes to Module MicrosoftTeams (v2.5.0 and later), not all functionality could yet be tested, your mileage may vary'
+    }
+
   } #begin
 
   process {
