@@ -23,6 +23,10 @@ function Get-TeamsTenantVoiceConfig {
     Displays Licenses for Call Plans, available Numbers, as well as
     Counters for all relevant Policies, available VoiceRoutingPolicies
   .EXAMPLE
+    Get-TeamsTenantVoiceConfig DisplayUserCounters
+    Displays a counters for Users in the Tenant as well as Users enabled for EnterpriseVoice
+    This will run for a long time and may result in a timeout with AzureAd and with Teams. Handle with care.
+  .EXAMPLE
     Get-TeamsTenantVoiceConfig -Detailed
     Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways
     Also displays diagnostic parameters for troubleshooting
