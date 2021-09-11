@@ -5,7 +5,7 @@
 # Status:     Live
 
 
-#TEST Refactoring of CmdLet to handing Object to this Cmdlet and working it with a worker function (like Test-TeamsUVC)
+
 
 function Enable-TeamsUserForEnterpriseVoice {
   <#

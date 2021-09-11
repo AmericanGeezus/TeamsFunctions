@@ -892,7 +892,6 @@ function New-TeamsAutoAttendant {
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Flow created"
-      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       if ($Parameters.ContainsKey('CallFlows')) {
         $Parameters.CallFlows.Add($AfterHoursCallFlow)
       }
@@ -913,7 +912,6 @@ function New-TeamsAutoAttendant {
 
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
-      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
         $Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
@@ -1024,7 +1022,6 @@ function New-TeamsAutoAttendant {
       $HolidaySetCallFlowParameters.Menu = $HolidaySetMenuObject
       $HolidaySetCallFlow = New-CsAutoAttendantCallFlow @HolidaySetCallFlowParameters
       Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Flow created"
-      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       if ($Parameters.ContainsKey('CallFlows')) {
         $Parameters.CallFlows.Add($HolidaySetCallFlow)
       }
@@ -1045,7 +1042,6 @@ function New-TeamsAutoAttendant {
 
       $HolidaySetCallHandlingAssociationParams.ScheduleId = $HolidaySchedule.Id
       $HolidaySetCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @HolidaySetCallHandlingAssociationParams
-      #TEST Validate for both AfterHours and HolidaySet CallHandlingAssociations
       Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Handling Association created with Holiday Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
         $Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)
