@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Add TenantDomain - Change HostedMigrationOverrideURL?
 
 function Get-TeamsTenant {
   <#
@@ -85,13 +85,14 @@ function Get-TeamsTenant {
     }
 
     # Adding OverrideURL
+    $TenantObject | Add-Member -MemberType NoteProperty -Name TenantDomain -Value $OverrideURL -Force #TODO Change!
     $TenantObject | Add-Member -MemberType NoteProperty -Name HostedMigrationOverrideURL -Value $OverrideURL -Force
 
     #Filtering Object
     if ( $TeamsModuleVersion -gt 2.3.1 ) {
       $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
         TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
-        DefaultDataLocation, DirSyncEnabled, WhenCreated, HostedMigrationOverrideURL, Domains
+        DefaultDataLocation, DirSyncEnabled, WhenCreated, TenantDomain, HostedMigrationOverrideURL, Domains
 
       #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
       $Domains = $TenantObject.Domains

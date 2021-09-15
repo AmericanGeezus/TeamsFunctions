@@ -245,7 +245,7 @@ function Get-TeamsUserVoiceConfig {
         UserPrincipalName          = $CsUser.UserPrincipalName
         SipAddress                 = $CsUser.SipAddress
         DisplayName                = $CsUser.DisplayName
-        <#
+        #<# Available until switch to new query method
         ObjectId                   = $UserObjectId
         Identity                   = $CsUser.Identity
         HostingProvider            = $CsUser.HostingProvider
@@ -258,6 +258,7 @@ function Get-TeamsUserVoiceConfig {
         #>
       }
 
+      <# When switching to new Query method
       #TEST Performance of Add-Member in comparison (100x?) and output for v2.5.x - Can InterpretedVoiceConfigType be salvaged somehow?
       if ($TeamsModuleVersion -lt 2.5.0) {
         $UserObject | Add-Member -MemberType NoteProperty -Name ObjectId -Value $UserObjectId
@@ -282,6 +283,7 @@ function Get-TeamsUserVoiceConfig {
       }
 
       $UserObject | Add-Member -MemberType NoteProperty -Name UsageLocation -Value $CsUser.UsageLocation
+      #>
 
       # Adding Licensing Parameters if not skipped
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
