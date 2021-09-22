@@ -132,7 +132,7 @@ function Remove-TeamsResourceAccount {
       $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Ignore
       if ($Associations.count -eq 0) {
         # Object has no associations
-        Write-Verbose -Message "'$DisplayName' Object does not have any associations"
+        Write-Verbose -Message "'$DisplayName' - Object does not have any associations"
         $Associations = $null
       }
       else {
