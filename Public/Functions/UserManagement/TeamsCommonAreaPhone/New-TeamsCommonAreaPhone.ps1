@@ -290,7 +290,7 @@ function New-TeamsCommonAreaPhone {
           "Function: $($MyInvocation.MyCommand.Name) - AzureAdUser created", ($AzureAdUser | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         $i = 0
-        $iMax = 45
+        $iMax = 60
         Write-Information "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
@@ -364,9 +364,9 @@ function New-TeamsCommonAreaPhone {
 
         $AllTests = $false
         $AllTests = foreach ($PlanToTest in $PlansToTest) { Test-TeamsUserLicense -Identity "$UPN" -ServicePlan "$PlanToTest" }
-        $TeamsUserLicenseNotYetAssigned = if ( $AllTests ) { $true } else { $false }
+        $TeamsUserLicenseAssigned = if ( ($AllTests) -notcontains $false ) { $true } else { $false }
       }
-      while (-not $TeamsUserLicenseNotYetAssigned)
+      while (-not $TeamsUserLicenseAssigned)
       Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
     }
     #endregion

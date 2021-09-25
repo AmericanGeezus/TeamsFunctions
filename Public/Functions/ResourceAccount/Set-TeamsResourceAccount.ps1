@@ -517,9 +517,9 @@ function Set-TeamsResourceAccount {
 
           $AllTests = $false
           $AllTests = foreach ($PlanToTest in $PlansToTest) { Test-TeamsUserLicense -Identity "$UPN" -ServicePlan "$PlanToTest" }
-          $TeamsUserLicenseNotYetAssigned = if ( $AllTests ) { $true } else { $false }
+          $TeamsUserLicenseAssigned = if ( ($AllTests) -notcontains $false ) { $true } else { $false }
         }
-        while (-not $TeamsUserLicenseNotYetAssigned)
+        while (-not $TeamsUserLicenseAssigned)
         Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
       }
       #endregion

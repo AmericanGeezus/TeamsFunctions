@@ -120,7 +120,7 @@ function New-TeamsResourceAccount {
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Telephone Number to assign')]
     [ValidateScript( {
         If ($_ -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') { $True } else {
-          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. Must start with a + and 8 to 15 digits long'
+          throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. Must be 8 to 15 digits long'
           $false
         }
       })]
@@ -272,7 +272,7 @@ function New-TeamsResourceAccount {
       if ($PSCmdlet.ShouldProcess("$UPN", 'New-CsOnlineApplicationInstance')) {
         $null = (New-CsOnlineApplicationInstance -UserPrincipalName $UPN -ApplicationId $AppId -DisplayName $Name -ErrorAction STOP)
         $i = 0
-        $iMax = 45
+        $iMax = 60
         Write-Information "INFO:    Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
@@ -304,7 +304,8 @@ function New-TeamsResourceAccount {
     }
     catch {
       # Catching anything
-      throw "Resource Account '$Name' - Creation failed: $($_.Exception.Message)"
+      Write-Error -Message "Resource Account '$Name' - Creation failed: $($_.Exception.Message)" -Exception $_.Exception
+      return
     }
     #endregion
 
@@ -371,9 +372,9 @@ function New-TeamsResourceAccount {
 
         $AllTests = $false
         $AllTests = foreach ($PlanToTest in $PlansToTest) { Test-TeamsUserLicense -Identity "$UPN" -ServicePlan "$PlanToTest" }
-        $TeamsUserLicenseNotYetAssigned = if ( $AllTests ) { $true } else { $false }
+        $TeamsUserLicenseAssigned = if ( ($AllTests) -notcontains $false ) { $true } else { $false }
       }
-      while (-not $TeamsUserLicenseNotYetAssigned)
+      while (-not $TeamsUserLicenseAssigned)
       Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
     }
     #endregion
@@ -395,6 +396,7 @@ function New-TeamsResourceAccount {
         # Processing paths for Telephone Numbers depending on Type
         $E164Number = Format-StringForUse $PhoneNumber -As E164
 
+        #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts
         if ($PhoneNumberIsMSNumber) {
           # Set in VoiceApplicationInstance
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"
