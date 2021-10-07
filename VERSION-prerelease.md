@@ -19,7 +19,7 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ### Updated
 
-- TBC
+- `Get-TeamsResourceAccount`: Added the Exception message to "Account not found" to feed back the error (RBAC)
 
 ### Limitations
 

@@ -131,6 +131,10 @@ function Get-TeamsResourceAccount {
           [void]$ResourceAccounts.Add($RA)
         }
         catch {
+          if ($_.Exception.Message.Contains('RBAC')) {
+            Write-Warning -Message 'AzureAd Admin Roles are not assigned, activated or have timed out. Please check your Administrative Roles'
+          }
+          Write-Error "$($_.Exception.Message)"
           Write-Information "INFO:    Resource Account '$I' - Not found!"
         }
       }
