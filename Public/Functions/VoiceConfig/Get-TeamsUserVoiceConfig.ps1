@@ -300,6 +300,8 @@ function Get-TeamsUserVoiceConfig {
         Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message $Operation
 
+        #FIXME - Limited to Diagnostic Level itself.
+        #Maybe introduce a separate parameter to flatten all nested objects in order to allow export independent of DiagnosticLevel
         if ( $PSBoundParameters.ContainsKey('DiagnosticLevel') ) {
           $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
           if ($CsUserLicense.Licenses) {
