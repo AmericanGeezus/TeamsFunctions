@@ -4,9 +4,9 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
 #TODO Check output for Diagnosticlevel 1-4 to ascertain removed output if CsOnlineObject is called with -Identity Switch!
-
+#TODO Check output for Policies - Add all relevant Policies to Level 2? (all Policies to Level 3? (move 3/4 to 4/5?))
+#TODO Add Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)
 function Get-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
