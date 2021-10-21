@@ -184,9 +184,11 @@ function Set-AzureAdUserLicenseServicePlan {
         }
 
         # Creating a new License Object
+        $License = $null #CHECK Addresses an issue with License Object being used the second time in the loop and displaying
         $License = New-AzureAdLicenseObject -AddSkuId $L.SkuId
         $DisabledPlans = $null
         try {
+          #CHECK Disabledplans cannot be populated correctly?
           $DisabledPlans = $L.ServicePlans | Where-Object ProvisioningStatus -EQ 'Disabled' -ErrorAction Stop | Select-Object ServicePlanId -ExpandProperty ServicePlanId
           $($License.AddLicenses).DisabledPlans = $DisabledPlans
         }
@@ -217,8 +219,9 @@ function Set-AzureAdUserLicenseServicePlan {
               }
 
               # Checking whether Service Plan is disabled
+              #VALIDATE - Sometimes reports that the ServicePlanID is not in DisabledPlans - ODD!
               if ( $ServicePlanToEnable.ServicePlanId -in $License.AddLicenses.DisabledPlans ) {
-                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Flaggin Service Plan for activation: '$($ServicePlanToEnable.ServicePlanId)'"
+                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Enabling Service Plan: '$($ServicePlanToEnable.ServicePlanId)'"
                 $null = $($License.AddLicenses).DisabledPlans.Remove($ServicePlanToEnable.ServicePlanId)
                 $EnabledPlans++
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -254,7 +257,7 @@ function Set-AzureAdUserLicenseServicePlan {
               }
               # Checking whether Service Plan is disabled
               if (-not ($ServicePlanToDisable.ServicePlanId -in $License.AddLicenses.DisabledPlans)) {
-                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Flaggin Service Plan for deactivation: '$($ServicePlanToEnable.ServicePlanId)'"
+                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Disabling Service Plan: '$($ServicePlanToDisable.ServicePlanId)'"
                 $($License.AddLicenses).DisabledPlans += $ServicePlanToDisable.ServicePlanId
                 $DisabledPlans++
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -302,7 +305,7 @@ function Set-AzureAdUserLicenseServicePlan {
         Write-Information "INFO:    '$ID' - Operation performed: $ChangedLicenseCount Assigned Licenses changed"
       }
       else {
-        Write-Warning 'INFO:    '$ID' - No Licenses changed. Please validate License Assignments with Get-TeamsUserLicense or use switch PassThru'
+        Write-Warning "INFO:    '$ID' - No Licenses changed. Please validate License Assignments with Get-TeamsUserLicense or use switch PassThru"
       }
 
       #endregion
