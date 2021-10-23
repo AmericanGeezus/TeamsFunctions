@@ -1355,8 +1355,11 @@ function Set-TeamsCallQueue {
       $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
       $CallQueueFinal = $CallQueueFinal | Where-Object Name -EQ "$NameNormalised"
 
-      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
       Write-Output $CallQueueFinal
+    }
+    else {
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
     }
     #endregion
 

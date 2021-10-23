@@ -166,7 +166,8 @@ function Get-TeamsAutoAttendantAudioFile {
     #foreach -parallel ($AA in $AutoAttendants) {
     foreach ($AA in $AutoAttendants) {
       # Initialising counters for Progress bars
-      Write-Progress -Id 0 -Status "Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AACount * 100)
+      $Status = "Auto Attendant '$($AA.Name)'"
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AACount * 100)
       $AACounter++
       [int]$step = 0
       [int]$sMax = 2
@@ -174,7 +175,7 @@ function Get-TeamsAutoAttendantAudioFile {
       #region Parsing Default Call Flow
       $Operation = 'Parsing Default CallFlow'
       $step++
-      Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($AA.Name)' - $Operation"
       Write-Information "INFO:    Parsing Audio Files for Auto Attendant '$($AA.Name)'"
 
@@ -200,7 +201,7 @@ function Get-TeamsAutoAttendantAudioFile {
       #region CallFlows
       $Operation = 'Parsing CallFlows'
       $step++
-      Write-Progress -Id 1 -Status "Auto Attendant '$($AA.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($AA.Name)' - $Operation"
 
       foreach ($Flow in $AA.CallFlows) {
@@ -223,6 +224,9 @@ function Get-TeamsAutoAttendantAudioFile {
         OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
       }
       #endregion
+      #VALIDATE output for Progress bar bleeding through in VSCode
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+
     }
   } #process
 

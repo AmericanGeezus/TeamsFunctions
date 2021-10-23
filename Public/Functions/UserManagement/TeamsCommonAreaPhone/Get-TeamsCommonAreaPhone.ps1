@@ -182,9 +182,10 @@ function Get-TeamsCommonAreaPhone {
 
     #region OUTPUT
     # Creating new PS Object
+    $StatusID0 = 'Information Gathering'
     $Operation = "Parsing Information for $($CommonAreaPhones.Count) Common Area Phones"
     $step++
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status $StatusID0 -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     foreach ($CommonAreaPhone in $CommonAreaPhones) {
       # Initialising counters for Progress bars
@@ -193,7 +194,7 @@ function Get-TeamsCommonAreaPhone {
 
       #region Parsing Policies
       $Operation = 'Parsing Policies'
-      Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
 
       # TeamsIPPhonePolicy and CommonAreaPhoneSignIn
@@ -309,16 +310,17 @@ function Get-TeamsCommonAreaPhone {
       #endregion
 
       # Parsing TeamsUserLicense
+      $Status = "Processing Object '$($CommonAreaPhone.DisplayName)'"
       $Operation = 'Parsing License Assignments'
       $step++
-      Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $CommonAreaPhoneLicense = Get-AzureAdUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
 
       # Phone Number Type
       $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
-      Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
@@ -364,7 +366,8 @@ function Get-TeamsCommonAreaPhone {
     }
 
     #endregion
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+    #CHECK Test Progress bars bleed-through. If not viable, close ID 0 before FOREACH
+    Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
 
   } #process
 

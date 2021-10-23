@@ -422,9 +422,9 @@ function New-TeamsCommonAreaPhone {
     else {
       $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordFormat
     }
-    Write-Output $ObjectCreated
 
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+    Write-Output $ObjectCreated
     #endregion
 
   } #process

@@ -336,12 +336,14 @@ function Connect-Me {
       }
 
       #Output
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
       Write-Output $SessionInfo
 
       Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Ready" -ForegroundColor Green
       Get-RandomQuote
     }
     else {
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
       return $(if ($Called) {
           # Returning basic connection information
           $SessionInfo = Get-CurrentConnectionInfo
@@ -349,7 +351,6 @@ function Connect-Me {
         })
     }
 
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
     #endregion
 
   } #process

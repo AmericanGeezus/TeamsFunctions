@@ -107,9 +107,10 @@ function Remove-TeamsResourceAccount {
       # Initialising counters for Progress bars
       [int]$step = 0
       [int]$sMax = 5
+      $Status = "Processing '$UPN'"
 
       #region Lookup of UserPrincipalName
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Processing: $UPN"
       try {
         #Trying to query the Resource Account
@@ -127,7 +128,7 @@ function Remove-TeamsResourceAccount {
       # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
       $Operation = "'$DisplayName' - Associations to Call Queues or Auto Attendants"
       $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Ignore
       if ($Associations.count -eq 0) {
@@ -163,7 +164,7 @@ function Remove-TeamsResourceAccount {
       # Removing Phone Number Assignments
       $Operation = "'$DisplayName' - Phone Number Assignments"
       $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
         if ($null -ne ($Object.TelephoneNumber)) {
@@ -189,7 +190,7 @@ function Remove-TeamsResourceAccount {
       # Reading User Licenses
       $Operation = "'$DisplayName' - License Assignments"
       $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
         $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId "$UPN" -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
@@ -217,7 +218,7 @@ function Remove-TeamsResourceAccount {
       # Removing AzureAD User
       $Operation = "'$DisplayName' - Removing AzureAD Object (AzureAdUser)"
       $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($Force -or $PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
@@ -234,7 +235,7 @@ function Remove-TeamsResourceAccount {
       #endregion
 
       # Output
-      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
       if ($PassThru) {
         Write-Output "AzureAdUser '$UserPrincipalName' removed"
       }

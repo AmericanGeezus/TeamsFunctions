@@ -172,6 +172,7 @@ function Enable-TeamsUserForEnterpriseVoice {
               $i++
             }
             while ( -not $(Get-CsOnlineUser "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled )
+            Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
 
             if ($Called) {
               return $true

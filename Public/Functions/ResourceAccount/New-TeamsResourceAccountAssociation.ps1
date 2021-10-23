@@ -260,7 +260,7 @@ function New-TeamsResourceAccountAssociation {
       }
 
       [void]$ValidatedAccounts.Add($Account)
-      Write-Progress -Id 1 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
     }
 
     # Processing found accounts
@@ -342,7 +342,9 @@ function New-TeamsResourceAccountAssociation {
           AssociatedTo      = $AssociationTarget.Name
         }
 
-        Write-Progress -Id 1 -Status "'$($Account.UserPrincipalName)' - Complete" -Activity $MyInvocation.MyCommand -Completed
+        Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+        #VALIDATE Application of ID 0 Completion for multiple Associations!
+        Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
         Write-Output $ResourceAccountAssociationObject
 
         if ( $ErrorEncountered ) {
@@ -354,7 +356,6 @@ function New-TeamsResourceAccountAssociation {
   } #process
 
   end {
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #New-TeamsResourceAccountAssociation

@@ -95,6 +95,7 @@ function Remove-TeamsAutoAttendant {
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity "$($AA.Identity)" -ErrorAction STOP
             }
+            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -Completed
           }
         }
         else {
@@ -105,7 +106,9 @@ function Remove-TeamsAutoAttendant {
         Write-Error -Message "Removal of Auto Attendant '$DN' failed" -Category OperationStopped
         return
       }
+      Write-Progress -Id 0 -Status "Processing '$DN'" -Activity $MyInvocation.MyCommand -Completed
     }
+
   } #process
 
   end {

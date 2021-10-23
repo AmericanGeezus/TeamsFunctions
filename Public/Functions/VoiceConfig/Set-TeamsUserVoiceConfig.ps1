@@ -782,13 +782,11 @@ function Set-TeamsUserVoiceConfig {
       if ( $PsCmdlet.ParameterSetName -eq 'DirectRouting' -and $null -eq $UserObjectPost.OnlineVoiceRoutingPolicy) {
         Write-Warning -Message 'Applied Policies take some time to show up on the object. Please verify again with Get-TeamsUserVoiceConfig'
       }
-
-      Write-Progress -Id 0 -Status 'Provisioning' -Activity $MyInvocation.MyCommand -Completed
-      return $UserObjectPost
     }
-    else {
-      Write-Progress -Id 0 -Status 'Provisioning' -Activity $MyInvocation.MyCommand -Completed
-      return
+    Write-Progress -Id 0 -Status 'Provisioning' -Activity $MyInvocation.MyCommand -Completed
+
+    if ( $PassThru ) {
+      Write-Object $UserObjectPost
     }
     #endregion
 

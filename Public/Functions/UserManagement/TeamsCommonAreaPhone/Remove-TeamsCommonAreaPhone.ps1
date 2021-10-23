@@ -98,8 +98,9 @@ function Remove-TeamsCommonAreaPhone {
       [int]$step = 0
       [int]$sMax = 3
 
+      $Status = "Processing '$UPN'"
       #region Lookup of UserPrincipalName
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "Processing: $UPN"
       try {
         #Trying to query the Common Area Phone
@@ -119,7 +120,7 @@ function Remove-TeamsCommonAreaPhone {
       #region Removing Voice Config
       $Operation = "'$DisplayName' - Removing Voice Configuration"
       $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
         Remove-TeamsUserVoiceConfig -UserPrincipalName $UPN -PassThru -ErrorAction Stop
@@ -133,7 +134,7 @@ function Remove-TeamsCommonAreaPhone {
       # Reading User Licenses
       $Operation = "'$DisplayName' - License Assignments"
       $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
         $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId "$UPN" -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
@@ -160,7 +161,7 @@ function Remove-TeamsCommonAreaPhone {
       # Removing AzureAD User
       $Operation = "'$DisplayName' - Removing AzureAD Object (AzureAdUser)"
       $step++
-      Write-Progress -Id 0 -Status "Processing '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($Force -or $PSCmdlet.ShouldProcess("Common Area Phone with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
@@ -177,7 +178,7 @@ function Remove-TeamsCommonAreaPhone {
       #endregion
 
       # Output
-      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
       if ($PassThru) {
         Write-Output "AzureAdUser '$UserPrincipalName' removed"
       }

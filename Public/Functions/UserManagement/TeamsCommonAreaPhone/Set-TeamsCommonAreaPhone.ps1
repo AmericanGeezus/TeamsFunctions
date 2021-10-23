@@ -438,12 +438,12 @@ function Set-TeamsCommonAreaPhone {
 
         $CommonAreaPhone = $null
         $CommonAreaPhone = Get-TeamsCommonAreaPhone -Identity "$UPN"
+      }
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      if ($PassThru) {
         Write-Output $CommonAreaPhone
       }
-
-      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
       #endregion
-
     }
 
   } #process

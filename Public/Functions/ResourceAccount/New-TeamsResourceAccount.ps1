@@ -506,7 +506,7 @@ function New-TeamsResourceAccount {
         Write-Warning -Message 'Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount to verify'
       }
 
-      Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
       Write-Output $ResourceAccountObject
 
     }

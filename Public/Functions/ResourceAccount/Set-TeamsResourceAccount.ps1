@@ -654,7 +654,7 @@ function Set-TeamsResourceAccount {
       #endregion
       #endregion
 
-      Write-Progress -Id 1 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
 
       if ( $PassThru ) {
         $Status = 'Output'
@@ -664,7 +664,7 @@ function Set-TeamsResourceAccount {
         Write-Verbose -Message "$Status - $Operation"
 
         $RAObject = Get-TeamsResourceAccount -Identity "$UPN"
-        Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+        Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
         Write-Output $RAObject
       }
     }

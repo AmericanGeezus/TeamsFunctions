@@ -121,8 +121,9 @@ function Remove-TeamsUserVoiceConfig {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $UserCounter = 0
     foreach ($UPN in $UserPrincipalName) {
-      Write-Verbose -Message "[PROCESS] Processing '$UPN'"
-      Write-Progress -Id 0 -Status "User '$UPN'" -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
+      $StatusID0 = "Processing '$UPN'"
+      Write-Verbose -Message "[PROCESS] $StatusID0"
+      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
       $UserCounter++
       # Initialising counters for Progress bars
       [int]$step = 0
@@ -134,18 +135,19 @@ function Remove-TeamsUserVoiceConfig {
       if ( $DisableEV ) { $sMax++ }
 
       #region Information Gathering
+      $Status = "User '$UPN'"
       $Operation = 'Querying User Account'
-      Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       # Querying Identity
       try {
-        Write-Verbose -Message "User '$UPN' - Querying User Account"
+        Write-Verbose -Message "$Status - $Operation"
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
         #$CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
         $CsUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
       }
       catch {
-        Write-Error "User '$UPN' not found: $($_.Exception.Message)" -Category ObjectNotFound
+        Write-Error "$Status not found: $($_.Exception.Message)" -Category ObjectNotFound
         continue
       }
       #endregion
@@ -155,8 +157,8 @@ function Remove-TeamsUserVoiceConfig {
         # Querying User Licenses
         $Operation = 'Calling Plans - Querying User Licenses'
         $step++
-        Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message $Operation
+        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
         $CsUserLicense = Get-AzureAdUserLicense "$UPN"
 
         if ($null -ne $CsUserLicense.Licenses) {
@@ -180,58 +182,58 @@ function Remove-TeamsUserVoiceConfig {
             # Removing TelephoneNumber
             $Operation = 'Calling Plans - Removing Telephone Number'
             $step++
-            Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message $Operation
+            Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+            Write-Verbose -Message "$Status - $Operation"
             if ( $Force -or $CsUser.TelephoneNumber ) {
               try {
                 Set-CsOnlineVoiceUser -Identity "$UPN" -TelephoneNumber $Null -ErrorAction Stop
-                Write-Information "INFO:    User '$UPN' - Removing TelephoneNumber: OK"
+                Write-Information "INFO:    $Status - Removing TelephoneNumber: OK"
               }
               catch {
                 if ( 'Your tenant is Disabled for this service. You are not permitted to use this cmdlet.' -in $_.Exception.Message) {
-                  Write-Verbose -Message "User '$UPN' - Removing TelephoneNumber: OK (Service Disabled)"
+                  Write-Verbose -Message "$Status - Removing TelephoneNumber: OK (Service Disabled)"
                 }
                 else {
-                  Write-Verbose -Message "User '$UPN' - Removing TelephoneNumber: Failed" -Verbose
+                  Write-Verbose -Message "$Status - Removing TelephoneNumber: Failed" -Verbose
                   Write-Error -Message "Error:  $($_.Exception.Message)"
                 }
               }
             }
             else {
-              Write-Verbose -Message "User '$UPN' - Removing TelephoneNumber: Not assigned"
+              Write-Verbose -Message "$Status - Removing TelephoneNumber: Not assigned"
             }
 
             # Removing Call Plan Licenses (with Confirmation)
             $Operation = 'Calling Plans - Removing Calling Plan Licenses'
             $step++
-            Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message $Operation
+            Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+            Write-Verbose -Message "$Status - $Operation"
             if ( $RemoveLicenses.Count -gt 0 ) {
               try {
                 if ( $PSCmdlet.ShouldProcess("$UPN", "Removing Licenses: $RemoveLicenses")) {
                   $null = (Set-TeamsUserLicense -Identity "$UPN" -Remove $RemoveLicenses -ErrorAction STOP)
-                  Write-Information "INFO:    User '$UPN' - Removing Call Plan Licenses: OK"
+                  Write-Information "INFO:    $Status - Removing Call Plan Licenses: OK"
                 }
                 else {
-                  Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
+                  Write-Verbose -Message "$Status - Removing Call Plan Licenses: None assigned"
                 }
               }
               catch {
-                Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: Failed" -Verbose
+                Write-Verbose -Message "$Status - Removing Call Plan Licenses: Failed" -Verbose
                 Write-Error -Message "Error:  $($_.Exception.Message)"
               }
             }
             else {
-              Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
+              Write-Verbose -Message "$Status - Removing Call Plan Licenses: None assigned"
             }
           }
           else {
             if ( $CsUser.TelephoneNumber ) {
-              Write-Error -Message "User '$UPN' - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
+              Write-Error -Message "$Status - Removing Call Plan Licenses: No licenses found on User. Cannot action removal of PhoneNumber" -Category PermissionDenied
             }
             else {
-              Write-Verbose -Message "User '$UPN' - Removing TelephoneNumber: Not assigned"
-              Write-Verbose -Message "User '$UPN' - Removing Call Plan Licenses: None assigned"
+              Write-Verbose -Message "$Status - Removing TelephoneNumber: Not assigned"
+              Write-Verbose -Message "$Status - Removing Call Plan Licenses: None assigned"
             }
           }
         }
@@ -243,40 +245,40 @@ function Remove-TeamsUserVoiceConfig {
         #region Removing OnPremLineURI
         $Operation = 'Direct Routing - Removing OnPremLineURI'
         $step++
-        Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message $Operation
+        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
         if ( $Force -or $CsUser.OnPremLineURI ) {
           try {
             $CsUser | Set-CsUser -OnPremLineURI $Null
-            Write-Information "INFO:    User '$UPN' - Removing OnPremLineURI: OK"
+            Write-Information "INFO:    $Status - Removing OnPremLineURI: OK"
           }
           catch {
-            Write-Verbose -Message "User '$UPN' - Removing OnPremLineURI: Failed" -Verbose
+            Write-Verbose -Message "$Status - Removing OnPremLineURI: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
         }
         else {
-          Write-Verbose -Message "User '$UPN' - Removing OnPremLineURI: Not assigned"
+          Write-Verbose -Message "$Status - Removing OnPremLineURI: Not assigned"
         }
         #endregion
 
         #region Removing Online Voice Routing Policy
         $Operation = 'Direct Routing - Removing Online Voice Routing Policy'
         $step++
-        Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message $Operation
+        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Verbose -Message "$Status - $Operation"
         if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy ) {
           try {
             $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
-            Write-Information "INFO:    User '$UPN' - Removing Online Voice Routing Policy: OK"
+            Write-Information "INFO:    $Status - Removing Online Voice Routing Policy: OK"
           }
           catch {
-            Write-Verbose -Message "User '$UPN' - Removing Online Voice Routing Policy: Failed" -Verbose
+            Write-Verbose -Message "$Status - Removing Online Voice Routing Policy: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
         }
         else {
-          Write-Verbose -Message "User '$UPN' - Removing Online Voice Routing Policy: Not assigned"
+          Write-Verbose -Message "$Status - Removing Online Voice Routing Policy: Not assigned"
         }
         #endregion
       }
@@ -286,20 +288,20 @@ function Remove-TeamsUserVoiceConfig {
       #region Removing Tenant DialPlan
       $Operation = 'Generic - Removing Tenant Dial Plan'
       $step++
-      Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Verbose -Message "$Status - $Operation"
       if ( $Force -or $CsUser.TenantDialPlan ) {
         try {
           $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
-          Write-Information "INFO:    User '$UPN' - Removing Tenant Dial Plan: OK"
+          Write-Information "INFO:    $Status - Removing Tenant Dial Plan: OK"
         }
         catch {
-          Write-Verbose -Message "User '$UPN' - Removing Tenant Dial Plan: Failed" -Verbose
+          Write-Verbose -Message "$Status - Removing Tenant Dial Plan: Failed" -Verbose
           Write-Error -Message "Error:  $($error.Exception.Message)"
         }
       }
       else {
-        Write-Verbose -Message "User '$UPN' - Removing Tenant Dial Plan: Not assigned"
+        Write-Verbose -Message "$Status - Removing Tenant Dial Plan: Not assigned"
       }
       #endregion
 
@@ -308,36 +310,35 @@ function Remove-TeamsUserVoiceConfig {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
           $Operation = 'Generic - Disabling Enterprise Voice'
           $step++
-          Write-Progress -Id 1 -Status "User '$UPN'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          Write-Verbose -Message $Operation
+          Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+          Write-Verbose -Message "$Status - $Operation"
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$UPN", 'Disabling EnterpriseVoice')) {
               $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
-              Write-Information "INFO:    User '$UPN' - Disabling EnterpriseVoice: OK"
+              Write-Information "INFO:    $Status - Disabling EnterpriseVoice: OK"
             }
             else {
-              Write-Verbose -Message "User '$UPN' - Disabling EnterpriseVoice: Skipped (Not confirmed)"
+              Write-Verbose -Message "$Status - Disabling EnterpriseVoice: Skipped (Not confirmed)"
             }
           }
           catch {
-            Write-Verbose -Message "User '$UPN' - Disabling EnterpriseVoice: Failed" -Verbose
+            Write-Verbose -Message "$Status - Disabling EnterpriseVoice: Failed" -Verbose
             Write-Error -Message "Error:  $($error.Exception.Message)"
           }
         }
         else {
-          Write-Verbose -Message "User '$UPN' - Disabling EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
+          Write-Verbose -Message "$Status - Disabling EnterpriseVoice: Skipped (Current Status is: Enabled)" -Verbose
         }
       }
       else {
-        Write-Verbose -Message "User '$UPN' - Disabling EnterpriseVoice: Skipped (Not enabled)"
+        Write-Verbose -Message "$Status - Disabling EnterpriseVoice: Skipped (Not enabled)"
       }
       #endregion
       #endregion
 
-
-      Write-Progress -Id 1 -Status "User '$UPN'" -Activity $MyInvocation.MyCommand -Completed
-
       # Output
+      Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
       if ( $PassThru ) {
         Get-TeamsUserVoiceConfig -UserPrincipalName "$UPN" -InformationAction SilentlyContinue -WarningAction SilentlyContinue
       }

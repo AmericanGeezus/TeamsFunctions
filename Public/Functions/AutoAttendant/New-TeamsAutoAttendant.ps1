@@ -1128,7 +1128,7 @@ function New-TeamsAutoAttendant {
     Write-Verbose -Message "$Status - $Operation"
 
     $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -WarningAction SilentlyContinue
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
     Write-Output $AAFinal
     #endregion
 
