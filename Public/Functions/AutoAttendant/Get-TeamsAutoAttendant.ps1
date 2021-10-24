@@ -85,8 +85,21 @@ function Get-TeamsAutoAttendant {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand.Name)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand.Name)`.md"
 
-    <# Does not currently work!
     #Initialising Counters
+    <#
+    $tokens = $errors = $null
+    $ast = [System.Management.Automation.Language.Parser]::ParseInput($MyInvocation.MyCommand.Definition, [ref] $tokens, [ref]$errors)
+    #>
+    #This only gets ALL the uses of Write-BetterProgress and does not differentiate between ID0 and ID1!
+    $script:StepsID0 = ([System.Management.Automation.PsParser]::Tokenize($MyInvocation.MyCommand.Definition, [ref]$null) | Where-Object { $_.Type -eq 'Command' -and $_.Content -eq 'Write-BetterProgress' }).Count
+    if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID0: $script:StepsID0" | Write-Debug }
+
+
+    <# Does not currently work!
+    $script:tokens = [System.Management.Automation.PsParser]::Tokenize($MyInvocation.MyCommand.Definition, [ref]$null) | Where-Object { $_.Type -eq 'Command' -and $_.Content -eq 'Write-BetterProgress' }
+    $script:tokens
+    if ($PSBoundParameters.ContainsKey('Debug')) { $script:tokens | Write-Debug }
+
     $scriptAst = [System.Management.Automation.Language.Parser]::ParseInput($MyInvocation.MyCommand.ScriptContents, [ref]$null, [ref]$null)
 
     #$script:StepsID0 = $processBlock.Extent.Text -split 'Write-BetterProgress -Id 0' | Measure-Object | Select-Object -Exp Count
@@ -95,7 +108,7 @@ function Get-TeamsAutoAttendant {
     $script:StepsID1 = $ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 1 ' | Measure-Object | Select-Object -ExpandProperty Count
     if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID1: $script:StepsID1" | Write-Debug }
     #>
-    
+
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
