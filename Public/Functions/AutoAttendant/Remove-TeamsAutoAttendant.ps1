@@ -72,8 +72,10 @@ function Remove-TeamsAutoAttendant {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $DNCounter = 0
     foreach ($DN in $Name) {
-      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation 'Querying CsAutoAttendant' -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
-      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
+      $StatusID0 = "Processing '$DN'"
+      $Operation = 'Querying CsAutoAttendant'
+      Write-Progress -Id 0 -Status $StatusID0 -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
+      Write-Verbose -Message "$StatusID0 - $Operation"
       $DNCounter++
       try {
         Write-Information 'INFO:    The listed Auto Attendants are being removed:'
@@ -89,13 +91,16 @@ function Remove-TeamsAutoAttendant {
           $AACounter = 0
           $AAs = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
-            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AAs * 100)
-            Write-Information "INFO:    Removing Auto Attendant: '$($AA.Name)'"
+            $Status = "'$DN'"
+            $Operation = "Removing Auto Attendant '$($AA.Name)'"
+            Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AAs * 100)
+            Write-Verbose -Message "$Status - $Operation"
+            Write-Information "INFO:    $Operation"
             $AACounter++
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity "$($AA.Identity)" -ErrorAction STOP
             }
-            Write-Progress -Id 1 -Status "Removing Auto Attendant '$($AA.Name)'" -Activity $MyInvocation.MyCommand -Completed
+            Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
           }
         }
         else {
@@ -106,7 +111,7 @@ function Remove-TeamsAutoAttendant {
         Write-Error -Message "Removal of Auto Attendant '$DN' failed" -Category OperationStopped
         return
       }
-      Write-Progress -Id 0 -Status "Processing '$DN'" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
     }
 
   } #process

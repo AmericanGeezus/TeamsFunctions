@@ -147,7 +147,8 @@ function Get-TeamsCallQueue {
     #foreach -parallel ($Q in $Queues) {
     foreach ($Q in $Queues) {
       # Initialising counters for Progress bars
-      Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
+      $StatusID0 = "Queue '$($Q.Name)'"
+      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $QueueCount * 100)
       $QueueCounter++
       [int]$step = 0
       [int]$sMax = 8
@@ -164,9 +165,10 @@ function Get-TeamsCallQueue {
         $sMax = $sMax + 2
       }
 
+      $Status = "'$($Q.Name)'"
       #region Finding OverflowActionTarget
       $Operation = 'Parsing OverflowActionTarget'
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       $OAT = $null
       if ($Q.OverflowActionTarget) {
@@ -177,7 +179,7 @@ function Get-TeamsCallQueue {
 
       #region Finding TimeoutActionTarget
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation 'Parsing TimeoutActionTarget' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation 'Parsing TimeoutActionTarget' -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - Parsing TimeoutActionTarget"
       $TAT = $null
       if ($Q.TimeoutActionTarget) {
@@ -190,7 +192,7 @@ function Get-TeamsCallQueue {
       # Channel
       $Operation = 'Parsing Channel'
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       if ($Q.ChannelId) {
         $FullChannelId = $Q.DistributionLists.Guid + '\' + $Q.ChannelId
@@ -202,7 +204,7 @@ function Get-TeamsCallQueue {
       # Distribution Lists
       $Operation = 'Parsing DistributionLists'
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       foreach ($DL in $Q.DistributionLists) {
         #$DLObject = Get-UniqueAzureADGroup "$DL" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -216,7 +218,7 @@ function Get-TeamsCallQueue {
       # Users
       $Operation = 'Parsing Users'
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       foreach ($User in $Q.Users) {
         try {
@@ -234,7 +236,7 @@ function Get-TeamsCallQueue {
         # Parsing Channel Users when the detailed Switch is used
         $Operation = 'Parsing Channel Users'
         $step++
-        Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($Q.Name)' - $Operation"
         foreach ($User in $Q.ChannelUserObjectId) {
           try {
@@ -251,7 +253,7 @@ function Get-TeamsCallQueue {
         # Parsing Agents only when the detailed Switch is used
         $Operation = 'Parsing Agents'
         $step++
-        Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "'$($Q.Name)' - $Operation"
 
         foreach ($Agent in $Q.Agents) {
@@ -271,7 +273,7 @@ function Get-TeamsCallQueue {
       #region Application Instance UPNs
       $Operation = 'Parsing Resource Accounts (Associated)'
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       foreach ($AI in $Q.ApplicationInstances) {
         $AIObject = $null
@@ -286,7 +288,7 @@ function Get-TeamsCallQueue {
       #region Application Instance UPNs
       $Operation = 'Parsing Resource Accounts (Caller Id)'
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       foreach ($OboRA in $Q.OboResourceAccountIds) {
         $OboObject = $null
@@ -302,7 +304,7 @@ function Get-TeamsCallQueue {
       # Building custom Object with Friendly Names
       $Operation = 'Constructing Output Object'
       $step++
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message "'$($Q.Name)' - $Operation"
       $QueueObject = $null
       $QueueObject = [PSCustomObject][ordered]@{
@@ -382,8 +384,8 @@ function Get-TeamsCallQueue {
       #endregion
 
       # Output
-      Write-Progress -Id 1 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
-      Write-Progress -Id 0 -Status "Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
 
       Write-Output $QueueObject
     }

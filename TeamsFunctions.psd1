@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.09.02'
+  ModuleVersion         = '21.10.23'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -136,6 +136,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-ISO3166Country',
     'Get-RegionFromCountryCode',
     'Get-TeamsObjectType',
+    'Write-BetterProgress',
     ## Licensing
     'New-AzureAdLicenseObject',
     'Test-AzureAdLicenseContainsServicePlan',

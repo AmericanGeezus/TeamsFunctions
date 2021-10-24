@@ -117,9 +117,10 @@ function Get-TeamsResourceAccount {
     $ResourceAccounts = $null
 
     #region Data gathering
+    $StatusID0 = 'Information Gathering'
     $Operation = 'Querying Resource Accounts'
     $step++
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status $StatusID0 -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     if ($PSBoundParameters.ContainsKey('UserPrincipalName')) {
       # Default Parameterset
@@ -173,16 +174,17 @@ function Get-TeamsResourceAccount {
     # Creating new PS Object
     $Operation = "Parsing Information for $($ResourceAccounts.Count) Resource Accounts"
     $step++
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+    Write-Progress -Id 0 -Status $StatusID0 -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
     Write-Verbose -Message $Operation
     foreach ($ResourceAccount in $ResourceAccounts) {
       # Initialising counters for Progress bars
       [int]$step = 0
       [int]$sMax = 7
 
+      $Status = "'$($ResourceAccount.UserPrincipalName)' - '$($ResourceAccount.DisplayName)'"
       # readable Application type
       $Operation = 'Parsing ApplicationType'
-      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($PSBoundParameters.ContainsKey('ApplicationType')) {
         $ResourceAccountApplicationType = $ApplicationType
@@ -194,7 +196,7 @@ function Get-TeamsResourceAccount {
       # Parsing CsOnlineUser
       $Operation = 'Parsing Online Voice Routing Policy'
       $step++
-      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       try {
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
@@ -209,14 +211,14 @@ function Get-TeamsResourceAccount {
       # Parsing TeamsUserLicense
       $Operation = 'Parsing License Assignments'
       $step++
-      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $ResourceAccountLicense = Get-AzureAdUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
 
       # Phone Number Type
       $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
       $step++
-      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
@@ -236,7 +238,7 @@ function Get-TeamsResourceAccount {
       # Associations
       $Operation = 'Parsing Association'
       $step++
-      Write-Progress -Id 1 -Status "'$($ResourceAccount.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
       Write-Verbose -Message $Operation
       $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       if ( $Association ) {
@@ -268,8 +270,8 @@ function Get-TeamsResourceAccount {
         AssociationStatus        = $AssociationStatus.Status
       }
 
-      Write-Progress -Id 1 -Status "Processing '$($ResourceAccount.UserPrincipalName)'" -Activity $MyInvocation.MyCommand -Completed
-      Write-Progress -Id 0 -Status 'Information Gathering' -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
       Write-Output $ResourceAccountObject
     }
 

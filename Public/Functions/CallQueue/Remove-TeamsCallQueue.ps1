@@ -68,8 +68,10 @@ function Remove-TeamsCallQueue {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $DNCounter = 0
     foreach ($DN in $Name) {
-      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation 'Querying CsCallQueue' -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
-      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
+      $StatusID0 = "Processing '$DN'"
+      $Operation = 'Querying CsCallQueue'
+      Write-Progress -Id 0 -Status $StatusID0 -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
+      Write-Verbose -Message "$StatusID0 - $Operation"
       $DNCounter++
       try {
         Write-Information 'INFO:    The listed Queues are being removed:'
@@ -85,13 +87,16 @@ function Remove-TeamsCallQueue {
           $QueueCounter = 0
           $Queues = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
           foreach ($Q in $QueueToRemove) {
-            Write-Progress -Id 1 -Status "Removing Call Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $Queues * 100)
-            Write-Information "INFO:    Removing Call Queue: '$($Q.Name)'"
+            $Status = "'$DN'"
+            $Operation = "Removing Call Queue: '$($Q.Name)'"
+            Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $Queues * 100)
+            Write-Verbose -Message "$Status - $Operation"
+            Write-Information "INFO:    $Operation"
             $QueueCounter++
             if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
               Remove-CsCallQueue -Identity "$($Q.Identity)" -ErrorAction STOP
             }
-            Write-Progress -Id 1 -Status "Removing Call Queue '$($AA.Name)'" -Activity $MyInvocation.MyCommand -Completed
+            Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
           }
         }
         else {
@@ -102,7 +107,7 @@ function Remove-TeamsCallQueue {
         Write-Error -Message "Removal of Call Queue '$DN' failed with Exception: $($_.Exception.Message)" -Category OperationStopped
         return
       }
-      Write-Progress -Id 0 -Status "Processing '$DN'" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
     }
   } #process
 
