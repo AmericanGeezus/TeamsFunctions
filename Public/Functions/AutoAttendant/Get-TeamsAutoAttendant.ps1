@@ -86,28 +86,12 @@ function Get-TeamsAutoAttendant {
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand.Name)`.md"
 
     #Initialising Counters
-    <#
-    $tokens = $errors = $null
-    $ast = [System.Management.Automation.Language.Parser]::ParseInput($MyInvocation.MyCommand.Definition, [ref] $tokens, [ref]$errors)
-    #>
-    #This only gets ALL the uses of Write-BetterProgress and does not differentiate between ID0 and ID1!
-    $script:StepsID0 = ([System.Management.Automation.PsParser]::Tokenize($MyInvocation.MyCommand.Definition, [ref]$null) | Where-Object { $_.Type -eq 'Command' -and $_.Content -eq 'Write-BetterProgress' }).Count
+    $ScriptAst = [System.Management.Automation.Language.Parser]::ParseInput($MyInvocation.MyCommand.Definition, [ref] $null, [ref]$null)
+    # This currently needs to subtract 1 for it also finds itself (can be improved if I could limit this to the process block)
+    $script:StepsID0 = ($ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 0 ' | Measure-Object | Select-Object -ExpandProperty Count) - 1
     if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID0: $script:StepsID0" | Write-Debug }
-
-
-    <# Does not currently work!
-    $script:tokens = [System.Management.Automation.PsParser]::Tokenize($MyInvocation.MyCommand.Definition, [ref]$null) | Where-Object { $_.Type -eq 'Command' -and $_.Content -eq 'Write-BetterProgress' }
-    $script:tokens
-    if ($PSBoundParameters.ContainsKey('Debug')) { $script:tokens | Write-Debug }
-
-    $scriptAst = [System.Management.Automation.Language.Parser]::ParseInput($MyInvocation.MyCommand.ScriptContents, [ref]$null, [ref]$null)
-
-    #$script:StepsID0 = $processBlock.Extent.Text -split 'Write-BetterProgress -Id 0' | Measure-Object | Select-Object -Exp Count
-    $script:StepsID0 = $ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 0 ' | Measure-Object | Select-Object -ExpandProperty Count
-    if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID0: $script:StepsID0" | Write-Debug }
-    $script:StepsID1 = $ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 1 ' | Measure-Object | Select-Object -ExpandProperty Count
+    $script:StepsID1 = ($ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 1 ' | Measure-Object | Select-Object -ExpandProperty Count) - 1
     if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID1: $script:StepsID1" | Write-Debug }
-    #>
 
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
@@ -197,7 +181,7 @@ function Get-TeamsAutoAttendant {
       $Activity = "'$($AA.Name)'"
       #region Finding Operator
       $Status = 'Parsing Operator'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $stepsID1
+      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
       Write-Verbose -Message "$Activity - $Status"
       #$Operation = 'Parsing Operator'
       #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
@@ -220,7 +204,7 @@ function Get-TeamsAutoAttendant {
 
       #region Application Instance UPNs
       $Status = 'Parsing Application Instances'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $stepsID1
+      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
       Write-Verbose -Message "$Activity - $Status"
       #$Operation = 'Parsing Application Instances'
       #$step++
@@ -237,7 +221,7 @@ function Get-TeamsAutoAttendant {
 
       #region Inclusion & Exclusion Scope Groups
       $Status = 'Parsing Inclusion & Exclusion Scope Groups'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $stepsID1
+      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
       Write-Verbose -Message "$Activity - $Status"
       #$Operation = 'Parsing Inclusion & Exclusion Scope Groups'
       #$step++
@@ -272,7 +256,7 @@ function Get-TeamsAutoAttendant {
       #region Creating Output Object
       # Building custom Object with Friendly Names
       $Status = 'Constructing Output Object'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $stepsID1
+      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
       Write-Verbose -Message "$Activity - $Status"
       #$Operation = 'Constructing Output Object'
       #$step++
@@ -304,7 +288,7 @@ function Get-TeamsAutoAttendant {
       if ($PSBoundParameters.ContainsKey('Detailed')) {
         #region Operator
         $Status = 'Switch Detailed - Parsing Operator'
-        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $stepsID1
+        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
 
         #$Operation = 'Switch Detailed - Parsing Operator'
         #$step++
@@ -329,7 +313,7 @@ function Get-TeamsAutoAttendant {
 
         #region DefaultCallFlow
         $Status = 'Switch Detailed - Parsing DefaultCallFlow'
-        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $stepsID1
+        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
 
         #$Operation = 'Switch Detailed - Parsing DefaultCallFlow'
         #$step++
@@ -386,7 +370,7 @@ function Get-TeamsAutoAttendant {
 
         #region CallFlows
         $Status = 'Switch Detailed - Parsing CallFlows'
-        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $stepsID1
+        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
 
         #$Operation = 'Switch Detailed - Parsing CallFlows'
         #$step++
@@ -450,7 +434,7 @@ function Get-TeamsAutoAttendant {
 
         #region Schedules
         $Status = 'Switch Detailed - Parsing Schedules'
-        Write-BetterProgress -Id 1 -Status $Status -Activity $Activity -Step ($step++) -Of $stepsID1
+        Write-BetterProgress -Id 1 -Status $Status -Activity $Activity -Step ($step++) -Of $script:StepsID1
         #$Operation = 'Switch Detailed - Parsing Schedules'
         #$step++
         #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
@@ -464,7 +448,7 @@ function Get-TeamsAutoAttendant {
 
         #region CallHandlingAssociations
         $Status = 'Switch Detailed - Parsing CallHandlingAssociations'
-        Write-BetterProgress -Id 1 -Status $Status -Activity $Activity -Step ($step++) -Of $stepsID1
+        Write-BetterProgress -Id 1 -Status $Status -Activity $Activity -Step ($step++) -Of $script:StepsID1
 
         #$Operation = 'Switch Detailed - Parsing CallHandlingAssociations'
         #$step++
