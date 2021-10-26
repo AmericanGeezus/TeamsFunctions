@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
+#TODO Testing $CsUser | Grant-... Cmdlets. Does not work with Set-CsUser any more (v2.6.0)
 
 
 function Set-TeamsUserVoiceConfig {
@@ -441,7 +441,7 @@ function Set-TeamsUserVoiceConfig {
         'User' {
           if ( $Force -or -not $CsUser.HostedVoicemail) {
             try {
-              $CsUser | Set-CsUser -HostedVoiceMail $TRUE -ErrorAction Stop
+              Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -HostedVoiceMail $TRUE -ErrorAction Stop
               Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK"
             }
             catch {
@@ -621,12 +621,12 @@ function Set-TeamsUserVoiceConfig {
               'User' {
                 if ($PhoneNumberIsMSNumber) {
                   # Remove MS Number
-                  $CsUser | Set-CsUser -TelephoneNumber $null -ErrorAction Stop
+                  Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -TelephoneNumber $null -ErrorAction Stop
                   Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - Calling Plan number removed"
                 }
                 else {
                   # Remove Direct Routing Number
-                  $CsUser | Set-CsUser -OnPremLineURI $null -ErrorAction Stop
+                  Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -OnPremLineURI $null -ErrorAction Stop
                   Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - Direct Routing number removed"
                 }
               }
@@ -670,7 +670,7 @@ function Set-TeamsUserVoiceConfig {
                   if ( $Force -or $CsUser.OnPremLineURI -ne $LineUri) {
                     #Error Message: Filter failed to return unique result"
                     try {
-                      $CsUser | Set-CsUser -OnPremLineURI $LineUri -ErrorAction Stop
+                      Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -OnPremLineURI $LineUri -ErrorAction Stop
                       Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$LineUri'"
                     }
                     catch {
@@ -696,9 +696,7 @@ function Set-TeamsUserVoiceConfig {
                   # Apply or Remove $PhoneNumber as TelephoneNumber
                   if ( $Force -or $CsUser.TelephoneNumber -ne $E164Number) {
                     try {
-                      # Pipe should work but was not yet tested.
-                      #$CsUser | Set-CsOnlineVoiceUser -TelephoneNumber $PhoneNumber -ErrorAction Stop
-                      $null = Set-CsOnlineVoiceUser -Identity "$($CsUser.ObjectId)" -TelephoneNumber $E164Number -ErrorAction Stop
+                      Set-CsOnlineVoiceUser -Identity "$($CsUser.ObjectId)" -TelephoneNumber $E164Number -ErrorAction Stop
                       Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$E164Number' (Calling Plan Number)"
                     }
                     catch {
