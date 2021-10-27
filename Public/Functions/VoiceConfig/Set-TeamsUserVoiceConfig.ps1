@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Testing $CsUser | Grant-... Cmdlets. Does not work with Set-CsUser any more (v2.6.0)
+
 
 
 function Set-TeamsUserVoiceConfig {
@@ -473,7 +473,7 @@ function Set-TeamsUserVoiceConfig {
         if ( $Force -or $CsUser.TenantDialPlan -ne $TenantDialPlan) {
           try {
             if ( $ObjectType -eq 'User' ) {
-              $CsUser | Grant-CsTenantDialPlan -PolicyName $TenantDialPlan -ErrorAction Stop
+              Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $TenantDialPlan -ErrorAction Stop
               Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$TenantDialPlan'"
             }
             else {
@@ -514,7 +514,7 @@ function Set-TeamsUserVoiceConfig {
           if ( $OnlineVoiceRoutingPolicy ) {
             if ( $Force -or ($CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) ) {
               try {
-                $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
+                Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
                 Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$OnlineVoiceRoutingPolicy'"
               }
               catch {
