@@ -3,7 +3,7 @@
 # Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
-
+#TODO if Connected but RBAC Roles have timed out does not trigger on POL - must capture PermissionDenied error on query
 #TODO Check output for Diagnosticlevel 1-4 to ascertain removed output if CsOnlineObject is called with -Identity Switch!
 #TODO Check output for Policies - Add all relevant Policies to Level 2? (all Policies to Level 3? (move 3/4 to 4/5?))
 #TODO Add Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)
@@ -41,7 +41,6 @@ function Get-TeamsUserVoiceConfig {
     System.Object
   .NOTES
     DiagnosticLevel details:
-    0 Same output as without the Parameter, though LicensesAssigned are nested in as an Object rather than names only.
     1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype
     2 Extended diagnostics displaying additional Voice-related Policies
     3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc.
@@ -54,9 +53,7 @@ function Get-TeamsUserVoiceConfig {
     - for Teams:      "Get-CsOnlineUser $UserPrincipalName"
 
     Exporting PowerShell Objects that contain Nested Objects as CSV results in this parameter being shown as "System.Object[]".
-    The nested Object itself however enables a more in-depth view of Licensing for this Object.
-    The introduction of Diagnostic Level 0 tries to bridge two seemingly contradicting requirements.
-    Using any diagnostic level gives the flexibly to drill-down into Licensing.
+    Using any diagnostic level higher than 3 adds Parameter LicenseObject allowing to drill-down into Licensing
     Omitting it allows for visible data when exporting as a CSV.
   .COMPONENT
     VoiceConfiguration
@@ -304,17 +301,20 @@ function Get-TeamsUserVoiceConfig {
         $step++
         Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
         Write-Verbose -Message "$Status - $Operation"
+        $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
+
 
         #FIXME - Limited to Diagnostic Level itself.
         #Maybe introduce a separate parameter to flatten all nested objects in order to allow export independent of DiagnosticLevel
-        if ( $PSBoundParameters.ContainsKey('DiagnosticLevel') ) {
-          $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
+        if ( $DiagnosticLevel -ge 3 ) {
+          $UserObject | Add-Member -MemberType NoteProperty -Name LicenseObject -Value $CsUserLicense.Licenses
           if ($CsUserLicense.Licenses) {
-            $UserObject.LicensesAssigned | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
+            $UserObject.LicenseObject | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
           }
         }
         else {
-          $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
+          #TODO Think how best to display this - Hidden in Verbose output may be a bit too hidden. INFO is a bit too "always"
+          Write-Verbose -Message "Parameter LicenseObject omitted. To receive this parameter with their nested licenses, please use DiagnosticLevel 3 or higher"
         }
 
         #Info about PhoneSystemStatus (suppressing feedback if AzureAdUser is already populated)
@@ -342,7 +342,6 @@ function Get-TeamsUserVoiceConfig {
       Write-Verbose -Message "$Status - $Operation"
       $UserObject | Add-Member -MemberType NoteProperty -Name EnterpriseVoiceEnabled -Value $CsUser.EnterpriseVoiceEnabled
       $UserObject | Add-Member -MemberType NoteProperty -Name HostedVoiceMail -Value $CsUser.HostedVoiceMail
-      $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
       $UserObject | Add-Member -MemberType NoteProperty -Name OnlineVoiceRoutingPolicy -Value $CsUser.OnlineVoiceRoutingPolicy
       $UserObject | Add-Member -MemberType NoteProperty -Name TenantDialPlan -Value $CsUser.TenantDialPlan
       $UserObject | Add-Member -MemberType NoteProperty -Name TelephoneNumber -Value $CsUser.TelephoneNumber
@@ -378,6 +377,7 @@ function Get-TeamsUserVoiceConfig {
             $UserObject | Add-Member -MemberType NoteProperty -Name CallingLineIdentity -Value $CsUser.CallingLineIdentity
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsIPPhonePolicy -Value $CsUser.TeamsIPPhonePolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsVdiPolicy -Value $CsUser.TeamsVdiPolicy
+            $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineDialOutPolicy -Value $CsUser.OnlineDialOutPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineVoicemailPolicy -Value $CsUser.OnlineVoicemailPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineAudioConferencingRoutingPolicy -Value $CsUser.OnlineAudioConferencingRoutingPolicy
