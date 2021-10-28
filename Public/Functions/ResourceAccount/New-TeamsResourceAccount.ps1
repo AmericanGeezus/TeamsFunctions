@@ -283,7 +283,7 @@ function New-TeamsResourceAccount {
             return
           }
           Write-Progress -Id 1 -Status $Status -Activity 'Azure Active Directory is propagating Object. Please wait' `
-            -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+            -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
           Start-Sleep -Milliseconds 1000
           $i++

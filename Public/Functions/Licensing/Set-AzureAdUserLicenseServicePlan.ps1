@@ -177,6 +177,7 @@ function Set-AzureAdUserLicenseServicePlan {
         }
         Write-Verbose -Message "User '$ID' - License '$LicenseName'"
         # Verifying the License is still available in the Tenant
+        $StandardLicense = $null
         $StandardLicense = Get-AzureADSubscribedSku | Where-Object { $_.SkuId -eq $L.SkuId }
         if ( -not $StandardLicense) {
           Write-Warning -Message "User '$ID' - License '$LicenseName' - License not found in the Tenant!?"
@@ -184,11 +185,10 @@ function Set-AzureAdUserLicenseServicePlan {
         }
 
         # Creating a new License Object
-        $License = $null #CHECK Addresses an issue with License Object being used the second time in the loop and displaying
+        $License = $null
         $License = New-AzureAdLicenseObject -AddSkuId $L.SkuId
         $DisabledPlans = $null
         try {
-          #CHECK Disabledplans cannot be populated correctly?
           $DisabledPlans = $L.ServicePlans | Where-Object ProvisioningStatus -EQ 'Disabled' -ErrorAction Stop | Select-Object ServicePlanId -ExpandProperty ServicePlanId
           $($License.AddLicenses).DisabledPlans = $DisabledPlans
         }
@@ -197,7 +197,8 @@ function Set-AzureAdUserLicenseServicePlan {
         }
 
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ( $License.AddLicenses.DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
+          "Function: $($MyInvocation.MyCommand.Name): LicenseObject:", ( $License | Format-List | Out-String).Trim() | Write-Debug
+          "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ( $($License.AddLicenses).DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
         }
 
         try {
@@ -212,24 +213,31 @@ function Set-AzureAdUserLicenseServicePlan {
               if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
                 "Function: $($MyInvocation.MyCommand.Name): Service Plan '$S':", ( $ServicePlanToEnable | Format-Table | Out-String).Trim() | Write-Debug
               }
-              if ( -not $ServicePlanToEnable) {
-                #VALIDATE Check application. PhoneSystem on E5 should be found but returns "not present!" Add Warning if it should be there (baseline)
-                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
-                continue
-              }
 
-              # Checking whether Service Plan is disabled
-              #VALIDATE - Sometimes reports that the ServicePlanID is not in DisabledPlans - ODD!
-              if ( $ServicePlanToEnable.ServicePlanId -in $License.AddLicenses.DisabledPlans ) {
-                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Enabling Service Plan: '$($ServicePlanToEnable.ServicePlanId)'"
-                $null = $($License.AddLicenses).DisabledPlans.Remove($ServicePlanToEnable.ServicePlanId)
-                $EnabledPlans++
+              if ( $ServicePlanToEnable) {
+                # Checking whether Service Plan is disabled
+                #FIXME IF doesn't go TRUE where it should! - ServicePlanID is not in DisabledPlans?!
+                Write-Verbose "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Status $( $ServicePlanToEnable.ServicePlanId -in $($License.AddLicenses).DisabledPlans )" #{
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-                  "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ($($License.AddLicenses).DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
+                  "Function: $($MyInvocation.MyCommand.Name): Service Plan '$S': Status", "ServicePlanToEnable: $($ServicePlanToEnable.ServicePlanId)" | Write-Debug
+                  "List of Disabled Plan (to match against): $($($License.AddLicenses).DisabledPlans)" | Write-Debug
+                }
+                #if ( $ServicePlanToEnable.ServicePlanId -in $($License.AddLicenses).DisabledPlans ) {
+                if ( $ServicePlanToEnable.ServicePlanId -in $DisabledPlans ) {
+                  Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Enabling Service Plan: '$($ServicePlanToEnable.ServicePlanId)'"
+                  $null = $License.AddLicenses.DisabledPlans.Remove($ServicePlanToEnable.ServicePlanId)
+                  $EnabledPlans++
+                  if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                    "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ( $License.AddLicenses.DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
+                  }
+                }
+                else {
+                  Write-Information "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already enabled"
+                  continue
                 }
               }
               else {
-                Write-Information "INFO:    User '$ID' - License '$LicenseName' - Service Plan '$S' is already enabled"
+                Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' not present"
                 continue
               }
             }
@@ -256,11 +264,12 @@ function Set-AzureAdUserLicenseServicePlan {
                 continue
               }
               # Checking whether Service Plan is disabled
-              if (-not ($ServicePlanToDisable.ServicePlanId -in $License.AddLicenses.DisabledPlans)) {
+              if (-not ($ServicePlanToDisable.ServicePlanId -in $($License.AddLicenses).DisabledPlans)) {
                 Write-Verbose -Message "User '$ID' - License '$LicenseName' - Service Plan: '$S' - Disabling Service Plan: '$($ServicePlanToDisable.ServicePlanId)'"
                 $($License.AddLicenses).DisabledPlans += $ServicePlanToDisable.ServicePlanId
                 $DisabledPlans++
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+                  "Function: $($MyInvocation.MyCommand.Name): LicenseObject:", ( $License | Format-List | Out-String).Trim() | Write-Debug
                   "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ($($License.AddLicenses).DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
                 }
               }
@@ -289,7 +298,7 @@ function Set-AzureAdUserLicenseServicePlan {
         # Executing Assignment
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name): LicensesToAssign:", ($License.AddLicenses | Format-List | Out-String).Trim() | Write-Debug
-          "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ($License.AddLicenses.DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
+          "Function: $($MyInvocation.MyCommand.Name): DisabledPlans:", ($($License.AddLicenses).DisabledPlans | Format-List | Out-String).Trim() | Write-Debug
         }
         if ($PSCmdlet.ShouldProcess("$ID", 'Set-AzureADUserLicense')) {
           #Assign $LicenseObject to each User

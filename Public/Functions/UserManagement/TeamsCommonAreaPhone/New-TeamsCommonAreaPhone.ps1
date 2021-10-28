@@ -300,8 +300,8 @@ function New-TeamsCommonAreaPhone {
             Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount'
             return
           }
-          Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' `
-            -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+          Write-Progress -Id 1 -Status $Status -Activity 'Azure Active Directory is propagating Object. Please wait' `
+            -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
           Start-Sleep -Milliseconds 1000
           $i++
@@ -356,8 +356,8 @@ function New-TeamsCommonAreaPhone {
         if ($i -gt $iMax) {
           Write-Error -Message "Could not find Successful Provisioning Status of ServicePlan '$PlanToTest' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
         }
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
-          -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+        Write-Progress -Id 1 -Status $Status -Activity 'Azure Active Directory is applying License. Please wait' `
+          -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
         Start-Sleep -Milliseconds 1000
         $i++
