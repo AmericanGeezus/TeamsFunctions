@@ -84,14 +84,6 @@ function Get-TeamsAutoAttendant {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand.Name)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand.Name)`.md"
-
-    #Initialising Counters
-    $ScriptAst = [System.Management.Automation.Language.Parser]::ParseInput($MyInvocation.MyCommand.Definition, [ref] $null, [ref]$null)
-    $script:StepsID0 = ($ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 0 ' | Measure-Object | Select-Object -ExpandProperty Count) - 1
-    if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID0: $script:StepsID0" | Write-Debug }
-    $script:StepsID1 = ($ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 1 ' | Measure-Object | Select-Object -ExpandProperty Count) - 1
-    if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID1: $script:StepsID1" | Write-Debug }
-
     # Asserting AzureAD Connection
     if (-not (Assert-AzureADConnection)) { break }
 
@@ -105,13 +97,18 @@ function Get-TeamsAutoAttendant {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
+
     if ($PSBoundParameters.ContainsKey('Detailed')) {
       Write-Verbose -Message "Parameter 'Detailed' - This may take a bit of time..." -Verbose
     }
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand.Name)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     #region Query objects
     # Capturing no input
@@ -129,7 +126,7 @@ function Get-TeamsAutoAttendant {
           foreach ($DN in $Name) {
             if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
               #Identity or ObjectId
-              #NOTE DO NOT use `-IncludeStatus` with Identity, it generates an error ParameterBindingException
+              #NOTE MicrosoftTeams v2.3.1 - DO NOT use `-IncludeStatus` with Identity, it generates an error ParameterBindingException
               Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand.Name) - ID - '$DN'"
               $AAByName = Get-CsAutoAttendant -Identity "$DN" -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
               $AutoAttendants += $AAByName
@@ -163,10 +160,11 @@ function Get-TeamsAutoAttendant {
     #foreach -parallel ($AA in $AutoAttendants) {
     foreach ($AA in $AutoAttendants) {
       # Initialising counters for Progress bars
-      $StatusID0 = "Auto Attendant '$($AA.Name)'"
-      #Write-Progress -Id 0 -Status $StatusID0 -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($AACounter / $AACount * 100)
+      $StatusID0 = "Processing Auto Attendant"
+      $CurrentOperationID0 = $ActivityID1 = "'$($AA.Name)'"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($AACounter++) -Of $AACount
+      #Write-Progress -Id 0 -Status $StatusID0 -Activity $ActivityID0 -PercentComplete ($AACounter / $AACount * 100)
       #$AACounter++
-      Write-BetterProgress -Id 0 -Activity $($MyInvocation.MyCommand.Name) -Status $StatusID0 -Step ($AACounter++) -Of $AACount
       <# Superceded by $stepsID1 tracker variable
       #TEST Performance of $stepsID1
       [int]$step = 0
@@ -177,14 +175,13 @@ function Get-TeamsAutoAttendant {
       # Initialising Arrays
       [System.Collections.ArrayList]$AIObjects = @()
 
-      $Activity = "'$($AA.Name)'"
+      $StatusID1 = 'Information Gathering'
       #region Finding Operator
-      $Status = 'Parsing Operator'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
-      Write-Verbose -Message "$Activity - $Status"
+      $CurrentOperationID1 = 'Parsing Operator'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       #$Operation = 'Parsing Operator'
-      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "$Status - $Operation"
+      #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+      #Write-Verbose -Message "$StatusID1 - $Operation"
       if ($null -eq $AA.Operator) {
         $AAOperator = $null
       }
@@ -195,20 +192,20 @@ function Get-TeamsAutoAttendant {
           $Operator = $CallableEntity.Entity
         }
         catch {
-          Write-Warning -Message "'$($AA.Name)' Operator: Not enumerated: $($_.Exception.Message)"
+          Write-Warning -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: Not enumerated: $($_.Exception.Message)"
+          #Write-Warning -Message "'$($AA.Name)' Operator: Not enumerated: $($_.Exception.Message)"
         }
       }
       # Output: $Operator, $OperatorTranscription
       #endregion
 
       #region Application Instance UPNs
-      $Status = 'Parsing Application Instances'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
-      Write-Verbose -Message "$Activity - $Status"
+      $CurrentOperationID1 = 'Parsing Application Instances'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       #$Operation = 'Parsing Application Instances'
       #$step++
-      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "$Status - $Operation"
+      #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+      #Write-Verbose -Message "$StatusID1 - $Operation"
       foreach ($AI in $AA.ApplicationInstances) {
         $AIObject = $null
         $AIObject = Get-CsOnlineApplicationInstance -WarningAction SilentlyContinue | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
@@ -219,13 +216,12 @@ function Get-TeamsAutoAttendant {
       # Output: $AIObjects.UserPrincipalName
 
       #region Inclusion & Exclusion Scope Groups
-      $Status = 'Parsing Inclusion & Exclusion Scope Groups'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
-      Write-Verbose -Message "$Activity - $Status"
+      $CurrentOperationID1 = 'Parsing Inclusion Scope Groups'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       #$Operation = 'Parsing Inclusion & Exclusion Scope Groups'
       #$step++
-      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "$Status - $Operation"
+      #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+      #Write-Verbose -Message "$StatusID1 - $Operation"
       if ($AA.DirectoryLookupScope.InclusionScope) {
         [System.Collections.ArrayList]$InclusionScopeDistributionLists = @()
         foreach ($DL in $AA.DirectoryLookupScope.InclusionScope.GroupScope.GroupIds) {
@@ -237,6 +233,8 @@ function Get-TeamsAutoAttendant {
           }
         }
       }
+      $CurrentOperationID1 = 'Parsing Exclusion Scope Groups'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       if ($AA.DirectoryLookupScope.ExclusionScope) {
         [System.Collections.ArrayList]$ExclusionScopeDistributionLists = @()
         foreach ($DL in $AA.DirectoryLookupScope.ExclusionScope.GroupScope.GroupIds) {
@@ -254,13 +252,13 @@ function Get-TeamsAutoAttendant {
 
       #region Creating Output Object
       # Building custom Object with Friendly Names
-      $Status = 'Constructing Output Object'
-      Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
-      Write-Verbose -Message "$Activity - $Status"
+      $StatusID1 = 'Processing'
+      $CurrentOperationID1 = 'Constructing Output Object'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       #$Operation = 'Constructing Output Object'
       #$step++
-      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "$Status - $Operation"
+      #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+      #Write-Verbose -Message "$StatusID1 - $Operation"
       $AAObject = $null
       $AAObject = [PsCustomObject][ordered]@{
         Identity                        = $AA.Identity
@@ -285,14 +283,14 @@ function Get-TeamsAutoAttendant {
 
       #region Extending Output Object with Switch Detailed
       if ($PSBoundParameters.ContainsKey('Detailed')) {
+        $StatusID1 = 'Information Gathering (Switch Detailed)'
         #region Operator
-        $Status = 'Switch Detailed - Parsing Operator'
-        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
-
+        $CurrentOperationID1 = 'Parsing Operator'
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         #$Operation = 'Switch Detailed - Parsing Operator'
         #$step++
-        #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-        #Write-Verbose -Message "$Status - $Operation"
+        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+        #Write-Verbose -Message "$StatusID1 - $Operation"
         if ($AA.Operator) {
           $AAOperator = @()
           $AAOperator = [PsCustomObject][ordered]@{
@@ -311,15 +309,16 @@ function Get-TeamsAutoAttendant {
         #endregion
 
         #region DefaultCallFlow
-        $Status = 'Switch Detailed - Parsing DefaultCallFlow'
-        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
-
+        $CurrentOperationID1 = 'Parsing DefaultCallFlow'
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         #$Operation = 'Switch Detailed - Parsing DefaultCallFlow'
         #$step++
-        #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-        #Write-Verbose -Message "$Status - $Operation"
+        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+        #Write-Verbose -Message "$StatusID1 - $Operation"
         # Default Call Flow Menu Prompts
-        Write-Debug -Message "'$($AA.Name)' - $Operation - Prompts"
+
+        Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: Prompts"
+        #Write-Debug -Message "'$($AA.Name)' - $Operation - Prompts"
         if ( $AA.DefaultCallFlow.Menu.Prompts ) {
           $AADefaultCallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $AA.DefaultCallFlow.Menu.Prompts
         }
@@ -328,7 +327,8 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow Menu Options
-        Write-Debug -Message "'$($AA.Name)' - $Operation - MenuOptions"
+        Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: MenuOptions"
+        #Write-Debug -Message "'$($AA.Name)' - $Operation - MenuOptions"
         if ( $AA.DefaultCallFlow.Menu.MenuOptions ) {
           try {
             if ($AA.DefaultCallFlow.Menu.MenuOptions.Prompt) {
@@ -351,7 +351,8 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow Menu
-        Write-Debug -Message "'$($AA.Name)' - $Operation - Menu"
+        Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: Menu"
+        #Write-Debug -Message "'$($AA.Name)' - $Operation - Menu"
         $AADefaultCallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $AA.DefaultCallFlow.Menu -Prompts $AADefaultCallFlowMenuPrompts -MenuOptions $AADefaultCallFlowMenuOptions
 
         # Default Call Flow Greetings
@@ -363,23 +364,24 @@ function Get-TeamsAutoAttendant {
         }
 
         # Default Call Flow
-        Write-Debug -Message "'$($AA.Name)' - $Operation - Call Flow"
+        Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: Call Flow"
+        #Write-Debug -Message "'$($AA.Name)' - $Operation - Call Flow"
         $AADefaultCallFlow = Merge-AutoAttendantArtefact -Type CallFlow -Object $AA.DefaultCallFlow -Prompts $AADefaultCallFlowGreetings -Menu $AADefaultCallFlowMenu
         #endregion
 
         #region CallFlows
-        $Status = 'Switch Detailed - Parsing CallFlows'
-        Write-BetterProgress -Id 1 -Activity $Activity -Status $Status -Step ($step++) -Of $script:StepsID1
-
+        $CurrentOperationID1 = 'Parsing CallFlows'
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         #$Operation = 'Switch Detailed - Parsing CallFlows'
         #$step++
-        #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-        #Write-Verbose -Message "$Status - $Operation"
+        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+        #Write-Verbose -Message "$StatusID1 - $Operation"
         $AACallFlows = @()
         foreach ($Flow in $AA.CallFlows) {
           # Call Flow Prompts
           $AACallFlowMenuPrompts = $null
-          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Prompts"
+          Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: $($Flow.Name) - Prompts"
+          #Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Prompts"
           if ($Flow.Menu.Prompts) {
             $AACallFlowMenuPrompts = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Menu.Prompts
           }
@@ -390,7 +392,8 @@ function Get-TeamsAutoAttendant {
           # Call Flow Menu Options
           $AACallFlowMenuOptionPrompt = $null
           $AACallFlowMenuOptions = $null
-          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - MenuOptions"
+          Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: $($Flow.Name) - MenuOptions"
+          #Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - MenuOptions"
           if ($Flow.Menu.MenuOptions) {
             try {
               if ($Flow.Menu.MenuOptions.Prompt) {
@@ -411,13 +414,15 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow Menu
-          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Menu"
+          Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: $($Flow.Name) - Menu"
+          #Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Menu"
           $AACallFlowMenu = $null
           $AACallFlowMenu = Merge-AutoAttendantArtefact -Type Menu -Object $Flow.Menu -Prompts $AACallFlowMenuPrompts -MenuOptions $AACallFlowMenuOptions
 
           # Call Flow Greetings
           $AACallFlowGreetings = $null
-          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Greetings"
+          Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: $($Flow.Name) - Greetings"
+          #Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Greetings"
           if ($Flow.Greetings) {
             $AACallFlowGreetings = Merge-AutoAttendantArtefact -Type Prompt -Object $Flow.Greetings
           }
@@ -426,17 +431,18 @@ function Get-TeamsAutoAttendant {
           }
 
           # Call Flow
-          Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Call Flow"
+          Write-Debug -Message "$ActivityID1 $StatusID1 $CurrentOperationID1`: $($Flow.Name) - Call Flow"
+          #Write-Debug -Message "'$($AA.Name)' - $Operation - $($Flow.Name) - Call Flow"
           $AACallFlows += Merge-AutoAttendantArtefact -Type CallFlow -Object $Flow -Prompts $AACallFlowGreetings -Menu $AACallFlowMenu
         }
         #endregion
 
         #region Schedules
-        $Status = 'Switch Detailed - Parsing Schedules'
-        Write-BetterProgress -Id 1 -Status $Status -Activity $Activity -Step ($step++) -Of $script:StepsID1
+        $CurrentOperationID1 = 'Parsing Schedules'
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         #$Operation = 'Switch Detailed - Parsing Schedules'
         #$step++
-        #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
+        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
         #Write-Debug -Message "'$($AA.Name)' - $Operation"
         $AASchedules = @()
         foreach ($Schedule in $AA.Schedules) {
@@ -446,13 +452,12 @@ function Get-TeamsAutoAttendant {
         #endregion
 
         #region CallHandlingAssociations
-        $Status = 'Switch Detailed - Parsing CallHandlingAssociations'
-        Write-BetterProgress -Id 1 -Status $Status -Activity $Activity -Step ($step++) -Of $script:StepsID1
-
+        $CurrentOperationID1 = 'Parsing CallHandlingAssociations'
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         #$Operation = 'Switch Detailed - Parsing CallHandlingAssociations'
         #$step++
-        #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $($MyInvocation.MyCommand.Name) -PercentComplete ($step / $sMax * 100)
-        #Write-Verbose -Message "$Status - $Operation"
+        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation $Operation -Activity $ActivityID0 -PercentComplete ($step / $sMax * 100)
+        #Write-Verbose -Message "$StatusID1 - $Operation"
         $AACallHandlingAssociations = @()
         foreach ($item in $AA.CallHandlingAssociations) {
           # Determine Call Flow Name
@@ -475,8 +480,8 @@ function Get-TeamsAutoAttendant {
       #endregion
 
       # Output
-      Write-Progress -Id 1 -Activity $Activity -Completed
-      Write-Progress -Id 0 -Activity $($MyInvocation.MyCommand.Name) -Status $StatusID0 -Completed
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $AAObject
     }
   } #process

@@ -91,6 +91,11 @@ function Get-TeamsAutoAttendantAudioFile {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
+
     $IsDetailed = ($PSBoundParameters.ContainsKey('Detailed'))
 
     # Helper Function for outputting Audio Files
@@ -116,6 +121,9 @@ function Get-TeamsAutoAttendantAudioFile {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     #region Query objects
+    $StatusID0 = 'Querying Objects'
+    $CurrentOperationID0 = "Finding Auto Attendants for provided input"
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') ) {
       Write-Information 'No Parameters - Querying ALL Auto Attendants. This could take a while. To query individual items, please provide Parameter Name or SearchString'
@@ -159,73 +167,81 @@ function Get-TeamsAutoAttendantAudioFile {
 
 
     # Parsing found Objects
-    Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $AACount"
-    $AACounter = 0
-    [int]$AACount = $AutoAttendants.Count
+    [int] $StepsID0 = $StepsID0 + $AutoAttendants.Count
+    Write-Verbose -Message "[PROCESS] Processing found Auto Attendants:  $StepsID0"
     #IMPROVE Explore Workflows with Parallel parsing:
     #foreach -parallel ($AA in $AutoAttendants) {
     foreach ($AA in $AutoAttendants) {
       # Initialising counters for Progress bars
-      $Status = "Auto Attendant '$($AA.Name)'"
-      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AACount * 100)
-      $AACounter++
-      [int]$step = 0
-      [int]$sMax = 2
-
-      #region Parsing Default Call Flow
-      $Operation = 'Parsing Default CallFlow'
-      $step++
-      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "'$($AA.Name)' - $Operation"
+      $StatusID0 = 'Processing'
+      $CurrentOperationID0 = $ActivityID1 = "'$($AA.Name)'"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       Write-Information "INFO:    Parsing Audio Files for Auto Attendant '$($AA.Name)'"
+      #$Status = "Auto Attendant '$($AA.Name)'"
+      #Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter /  $StepsID0 * 100)
+      #$AACounter++
+      #[int]$step = 0
+      #[int]$sMax = 2
+
+      $StatusID1 = "Parsing"
+      #region Parsing Default Call Flow
+      $CurrentOperationID1 = 'Default CallFlow'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      #$Operation = 'Parsing Default CallFlow'
+      #$step++
+      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      #Write-Verbose -Message "'$($AA.Name)' - $Operation"
 
       # Default Call Flow Greetings
       $Operation2 = 'Default Call Flow - Greeting'
-      Write-Verbose -Message "'$($AA.Name)' - $Operation2"
+      Write-Verbose -Message "$ActivityID1 - $CurrentOperationID1 - $Operation2"
       $Prompt = $AA.DefaultCallFlow.Greetings.AudioFilePrompt
       OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
 
       # Default Call Flow Menu
       $Operation2 = 'Default Call Flow - Menu - Prompt'
-      Write-Verbose -Message "'$($AA.Name)' - $Operation2"
+      Write-Verbose -Message "$ActivityID1 - $CurrentOperationID1 - $Operation2"
       $Prompt = $AA.DefaultCallFlow.Menu.Prompts.AudioFilePrompt
       OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
 
       # Default Call Menu Option Prompt
       $Operation2 = 'Default Call Flow - Menu Option - Prompt'
-      Write-Verbose -Message "'$($AA.Name)' - $Operation2"
+      Write-Verbose -Message "$ActivityID1 - $CurrentOperationID1 - $Operation2"
       $Prompt = $AA.DefaultCallFlow.Menu.MenuOptions.Prompt.AudioFilePrompt
       OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
       #endregion
 
       #region CallFlows
-      $Operation = 'Parsing CallFlows'
-      $step++
-      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "'$($AA.Name)' - $Operation"
+      $CurrentOperationID1 = 'CallFlows'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      #$Operation = 'Parsing CallFlows'
+      #$step++
+      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
+      #Write-Verbose -Message "$ActivityID1 - $Operation"
 
       foreach ($Flow in $AA.CallFlows) {
         # Call Flow Greeting Prompt
-        $Operation2 = "Call Flow '$($Flow.Name)' - Greeting - Prompt"
-        Write-Verbose -Message "'$($AA.Name)' - $Operation2"
+        $Operation2 = "'$($Flow.Name)' - Greeting - Prompt"
+        Write-Verbose -Message "$ActivityID1 - $CurrentOperationID1 - $Operation2"
         $Prompt = $Flow.Greetings.AudioFilePrompt
         OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
 
         # Call Flow Menu Prompt
-        $Operation2 = "Call Flow '$($Flow.Name)' - Menu - Prompt"
-        Write-Verbose -Message "'$($AA.Name)' - $Operation2"
+        $Operation2 = "'$($Flow.Name)' - Menu - Prompt"
+        Write-Verbose -Message "$ActivityID1 - $CurrentOperationID1 - $Operation2"
         $Prompt = $Flow.Menu.Prompts.AudioFilePrompt
         OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
 
         # Call Flow Menu Option Prompt
-        $Operation2 = "Call Flow '$($Flow.Name)' - Menu Option - Prompt"
-        Write-Verbose -Message "'$($AA.Name)' - $Operation2"
+        $Operation2 = "'$($Flow.Name)' - Menu Option - Prompt"
+        Write-Verbose -Message "$ActivityID1 - $CurrentOperationID1 - $Operation2"
         $Prompt = $Flow.Menu.MenuOptions.Prompt.AudioFilePrompt
         OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
       }
       #endregion
       #VALIDATE output for Progress bar bleeding through in VSCode
-      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
 
     }
   } #process

@@ -72,6 +72,8 @@ function Enable-TeamsUserForEnterpriseVoice {
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
@@ -157,6 +159,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             $null = Set-CsUser -Identity $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
             $i = 0
             $iMax = 20
+            $Activity = 'Waiting for Azure Active Directory to return a result. Please wait'
             $Status = 'Enable User For Enterprise Voice'
             $Operation = 'Waiting for Get-CsOnlineUser to return a Result'
             Write-Verbose -Message "$Status - $Operation"
@@ -165,14 +168,13 @@ function Enable-TeamsUserForEnterpriseVoice {
                 Write-Error -Message "User '$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false
               }
-              Write-Progress -Id 0 -Status $Status -Activity 'Waiting for Azure Active Directory to return a result. Please wait' `
-                -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
+              Write-Progress -Id 0 -Activity $Activity -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
 
               Start-Sleep -Milliseconds 1000
               $i++
             }
             while ( -not $(Get-CsOnlineUser "$($UserObject.UserPrincipalName)" -WarningAction SilentlyContinue).EnterpriseVoiceEnabled )
-            Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+            Write-Progress -Id 0 -Activity $Activity -Completed
 
             if ($Called) {
               return $true

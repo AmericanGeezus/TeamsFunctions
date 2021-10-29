@@ -165,6 +165,9 @@ function Set-TeamsUserVoiceConfig {
       Write-Warning -Message 'Due to recent changes to Module MicrosoftTeams (v2.5.0 and later), not all functionality could yet be tested, your mileage may vary'
     }
 
+    #Initialising Counters
+    $script:StepsID0 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 0
+
   } #begin
 
   process {

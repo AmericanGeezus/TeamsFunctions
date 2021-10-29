@@ -6,6 +6,8 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 [![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2195-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
+Major refactoring for support of MicrosoftTeams v2.6.0
+
 ### Draft - Look ahead
 
 - `Disable-AzureAdUserLicense`: Draft Status

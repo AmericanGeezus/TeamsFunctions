@@ -100,39 +100,22 @@ function Connect-Me {
     # Required as Warnings on the OriginalRegistrarPool somehow may halt Script execution
     $WarningPreference = 'Continue'
 
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 6
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
 
     #region Preparation
-    # Preparing environment
+    $StatusID0 = 'Preparation'
+    $CurrentOperationID0 = 'Preparing environment'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     #Persist Stored Credentials on local machine - Value is unclear as they don't seem to be needed anymore now that New-CsOnlineSession is gone
     if (!$PSDefaultParameterValues.'Parameters:Processed') {
       $PSDefaultParameterValues.add('New-StoredCredential:Persist', 'LocalMachine')
       $PSDefaultParameterValues.add('Parameters:Processed', $true)
     }
 
-    # Cleaning up existing sessions
-    $Status = 'Preparation'
-    $Operation = 'Verifying Parameters'
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
-    #region Parameter validation
-    if ($PSBoundParameters.ContainsKey('ExchangeOnline')) {
-      $sMax++
-    }
-
-    if ( -not $NoFeedback ) {
-      $sMax = $sMax + 3
-    }
-    #endregion
-
     #Loading Modules
-    $Operation = 'Loading Modules'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
     $AzureAdModule, $AzureAdPreviewModule, $TeamsModule = Get-NewestModule AzureAd, AzureAdPreview, MicrosoftTeams
 
     Write-Verbose -Message "Importing Module 'MicrosoftTeams'"
@@ -155,6 +138,8 @@ function Connect-Me {
     $global:VerbosePreference = $SaveVerbosePreference
 
     # Determine Module Version loaded
+    $CurrentOperationID0 = 'Loading modules'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ( $AzureAdPreviewModule ) {
       Remove-Module AzureAd -Verbose:$false -ErrorAction SilentlyContinue
       Import-Module AzureAdPreview -Force -Global -Verbose:$false
@@ -171,9 +156,6 @@ function Connect-Me {
     $Command = 'Get-AzureADMSPrivilegedRoleAssignment'
     try {
       $PIMavailable = Get-Command -Name $Command -ErrorAction Stop
-      if ( $PIMavailable ) {
-        $sMax++
-      }
     }
     catch {
       Write-Information "INFO:    Command '$Command' not available. Privileged Identity Management role activation cannot be used. Please ensure admin roles are activated prior to running this command"
@@ -194,7 +176,9 @@ function Connect-Me {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     #region Connections
-    $Status = 'Establishing Connection'
+    $StatusID0 = $ActivityID1 = 'Establishing Connection'
+    $CurrentOperationID0 = 'Determining Order & Scope'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     Write-Information "INFO:    Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     $ConnectionOrder = @('AzureAd')
     if ( $PIMavailable ) {
@@ -209,20 +193,18 @@ function Connect-Me {
       $ConnectionOrder += 'ExchangeOnline'
     }
 
+    [int] $StepsID1 = $ConnectionOder.Count
     foreach ($Connection in $ConnectionOrder) {
-      $Service = $Connection
-      $step++
-      $Operation = $Service
-      Write-Progress -Id 0 -Status $Status -CurrentOperation "$Operation - Please see Authentication dialog" -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation" #-Verbose
-
+      $StatusID1 = "$Connection"
+      $CurrentOperationID1 = 'Connecting... Please see Authentication dialog'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       try {
         switch ($Connection) {
           'AzureAd' {
             $AzureAdParameters = $ConnectionParameters
             $AzureAdParameters += @{ 'AccountId' = $AccountId }
             $AzureAdFeedback = Connect-AzureAD @AzureAdParameters
-            Write-Information "SUCCESS: $Status - $Operation"
+            Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
           }
           'Enabling eligible Admin Roles' {
             try {
@@ -236,7 +218,7 @@ function Connect-Me {
               else {
                 Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated - If Privileged Admin Groups are used, please activate via PIM: https://aka.ms/myroles ' -Verbose
               }
-              Write-Information "SUCCESS: $Status - $Operation"
+              Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
             }
             catch {
               if ($_.Exception.Message.Split('["')[2] -eq 'MfaRule') {
@@ -265,7 +247,7 @@ function Connect-Me {
               $TeamsConnection = Connect-MicrosoftTeams @MicrosoftTeamsParameters
             }
             catch {
-              Write-Verbose -Message "$Status - $Operation - Try `#2 - Please confirm Account" -Verbose
+              Write-Verbose -Message " $StatusID0 - $CurrentOperationID0 - Try `#2 - Please confirm Account" -Verbose
               if ($AzureAdFeedback) {
                 $TeamsConnection = Connect-MicrosoftTeams -TenantId $AzureAdFeedback.TenantId -ErrorAction Stop
               }
@@ -276,10 +258,10 @@ function Connect-Me {
             #$null = Use-MicrosoftTeamsConnection
             if (-not (Use-MicrosoftTeamsConnection) -and $TeamsConnection) {
               # order is important here!
-              Write-Warning -Message "When activating roles with this CmdLet, propagation may not have completed. Please wait a few seconds and retry this command."
+              Write-Warning -Message 'When activating roles with this CmdLet, propagation may not have completed. Please wait a few seconds and retry this command.'
               throw 'MicrosoftTeams - Connection to MicrosoftTeams established, but Cmdlets not able to run. Please verify Admin Roles via https://aka.ms/myroles'
             }
-            Write-Information "SUCCESS: $Status - $Operation"
+            Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
           }
           'ExchangeOnline' {
             $ExchangeOnlineParameters = $ConnectionParameters
@@ -287,7 +269,7 @@ function Connect-Me {
             $ExchangeOnlineParameters += @{ 'ShowProgress' = $true }
             $ExchangeOnlineParameters += @{ 'ShowBanner' = $false }
             $null = Connect-ExchangeOnline @ExchangeOnlineParameters
-            Write-Information "SUCCESS: $Status - $Operation"
+            Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
           }
         }
       }
@@ -298,14 +280,12 @@ function Connect-Me {
         }
       }
     }
+    Write-Progress -Id 1 -Activity $ActivityID1 -Completed
 
     if ( -not $NoFeedback ) {
-      $Status = 'Providing Feedback'
-      $step++
-      $Operation = 'Querying information about established sessions'
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
+      $StatusID0 = 'Providing Feedback'
+      $CurrentOperationID0 = 'Querying information about established sessions'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       $SessionInfo = Get-CurrentConnectionInfo
       $SessionInfo | Add-Member -MemberType NoteProperty -Name AdminRoles -Value ''
 
@@ -315,10 +295,8 @@ function Connect-Me {
       }
       else {
         #AdminRoles is already populated if they have been activated with PIM (though only with eligible ones) this overwrites the previous set of roles
-        $step++
-        $Operation = 'Querying assigned Admin Roles'
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
+        $CurrentOperationID0 = 'Querying assigned Admin Roles'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         if ( Test-AzureADConnection) {
           try {
             $Roles = $(Get-AzureAdAdminRole -Identity (Get-AzureADCurrentSessionInfo).Account -ErrorAction Stop).RoleName -join ', '
@@ -336,14 +314,14 @@ function Connect-Me {
       }
 
       #Output
-      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $SessionInfo
 
       Write-Host "$(Get-Date -Format 'dd MMM yyyy HH:mm') | Ready" -ForegroundColor Green
       Get-RandomQuote
     }
     else {
-      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       return $(if ($Called) {
           # Returning basic connection information
           $SessionInfo = Get-CurrentConnectionInfo

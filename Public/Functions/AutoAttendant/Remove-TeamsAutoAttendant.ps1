@@ -66,17 +66,23 @@ function Remove-TeamsAutoAttendant {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $DNCounter = 0
     foreach ($DN in $Name) {
-      $StatusID0 = "Processing '$DN'"
-      $Operation = 'Querying CsAutoAttendant'
-      Write-Progress -Id 0 -Status $StatusID0 -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
-      Write-Verbose -Message "$StatusID0 - $Operation"
-      $DNCounter++
+      $StepsID0 = $Name.Count
+      $StatusID0 = "Processing"
+      $CurrentOperationID0 = $ActivityID1 = "'$DN'"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $StepsID0
+      #Write-Progress -Id 0 -Status $StatusID0 -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
+      #Write-Verbose -Message "$StatusID0 - $Operation"
+      #$DNCounter++
       try {
         Write-Information 'INFO:    The listed Auto Attendants are being removed:'
         if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
@@ -88,19 +94,21 @@ function Remove-TeamsAutoAttendant {
         }
 
         if ( $AAToRemove ) {
-          $AACounter = 0
-          $AAs = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
+          $StepsID1 = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
-            $Status = "'$DN'"
-            $Operation = "Removing Auto Attendant '$($AA.Name)'"
-            Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter / $AAs * 100)
-            Write-Verbose -Message "$Status - $Operation"
-            Write-Information "INFO:    $Operation"
-            $AACounter++
+            $StatusID1 = 'Removing Auto Attendant'
+            $CurrentOperationID1 = "'$($AA.Name)'"
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $StepsID1
+            Write-Information "INFO:    $StatusID1 $CurrentOperationID1"
+            #Write-Progress -Id 1 -Status $Status -CurrentOperation $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($CountID1 / $StepsID1 * 100)
+            #Write-Verbose -Message "$Status - $CurrentOperationID1"
+            #Write-Information "INFO:    $StatusID1 $CurrentOperationID1"
+            #$CountID1++
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity "$($AA.Identity)" -ErrorAction STOP
             }
-            Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+            Write-Progress -Id 1 -Activity $ActivityID1 -Completed
+            #Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
           }
         }
         else {
@@ -111,7 +119,8 @@ function Remove-TeamsAutoAttendant {
         Write-Error -Message "Removal of Auto Attendant '$DN' failed" -Category OperationStopped
         return
       }
-      Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
+      #Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -Completed
     }
 
   } #process
