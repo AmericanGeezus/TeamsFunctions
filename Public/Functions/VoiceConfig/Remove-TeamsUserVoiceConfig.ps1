@@ -249,7 +249,8 @@ function Remove-TeamsUserVoiceConfig {
         Write-Verbose -Message "$Status - $Operation"
         if ( $Force -or $CsUser.OnPremLineURI ) {
           try {
-            $CsUser | Set-CsUser -OnPremLineURI $Null
+            #$CsUser | Set-CsUser -OnPremLineURI $Null
+            Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -OnPremLineURI $Null
             Write-Information "INFO:    $Status - Removing OnPremLineURI: OK"
           }
           catch {
@@ -314,7 +315,8 @@ function Remove-TeamsUserVoiceConfig {
           Write-Verbose -Message "$Status - $Operation"
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$UPN", 'Disabling EnterpriseVoice')) {
-              $CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
+              #$CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
+              Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -EnterpriseVoiceEnabled $false
               Write-Information "INFO:    $Status - Disabling EnterpriseVoice: OK"
             }
             else {

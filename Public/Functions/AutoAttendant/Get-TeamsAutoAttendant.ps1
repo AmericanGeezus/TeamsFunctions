@@ -87,7 +87,6 @@ function Get-TeamsAutoAttendant {
 
     #Initialising Counters
     $ScriptAst = [System.Management.Automation.Language.Parser]::ParseInput($MyInvocation.MyCommand.Definition, [ref] $null, [ref]$null)
-    # This currently needs to subtract 1 for it also finds itself (can be improved if I could limit this to the process block)
     $script:StepsID0 = ($ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 0 ' | Measure-Object | Select-Object -ExpandProperty Count) - 1
     if ($PSBoundParameters.ContainsKey('Debug')) { "Function: $($MyInvocation.MyCommand.Name): StepsID0: $script:StepsID0" | Write-Debug }
     $script:StepsID1 = ($ScriptAst.Extent.Text -Split 'Write-BetterProgress -Id 1 ' | Measure-Object | Select-Object -ExpandProperty Count) - 1
