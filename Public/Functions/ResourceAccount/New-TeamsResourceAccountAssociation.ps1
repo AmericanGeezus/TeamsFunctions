@@ -94,16 +94,11 @@ function New-TeamsResourceAccountAssociation {
       $ConfirmPreference = 'None'
     }
 
-    # Initialising counters for Progress bars - Level 0
-    [int]$step = 0
-    [int]$sMax = 5
-
     #region Determining and Validating Entity
+    $StatusID0 = 'Verifying input'
     # Determining $EntityObject
-    $Status = 'Validation'
-    $Operation = 'Determining Entity'
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = 'Determining Entity Object'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     try {
       switch ($PSCmdlet.ParameterSetName) {
         'CallQueue' {
@@ -133,10 +128,8 @@ function New-TeamsResourceAccountAssociation {
     }
 
     # Validating Unique result received
-    $Operation = 'Unique result'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = 'Determining Entity Object is unique'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($null -eq $EntityObject) {
       throw [System.Exception]::New("$DesiredType '$Entity' - Not found, please check entity exists with this Name" )
     }
@@ -156,12 +149,15 @@ function New-TeamsResourceAccountAssociation {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+    # re-Initialising counters for Progress bars (for Pipeline processing)
+    [int]$CountID0 = 2
+
+    $StatusID0 = 'Verifying input'
     # Query $UserPrincipalName
     [System.Collections.ArrayList]$Accounts = @()
-    $Operation = 'Processing provided UserPrincipalNames'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = 'Processing provided UserPrincipalNames'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     foreach ($UPN in $UserPrincipalName) {
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
@@ -182,31 +178,16 @@ function New-TeamsResourceAccountAssociation {
       return
     }
 
-    $Operation = 'Processing found Resource Accounts'
-    $step++
-    Write-Progress -Id 0 -Status $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
-    $Counter = 1
+    $CurrentOperationID0 = $ActivityID1 = 'Processing found Resource Accounts'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    [int] $StepsID1 = $Accounts.Count
     [System.Collections.ArrayList]$ValidatedAccounts = @()
     foreach ($Account in $Accounts) {
-      $Status = 'Processing'
-      $Operation = "'$($Account.UserPrincipalName)'"
-      Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
-      Write-Verbose -Message "$Status - $Operation"
-      $Counter++
-      # Query existing connection
-
-      # Initialising counters for Progress bars - Level 0
-      [int]$step2 = 1
-      [int]$sMax2 = 6
-
-      $Status = "'$($Account.UserPrincipalName)'"
-      $Operation = 'Querying existing associations'
-      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
-      Write-Verbose -Message "$Status - $Operation"
+      $StatusID1 = "'$($Account.UserPrincipalName)'"
+      $CurrentOperationID1 = 'Querying existing associations'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       $ExistingConnection = $null
       $ExistingConnection = Get-CsOnlineApplicationInstanceAssociation -Identity $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-
       if ($null -eq $ExistingConnection.ConfigurationId) {
         Write-Verbose -Message "'$($Account.UserPrincipalName)' - No assignment found. OK"
       }
@@ -216,10 +197,8 @@ function New-TeamsResourceAccountAssociation {
       }
 
       # Comparing ApplicationType
-      $Operation = 'Validating ApplicationType'
-      $step2++
-      Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
-      Write-Verbose -Message "$Status - $Operation"
+      $CurrentOperationID1 = 'Validating ApplicationType'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       $ApplicationTypeMatches = ((Get-CsOnlineApplicationInstance -Identity "$($Account.UserPrincipalName)" -WarningAction SilentlyContinue).ApplicationId -eq (GetAppIdFromApplicationType $DesiredType))
 
       if ( $ApplicationTypeMatches ) {
@@ -228,10 +207,6 @@ function New-TeamsResourceAccountAssociation {
       else {
         if ($PSBoundParameters.ContainsKey('Force')) {
           # Changing Application Type
-          $Operation = "Application Type is not '$DesiredType' - Changing"
-          $step2++
-          Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
-          Write-Verbose -Message "$Status - $Operation"
           try {
             $null = Set-CsOnlineApplicationInstance -Identity $Account.ObjectId -ApplicationId $(GetAppIdFromApplicationType $DesiredType) -ErrorAction Stop
           }
@@ -240,16 +215,12 @@ function New-TeamsResourceAccountAssociation {
             continue
           }
 
-          $Operation = "Application Type is not '$DesiredType' - Waiting for AzureAD (2s)"
-          $step2++
-          Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
-          Write-Verbose -Message "$Status - $Operation"
+          $CurrentOperationID1 = "Application Type is not '$DesiredType' - Waiting for AzureAD (2s)"
+          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
           Start-Sleep -Seconds 2
 
-          $Operation = "Application Type is not '$DesiredType' - Verifying"
-          $step2++
-          Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step2 / $sMax2 * 100)
-          Write-Verbose -Message "$Status - $Operation"
+          $CurrentOperationID1 = "Application Type is not '$DesiredType' - Verifying"
+          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
           if ($DesiredType -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity "($($Account.ObjectId)" -WarningAction SilentlyContinue).ApplicationId)) {
             Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed to Desired Type: '$DesiredType'" -Category InvalidType
             continue
@@ -265,32 +236,20 @@ function New-TeamsResourceAccountAssociation {
       }
 
       [void]$ValidatedAccounts.Add($Account)
-      Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
     }
 
     # Processing found accounts
+    [int] $StepsID1 = $ValidatedAccounts.Count
+    $CurrentOperationID0 = $ActivityID1 = "Processing $StepsID1 validated Accounts"
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ( $ValidatedAccounts ) {
       # Processing Assignment
-      Write-Verbose -Message "Processing assignment of all Accounts to $DesiredType '$($EntityObject.Name)'"
-      $Counter = 1
       foreach ($Account in $Accounts) {
         $ErrorEncountered = $null
-
-        $Status = 'Assignment'
-        $Operation = "'$($Account.UserPrincipalName)'"
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($Counter / $($Accounts.Count) * 100)
-        Write-Verbose -Message "$Status - $Operation"
-        $Counter++
-
-        # Initialising counters for Progress bars - Level 0
-        [int]$step3 = 1
-        [int]$sMax3 = 4
-
-        # Establishing Association
-        $Status = "'$($Account.UserPrincipalName)'"
-        $Operation = "Assigning to $DesiredType '$($EntityObject.Name)'"
-        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step3 / $sMax3 * 100)
-        Write-Verbose -Message "$Status - $Operation"
+        $StatusID1 = "Assignment to $DesiredType '$($EntityObject.Name)'"
+        $CurrentOperationID1 = "Associating '$($Account.UserPrincipalName)' with $DesiredType"
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
 
         # Creating Splatting Object
         $Parameters = $null
@@ -300,7 +259,6 @@ function New-TeamsResourceAccountAssociation {
         $Parameters += @{ 'ErrorAction' = 'Stop' }
 
         # Create CsAutoAttendantCallableEntity
-        Write-Verbose -Message '[PROCESS] Creating Resource Account Association'
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
@@ -317,16 +275,9 @@ function New-TeamsResourceAccountAssociation {
 
         # Re-query Association Target
         #  Wating for AAD to write the Association Target so that it may be queried correctly
-        $Operation = "Assigning to $DesiredType '$($EntityObject.Name)' - Waiting for AzureAD (2s)"
-        $step3++
-        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step3 / $sMax3 * 100)
-        Write-Verbose -Message "$Status - $Operation"
+        $CurrentOperationID1 = "Validating association of '$($Account.UserPrincipalName)' with $DesiredType"
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         Start-Sleep -Seconds 2
-
-        $Operation = "Assigning to $DesiredType '$($EntityObject.Name)' - Verifying"
-        $step3++
-        Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step3 / $sMax3 * 100)
-        Write-Verbose -Message "$Status - $Operation"
         $AssociationTarget = switch ($PSCmdlet.ParameterSetName) {
           'CallQueue' {
             Get-CsCallQueue -Identity $OperationStatus.Results.ConfigurationId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -347,9 +298,9 @@ function New-TeamsResourceAccountAssociation {
           AssociatedTo      = $AssociationTarget.Name
         }
 
-        Write-Progress -Id 1 -Status $Status -Activity $MyInvocation.MyCommand -Completed
-        #VALIDATE Application of ID 0 Completion for multiple Associations!
-        Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+        Write-Progress -Id 1 -Activity $ActivityID1 -Completed
+        #TEST Application of ID 0 Completion for multiple Associations!
+        Write-Progress -Id 0 -Activity $ActivityID0 -Completed
         Write-Output $ResourceAccountAssociationObject
 
         if ( $ErrorEncountered ) {

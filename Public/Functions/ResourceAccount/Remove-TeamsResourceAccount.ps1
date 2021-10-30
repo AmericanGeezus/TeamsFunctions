@@ -108,19 +108,15 @@ function Remove-TeamsResourceAccount {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $StatusID0 = "Processing Removal"
+    $StatusID0 = 'Processing Removal'
     foreach ($UPN in $UserPrincipalName) {
-      <# Initialising counters for Progress bars
-      [int]$step = 0
-      [int]$sMax = 5
-      #>
       $script:StepsID0 = $UserPrincipalName.Count
       $CurrentOperationID0 = $ActivityID1 = "Processing '$UPN'"
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
 
-      $StatusID1 = "Processing '$DisplayName'"
+      $StatusID1 = 'Querying Object'
       #region Lookup of UserPrincipalName
-      $CurrentOperationID1 = 'Querying Object'
+      $CurrentOperationID1 = 'Querying CsOnlineApplicationInstance'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       try {
         #Trying to query the Resource Account
@@ -135,6 +131,7 @@ function Remove-TeamsResourceAccount {
       #endregion
 
       #region Associations
+      $StatusID1 = "Processing Object '$DisplayName'"
       # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
       $CurrentOperationID1 = 'Removing Associations to Call Queues or Auto Attendants'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1

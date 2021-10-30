@@ -124,31 +124,16 @@ function Remove-TeamsUserVoiceConfig {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $UserCounter = 0
+    $StatusID0 = 'Processing'
     foreach ($UPN in $UserPrincipalName) {
-      $StatusID0 = 'Processing'
-      $CurrentOperationID0 = $ActivityID1 = "'$UPN'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($UserCounter++) -Of $UserPrincipalName.Count
-      [int]$step = 0
-      #Write-Verbose -Message "[PROCESS] $StatusID0"
-      #Write-Progress -Id 0 -Status $StatusID0 -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
-      #$UserCounter++
-      <# Initialising counters for Progress bars
-      [int]$step = 0
-      [int]$sMax = switch ($Scope) {
-        'All' { 7 }
-        'CallingPlans' { 4 }
-        'DirectRouting' { 4 }
-      }
-      if ( $DisableEV ) { $sMax++ }
-      #>
+      $script:StepsID0 = $UserPrincipalName.Count
+      $CurrentOperationID0 = $ActivityID1 = "Processing '$UPN'"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
 
       #region Information Gathering
-      $StatusID1 = "User '$UPN'"
-      $CurrentOperationID1 = 'Querying User Account'
+      $StatusID1 = 'Querying Object'
+      $CurrentOperationID1 = 'Querying CsOnlineUser'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-      #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
       # Querying Identity
       try {
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
@@ -166,9 +151,6 @@ function Remove-TeamsUserVoiceConfig {
         # Querying User Licenses
         $CurrentOperationID1 = 'Calling Plans - Querying User Licenses'
         Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-        #$step++
-        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
         $CsUserLicense = Get-AzureAdUserLicense "$UPN"
 
         if ($null -ne $CsUserLicense.Licenses) {
@@ -184,9 +166,6 @@ function Remove-TeamsUserVoiceConfig {
             # Removing TelephoneNumber
             $CurrentOperationID1 = 'Calling Plans - Removing Telephone Number'
             Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-            #$step++
-            #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
             if ( $Force -or $CsUser.TelephoneNumber ) {
               try {
                 Set-CsOnlineVoiceUser -Identity "$UPN" -TelephoneNumber $Null -ErrorAction Stop
@@ -209,9 +188,6 @@ function Remove-TeamsUserVoiceConfig {
             # Removing Call Plan Licenses (with Confirmation)
             $CurrentOperationID1 = 'Calling Plans - Removing Calling Plan Licenses'
             Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-            #$step++
-            #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
             if ( $RemoveLicenses.Count -gt 0 ) {
               try {
                 if ( $PSCmdlet.ShouldProcess("$UPN", "Removing Licenses: $RemoveLicenses")) {
@@ -249,9 +225,6 @@ function Remove-TeamsUserVoiceConfig {
         #region Removing OnPremLineURI
         $CurrentOperationID1 = 'Direct Routing - Removing OnPremLineURI'
         Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-        #$step++
-        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
         if ( $Force -or $CsUser.OnPremLineURI ) {
           try {
             #$CsUser | Set-CsUser -OnPremLineURI $Null
@@ -271,9 +244,6 @@ function Remove-TeamsUserVoiceConfig {
         #region Removing Online Voice Routing Policy
         $CurrentOperationID1 = 'Direct Routing - Removing Online Voice Routing Policy'
         Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-        #$step++
-        #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
         if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy ) {
           try {
             $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
@@ -295,9 +265,6 @@ function Remove-TeamsUserVoiceConfig {
       #region Removing Tenant DialPlan
       $CurrentOperationID1 = 'Generic - Removing Tenant Dial Plan'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-      #$step++
-      #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
       if ( $Force -or $CsUser.TenantDialPlan ) {
         try {
           $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
@@ -318,9 +285,6 @@ function Remove-TeamsUserVoiceConfig {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
           $CurrentOperationID1 = 'Generic - Disabling Enterprise Voice'
           Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
-          #$step++
-          #Write-Progress -Id 1 -Status $StatusID1 -CurrentOperation  $CurrentOperationID1 -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-          #Write-Verbose -Message "$StatusID1 -  $CurrentOperationID1"
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$UPN", 'Disabling EnterpriseVoice')) {
               #$CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
@@ -352,7 +316,6 @@ function Remove-TeamsUserVoiceConfig {
       if ( $PassThru ) {
         Get-TeamsUserVoiceConfig -UserPrincipalName "$UPN" -InformationAction SilentlyContinue -WarningAction SilentlyContinue
       }
-
     }
   } #process
 

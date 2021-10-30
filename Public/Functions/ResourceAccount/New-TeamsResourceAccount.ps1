@@ -156,19 +156,9 @@ function New-TeamsResourceAccount {
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
     [int]$script:CountID0 = [int]$script:CountID1 = 0
 
-    <# superceded
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 10
-    if ( $License ) { $sMax = $sMax + 4 }
-    if ( $License -and $PhoneNumber ) { $sMax++ }
-    if ( $PhoneNumber ) { $sMax = $sMax + 2 }
-    #>
-
     #region Validating Licenses to be applied result in correct Licensing (contain PhoneSystem)
     $PlansToTest = 'MCOEV_VIRTUALUSER', 'MCOEV'
     if ( $PSBoundParameters.ContainsKey('License') ) {
-      $ActivityID0 = 'Preparation'
       $StatusID0 = 'Verifying input'
       $CurrentOperationID0 = 'Validating Licenses to be applied result in correct Licensing'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
