@@ -113,17 +113,18 @@ function Find-TeamsCallableEntity {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-
-    [int] $StepsID1 = $Identity.Count
+    [int] $CountID0 = 2
+    [int] $StepsID0 = $CountID0 + $Identity.Count
     foreach ( $Id in $Identity) {
+      [int] $CountID1 = 0
       $CallTarget = $null
       [System.Collections.ArrayList]$Output = @()
-      $StatusID0 = "Processing Entities"
+      $StatusID0 = 'Processing Entities'
       $CurrentOperationID0 = $ActivityID1 = "'$Id'"
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
 
-      $StatusID1 = "Querying Entity"
-      # Object
+      $StatusID1 = 'Querying Entity'
+      #region Object
       $CurrentOperationID1 = 'Teams Callable Entity'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       try {
@@ -139,8 +140,10 @@ function Find-TeamsCallableEntity {
       }
       catch {
         Write-Error -Message "Callable Entity '$Id' found, but no unique result determined. Cannot continue."
+        Write-Progress -Id 1 -Activity $ActivityID1 -Completed
         continue
       }
+      #endregion
 
       #region Search Results
       $StatusID1 = 'Checking Call Queues'

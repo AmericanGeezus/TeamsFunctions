@@ -177,20 +177,11 @@ function Get-TeamsAutoAttendantAudioFile {
       $CurrentOperationID0 = $ActivityID1 = "'$($AA.Name)'"
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       Write-Information "INFO:    Parsing Audio Files for Auto Attendant '$($AA.Name)'"
-      #$Status = "Auto Attendant '$($AA.Name)'"
-      #Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -PercentComplete ($AACounter /  $StepsID0 * 100)
-      #$AACounter++
-      #[int]$step = 0
-      #[int]$sMax = 2
 
       $StatusID1 = "Parsing"
       #region Parsing Default Call Flow
       $CurrentOperationID1 = 'Default CallFlow'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
-      #$Operation = 'Parsing Default CallFlow'
-      #$step++
-      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "'$($AA.Name)' - $Operation"
 
       # Default Call Flow Greetings
       $Operation2 = 'Default Call Flow - Greeting'
@@ -214,11 +205,6 @@ function Get-TeamsAutoAttendantAudioFile {
       #region CallFlows
       $CurrentOperationID1 = 'CallFlows'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
-      #$Operation = 'Parsing CallFlows'
-      #$step++
-      #Write-Progress -Id 1 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      #Write-Verbose -Message "$ActivityID1 - $Operation"
-
       foreach ($Flow in $AA.CallFlows) {
         # Call Flow Greeting Prompt
         $Operation2 = "'$($Flow.Name)' - Greeting - Prompt"

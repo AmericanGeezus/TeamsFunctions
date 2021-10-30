@@ -281,11 +281,13 @@ function New-TeamsResourceAccount {
         }
       }
       else {
+        Write-Progress -Id 1 -Activity $ActivityID1 -Completed
         return
       }
     }
     catch {
       # Catching anything
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
       Write-Error -Message "Resource Account '$Name' - Creation failed: $($_.Exception.Message)" -Exception $_.Exception
       return
     }
