@@ -297,6 +297,7 @@ function New-TeamsCommonAreaPhone {
         $i = 0
         $iMax = 60
         Write-Information "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
+        $Activity = 'Azure Active Directory is propagating Object. Please wait'
         $Status = 'Querying User'
         $Operation = 'Waiting for Get-AzureAdUser to return a Result'
         Write-Verbose -Message "$Status - $Operation"
@@ -305,9 +306,7 @@ function New-TeamsCommonAreaPhone {
             Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount'
             return
           }
-          Write-Progress -Id 1 -Status $Status -Activity 'Azure Active Directory is propagating Object. Please wait' `
-            -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
-
+          Write-Progress -Id 1 -Status $Status -Activity $Activity -CurrentOperation $Operation -SecondsRemaining $($iMax - $i) -PercentComplete (($i * 100) / $iMax)
           Start-Sleep -Milliseconds 1000
           $i++
 

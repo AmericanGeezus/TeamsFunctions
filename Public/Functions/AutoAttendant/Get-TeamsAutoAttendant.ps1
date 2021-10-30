@@ -153,18 +153,18 @@ function Get-TeamsAutoAttendant {
     #endregion
 
     # Parsing found Objects
-    Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $AACount"
-    $AACounter = 0
-    [int]$AACount = $AutoAttendants.Count
+    [int]$CountID0 = 0
+    [int]$StepsID0 = $AutoAttendants.Count
+    Write-Verbose -Message "[PROCESS] Processing found Auto Attendants: $StepsID0"
     #IMPROVE Explore Workflows with Parallel parsing:
     #foreach -parallel ($AA in $AutoAttendants) {
     foreach ($AA in $AutoAttendants) {
       # Initialising counters for Progress bars
       $StatusID0 = "Processing Auto Attendant"
       $CurrentOperationID0 = $ActivityID1 = "'$($AA.Name)'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($AACounter++) -Of $AACount
-      #Write-Progress -Id 0 -Status $StatusID0 -Activity $ActivityID0 -PercentComplete ($AACounter / $AACount * 100)
-      #$AACounter++
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      #Write-Progress -Id 0 -Status $StatusID0 -Activity $ActivityID0 -PercentComplete ($CountID0 / $StepsID0 * 100)
+      #$CountID0++
       <# Superceded by $stepsID1 tracker variable
       #TEST Performance of $stepsID1
       [int]$step = 0

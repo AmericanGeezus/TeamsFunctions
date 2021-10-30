@@ -358,17 +358,16 @@ function New-TeamsCallQueue {
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
     [int]$script:CountID0 = [int]$script:CountID1 = 0
 
-    # Initialising counters for Progress bars
+    <# Initialising counters for Progress bars
     [int]$step = 0
     [int]$sMax = 12
     if ( $MusicOnHoldAudioFile ) { $sMax++ }
     if ( $WelcomeMusicAudioFile ) { $sMax++ }
-
-    $Status = 'Verifying input'
-    $Operation = 'Validating Parameters'
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    #>
+    #region Validating Input
+    $StatusID0 = 'Validating Input'
+    $CurrentOperationID0 = 'LanguageId'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Language = $($LanguageId.Split('-')[0]).ToLower() + '-' + $($LanguageId.Split('-')[1]).ToUpper()
@@ -393,42 +392,38 @@ function New-TeamsCallQueue {
     }
 
     # Mutual exclusivity of Channel and Users/Groups
+    $CurrentOperationID0 = 'Checking for mutual exclusivity of Channel and Users/Groups'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('TeamAndChannel') -and ($PSBoundParameters.ContainsKey('Users') -or $PSBoundParameters.ContainsKey('DistributionLists'))) {
       Write-Warning "Parameter 'TeamAndChannel' cannot be combined with Users or Groups. It will be ignored!"
       [void]$PSBoundParameters.Remove('TeamAndChannel')
     }
+    #endregion
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
-    $Status = 'Preparing Parameters'
+    $StatusID0 = 'Processing Name, Audio Files & Queue Options'
     # preparing Splatting Object
     $Parameters = $null
 
     #region Required Parameters: Name
-    $Operation = 'Name'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
-    # Normalising $Name
+    $CurrentOperationID0 = 'DisplayName'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
     Write-Information "INFO:    Call Queue '$Name' DisplayName normalised to: '$NameNormalised'"
     $Parameters += @{'Name' = $NameNormalised }
     #endregion
 
     #region Music On Hold
+    $CurrentOperationID0 = 'Music On Hold Audio File'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile') -and $PSBoundParameters.ContainsKey('UseDefaultMusicOnHold')) {
       Write-Warning -Message "'$NameNormalised' MusicOnHoldAudioFile and UseDefaultMusicOnHold are mutually exclusive. UseDefaultMusicOnHold is ignored!"
       $UseDefaultMusicOnHold = $false
     }
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile')) {
-      $Operation = 'Music On Hold'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
       if ($null -ne $MusicOnHoldAudioFile) {
         # File import handles file existence, format & size requirements
         $MOHFileName = Split-Path $MusicOnHoldAudioFile -Leaf
@@ -458,12 +453,9 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Welcome Message
+    $CurrentOperationID0 = 'Welcome Message Audio File'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
-      $Operation = 'Welcome Message'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
       if ($null -ne $WelcomeMusicAudioFile) {
         # File import handles file existence, format & size requirements
         $WMFileName = Split-Path $WelcomeMusicAudioFile -Leaf
@@ -490,10 +482,8 @@ function New-TeamsCallQueue {
 
     #region Routing metrics, Thresholds and Language
     # One Progress operation for all Parameters
-    $Operation = 'Routing metrics, Thresholds and Language'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = 'Routing metrics, Thresholds and Language'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
 
     #region ValueSet Parameters
     # RoutingMethod
@@ -584,12 +574,10 @@ function New-TeamsCallQueue {
 
 
     #region Overflow
-    $Operation = 'Overflow'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $StatusID0 = 'Processing Overflow Parameters'
     #region Overflow Action
+    $CurrentOperationID0 = 'OverflowAction'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('OverflowAction')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' Parsing requirements"
       if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
@@ -617,6 +605,8 @@ function New-TeamsCallQueue {
 
     #region OverflowActionTarget
     # Processing for Target is dependent on Action
+    $CurrentOperationID0 = 'OverflowActionTarget'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
       Write-Verbose -Message "'$NameNormalised' Parsing OverflowActionTarget" -Verbose
       try {
@@ -634,7 +624,6 @@ function New-TeamsCallQueue {
             $CallTarget = $null
             $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
             switch ( $CallTarget.ObjectType ) {
-              #VALIDATE whether 'Channel' would be a valid target to forward to (maybe in the future?)
               'TelURI' {
                 #Telephone Number (E.164)
                 $Parameters += @{'OverflowActionTarget' = $CallTarget.Identity }
@@ -841,12 +830,10 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Timeout
-    $Operation = 'Timeout'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $StatusID0 = "Processing Timeout Parameters"
     #region TimeoutAction
+    $CurrentOperationID0 = 'TimeoutAction'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' Parsing requirements"
       if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
@@ -874,6 +861,8 @@ function New-TeamsCallQueue {
 
     #region TimeoutActionTarget
     # Processing for Target is dependent on Action
+    $CurrentOperationID0 = 'TimeoutActionTarget'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
       Write-Verbose -Message "'$NameNormalised' Parsing TimeoutActionTarget" -Verbose
       try {
@@ -1097,12 +1086,10 @@ function New-TeamsCallQueue {
 
 
     #region Agents & Accounts
+    $StatusID0 = 'Agents, Channel, Users & Caller Id'
     #region Channel
-    $Operation = 'Parsing Channel'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = 'Parsing Channel'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('TeamAndChannel')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Team and Channel" -Verbose
       try {
@@ -1117,11 +1104,8 @@ function New-TeamsCallQueue {
     #endregion
 
     #region ChannelUsers - Parsing and verifying ChannelUsers
-    $Operation = 'Parsing ChannelUsers'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = 'Parsing ChannelUsers'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('ChannelUsers')) {
       Write-Verbose -Message "'$NameNormalised' Parsing ChannelUsers"
       [System.Collections.ArrayList]$ChannelUsersIdList = @()
@@ -1151,7 +1135,6 @@ function New-TeamsCallQueue {
           continue
         }
       }
-
       if ($UserIdList.Count -gt 0) {
         Write-Verbose -Message "'$NameNormalised' Users: Adding $($ChannelUsersIdList.Count) ChannelUsers to the Queue" -Verbose
         $Parameters += @{'ChannelUserObjectId' = @($ChannelUsersIdList) }
@@ -1161,11 +1144,8 @@ function New-TeamsCallQueue {
 
 
     #region Users - Parsing and verifying Users
-    $Operation = 'Parsing Users'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = 'Parsing Users'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' - Parsing Users"
       [System.Collections.ArrayList]$UserIdList = @()
@@ -1204,11 +1184,8 @@ function New-TeamsCallQueue {
     #endregion
 
     #region Groups - Parsing Distribution Lists and their Users
-    $Operation = 'Parsing Distribution Lists'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = 'Parsing Distribution Lists'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists" -Verbose
       [System.Collections.ArrayList]$DLIdList = @()
@@ -1237,11 +1214,8 @@ function New-TeamsCallQueue {
 
 
     #region ResourceAccountsForCallerId - Parsing and verifying Parsing Resource Accounts for Caller Id
-    $Operation = 'Parsing Resource Accounts for Caller Id'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = 'Parsing Resource Accounts for Caller Id'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('ResourceAccountsForCallerId')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Resource Accounts for Caller Id"
       [System.Collections.ArrayList]$OboResourceAccountIds = @()
@@ -1289,16 +1263,14 @@ function New-TeamsCallQueue {
 
 
     #region ACTION
+    $StatusID0 = 'Creating Object'
+    $CurrentOperationID0 = "Creating Call Queue: '$NameNormalised'"
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
       "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Create CQ (New-CsCallQueue)
-    $Status = 'Creating Object'
-    $Operation = "Creating Call Queue: '$NameNormalised'"
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
     if ($PSCmdlet.ShouldProcess("$UserPrincipalName", 'New-CsCallQueue')) {
       try {
         # Create the Call Queue with all enumerated Parameters passed through splatting
@@ -1317,16 +1289,12 @@ function New-TeamsCallQueue {
 
 
     #region OUTPUT
-    $Status = 'Creating Object'
-    $Operation = 'Querying Object'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = "Preparing Output"
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
     $CallQueueFinal = $CallQueueFinal | Where-Object Name -EQ "$NameNormalised"
 
-    Write-Progress -Id 0 -Status $Status -Activity $MyInvocation.MyCommand -Completed
+    Write-Progress -Id 0 -Activity $ActivityID0 -Completed
     Write-Output $CallQueueFinal
     #endregion
 
