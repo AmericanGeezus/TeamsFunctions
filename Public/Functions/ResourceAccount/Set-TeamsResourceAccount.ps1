@@ -484,7 +484,7 @@ function Set-TeamsResourceAccount {
         Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
         Write-Verbose -Message "License '$License'- Expecting one of the corresponding ServicePlans '$PlansToTest'"
         $StatusID1 = 'Azure Active Directory is propagating Object. Please wait'
-        $CurrentOperationID1 = 'Querying User License. Waiting for return of a positive Result'
+        $CurrentOperationID1 = 'Waiting for Test-TeamsUserLicense to return a positive Result'
         do {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Successful Provisioning Status of ServicePlan '$PlansToTest' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop

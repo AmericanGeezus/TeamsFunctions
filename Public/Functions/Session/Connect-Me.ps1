@@ -228,7 +228,7 @@ function Connect-Me {
                 Write-Warning 'Enable-AzureAdAdminrole - Activating Admin roles failed: PIM requires a Ticket Number - please activate via Azure Admin Center - https://aka.ms/myroles'
               }
               else {
-                Write-Verbose 'Enable-AzureAdAdminrole - Tenant may not be enabled for PIM or roles could not be activated' -Verbose
+                Write-Verbose 'Enable-AzureAdAdminrole - PIM or roles could not be activated or Tenant may not be enabled for PIM' -Verbose
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
                   "Function: $($MyInvocation.MyCommand.Name): Exception:", $_.Exception.Message | Write-Debug
                 }

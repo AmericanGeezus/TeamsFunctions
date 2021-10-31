@@ -198,6 +198,7 @@ function Set-TeamsUserVoiceConfig {
     try {
       $CsUser = Get-TeamsUserVoiceConfig -UserPrincipalName "$UserPrincipalName" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
+      $IsPSsuccess = $CsUser.PhoneSystemStatus.Contains('Success')
       $ObjectType = $CsUser.ObjectType
     }
     catch {
@@ -210,62 +211,117 @@ function Set-TeamsUserVoiceConfig {
 
     $StatusID1 = 'Establishing User Object Readiness'
     #region Establishing User Object Readiness
-    #region Querying User Licenses
-    $CurrentOperationID1 = 'Querying User License (AzureAdUserLicense)'
+    $Operation = 'PhoneSystem License'
+    $CurrentOperationID1 = "Asserting Callable Entity (Validating $Operation & EnterpriseVoice enablement)"
     Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
-    #IMPROVE This works, but could be replaced with Assert-TeamsCallableEntity - Does check license AND to be extended for PhoneSystemStatus too
-    try {
-      if ( $CsUser.PhoneSystem ) {
-        Write-Verbose -Message "Object '$UserPrincipalName' - PhoneSystem License is assigned - Validating PhoneSystemStatus"
-        if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
-          try {
-            if ( $CsUser.PhoneSystemStatus.Contains('Disabled')) {
-              Write-Information "TRYING:  Object '$UserPrincipalName' - PhoneSystem License is assigned - ServicePlan PhoneSystem is Disabled - Trying to activate"
-              Set-AzureAdLicenseServicePlan -Identity "$($CsUser.UserPrincipalName)" -Enable MCOEV -ErrorAction Stop
-              if (-not (Get-AzureAdUserLicense -Identity "$UserPrincipalName").PhoneSystemStatus.Contains('Success')) {
-                throw
+    if ( -not $IsEVenabled -or -not $IsPSsuccess) {
+      #TEST execution of Assert-TeamsCallableEntity - currently limited to use with Force
+      if ($Force) {
+        try {
+          Write-Information "TRYING:  Object '$UserPrincipalName' - $Operation is assigned - ServicePlan PhoneSystem is Disabled - Trying to activate"
+          $Assertion = $null
+          $Assertion = Assert-TeamsCallableEntity -Identity "$($CsUser.UserPrincipalName)" -Terminate -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
+          if ($Assertion) {
+            Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation` & Status: OK"
+            Write-Information "SUCCESS: Object '$UserPrincipalName' - Enterprise Voice Status: OK"
+            $IsEVenabled = $True
+          }
+          else {
+            throw
+          }
+        }
+        catch {
+          throw "Object '$UserPrincipalName' - $Operation found but not licensed correctly (PhoneSystem) - Object could not be enabled."
+        }
+      }
+      else {
+        #TEST normal execution - as before - should behave as v21.9.2 did
+        try {
+          if ( $CsUser.PhoneSystem ) {
+            Write-Verbose -Message "Object '$UserPrincipalName' - $Operation is assigned - Validating PhoneSystemStatus"
+            if ( -not $CsUser.PhoneSystemStatus.Contains('Success')) {
+              try {
+                if ( $CsUser.PhoneSystemStatus.Contains('Disabled')) {
+                  Write-Information "TRYING:  Object '$UserPrincipalName' - $Operation is assigned - ServicePlan PhoneSystem is Disabled - Trying to activate"
+                  Set-AzureAdLicenseServicePlan -Identity "$($CsUser.UserPrincipalName)" -Enable MCOEV -ErrorAction Stop
+                  if (-not (Get-AzureAdUserLicense -Identity "$UserPrincipalName").PhoneSystemStatus.Contains('Success')) {
+                    throw
+                  }
+                }
+                else {
+                  Write-Information "TRYING:  Object '$UserPrincipalName' - $Operation is assigned - ServicePlan is: $($CsUser.PhoneSystemStatus)"
+                }
+              }
+              catch {
+                throw "Object '$UserPrincipalName' - $Operation found but not licensed correctly (PhoneSystem) - Object could not be enabled."
               }
             }
-            else {
-              Write-Information "TRYING:  Object '$UserPrincipalName' - PhoneSystem License is assigned - ServicePlan is: $($CsUser.PhoneSystemStatus)"
+          }
+          else {
+            throw "Object '$UserPrincipalName' - $Operation is not assigned"
+          }
+        }
+        catch {
+          # Unlicensed
+          if ($force) {
+            Write-Warning -Message "Object '$UserPrincipalName' - $Operation is not correctly licensed. PhoneSystem Service Plan status must be 'Success'. Assignment will continue, though will be only partially successful."
+          }
+          else {
+            if ( -not $UserLic ) {
+              $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue
             }
-          }
-          catch {
-            throw "Object '$UserPrincipalName' - is not licensed correctly. Please check License assignment. PhoneSystem Service Plan status must be 'Success'"
+            Write-Verbose -Message 'License Status:' -Verbose
+            $UserLic.Licenses
+            Write-Verbose -Message 'Service Plan Status (PhoneSystem):' -Verbose
+            $UserLic.ServicePlans | Where-Object ServicePlanName -EQ 'MCOEV'
+            $UserLic.ServicePlans | Where-Object ServicePlanName -EQ 'MCOEV_VIRTUALUSER'
+            $ErrorLog += $_.Exception.Message
+            Write-Error -Message "Object '$UserPrincipalName' - $Operation is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
+            return
+            #throw "Object '$UserPrincipalName' - $Operation is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
           }
         }
-
-        if ( $CsUser.PhoneSystemStatus.Contains(',')) {
-          Write-Warning -Message "Object '$UserPrincipalName' - PhoneSystem License: Multiple assignments found. Please verify License assignment."
-          $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue
-          Write-Verbose -Message 'All licenses assigned to the User:' -Verbose
-          #Output reduced with Select-Object for better visibility
-          Write-Output $UserLic.Licenses | Select-Object ProductName, SkuPartNumber, LicenseType, IncludesTeams, IncludesPhoneSystem, ServicePlans
-        }
-      }
-      else {
-        throw "Object '$UserPrincipalName' - PhoneSystem License is not assigned"
       }
     }
-    catch {
-      # Unlicensed
-      if ($force) {
-        Write-Warning -Message "Object '$UserPrincipalName' - PhoneSystem License is not correctly licensed. PhoneSystem Service Plan status must be 'Success'. Assignment will continue, though will be only partially successful."
+    #endregion
+
+    #region Checking multiple assignments of PhoneSystem
+    $CurrentOperationID1 = 'Checking multiple assignments of PhoneSystem'
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    if ( $CsUser.PhoneSystemStatus.Contains(',')) {
+      Write-Warning -Message "Object '$UserPrincipalName' - $Operation`: Multiple assignments found. Please verify License assignment."
+      $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue
+      Write-Verbose -Message 'All licenses assigned to the User:' -Verbose
+      Write-Output $UserLic.Licenses | Select-Object ProductName, SkuPartNumber, LicenseType, IncludesTeams, IncludesPhoneSystem, ServicePlans
+    }
+    #endregion
+
+    #region Enable if not Enabled for EnterpriseVoice
+    if (-not $Force) {
+      #TEST once Assert-TeamsCallableEntity takes over the validation, this section can be removed (or retained for double checking)
+      $Operation = 'Enterprise Voice'
+      $CurrentOperationID1 = "Validating User is enabled for $Operation"
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      if ( -not $IsEVenabled) {
+        Write-Verbose "Object '$UserPrincipalName' - $Operation`: Not enabled, trying to Enable"
+        if ($Force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
+          $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity "$UserPrincipalName" -Force
+          if ($IsEVenabled) {
+            Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK"
+          }
+        }
       }
       else {
-        if ( -not $UserLic ) {
-          $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue
-        }
-        Write-Verbose -Message 'License Status:' -Verbose
-        $UserLic.Licenses
-        Write-Verbose -Message 'Service Plan Status (PhoneSystem):' -Verbose
-        $UserLic.ServicePlans | Where-Object ServicePlanName -EQ 'MCOEV'
-        $UserLic.ServicePlans | Where-Object ServicePlanName -EQ 'MCOEV_VIRTUALUSER'
-        $ErrorLog += $_.Exception.Message
-        Write-Error -Message "Object '$UserPrincipalName' - PhoneSystem License is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
-        return
-        #throw "Object '$UserPrincipalName' - PhoneSystem License is not correctly licensed. Please check License assignment. PhoneSystem Service Plan status must be 'Success'."
+        Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Already enabled" -Verbose
       }
+    }
+
+
+    # Pre-empting errors based on Object not being enabled for Enterprise Voice
+    if ( -not $IsEVenabled) {
+      $ErrorLogMessage = "Object '$UserPrincipalName' - $Operation`: Could not enable Object. Please investigate. Voice Configuration will not succeed for all entries"
+      Write-Error -Message $ErrorLogMessage
+      $ErrorLog += $ErrorLogMessage
     }
     #endregion
 
@@ -370,31 +426,6 @@ function Set-TeamsUserVoiceConfig {
       if ( -not $CurrentPhoneNumber ) {
         Write-Warning -Message "Object '$UserPrincipalName' - Phone Number not provided or present. User will not be able to use PhoneSystem"
       }
-    }
-    #endregion
-
-    #region Enable if not Enabled for EnterpriseVoice
-    $Operation = 'Enterprise Voice'
-    $CurrentOperationID1 = "Validating User is enabled for $Operation"
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
-    if ( -not $IsEVenabled) {
-      Write-Verbose "Object '$UserPrincipalName' - $Operation`: Not enabled, trying to Enable"
-      if ($Force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
-        $IsEVenabled = Enable-TeamsUserForEnterpriseVoice -Identity "$UserPrincipalName" -Force
-        if ($IsEVenabled) {
-          Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK"
-        }
-      }
-    }
-    else {
-      Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Already enabled" -Verbose
-    }
-
-    # Pre-empting errors based on Object not being enabled for Enterprise Voice
-    if ( -not $IsEVenabled) {
-      $ErrorLogMessage = "Object '$UserPrincipalName' - $Operation`: Could not enable Object. Please investigate. Voice Configuration will not succeed for all entries"
-      Write-Error -Message $ErrorLogMessage
-      $ErrorLog += $ErrorLogMessage
     }
     #endregion
     #endregion

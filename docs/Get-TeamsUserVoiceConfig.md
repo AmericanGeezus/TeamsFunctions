@@ -117,7 +117,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 DiagnosticLevel details:
-0 Same output as without the Parameter, though LicensesAssigned are nested in as an Object rather than names only.
 1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype
 2 Extended diagnostics displaying additional Voice-related Policies
 3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc.
@@ -131,9 +130,7 @@ For a full parameterset, please run:
 - for Teams:      "Get-CsOnlineUser $UserPrincipalName"
 
 Exporting PowerShell Objects that contain Nested Objects as CSV results in this parameter being shown as "System.Object\[\]".
-The nested Object itself however enables a more in-depth view of Licensing for this Object.
-The introduction of Diagnostic Level 0 tries to bridge two seemingly contradicting requirements.
-Using any diagnostic level gives the flexibly to drill-down into Licensing.
+Using any diagnostic level higher than 3 adds Parameter LicenseObject allowing to drill-down into Licensing
 Omitting it allows for visible data when exporting as a CSV.
 
 ## RELATED LINKS

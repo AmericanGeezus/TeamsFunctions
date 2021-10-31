@@ -8220,6 +8220,13 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Get-TeamsTenantVoiceConfig DisplayUserCounters</dev:code>
+        <dev:remarks>
+          <maml:para>Displays a counters for Users in the Tenant as well as Users enabled for EnterpriseVoice This will run for a long time and may result in a timeout with AzureAd and with Teams. Handle with care.</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Get-TeamsTenantVoiceConfig -Detailed</dev:code>
         <dev:remarks>
           <maml:para>Displays a detailed view also listing Names for DialPlans, PSTN Usages, Voice Routes and PSTN Gateways Also displays diagnostic parameters for troubleshooting</maml:para>
@@ -8623,12 +8630,12 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>DiagnosticLevel details: 0 Same output as without the Parameter, though LicensesAssigned are nested in as an Object rather than names only. 1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype 2 Extended diagnostics displaying additional Voice-related Policies 3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc. 4 Extended troubleshooting parameters from AzureAD like LastDirSyncTime Parameters are additive, meaning with each DiagnosticLevel more information is displayed</maml:para>
+        <maml:para>DiagnosticLevel details: 1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype 2 Extended diagnostics displaying additional Voice-related Policies 3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc. 4 Extended troubleshooting parameters from AzureAD like LastDirSyncTime Parameters are additive, meaning with each DiagnosticLevel more information is displayed</maml:para>
         <maml:para>This script takes a select set of Parameters from AzureAD, Teams &amp; Licensing. For a full parameterset, please run: - for AzureAD:    "Find-AzureAdUser $UserPrincipalName | FL"</maml:para>
         <maml:para>- for Licensing:  "Get-AzureAdUserLicense $UserPrincipalName"</maml:para>
         <maml:para>- for Teams:      "Get-CsOnlineUser $UserPrincipalName"</maml:para>
         <maml:para></maml:para>
-        <maml:para>Exporting PowerShell Objects that contain Nested Objects as CSV results in this parameter being shown as "System.Object[]". The nested Object itself however enables a more in-depth view of Licensing for this Object. The introduction of Diagnostic Level 0 tries to bridge two seemingly contradicting requirements. Using any diagnostic level gives the flexibly to drill-down into Licensing. Omitting it allows for visible data when exporting as a CSV.</maml:para>
+        <maml:para>Exporting PowerShell Objects that contain Nested Objects as CSV results in this parameter being shown as "System.Object[]". Using any diagnostic level higher than 3 adds Parameter LicenseObject allowing to drill-down into Licensing Omitting it allows for visible data when exporting as a CSV.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -15935,7 +15942,7 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Remove-TeamsUserVoiceConfig</maml:name>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
           <maml:name>UserPrincipalName</maml:name>
           <maml:description>
             <maml:para>Required. UserPrincipalName of the User.</maml:para>
@@ -16017,7 +16024,7 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="none">
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
         <maml:name>UserPrincipalName</maml:name>
         <maml:description>
           <maml:para>Required. UserPrincipalName of the User.</maml:para>
@@ -20590,6 +20597,258 @@
       <maml:navigationLink>
         <maml:linkText>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:linkText>
         <maml:uri>https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating</maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
+  </command:command>
+  <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
+    <command:details>
+      <command:name>Write-BetterProgress</command:name>
+      <command:verb>Write</command:verb>
+      <command:noun>BetterProgress</command:noun>
+      <maml:description>
+        <maml:para>Wrapper for Write-Progress to improve consistency with output</maml:para>
+      </maml:description>
+    </command:details>
+    <maml:description>
+      <maml:para>This function improves upon Write-Progress to display more consistent and meaningful progress bars</maml:para>
+    </maml:description>
+    <command:syntax>
+      <command:syntaxItem>
+        <maml:name>Write-BetterProgress</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>ID</maml:name>
+          <maml:description>
+            <maml:para>Required. Synonymous with Write-Progress Parameter Id Id to bind it to. Could have been omitted, but for consistent input it should be clearly stated.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>ParentId</maml:name>
+          <maml:description>
+            <maml:para>Optional. Synonymous with Write-Progress Parameter ParentId Parent Id to bind it to. If not provided will be assumed one less than the ID provided. For Example: Id 2 will result in the Parent ID being calculated as ParentId 1</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+          <maml:name>Activity</maml:name>
+          <maml:description>
+            <maml:para>Required. Synonymous with Write-Progress Parameter Activity When called in Functions, $MyInvocation.MyCommand is a good activity. When called in ID higher than 0, the activity should display what is being worked on (Loop item, etc.)</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+          <maml:name>Status</maml:name>
+          <maml:description>
+            <maml:para>Required. Synonymous with Write-Progress Parameter Status Message to display as a Status. This can be the current operation if this level of granularity is enough</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+          <maml:name>CurrentOperation</maml:name>
+          <maml:description>
+            <maml:para>Optional. Synonymous with Write-Progress Parameter CurrentOperation Provides more granularity over the Status if required.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+          <maml:name>Step</maml:name>
+          <maml:description>
+            <maml:para>Required. Current Step to display progress for Calculates Write-Progress Parameter PercentComplete with (StepNumber / StepTotal ) * 100</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
+          <maml:name>Of</maml:name>
+          <maml:description>
+            <maml:para>Required. Total Steps to calculate from Calculates Write-Progress Parameter PercentComplete with (StepNumber / StepTotal ) * 100 If not provided or received as 0, will be assumed as 100 to avoid running into errors</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+          <dev:type>
+            <maml:name>Int32</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+    </command:syntax>
+    <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>ID</maml:name>
+        <maml:description>
+          <maml:para>Required. Synonymous with Write-Progress Parameter Id Id to bind it to. Could have been omitted, but for consistent input it should be clearly stated.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>ParentId</maml:name>
+        <maml:description>
+          <maml:para>Optional. Synonymous with Write-Progress Parameter ParentId Parent Id to bind it to. If not provided will be assumed one less than the ID provided. For Example: Id 2 will result in the Parent ID being calculated as ParentId 1</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+        <maml:name>Activity</maml:name>
+        <maml:description>
+          <maml:para>Required. Synonymous with Write-Progress Parameter Activity When called in Functions, $MyInvocation.MyCommand is a good activity. When called in ID higher than 0, the activity should display what is being worked on (Loop item, etc.)</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+        <maml:name>Status</maml:name>
+        <maml:description>
+          <maml:para>Required. Synonymous with Write-Progress Parameter Status Message to display as a Status. This can be the current operation if this level of granularity is enough</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+        <maml:name>CurrentOperation</maml:name>
+        <maml:description>
+          <maml:para>Optional. Synonymous with Write-Progress Parameter CurrentOperation Provides more granularity over the Status if required.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="6" aliases="none">
+        <maml:name>Step</maml:name>
+        <maml:description>
+          <maml:para>Required. Current Step to display progress for Calculates Write-Progress Parameter PercentComplete with (StepNumber / StepTotal ) * 100</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="7" aliases="none">
+        <maml:name>Of</maml:name>
+        <maml:description>
+          <maml:para>Required. Total Steps to calculate from Calculates Write-Progress Parameter PercentComplete with (StepNumber / StepTotal ) * 100 If not provided or received as 0, will be assumed as 100 to avoid running into errors</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
+        <dev:type>
+          <maml:name>Int32</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+    </command:parameters>
+    <command:inputTypes>
+      <command:inputType>
+        <dev:type>
+          <maml:name>System.String</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:inputType>
+    </command:inputTypes>
+    <command:returnValues>
+      <command:returnValue>
+        <dev:type>
+          <maml:name>System.Progress</maml:name>
+        </dev:type>
+        <maml:description>
+          <maml:para></maml:para>
+        </maml:description>
+      </command:returnValue>
+    </command:returnValues>
+    <maml:alertSet>
+      <maml:alert>
+        <maml:para>Inspired by Adam Betrams wonderful take on 'A Better Way to Use Write-Progress' https://adamtheautomator.com/write-progress/</maml:para>
+        <maml:para>This wrapper functions supports all parameters except Completed. Please use the following to cleanly complete your progress bar (swap ID and Activity as required): Write-Progress -Id 0 -Activity $MyInvocation.MyCommand -Completed</maml:para>
+        <maml:para>NOTE: Run this BEFORE Write-Output or RETURN commands as some terminals suffer from a bleed-through effect that super-imposes the Progress over the output: https://github.com/microsoft/vscode/issues/118661</maml:para>
+      </maml:alert>
+    </maml:alertSet>
+    <command:examples>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -Step $i -of 10</dev:code>
+        <dev:remarks>
+          <maml:para>Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}' Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Write-BetterProgress -Id 1 -Activity "Processing Item #$i" -Status "Step $i - Substep $j" -Step $j -of 10</dev:code>
+        <dev:remarks>
+          <maml:para>Assumes running an a foreach loop of 'foreach ($j in (1..10)) {Write-BetterProgress -Id 1...}' Displays the Progress for ID 1 - with the activity set to the calling command (useful when used in a Function) NOTE: The ParentId is set to 0 automatically (one less than the ID provided, unless Parameter ParentId is used)</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Write-BetterProgress -Id 2 -ParentId 1 -Activity 'Looping through Activities' -CurrentOperation 'Displaying Level 3' -Status "Step $i - Substep $j - iteration $k" -Step $k -of 10</dev:code>
+        <dev:remarks>
+          <maml:para>Assumes running an a foreach loop of 'foreach ($k in (1..10)) {Write-BetterProgress -Id 2...}' Displays the Progress for ID 2 - with the Parent ID set to 1 (this is calculated to 1 anyway, but can be overridden) CurrentOperation is optional and will display another line below if needed for more granularity.</maml:para>
+        </dev:remarks>
+      </command:example>
+    </command:examples>
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Write-BetterProgress.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Write-BetterProgress.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_Supporting_Functions.md</maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:linkText>
+        <maml:uri>https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/</maml:uri>
       </maml:navigationLink>
     </command:relatedLinks>
   </command:command>

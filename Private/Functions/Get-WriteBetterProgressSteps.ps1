@@ -18,8 +18,8 @@ function Get-WriteBetterProgressSteps {
     Runs through the provided Code object (or, if not provided, the code of the calling function)
     Returns integer value for each level discovered
   .PARAMETER Code
-    Optional. Code to read.
-    If not provided, will use the code of the calling function
+    Required. Code to read.
+    Planned: If not provided, will use the code of the calling function
   .PARAMETER Levels
     Optional. Number of cascaded levels to use.
     If not provided, will assume single level (ID 0)

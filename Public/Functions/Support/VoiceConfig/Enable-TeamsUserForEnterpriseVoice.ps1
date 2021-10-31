@@ -159,8 +159,8 @@ function Enable-TeamsUserForEnterpriseVoice {
             $null = Set-CsUser -Identity $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
             $i = 0
             $iMax = 20
-            $Activity = 'Azure Active Directory is propagating Object. Please wait'
-            $Status = 'Enable User For Enterprise Voice'
+            $Activity = 'Enable User For Enterprise Voice'
+            $Status = 'Azure Active Directory is propagating Object. Please wait'
             $Operation = 'Waiting for Get-CsOnlineUser to return a Result'
             Write-Verbose -Message "$Status - $Operation"
             do {
@@ -168,7 +168,7 @@ function Enable-TeamsUserForEnterpriseVoice {
                 Write-Error -Message "User '$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false
               }
-              Write-Progress -Id 0 -Status $Status -Activity $Activity -CurrentOperation $Operation -SecondsRemaining $($iMax - $i) -PercentComplete (($i * 100) / $iMax)
+              Write-Progress -Id 0 -Activity $Activity -Status $Status -CurrentOperation $Operation -SecondsRemaining $($iMax - $i) -PercentComplete (($i * 100) / $iMax)
               Start-Sleep -Milliseconds 1000
               $i++
             }

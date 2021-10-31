@@ -260,7 +260,8 @@ function New-TeamsResourceAccount {
         $iMax = 60
         Write-Information "INFO:    Resource Account '$Name' ($ApplicationType) created; Waiting for AzureAd to write object ($iMax s)"
         $StatusID1 = 'Azure Active Directory is propagating Object. Please wait'
-        $CurrentOperationID1 = 'Querying Application Instance Object. Waiting for Get-AzureAdUser to return a Result'
+        $CurrentOperationID1 = 'Waiting for Get-AzureAdUser to return a Result'
+        Write-Verbose -Message "$StatusID1 - $CurrentOperationID1"
         do {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount'
