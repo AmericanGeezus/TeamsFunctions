@@ -62,15 +62,21 @@ function Remove-TeamsCallQueue {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $DNCounter = 0
     foreach ($DN in $Name) {
-      Write-Progress -Id 0 -Status "Processing '$DN'" -CurrentOperation 'Querying CsCallQueue' -Activity $MyInvocation.MyCommand -PercentComplete ($DNCounter / $($Name.Count) * 100)
-      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - '$DN'"
-      $DNCounter++
+      [int]$CountID0 = 0
+      [int]$StepsID0 = $Name.Count
+      $StatusID0 = 'Processing'
+      $CurrentOperationID0 = $ActivityID1 = "'$DN'"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $StepsID0
       try {
         Write-Information 'INFO:    The listed Queues are being removed:'
         if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
@@ -82,15 +88,16 @@ function Remove-TeamsCallQueue {
         }
 
         if ( $QueueToRemove ) {
-          $QueueCounter = 0
-          $Queues = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
+          $StepsID1 = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
           foreach ($Q in $QueueToRemove) {
-            Write-Progress -Id 1 -Status "Removing Queue '$($Q.Name)'" -Activity $MyInvocation.MyCommand -PercentComplete ($QueueCounter / $Queues * 100)
-            Write-Information "INFO:    Removing Queue: '$($Q.Name)'"
-            $QueueCounter++
+            $StatusID1 = 'Removing Call Queue'
+            $CurrentOperationID1 = "'$($Q.Name)'"
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $StepsID1
+            Write-Information "INFO:    $StatusID1 $CurrentOperationID1"
             if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
               Remove-CsCallQueue -Identity "$($Q.Identity)" -ErrorAction STOP
             }
+            Write-Progress -Id 1 -Activity $ActivityID1 -Completed
           }
         }
         else {
@@ -101,6 +108,7 @@ function Remove-TeamsCallQueue {
         Write-Error -Message "Removal of Call Queue '$DN' failed with Exception: $($_.Exception.Message)" -Category OperationStopped
         return
       }
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
     }
   } #process
 

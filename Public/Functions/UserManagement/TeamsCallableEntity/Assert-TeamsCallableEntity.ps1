@@ -124,22 +124,21 @@ function Assert-TeamsCallableEntity {
       elseif ( $Object.PhoneSystemStatus.Contains('PendingInput')) {
         Write-Verbose -Message "Target '$Identity' found and licensed (Pending Input)"
       }
-      else {
-        #TEST whether this would work. Might take some time b/c Object cannot be used in 'PendingInput' just yet?
-        <#
+      elseif ( $Object.PhoneSystemStatus.Contains('Disabled')) {
+        Write-Verbose -Message "Target '$Identity' found and licensed (Disabled) - Trying to enable"
         try {
-          Write-Information "INFO:    Target '$Identity' found and licensed, but PhoneSystem is disabled. Trying to Enable"
-          Set-AzureAdLicenseServicePlan -Identity "$Identity" -Enable MCOEV
-          Write-Verbose -Message "Target '$Identity' found and PhoneSystem License applied. Waiting for AzureAd to complete provisioning"
-          Start-Sleep -Seconds 2
-          $UserLicense = Get-AzureAdUserLicense $Identity
-          if ( $UserLicense.PhoneSystemStatus -ne "Success" -or $UserLicense.PhoneSystemStatus -ne "PendingInput") {
+          Write-Information "TRYING:  Object '$UserPrincipalName' - PhoneSystem License is assigned - ServicePlan PhoneSystem is Disabled - Trying to activate"
+          Set-AzureAdLicenseServicePlan -Identity "$($CsUser.UserPrincipalName)" -Enable MCOEV -ErrorAction Stop
+          #TEST Waiting for Azure Ad to propagate - is 3s enough time?
+          $Seconds = 3
+          Write-Information "WAITING: Object '$UserPrincipalName' - PhoneSystem License is assigned and enabled, waiting for AzureAd to Propagate ($Seconds`s)"
+          Start-Sleep -Seconds $Seconds
+          if (-not (Get-AzureAdUserLicense -Identity "$UserPrincipalName").PhoneSystemStatus.Contains('Success')) {
             throw
           }
         }
         catch {
-          Write-Error -Message "" -RecommendedAction "" -Category  -Exception $_.Exception.Message
-          $ErrorMessage = "Target '$Identity' found but not licensed correctly (PhoneSystem) - Service Plan could not be enabled!"
+          $ErrorMessage = "Target '$Identity' found but not licensed correctly (PhoneSystem) - Object could not be enabled"
           if ($Terminate) {
             throw $ErrorMessage
           }
@@ -148,7 +147,8 @@ function Assert-TeamsCallableEntity {
             return $false
           }
         }
-        #>
+      }
+      else {
         $ErrorMessage = "Target '$Identity' found but not licensed correctly (PhoneSystem)"
         if ($Terminate) {
           throw $ErrorMessage
@@ -205,4 +205,4 @@ function Assert-TeamsCallableEntity {
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
-} #Assert-TeamsCallableEntity
+} #

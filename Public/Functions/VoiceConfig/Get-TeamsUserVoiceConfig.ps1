@@ -3,10 +3,10 @@
 # Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
-
-
+#TODO if Connected but RBAC Roles have timed out does not trigger on POL - must capture PermissionDenied error on query
 #TODO Check output for Diagnosticlevel 1-4 to ascertain removed output if CsOnlineObject is called with -Identity Switch!
-
+#TODO Check output for Policies - Add all relevant Policies to Level 2? (all Policies to Level 3? (move 3/4 to 4/5?))
+#TODO Add Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)
 function Get-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
@@ -41,7 +41,6 @@ function Get-TeamsUserVoiceConfig {
     System.Object
   .NOTES
     DiagnosticLevel details:
-    0 Same output as without the Parameter, though LicensesAssigned are nested in as an Object rather than names only.
     1 Basic diagnostics for Hybrid Configuration or when moving users from On-prem Skype
     2 Extended diagnostics displaying additional Voice-related Policies
     3 Basic troubleshooting parameters from AzureAD like AccountEnabled, etc.
@@ -54,9 +53,7 @@ function Get-TeamsUserVoiceConfig {
     - for Teams:      "Get-CsOnlineUser $UserPrincipalName"
 
     Exporting PowerShell Objects that contain Nested Objects as CSV results in this parameter being shown as "System.Object[]".
-    The nested Object itself however enables a more in-depth view of Licensing for this Object.
-    The introduction of Diagnostic Level 0 tries to bridge two seemingly contradicting requirements.
-    Using any diagnostic level gives the flexibly to drill-down into Licensing.
+    Using any diagnostic level higher than 3 adds Parameter LicenseObject allowing to drill-down into Licensing
     Omitting it allows for visible data when exporting as a CSV.
   .COMPONENT
     VoiceConfiguration
@@ -107,6 +104,11 @@ function Get-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
+
     # Adding Types
     Add-Type -AssemblyName Microsoft.Open.AzureAD16.Graph.Client
     Add-Type -AssemblyName Microsoft.Open.Azure.AD.CommonLibrary
@@ -114,25 +116,24 @@ function Get-TeamsUserVoiceConfig {
     # preparing Output Field Separator
     $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
 
+    # Querying Teams Module Version
+    #$TeamsModuleVersion = (Get-Module MicrosoftTeams -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Version
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $UserCounter = 0
+    [int] $StepsID0 = $UserPrincipalName.Count
     foreach ($User in $UserPrincipalName) {
-      # Initialising counters for Progress bars
-      [int]$step = 0
-      [int]$sMax = 7
-      if ( $DiagnosticLevel ) { $sMax = $sMax + $DiagnosticLevel }
-      if ( $DiagnosticLevel -ge 3 ) { $sMax++ }
-      if ( -not $SkipLicenseCheck ) { $sMax++ }
-
+      $StatusID0 = "Processing"
+      $CurrentOperationID0 = $ActivityID1 = "'$User'"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       #region Information Gathering
-      Write-Progress -Id 0 -Status "User '$User'" -CurrentOperation 'Querying User Account' -Activity $MyInvocation.MyCommand -PercentComplete ($UserCounter / $($UserPrincipalName.Count) * 100)
-      Write-Verbose -Message "[PROCESS] Processing '$User'"
+      $StatusID1 = 'Information Gathering'
       #region Querying Identity
       try {
-        Write-Verbose -Message "User '$User' - Querying User Account (CsOnlineUser)"
+        $CurrentOperationID1 = "Querying User Account (CsOnlineUser)"
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
         #$CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
         $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
@@ -140,7 +141,8 @@ function Get-TeamsUserVoiceConfig {
       catch {
         # If CsOnlineUser not found, trying AzureAdUser
         try {
-          Write-Verbose -Message "User '$User' - Querying User Account (AzureAdUser)"
+          $CurrentOperationID1 = 'Querying User Account (AzureAdUser)'
+          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
           $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
           $CsUser = $AdUser
           Write-Warning -Message "User '$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
@@ -157,12 +159,12 @@ function Get-TeamsUserVoiceConfig {
       }
       #endregion
 
-      #FIXME This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
+      $StatusID1 = 'Verification'
+      #CHECK v2.6.0 has reverted a change introduced with v2.5.0 - Output object now identical to v2.3.1...
       #region Constructing InterpretedVoiceConfigType
-      $Operation = 'Verification, Testing InterpretedVoiceConfigType'
-      $step++
-      Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      $CurrentOperationID1 = 'Testing InterpretedVoiceConfigType'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      #TODO Rework into separate function! Get-TeamsInterpretedVoiceConfigType (and make it to accept $CsUserObject)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
         Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
         $InterpretedVoiceConfigType = 'CallingPlans'
@@ -185,10 +187,9 @@ function Get-TeamsUserVoiceConfig {
       #endregion
 
       #region Testing ObjectType
-      $Operation = 'Verification, Testing ObjectType'
-      $step++
-      Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      $CurrentOperationID1 = 'Testing ObjectType (Get-TeamsObjectType)'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      #TODO Rework Get-TeamsObjectType to accept $CsUserObject
       #Performance of lookup for Get-TeamsCallableEntity  meant that it takes another Get-CsUser Lookup longer
       #$ObjectType = (Get-TeamsCallableEntity -Identity "$($CsUser.UserPrincipalName)").ObjectType
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
@@ -196,11 +197,8 @@ function Get-TeamsUserVoiceConfig {
       #endregion
 
       #region Testing for Misconfiguration
-      $Operation = 'Testing for Misconfiguration'
-      $step++
-      Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
-      #$null = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -ErrorAction SilentlyContinue
+      $CurrentOperationID1 = 'Testing for Misconfiguration (Test-TeamsUserVoiceConfig)'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       if ( $AdUser -ne $CsUser ) {
         # Necessary as Test-TeamsUserVoiceConfig expects a CsOnlineUser Object
         $null = Test-TeamsUserVoiceConfig -Object $CsUser -ErrorAction SilentlyContinue
@@ -232,16 +230,15 @@ function Get-TeamsUserVoiceConfig {
       #endregion
 
       #region Creating Base Custom Object
-      $Operation = 'Preparing Output Object'
-      $step++
-      Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      $CurrentOperationID1 = 'Preparing Output Object'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       # Adding Basic parameters
       $UserObject = $null
       $UserObject = [PSCustomObject][ordered]@{
         UserPrincipalName          = $CsUser.UserPrincipalName
         SipAddress                 = $CsUser.SipAddress
         DisplayName                = $CsUser.DisplayName
+        #<# Available until switch to new query method
         ObjectId                   = $UserObjectId
         Identity                   = $CsUser.Identity
         HostingProvider            = $CsUser.HostingProvider
@@ -251,31 +248,54 @@ function Get-TeamsUserVoiceConfig {
         TeamsUpgradeEffectiveMode  = $CsUser.TeamsUpgradeEffectiveMode
         VoicePolicy                = $CsUser.VoicePolicy
         UsageLocation              = $CsUser.UsageLocation
+        #>
       }
+
+      <# When switching to new Query method
+      #TEST Performance of Add-Member in comparison (100x?) and output for v2.5.x - Can InterpretedVoiceConfigType be salvaged somehow?
+      if ($TeamsModuleVersion -lt 2.5.0) {
+        $UserObject | Add-Member -MemberType NoteProperty -Name ObjectId -Value $UserObjectId
+        $UserObject | Add-Member -MemberType NoteProperty -Name Identity -Value $Identity
+      }
+      else {
+        $UserObject | Add-Member -MemberType NoteProperty -Name Identity -Value $Identity
+        $UserObject | Add-Member -MemberType AliasProperty -Name ObjectId -Value $Identity
+      }
+
+      $UserObject | Add-Member -MemberType NoteProperty -Name HostingProvider -Value $CsUser.HostingProvider
+      $UserObject | Add-Member -MemberType NoteProperty -Name ObjectType -Value $ObjectType
+      $UserObject | Add-Member -MemberType NoteProperty -Name InterpretedUserType -Value $CsUser.InterpretedUserType
+
+      if ($TeamsModuleVersion -lt 2.5.0) {
+        $UserObject | Add-Member -MemberType NoteProperty -Name InterpretedVoiceConfigType -Value $InterpretedVoiceConfigType
+        $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $CsUser.TeamsUpgradeEffectiveMode
+        $UserObject | Add-Member -MemberType NoteProperty -Name VoicePolicy -Value $CsUser.VoicePolicy
+      }
+      else {
+        $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $CsUser.TeamsUpgradeEffectiveMode
+      }
+
+      $UserObject | Add-Member -MemberType NoteProperty -Name UsageLocation -Value $CsUser.UsageLocation
+      #>
 
       # Adding Licensing Parameters if not skipped
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses
-        $Operation = 'Querying User Licenses'
-        $step++
-        Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message $Operation
+        $CurrentOperationID1 = 'Querying User Licenses'
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
         $CsUserLicense = Get-AzureAdUserLicense -Identity "$($CsUser.UserPrincipalName)" -FilterRelevantForTeams
+        $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
 
-        # Adding Parameters
-        $Operation = 'Adding Parameters: Licensing Configuration'
-        $step++
-        Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message $Operation
-
-        if ( $PSBoundParameters.ContainsKey('DiagnosticLevel') ) {
-          $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $CsUserLicense.Licenses
+        # Adding additional LicenseObject Parameter with nested Object if Diagnostic Level is high enough (3 or higher)
+        if ( $DiagnosticLevel -ge 3 ) {
+          $UserObject | Add-Member -MemberType NoteProperty -Name LicenseObject -Value $CsUserLicense.Licenses
           if ($CsUserLicense.Licenses) {
-            $UserObject.LicensesAssigned | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
+            $UserObject.LicenseObject | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.ProductName } -Force
           }
         }
         else {
-          $UserObject | Add-Member -MemberType NoteProperty -Name LicensesAssigned -Value $($CsUserLicense.Licenses.ProductName -join ', ')
+          #TODO Think how best to display this - Hidden in Verbose output may be a bit too hidden. INFO is a bit too "always"
+          Write-Verbose -Message "Parameter LicenseObject omitted. To receive this parameter with their nested licenses, please use DiagnosticLevel 3 or higher"
         }
 
         #Info about PhoneSystemStatus (suppressing feedback if AzureAdUser is already populated)
@@ -297,13 +317,8 @@ function Get-TeamsUserVoiceConfig {
       }
 
       # Adding Provisioning Parameters
-      $Operation = 'Adding Parameters: Voice Configuration'
-      $step++
-      Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
       $UserObject | Add-Member -MemberType NoteProperty -Name EnterpriseVoiceEnabled -Value $CsUser.EnterpriseVoiceEnabled
       $UserObject | Add-Member -MemberType NoteProperty -Name HostedVoiceMail -Value $CsUser.HostedVoiceMail
-      $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
       $UserObject | Add-Member -MemberType NoteProperty -Name OnlineVoiceRoutingPolicy -Value $CsUser.OnlineVoiceRoutingPolicy
       $UserObject | Add-Member -MemberType NoteProperty -Name TenantDialPlan -Value $CsUser.TenantDialPlan
       $UserObject | Add-Member -MemberType NoteProperty -Name TelephoneNumber -Value $CsUser.TelephoneNumber
@@ -316,10 +331,8 @@ function Get-TeamsUserVoiceConfig {
         switch ($DiagnosticLevel) {
           { $PSItem -ge 1 } {
             # Displaying basic diagnostic parameters (Hybrid)
-            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 1 - Voice related Parameters'
-            $step++
-            Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message $Operation
+            $CurrentOperationID1 = 'Processing DiagnosticLevel 1 - Voice Configuration Parameters'
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremLineURIManuallySet -Value $CsUser.OnPremLineURIManuallySet
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremEnterPriseVoiceEnabled -Value $CsUser.OnPremEnterPriseVoiceEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
@@ -330,15 +343,14 @@ function Get-TeamsUserVoiceConfig {
 
           { $PSItem -ge 2 } {
             # Displaying extended diagnostic parameters
-            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 2 - Voice related Policies'
-            $step++
-            Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message $Operation
+            $CurrentOperationID1 = 'Processing DiagnosticLevel 2 - Voice related Policies and Emergency Calling'
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallingPolicy -Value $CsUser.TeamsEmergencyCallingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsCallingPolicy -Value $CsUser.TeamsCallingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name CallingLineIdentity -Value $CsUser.CallingLineIdentity
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsIPPhonePolicy -Value $CsUser.TeamsIPPhonePolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsVdiPolicy -Value $CsUser.TeamsVdiPolicy
+            $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineDialOutPolicy -Value $CsUser.OnlineDialOutPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineVoicemailPolicy -Value $CsUser.OnlineVoicemailPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineAudioConferencingRoutingPolicy -Value $CsUser.OnlineAudioConferencingRoutingPolicy
@@ -346,10 +358,8 @@ function Get-TeamsUserVoiceConfig {
 
           { $PSItem -ge 3 } {
             # Querying AD Object (if Diagnostic Level is 3 or higher)
-            $Operation = 'Querying AzureAd User'
-            $step++
-            Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message $Operation
+            $CurrentOperationID1 = 'Processing DiagnosticLevel 3 - Querying AzureAd User'
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
             if ( -not $AdUser ) {
               try {
                 $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
@@ -360,10 +370,8 @@ function Get-TeamsUserVoiceConfig {
             }
 
             # Displaying advanced diagnostic parameters
-            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 3 - AzureAd Parameters, Status'
-            $step++
-            Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message $Operation
+            $CurrentOperationID1 = 'Processing DiagnosticLevel 3 - AzureAd Parameters, Status'
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
             $UserObject | Add-Member -MemberType NoteProperty -Name AdAccountEnabled -Value $AdUser.AccountEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountEnabled -Value $CsUser.Enabled
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountIsValid -Value $CsUser.IsValid
@@ -375,10 +383,8 @@ function Get-TeamsUserVoiceConfig {
           }
           { $PSItem -ge 4 } {
             # Displaying all of CsOnlineUser (previously omitted)
-            $Operation = 'Adding Parameters: Voice Configuration, DiagnosticLevel 3 - AzureAd Parameters, DirSync'
-            $step++
-            Write-Progress -Id 1 -Status "User '$User'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-            Write-Verbose -Message $Operation
+            $CurrentOperationID1 = 'Processing DiagnosticLevel 4 - AzureAd Parameters, DirSync'
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
             $UserObject | Add-Member -MemberType NoteProperty -Name DirSyncEnabled -Value $AdUser.DirSyncEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name LastDirSyncTime -Value $AdUser.LastDirSyncTime
             $UserObject | Add-Member -MemberType NoteProperty -Name AdDeletionTimestamp -Value $AdUser.DeletionTimestamp
@@ -395,11 +401,11 @@ function Get-TeamsUserVoiceConfig {
       #endregion
 
       # Output
-      Write-Progress -Id 1 -Status "User '$User'" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
+      #TEST Impact of Closing ID0 after Output
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $UserObject
-
     }
-
   } #process
 
   end {

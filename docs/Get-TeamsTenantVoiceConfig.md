@@ -32,6 +32,15 @@ Counters for all relevant Policies, available VoiceRoutingPolicies
 
 ### EXAMPLE 2
 ```
+Get-TeamsTenantVoiceConfig DisplayUserCounters
+```
+
+Displays a counters for Users in the Tenant as well as Users enabled for EnterpriseVoice
+This will run for a long time and may result in a timeout with AzureAd and with Teams.
+Handle with care.
+
+### EXAMPLE 3
+```
 Get-TeamsTenantVoiceConfig -Detailed
 ```
 

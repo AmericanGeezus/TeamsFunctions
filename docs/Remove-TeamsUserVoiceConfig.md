@@ -61,7 +61,7 @@ UserPrincipalName of the User.
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases:
+Aliases: ObjectId, Identity
 
 Required: True
 Position: 1

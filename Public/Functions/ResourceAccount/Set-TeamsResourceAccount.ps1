@@ -167,6 +167,12 @@ function Set-TeamsResourceAccount {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
+
+    <# superceded
     # Initialising counters for Progress bars
     [int]$step = 0
     [int]$sMax = 4
@@ -178,6 +184,7 @@ function Set-TeamsResourceAccount {
     if ( $License -and $PhoneNumber ) { $sMax++ }
     if ( $PhoneNumber ) { $sMax++ }
     if ( $PassThru ) { $sMax++ }
+    #>
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -187,11 +194,10 @@ function Set-TeamsResourceAccount {
     #region Validating Licenses to be applied result in correct Licensing (contain PhoneSystem)
     $PlansToTest = 'MCOEV_VIRTUALUSER', 'MCOEV'
     if ( $PSBoundParameters.ContainsKey('License') ) {
-      $Status = 'Verifying input'
-      $Operation = 'Validating Licenses to be applied result in correct Licensing'
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-      $step++
+      $ActivityID0 = 'Preparation'
+      $StatusID0 = 'Verifying input'
+      $CurrentOperationID0 = 'Validating Licenses to be applied result in correct Licensing'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       $IncludesPlan = 0
       foreach ($L in $License) {
         foreach ($PlanToTest in $PlansToTest) {
@@ -215,13 +221,12 @@ function Set-TeamsResourceAccount {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($UPN in $UserPrincipalName) {
+      $ActivityID0 = "'$UPN'"
       #region PREPARATION
-      $Status = 'Verifying input'
+      $StatusID0 = 'Verifying input'
       #region Lookup of UserPrincipalName
-      $Operation = 'Querying Object'
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
+      $CurrentOperationID0 = 'Querying Object'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       try {
         #TEST Piping with UserPrincipalName, Identity from Get-CsOnlineApplicationInstance AND Get-TeamsRA
         #Trying to query the Resource Account
@@ -237,12 +242,9 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region Normalising $DisplayName
+      $CurrentOperationID0 = 'Processing DisplayName'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       if ($PSBoundParameters.ContainsKey('DisplayName')) {
-        $Operation = 'DisplayName'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
         $DisplayNameNormalised = Format-StringForUse -InputString $DisplayName -As DisplayName
         $Name = $DisplayNameNormalised
         Write-Verbose -Message "DisplayName normalised to: '$Name'"
@@ -253,12 +255,9 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region ApplicationType and Associations
+      $CurrentOperationID0 = 'Parsing Application Type'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       if ($PSBoundParameters.ContainsKey('ApplicationType')) {
-        $Operation = 'Application Type'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
         # Translating $ApplicationType (Name) to ID used by Commands.
         $AppId = GetAppIdFromApplicationType $ApplicationType
         $CurrentAppId = $Object.ApplicationId
@@ -282,11 +281,8 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region PhoneNumber
-      $Operation = 'Phone Number'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
+      $CurrentOperationID0 = 'Parsing Phone Number'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       # Querying CurrentPhoneNumber
       try {
         $CurrentPhoneNumber = $Object.PhoneNumber.Replace('tel:', '')
@@ -344,11 +340,8 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region UsageLocation
-      $Operation = 'Usage Location'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
+      $CurrentOperationID0 = 'Parsing Usage Location'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       $CurrentUsageLocation = (Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue).UsageLocation
       if ($PSBoundParameters.ContainsKey('UsageLocation')) {
         if ($Usagelocation -eq $CurrentUsageLocation) {
@@ -376,11 +369,8 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region Current License
-      $Operation = 'Querying current License and Testing Licensing Scope (Should contain PhoneSystem or PhoneSystemVirtualUser)'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-
+      $CurrentOperationID0 = 'Querying current License and Testing Licensing Scope (Should contain PhoneSystem or PhoneSystemVirtualUser)'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       $IsLicensed = $false
       # Determining license Status of Object
       $UserLicense = Get-AzureAdUserLicense -Identity "$UPN"
@@ -397,14 +387,11 @@ function Set-TeamsResourceAccount {
 
 
       #region ACTION
-      $Status = 'Applying Settings'
+      $StatusID0 = 'Applying Settings'
       #region DisplayName
       if ($PSBoundParameters.ContainsKey('DisplayName')) {
-        $Operation = 'DisplayName'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
+        $CurrentOperationID0 = 'Setting Display Name'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         try {
           if ($PSCmdlet.ShouldProcess("$UPN", "Set-CsOnlineApplicationInstance -Displayname `"$DisplayNameNormalised`"")) {
             Write-Verbose -Message "'$CurrentDisplayName' Changing DisplayName to: $DisplayNameNormalised"
@@ -423,11 +410,8 @@ function Set-TeamsResourceAccount {
 
       #region Application Type
       if ($PSBoundParameters.ContainsKey('ApplicationType')) {
-        $Operation = 'Application Type'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
+        $CurrentOperationID0 = 'Checking Application Type is correct'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         # Application Type Change?
         if ($AppId -ne $CurrentAppId) {
           try {
@@ -447,11 +431,8 @@ function Set-TeamsResourceAccount {
 
       #region UsageLocation
       if ($PSBoundParameters.ContainsKey('UsageLocation')) {
-        $Operation = 'Usage Location'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
+        $CurrentOperationID0 = 'Setting Usage Location'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         if ($PSCmdlet.ShouldProcess("$UPN", "Set-AzureADUser -UsageLocation $UsageLocation")) {
           try {
             Set-AzureADUser -ObjectId "$UPN" -UsageLocation $UsageLocation -ErrorAction STOP
@@ -470,11 +451,10 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region Licensing
+      $StatusID0 = 'Applying Settings - License'
       if ($PSBoundParameters.ContainsKey('License')) {
-        $Operation = 'Processing License assignment'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
+        $CurrentOperationID0 = 'Processing License assignment'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         if ( $License -in $UserLicense.Licenses.ParameterName -and $IsLicensed ) {
           # No action required
           Write-Information "INFO:    Resource Account '$Name ($UPN)' License '$License' already assigned."
@@ -497,40 +477,36 @@ function Set-TeamsResourceAccount {
 
       #region Waiting for License Application
       if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
-        $Operation = 'Waiting for AzureAd to write Object'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
+        $CurrentOperationID0 = $ActivityID1 = 'Checking License propagation as a requirement before applying Phone Number'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         $i = 0
         $iMax = 600
         Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
         Write-Verbose -Message "License '$License'- Expecting one of the corresponding ServicePlans '$PlansToTest'"
+        $StatusID1 = 'Azure Active Directory is propagating Object. Please wait'
+        $CurrentOperationID1 = 'Waiting for Test-TeamsUserLicense to return a positive Result'
         do {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Successful Provisioning Status of ServicePlan '$PlansToTest' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
           }
-          Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
-            -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
-
+          Write-Progress -Id 1 -ParentId 0 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -SecondsRemaining $($iMax - $i) -PercentComplete (($i * 100) / $iMax)
           Start-Sleep -Milliseconds 1000
           $i++
 
           $AllTests = $false
           $AllTests = foreach ($PlanToTest in $PlansToTest) { Test-TeamsUserLicense -Identity "$UPN" -ServicePlan "$PlanToTest" }
-          $TeamsUserLicenseNotYetAssigned = if ( $AllTests ) { $true } else { $false }
+          $TeamsUserLicenseAssigned = if ( ($AllTests) -notcontains $false ) { $true } else { $false }
         }
-        while (-not $TeamsUserLicenseNotYetAssigned)
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
+        while (-not $TeamsUserLicenseAssigned)
+        Write-Progress -Id 1 -Activity $ActivityID1 -Completed
       }
       #endregion
 
       #region PhoneNumber
+      $StatusID0 = 'Applying Settings - Phone Number'
       if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-        $Operation = 'Phone Number'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
+        $CurrentOperationID0 = 'Checking Previous assignment of Phone Number'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         if ( $Force -and $PhoneNumber -and $UserWithThisNumber ) {
           # Removing number from previous Object
           try {
@@ -569,6 +545,8 @@ function Set-TeamsResourceAccount {
 
         # Removing old Number (if $null or different to current)
         if ($null -eq $PhoneNumber -or $force -or $CurrentPhoneNumber -ne $PhoneNumber) {
+          $CurrentOperationID0 = 'Removing Phone Number'
+          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
           Write-Verbose -Message "'$Name ($UPN)' ACTION: Removing Phone Number"
           try {
             $UVCObject = Get-TeamsUserVoiceConfig -UserPrincipalName "$UPN" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorVariable Stop
@@ -599,6 +577,8 @@ function Set-TeamsResourceAccount {
         }
 
         # Assigning Telephone Number
+        $CurrentOperationID0 = 'Applying Phone Number'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         if ($PhoneNumber) {
           if ( -not $IsLicensed ) {
             Write-Error -Message 'A Phone Number can only be assigned to licensed objects.' -Category ResourceUnavailable -RecommendedAction 'Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
@@ -641,6 +621,8 @@ function Set-TeamsResourceAccount {
       #endregion
 
       #region OnlineVoiceRoutingPolicy
+      $CurrentOperationID0 = 'Applying Online Voice Routing Policy'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       if ( $OnlineVoiceRoutingPolicy ) {
         try {
           Grant-CsOnlineVoiceRoutingPolicy -Identity $UPN -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
@@ -654,19 +636,18 @@ function Set-TeamsResourceAccount {
       #endregion
       #endregion
 
-      Write-Progress -Id 1 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
 
       if ( $PassThru ) {
-        $Status = 'Output'
-        $Operation = 'Querying Object'
-        $step++
-        Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-        Write-Verbose -Message "$Status - $Operation"
-
+        $StatusID0 = 'Output'
+        $CurrentOperationID0 = "Querying Object"
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
         $RAObject = Get-TeamsResourceAccount -Identity "$UPN"
-        Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
-        Write-Output $RAObject
       }
+      else {
+        $RAObject = $null
+      }
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
+      Write-Output $RAObject
     }
   } #process
 

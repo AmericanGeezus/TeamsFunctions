@@ -93,18 +93,20 @@ function Get-TeamsCommonAreaPhone {
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
+    if (-not $PSBoundParameters.ContainsKey('Confirm')) { $ConfirmPreference = $PSCmdlet.SessionState.PSVariable.GetValue('ConfirmPreference') }
+    if (-not $PSBoundParameters.ContainsKey('WhatIf')) { $WhatIfPreference = $PSCmdlet.SessionState.PSVariable.GetValue('WhatIfPreference') }
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 3
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
 
     # Querying Global Policies
-    $Operation = 'Querying Global Policies'
-    $step++
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    $StatusID0 = 'Information Gathering'
+    $CurrentOperationID0 = "Querying Global Policies"
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     $GlobalIPPhonePolicy = Get-CsTeamsIPPhonePolicy 'Global'
     $GlobalCallingPolicy = Get-CsTeamsCallingPolicy 'Global'
     $GlobalCallParkPolicy = Get-CsTeamsCallParkPolicy 'Global'
@@ -116,10 +118,8 @@ function Get-TeamsCommonAreaPhone {
     $CommonAreaPhones = $null
 
     #region Data gathering
-    $Operation = 'Querying Common Area Phones'
-    $step++
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    $CurrentOperationID0 = 'Querying Common Area Phones'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     switch ($PSCmdlet.ParameterSetName) {
       'Identity' {
         # Default Parameterset
@@ -175,28 +175,27 @@ function Get-TeamsCommonAreaPhone {
     # Stop script if no data has been determined
     if ($CommonAreaPhones.Count -eq 0) {
       Write-Verbose -Message 'No Data found.'
+      Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       return
     }
     #endregion
 
 
-    #region OUTPUT
+    #region Information Gathering
     # Creating new PS Object
-    $Operation = "Parsing Information for $($CommonAreaPhones.Count) Common Area Phones"
-    $step++
-    Write-Progress -Id 0 -Status 'Information Gathering' -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message $Operation
+    [int] $CountID0 = 2
+    [int] $StepsID0 = $CountID0 + $CommonAreaPhones.Count
     foreach ($CommonAreaPhone in $CommonAreaPhones) {
-      # Initialising counters for Progress bars
-      [int]$step = 0
-      [int]$sMax = 3
+      [int] $CountID1 = 0
+      $StatusID0 = 'Processing found User Objects'
+      $CurrentOperationID0 = $ActivityID1 = "'$($CommonAreaPhone.UserPrincipalName)'"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
 
+      $StatusID1 = 'Information Gathering'
       #region Parsing Policies
-      $Operation = 'Parsing Policies'
-      Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
-
       # TeamsIPPhonePolicy and CommonAreaPhoneSignIn
+      $CurrentOperationID1 = 'Parsing IP Phone Policy (CommonAreaPhoneSignIn)'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       if ( -not $CommonAreaPhone.TeamsIPPhonePolicy ) {
         $UserSignInMode = $GlobalIPPhonePolicy.SignInMode
         if ( $GlobalIPPhonePolicy.SignInMode -ne 'CommonAreaPhoneSignIn' ) {
@@ -234,6 +233,8 @@ function Get-TeamsCommonAreaPhone {
       }
 
       # TeamsCallingPolicy and AllowPrivateCalling
+      $CurrentOperationID1 = 'Parsing Teams Calling Policy (AllowPrivateCalling)'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       if ( -not $CommonAreaPhone.TeamsCallingPolicy ) {
         $UserAllowPrivateCalling = $GlobalCallingPolicy.AllowPrivateCalling
         if ( -not $GlobalCallingPolicy.AllowPrivateCalling ) {
@@ -271,6 +272,8 @@ function Get-TeamsCommonAreaPhone {
       }
 
       # TeamsCallParkPolicy and AllowCallPark
+      $CurrentOperationID1 = 'Parsing Teams Call Park Policy (AllowCallPark)'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       if ( -not $CommonAreaPhone.TeamsCallParkPolicy ) {
         $UserAllowCallPark = $GlobalCallParkPolicy.AllowCallPark
         if ( -not $GlobalCallParkPolicy.AllowCallPark ) {
@@ -309,17 +312,13 @@ function Get-TeamsCommonAreaPhone {
       #endregion
 
       # Parsing TeamsUserLicense
-      $Operation = 'Parsing License Assignments'
-      $step++
-      Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      $CurrentOperationID1 = 'Parsing License Assignments'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       $CommonAreaPhoneLicense = Get-AzureAdUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
 
       # Phone Number Type
-      $Operation = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
-      $step++
-      Write-Progress -Id 1 -Status "'$($CommonAreaPhone.DisplayName)'" -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message $Operation
+      $CurrentOperationID1 = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars 'tel:+') -split ';')[0]
@@ -334,8 +333,11 @@ function Get-TeamsCommonAreaPhone {
       else {
         $CommonAreaPhonePhoneNumberType = $null
       }
+      #endregion
 
-      # creating new PS Object (synchronous with Get and Set)
+      #region Output - Creating new PS Object (synchronous with Get and Set)
+      $CurrentOperationID1 = 'Preparing Output Object'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
       $CommonAreaPhoneObject = [PSCustomObject][ordered]@{
         ObjectId                     = $CommonAreaPhone.ObjectId
         UserPrincipalName            = $CommonAreaPhone.UserPrincipalName
@@ -359,12 +361,13 @@ function Get-TeamsCommonAreaPhone {
         EffectiveAllowCallPark       = $UserAllowCallPark
       }
 
-      Write-Progress -Id 1 -Status "Processing '$($CommonAreaPhone.UserPrincipalName)'" -Activity $MyInvocation.MyCommand -Completed
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
       Write-Output $CommonAreaPhoneObject
     }
 
     #endregion
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
+    #CHECK Test Progress bars bleed-through. If not viable, close ID 0 before FOREACH
+    Write-Progress -Id 0 -Activity $ActivityID0 -Completed
 
   } #process
 

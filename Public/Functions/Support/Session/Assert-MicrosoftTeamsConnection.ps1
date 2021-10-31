@@ -4,7 +4,7 @@
 # Updated:    01-OCT-2020
 # Status:     Live
 
-
+#TODO Returns TRUE (Object) if Connected but RBAC Roles have timed out - must capture PermissionDenied errors for GET-CmdLets
 
 
 function Assert-MicrosoftTeamsConnection {

@@ -73,7 +73,7 @@ function Get-RandomQuote {
     "What is normal? Normal was yesterday. If you lose a leg, one day you're hopping around on one leg, so you know the difference. (Terry Pratchett)", `
     'Do you know that a man is not dead while his name is still spoken? (Terry Pratchett) -- GNU Sir Terry.', `
     "It's not worth doing something unless someone, somewhere, would much rather you weren't doing it (Terry Pratchett)", `
-    "Fear is the mind-killer. Fear is the little-death that brings total obliteration. I will face my fear. I will permit it to pass over me and through me. (Frank Herbert, Dune)", `
+    'Fear is the mind-killer. Fear is the little-death that brings total obliteration. I will face my fear. I will permit it to pass over me and through me. (Frank Herbert, Dune)', `
     'Deep in the human unconscious is a pervasive need for a logical universe that makes sense. But the real universe is always one step beyond logic. (Frank Herbert, Dune)', `
     'The concept of progress acts as a protective mechanism to shield us from the terrors of the future. (Frank Herbert, Dune)', `
     'Just as individuals are born, mature, breed, and die, so do societies and civilizations and governments. (Frank Herbert, Dune)', `
@@ -83,8 +83,8 @@ function Get-RandomQuote {
     'And when it has gone past I will turn the inner eye to see its path. Where the fear has gone there will be nothing. Only I will remain. (Frank Herbert, Dune)', `
     #endregion Addded David
 
-    #region Added Julia
-    "Give a man a fire and he's warm for a day, but set fire to him and he's warm for the rest of his life. (Terry Pratchett)", `
+  #region Added Julia
+  "Give a man a fire and he's warm for a day, but set fire to him and he's warm for the rest of his life. (Terry Pratchett)", `
     'In ancient times cats were worshipped as gods; they have not forgotten this. (Terry Pratchett)', `
     'In the beginning there was nothing, which exploded. (Terry Pratchett)', `
     'Real stupidity beats artificial intelligence every time. (Terry Pratchett)', `
@@ -102,8 +102,8 @@ function Get-RandomQuote {
     "If you don't stick to your values when they're being tested, they're not values: they're hobbies. (Jon Stewart)", `
     #endregion Added Julia
 
-    #region Imported
-    'People say nothing is impossible, but I do nothing every day. (A. A. Milne)', `
+  #region Imported
+  'People say nothing is impossible, but I do nothing every day. (A. A. Milne)', `
     'The best thing about the future is that it comes one day at a time. (Abraham Lincoln)', `
     'Light travels faster than sound. This is why some people appear bright until you hear them speak. (Alan Dundes)', `
     'The difference between stupidity and genius is that genius has its limits. (Albert Einstein)', `
@@ -196,7 +196,6 @@ function Get-RandomQuote {
     'My pessimism extends to the point of even suspecting the sincerity of other pessimists. (Jean Rostand)', `
     "It's amazing that the amount of news that happens in the world every day always just exactly fits the newspaper. (Jerry Seinfeld)", `
     'Laugh a lot. It burns a lot of calories. (Jessica Simpson)', `
-    'Avoid fruits and nuts. You are what you eat. (Jim Davis)', `
     'The simple act of opening a bottle of wine has brought more happiness to the human race than all the collective governments in the history of earth. (Jim Harrison)', `
     'Americans are incredibly inpatient. Someone once said that the shortest period of time in America is the time between when the light turns green and when you hear the first horn honk. (Jim Rohn)', `
     "Age is just a number. It's totally irrelevant unless, of course, you happen to be a bottle of wine. (Joan Collins)", `

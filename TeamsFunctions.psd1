@@ -12,7 +12,7 @@
   RootModule            = 'TeamsFunctions.psm1'
 
   # Version number of this module.
-  ModuleVersion         = '21.09.02'
+  ModuleVersion         = '21.10.31'
 
   # Supported PSEditions
   # CompatiblePSEditions = @()
@@ -136,6 +136,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-ISO3166Country',
     'Get-RegionFromCountryCode',
     'Get-TeamsObjectType',
+    'Write-BetterProgress',
     ## Licensing
     'New-AzureAdLicenseObject',
     'Test-AzureAdLicenseContainsServicePlan',
@@ -258,7 +259,7 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
       Tags       = @('Teams', 'DirectRouting', 'EnterpriseVoice', 'Licensing', 'ResourceAccount', 'CallQueue', 'AutoAttendant', 'VoiceConfig', 'CommonAreaPhone')
 
       # Prerelease Version
-      #Prerelease = '-prerelease'
+      Prerelease = '-prerelease'
 
       # A URL to the license for this module.
       LicenseUri = 'https://github.com/DEberhardt/TeamsFunctions/blob/master/LICENSE'

@@ -149,19 +149,17 @@ function New-TeamsCommonAreaPhone {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 6
-    if ( $License ) { $sMax = $sMax + 2 }
+    #Initialising Counters
+    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int]$script:CountID0 = [int]$script:CountID1 = 0
 
+    $StatusID0 = 'Verifying input'
     #region Validating Licenses to be applied result in correct Licensing (contains Teams & PhoneSystem)
     $PlansToTest = 'TEAMS1', 'MCOEV'
     if ( $PSBoundParameters.ContainsKey('License') ) {
-      $Status = 'Verifying input'
-      $Operation = 'Validating Licenses to be applied result in correct Licensing'
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-      $step++
+      $CurrentOperationID0 = 'Validating Licenses to be applied result in correct Licensing'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       $IncludesTeams = 0
       $IncludesPhoneSystem = 0
       foreach ($L in $License) {
@@ -190,13 +188,14 @@ function New-TeamsCommonAreaPhone {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Parameters = @{}
-
+    [int] $CountID0 = 1
+    [int] $StepsID0 = $CountID0 + $StepsID0
+    #TODO Validate use with Pipeline for creating multiple Objects with CSV input (Identity, DisplayName & all policies)
+    $StatusID0 = 'Verifying input'
     #region PREPARATION
-    $Status = 'Verifying input'
     #region Normalising $UserPrincipalname
-    $Operation = 'Normalising UserPrincipalName'
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = 'Normalising UserPrincipalName'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     $UPN = Format-StringForUse -InputString $UserPrincipalName -As UserPrincipalName
     Write-Verbose -Message "UserPrincipalName normalised to: '$UPN'"
     $Parameters += @{ 'UserPrincipalName' = "$UPN" }
@@ -207,10 +206,8 @@ function New-TeamsCommonAreaPhone {
     #endregion
 
     #region Normalising $DisplayName
-    $Operation = 'Normalising DisplayName'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = 'Normalising DisplayName'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('DisplayName')) {
       $Name = Format-StringForUse -InputString $DisplayName -As DisplayName
     }
@@ -222,10 +219,8 @@ function New-TeamsCommonAreaPhone {
     #endregion
 
     #region UsageLocation
-    $Operation = 'Parsing UsageLocation'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = 'Parsing UsageLocation'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('UsageLocation')) {
       Write-Verbose -Message "'$Name' UsageLocation parsed: Using '$UsageLocation'"
     }
@@ -246,11 +241,8 @@ function New-TeamsCommonAreaPhone {
 
 
     #region Password Profile
-    $Operation = 'Password Profile'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = 'Creating Password Profile'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
     $PasswordProfile.EnforceChangePasswordPolicy = $true
     $PasswordProfile.ForceChangePasswordNextLogin = $true
@@ -272,12 +264,10 @@ function New-TeamsCommonAreaPhone {
 
 
     #region ACTION
-    $Status = 'Creating Object'
+    $StatusID0 = 'Creating Object'
     #region Creating Account
-    $Operation = 'Creating Common Area Phone'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
+    $CurrentOperationID0 = $ActivityID1 = 'Creating Common Area Phone'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     try {
       #Trying to create the Common Area Phone
       Write-Verbose -Message "'$Name' Creating Common Area Phone with New-AzureAdUser..."
@@ -290,19 +280,17 @@ function New-TeamsCommonAreaPhone {
           "Function: $($MyInvocation.MyCommand.Name) - AzureAdUser created", ($AzureAdUser | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         $i = 0
-        $iMax = 45
+        $iMax = 60
         Write-Information "INFO:    Common Area Phone '$Name' created; Waiting for AzureAd to write object ($iMax s)"
-        $Status = 'Querying User'
-        $Operation = 'Waiting for Get-AzureAdUser to return a Result'
-        Write-Verbose -Message "$Status - $Operation"
+        $StatusID1 = 'Azure Active Directory is propagating Object. Please wait'
+        $CurrentOperationID1 = 'Waiting for Get-AzureAdUser to return a Result'
+        Write-Verbose -Message "$StatusID1 - $CurrentOperationID1"
         do {
           if ($i -gt $iMax) {
             Write-Error -Message "Could not find Object in AzureAD in the last $iMax Seconds" -Category ObjectNotFound -RecommendedAction 'Please verify Object has been created (UserPrincipalName); Continue with Set-TeamsResourceAccount'
             return
           }
-          Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' `
-            -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
-
+          Write-Progress -Id 1 -ParentId 0 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -SecondsRemaining $($iMax - $i) -PercentComplete (($i * 100) / $iMax)
           Start-Sleep -Milliseconds 1000
           $i++
 
@@ -312,22 +300,22 @@ function New-TeamsCommonAreaPhone {
         Write-Progress -Id 1 -Activity 'Azure Active Directory is propagating Object. Please wait' -Status $Status -Completed
       }
       else {
+        Write-Progress -Id 1 -Activity $ActivityID1 -Completed
         return
       }
     }
     catch {
       # Catching anything
-      throw "Common Area Phone '$Name' - Creation failed: $($_.Exception.Message)"
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
+      Write-Error -Message "Common Area Phone '$Name' - Creation failed: $($_.Exception.Message)" -Exception $_.Exception
     }
     #endregion
 
-    $Status = 'Applying Settings'
+    $StatusID0 = 'Applying Settings'
     #region Licensing
+    $CurrentOperationID0 = 'Processing License assignment'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('License')) {
-      $Operation = 'Processing License assignment'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
       try {
         if ($PSCmdlet.ShouldProcess("$UPN", "Set-TeamsUserLicense -Add $License")) {
           $null = (Set-TeamsUserLicense -Identity "$UPN" -Add $License -ErrorAction STOP)
@@ -341,43 +329,9 @@ function New-TeamsCommonAreaPhone {
     }
     #endregion
 
-    <# This will currently never be executed as PhoneNumber is not a parameter on the CmdLet - left here for future expansion
-    #region Waiting for License Application
-    if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $Operation = 'Waiting for AzureAd to write Object'
-      $step++
-      Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-      Write-Verbose -Message "$Status - $Operation"
-      $i = 0
-      $iMax = 600
-      Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
-      Write-Verbose -Message "License '$License'- Expecting corresponding ServicePlan '$PlanToTest'"
-      do {
-        if ($i -gt $iMax) {
-          Write-Error -Message "Could not find Successful Provisioning Status of ServicePlan '$PlanToTest' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop
-        }
-        Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' `
-          -Status $Status -SecondsRemaining $($iMax - $i) -CurrentOperation $Operation -PercentComplete (($i * 100) / $iMax)
-
-        Start-Sleep -Milliseconds 1000
-        $i++
-
-        $AllTests = $false
-        $AllTests = foreach ($PlanToTest in $PlansToTest) { Test-TeamsUserLicense -Identity "$UPN" -ServicePlan "$PlanToTest" }
-        $TeamsUserLicenseNotYetAssigned = if ( $AllTests ) { $true } else { $false }
-      }
-      while (-not $TeamsUserLicenseNotYetAssigned)
-      Write-Progress -Id 1 -Activity 'Azure Active Directory is applying License. Please wait' -Status $Status -Completed
-    }
-    #endregion
-    #>
-
     #region Policies
-    $Operation = 'Applying Policies'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID1 = 'Processing Policy assignments'
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
     if (-not $IsLicensed) {
       Write-Error -Message 'Policies can only be assigned to licensed objects. Please wait for propagation or apply a license before assigning policies. Set-TeamsCommonAreaPhone can be used to do both'
     }
@@ -407,24 +361,20 @@ function New-TeamsCommonAreaPhone {
 
     #endregion
 
+    $StatusID0 = 'Validation'
     #region OUTPUT
-    $Status = 'Validation'
-    $Operation = 'Querying Object'
-    $step++
-    Write-Progress -Id 0 -Status $Status -CurrentOperation $Operation -Activity $MyInvocation.MyCommand -PercentComplete ($step / $sMax * 100)
-    Write-Verbose -Message "$Status - $Operation"
-
+    $CurrentOperationID0 = 'Validation & Output'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     $ObjectCreated = $null
     $ObjectCreated = Get-TeamsCommonAreaPhone -Identity "$UPN" -WarningAction SilentlyContinue
     if ($PSBoundParameters.ContainsKey('Password')) {
       Write-Verbose 'Password is encrypted and applied as per definition, provided it is adhering to the complexity requirements'
     }
     else {
-      $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value $PasswordFormat
+      $ObjectCreated | Add-Member -MemberType NoteProperty -Name Password -Value "$PasswordFormat"
     }
+    Write-Progress -Id 0 -Activity $ActivityID0 -Completed
     Write-Output $ObjectCreated
-
-    Write-Progress -Id 0 -Status 'Complete' -Activity $MyInvocation.MyCommand -Completed
     #endregion
 
   } #process
