@@ -176,7 +176,7 @@ function Connect-Me {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     #region Connections
-    $StatusID0 = $ActivityID1 = 'Establishing Connection'
+    $StatusID0 = 'Preparation'
     $CurrentOperationID0 = 'Determining Order & Scope'
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     Write-Information "INFO:    Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
@@ -193,11 +193,11 @@ function Connect-Me {
       $ConnectionOrder += 'ExchangeOnline'
     }
 
-    [int] $StepsID1 = $ConnectionOder.Count
+    [int] $StepsID0 = $StepsID0 + $(if ($ConnectionOrder.IsArray) { $ConnectionOrder.Count } else { 1 })
     foreach ($Connection in $ConnectionOrder) {
-      $StatusID1 = "$Connection"
-      $CurrentOperationID1 = 'Connecting... Please see Authentication dialog'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      $StatusID0 = 'Establishing Connection -- Please see Authentication dialog'
+      $CurrentOperationID0 = "$Connection"
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       try {
         switch ($Connection) {
           'AzureAd' {

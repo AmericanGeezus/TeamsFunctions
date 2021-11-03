@@ -775,7 +775,7 @@ function Set-TeamsUserVoiceConfig {
     }
     Write-Progress -Id 1 -Activity $ActivityID1 -Completed
     Write-Progress -Id 0 -Activity $ActivityID0 -Completed
-    Write-Object $UserObjectPost
+    Write-Output $UserObjectPost
     #endregion
 
   } #process
