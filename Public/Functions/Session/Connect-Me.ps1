@@ -280,7 +280,6 @@ function Connect-Me {
         }
       }
     }
-    Write-Progress -Id 1 -Activity $ActivityID1 -Completed
 
     if ( -not $NoFeedback ) {
       $StatusID0 = 'Providing Feedback'

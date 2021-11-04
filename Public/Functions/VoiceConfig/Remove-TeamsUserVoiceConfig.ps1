@@ -146,6 +146,7 @@ function Remove-TeamsUserVoiceConfig {
       }
       #endregion
 
+      $StatusID1 = 'Applying Settings'
       #region Call Plan Configuration
       if ($Scope -eq 'All' -or $Scope -eq 'CallingPlans') {
         # Querying User Licenses
@@ -227,7 +228,6 @@ function Remove-TeamsUserVoiceConfig {
         Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
         if ( $Force -or $CsUser.OnPremLineURI ) {
           try {
-            #$CsUser | Set-CsUser -OnPremLineURI $Null
             Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -OnPremLineURI $Null
             Write-Information "INFO:    $StatusID1 - Removing OnPremLineURI: OK"
           }
@@ -246,7 +246,7 @@ function Remove-TeamsUserVoiceConfig {
         Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
         if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy ) {
           try {
-            $CsUser | Grant-CsOnlineVoiceRoutingPolicy -PolicyName $Null
+            Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
             Write-Information "INFO:    $StatusID1 - Removing Online Voice Routing Policy: OK"
           }
           catch {
@@ -267,7 +267,7 @@ function Remove-TeamsUserVoiceConfig {
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
       if ( $Force -or $CsUser.TenantDialPlan ) {
         try {
-          $CsUser | Grant-CsTenantDialPlan -PolicyName $Null
+          Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
           Write-Information "INFO:    $StatusID1 - Removing Tenant Dial Plan: OK"
         }
         catch {
@@ -287,8 +287,7 @@ function Remove-TeamsUserVoiceConfig {
           Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$UPN", 'Disabling EnterpriseVoice')) {
-              #$CsUser | Set-CsUser -EnterpriseVoiceEnabled $false
-              Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -EnterpriseVoiceEnabled $false
+              Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -EnterpriseVoiceEnabled $false -HostedVoiceMail $false
               Write-Information "INFO:    $StatusID1 - Disabling EnterpriseVoice: OK"
             }
             else {
