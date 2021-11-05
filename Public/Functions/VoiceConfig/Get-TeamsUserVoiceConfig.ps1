@@ -157,7 +157,6 @@ function Get-TeamsUserVoiceConfig {
       #endregion
 
       $StatusID0 = "Processing '$User' - Verification"
-      #CHECK v2.6.0 has reverted a change introduced with v2.5.0 - Output object now identical to v2.3.1...
       #region Constructing InterpretedVoiceConfigType
       $CurrentOperationID0 = 'Testing InterpretedVoiceConfigType'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
@@ -168,9 +167,6 @@ function Get-TeamsUserVoiceConfig {
       #region Testing ObjectType
       $CurrentOperationID0 = 'Testing ObjectType (Get-TeamsObjectType)'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
-      #TODO Rework Get-TeamsObjectType to accept $CsUserObject
-      #Performance of lookup for Get-TeamsCallableEntity  meant that it takes another Get-CsUser Lookup longer
-      #$ObjectType = (Get-TeamsCallableEntity -Identity "$($CsUser.UserPrincipalName)").ObjectType
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
 
       #endregion

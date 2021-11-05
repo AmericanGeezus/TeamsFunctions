@@ -1,7 +1,7 @@
 ﻿# Module:   TeamsFunctions
 # Function: VoiceConfig
 # Author:   David Eberhardt
-# Updated:  15-MAY-2021
+# Updated:  05-NOV-2021
 # Status:   Live
 
 
@@ -65,8 +65,8 @@ function Get-InterpretedVoiceConfigType {
   begin {
     Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
-    $Called = ($stack.length -ge 3)
-    $CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
+    $script:Called = ($stack.length -ge 3)
+    $script:CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
 
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"

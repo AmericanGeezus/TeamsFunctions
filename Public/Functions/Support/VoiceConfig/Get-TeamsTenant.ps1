@@ -58,34 +58,41 @@ function Get-TeamsTenant {
     # preparing Output Field Separator
     $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
 
+    function Get-CsHostedMigrationURL {
+      #Curtesy of Eric Marsi - https://www.ucit.blog/post/random-powershell-code-snippets-functions-library
+      [CmdletBinding()]
+      param(
+        [Parameter(Mandatory)]
+        [String]$Domain
+      )
+
+      $HMSID = try {
+            (((Invoke-WebRequest -Uri "https://webdir.online.lync.com/Autodiscover/AutodiscoverService.svc/root?originalDomain=$($Domain)").content -split 'webdir')[3] -split '.online')[0]
+      }
+      catch {
+        Write-Error "Failed to get the Hosted Migration URL. The exception caught was $_" -ErrorAction Stop
+      }
+
+      $MigrationURL = 'https://admin' + "$($HMSID)" + '.online.lync.com/HostedMigration/hostedmigrationService.svc'
+      return $MigrationURL
+    }
+
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     Write-Information 'INFO: This is abbreviated output of Get-CsTenant. For full information, please run Get-CsTenant'
 
+    Write-Debug -Message 'Querying Tenant'
     $TenantObject = Get-CsTenant -WarningAction SilentlyContinue # This should trigger a reconnect as well.
 
     #Determining OverrideURL
-    if ( $TeamsModuleVersion -gt 2.3.1 ) {
-      #BODGE may need addressing with Get-CsHostedMigrationURL
-      $OverrideURL = $(Get-AzureADCurrentSessionInfo).TenantDomain
-    }
-    else {
-      $TenantId = $TenantObject | Select-Object -ExpandProperty Identity
-
-      if ($TenantId -match '.*DC\=lync(.*)001\,DC=local') {
-        $Id = $TenantId.Substring($TenantId.IndexOf('lync') + 4, 2)
-        $OverrideURL = "https://admin$Id.online.lync.com/HostedMigration/hostedmigrationService.svc"
-      }
-      else {
-        Write-Warning -Message "Override Admin URL could not be determined, please Read from Identity manually (2 digits after 'DC\=lync')"
-        $OverrideURL = $null
-      }
-    }
+    Write-Debug -Message 'Determining URLs'
+    $TenantDomain = $(Get-AzureADCurrentSessionInfo).TenantDomain
+    $OverrideURL = Get-CsHostedMigrationURL $TenantDomain
 
     # Adding OverrideURL
-    $TenantObject | Add-Member -MemberType NoteProperty -Name TenantDomain -Value $OverrideURL -Force #TODO Change!
+    $TenantObject | Add-Member -MemberType NoteProperty -Name TenantDomain -Value $TenantDomain -Force
     $TenantObject | Add-Member -MemberType NoteProperty -Name HostedMigrationOverrideURL -Value $OverrideURL -Force
 
     #Filtering Object
@@ -96,32 +103,22 @@ function Get-TeamsTenant {
 
       #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
       $Domains = $TenantObject.Domains
-      <#
-      #$DomainsOnMicrosoft = ($Domains | Where-Object Name -Match '.onmicrosoft.com').Name -join ', '
-      $DomainsOnMicrosoft = ($Domains | Where-Object Name -Match '.onmicrosoft.com').Name -join '
-'
-      #$DomainsForTeams = ($Domains | Where-Object Capability -Match 'OfficeCommunicationsOnline').Name -join ', '
-      $DomainsForTeams = ($Domains | Where-Object Capability -Match 'OfficeCommunicationsOnline').Name -join '
-'
-      $Object | Add-Member -MemberType NoteProperty -Name ManagedOnMicrosoftDomains -Value $DomainsOnMicrosoft -Force
-      $Object | Add-Member -MemberType NoteProperty -Name ManagedSipDomains -Value $DomainsForTeams -Force
-      #$Object.DomainsOnMicrosoft | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Name } -Force
-      #$Object.DomainsForTeams | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Name } -Force
-      #>
-
+      Write-Debug -Message 'Querying OnMSFT Domains'
       $ManagedOnMicrosoftDomains = $Domains | Where-Object Name -Match '.onmicrosoft.com'
       $Object | Add-Member -MemberType NoteProperty -Name ManagedOnMicrosoftDomains -Value $ManagedOnMicrosoftDomains.Name -Force
 
+      Write-Debug -Message 'Querying Comms Domains'
       $ManagedCommunicationsDomains = $Domains | Where-Object Capability -Match 'OfficeCommunicationsOnline'
       $Object | Add-Member -MemberType NoteProperty -Name ManagedCommunicationsDomains -Value $ManagedCommunicationsDomains.Name -Force
 
+      Write-Debug -Message 'Querying SIP Domains'
       $SipDomains = Get-CsOnlineSipDomain -WarningAction SilentlyContinue
       $Object | Add-Member -MemberType NoteProperty -Name ManagedSipDomains -Value $SipDomains.Name -Force
     }
     else {
       $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
         TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
-        ExperiencePolicy, DirSyncEnabled, LastSyncTimeStamp, IsValid, WhenCreated, WhenChanged, TenantPoolExtension, HostedMigrationOverrideURL
+        ExperiencePolicy, DirSyncEnabled, LastSyncTimeStamp, IsValid, WhenCreated, WhenChanged, TenantPoolExtension, TenantDomain, HostedMigrationOverrideURL
 
       #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
       $Domains = $TenantObject.Domains.Split(',') #| Select-Object -First 10
