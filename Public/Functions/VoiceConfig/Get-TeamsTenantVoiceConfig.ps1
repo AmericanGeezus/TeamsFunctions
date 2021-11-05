@@ -78,7 +78,7 @@ function Get-TeamsTenantVoiceConfig {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    [int]$script:CountID0 = [int]$script:CountID1 = 1
 
   } #begin
 
@@ -87,15 +87,15 @@ function Get-TeamsTenantVoiceConfig {
     #region Information Gathering
     $StatusID0 = 'Information Gathering'
     $CurrentOperationID0 = 'Querying Tenant'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     $Tenant = Get-CsTenant -WarningAction SilentlyContinue
 
     $CurrentOperationID0 = 'Querying SIP Domains'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     $SipDomains = Get-CsOnlineSipDomain -WarningAction SilentlyContinue
 
     $CurrentOperationID0 = 'Querying Tenant Licenses'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     $TenantLicenses = Get-TeamsTenantLicense -Detailed
     $CallPlanINT = $TenantLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN1'
     $CallPlanDOM = $TenantLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTN2'
@@ -103,7 +103,7 @@ function Get-TeamsTenantVoiceConfig {
     $CommunicationC = $TenantLicenses | Where-Object SkuPartNumber -EQ 'MCOPSTNC'
 
     $CurrentOperationID0 = 'Querying Direct Routing Information'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     $TDP = Get-CsTenantDialPlan -WarningAction SilentlyContinue
     $OVP = Get-CsOnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
     $OPU = (Get-CsOnlinePstnUsage -WarningAction SilentlyContinue).Usage
@@ -113,7 +113,7 @@ function Get-TeamsTenantVoiceConfig {
 
     #region Creating Base Custom Object
     $CurrentOperationID0 = 'Preparing Output Object'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     $Object = [PSCustomObject][ordered]@{
       DisplayName                            = $Tenant.DisplayName
       Domains                                = $Tenant.Domains
@@ -134,20 +134,20 @@ function Get-TeamsTenantVoiceConfig {
 
     #region User Information
     $CurrentOperationID0 = $ActivityID1 = 'Processing Parameter DisplayUserCounters'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
       $StatusID1 = 'Querying User Information - This will take some time!'
       Write-Information "INFO:    $ActivityID1 - $StatusID1"
       $CurrentOperationID1 = 'Querying AzureADUsers'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $AdUsers = Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE -WarningAction SilentlyContinue
 
       $CurrentOperationID1 = 'Querying CsOnlineUsers'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $CsOnlineUsers = Get-CsOnlineUser -WarningAction SilentlyContinue
 
       $CurrentOperationID1 = 'Counting Voice Users (EnterpriseVoiceEnabled)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $CsOnlineUsersEV = $CsOnlineUsers | Where-Object EnterpriseVoiceEnabled -EQ $TRUE
 
       $Object | Add-Member -MemberType NoteProperty -Name UsersEnabledInAzureAD -Value $AdUsers.Count
@@ -161,7 +161,7 @@ function Get-TeamsTenantVoiceConfig {
     #region Detailed Information
     if ($PSBoundParameters.ContainsKey('Detailed')) {
       $CurrentOperationID0 = 'Processing Parameter Detailed - Querying Microsoft Telephone Numbers'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
       if (-not $TeamsFunctionsMSTelephoneNumbers) {
         $TeamsFunctionsMSTelephoneNumbers = Get-CsOnlineTelephoneNumber -ResultSize 20000 -WarningAction SilentlyContinue
       }

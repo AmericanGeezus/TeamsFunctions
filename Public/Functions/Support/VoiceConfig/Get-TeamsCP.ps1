@@ -29,7 +29,7 @@ function Get-TeamsCP {
     Lists Online Voice Routes with "Allow" in the Name
     Behaviour like: Get-CsTeamsCallingPolicy -Filter "*Allow*"
   .NOTES
-    This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
+    This script is indulging the lazy admin. It behaves like Get-CsTeamsCallingPolicy with a twist:
     If more than three results are found, a reduced set of Parameters are shown for better visibility:
     Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType
   .INPUTS

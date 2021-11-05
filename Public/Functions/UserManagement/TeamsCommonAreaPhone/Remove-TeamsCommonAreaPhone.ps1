@@ -85,7 +85,7 @@ function Remove-TeamsCommonAreaPhone {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    [int]$script:CountID0 = [int]$script:CountID1 = 1
 
     # Caveat - Access rights
     Write-Verbose -Message "This CmdLet requires the Office 365 Admin Role 'User Administrator' to execute Remove-AzureAdUser" -Verbose
@@ -102,12 +102,12 @@ function Remove-TeamsCommonAreaPhone {
     foreach ($UPN in $UserPrincipalName) {
       $script:StepsID0 = $UserPrincipalName.Count
       $CurrentOperationID0 = $ActivityID1 = "Processing '$UPN'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
 
       $StatusID1 = 'Querying Object'
       #region Lookup of UserPrincipalName
       $CurrentOperationID1 = 'Querying CsOnlineUser'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {
         #Trying to query the Common Area Phone
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
@@ -126,7 +126,7 @@ function Remove-TeamsCommonAreaPhone {
       $StatusID1 = "Processing Object '$DisplayName'"
       #region Removing Voice Config
       $CurrentOperationID1 = 'Removing Voice Configuration'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {
         Remove-TeamsUserVoiceConfig -UserPrincipalName $UPN -PassThru -ErrorAction Stop
       }
@@ -138,7 +138,7 @@ function Remove-TeamsCommonAreaPhone {
       #region Licensing
       # Reading User Licenses
       $CurrentOperationID1 = 'Removing License Assignments'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {
         $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId "$UPN" -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
 
@@ -163,7 +163,7 @@ function Remove-TeamsCommonAreaPhone {
       #region Account Removal
       # Removing AzureAD User
       $CurrentOperationID1 = 'Removing AzureAD Object (AzureAdUser)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       if ($Force -or $PSCmdlet.ShouldProcess("Common Area Phone with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId "$UPN" -ErrorAction STOP)

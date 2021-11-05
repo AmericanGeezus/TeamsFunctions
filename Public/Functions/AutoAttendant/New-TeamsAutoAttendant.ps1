@@ -320,12 +320,12 @@ function New-TeamsAutoAttendant {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    [int]$script:CountID0 = [int]$script:CountID1 = 1
 
     $StatusID0 = 'Verifying input'
     #region Parameter validation
-    $CurrentOperationID0 = "Validating Language, Voice capabilities & Time Zone"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    $CurrentOperationID0 = 'Validating Language, Voice capabilities & Time Zone'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
 
     # Language has to be normalised as the Id is case sensitive. Default value: en-US
     $Language = $($LanguageId.Split('-')[0]).ToLower() + '-' + $($LanguageId.Split('-')[1]).ToUpper()
@@ -347,7 +347,7 @@ function New-TeamsAutoAttendant {
     #region BusinessHours
     # Main Call Flow -- DefaultCallFlow VS BusinessHours*
     $CurrentOperationID0 = 'Validating DefaultCallFlow'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     if ($DefaultCallFlow) {
       # DefaultCallFlow
       Write-Information 'DefaultCallFlow - Overriding all BusinessHours-Parameters'
@@ -406,7 +406,7 @@ function New-TeamsAutoAttendant {
 
     #region Default Parameters VS AfterHours & HolidaySet Parameters
     $CurrentOperationID0 = 'Validating CallFlows'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     # Call Flows & Call Handling Associations
     if ($PSBoundParameters.ContainsKey('CallFlows') -or $PSBoundParameters.ContainsKey('CallHandlingAssociations')) {
       # Custom Call Flows
@@ -503,16 +503,16 @@ function New-TeamsAutoAttendant {
       }
       else {
         if ( $AfterHoursSchedule) {
-          Write-Information "INFO:    Auto Attendant '$NameNormalised' Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'"
+          Write-Information "INFO:    Auto Attendant '$Name' Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'"
         }
         else {
           $AfterHoursSchedule = 'MonToFri9to5'
-          Write-Information "INFO:    Auto Attendant '$NameNormalised' Schedule - AfterHoursSchedule not provided, Using: '$AfterHoursSchedule'"
+          Write-Information "INFO:    Auto Attendant '$Name' Schedule - AfterHoursSchedule not provided, Using: '$AfterHoursSchedule'"
         }
 
         # Creating Schedule
-        $CurrentOperationID1 = 'Business Hours Call Flow - Creating Schedule'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        $CurrentOperationID0 = 'Business Hours Call Flow - Creating Schedule'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
         $Schedule = switch ($AfterHoursSchedule) {
           'Open24x7' {
             New-TeamsAutoAttendantSchedule -Name 'Business Hours Schedule' -WeeklyRecurrentSchedule -BusinessDays MonToSun -BusinessHours AllDay -Complement
@@ -603,7 +603,7 @@ function New-TeamsAutoAttendant {
 
     #region Required Parameters
     $CurrentOperationID1 = 'Name, TimeZone & Language, Voice Responses'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
     # Normalising $Name
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
     Write-Verbose -Message "'$Name' DisplayName normalised to: '$NameNormalised'"
@@ -641,7 +641,7 @@ function New-TeamsAutoAttendant {
 
     #region Operator
     $CurrentOperationID1 = 'Operator'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
     if ($PSBoundParameters.ContainsKey('Operator')) {
       try {
         $OperatorEntity = New-TeamsCallableEntity -Identity "$Operator"
@@ -658,7 +658,7 @@ function New-TeamsAutoAttendant {
 
     #region Business Hours Call Flow
     $CurrentOperationID1 = 'Business Hours Call Flow - Default Call Flow & Call Flow Option'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
     if ( $DefaultCallFlow ) {
       # Using As-Is
       Write-Information "INFO:    Auto Attendant '$NameNormalised' DefaultCallFlow - Custom Object provided. Over-riding other options (like switch 'BusinessHoursCallFlow')"
@@ -726,7 +726,7 @@ function New-TeamsAutoAttendant {
       #Adding optional BusinessHoursGreeting
       if ($PSBoundParameters.ContainsKey('BusinessHoursGreeting')) {
         $CurrentOperationID1 = 'Business Hours Call Flow - Greeting'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
         try {
           $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$BusinessHoursGreeting"
           if ($BusinessHoursGreetingObject) {
@@ -742,7 +742,7 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       $CurrentOperationID1 = 'Business Hours Call Flow - Building Call Flow'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       # Adding Business Hours Call Flow
       $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenuObject
       $BusinessHoursCallFlow = New-CsAutoAttendantCallFlow @BusinessHoursCallFlowParameters
@@ -755,11 +755,11 @@ function New-TeamsAutoAttendant {
     #region Processing provided CallFlows and CallHandlingAssociations Objects
     if ($PSBoundParameters.ContainsKey('CallFlows')) {
       $CurrentOperationID1 = 'After Hours Call Flow - Objects'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       # Custom Option provided - Using As-Is
       Write-Information "INFO:    Auto Attendant '$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')"
-      $Parameters += @{'CallFlows' = $CallFlows }
-      $Parameters += @{'CallHandlingAssociations' = $CallHandlingAssociations }
+      $Parameters += @{'CallFlows' = @($CallFlows) }
+      $Parameters += @{'CallHandlingAssociations' = @($CallHandlingAssociations) }
     }
     #endregion
 
@@ -772,7 +772,7 @@ function New-TeamsAutoAttendant {
     # Processing CallFlow
     if ($AfterHoursCallFlowOption -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
       $CurrentOperationID1 = 'After Hours Call Flow - Call Flows & Call Flow Option'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       # Option Selected
       Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'AfterHoursCallFlowOption'..."
       $AfterHoursCallFlowParameters = @{}
@@ -833,7 +833,7 @@ function New-TeamsAutoAttendant {
       #region AfterHoursGreeting
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) {
         $CurrentOperationID1 = 'After Hours Call Flow - Greeting'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
         try {
           $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$AfterHoursGreeting"
           if ($AfterHoursGreetingObject) {
@@ -849,16 +849,17 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       $CurrentOperationID1 = 'After Hours Call Flow - Building Call Flow'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       # Adding After Hours Call Flow
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Flow created"
       if ($Parameters.ContainsKey('CallFlows')) {
-        $Parameters.CallFlows.Add($AfterHoursCallFlow)
+        $Parameters.CallFlows += $AfterHoursCallFlow
+        #$Parameters.CallFlows.Add($AfterHoursCallFlow)
       }
       else {
-        $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
+        $Parameters += @{'CallFlows' = @($AfterHoursCallFlow) }
       }
 
       # Adding Call Flow ID(s) to Call handling Associations
@@ -868,12 +869,13 @@ function New-TeamsAutoAttendant {
 
       #region After Hours Schedule & Call Handling Association
       $CurrentOperationID1 = 'Schedule & Call Handling Association'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
       Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
-        $Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
+        $Parameters.CallHandlingAssociation += $AfterHoursCallHandlingAssociation
+        #$Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
       }
       else {
         $Parameters += @{'CallHandlingAssociation' = @($AfterHoursCallHandlingAssociation) }
@@ -885,12 +887,12 @@ function New-TeamsAutoAttendant {
     #region HolidaySet Call Flow
     #Initialising Variables for Call Handling Association
     $HolidaySetCallHandlingAssociationParams = @{}
-    $HolidaySetCallHandlingAssociationParams.Type = 'HolidaySet'
+    $HolidaySetCallHandlingAssociationParams.Type = 'Holiday' # HolidaySet does not work anymore!?
 
     # Processing HolidaySetsCallFlowOption
     if ($HolidaySetCallFlowOption -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
       $CurrentOperationID1 = 'Holiday Call Flow - Call Flows & Call Flow Option'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       # Option Selected
       Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'HolidaySetCallFlowOption'..."
       $HolidaySetCallFlowParameters = @{}
@@ -951,7 +953,7 @@ function New-TeamsAutoAttendant {
       #region HolidaySetGreeting
       if ($PSBoundParameters.ContainsKey('HolidaySetGreeting')) {
         $CurrentOperationID1 = 'Holiday Call Flow - Greeting'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
         try {
           $HolidaySetGreetingObject = New-TeamsAutoAttendantPrompt -String "$HolidaySetGreeting"
           if ($HolidaySetGreetingObject) {
@@ -967,16 +969,17 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       $CurrentOperationID1 = 'Holiday Call Flow - Building Call Flow'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       # Adding Holiday Set Call Flow
       $HolidaySetCallFlowParameters.Menu = $HolidaySetMenuObject
       $HolidaySetCallFlow = New-CsAutoAttendantCallFlow @HolidaySetCallFlowParameters
       Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Flow created"
       if ($Parameters.ContainsKey('CallFlows')) {
-        $Parameters.CallFlows.Add($HolidaySetCallFlow)
+        $Parameters.CallFlows += $HolidaySetCallFlow
+        #$Parameters.CallFlows.Add($HolidaySetCallFlow)
       }
       else {
-        $Parameters += @{'CallFlows' = $HolidaySetCallFlow }
+        $Parameters += @{'CallFlows' = @($HolidaySetCallFlow) }
       }
 
       # Adding Call Flow ID(s) to Call handling Associations
@@ -986,12 +989,13 @@ function New-TeamsAutoAttendant {
 
       #region Holiday Set Schedule & Call Handling Association
       $CurrentOperationID1 = 'Holiday Call Flow - Schedule & Call Handling Association'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $HolidaySetCallHandlingAssociationParams.ScheduleId = $HolidaySchedule.Id
       $HolidaySetCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @HolidaySetCallHandlingAssociationParams
       Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Handling Association created with Holiday Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
-        $Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)
+        $Parameters.CallHandlingAssociation += $HolidaySetCallHandlingAssociation
+        #$Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)
       }
       else {
         $Parameters += @{'CallHandlingAssociation' = @($HolidaySetCallHandlingAssociation) }
@@ -1003,7 +1007,7 @@ function New-TeamsAutoAttendant {
 
     #region Inclusion and Exclusion Scope
     $CurrentOperationID1 = 'Dial Scopes - Inclusion & Exclusion Scope'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
     # Inclusion Scope
     if ($PSBoundParameters.ContainsKey('InclusionScope')) {
       Write-Verbose -Message "'$NameNormalised' InclusionScope provided. Using as-is"
@@ -1045,7 +1049,7 @@ function New-TeamsAutoAttendant {
     # Create AA (New-CsAutoAttendant)
     $StatusID0 = 'Creating Auto Attendant'
     $CurrentOperationID0 = "'$NameNormalised'"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     if ($PSCmdlet.ShouldProcess("$NameNormalised", 'New-CsAutoAttendant')) {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
@@ -1066,7 +1070,7 @@ function New-TeamsAutoAttendant {
     #region OUTPUT
     $StatusID0 = 'Validation'
     $CurrentOperationID0 = 'Querying Object'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -WarningAction SilentlyContinue
     Write-Progress -Id 0 -Activity $ActivityID0 -Completed
     Write-Output $AAFinal

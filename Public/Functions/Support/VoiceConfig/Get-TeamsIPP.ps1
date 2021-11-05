@@ -34,7 +34,7 @@ function Get-TeamsIPP {
   .OUTPUTS
     System.Object
   .NOTES
-    This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
+    This script is indulging the lazy admin. It behaves like Get-CsTeamsIPPhonePolicy with a twist:
     If more than three results are found, a reduced set of Parameters are shown for better visibility:
     Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
   .COMPONENT

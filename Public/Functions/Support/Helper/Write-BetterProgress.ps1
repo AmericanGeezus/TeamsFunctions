@@ -38,9 +38,29 @@ function Write-BetterProgress {
     Optional. Synonymous with Write-Progress Parameter CurrentOperation
     Provides more granularity over the Status if required.
   .EXAMPLE
+    Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Step $i -of 10
+    Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+    Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+  .EXAMPLE
     Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -Step $i -of 10
     Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
     Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+    Displays the Status
+  .EXAMPLE
+    Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -CurrentOperation "Task X" -Step $i -of 10
+    Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+    Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+    Displays the Current Operation
+  .EXAMPLE
+    Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -CurrentOperation "Task X" -Step $i -of 10
+    Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+    Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+    Displays the Status and the Current Operation
+  .EXAMPLE
+    Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "" -CurrentOperation "" -Step $i -of 10
+    Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+    Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+    Contrary to Write-Progress, allows passing of empty strings to the omit displays of Status and/or Current Operation
   .EXAMPLE
     Write-BetterProgress -Id 1 -Activity "Processing Item #$i" -Status "Step $i - Substep $j" -Step $j -of 10
     Assumes running an a foreach loop of 'foreach ($j in (1..10)) {Write-BetterProgress -Id 1...}'
@@ -89,10 +109,12 @@ function Write-BetterProgress {
     [Parameter (Mandatory)]
     [string]$Activity,
 
-    [Parameter (Mandatory)]
+    [Parameter ()]
+    [AllowNull()]
     [string]$Status,
 
     [Parameter ()]
+    [AllowNull()]
     [string]$CurrentOperation,
 
     [Parameter (Mandatory)]
@@ -129,8 +151,8 @@ function Write-BetterProgress {
 
     $WriteProgressParams = @{
       Activity        = $Activity
-      Status          = $Status
-      PercentComplete = (($Step / $Of) * 100)
+      #Status          = $Status
+      PercentComplete = (($($Step - 1) / $Of) * 100)
       ID              = $ID
     }
 
@@ -139,22 +161,30 @@ function Write-BetterProgress {
       $WriteProgressParams += @{ ParentId = $MyParentID }
     }
 
+    if ($PSBoundParameters.ContainsKey('Status')) {
+      if ( $null -ne $Status -and $Status -ne '' ) {
+        $WriteProgressParams += @{ Status = $Status }
+      }
+    }
+
     if ($PSBoundParameters.ContainsKey('CurrentOperation')) {
-      $WriteProgressParams += @{ CurrentOperation = $CurrentOperation }
+      if ( $null -ne $CurrentOperation -and $CurrentOperation -ne '' ) {
+        $WriteProgressParams += @{ CurrentOperation = $CurrentOperation }
+      }
     }
 
     try {
       Write-Progress @WriteProgressParams -ErrorAction Stop
     }
     catch {
-      Write-Debug "  Progress: Catching PercentComplete Error by increasing highest step by 1. Check code"
+      Write-Debug '  Progress: Catching PercentComplete Error by increasing highest step by 1. Check code'
       $Of++
-      $WriteProgressParams.PercentComplete = (($Step / $Of) * 100)
+      $WriteProgressParams.PercentComplete = (($($Step - 1) / $Of) * 100)
       Write-Progress @WriteProgressParams
     }
 
     Write-Debug "  Progress: Step $Step of $Of - $([math]::Round(($WriteProgressParams.PercentComplete)))% complete"
-    $VerboseMessage = "$Activity - $Status" + $(if ($PSBoundParameters.ContainsKey('CurrentOperation')) { " - $CurrentOperation" })
+    $VerboseMessage = "$Activity" + $(if ($WriteProgressParams.ContainsKey('Status')) { " - $Status" }) + $(if ($WriteProgressParams.ContainsKey('CurrentOperation')) { " - $CurrentOperation" })
     Write-Verbose $VerboseMessage
   } #process
 

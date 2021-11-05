@@ -103,12 +103,12 @@ function Connect-Me {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    [int]$script:CountID0 = [int]$script:CountID1 = 1
 
     #region Preparation
     $StatusID0 = 'Preparation'
     $CurrentOperationID0 = 'Preparing environment'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     #Persist Stored Credentials on local machine - Value is unclear as they don't seem to be needed anymore now that New-CsOnlineSession is gone
     if (!$PSDefaultParameterValues.'Parameters:Processed') {
       $PSDefaultParameterValues.add('New-StoredCredential:Persist', 'LocalMachine')
@@ -139,7 +139,7 @@ function Connect-Me {
 
     # Determine Module Version loaded
     $CurrentOperationID0 = 'Loading modules'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     if ( $AzureAdPreviewModule ) {
       Remove-Module AzureAd -Verbose:$false -ErrorAction SilentlyContinue
       Import-Module AzureAdPreview -Force -Global -Verbose:$false
@@ -178,7 +178,7 @@ function Connect-Me {
     #region Connections
     $StatusID0 = 'Preparation'
     $CurrentOperationID0 = 'Determining Order & Scope'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     Write-Information "INFO:    Establishing Connection to Tenant: $($($AccountId -split '@')[1])"
     $ConnectionOrder = @('AzureAd')
     if ( $PIMavailable ) {
@@ -193,11 +193,11 @@ function Connect-Me {
       $ConnectionOrder += 'ExchangeOnline'
     }
 
-    [int] $StepsID0 = $StepsID0 + $(if ($ConnectionOrder.IsArray) { $ConnectionOrder.Count } else { 1 })
+    [int] $script:StepsID0 = $script:StepsID0 + $(if ($ConnectionOrder.IsArray) { $ConnectionOrder.Count } else { 1 })
     foreach ($Connection in $ConnectionOrder) {
       $StatusID0 = 'Authenticating'
       $CurrentOperationID0 = "$Connection"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
       try {
         switch ($Connection) {
           'AzureAd' {
@@ -284,7 +284,7 @@ function Connect-Me {
     if ( -not $NoFeedback ) {
       $StatusID0 = 'Providing Feedback'
       $CurrentOperationID0 = 'Querying information about established sessions'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
       $SessionInfo = Get-CurrentConnectionInfo
       $SessionInfo | Add-Member -MemberType NoteProperty -Name AdminRoles -Value ''
 
@@ -295,7 +295,7 @@ function Connect-Me {
       else {
         #AdminRoles is already populated if they have been activated with PIM (though only with eligible ones) this overwrites the previous set of roles
         $CurrentOperationID0 = 'Querying assigned Admin Roles'
-        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
         if ( Test-AzureADConnection) {
           try {
             $Roles = $(Get-AzureAdAdminRole -Identity (Get-AzureADCurrentSessionInfo).Account -ErrorAction Stop).RoleName -join ', '

@@ -90,7 +90,7 @@ function Remove-TeamsResourceAccount {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    [int]$script:CountID0 = [int]$script:CountID1 = 1
 
     # Caveat - Access rights
     Write-Verbose -Message "This CmdLet requires the Office 365 Admin Role 'User Administrator' to execute Remove-AzureAdUser" -Verbose
@@ -112,12 +112,12 @@ function Remove-TeamsResourceAccount {
     foreach ($UPN in $UserPrincipalName) {
       $script:StepsID0 = $UserPrincipalName.Count
       $CurrentOperationID0 = $ActivityID1 = "Processing '$UPN'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
 
       $StatusID1 = 'Querying Object'
       #region Lookup of UserPrincipalName
       $CurrentOperationID1 = 'Querying CsOnlineApplicationInstance'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {
         #Trying to query the Resource Account
         $Object = (Get-CsOnlineApplicationInstance -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
@@ -134,7 +134,7 @@ function Remove-TeamsResourceAccount {
       $StatusID1 = "Processing Object '$DisplayName'"
       # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
       $CurrentOperationID1 = 'Removing Associations to Call Queues or Auto Attendants'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Ignore
       if ($Associations.count -eq 0) {
         # Object has no associations
@@ -168,7 +168,7 @@ function Remove-TeamsResourceAccount {
       #region PhoneNumber
       # Removing Phone Number Assignments
       $CurrentOperationID1 = 'Removing Phone Number Assignments'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {
         if ($null -ne ($Object.TelephoneNumber)) {
           # Remove from VoiceApplicationInstance
@@ -192,7 +192,7 @@ function Remove-TeamsResourceAccount {
       #region Licensing
       # Reading User Licenses
       $CurrentOperationID1 = 'Removing License Assignments'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {
         $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId "$UPN" -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
 
@@ -218,7 +218,7 @@ function Remove-TeamsResourceAccount {
       #region Account Removal
       # Removing AzureAD User
       $CurrentOperationID1 = 'Removing Removing AzureAD Object (AzureAdUser)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       if ($Force -or $PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)

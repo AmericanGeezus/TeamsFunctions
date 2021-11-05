@@ -113,7 +113,7 @@ function Remove-TeamsUserVoiceConfig {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    [int]$script:CountID0 = [int]$script:CountID1 = 1
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -128,7 +128,7 @@ function Remove-TeamsUserVoiceConfig {
     foreach ($UPN in $UserPrincipalName) {
       $script:StepsID0 = $UserPrincipalName.Count
       $CurrentOperationID0 = $ActivityID1 = "Processing '$UPN'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
 
       #region Information Gathering
       $StatusID1 = 'Querying Object'
