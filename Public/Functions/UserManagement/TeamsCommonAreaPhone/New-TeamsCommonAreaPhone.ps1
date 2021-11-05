@@ -4,8 +4,8 @@
 # Updated:  24-MAY-2021
 # Status:   RC
 
-# https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/  - check setup against blog
-
+#TODO https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/  - check setup against blog
+#TODO Validate use with Pipeline for creating multiple Objects with CSV input (Identity, DisplayName & all policies)
 
 function New-TeamsCommonAreaPhone {
   <#
@@ -190,7 +190,6 @@ function New-TeamsCommonAreaPhone {
     $Parameters = @{}
     [int] $CountID0 = 1
     [int] $StepsID0 = $CountID0 + $StepsID0
-    #TODO Validate use with Pipeline for creating multiple Objects with CSV input (Identity, DisplayName & all policies)
     $StatusID0 = 'Verifying input'
     #region PREPARATION
     #region Normalising $UserPrincipalname

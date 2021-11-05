@@ -119,12 +119,12 @@ function Write-BetterProgress {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     if ($Of -eq 0 -or -not $PSBoundParameters.ContainsKey('of')) {
-      $Of = 100
+      $Of = 20
     }
     else {
       #Transitioning from Step 1 starting at 0 to starting at 1 (needs one extra step to avoid calculation errors)
       #This allows calling the function with '-Step ($Step++)'
-      $Of++
+      #$Of++
     }
 
     $WriteProgressParams = @{
@@ -147,11 +147,13 @@ function Write-BetterProgress {
       Write-Progress @WriteProgressParams -ErrorAction Stop
     }
     catch {
+      Write-Debug "  Progress: Catching PercentComplete Error by increasing highest step by 1. Check code"
       $Of++
       $WriteProgressParams.PercentComplete = (($Step / $Of) * 100)
       Write-Progress @WriteProgressParams
     }
 
+    Write-Debug "  Progress: Step $Step of $Of - $([math]::Round(($WriteProgressParams.PercentComplete)))% complete"
     $VerboseMessage = "$Activity - $Status" + $(if ($PSBoundParameters.ContainsKey('CurrentOperation')) { " - $CurrentOperation" })
     Write-Verbose $VerboseMessage
   } #process
