@@ -3,10 +3,9 @@
 # Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
-#TODO if Connected but RBAC Roles have timed out does not trigger on POL - must capture PermissionDenied error on query
-#TODO Check output for Diagnosticlevel 1-4 to ascertain removed output if CsOnlineObject is called with -Identity Switch!
-#TODO Check output for Policies - Add all relevant Policies to Level 2? (all Policies to Level 3? (move 3/4 to 4/5?))
-#TODO Add Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)
+
+#TEST Add Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)
+
 function Get-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
@@ -269,7 +268,6 @@ function Get-TeamsUserVoiceConfig {
           }
         }
         else {
-          #TODO Think how best to display this - Hidden in Verbose output may be a bit too hidden. INFO is a bit too "always"
           Write-Verbose -Message 'Parameter LicenseObject omitted. To receive this parameter with their nested licenses, please use DiagnosticLevel 3 or higher'
         }
 
@@ -309,10 +307,18 @@ function Get-TeamsUserVoiceConfig {
             $CurrentOperationID0 = 'Processing DiagnosticLevel 1 - Voice Configuration Parameters'
             Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
             $UserObject | Add-Member -MemberType NoteProperty -Name OnPremLineURIManuallySet -Value $CsUser.OnPremLineURIManuallySet
-            $UserObject | Add-Member -MemberType NoteProperty -Name OnPremEnterPriseVoiceEnabled -Value $CsUser.OnPremEnterPriseVoiceEnabled
+            $UserObject | Add-Member -MemberType NoteProperty -Name OnPremEnterpriseVoiceEnabled -Value $CsUser.OnPremEnterpriseVoiceEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
-            $UserObject | Add-Member -MemberType NoteProperty -Name TeamsVoiceRoute -Value $CsUser.TeamsVoiceRoute
-            $UserObject | Add-Member -MemberType NoteProperty -Name VoiceRoutingPolicy -Value $CsUser.VoiceRoutingPolicy
+            # Query for User Location
+            try {
+              $UserLocation = (Get-CsOnlineVoiceUser $CsUser).Location
+              $UserAssignedAddress = if ( $UserLocation ) { (Get-CsOnlineLisLocation -LocationId $UserLocation).Description } else { $null }
+            }
+            catch {
+              $UserAssignedAddress = $null
+            }
+            $UserObject | Add-Member -MemberType NoteProperty -Name UserAssignedAddress -Value $UserAssignedAddress
+            $UserObject | Add-Member -MemberType NoteProperty -Name CallingLineIdentity -Value $CsUser.CallingLineIdentity
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallRoutingPolicy -Value $CsUser.TeamsEmergencyCallRoutingPolicy
           }
 
@@ -322,13 +328,13 @@ function Get-TeamsUserVoiceConfig {
             Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallingPolicy -Value $CsUser.TeamsEmergencyCallingPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsCallingPolicy -Value $CsUser.TeamsCallingPolicy
-            $UserObject | Add-Member -MemberType NoteProperty -Name CallingLineIdentity -Value $CsUser.CallingLineIdentity
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsIPPhonePolicy -Value $CsUser.TeamsIPPhonePolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsVdiPolicy -Value $CsUser.TeamsVdiPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradePolicy -Value $CsUser.TeamsUpgradePolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineDialOutPolicy -Value $CsUser.OnlineDialOutPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineVoicemailPolicy -Value $CsUser.OnlineVoicemailPolicy
             $UserObject | Add-Member -MemberType NoteProperty -Name OnlineAudioConferencingRoutingPolicy -Value $CsUser.OnlineAudioConferencingRoutingPolicy
+            $UserObject | Add-Member -MemberType NoteProperty -Name VoiceRoutingPolicy -Value $CsUser.VoiceRoutingPolicy
           }
 
           { $PSItem -ge 3 } {
@@ -347,6 +353,7 @@ function Get-TeamsUserVoiceConfig {
             # Displaying advanced diagnostic parameters
             $CurrentOperationID0 = 'Processing DiagnosticLevel 3 - AzureAd Parameters, Status'
             Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+            $UserObject | Add-Member -MemberType NoteProperty -Name TeamsVoiceRoute -Value $CsUser.TeamsVoiceRoute # Parked here as low priority
             $UserObject | Add-Member -MemberType NoteProperty -Name AdAccountEnabled -Value $AdUser.AccountEnabled
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountEnabled -Value $CsUser.Enabled
             $UserObject | Add-Member -MemberType NoteProperty -Name CsAccountIsValid -Value $CsUser.IsValid

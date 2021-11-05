@@ -371,13 +371,12 @@ function New-TeamsResourceAccount {
       else {
         # Processing paths for Telephone Numbers depending on Type
         $E164Number = Format-StringForUse $PhoneNumber -As E164
-
-        #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts
+        #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts?
         if ($PhoneNumberIsMSNumber) {
           # Set in VoiceApplicationInstance
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"
           try {
-            if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $PhoneNumber")) {
+            if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
               $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -TelephoneNumber $E164Number -ErrorAction STOP)
             }
           }
@@ -389,7 +388,7 @@ function New-TeamsResourceAccount {
           # Set in ApplicationInstance
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, provisioning for: Direct Routing"
           try {
-            if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $PhoneNumber")) {
+            if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
               $null = (Set-CsOnlineApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -OnpremPhoneNumber $E164Number -Force -ErrorAction STOP)
             }
           }

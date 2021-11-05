@@ -195,7 +195,7 @@ function Connect-Me {
 
     [int] $StepsID0 = $StepsID0 + $(if ($ConnectionOrder.IsArray) { $ConnectionOrder.Count } else { 1 })
     foreach ($Connection in $ConnectionOrder) {
-      $StatusID0 = 'Establishing Connection - Please see Authentication dialog'
+      $StatusID0 = 'Authenticating'
       $CurrentOperationID0 = "$Connection"
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
       try {

@@ -235,6 +235,7 @@ function Enable-AzureAdAdminRole {
 
       # Determining Group Assignments
       Write-Verbose -Message "User '$Id' Determining group assignments"
+      Write-Verbose -Message "Querying The AzureAdDirectory Role is performed assuming the  Teams Service Admin (Teams Administrator)"
       #BODGE This assumes Teams Service Admin (Teams Administrator) - may require multiple brushes Try/Catch with "Teams Communications Administrator" as well.
       $Role = Get-AzureADDirectoryRole -Filter "DisplayName eq 'Teams Administrator'"
       $MyGroups = (Get-AzureADDirectoryRoleMember -ObjectId $Role.ObjectId | Where-Object ObjectType -EQ 'Group').ObjectId
