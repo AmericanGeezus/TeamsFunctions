@@ -143,7 +143,7 @@ function Set-TeamsCommonAreaPhone {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     $StatusID0 = 'Verifying input'
     #region Validating Licenses to be applied result in correct Licensing (contains Teams & PhoneSystem)

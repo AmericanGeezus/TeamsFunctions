@@ -100,7 +100,7 @@ function Get-TeamsAutoAttendant {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     if ($PSBoundParameters.ContainsKey('Detailed')) {
       Write-Verbose -Message "Parameter 'Detailed' - This may take a bit of time..." -Verbose
@@ -109,7 +109,7 @@ function Get-TeamsAutoAttendant {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     $StatusID0 = 'Information Gathering'
     #region Data gathering

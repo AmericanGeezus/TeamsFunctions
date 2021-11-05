@@ -87,7 +87,7 @@ function New-TeamsResourceAccountAssociation {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -151,7 +151,7 @@ function New-TeamsResourceAccountAssociation {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     # re-Initialising counters for Progress bars (for Pipeline processing)
-    [int]$script:CountID0 = 2
+    [int] $script:CountID0 = 2
 
     $StatusID0 = 'Verifying input'
     # Query $UserPrincipalName

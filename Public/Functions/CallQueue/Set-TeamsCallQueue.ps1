@@ -342,7 +342,7 @@ function Set-TeamsCallQueue {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     <# Initialising counters for Progress bars
     [int]$step = 0
@@ -382,7 +382,7 @@ function Set-TeamsCallQueue {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     # re-Initialising counters for Progress bars (for Pipeline processing)
-    [int]$script:CountID0 = 2
+    [int] $script:CountID0 = 2
 
     #region PREPARATION
     $StatusID0 = 'Querying Object'

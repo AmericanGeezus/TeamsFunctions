@@ -152,7 +152,7 @@ function New-TeamsCommonAreaPhone {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     $StatusID0 = 'Verifying input'
     #region Validating Licenses to be applied result in correct Licensing (contains Teams & PhoneSystem)
@@ -329,13 +329,15 @@ function New-TeamsCommonAreaPhone {
     #endregion
 
     #region Policies
-    $CurrentOperationID1 = 'Processing Policy assignments'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+    $CurrentOperationID0 = 'Processing Policy assignments'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     if (-not $IsLicensed) {
       Write-Error -Message 'Policies can only be assigned to licensed objects. Please wait for propagation or apply a license before assigning policies. Set-TeamsCommonAreaPhone can be used to do both'
     }
     else {
       #IP Phone Policy
+      $ActivityID1 = "Granting IP Phone Policy"
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       if ($PSBoundParameters.ContainsKey('IPPhonePolicy')) {
         Grant-CsTeamsIPPhonePolicy -Identity $AzureAdUser.ObjectId -PolicyName $IPPhonePolicy
       }
@@ -343,6 +345,8 @@ function New-TeamsCommonAreaPhone {
         Write-Verbose -Message "Object '$($CsOnlineUser.UserPrincipalName)' - IP Phone Policy 'Global' is in effect!"
       }
       #Teams Calling Policy
+      $ActivityID1 = "Granting Calling Policy"
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       if ($PSBoundParameters.ContainsKey('TeamsCallingPolicy')) {
         Grant-CsTeamsCallingPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallingPolicy
       }
@@ -350,14 +354,16 @@ function New-TeamsCommonAreaPhone {
         Write-Verbose -Message "Object '$($CsOnlineUser.UserPrincipalName)' - Calling Policy 'Global' is in effect!"
       }
       #Teams Call Park Policy
+      $ActivityID1 = 'Granting Call Park Policy'
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       if ($PSBoundParameters.ContainsKey('TeamsCallParkPolicy')) {
         Grant-CsTeamsCallParkPolicy -Identity $AzureAdUser.ObjectId -PolicyName $TeamsCallParkPolicy
       }
       else {
         Write-Verbose -Message "Object '$($CsOnlineUser.UserPrincipalName)' - Call Park Policy 'Global' is in effect!"
       }
+      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
     }
-
     #endregion
 
     $StatusID0 = 'Validation'

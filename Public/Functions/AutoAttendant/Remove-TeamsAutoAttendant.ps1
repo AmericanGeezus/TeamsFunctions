@@ -69,15 +69,15 @@ function Remove-TeamsAutoAttendant {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($DN in $Name) {
-      [int]$script:CountID0 = 1
-      [int]$script:StepsID0 = $Name.Count
+      [int] $script:CountID0 = 1
+      [int] $script:StepsID0 = $Name.Count
       $StatusID0 = "Processing '$DN'"
       $CurrentOperationID0 = "Querying Object"
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
@@ -93,7 +93,7 @@ function Remove-TeamsAutoAttendant {
 
         if ( $AAToRemove ) {
           $StatusID0 = "Removing $($AAToRemove.Count) Objects"
-          $script:StepsID0 = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
+          $script:StepsID1 = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
             $ActivityID1 = "'$($AA.Name)'"
             $StatusID1 = $CurrentOperationID1 = ''

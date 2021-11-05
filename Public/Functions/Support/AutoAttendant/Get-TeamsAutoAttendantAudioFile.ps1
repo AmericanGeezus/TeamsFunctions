@@ -94,7 +94,7 @@ function Get-TeamsAutoAttendantAudioFile {
     #Initialising Counters
     $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
     $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     $IsDetailed = ($PSBoundParameters.ContainsKey('Detailed'))
 
@@ -119,7 +119,7 @@ function Get-TeamsAutoAttendantAudioFile {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int]$script:CountID0 = [int]$script:CountID1 = 1
+    [int] $script:CountID0 = [int] $script:CountID1 = 1
 
     $StatusID0 = 'Information Gathering'
     #region Data gathering
