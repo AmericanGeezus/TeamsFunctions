@@ -161,26 +161,8 @@ function Get-TeamsUserVoiceConfig {
       #region Constructing InterpretedVoiceConfigType
       $CurrentOperationID0 = 'Testing InterpretedVoiceConfigType'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
-      #TODO Rework into separate function! Get-TeamsInterpretedVoiceConfigType (and make it to accept $CsUserObject)
-      if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
-        Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
-        $InterpretedVoiceConfigType = 'CallingPlans'
-      }
-      elseif ($CsUser.VoicePolicy -eq 'HybridVoice') {
-        Write-Verbose -Message "VoicePolicy found as 'HybridVoice'"
-        if ($null -ne $CsUser.VoiceRoutingPolicy -and $null -eq $CsUser.OnlineVoiceRoutingPolicy) {
-          Write-Verbose -Message "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
-          $InterpretedVoiceConfigType = 'SkypeHybridPSTN'
-        }
-        else {
-          Write-Verbose -Message "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
-          $InterpretedVoiceConfigType = 'DirectRouting'
-        }
-      }
-      else {
-        Write-Verbose -Message "InterpretedVoiceConfigType is 'Unknown' (undetermined)"
-        $InterpretedVoiceConfigType = 'Unknown'
-      }
+      #TEST separate function! Get-TeamsInterpretedVoiceConfigType (and make it to accept $CsUserObject)
+      $InterpretedVoiceConfigType = Get-InterpretedVoiceConfigType -Object $CsUser
       #endregion
 
       #region Testing ObjectType

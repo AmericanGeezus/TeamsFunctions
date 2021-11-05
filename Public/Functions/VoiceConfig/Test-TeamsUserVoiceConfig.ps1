@@ -29,6 +29,10 @@ function Test-TeamsUserVoiceConfig {
     Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured
     No effect for Microsoft Calling Plans
   .EXAMPLE
+    Test-TeamsUserVoiceConfig -Object $CsOnlineUser
+    Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
+    To reduce query time, the CsOnlineUser Object can be passed to this function
+  .EXAMPLE
     Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
   .EXAMPLE
