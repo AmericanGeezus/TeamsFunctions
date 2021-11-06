@@ -133,20 +133,20 @@ function Get-TeamsTenantVoiceConfig {
     #endregion
 
     #region User Information
-    $CurrentOperationID0 = $ActivityID1 = 'Processing Parameter DisplayUserCounters'
+    $CurrentOperationID0 = 'Processing Parameter DisplayUserCounters'
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     if ($PSBoundParameters.ContainsKey('DisplayUserCounters')) {
-      $StatusID1 = 'Querying User Information - This will take some time!'
-      Write-Information "INFO:    $ActivityID1 - $StatusID1"
-      $CurrentOperationID1 = 'Querying AzureADUsers'
+      $ActivityID1 = 'Querying User Information - This will take some time!'
+      Write-Information "INFO:    $ActivityID1"
+      $StatusID1 = 'Querying AzureADUsers'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $AdUsers = Get-AzureADUser -All:$TRUE | Where-Object AccountEnabled -EQ $TRUE -WarningAction SilentlyContinue
 
-      $CurrentOperationID1 = 'Querying CsOnlineUsers'
+      $StatusID1 = 'Querying CsOnlineUsers'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $CsOnlineUsers = Get-CsOnlineUser -WarningAction SilentlyContinue
 
-      $CurrentOperationID1 = 'Counting Voice Users (EnterpriseVoiceEnabled)'
+      $StatusID1 = 'Counting Voice Users (EnterpriseVoiceEnabled)'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $CsOnlineUsersEV = $CsOnlineUsers | Where-Object EnterpriseVoiceEnabled -EQ $TRUE
 

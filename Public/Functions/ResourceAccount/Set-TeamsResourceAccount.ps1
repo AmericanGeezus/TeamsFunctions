@@ -477,12 +477,13 @@ function Set-TeamsResourceAccount {
 
       #region Waiting for License Application
       if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
-        $CurrentOperationID0 = $ActivityID1 = 'Checking License propagation as a requirement before applying Phone Number'
+        $CurrentOperationID0 = $StatusID0 = ''
         Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
         $i = 0
         $iMax = 600
         Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
         Write-Verbose -Message "License '$License'- Expecting one of the corresponding ServicePlans '$PlansToTest'"
+        $ActivityID1 = 'Checking License propagation as a requirement before applying Phone Number'
         $StatusID1 = 'Azure Active Directory is propagating Object. Please wait'
         $CurrentOperationID1 = 'Waiting for Test-TeamsUserLicense to return a positive Result'
         do {

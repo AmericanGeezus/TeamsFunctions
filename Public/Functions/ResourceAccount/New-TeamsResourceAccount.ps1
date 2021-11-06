@@ -247,10 +247,10 @@ function New-TeamsResourceAccount {
 
 
     #region ACTION
-    $StatusID0 = 'Creating Object'
-    #region Creating Account
-    $CurrentOperationID0 = $ActivityID1 = 'Creating Resource Account'
+    $StatusID0 = $CurrentOperationID0 = ''
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    #region Creating Account
+    $ActivityID1 = 'Creating Resource Account'
     try {
       #Trying to create the Resource Account
       Write-Verbose -Message "'$Name' Creating Resource Account with New-CsOnlineApplicationInstance..."
@@ -333,14 +333,15 @@ function New-TeamsResourceAccount {
 
     #region Waiting for License Application
     if ($PSBoundParameters.ContainsKey('License') -and $PSBoundParameters.ContainsKey('PhoneNumber')) {
-      $CurrentOperationID0 = $ActivityID1 = 'Checking License propagation as a requirement before applying Phone Number'
+      $CurrentOperationID0 = $StatusID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
       $i = 0
       $iMax = 600
       Write-Warning -Message "Applying a License may take longer than provisioned for ($($iMax/60) mins) in this Script - If so, please apply PhoneNumber manually with Set-TeamsResourceAccount"
       Write-Verbose -Message "License '$License'- Expecting one of the corresponding ServicePlans '$PlansToTest'"
+      $ActivityID1 = 'Checking License propagation as a requirement before applying Phone Number'
       $StatusID1 = 'Azure Active Directory is propagating Object. Please wait'
-      $CurrentOperationID1 = 'Querying User License. Waiting for return of a positive Result'
+      $CurrentOperationID1 = 'Waiting for Test-TeamsUserLicense to return a positive Result'
       do {
         if ($i -gt $iMax) {
           Write-Error -Message "Could not find Successful Provisioning Status of ServicePlan '$PlansToTest' in AzureAD in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify License has been applied correctly (Get-TeamsResourceAccount); Continue with Set-TeamsResourceAccount' -ErrorAction Stop

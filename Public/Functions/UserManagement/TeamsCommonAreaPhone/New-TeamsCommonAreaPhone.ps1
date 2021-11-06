@@ -263,10 +263,10 @@ function New-TeamsCommonAreaPhone {
 
 
     #region ACTION
-    $StatusID0 = 'Creating Object'
-    #region Creating Account
-    $CurrentOperationID0 = $ActivityID1 = 'Creating Common Area Phone'
+    $StatusID0 = $CurrentOperationID0 = ''
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    #region Creating Account
+    $ActivityID1 = 'Creating Common Area Phone'
     try {
       #Trying to create the Common Area Phone
       Write-Verbose -Message "'$Name' Creating Common Area Phone with New-AzureAdUser..."

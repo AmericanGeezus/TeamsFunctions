@@ -6128,7 +6128,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsTeamsCallingPolicy with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsCallingPolicy | Select-Object Identity, Description, BusyOnBusyEnabledType</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -6246,7 +6246,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reordered set of Parameters are shown for better visibility: Get-CsTeamsEmergencyCallingPolicy | Select-Object Identity, Description, NotificationMode, NotificationGroup</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsTeamsEmergencyCallingPolicy with a twist: If more than three results are found, a reordered set of Parameters are shown for better visibility: Get-CsTeamsEmergencyCallingPolicy | Select-Object Identity, Description, NotificationMode, NotificationGroup</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -6482,7 +6482,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes</maml:para>
+        <maml:para>This script is indulging the lazy admin. It behaves like Get-CsTeamsIPPhonePolicy with a twist: If more than three results are found, a reduced set of Parameters are shown for better visibility: Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -20554,27 +20554,34 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
+        <dev:code>Test-TeamsUserVoiceConfig -Object $CsOnlineUser</dev:code>
+        <dev:remarks>
+          <maml:para>Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found To reduce query time, the CsOnlineUser Object can be passed to this function</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName</dev:code>
         <dev:remarks>
           <maml:para>Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
         <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial</dev:code>
         <dev:remarks>
           <maml:para>Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDialPlan</dev:code>
         <dev:remarks>
           <maml:para>Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found This requires a Tenant Dial Plan to be assigned as well.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
         <dev:code>Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial -IncludeTenantDialPlan</dev:code>
         <dev:remarks>
           <maml:para>Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found This will treat any Object that only has a Tenant Dial Plan also as partially configured</maml:para>
@@ -20651,7 +20658,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
           <maml:name>Status</maml:name>
           <maml:description>
             <maml:para>Required. Synonymous with Write-Progress Parameter Status Message to display as a Status. This can be the current operation if this level of granularity is enough</maml:para>
@@ -20738,7 +20745,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
         <maml:name>Status</maml:name>
         <maml:description>
           <maml:para>Required. Synonymous with Write-Progress Parameter Status Message to display as a Status. This can be the current operation if this level of granularity is enough</maml:para>
@@ -20817,20 +20824,48 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
-        <dev:code>Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -Step $i -of 10</dev:code>
+        <dev:code>Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Step $i -of 10</dev:code>
         <dev:remarks>
           <maml:para>Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}' Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
+        <dev:code>Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -Step $i -of 10</dev:code>
+        <dev:remarks>
+          <maml:para>Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}' Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function) Displays the Status</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <dev:code>Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -CurrentOperation "Task X" -Step $i -of 10</dev:code>
+        <dev:remarks>
+          <maml:para>Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}' Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function) Displays the Current Operation</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
+        <dev:code>Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -CurrentOperation "Task X" -Step $i -of 10</dev:code>
+        <dev:remarks>
+          <maml:para>Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}' Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function) Displays the Status and the Current Operation</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
+        <dev:code>Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "" -CurrentOperation "" -Step $i -of 10</dev:code>
+        <dev:remarks>
+          <maml:para>Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}' Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function) Contrary to Write-Progress, allows passing of empty strings to the omit displays of Status and/or Current Operation</maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- EXAMPLE 6 --------------------------</maml:title>
         <dev:code>Write-BetterProgress -Id 1 -Activity "Processing Item #$i" -Status "Step $i - Substep $j" -Step $j -of 10</dev:code>
         <dev:remarks>
           <maml:para>Assumes running an a foreach loop of 'foreach ($j in (1..10)) {Write-BetterProgress -Id 1...}' Displays the Progress for ID 1 - with the activity set to the calling command (useful when used in a Function) NOTE: The ParentId is set to 0 automatically (one less than the ID provided, unless Parameter ParentId is used)</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 7 --------------------------</maml:title>
         <dev:code>Write-BetterProgress -Id 2 -ParentId 1 -Activity 'Looping through Activities' -CurrentOperation 'Displaying Level 3' -Status "Step $i - Substep $j - iteration $k" -Step $k -of 10</dev:code>
         <dev:remarks>
           <maml:para>Assumes running an a foreach loop of 'foreach ($k in (1..10)) {Write-BetterProgress -Id 2...}' Displays the Progress for ID 2 - with the Parent ID set to 1 (this is calculated to 1 anyway, but can be overridden) CurrentOperation is optional and will display another line below if needed for more granularity.</maml:para>

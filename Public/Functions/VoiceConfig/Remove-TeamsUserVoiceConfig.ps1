@@ -124,13 +124,13 @@ function Remove-TeamsUserVoiceConfig {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    $StatusID0 = 'Processing'
+    [int] $script:StepsID0 = $UserPrincipalName.Count
     foreach ($UPN in $UserPrincipalName) {
-      $script:StepsID0 = $UserPrincipalName.Count
-      $CurrentOperationID0 = $ActivityID1 = "Processing '$UPN'"
+      $CurrentOperationID0 = $StatusID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
 
       #region Information Gathering
+      $ActivityID1 = "Processing '$UPN'"
       $StatusID1 = 'Querying Object'
       $CurrentOperationID1 = 'Querying CsOnlineUser'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $script:StepsID1

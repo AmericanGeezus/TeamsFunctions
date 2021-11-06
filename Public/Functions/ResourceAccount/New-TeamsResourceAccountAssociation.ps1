@@ -178,12 +178,14 @@ function New-TeamsResourceAccountAssociation {
       return
     }
 
-    $CurrentOperationID0 = $ActivityID1 = 'Processing found Resource Accounts'
+    $StatusID0 = 'Processing found Resource Accounts'
+    $CurrentOperationID0 = ''
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     [int] $script:StepsID1 = $Accounts.Count
     [System.Collections.ArrayList]$ValidatedAccounts = @()
     foreach ($Account in $Accounts) {
-      $StatusID1 = "'$($Account.UserPrincipalName)'"
+      $ActivityID1 = "'$($Account.UserPrincipalName)'"
+      $StatusID1 = ''
       $CurrentOperationID1 = 'Querying existing associations'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       $ExistingConnection = $null
@@ -240,13 +242,15 @@ function New-TeamsResourceAccountAssociation {
     }
 
     # Processing found accounts
-    [int] $script:StepsID1 = $ValidatedAccounts.Count
-    $CurrentOperationID0 = $ActivityID1 = "Processing $script:StepsID1 validated Accounts"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
     if ( $ValidatedAccounts ) {
+    [int] $script:StepsID1 = $ValidatedAccounts.Count
+    $StatusID0 = "Processing $script:StepsID1 validated Resource Accounts"
+    $CurrentOperationID0 = ''
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
       # Processing Assignment
-      foreach ($Account in $Accounts) {
+      foreach ($Account in $ValidatedAccounts) {
         $ErrorEncountered = $null
+        $ActivityID1 = "'$($Account.UserPrincipalName)'"
         $StatusID1 = "Assignment to $DesiredType '$($EntityObject.Name)'"
         $CurrentOperationID1 = "Associating '$($Account.UserPrincipalName)' with $DesiredType"
         Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1

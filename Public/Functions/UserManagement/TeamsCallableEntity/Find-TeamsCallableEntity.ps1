@@ -119,10 +119,9 @@ function Find-TeamsCallableEntity {
       [int] $script:CountID1 = 1
       $CallTarget = $null
       [System.Collections.ArrayList]$Output = @()
-      $StatusID0 = 'Processing Entities'
-      $CurrentOperationID0 = $ActivityID1 = "'$Id'"
+      $StatusID0 = $CurrentOperationID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
-
+      $ActivityID1 = "'$Id'"
       $StatusID1 = 'Querying Entity'
       #region Object
       $CurrentOperationID1 = 'Teams Callable Entity'

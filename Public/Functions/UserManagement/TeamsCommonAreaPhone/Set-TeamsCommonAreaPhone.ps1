@@ -182,10 +182,9 @@ function Set-TeamsCommonAreaPhone {
     [int] $script:CountID0 = 1
     [int] $script:StepsID0 = $script:CountID0 + $UserPrincipalName.Count
     ForEach ($UPN in $UserPrincipalName) {
-      $StatusID0 = 'Processing'
-      $CurrentOperationID0 = $ActivityID1 = "'$UPN'"
+      $StatusID0 = $CurrentOperationID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
-
+      $ActivityID1 = "'$UPN'"
       $StatusID1 = 'Verifying input'
       #region PREPARATION
       #region Lookup of UserPrincipalName

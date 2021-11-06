@@ -99,13 +99,13 @@ function Remove-TeamsCommonAreaPhone {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $StatusID0 = 'Processing Removal'
+    [int] $script:StepsID0 = $UserPrincipalName.Count
     foreach ($UPN in $UserPrincipalName) {
-      $script:StepsID0 = $UserPrincipalName.Count
-      $CurrentOperationID0 = $ActivityID1 = "Processing '$UPN'"
+      $StatusID0 = $CurrentOperationID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
-
-      $StatusID1 = 'Querying Object'
+      $ActivityID1 = "'$UPN'"
       #region Lookup of UserPrincipalName
+      $StatusID1 = 'Querying Object'
       $CurrentOperationID1 = 'Querying CsOnlineUser'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {
@@ -123,8 +123,8 @@ function Remove-TeamsCommonAreaPhone {
       }
       #endregion
 
-      $StatusID1 = "Processing Object '$DisplayName'"
       #region Removing Voice Config
+      $StatusID1 = "Processing Object '$DisplayName'"
       $CurrentOperationID1 = 'Removing Voice Configuration'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
       try {

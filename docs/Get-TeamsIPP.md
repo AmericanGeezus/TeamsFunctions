@@ -77,7 +77,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 This script is indulging the lazy admin.
-It behaves like Get-CsOnlineVoiceRoute with a twist:
+It behaves like Get-CsTeamsIPPhonePolicy with a twist:
 If more than three results are found, a reduced set of Parameters are shown for better visibility:
 Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
 

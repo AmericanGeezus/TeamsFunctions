@@ -187,12 +187,11 @@ function Get-TeamsCommonAreaPhone {
     [int] $script:StepsID0 = $script:CountID0 + $CommonAreaPhones.Count
     foreach ($CommonAreaPhone in $CommonAreaPhones) {
       [int] $script:CountID1 = 1
-      $StatusID0 = 'Processing found User Objects'
-      $CurrentOperationID0 = $ActivityID1 = "'$($CommonAreaPhone.UserPrincipalName)'"
+      $StatusID0 = $CurrentOperationID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
-
-      $StatusID1 = 'Information Gathering'
+      $ActivityID1 = "'$($CommonAreaPhone.UserPrincipalName)'"
       #region Parsing Policies
+      $StatusID1 = 'Information Gathering'
       # TeamsIPPhonePolicy and CommonAreaPhoneSignIn
       $CurrentOperationID1 = 'Parsing IP Phone Policy (CommonAreaPhoneSignIn)'
       Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
