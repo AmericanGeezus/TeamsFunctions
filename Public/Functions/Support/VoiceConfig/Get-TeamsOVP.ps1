@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Create separate function for determination of OVP/OPU/OVR from Find-TeamsUVR - Add here when called with Identity
 
 function Get-TeamsOVP {
   <#

@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Create separate function for determination of OVP/OPU/OVR - Add to Get-TeamsOVP when called with Identity
 
 function Find-TeamsUserVoiceRoute {
   <#
