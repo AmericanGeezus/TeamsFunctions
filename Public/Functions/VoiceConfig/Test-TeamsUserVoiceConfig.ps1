@@ -149,9 +149,21 @@ function Test-TeamsUserVoiceConfig {
       else {
         Write-Warning -Message "User '$User' - $TestObject is '$IUT'"
         Write-Verbose -Message "Potential misconfiguration detected - Contains 'Disabled', 'OnPrem', 'Failed' or any other error-state. Please investigate!"
+        if ( $IUT -match 'WithMCOValidationError' ) {
+          $ErrorCode = (($CsUser.MCOValidationError -split '<ErrorCode>')[1] -split [regex]::Escape('</ErrorCode>'))[0]
+          $ErrorDescription = (($CsUser.MCOValidationError -split '<ErrorDescription>')[1] -split [regex]::Escape('</ErrorDescription>'))[0]
+          Write-Warning "User '$User' - MCOValidationError encountered: '$ErrorCode'"
+          Write-Information "INFO:    MCO Validation Error description: '$ErrorDescription'"
+        }
       }
       #endregion
 
+      #region SIP Address
+      $TestObject = 'SIP Address'
+      if ( -not $CsUser.SipAddress ) {
+        Write-Warning -Message "User '$User' - $TestObject is not present. User is not able to consume Teams or able to be provisioned for Teams Voice"
+      }
+      #endregion
 
       #region Testing EV Enablement as hard requirement
       $TestObject = 'Enterprise Voice Enabled'

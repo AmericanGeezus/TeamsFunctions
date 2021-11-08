@@ -167,7 +167,6 @@ function Get-TeamsUserVoiceConfig {
       $CurrentOperationID0 = 'Testing ObjectType (Get-TeamsObjectType)'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
-
       #endregion
 
       #region Testing for Misconfiguration
@@ -180,7 +179,6 @@ function Get-TeamsUserVoiceConfig {
       else {
         Write-Verbose -Message 'No validation can be performed for the Object as CsOnlineUser Object not found!'
       }
-
 
       #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
       if ( $CsUser.SipAddress -and -not $CsUser.TenantDialPlan -and $ObjectType -ne 'ApplicationEndpoint' ) {

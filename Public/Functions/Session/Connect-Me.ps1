@@ -204,7 +204,7 @@ function Connect-Me {
             $AzureAdParameters = $ConnectionParameters
             $AzureAdParameters += @{ 'AccountId' = $AccountId }
             $AzureAdFeedback = Connect-AzureAD @AzureAdParameters
-            Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
+            Write-Information "SUCCESS: $StatusID0 - $CurrentOperationID0"
           }
           'Enabling eligible Admin Roles' {
             try {
@@ -218,7 +218,7 @@ function Connect-Me {
               else {
                 Write-Verbose 'Enable-AzureAdAdminrole - No roles have been activated - If Privileged Admin Groups are used, please activate via PIM: https://aka.ms/myroles ' -Verbose
               }
-              Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
+              Write-Information "SUCCESS: $StatusID0 - $CurrentOperationID0"
             }
             catch {
               if ($_.Exception.Message.Split('["')[2] -eq 'MfaRule') {
@@ -261,7 +261,7 @@ function Connect-Me {
               Write-Warning -Message 'When activating roles with this CmdLet, propagation may not have completed. Please wait a few seconds and retry this command.'
               throw 'MicrosoftTeams - Connection to MicrosoftTeams established, but Cmdlets not able to run. Please verify Admin Roles via https://aka.ms/myroles'
             }
-            Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
+            Write-Information "SUCCESS: $StatusID0 - $CurrentOperationID0"
           }
           'ExchangeOnline' {
             $ExchangeOnlineParameters = $ConnectionParameters
@@ -269,7 +269,7 @@ function Connect-Me {
             $ExchangeOnlineParameters += @{ 'ShowProgress' = $true }
             $ExchangeOnlineParameters += @{ 'ShowBanner' = $false }
             $null = Connect-ExchangeOnline @ExchangeOnlineParameters
-            Write-Information "SUCCESS:  $StatusID0 - $CurrentOperationID0"
+            Write-Information "SUCCESS: $StatusID0 - $CurrentOperationID0"
           }
         }
       }
