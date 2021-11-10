@@ -98,10 +98,14 @@ function Set-TeamsUserVoiceConfig {
     [switch]$DirectRouting,
 
     [Parameter(ParameterSetName = 'DirectRouting', ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Routing Policy')]
+    [AllowNull()]
+    [AllowEmptyString()]
     [Alias('OVP')]
     [string]$OnlineVoiceRoutingPolicy,
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Tenant Dial Plan')]
+    [AllowNull()]
+    [AllowEmptyString()]
     [Alias('TDP')]
     [string]$TenantDialPlan,
 
@@ -463,18 +467,14 @@ function Set-TeamsUserVoiceConfig {
       #endregion
 
       #region Tenant Dial Plan
-      if ( $TenantDialPlan ) {
-        $CurrentOperationID0 = 'Tenant Dial Plan'
-        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
-        if ( $Force -or $CsUser.TenantDialPlan -ne $TenantDialPlan) {
+      $Operation = 'Tenant Dial Plan'
+      if ( $PSBoundParameters.ContainsKey('TenantDialPlan') ) {
+        if ( $Force -or -not $TenantDialPlan ) {
+          $CurrentOperationID0 = "Removing $Operation"
+          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
           try {
-            if ( $ObjectType -eq 'User' ) {
-              Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $TenantDialPlan -ErrorAction Stop
-              Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$TenantDialPlan'"
-            }
-            else {
-              Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Operation not available for ObjectType '$ObjectType'" -Verbose
-            }
+            Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
+            Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: Removed"
           }
           catch {
             $ErrorLogMessage = "Object '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'"
@@ -482,8 +482,28 @@ function Set-TeamsUserVoiceConfig {
             $ErrorLog += $ErrorLogMessage
           }
         }
-        else {
-          Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+        if ( $TenantDialPlan ) {
+          if ( $Force -or ($CsUser.TenantDialPlan -ne $TenantDialPlan) ) {
+            $CurrentOperationID0 = "Applying $Operation"
+            Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+            try {
+              if ( $ObjectType -eq 'User' ) {
+                Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $TenantDialPlan -ErrorAction Stop
+                Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$TenantDialPlan'"
+              }
+              else {
+                Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Operation not available for ObjectType '$ObjectType'" -Verbose
+              }
+            }
+            catch {
+              $ErrorLogMessage = "Object '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'"
+              Write-Error -Message $ErrorLogMessage
+              $ErrorLog += $ErrorLogMessage
+            }
+          }
+          else {
+            Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+          }
         }
       }
       else {
@@ -503,13 +523,13 @@ function Set-TeamsUserVoiceConfig {
           $StatusID0 = 'Applying Voice Configuration: Provisioning for Direct Routing'
           # Apply $OnlineVoiceRoutingPolicy
           $Operation = 'Online Voice Routing Policy'
-          $CurrentOperationID0 = "Applying $Operation"
-          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
-          if ( $OnlineVoiceRoutingPolicy ) {
-            if ( $Force -or ($CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) ) {
+          if ( $PSBoundParameters.ContainsKey('OnlineVoiceRoutingPolicy') ) {
+            if ( $Force -or -not $OnlineVoiceRoutingPolicy ) {
+              $CurrentOperationID0 = "Removing $Operation"
+              Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
               try {
-                Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
-                Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$OnlineVoiceRoutingPolicy'"
+                Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
+                Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: Removed"
               }
               catch {
                 $ErrorLogMessage = "Object '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'"
@@ -517,9 +537,25 @@ function Set-TeamsUserVoiceConfig {
                 $ErrorLog += $ErrorLogMessage
               }
             }
-            else {
-              Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+            if ( $OnlineVoiceRoutingPolicy ) {
+              if ( $Force -or ($CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) ) {
+                $CurrentOperationID0 = "Applying $Operation"
+                Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+                try {
+                  Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
+                  Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$OnlineVoiceRoutingPolicy'"
+                }
+                catch {
+                  $ErrorLogMessage = "Object '$UserPrincipalName' - $Operation`: Failed: '$($_.Exception.Message)'"
+                  Write-Error -Message $ErrorLogMessage
+                  $ErrorLog += $ErrorLogMessage
+                }
+              }
+              else {
+                Write-Verbose -Message "Object '$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+              }
             }
+
           }
           else {
             if ( $CsUser.OnlineVoiceRoutingPolicy ) {
