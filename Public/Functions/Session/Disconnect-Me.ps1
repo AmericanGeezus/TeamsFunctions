@@ -59,8 +59,7 @@ function Disconnect-Me {
 
     $WarningPreference = 'SilentlyContinue'
     $ErrorActionPreference = 'SilentlyContinue'
-
-    # Assuming Modules are already imported
+    $InformationPreference = 'Continue'
 
     # Cleanup of global Variables set
     #Remove-TeamsFunctionsGlobalVariable # Removed as dynamic replacement is working as intended
@@ -72,6 +71,12 @@ function Disconnect-Me {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+
+    # Querying Azure Ad Connection
+    $SessionInfo = Get-CurrentConnectionInfo
+    if ( $SessionInfo ) {
+      Write-Information "Disconnecting from Tenant: $($SessionInfo.Tenant)"
+    }
 
     try {
       Write-Verbose -Message 'Disconnecting Session from MicrosoftTeams'
