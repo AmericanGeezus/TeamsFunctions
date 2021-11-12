@@ -38,7 +38,7 @@ function Use-MicrosoftTeamsConnection {
   begin {
     #Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    $script:TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
+    $private:TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
 
   } #begin
 

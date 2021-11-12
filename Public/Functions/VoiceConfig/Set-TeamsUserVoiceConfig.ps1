@@ -165,9 +165,9 @@ function Set-TeamsUserVoiceConfig {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     # Teams Module Caveat
     $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
@@ -187,7 +187,7 @@ function Set-TeamsUserVoiceConfig {
     #region Information Gathering
     #region Excluding Resource Accounts
     $CurrentOperationID0 = 'Querying Account Type is not a Resource Account'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ( Test-TeamsResourceAccount $UserPrincipalName) {
       Write-Verbose -Message 'Resource Account specified! Operations performed with Set-TeamsResourceAccount'
     }
@@ -195,7 +195,7 @@ function Set-TeamsUserVoiceConfig {
 
     #region Querying Identity
     $CurrentOperationID0 = 'Querying User Account (TeamsUserVoiceConfig)'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     try {
       $CsUser = Get-TeamsUserVoiceConfig -UserPrincipalName "$UserPrincipalName" -InformationAction SilentlyContinue -WarningAction SilentlyContinue -ErrorAction Stop
       $IsEVenabled = $CsUser.EnterpriseVoiceEnabled
@@ -214,7 +214,7 @@ function Set-TeamsUserVoiceConfig {
     #region Establishing User Object Readiness
     $Operation = 'PhoneSystem License'
     $CurrentOperationID0 = "Asserting Callable Entity (Validating $Operation & EnterpriseVoice enablement)"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ( -not $IsEVenabled -or -not $IsPSsuccess) {
       #TEST execution of Assert-TeamsCallableEntity - currently limited to use with Force
       if ($Force) {
@@ -288,7 +288,7 @@ function Set-TeamsUserVoiceConfig {
 
     #region Checking multiple assignments of PhoneSystem
     $CurrentOperationID0 = 'Checking multiple assignments of PhoneSystem'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ( $CsUser.PhoneSystemStatus.Contains(',')) {
       Write-Warning -Message "Object '$UserPrincipalName' - $Operation`: Multiple assignments found. Please verify License assignment."
       $UserLic = Get-AzureAdUserLicense -UserPrincipalName "$UserPrincipalName" -WarningAction SilentlyContinue
@@ -302,7 +302,7 @@ function Set-TeamsUserVoiceConfig {
       #TEST once Assert-TeamsCallableEntity takes over the validation, this section can be removed (or retained for double checking)
       $Operation = 'Enterprise Voice'
       $CurrentOperationID0 = "Validating User is enabled for $Operation"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       if ( -not $IsEVenabled) {
         Write-Verbose "Object '$UserPrincipalName' - $Operation`: Not enabled, trying to Enable"
         if ($Force -or $PSCmdlet.ShouldProcess("$UserPrincipalName", "Set-CsUser -EnterpriseVoiceEnabled $TRUE")) {
@@ -329,7 +329,7 @@ function Set-TeamsUserVoiceConfig {
     #region Calling Plans - Number verification
     if ( $PSCmdlet.ParameterSetName -eq 'CallingPlans' ) {
       $CurrentOperationID0 = 'Testing Object for Calling Plan License'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       # Validating License assignment
       try {
         if ( -not $CallingPlanLicense ) {
@@ -352,7 +352,7 @@ function Set-TeamsUserVoiceConfig {
 
       if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
         $CurrentOperationID0 = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
-        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
         # Validating Microsoft Number
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
@@ -371,7 +371,7 @@ function Set-TeamsUserVoiceConfig {
 
     #region Validating Phone Number Format
     $CurrentOperationID0 = 'Querying current Phone Number'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     # Querying CurrentPhoneNumber
     try {
       $CurrentPhoneNumber = $CsUser.LineUri
@@ -384,7 +384,7 @@ function Set-TeamsUserVoiceConfig {
 
     if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
       $CurrentOperationID0 = 'Validating Phone Number format'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
         if ($CurrentPhoneNumber) {
           Write-Warning -Message "Object '$UserPrincipalName' - PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
@@ -438,7 +438,7 @@ function Set-TeamsUserVoiceConfig {
       #region Generic Configuration
       #region Enable HostedVoicemail
       $CurrentOperationID0 = 'Enabling Hosted Voicemail'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       switch ( $ObjectType ) {
         'User' {
           if ( $Force -or -not $CsUser.HostedVoicemail) {
@@ -471,7 +471,7 @@ function Set-TeamsUserVoiceConfig {
       if ( $PSBoundParameters.ContainsKey('TenantDialPlan') ) {
         if ( $Force -or -not $TenantDialPlan ) {
           $CurrentOperationID0 = "Removing $Operation"
-          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
           try {
             Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
             Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: Removed"
@@ -485,7 +485,7 @@ function Set-TeamsUserVoiceConfig {
         if ( $TenantDialPlan ) {
           if ( $Force -or ($CsUser.TenantDialPlan -ne $TenantDialPlan) ) {
             $CurrentOperationID0 = "Applying $Operation"
-            Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+            Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
             try {
               if ( $ObjectType -eq 'User' ) {
                 Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $TenantDialPlan -ErrorAction Stop
@@ -526,7 +526,7 @@ function Set-TeamsUserVoiceConfig {
           if ( $PSBoundParameters.ContainsKey('OnlineVoiceRoutingPolicy') ) {
             if ( $Force -or -not $OnlineVoiceRoutingPolicy ) {
               $CurrentOperationID0 = "Removing $Operation"
-              Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+              Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
               try {
                 Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
                 Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: Removed"
@@ -540,7 +540,7 @@ function Set-TeamsUserVoiceConfig {
             if ( $OnlineVoiceRoutingPolicy ) {
               if ( $Force -or ($CsUser.OnlineVoiceRoutingPolicy -ne $OnlineVoiceRoutingPolicy) ) {
                 $CurrentOperationID0 = "Applying $Operation"
-                Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+                Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
                 try {
                   Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $OnlineVoiceRoutingPolicy -ErrorAction Stop
                   Write-Information "SUCCESS: Object '$UserPrincipalName' - $Operation`: OK - '$OnlineVoiceRoutingPolicy'"
@@ -574,7 +574,7 @@ function Set-TeamsUserVoiceConfig {
           #TODO prepare for OperatorConnect - how?
           <#
           $CurrentOperationID0 = 'Online Voice Routing Policy'
-          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
           #>
         }
         'CallingPlans' {
@@ -582,7 +582,7 @@ function Set-TeamsUserVoiceConfig {
           # Apply $CallingPlanLicense
           $Operation = 'Calling Plan License'
           $CurrentOperationID0 = "Applying $Operation"
-          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
           if ($CallingPlanLicense) {
             try {
               $null = (Set-TeamsUserLicense -Identity "$UserPrincipalName" -Add $CallingPlanLicense -ErrorAction STOP)
@@ -605,21 +605,21 @@ function Set-TeamsUserVoiceConfig {
       $StatusID0 = 'Applying Voice Configuration: Phone Number'
       if ( $Force -and $PSBoundParameters.ContainsKey('PhoneNumber') -and $UserWithThisNumber ) {
         $CurrentOperationID0 = 'Scavenging Phone Number'
-        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
         Write-Warning -Message 'Parameter Force - Scavenging Phone Number from all Objects where number is assigned. Validate carefully'
         foreach ($UserWTN in $UserWithThisNumber) {
           try {
-            Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID1 FROM '$($UserWTN.UserPrincipalName)'"
+            Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID0 FROM '$($UserWTN.UserPrincipalName)'"
             if ($UserWTN.InterpretedUserType.Contains('ApplicationInstance')) {
               if ($PSCmdlet.ShouldProcess("$($UserWTN.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
                 Set-TeamsResourceAccount -UserPrincipalName $($UserWTN.UserPrincipalName) -PhoneNumber $Null -WarningAction SilentlyContinue -ErrorAction Stop
-                Write-Information "SUCCESS: Resource Account '$($UserWTN.UserPrincipalName)' - $CurrentOperationID1`: OK"
+                Write-Information "SUCCESS: Resource Account '$($UserWTN.UserPrincipalName)' - $CurrentOperationID0`: OK"
               }
             }
             elseif ($UserWTN.InterpretedUserType.Contains('User')) {
               if ($PSCmdlet.ShouldProcess("$($UserWTN.UserPrincipalName)", 'Set-TeamsUserVoiceConfig')) {
                 $UserWTN | Set-TeamsUserVoiceConfig -PhoneNumber $Null -WarningAction SilentlyContinue -ErrorAction Stop
-                Write-Information "SUCCESS: Object '$($UserWTN.UserPrincipalName)' - $CurrentOperationID1`: OK"
+                Write-Information "SUCCESS: Object '$($UserWTN.UserPrincipalName)' - $CurrentOperationID0`: OK"
               }
             }
             else {
@@ -638,42 +638,42 @@ function Set-TeamsUserVoiceConfig {
         if ( ([String]::IsNullOrEmpty($PhoneNumber)) ) {
           Write-Warning -Message "Object '$UserPrincipalName' - PhoneNumber is empty and will be removed. The User will not be able to use PhoneSystem!"
           $CurrentOperationID0 = 'Removing Phone Number'
-          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
           try {
             switch ( $ObjectType ) {
               'User' {
                 if ($PhoneNumberIsMSNumber) {
                   # Remove MS Number
                   Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -TelephoneNumber $null -ErrorAction Stop
-                  Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID1`: OK - Calling Plan number removed"
+                  Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID0`: OK - Calling Plan number removed"
                 }
                 else {
                   # Remove Direct Routing Number
                   Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -OnPremLineURI $null -ErrorAction Stop
-                  Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID1`: OK - Direct Routing number removed"
+                  Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID0`: OK - Direct Routing number removed"
                 }
               }
               'ApplicationEndpoint' {
                 $RAAction = Set-TeamsResourceAccount -UserPrincipalName "$UserPrincipalName" -PhoneNumber $null -PassThru -ErrorAction Stop
                 if ( -not $RAAction.PhoneNumber ) {
-                  Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID1`: OK - Number removed from Resource Account"
+                  Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID0`: OK - Number removed from Resource Account"
                 }
                 else {
                   throw 'Number failed to be unassigned from Resource Account (Operation performed with Set-TeamsResourceAccount)'
                 }
               }
               default {
-                Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID1`: Operation not available for ObjectType '$ObjectType'" -Verbose
+                Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID0`: Operation not available for ObjectType '$ObjectType'" -Verbose
               }
             }
           }
           catch {
             if ($_.Exception.Message.Contains('dirsync')) {
-              Write-Warning -Message "Object '$UserPrincipalName' - $CurrentOperationID1`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+              Write-Warning -Message "Object '$UserPrincipalName' - $CurrentOperationID0`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
               Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -HostedVoiceMail $null -LineUri $null" -ForegroundColor Magenta
             }
             else {
-              Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID1`: Failed: '$($_.Exception.Message)'" -Verbose
+              Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID0`: Failed: '$($_.Exception.Message)'" -Verbose
             }
           }
         }
@@ -682,7 +682,7 @@ function Set-TeamsUserVoiceConfig {
         #region Applying Phone Number
         if ( -not [String]::IsNullOrEmpty($PhoneNumber) ) {
           $CurrentOperationID0 = 'Applying Phone Number'
-          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+          Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
           switch ( $ObjectType ) {
             'User' {
               switch ($PSCmdlet.ParameterSetName) {
@@ -692,22 +692,22 @@ function Set-TeamsUserVoiceConfig {
                     #Error Message: Filter failed to return unique result"
                     try {
                       Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -OnPremLineURI $LineUri -ErrorAction Stop
-                      Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID1`: OK - '$LineUri'"
+                      Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID0`: OK - '$LineUri'"
                     }
                     catch {
                       if ($_.Exception.Message.Contains('dirsync')) {
-                        Write-Warning -Message "Object '$UserPrincipalName' - $CurrentOperationID1`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
+                        Write-Warning -Message "Object '$UserPrincipalName' - $CurrentOperationID0`: Failed: Object needs to be changed in Skype OnPrem. Please run the following CmdLet against Skype"
                         Write-Host "Set-CsUser -Identity `"$UserPrincipalName`" -LineUri '$LineUri'" -ForegroundColor Magenta
                       }
                       else {
-                        $ErrorLogMessage = "Object '$UserPrincipalName' - $CurrentOperationID1`: Failed: '$($_.Exception.Message)'"
+                        $ErrorLogMessage = "Object '$UserPrincipalName' - $CurrentOperationID0`: Failed: '$($_.Exception.Message)'"
                         Write-Error -Message $ErrorLogMessage
                       }
                       $ErrorLog += $ErrorLogMessage
                     }
                   }
                   else {
-                    Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID1`: Already assigned" -Verbose
+                    Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID0`: Already assigned" -Verbose
                   }
                 }
                 'OperatorConnect' {
@@ -718,16 +718,16 @@ function Set-TeamsUserVoiceConfig {
                   if ( $Force -or $CsUser.TelephoneNumber -ne $E164Number) {
                     try {
                       Set-CsOnlineVoiceUser -Identity "$($CsUser.ObjectId)" -TelephoneNumber $E164Number -ErrorAction Stop
-                      Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID1`: OK - '$E164Number' (Calling Plan Number)"
+                      Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID0`: OK - '$E164Number' (Calling Plan Number)"
                     }
                     catch {
-                      $ErrorLogMessage = "Object '$UserPrincipalName' - $CurrentOperationID1 failed: '$($_.Exception.Message)'"
+                      $ErrorLogMessage = "Object '$UserPrincipalName' - $CurrentOperationID0 failed: '$($_.Exception.Message)'"
                       Write-Error -Message $ErrorLogMessage
                       $ErrorLog += $ErrorLogMessage
                     }
                   }
                   else {
-                    Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID1`: Already assigned" -Verbose
+                    Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID0`: Already assigned" -Verbose
                   }
                 }
               }
@@ -737,21 +737,21 @@ function Set-TeamsUserVoiceConfig {
                 try {
                   $RAActionAssign = Set-TeamsResourceAccount -UserPrincipalName "$UserPrincipalName" -PhoneNumber $E164Number -PassThru -ErrorAction Stop
                   if ( $RAActionAssign.PhoneNumber ) {
-                    Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID1`: OK - Number assigned to Resource Account"
+                    Write-Information "SUCCESS: Object '$UserPrincipalName' - $CurrentOperationID0`: OK - Number assigned to Resource Account"
                   }
                   else {
                     throw 'Number failed to assign to Resource Account (Operation performed with Set-TeamsResourceAccount)'
                   }
                 }
                 catch {
-                  $ErrorLogMessage = "Object '$UserPrincipalName' - $CurrentOperationID1 failed: '$($_.Exception.Message)'"
+                  $ErrorLogMessage = "Object '$UserPrincipalName' - $CurrentOperationID0 failed: '$($_.Exception.Message)'"
                   Write-Error -Message $ErrorLogMessage
                   $ErrorLog += $ErrorLogMessage
                 }
               }
             }
             default {
-              Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID1`: Operation not available for ObjectType '$ObjectType'" -Verbose
+              Write-Verbose -Message "Object '$UserPrincipalName' - $CurrentOperationID0`: Operation not available for ObjectType '$ObjectType'" -Verbose
             }
           }
         }
@@ -771,7 +771,7 @@ function Set-TeamsUserVoiceConfig {
     # Write $ErrorLog
     if ( $WriteErrorLog -and $errorLog) {
       $CurrentOperationID0 = 'Writing ErrorLog'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $Path = 'C:\Temp'
       $Filename = "$(Get-Date -Format 'yyyy-MM-dd HH')xx - $($MyInvocation.MyCommand) - ERROR.log"
       $LogPath = "$Path\$Filename"
@@ -790,7 +790,7 @@ function Set-TeamsUserVoiceConfig {
     if ( $PassThru ) {
       # Re-Query Object
       $CurrentOperationID0 = 'Waiting for Office 365 to write the Object'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       Write-Verbose -Message 'Waiting 3-5s for Office 365 to write changes to User Object (Policies might not show up yet)'
       Start-Sleep -Seconds 3
       $UserObjectPost = Get-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -InformationAction SilentlyContinue -WarningAction SilentlyContinue

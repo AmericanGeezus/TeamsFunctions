@@ -92,9 +92,9 @@ function Get-TeamsAutoAttendantAudioFile {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     $IsDetailed = ($PSBoundParameters.ContainsKey('Detailed'))
 
@@ -119,12 +119,12 @@ function Get-TeamsAutoAttendantAudioFile {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     $StatusID0 = 'Information Gathering'
     #region Data gathering
     $CurrentOperationID0 = 'Querying Auto Attendants'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString') ) {
       Write-Information 'No Parameters - Querying ALL Auto Attendants. This could take a while. To query individual items, please provide Parameter Name or SearchString'
@@ -168,21 +168,21 @@ function Get-TeamsAutoAttendantAudioFile {
 
 
     # Parsing found Objects
-    [int] $script:StepsID0 = $script:StepsID0 + $AutoAttendants.Count
+    [int] $private:StepsID0 = $private:StepsID0 + $AutoAttendants.Count
     Write-Verbose -Message "[PROCESS] Processing found Auto Attendants:  $($AutoAttendants.Count)"
     #IMPROVE Explore Workflows with Parallel parsing:
     #foreach -parallel ($AA in $AutoAttendants) {
     foreach ($AA in $AutoAttendants) {
       # Initialising counters for Progress bars
-      [int] $script:CountID0 = 1
-      [int] $script:CountID1 = 1
+      [int] $private:CountID0 = 1
+      [int] $private:CountID1 = 1
       $ActivityID0 = "'$($AA.Name)'"
       Write-Information "INFO:    Parsing Audio Files for Auto Attendant '$($AA.Name)'"
 
       $StatusID0 = 'Parsing'
       #region Parsing Default Call Flow
       $CurrentOperationID0 = 'Default Call Flow'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
 
       # Default Call Flow Greetings
       $Operation2 = 'Greeting'
@@ -205,7 +205,7 @@ function Get-TeamsAutoAttendantAudioFile {
 
       #region CallFlows
       $CurrentOperationID0 = 'Call Flows'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       foreach ($Flow in $AA.CallFlows) {
         # Call Flow Greeting Prompt
         $Operation2 = "'$($Flow.Name)' - Greeting - Prompt"

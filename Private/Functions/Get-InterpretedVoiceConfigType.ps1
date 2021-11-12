@@ -65,8 +65,8 @@ function Get-InterpretedVoiceConfigType {
   begin {
     Show-FunctionStatus -Level Live
     $Stack = Get-PSCallStack
-    $script:Called = ($stack.length -ge 3)
-    $script:CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
+    $private:Called = ($stack.length -ge 3)
+    $private:CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
 
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"

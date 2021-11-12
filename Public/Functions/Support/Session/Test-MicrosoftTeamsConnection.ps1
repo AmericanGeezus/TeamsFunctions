@@ -44,13 +44,13 @@ function Test-MicrosoftTeamsConnection {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
-    $script:TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
+    $private:TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      Write-Debug -Message 'This CmdLet is trained on detecting a PSSession being created to be usable for Teams. As Microsoft updates more and more CmdLets not requiring this (moving them to an AutoREST function, this Cmdlet may become obsolete'
+      Write-Debug -Message 'This CmdLet detects a PSSession being created to be usable for Teams. As Microsoft updates more CmdLets not requiring this, this Cmdlet may become obsolete'
       <#
       # Retained for later, as the CmdLets requiring/creating a PsSession are getting less and less
       if ($TeamsModuleVersion -gt 2.3.1) {

@@ -67,20 +67,20 @@ function Remove-TeamsAutoAttendant {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($DN in $Name) {
-      [int] $script:CountID0 = 1
-      [int] $script:StepsID0 = $Name.Count
+      [int] $private:CountID0 = 1
+      [int] $private:StepsID0 = $Name.Count
       $StatusID0 = "Processing '$DN'"
       $CurrentOperationID0 = "Querying Object"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       try {
         Write-Information 'INFO:    The listed Auto Attendants are being removed:'
         if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
@@ -93,11 +93,11 @@ function Remove-TeamsAutoAttendant {
 
         if ( $AAToRemove ) {
           $StatusID0 = "Removing $($AAToRemove.Count) Objects"
-          $script:StepsID1 = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
+          $private:StepsID1 = if ($AAToRemove -is [Array]) { $AAToRemove.Count } else { 1 }
           foreach ($AA in $AAToRemove) {
             $ActivityID1 = "'$($AA.Name)'"
             $StatusID1 = $CurrentOperationID1 = ''
-            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
             Write-Information "INFO:    $ActivityID1"
             if ($PSCmdlet.ShouldProcess("$($AA.Name)", 'Remove-CsAutoAttendant')) {
               Remove-CsAutoAttendant -Identity "$($AA.Identity)" -ErrorAction STOP

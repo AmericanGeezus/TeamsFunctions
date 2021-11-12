@@ -354,9 +354,9 @@ function New-TeamsCallQueue {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     <# Initialising counters for Progress bars
     [int]$step = 0
@@ -367,7 +367,7 @@ function New-TeamsCallQueue {
     #region Validating Input
     $StatusID0 = 'Validating Input'
     $CurrentOperationID0 = 'LanguageId'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     # Language has to be normalised as the Id is case sensitive
     if ($PSBoundParameters.ContainsKey('LanguageId')) {
       $Language = $($LanguageId.Split('-')[0]).ToLower() + '-' + $($LanguageId.Split('-')[1]).ToUpper()
@@ -393,7 +393,7 @@ function New-TeamsCallQueue {
 
     # Mutual exclusivity of Channel and Users/Groups
     $CurrentOperationID0 = 'Checking for mutual exclusivity of Channel and Users/Groups'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('TeamAndChannel') -and ($PSBoundParameters.ContainsKey('Users') -or $PSBoundParameters.ContainsKey('DistributionLists'))) {
       Write-Warning "Parameter 'TeamAndChannel' cannot be combined with Users or Groups. It will be ignored!"
       [void]$PSBoundParameters.Remove('TeamAndChannel')
@@ -410,7 +410,7 @@ function New-TeamsCallQueue {
 
     #region Required Parameters: Name
     $CurrentOperationID0 = 'DisplayName'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
     Write-Information "INFO:    Call Queue '$Name' DisplayName normalised to: '$NameNormalised'"
     $Parameters += @{'Name' = $NameNormalised }
@@ -418,7 +418,7 @@ function New-TeamsCallQueue {
 
     #region Music On Hold
     $CurrentOperationID0 = 'Music On Hold Audio File'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('MusicOnHoldAudioFile') -and $PSBoundParameters.ContainsKey('UseDefaultMusicOnHold')) {
       Write-Warning -Message "'$NameNormalised' MusicOnHoldAudioFile and UseDefaultMusicOnHold are mutually exclusive. UseDefaultMusicOnHold is ignored!"
       $UseDefaultMusicOnHold = $false
@@ -454,7 +454,7 @@ function New-TeamsCallQueue {
 
     #region Welcome Message
     $CurrentOperationID0 = 'Welcome Message Audio File'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('WelcomeMusicAudioFile')) {
       if ($null -ne $WelcomeMusicAudioFile) {
         # File import handles file existence, format & size requirements
@@ -483,7 +483,7 @@ function New-TeamsCallQueue {
     #region Routing metrics, Thresholds and Language
     # One Progress operation for all Parameters
     $CurrentOperationID0 = 'Routing metrics, Thresholds and Language'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
 
     #region ValueSet Parameters
     # RoutingMethod
@@ -577,7 +577,7 @@ function New-TeamsCallQueue {
     $StatusID0 = 'Processing Overflow Parameters'
     #region Overflow Action
     $CurrentOperationID0 = 'OverflowAction'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('OverflowAction')) {
       Write-Verbose -Message "'$NameNormalised' OverflowAction '$OverflowAction' Parsing requirements"
       if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
@@ -606,7 +606,7 @@ function New-TeamsCallQueue {
     #region OverflowActionTarget
     # Processing for Target is dependent on Action
     $CurrentOperationID0 = 'OverflowActionTarget'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('OverflowActionTarget')) {
       Write-Verbose -Message "'$NameNormalised' Parsing OverflowActionTarget" -Verbose
       try {
@@ -833,7 +833,7 @@ function New-TeamsCallQueue {
     $StatusID0 = "Processing Timeout Parameters"
     #region TimeoutAction
     $CurrentOperationID0 = 'TimeoutAction'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('TimeoutAction')) {
       Write-Verbose -Message "'$NameNormalised' TimeoutAction '$TimeoutAction' Parsing requirements"
       if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
@@ -862,7 +862,7 @@ function New-TeamsCallQueue {
     #region TimeoutActionTarget
     # Processing for Target is dependent on Action
     $CurrentOperationID0 = 'TimeoutActionTarget'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('TimeoutActionTarget')) {
       Write-Verbose -Message "'$NameNormalised' Parsing TimeoutActionTarget" -Verbose
       try {
@@ -1089,7 +1089,7 @@ function New-TeamsCallQueue {
     $StatusID0 = 'Agents, Channel, Users & Caller Id'
     #region Channel
     $CurrentOperationID0 = 'Parsing Channel'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('TeamAndChannel')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Team and Channel" -Verbose
       try {
@@ -1105,7 +1105,7 @@ function New-TeamsCallQueue {
 
     #region ChannelUsers - Parsing and verifying ChannelUsers
     $CurrentOperationID0 = 'Parsing ChannelUsers'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('ChannelUsers')) {
       Write-Verbose -Message "'$NameNormalised' Parsing ChannelUsers"
       [System.Collections.ArrayList]$ChannelUsersIdList = @()
@@ -1145,7 +1145,7 @@ function New-TeamsCallQueue {
 
     #region Users - Parsing and verifying Users
     $CurrentOperationID0 = 'Parsing Users'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('Users')) {
       Write-Verbose -Message "'$NameNormalised' - Parsing Users"
       [System.Collections.ArrayList]$UserIdList = @()
@@ -1185,7 +1185,7 @@ function New-TeamsCallQueue {
 
     #region Groups - Parsing Distribution Lists and their Users
     $CurrentOperationID0 = 'Parsing Distribution Lists'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('DistributionLists')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Distribution Lists" -Verbose
       [System.Collections.ArrayList]$DLIdList = @()
@@ -1215,7 +1215,7 @@ function New-TeamsCallQueue {
 
     #region ResourceAccountsForCallerId - Parsing and verifying Parsing Resource Accounts for Caller Id
     $CurrentOperationID0 = 'Parsing Resource Accounts for Caller Id'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('ResourceAccountsForCallerId')) {
       Write-Verbose -Message "'$NameNormalised' Parsing Resource Accounts for Caller Id"
       [System.Collections.ArrayList]$OboResourceAccountIds = @()
@@ -1265,7 +1265,7 @@ function New-TeamsCallQueue {
     #region ACTION
     $StatusID0 = 'Creating Object'
     $CurrentOperationID0 = "Creating Call Queue: '$NameNormalised'"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
       "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
@@ -1290,7 +1290,7 @@ function New-TeamsCallQueue {
 
     #region OUTPUT
     $CurrentOperationID0 = "Preparing Output"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     $CallQueueFinal = Get-TeamsCallQueue -Name "$NameNormalised" -WarningAction SilentlyContinue
     $CallQueueFinal = $CallQueueFinal | Where-Object Name -EQ "$NameNormalised"
 

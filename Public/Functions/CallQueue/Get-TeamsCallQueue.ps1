@@ -96,20 +96,20 @@ function Get-TeamsCallQueue {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     $StatusID0 = 'Information Gathering'
     #region Data gathering
     $CurrentOperationID0 = 'Querying Call Queues'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     # Capturing no input
     if (-not $PSBoundParameters.ContainsKey('Name') -and -not $PSBoundParameters.ContainsKey('SearchString')) {
       Write-Information 'No Parameters - Listing names only. To query individual items, please provide Parameter Name or SearchString'
@@ -154,7 +154,7 @@ function Get-TeamsCallQueue {
     #foreach -parallel ($Q in $Queues) {
     foreach ($Q in $Queues) {
       # Initialising counters for Progress bars
-      [int] $script:CountID0 = 1
+      [int] $private:CountID0 = 1
       $ActivityID0 = "'$($Q.Name)'"
 
       # Initialising Arrays
@@ -171,7 +171,7 @@ function Get-TeamsCallQueue {
       $StatusID0 = 'Parsing Targets'
       #region Finding OverflowActionTarget
       $CurrentOperationID0 = 'OverflowActionTarget'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $OAT = $null
       if ($Q.OverflowActionTarget) {
         $OAT = Get-TeamsCallableEntity -Identity "$($Q.OverflowActionTarget.Id)" -WarningAction SilentlyContinue
@@ -181,7 +181,7 @@ function Get-TeamsCallQueue {
 
       #region Finding TimeoutActionTarget
       $CurrentOperationID0 = 'TimeoutActionTarget'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $TAT = $null
       if ($Q.TimeoutActionTarget) {
         $TAT = Get-TeamsCallableEntity -Identity "$($Q.TimeoutActionTarget.Id)" -WarningAction SilentlyContinue
@@ -193,7 +193,7 @@ function Get-TeamsCallQueue {
       $StatusID0 = 'Parsing Endpoints'
       # Channel
       $CurrentOperationID0 = 'Channel'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       if ($Q.ChannelId) {
         $FullChannelId = $Q.DistributionLists.Guid + '\' + $Q.ChannelId
         $Team, $Channel = Get-TeamAndChannel -String "$FullChannelId"
@@ -203,7 +203,7 @@ function Get-TeamsCallQueue {
 
       # Distribution Lists
       $CurrentOperationID0 = 'DistributionLists'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       foreach ($DL in $Q.DistributionLists) {
         $DLObject = Get-AzureADGroup -ObjectId "$DL" -WarningAction SilentlyContinue
         if ($DLObject) {
@@ -214,7 +214,7 @@ function Get-TeamsCallQueue {
 
       # Users
       $CurrentOperationID0 = 'Users'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       foreach ($User in $Q.Users) {
         try {
           $UserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
@@ -231,7 +231,7 @@ function Get-TeamsCallQueue {
         $StatusID0 = 'Switch Detailed'
         # Parsing Channel Users when the detailed Switch is used
         $CurrentOperationID0 = 'Channel Users'
-        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
         foreach ($User in $Q.ChannelUserObjectId) {
           try {
             $ChannelUserObject = Get-AzureADUser -ObjectId "$($User.Guid)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
@@ -246,7 +246,7 @@ function Get-TeamsCallQueue {
 
         # Parsing Agents only when the detailed Switch is used
         $CurrentOperationID0 = 'Agents'
-        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
         foreach ($Agent in $Q.Agents) {
           try {
             $AgentObject = Get-AzureADUser -ObjectId "$($Agent.ObjectId)" -WarningAction SilentlyContinue -ErrorAction Stop | Select-Object UserPrincipalName, DisplayName, JobTitle, CompanyName, Country, UsageLocation, PreferredLanguage
@@ -264,7 +264,7 @@ function Get-TeamsCallQueue {
       $StatusID0 = 'Parsing Resource Accounts'
       #region Application Instance UPNs
       $CurrentOperationID0 = 'Resource Accounts (Associated)'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       foreach ($AI in $Q.ApplicationInstances) {
         $AIObject = $null
         $AIObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $AI } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
@@ -277,7 +277,7 @@ function Get-TeamsCallQueue {
 
       #region Application Instance UPNs
       $CurrentOperationID0 = 'Resource Accounts (CallerId)'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       foreach ($OboRA in $Q.OboResourceAccountIds) {
         $OboObject = $null
         $OboObject = Get-CsOnlineApplicationInstance | Where-Object { $_.ObjectId -eq $OboRA } | Select-Object UserPrincipalName, DisplayName, PhoneNumber
@@ -292,7 +292,7 @@ function Get-TeamsCallQueue {
       # Building custom Object with Friendly Names
       $StatusID0 = 'Output'
       $CurrentOperationID0 = 'Constructing Output Object'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $QueueObject = $null
       $QueueObject = [PSCustomObject][ordered]@{
         Identity                  = $Q.Identity

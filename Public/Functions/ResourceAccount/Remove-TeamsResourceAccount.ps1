@@ -88,9 +88,9 @@ function Remove-TeamsResourceAccount {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     # Caveat - Access rights
     Write-Verbose -Message "This CmdLet requires the Office 365 Admin Role 'User Administrator' to execute Remove-AzureAdUser" -Verbose
@@ -109,14 +109,14 @@ function Remove-TeamsResourceAccount {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($UPN in $UserPrincipalName) {
-      [int] $script:CountID0 = 1
-      [int] $script:StepsID0 = $UserPrincipalName.Count
+      [int] $private:CountID0 = 1
+      [int] $private:StepsID0 = $UserPrincipalName.Count
       $StatusID0 = "Processing '$UPN'"
       $CurrentOperationID0 = 'Querying Object'
 
       #region Lookup of UserPrincipalName
       $CurrentOperationID0 = 'Querying CsOnlineApplicationInstance'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       try {
         #Trying to query the Resource Account
         $Object = (Get-CsOnlineApplicationInstance -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP)
@@ -132,7 +132,7 @@ function Remove-TeamsResourceAccount {
       #region Associations
       # Finding all Associations to of this Resource Account to Call Queues or Auto Attendants
       $CurrentOperationID0 = 'Removing Associations to Call Queues or Auto Attendants'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $Associations = Get-CsOnlineApplicationInstanceAssociation -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Ignore
       if ($Associations.count -eq 0) {
         # Object has no associations
@@ -166,7 +166,7 @@ function Remove-TeamsResourceAccount {
       #region PhoneNumber
       # Removing Phone Number Assignments
       $CurrentOperationID0 = 'Removing Phone Number Assignments'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       try {
         if ($null -ne ($Object.TelephoneNumber)) {
           # Remove from VoiceApplicationInstance
@@ -190,7 +190,7 @@ function Remove-TeamsResourceAccount {
       #region Licensing
       # Reading User Licenses
       $CurrentOperationID0 = 'Removing License Assignments'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       try {
         $UserLicenseSkuIDs = (Get-AzureADUserLicenseDetail -ObjectId "$UPN" -ErrorAction STOP -WarningAction SilentlyContinue).SkuId
         if ($null -eq $UserLicenseSkuIDs) {
@@ -214,7 +214,7 @@ function Remove-TeamsResourceAccount {
       #region Account Removal
       # Removing AzureAD User
       $CurrentOperationID0 = 'Removing Removing AzureAD Object (AzureAdUser)'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       if ($Force -or $PSCmdlet.ShouldProcess("Resource Account with DisplayName: '$DisplayName'", 'Remove-AzureADUser')) {
         try {
           $null = (Remove-AzureADUser -ObjectId $UPN -ErrorAction STOP)

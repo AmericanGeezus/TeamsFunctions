@@ -85,9 +85,9 @@ function New-TeamsResourceAccountAssociation {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int] $script:CountID0 = [int] $script:CountID1 = 1
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
@@ -98,7 +98,7 @@ function New-TeamsResourceAccountAssociation {
     $StatusID0 = 'Verifying input'
     # Determining $EntityObject
     $CurrentOperationID0 = 'Determining Entity Object'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     try {
       switch ($PSCmdlet.ParameterSetName) {
         'CallQueue' {
@@ -129,7 +129,7 @@ function New-TeamsResourceAccountAssociation {
 
     # Validating Unique result received
     $CurrentOperationID0 = 'Determining Entity Object is unique'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($null -eq $EntityObject) {
       throw [System.Exception]::New("$DesiredType '$Entity' - Not found, please check entity exists with this Name" )
     }
@@ -151,13 +151,13 @@ function New-TeamsResourceAccountAssociation {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     # re-Initialising counters for Progress bars (for Pipeline processing)
-    [int] $script:CountID0 = 2
+    [int] $private:CountID0 = 2
 
     $StatusID0 = 'Verifying input'
     # Query $UserPrincipalName
     [System.Collections.ArrayList]$Accounts = @()
     $CurrentOperationID0 = 'Processing provided UserPrincipalNames'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     foreach ($UPN in $UserPrincipalName) {
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
@@ -180,14 +180,14 @@ function New-TeamsResourceAccountAssociation {
 
     $StatusID0 = 'Processing found Resource Accounts'
     $CurrentOperationID0 = ''
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
-    [int] $script:StepsID1 = $Accounts.Count
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
+    [int] $private:StepsID1 = $Accounts.Count
     [System.Collections.ArrayList]$ValidatedAccounts = @()
     foreach ($Account in $Accounts) {
       $ActivityID1 = "'$($Account.UserPrincipalName)'"
       $StatusID1 = ''
       $CurrentOperationID1 = 'Querying existing associations'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $ExistingConnection = $null
       $ExistingConnection = Get-CsOnlineApplicationInstanceAssociation -Identity $Account.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       if ($null -eq $ExistingConnection.ConfigurationId) {
@@ -200,7 +200,7 @@ function New-TeamsResourceAccountAssociation {
 
       # Comparing ApplicationType
       $CurrentOperationID1 = 'Validating ApplicationType'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $ApplicationTypeMatches = ((Get-CsOnlineApplicationInstance -Identity "$($Account.UserPrincipalName)" -WarningAction SilentlyContinue).ApplicationId -eq (GetAppIdFromApplicationType $DesiredType))
 
       if ( $ApplicationTypeMatches ) {
@@ -218,11 +218,11 @@ function New-TeamsResourceAccountAssociation {
           }
 
           $CurrentOperationID1 = "Application Type is not '$DesiredType' - Waiting for AzureAD (2s)"
-          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
           Start-Sleep -Seconds 2
 
           $CurrentOperationID1 = "Application Type is not '$DesiredType' - Verifying"
-          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
           if ($DesiredType -ne $(GetApplicationTypeFromAppId (Get-CsOnlineApplicationInstance -Identity "($($Account.ObjectId)" -WarningAction SilentlyContinue).ApplicationId)) {
             Write-Error -Message "'$($Account.UserPrincipalName)' - Application type could not be changed to Desired Type: '$DesiredType'" -Category InvalidType
             continue
@@ -243,17 +243,17 @@ function New-TeamsResourceAccountAssociation {
 
     # Processing found accounts
     if ( $ValidatedAccounts ) {
-    [int] $script:StepsID1 = $ValidatedAccounts.Count
-    $StatusID0 = "Processing $script:StepsID1 validated Resource Accounts"
-    $CurrentOperationID0 = ''
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($script:CountID0++) -Of $script:StepsID0
+      [int] $private:StepsID1 = $ValidatedAccounts.Count
+      $StatusID0 = "Processing $private:StepsID1 validated Resource Accounts"
+      $CurrentOperationID0 = ''
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       # Processing Assignment
       foreach ($Account in $ValidatedAccounts) {
         $ErrorEncountered = $null
         $ActivityID1 = "'$($Account.UserPrincipalName)'"
         $StatusID1 = "Assignment to $DesiredType '$($EntityObject.Name)'"
         $CurrentOperationID1 = "Associating '$($Account.UserPrincipalName)' with $DesiredType"
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
 
         # Creating Splatting Object
         $Parameters = $null
@@ -280,7 +280,7 @@ function New-TeamsResourceAccountAssociation {
         # Re-query Association Target
         #  Wating for AAD to write the Association Target so that it may be queried correctly
         $CurrentOperationID1 = "Validating association of '$($Account.UserPrincipalName)' with $DesiredType"
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($script:CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         Start-Sleep -Seconds 2
         $AssociationTarget = switch ($PSCmdlet.ParameterSetName) {
           'CallQueue' {
