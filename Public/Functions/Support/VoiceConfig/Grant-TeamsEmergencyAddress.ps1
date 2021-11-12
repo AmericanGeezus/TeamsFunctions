@@ -92,7 +92,7 @@ function Grant-TeamsEmergencyAddress {
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # preparing Splatting Object
     $Parameters = $null

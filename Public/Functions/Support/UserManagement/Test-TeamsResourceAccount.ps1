@@ -62,7 +62,7 @@ function Test-TeamsResourceAccount {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
   } #begin
 

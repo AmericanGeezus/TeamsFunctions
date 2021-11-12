@@ -46,7 +46,7 @@ function Get-TeamsTenant {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Querying Version Number for
     #TODO put this in a Global variable for all TF cmdlets!

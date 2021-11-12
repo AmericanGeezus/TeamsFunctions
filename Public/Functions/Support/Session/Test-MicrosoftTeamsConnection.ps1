@@ -44,7 +44,7 @@ function Test-MicrosoftTeamsConnection {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
-    $private:TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
+    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
   } #begin
 
   process {

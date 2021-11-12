@@ -85,7 +85,7 @@ function Disable-AzureAdAdminRole {
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     #$Stack = Get-PSCallStack
     #$Called = ($stack.length -ge 3)
