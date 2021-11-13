@@ -365,7 +365,6 @@ function Get-TeamsCommonAreaPhone {
     }
 
     #endregion
-    #TEST Test Progress bars bleed-through. If not viable, close ID 0 before FOREACH
     Write-Progress -Id 0 -Activity $ActivityID0 -Completed
 
   } #process

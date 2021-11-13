@@ -133,7 +133,7 @@ function Remove-TeamsUserVoiceConfig {
       $ActivityID1 = "Processing '$UPN'"
       $StatusID1 = 'Querying Object'
       $CurrentOperationID1 = 'Querying CsOnlineUser'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       # Querying Identity
       try {
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
@@ -151,7 +151,7 @@ function Remove-TeamsUserVoiceConfig {
       if ($Scope -eq 'All' -or $Scope -eq 'CallingPlans') {
         # Querying User Licenses
         $CurrentOperationID1 = 'Calling Plans - Querying User Licenses'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         $CsUserLicense = Get-AzureAdUserLicense "$UPN"
 
         if ($null -ne $CsUserLicense.Licenses) {
@@ -166,7 +166,7 @@ function Remove-TeamsUserVoiceConfig {
           if ($Force -or $RemoveLicenses.Count -gt 0) {
             # Removing TelephoneNumber
             $CurrentOperationID1 = 'Calling Plans - Removing Telephone Number'
-            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
             if ( $Force -or $CsUser.TelephoneNumber ) {
               try {
                 Set-CsOnlineVoiceUser -Identity "$UPN" -TelephoneNumber $Null -ErrorAction Stop
@@ -188,7 +188,7 @@ function Remove-TeamsUserVoiceConfig {
 
             # Removing Call Plan Licenses (with Confirmation)
             $CurrentOperationID1 = 'Calling Plans - Removing Calling Plan Licenses'
-            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
             if ( $RemoveLicenses.Count -gt 0 ) {
               try {
                 if ( $PSCmdlet.ShouldProcess("$UPN", "Removing Licenses: $RemoveLicenses")) {
@@ -225,7 +225,7 @@ function Remove-TeamsUserVoiceConfig {
       if ($Scope -eq 'All' -or $Scope -eq 'DirectRouting') {
         #region Removing OnPremLineURI
         $CurrentOperationID1 = 'Direct Routing - Removing OnPremLineURI'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         if ( $Force -or $CsUser.OnPremLineURI ) {
           try {
             Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -OnPremLineURI $Null
@@ -243,7 +243,7 @@ function Remove-TeamsUserVoiceConfig {
 
         #region Removing Online Voice Routing Policy
         $CurrentOperationID1 = 'Direct Routing - Removing Online Voice Routing Policy'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         if ( $Force -or $CsUser.OnlineVoiceRoutingPolicy ) {
           try {
             Grant-CsOnlineVoiceRoutingPolicy -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
@@ -264,7 +264,7 @@ function Remove-TeamsUserVoiceConfig {
       #region Generic/shared Configuration
       #region Removing Tenant DialPlan
       $CurrentOperationID1 = 'Generic - Removing Tenant Dial Plan'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ( $Force -or $CsUser.TenantDialPlan ) {
         try {
           Grant-CsTenantDialPlan -Identity "$($CsUser.UserPrincipalName)" -PolicyName $null -ErrorAction Stop
@@ -284,7 +284,7 @@ function Remove-TeamsUserVoiceConfig {
       if ( $Force -or $CsUser.EnterpriseVoiceEnabled ) {
         if ($PSBoundParameters.ContainsKey('DisableEV')) {
           $CurrentOperationID1 = 'Generic - Disabling Enterprise Voice'
-          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($step++) -Of $private:StepsID1
+          Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
           try {
             if ($Force -or $PSCmdlet.ShouldProcess("$UPN", 'Disabling EnterpriseVoice')) {
               Set-CsUser -Identity "$($CsUser.UserPrincipalName)" -EnterpriseVoiceEnabled $false -HostedVoiceMail $false

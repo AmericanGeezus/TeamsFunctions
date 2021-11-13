@@ -476,9 +476,9 @@ function New-TeamsResourceAccount {
         Write-Warning -Message 'Object replication pending, Phone Number does not show yet. Run Get-TeamsResourceAccount to verify'
       }
 
+      # Output
       Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $ResourceAccountObject
-
     }
     catch {
       Write-Warning -Message 'Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance'

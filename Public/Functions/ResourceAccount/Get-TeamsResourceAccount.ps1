@@ -254,6 +254,7 @@ function Get-TeamsResourceAccount {
         AssociationStatus        = $AssociationStatus.Status
       }
 
+      # Output
       Write-Progress -Id 1 -Activity $ActivityID0 -Completed
       Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $ResourceAccountObject

@@ -172,20 +172,6 @@ function Set-TeamsResourceAccount {
     $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
     [int] $private:CountID0 = [int] $private:CountID1 = 1
 
-    <# superceded
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 4
-    if ( $DisplayName ) { $sMax = $sMax + 2 }
-    if ( $UsageLocation ) { $sMax++ }
-    if ( $ApplicationType ) { $sMax = $sMax + 2 }
-    if ( $UsageLocation ) { $sMax++ }
-    if ( $License ) { $sMax = $sMax + 3 }
-    if ( $License -and $PhoneNumber ) { $sMax++ }
-    if ( $PhoneNumber ) { $sMax++ }
-    if ( $PassThru ) { $sMax++ }
-    #>
-
     # Enabling $Confirm to work with $Force
     if ($Force -and -not $Confirm) {
       $ConfirmPreference = 'None'

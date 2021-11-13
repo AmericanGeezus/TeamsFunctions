@@ -226,8 +226,8 @@ function Get-TeamsAutoAttendantAudioFile {
         OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
       }
       #endregion
+      
       Write-Progress -Id 0 -Activity $ActivityID0 -Completed
-
     }
   } #process
 

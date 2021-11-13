@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   Live
 
-
+#TEST Overflow & Timeout - Voicemail does not work as desired!?
 
 
 function Set-TeamsCallQueue {
@@ -344,15 +344,6 @@ function Set-TeamsCallQueue {
     $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
     [int] $private:CountID0 = [int] $private:CountID1 = 1
 
-    <# Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 11
-    if ( $DisplayName ) { $sMax++ }
-    if ( $MusicOnHoldAudioFile ) { $sMax++ }
-    if ( $WelcomeMusicAudioFile ) { $sMax++ }
-    if ( $PassThru ) { $sMax++ }
-    #>
-
     #region Validating Input
     $StatusID0 = 'Validating Input'
     # Language has to be normalised as the Id is case sensitive
@@ -682,7 +673,6 @@ function Set-TeamsCallQueue {
             }
           }
           'VoiceMail' {
-            #TEST Voicemail does not work as desired!?
             # VoiceMail requires an OverflowActionTarget (UPN of a User to be translated to GUID)
             $Target = $OverflowActionTarget
             $CallTarget = Get-TeamsCallableEntity -Identity "$Target"
@@ -956,7 +946,6 @@ function Set-TeamsCallQueue {
             }
           }
           'VoiceMail' {
-            #TEST Voicemail does not work as desired!?
             # VoiceMail requires an TimeoutActionTarget (UPN of a User to be translated to GUID)
             $Target = $TimeoutActionTarget
             $CallTarget = Get-TeamsCallableEntity -Identity "$Target"

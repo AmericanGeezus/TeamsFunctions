@@ -4,7 +4,7 @@
 # Updated:    20-DEC-2020
 # Status:     Live
 
-#TODO: Privileged Admin Groups buildout
+#TODO: Privileged Admin Groups powershell required. Buildout to commence afterwards
 #TODO: Change validation of Request to return validated setting via GET-AzureADMSRoleAssignment
 
 function Enable-AzureAdAdminRole {

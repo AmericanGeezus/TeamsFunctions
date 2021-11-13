@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TEST Add Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)
+
 
 function Get-TeamsUserVoiceConfig {
   <#
@@ -156,20 +156,15 @@ function Get-TeamsUserVoiceConfig {
       #endregion
 
       $StatusID0 = "Processing '$User' - Verification"
-      #region Constructing InterpretedVoiceConfigType
+      #region Constructing InterpretedVoiceConfigType, ObjectType & Misconfiguration
       $CurrentOperationID0 = 'Testing InterpretedVoiceConfigType'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
-      #TEST separate function! Get-TeamsInterpretedVoiceConfigType (and make it to accept $CsUserObject)
       $InterpretedVoiceConfigType = Get-InterpretedVoiceConfigType -Object $CsUser
-      #endregion
 
-      #region Testing ObjectType
       $CurrentOperationID0 = 'Testing ObjectType (Get-TeamsObjectType)'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $ObjectType = Get-TeamsObjectType $CsUser.UserPrincipalName
-      #endregion
 
-      #region Testing for Misconfiguration
       $CurrentOperationID0 = 'Testing for Misconfiguration (Test-TeamsUserVoiceConfig)'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       if ( $AdUser -ne $CsUser ) {
@@ -181,15 +176,19 @@ function Get-TeamsUserVoiceConfig {
       }
 
       #Info about unassigned Dial Plan (suppressing feedback if AzureAdUser is already populated)
-      if ( $CsUser.SipAddress -and -not $CsUser.TenantDialPlan -and $ObjectType -ne 'ApplicationEndpoint' ) {
-        Write-Information "INFO:    User '$User' - No Dial Plan is assigned"
+      if ( $CsUser.SipAddress -and $ObjectType -ne 'ApplicationEndpoint' ) {
+        if ( -not $CsUser.TenantDialPlan ) {
+          Write-Information "INFO:    User '$User' - No Dial Plan is assigned"
+        }
       }
       #endregion
       #endregion
 
-      #TEST rework based on Identity (needed for v2.5.0) - Parameter ObjectId seems to be removed?
       #region Refactoring ObjectId for v2.5.0 for backward compatibility
-      "Function: $($MyInvocation.MyCommand.Name): ObjectId:", ($CsUser.ObjectId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      #TEST rework based on Identity (needed for v2.5.0) - Parameter ObjectId seems to be removed?
+      if ($PSBoundParameters.ContainsKey('Debug')) {
+        "Function: $($MyInvocation.MyCommand.Name): ObjectId:", ($CsUser.ObjectId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
 
       if ( $CsUser.ObjectId -is [object] ) {
         #$UserObjectId = $CsUser.ObjectId.Guid
@@ -224,7 +223,6 @@ function Get-TeamsUserVoiceConfig {
       }
 
       <# When switching to new Query method
-      #TEST Performance of Add-Member in comparison (100x?) and output for v2.5.x - Can InterpretedVoiceConfigType be salvaged somehow?
       if ($TeamsModuleVersion -lt 2.5.0) {
         $UserObject | Add-Member -MemberType NoteProperty -Name ObjectId -Value $UserObjectId
         $UserObject | Add-Member -MemberType NoteProperty -Name Identity -Value $Identity
@@ -315,6 +313,7 @@ function Get-TeamsUserVoiceConfig {
             catch {
               $UserAssignedAddress = $null
             }
+            #TEST Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)
             $UserObject | Add-Member -MemberType NoteProperty -Name UserAssignedAddress -Value $UserAssignedAddress
             $UserObject | Add-Member -MemberType NoteProperty -Name CallingLineIdentity -Value $CsUser.CallingLineIdentity
             $UserObject | Add-Member -MemberType NoteProperty -Name TeamsEmergencyCallRoutingPolicy -Value $CsUser.TeamsEmergencyCallRoutingPolicy

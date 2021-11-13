@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
+#TODO Requirement capture for configuration for OperatorConnect needed
 
 
 function Set-TeamsUserVoiceConfig {
@@ -216,7 +216,7 @@ function Set-TeamsUserVoiceConfig {
     $CurrentOperationID0 = "Asserting Callable Entity (Validating $Operation & EnterpriseVoice enablement)"
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ( -not $IsEVenabled -or -not $IsPSsuccess) {
-      #TEST execution of Assert-TeamsCallableEntity - currently limited to use with Force
+      #VALIDATE execution of Assert-TeamsCallableEntity - currently limited to use with Force
       if ($Force) {
         try {
           Write-Information "TRYING:  Object '$UserPrincipalName' - $Operation is assigned - ServicePlan PhoneSystem is Disabled - Trying to activate"
@@ -236,7 +236,7 @@ function Set-TeamsUserVoiceConfig {
         }
       }
       else {
-        #TEST normal execution - as before - should behave as v21.9.2 did
+        #NOTE normal execution - as before - should behave as v21.9.2 did
         try {
           if ( $CsUser.PhoneSystem ) {
             Write-Verbose -Message "Object '$UserPrincipalName' - $Operation is assigned - Validating PhoneSystemStatus"
@@ -571,9 +571,9 @@ function Set-TeamsUserVoiceConfig {
         }
         'OperatorConnect' {
           $StatusID0 = 'Applying Voice Configuration: Provisioning for Operator Connect'
-          #TODO prepare for OperatorConnect - how?
+          # OperatorConnect - Requirement capture needed
           <#
-          $CurrentOperationID0 = 'Online Voice Routing Policy'
+          $CurrentOperationID0 = 'Applying Voice Configuration: Operator Connect'
           Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
           #>
         }
@@ -711,7 +711,11 @@ function Set-TeamsUserVoiceConfig {
                   }
                 }
                 'OperatorConnect' {
-                  #TODO prepare for OperatorConnect - how?
+                  # OperatorConnect - Requirement capture needed
+                  <#
+                  $CurrentOperationID0 = 'Applying Voice Configuration: Operator Connect'
+                  Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
+                  #>
                 }
                 'CallingPlans' {
                   # Apply or Remove $PhoneNumber as TelephoneNumber

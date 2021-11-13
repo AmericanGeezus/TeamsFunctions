@@ -303,7 +303,6 @@ function New-TeamsResourceAccountAssociation {
         }
 
         Write-Progress -Id 1 -Activity $ActivityID1 -Completed
-        #TEST Application of ID 0 Completion for multiple Associations!
         Write-Progress -Id 0 -Activity $ActivityID0 -Completed
         Write-Output $ResourceAccountAssociationObject
 

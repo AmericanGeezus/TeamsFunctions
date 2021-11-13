@@ -338,8 +338,11 @@ function New-TeamsAutoAttendant {
       $TimeZoneId = $TimeZone
     }
     else {
-      #TODO Add variable of queried TimeZones to speed things up
-      $TimeZoneId = (Get-CsAutoAttendantSupportedTimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
+      #TEST Variable of queried TimeZones to speed things up
+      # Query of Supported TimeZones based on previously calculated global Variable
+      if ( -not $global:TFSupportedAATimeZones ) { $global:TFSupportedAATimeZones = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
+
+      $TimeZoneId = ($global:TFSupportedAATimeZones | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
       Write-Verbose -Message "TimeZone - Found! Using: '$TimeZoneId'"
       Write-Information 'TimeZone - This is a correct match for the Time Zone, but might not be fully precise. - Please fine-tune Time Zone in the Admin Center if needed.'
     }
