@@ -177,7 +177,7 @@ function New-TeamsAutoAttendant {
     [Parameter(HelpMessage = 'TimeZone Identifier from Get-CsAutoAttendantSupportedTimeZone')]
     #[ValidateSet('UTC-12:00', 'UTC-11:00', 'UTC-10:00', 'UTC-09:00', 'UTC-08:00', 'UTC-07:00', 'UTC-06:00', 'UTC-05:00', 'UTC-04:30', 'UTC-04:00', 'UTC-03:30', 'UTC-03:00', 'UTC-02:00', 'UTC-01:00', 'UTC', 'UTC+01:00', 'UTC+02:00', 'UTC+03:00', 'UTC+03:30', 'UTC+04:00', 'UTC+04:30', 'UTC+05:00', 'UTC+05:30', 'UTC+05:45', 'UTC+06:00', 'UTC+06:30', 'UTC+07:00', 'UTC+08:00', 'UTC+09:00', 'UTC+09:30', 'UTC+10:00', 'UTC+11:00', 'UTC+12:00', 'UTC+13:00', 'UTC+14:00')]
     [ValidateScript( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone }
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone ) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
         [System.Collections.Arraylist]$TimeZoneUTCStrings = ($TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -NotLike '(UTC)*').DisplayName.Substring(1, 9) | Get-Unique
         [void]$TimeZoneUTCStrings.Add('UTC')
         if ($_ -in $TimeZoneUTCStrings) { $True } else {
@@ -185,7 +185,7 @@ function New-TeamsAutoAttendant {
         }
       })]
     [ArgumentCompleter( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone }
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone ) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
         [System.Collections.Arraylist]$TimeZoneUTCStrings = ($TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -NotLike '(UTC)*').DisplayName.Substring(1, 9) | Get-Unique
         [void]$TimeZoneUTCStrings.Add('UTC')
         $TimeZoneUTCStrings | Sort-Object | ForEach-Object {
@@ -196,15 +196,15 @@ function New-TeamsAutoAttendant {
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
     [ValidateScript( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
-        if ($_ -in $TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $True } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $TeamsFunctionsCsAutoAttendantSupportedLanguageIds"
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedLanguage ) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguage = Get-CsAutoAttendantSupportedLanguage -WarningAction SilentlyContinue }
+        if ($_ -in $($TeamsFunctionsCsAutoAttendantSupportedLanguage).Id) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $($TeamsFunctionsCsAutoAttendantSupportedLanguage.Id)"
         }
       })]
     [ArgumentCompleter( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
-        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | Sort-Object | ForEach-Object {
-          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedLanguage ) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguage = Get-CsAutoAttendantSupportedLanguage -WarningAction SilentlyContinue }
+        $($TeamsFunctionsCsAutoAttendantSupportedLanguage.Id) | Sort-Object | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguage.Count) records available")
         }
       })]
     [string]$LanguageId = 'en-US',
@@ -330,7 +330,9 @@ function New-TeamsAutoAttendant {
     # Language has to be normalised as the Id is case sensitive. Default value: en-US
     $Language = $($LanguageId.Split('-')[0]).ToLower() + '-' + $($LanguageId.Split('-')[1]).ToUpper()
     Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
-    $VoiceResponsesSupported = (Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported
+    # Query of Supported Languages based on previously calculated global Variable
+    if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedLanguage ) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguage = Get-CsAutoAttendantSupportedLanguage -WarningAction SilentlyContinue }
+    $VoiceResponsesSupported = ($global:TeamsFunctionsCsAutoAttendantSupportedLanguage | Where-Object Id -eq "$Language").VoiceResponseSupported
 
     # TimeZoneId - Generated from $TimeZone. Default value: UTC
     Write-Verbose -Message "TimeZone - Parsing TimeZone '$TimeZone'"
@@ -338,11 +340,9 @@ function New-TeamsAutoAttendant {
       $TimeZoneId = $TimeZone
     }
     else {
-      #TEST Variable of queried TimeZones to speed things up
       # Query of Supported TimeZones based on previously calculated global Variable
-      if ( -not $global:TFSupportedAATimeZones ) { $global:TFSupportedAATimeZones = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
-
-      $TimeZoneId = ($global:TFSupportedAATimeZones | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
+      if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone ) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
+      $TimeZoneId = ($global:TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
       Write-Verbose -Message "TimeZone - Found! Using: '$TimeZoneId'"
       Write-Information 'TimeZone - This is a correct match for the Time Zone, but might not be fully precise. - Please fine-tune Time Zone in the Admin Center if needed.'
     }

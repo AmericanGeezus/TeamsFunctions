@@ -11908,7 +11908,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BusinessHoursStart</maml:name>
           <maml:description>
-            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
+            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "9:00 AM" or "08:45"</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -11917,10 +11917,10 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>BusinessHoursEnd</maml:name>
           <maml:description>
-            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
+            <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "5:15 PM" or "17:30"</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -12088,7 +12088,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BusinessHoursStart</maml:name>
         <maml:description>
-          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
+          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "9:00 AM" or "08:45"</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -12097,10 +12097,10 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>BusinessHoursEnd</maml:name>
         <maml:description>
-          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in the format "09:00" - 15 minute increments only</maml:para>
+          <maml:para>Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "5:15 PM" or "17:30"</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
