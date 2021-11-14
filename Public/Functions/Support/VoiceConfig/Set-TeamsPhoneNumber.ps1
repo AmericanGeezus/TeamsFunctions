@@ -65,12 +65,16 @@ function Set-TeamsPhoneNumber {
     [string[]]$UserPrincipalName,
 
     [Parameter(Mandatory, Position = 1, HelpMessage = 'Telephone Number to assign')]
+    [AllowNull()]
+    [AllowEmptyString()]
+    <#
     [ValidateScript( {
         If ($_ -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') { $True } else {
           throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. Must be 8 to 15 digits long'
           $false
         }
       })]
+    #>
     [Alias('Tel', 'Number', 'TelephoneNumber')]
     [string]$PhoneNumber,
 
@@ -95,6 +99,14 @@ function Set-TeamsPhoneNumber {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
+    if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
+      $PhoneNumber = $null
+    }
+    else {
+      If ($PhoneNumber -notmatch '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
+        throw [System.Management.Automation.ValidationMetadataException] 'Not a valid phone number. Must be 8 to 15 digits long'
+      }
+    }
     # Preparing Splatting Object
     $parameters = $null
     $Parameters = @{
@@ -112,17 +124,18 @@ function Set-TeamsPhoneNumber {
 
         [Parameter(Mandatory)]
         [AllowNull()]
+        [AllowEmptyString()]
         [string]$PhoneNumber,
 
         [Parameter(Mandatory)]
-        [switch]$PhoneNumberIsMSNumber,
+        [boolean]$PhoneNumberIsMSNumber,
 
         [Parameter(Mandatory)]
         [ValidateSet('User', 'ApplicationInstance')]
         [string]$UserType
       ) #param
 
-      if ( $null -eq $PhoneNumber ) {
+      if ( $null -eq $PhoneNumber -or $PhoneNumber -eq '' ) {
         $E164Number = $LineUri = $null
       }
       else {
@@ -182,9 +195,9 @@ function Set-TeamsPhoneNumber {
 
       #Determining Object Type
       $UserType = switch -regex ( $UserObject.InterpretedUserType ) {
-        'User' { return 'User' }
-        'ApplicationInstance' { return 'ApplicationInstance' }
-        Default { return $false }
+        'User' { 'User' }
+        'ApplicationInstance' { 'ApplicationInstance' }
+        Default { $false }
       }
 
       if ( -not $UserType ) {
@@ -200,7 +213,7 @@ function Set-TeamsPhoneNumber {
       #endregion
 
       #region Validating License
-      if ( -not $UserLicense.PhoneSystem -or -not $UserLicense.PhoneSystemVirtualUser ) {
+      if ( -not $UserLicense.PhoneSystem -and -not $UserLicense.PhoneSystemVirtualUser ) {
         $Message = "User '$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required)!"
         if ($Called) {
           Write-Warning -Message $Message
@@ -236,7 +249,10 @@ function Set-TeamsPhoneNumber {
       #endregion
 
       #region Enterprise Voice
-      if ( -not $UserObject.EnterpriseVoiceEnabled ) {
+      if ( $UserObject.EnterpriseVoiceEnabled ) {
+        $EVenabled = $true
+      }
+      else {
         Write-Information "TRYING:  User '$Id' - Enterprise Voice: Not enabled, trying to enable"
         $EVenabled = Enable-TeamsUserForEnterpriseVoice -UserPrincipalName $UserObject.UserPrincipalName
       }
@@ -271,20 +287,25 @@ function Set-TeamsPhoneNumber {
           Write-Verbose -Message "Object '$Id' - PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken"
         }
         $PhoneNumber = $null
+        $PhoneNumberIsMSNumber = $false
       }
       else {
         #Number Type
         Write-Verbose -Message "Object '$Id' - Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)"
         $MSNumber = ((Format-StringForUse -InputString "$PhoneNumber" -SpecialChars 'tel:+') -split ';')[0]
-        $PhoneNumberIsMSNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
+        $CsOnlineTelephoneNumber = Get-CsOnlineTelephoneNumber -TelephoneNumber $MSNumber -WarningAction SilentlyContinue
+        $PhoneNumberIsMSNumber = if ( $null -ne $CsOnlineTelephoneNumber ) { $true } else { $false }
         Write-Verbose -Message "Provisioning for $(if ( $PhoneNumberIsMSNumber ) { 'Calling Plans' } else { 'Direct Routing'})"
 
         # Previous assignments
-        $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number -WarningAction SilentlyContinue
-
-        #TEST the resolution for this BODGE: Assumes singular result (also apply to Set-TeamsUVC)
-        #if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UserPrincipalName) {
-        if ($UserWithThisNumber -and $Id -notin $UserWithThisNumber.UserPrincipalName) {
+        if ( $PhoneNumber ) {
+          $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber -WarningAction SilentlyContinue
+          $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object UserPrincipalName -NE $UserPrincipalName
+        }
+        else {
+          $UserWithThisNumber = $UserWithThisNumberExceptSelf = $null
+        }
+        if ( $UserWithThisNumberExceptSelf ) {
           if ($Force) {
             Write-Warning -Message "Object '$Id' - Number '$LineUri' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
           }
@@ -358,7 +379,7 @@ function Set-TeamsPhoneNumber {
 
       # Output
       if ($Called) {
-        return $true
+        Write-Output $true
       }
     }
     #endregion

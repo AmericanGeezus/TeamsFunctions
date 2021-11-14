@@ -45,7 +45,7 @@ function Use-MicrosoftTeamsConnection {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
       # MEASUREMENTS This currently takes about half a second (486ms on average)
-      $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
 
       #Start-Sleep -Seconds 1
       if (Test-MicrosoftTeamsConnection) {

@@ -171,7 +171,9 @@ For more information, please visit the https://davideberhardt.wordpress.com/ or 
     'Get-TeamsIPP',
     'Get-TeamsECP',
     'Get-TeamsECRP',
+    'Get-TeamsCLI',
     'Grant-TeamsEmergencyAddress',
+    'Set-TeamsPhoneNumber',
     #endregion
 
     #Teams

@@ -176,6 +176,9 @@ function Find-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
+    $Stack = Get-PSCallStack
+    $Called = ($stack.length -ge 3)
+
     if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
       Write-Warning -Message "The switch 'ValidateLicense' verifies whether the correct license is assigned before considering the User. This increases run-time tremendously!"
     }
@@ -204,7 +207,7 @@ function Find-TeamsUserVoiceConfig {
             $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
           }
           else {
-            Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
+            Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each'
             Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
           }
         }
@@ -228,7 +231,9 @@ function Find-TeamsUserVoiceConfig {
           else {
             $Number = Format-StringForUse "$($PhoneNr.split(';')[0].split('x')[0])" -SpecialChars 'telx:+() -'
           }
-          Write-Information "TRYING:  Finding all Users enabled for Teams with Phone Number string '$Number': Searching..."
+          if ( -not $Called) {
+            Write-Information "TRYING:  Finding all Users enabled for Teams with Phone Number string '$Number': Searching..."
+          }
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f $Number
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -242,12 +247,16 @@ function Find-TeamsUserVoiceConfig {
               $Users | Select-Object UserPrincipalName, LineUri
             }
             else {
-              Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
+              if ( -not $Called) {
+                Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
+              }
               Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
             }
           }
           else {
-            Write-Verbose -Message "Number: '$Number' - No assignments found (LineURI)" -Verbose
+            if ( -not $Called) {
+              Write-Verbose -Message "Number: '$Number' - No assignments found (LineURI)" -Verbose
+            }
           }
         }
         break
@@ -264,7 +273,9 @@ function Find-TeamsUserVoiceConfig {
           else {
             $ExtN = 'ext=' + $ext
           }
-          Write-Information "TRYING:  Finding all Users enabled for Teams with Extension '$ExtN': Searching..."
+          if ( -not $Called) {
+            Write-Information "TRYING:  Finding all Users enabled for Teams with Extension '$ExtN': Searching..."
+          }
           #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
           $Filter = 'LineURI -like "*{0}*"' -f "$ExtN"
           $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
@@ -278,12 +289,16 @@ function Find-TeamsUserVoiceConfig {
               $Users | Select-Object UserPrincipalName, LineUri
             }
             else {
-              Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
+              if ( -not $Called) {
+                Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
+              }
               Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
             }
           }
           else {
-            Write-Verbose -Message "Extension: '$ExtN' - No assignments found (LineURI)" -Verbose
+            if ( -not $Called) {
+              Write-Verbose -Message "Extension: '$ExtN' - No assignments found (LineURI)" -Verbose
+            }
           }
         }
         break
@@ -294,7 +309,9 @@ function Find-TeamsUserVoiceConfig {
         $Filter = 'Enabled -eq $TRUE'
         $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction Stop
         Write-Verbose -Message "Sifting through Information for $($CsUsers.Count) Users: Parsing..."
-        Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching... This will take quite some time!"
+        if ( -not $Called) {
+          Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching... This will take quite some time!"
+        }
         switch ($ConfigurationType) {
           'DirectRouting' {
             if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
@@ -355,7 +372,9 @@ function Find-TeamsUserVoiceConfig {
       } #CT
 
       'VP' {
-        Write-Information "TRYING:  Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!"
+        if ( -not $Called) {
+          Write-Information "TRYING:  Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!"
+        }
         $Filter = 'VoicePolicy -EQ "{0}"' -f $VoicePolicy
         Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         break
@@ -365,7 +384,9 @@ function Find-TeamsUserVoiceConfig {
         Write-Verbose -Message "Finding OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy'..."
         $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
         if ($null -ne $OVP) {
-          Write-Information "TRYING:  Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!"
+          if ( -not $Called) {
+            Write-Information "TRYING:  Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!"
+          }
           $Filter = 'OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy
           Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
@@ -379,7 +400,9 @@ function Find-TeamsUserVoiceConfig {
         Write-Verbose -Message "Finding TenantDialPlan '$TenantDialPlan'..."
         $TDP = Get-CsTenantDialPlan $TenantDialPlan -WarningAction SilentlyContinue
         if ($null -ne $TDP) {
-          Write-Information "TRYING:  Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!"
+          if ( -not $Called) {
+            Write-Information "TRYING:  Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!"
+          }
           $Filter = 'TenantDialPlan -EQ "{0}"' -f $TenantDialPlan
           Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }

@@ -141,7 +141,7 @@ function Get-TeamsUserVoiceConfig {
           $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
           $CsUser = $AdUser
           Write-Warning -Message "User '$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
-          Write-Verbose -Message 'You receive this message if no License containing Teams is assigned or the Teams ServicePlan (TEAMS1) is disabled! Please validate the User License. No further validation is performed. The Object returned only contains data from AzureAd' -Verbose
+          Write-Verbose -Message 'You may receive this message if no License containing Teams is assigned or the Teams ServicePlan (TEAMS1) is disabled! Please validate the User License. No further validation is performed. The Object returned only contains data from AzureAd' -Verbose
         }
         catch [Microsoft.Open.AzureAD16.Client.ApiException] {
           Write-Error -Message "User '$User' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$User' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
