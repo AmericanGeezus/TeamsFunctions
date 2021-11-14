@@ -62,7 +62,6 @@ function Backup-TeamsTenant {
   begin {
     Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting MicrosoftTeams Connection
     if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }

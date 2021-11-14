@@ -80,6 +80,6 @@ function Show-FunctionStatus {
         Write-Information "INFO:    $Function is [ARCHIVED]!"
       }
     }
-
+    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$Function`.md"
   }
 } #Show-FunctionStatus

@@ -63,13 +63,13 @@ function Get-InterpretedVoiceConfigType {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
-    $Stack = Get-PSCallStack
-    $private:Called = ($stack.length -ge 3)
-    $private:CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
+    #Show-FunctionStatus -Level Live
+    #$Stack = Get-PSCallStack
+    #$private:Called = ($stack.length -ge 3)
+    #$private:CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
 
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
@@ -112,7 +112,7 @@ function Get-InterpretedVoiceConfigType {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     switch ($PSCmdlet.ParameterSetName) {
       'UserprincipalName' {
         foreach ($User in $UserPrincipalName) {
@@ -139,6 +139,6 @@ function Get-InterpretedVoiceConfigType {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-InterpretedVoiceConfigType

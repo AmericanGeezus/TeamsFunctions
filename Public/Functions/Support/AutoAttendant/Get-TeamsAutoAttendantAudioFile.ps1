@@ -76,7 +76,6 @@ function Get-TeamsAutoAttendantAudioFile {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
@@ -226,7 +225,7 @@ function Get-TeamsAutoAttendantAudioFile {
         OutputAudioFile -AAName $($AA.Name) -Step $Operation2 -IsDetailed $IsDetailed -Prompt $Prompt
       }
       #endregion
-      
+
       Write-Progress -Id 0 -Activity $ActivityID0 -Completed
     }
   } #process

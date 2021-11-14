@@ -66,7 +66,6 @@ function Restore-TeamsEV {
   begin {
     Show-FunctionStatus -Level Unmanaged
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     Try {
       $ZipPath = (Resolve-Path -Path $File)
