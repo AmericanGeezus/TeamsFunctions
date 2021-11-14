@@ -93,9 +93,9 @@ function Enable-TeamsUserForEnterpriseVoice {
       $Id = $($UserObject.UserPrincipalName)
       Write-Verbose -Message "[PROCESS] Enabling User '$Id' for Enterprise Voice"
 
-      $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
-      if ( $TeamsModuleVersion -gt 2.3.1 -and -not $Called) {
-        Write-Warning -Message 'Due to recent changes to Module MicrosoftTeams (v2.5.0 and later), not all functionality could yet be tested, your mileage may vary'
+      if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
+      if ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 -and -not $Called ) {
+        Write-Warning -Message 'Due to recent changes to Module MicrosoftTeams (v2.5.0 and later), not all functionality could yet be tested, handle with care'
       }
 
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {

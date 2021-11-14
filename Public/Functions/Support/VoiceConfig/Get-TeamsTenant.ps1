@@ -49,8 +49,7 @@ function Get-TeamsTenant {
     if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Querying Version Number for
-    #TODO put this in a Global variable for all TF cmdlets!
-    $TeamsModuleVersion = (Get-Module MicrosoftTeams -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Version
+    if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
 
     # Format enumeration
     $FormatEnumerationLimit = -1 # Unlimited (for Domains)
@@ -96,7 +95,7 @@ function Get-TeamsTenant {
     $TenantObject | Add-Member -MemberType NoteProperty -Name HostedMigrationOverrideURL -Value $OverrideURL -Force
 
     #Filtering Object
-    if ( $TeamsModuleVersion -gt 2.3.1 ) {
+    if ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 ) {
       $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
         TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
         DefaultDataLocation, DirSyncEnabled, WhenCreated, TenantDomain, HostedMigrationOverrideURL, Domains

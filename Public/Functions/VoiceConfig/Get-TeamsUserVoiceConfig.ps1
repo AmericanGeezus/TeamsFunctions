@@ -116,7 +116,7 @@ function Get-TeamsUserVoiceConfig {
     $OFS = ', ' # do not remove - Automatic variable, used to separate elements!
 
     # Querying Teams Module Version
-    #$TeamsModuleVersion = (Get-Module MicrosoftTeams -WarningAction SilentlyContinue -ErrorAction SilentlyContinue).Version
+    #if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
 
   } #begin
 
@@ -223,7 +223,7 @@ function Get-TeamsUserVoiceConfig {
       }
 
       <# When switching to new Query method
-      if ($TeamsModuleVersion -lt 2.5.0) {
+      if ( $TeamsFunctionsMSTeamsModule.Version -lt 2.5.0 ) {
         $UserObject | Add-Member -MemberType NoteProperty -Name ObjectId -Value $UserObjectId
         $UserObject | Add-Member -MemberType NoteProperty -Name Identity -Value $Identity
       }
@@ -236,7 +236,7 @@ function Get-TeamsUserVoiceConfig {
       $UserObject | Add-Member -MemberType NoteProperty -Name ObjectType -Value $ObjectType
       $UserObject | Add-Member -MemberType NoteProperty -Name InterpretedUserType -Value $CsUser.InterpretedUserType
 
-      if ($TeamsModuleVersion -lt 2.5.0) {
+      if ( $TeamsFunctionsMSTeamsModule.Version -lt 2.5.0 ) {
         $UserObject | Add-Member -MemberType NoteProperty -Name InterpretedVoiceConfigType -Value $InterpretedVoiceConfigType
         $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $CsUser.TeamsUpgradeEffectiveMode
         $UserObject | Add-Member -MemberType NoteProperty -Name VoicePolicy -Value $CsUser.VoicePolicy

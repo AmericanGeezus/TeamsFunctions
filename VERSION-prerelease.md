@@ -11,6 +11,7 @@ Major refactoring for support of MicrosoftTeams v2.6.0
 ### New
 
 - `Get-InterpretedVoiceConfigType`: New private function to interpret the status of the Voice Configuration (Direct Routing VS Calling Plans)
+- `Set-TeamsPhoneNumber`: Universal helper function to apply CallingPlan/DirectRouting Number to User or Resource Account (currently in RC, once live will be integrated in all Functions that handle PhoneNumbers)
 
 ### Updated
 
@@ -23,6 +24,8 @@ Major refactoring for support of MicrosoftTeams v2.6.0
 - `Disconnect-Me`:
   - Adding InformationPreference variable
   - Information output about which Tenant it was disconnecting from
+- `Get-AzureAdLicense`: Added Parameter SearchString to search for Product Names or SkuPartNumber
+- `Get-AzureAdLicenseServicePlan`: Added Parameter SearchString to search for Product Names or Service Plan Names
 - `Get-TeamsTenant`: Added Get-CsHostedMigrationURL, curtesy of Eric Marsi
 - `Get-TeamsUserVoiceConfig`
   - Refactoring of output to declutter and streamline troubleshooting

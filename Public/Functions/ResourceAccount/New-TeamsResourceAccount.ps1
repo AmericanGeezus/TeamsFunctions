@@ -373,6 +373,7 @@ function New-TeamsResourceAccount {
         # Processing paths for Telephone Numbers depending on Type
         $E164Number = Format-StringForUse $PhoneNumber -As E164
         #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts?
+        #TEST integration of Set-TeamsPhoneNumber
         if ($PhoneNumberIsMSNumber) {
           # Set in VoiceApplicationInstance
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"

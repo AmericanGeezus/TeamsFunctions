@@ -170,8 +170,8 @@ function Set-TeamsUserVoiceConfig {
     [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     # Teams Module Caveat
-    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
-    if ( $TeamsModuleVersion -gt 2.3.1 ) {
+    if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
+    if ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 ) {
       Write-Warning -Message 'Due to recent changes to Module MicrosoftTeams (v2.5.0 and later), not all functionality could yet be tested, handle with care'
     }
 
@@ -406,7 +406,9 @@ function Set-TeamsUserVoiceConfig {
             # Checking number is free
             Write-Verbose -Message "Object '$UserPrincipalName' - PhoneNumber - Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number -WarningAction SilentlyContinue
-            if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UserPrincipalName) {
+            #TEST the resolution for this BODGE: Assumes singular result
+            #if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UserPrincipalName) {
+            if ($UserWithThisNumber -and $UserPrincipalName -notin $UserWithThisNumber.UserPrincipalName) {
               if ($Force) {
                 Write-Warning -Message "Object '$UserPrincipalName' - Number '$LineUri' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
               }

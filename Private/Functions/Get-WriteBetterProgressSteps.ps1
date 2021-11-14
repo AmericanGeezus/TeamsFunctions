@@ -34,7 +34,7 @@ function Get-WriteBetterProgressSteps {
 	#>
 
   [CmdletBinding()]
-  [OutputType([Boolean])]
+  [OutputType([System.Int32])]
   param(
     [Parameter(Mandatory)]
     $Code,

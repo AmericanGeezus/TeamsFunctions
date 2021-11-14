@@ -3780,6 +3780,18 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-AzureAdLicense</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>SearchString</maml:name>
+          <maml:description>
+            <maml:para>Optional. Filters output for String found in Parameters ProductName or SkuPartNumber</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>FilterRelevantForTeams</maml:name>
           <maml:description>
@@ -3794,6 +3806,18 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>SearchString</maml:name>
+        <maml:description>
+          <maml:para>Optional. Filters output for String found in Parameters ProductName or SkuPartNumber</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>FilterRelevantForTeams</maml:name>
         <maml:description>
@@ -3875,6 +3899,18 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-AzureAdLicenseServicePlan</maml:name>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>SearchString</maml:name>
+          <maml:description>
+            <maml:para>Optional. Filters output for String found in Parameters ProductName or ServicePlanName</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>FilterRelevantForTeams</maml:name>
           <maml:description>
@@ -3889,6 +3925,18 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>SearchString</maml:name>
+        <maml:description>
+          <maml:para>Optional. Filters output for String found in Parameters ProductName or ServicePlanName</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>FilterRelevantForTeams</maml:name>
         <maml:description>

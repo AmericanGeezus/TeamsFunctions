@@ -44,7 +44,8 @@ function Test-MicrosoftTeamsConnection {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
-    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
+    #if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
+    
   } #begin
 
   process {
@@ -53,7 +54,7 @@ function Test-MicrosoftTeamsConnection {
       Write-Debug -Message 'This CmdLet detects a PSSession being created to be usable for Teams. As Microsoft updates more CmdLets not requiring this, this Cmdlet may become obsolete'
       <#
       # Retained for later, as the CmdLets requiring/creating a PsSession are getting less and less
-      if ($TeamsModuleVersion -gt 2.3.1) {
+      if ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 ) {
         $VerbosePreference = 'SilentlyContinue'
         $DebugPreference = 'Continue'
         $Tenant = Get-CsTenant -WarningAction SilentlyContinue -ErrorAction Stop

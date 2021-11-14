@@ -3,6 +3,76 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.11 - Nov 2021 release
+
+MicrosoftTeams v2.6.0 is live and with it come a few changes. A lot of testing has gone into this release, though not every function could be ascertained in full.
+This Changelog includes the changes from the v21.10.31-prerelease
+
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-109-blue.svg) ![Private](https://img.shields.io/badge/Private-17-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-55-green.svg)                                                                                                                                                                            |
+| Status    | ![Live](https://img.shields.io/badge/Live-95-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-0-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2281-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | MicrosoftTeams v2.6.0, Stability, Bugfixing, Refactoring of Progress bars, Utilising Scopes                                                                                                                                                                                                                                                                  |
+
+### New
+
+- `Set-TeamsPhoneNumber` (RC) Universal helper function to apply CallingPlan/DirectRouting Number to User or Resource Account (once live will be integrated in all Functions that handle PhoneNumbers to simplify the code base)
+- `Write-BetterProgress`: Write-Progress, just easier (I hope). Automatic Parenting, fewer errors in counting PercentageComplete. Does (deliberately) not support `-Complete`, but other than that, a full wrapper for Write-Progress
+- `Get-WriteBetterProgressSteps`: Private function to utilise ScriptAST to find the number of Steps for a certain ID
+- `Get-InterpretedVoiceConfigType`: New private function to interpret the status of the Voice Configuration (Direct Routing VS Calling Plans)
+
+### Updated
+
+- Major refactoring for display of Progress bars
+  - All Functions that display Progress bars now utilise `Write-BetterProgress`.
+  - Number of steps are now determined dynamically through crawling through ScriptAST
+  - Counter now starts at 1; First step now always '1 of x' (20)
+  - Flattening of nested IDs (ID1) where not needed; Where displayed, duplications were removed
+  - Addressed an issue with bleedthrough of Write-Progress output when used with Visual Studio Code.
+- Major refactoring of validation for often used functionality in Begin blocks
+  - Ascertaining Sessions to AzureAd and MicrosoftTeams now handled with Script-Variable and executed only once
+  - Accertaining of MicrosoftTeams Module Version now handled with global TeamsFunctions variable
+- Testing on MicrosoftTeams v2.6.0 continues, a caveat is shown for some functions that interact with `Set-CsUser`. The `CsOnlineUser` Object can currently not piped to
+- `Connect-Me`: Fixed the wording if PIM activation fails to now correctly state that.
+- `Disconnect-Me`: Adding InformationPreference variable & Displaying Information output about which Tenant it has disconnected from
+- `Get-AzureAdLicense`: Added Parameter SearchString to search for Product Names or SkuPartNumber
+- `Get-AzureAdLicenseServicePlan`: Added Parameter SearchString to search for Product Names or Service Plan Names
+- `Set-AzureAdUserLicenseServicePlan`:
+  - Fixed a bug that resulted in ServicePlans being reported "already enabled" when more than one license was assigned. Now stable!
+- `Get-TeamsTenant`: Added Get-CsHostedMigrationURL, curtesy of Eric Marsi
+- `Get-TeamsUserVoiceConfig`
+  - Refactoring of output to declutter and streamline troubleshooting for better usability.
+  - DiagnosticLevel 1: Promoted `CallingLineIdentity`, Added `UserAssignedAddress` (Voice Users Address string (if assigned))
+  - DiagnosticLevel 3: Demoted `TeamsVoiceRoute`, Added `LicenseObject` (nested Object)
+- `Set-TeamsUserVoiceConfig`
+  - Fixed an issue with output
+  - Fixed an issue with removal of Policies if provided with $null
+  - Refactored actions to use Identity directly rather than getting the CsOnlineUser Object being piped to the Function (resulted in an error with v2.5.1 and following)
+  - Refactored use of `Assert-TeamsCallableEntity` with `Force` to simplify the check for PhoneSystem and EnterpriseVoice Enablement.
+- `Test-TeamsUserVoiceConfig`:
+  - Added Warning for SIP Address not specified (not enabled for Teams)
+  - Added Warning for MCOValidationError incl. the Error Description
+- `Get-TeamsResourceAccount`: Added the Exception message to "Account not found" to feed back the error (RBAC)
+- `New-TeamsResourceAccount`: Increased time to wait for Account creation to 60s
+- `Find-TeamsUserVoiceRoute`: Fixed an issue displaying the TDP instead of the OVP for the OnlineVoiceRoutingPolicy for v2.5.x
+- `New-TeamsAutoAttendant`: Fixed some inconsistencies since refactoring query of TimeZone to be saved as a Global TF-Variable
+- `New-TeamsAutoAttendantSchedule`: Improved handling of `BusinessHoursStart` and `BusinessHoursEnd`
+  - Fixed an issue matching the Time Format and improving the output for incorrect formats
+  - Added Support for 12h notation (AM/PM)
+  - Fixed an issue with `BusinessHoursEnd` (now terminating at midnight) and made Parameter optional
+- `Assert-TeamsCallableEntity`:
+  - Refactored to be able to enable a disabled PhoneSystem ServicePlan if found.
+- Fixed multiple typos and misalignments when `Write-Information` is used.
+
+### Current Limitations
+
+- MicrosoftTeams v2.6.0 is not fully tested, "Here be Dragons"
+- Piping of `CsOnlineUser`-Object to other CmdLets currently not possible due to change in `Identity` - To be reviewed
+- Some output seems to be changed in recent releases (nested objects received for Policies rather than name) - To be reviewed
+
 ## v21.09 - Sep 2021 release
 
 MicrosoftTeams has been released in v2.5.1 which includes a change for the returned Object for `Get-CsTenant` and `Get-CsOnlineUser` (and others!). Microsoft has started refurbishing the CmdLet calls using REST-method/Graph instead of a remoting call. This impacts on Teamsfunctions on two major areas:
