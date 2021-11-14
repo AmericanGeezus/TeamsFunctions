@@ -93,9 +93,6 @@ function Enable-TeamsUserForEnterpriseVoice {
       Write-Verbose -Message "[PROCESS] Enabling User '$Id' for Enterprise Voice"
 
       if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
-      if ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 -and -not $Called ) {
-        Write-Warning -Message 'Due to recent changes to Module MicrosoftTeams (v2.5.0 and later), not all functionality could yet be tested, handle with care'
-      }
 
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
         $Message = "User '$Id' is not hosted in Teams!"
