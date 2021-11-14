@@ -35,7 +35,7 @@ function Get-TeamAndChannel {
   if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
   if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-
+  Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing Team & Channel for: '$String'"
   $TeamId, $ChannelId = $String.split('\')
 
   if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {

@@ -87,7 +87,6 @@ function Find-TeamsUserVoiceRoute {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-    #TEST whether Class definition can be used in nested functions
     #region Defining Output Object
     class TFVoiceRouting {
       [string]$UserPrincipalName

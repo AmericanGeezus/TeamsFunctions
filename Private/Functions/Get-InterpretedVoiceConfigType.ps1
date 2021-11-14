@@ -116,7 +116,7 @@ function Get-InterpretedVoiceConfigType {
     switch ($PSCmdlet.ParameterSetName) {
       'UserprincipalName' {
         foreach ($User in $UserPrincipalName) {
-          Write-Verbose -Message "[PROCESS] Processing '$User'"
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing '$User'"
           try {
             #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
             #$CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
@@ -131,7 +131,7 @@ function Get-InterpretedVoiceConfigType {
       }
       'Object' {
         foreach ($O in $Object) {
-          Write-Verbose -Message "[PROCESS] Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)'"
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)'"
           Write-Output (TestVoiceConfigType -CsUser $O)
         }
       }

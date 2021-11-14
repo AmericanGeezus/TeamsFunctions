@@ -27,6 +27,7 @@ function GetApplicationTypeFromAppId {
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing CsAppId '$CsAppId'"
 
     switch ($CsAppId) {
       "11cd3e2e-fccb-42ad-ad00-878b93575e07" { $CsApplicationType = "CallQueue" }

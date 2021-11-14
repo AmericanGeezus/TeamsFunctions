@@ -67,6 +67,7 @@ function Assert-TeamsAudioFile {
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Testing File
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing AudioFile: '$File'"
     if (-not (Test-Path $File)) {
       Write-Error -Message "AudioFile: '$File': not found!"
       return $false

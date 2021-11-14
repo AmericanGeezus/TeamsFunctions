@@ -32,6 +32,7 @@ function Get-NewestModule {
   #Show-FunctionStatus -Level Live
 
   foreach ($M in $Module) {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing Module: '$M'"
     $MyModule = Get-Module "$M" -ListAvailable | Sort-Object Version -Descending | Select-Object -First 1
 
     Write-Output $MyModule

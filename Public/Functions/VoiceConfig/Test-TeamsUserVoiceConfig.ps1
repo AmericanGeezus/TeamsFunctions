@@ -203,7 +203,9 @@ function Test-TeamsUserVoiceConfig {
       #VALIDATE This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
       #region Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
-        Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          Write-Debug "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
+        }
         $TestObject = 'BusinessVoice - Calling Plan License'
         $CallPlanPresent = Test-TeamsUserHasCallPlan $User
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -257,13 +259,17 @@ function Test-TeamsUserVoiceConfig {
         }
       }
       elseif ($CsUser.VoicePolicy -eq 'HybridVoice') {
-        Write-Verbose -Message "VoicePolicy found as 'HybridVoice'"
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          Write-Debug "VoicePolicy found as 'HybridVoice'"
+        }
         $TestObject = 'HybridVoice - Voice Routing'
 
         $VRPPresent = ($null -ne $CsUser.VoiceRoutingPolicy)
         $OVPPresent = ($null -ne $CsUser.OnlineVoiceRoutingPolicy)
         if ($VRPPresent) {
-          Write-Verbose -Message "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            Write-Debug "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
+          }
           if ( -not $Called) {
             Write-Information "INFO:    User '$User' - $TestObject - Voice Routing Policy - Assigned"
           }
@@ -272,7 +278,9 @@ function Test-TeamsUserVoiceConfig {
           Write-Verbose -Message "User '$User' - $TestObject - Voice Routing Policy - Not assigned"
         }
         if ($OVPPresent) {
-          Write-Verbose -Message "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            Write-Debug "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
+          }
           if ( -not $Called) {
             Write-Information "INFO:    User '$User' - $TestObject - Online Voice Routing Policy - Assigned"
           }

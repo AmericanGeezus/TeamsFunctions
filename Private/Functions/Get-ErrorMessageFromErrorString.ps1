@@ -68,7 +68,7 @@ function Get-ErrorMessageFromErrorString {
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing ErrorMessage Exception string"
     $Message = $Exception.Split("`n")[2]
 
     Write-Output $Message

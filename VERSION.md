@@ -35,6 +35,7 @@ This Changelog includes the changes from the v21.10.31-prerelease
 - Major refactoring of validation for often used functionality in Begin blocks
   - Ascertaining Sessions to AzureAd and MicrosoftTeams now handled with Script-Variable and executed only once
   - Accertaining of MicrosoftTeams Module Version now handled with global TeamsFunctions variable
+- Updating display of Help-URL only for the first called function (quietens verbose output)
 - Testing on MicrosoftTeams v2.6.0 continues, a caveat is shown for some functions that interact with `Set-CsUser`. The `CsOnlineUser` Object can currently not piped to
 - `Connect-Me`: Fixed the wording if PIM activation fails to now correctly state that.
 - `Disconnect-Me`: Adding InformationPreference variable & Displaying Information output about which Tenant it has disconnected from
@@ -57,7 +58,9 @@ This Changelog includes the changes from the v21.10.31-prerelease
   - Added Warning for MCOValidationError incl. the Error Description
 - `Get-TeamsResourceAccount`: Added the Exception message to "Account not found" to feed back the error (RBAC)
 - `New-TeamsResourceAccount`: Increased time to wait for Account creation to 60s
-- `Find-TeamsUserVoiceRoute`: Fixed an issue displaying the TDP instead of the OVP for the OnlineVoiceRoutingPolicy for v2.5.x
+- `Find-TeamsUserVoiceRoute`:
+  - Fixed an issue displaying the TDP instead of the OVP for the OnlineVoiceRoutingPolicy for v2.5.x
+  - Refactored function to accept CsOnlineUser Object
 - `New-TeamsAutoAttendant`: Fixed some inconsistencies since refactoring query of TimeZone to be saved as a Global TF-Variable
 - `New-TeamsAutoAttendantSchedule`: Improved handling of `BusinessHoursStart` and `BusinessHoursEnd`
   - Fixed an issue matching the Time Format and improving the output for incorrect formats
