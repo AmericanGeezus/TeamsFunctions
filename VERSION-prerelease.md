@@ -6,45 +6,15 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 [![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2262-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
-Major refactoring for support of MicrosoftTeams v2.6.0
+TBC
 
 ### New
 
-- `Get-InterpretedVoiceConfigType`: New private function to interpret the status of the Voice Configuration (Direct Routing VS Calling Plans)
-- `Set-TeamsPhoneNumber`: Universal helper function to apply CallingPlan/DirectRouting Number to User or Resource Account (currently in RC, once live will be integrated in all Functions that handle PhoneNumbers)
+- tbc
 
 ### Updated
 
-- Major refactoring for Progress bar - now fixed and fully tested
-  - Script Scope now set to private to avoid Step count be out of whack
-  - Moved Counter to start at 1; First step now always '1 of x' (20)
-  - Flattening of ID1 where not needed
-  - If ID1 is used, duplicated output (of ID0) was removed
-- Major refactoring of validation for Sessions increasing script execution by removing individual checks by each script and relying on the first CmdLet to execute this for the current Script scope
-- `Disconnect-Me`:
-  - Adding InformationPreference variable
-  - Information output about which Tenant it was disconnecting from
-- `Get-AzureAdLicense`: Added Parameter SearchString to search for Product Names or SkuPartNumber
-- `Get-AzureAdLicenseServicePlan`: Added Parameter SearchString to search for Product Names or Service Plan Names
-- `Get-TeamsTenant`: Added Get-CsHostedMigrationURL, curtesy of Eric Marsi
-- `Get-TeamsUserVoiceConfig`
-  - Refactoring of output to declutter and streamline troubleshooting
-  - Added UserAssignedAddress as a calculation of a Voice Users Address string (if specified)
-  - DiagnosticLevel 1: Moved CallingLineIdentity, Added UserAssignedAddress
-  - DiagnosticLevel 3: Moved TeamsVoiceRoute here
-- `Set-TeamsUserVoiceConfig`
-  - Fixed an issue with output
-  - Fixed an issue with removal of Policies if provided with $null
-- `Test-TeamsUserVoiceConfig`:
-  - Added Warning for SIP Address not specified (not enabled for Teams)
-  - Added Warning for MCOValidationError incl. the Error Description
-- `Find-TeamsUserVoiceRoute`: Fixed an issue displaying the TDP instead of the OVP for the OnlineVoiceRoutingPolicy for v2.5.x
-- `New-TeamsAutoAttendant`: Fixed some inconsistencies since refactoring query of TimeZone to be saved as a Global TF-Variable
-- `New-TeamsAutoAttendantSchedule`: Improved handling of `BusinessHoursStart` and `BusinessHoursEnd`
-  - Fixed an issue matching the Time Format and improving the output for incorrect formats
-  - Added Support for 12h notation (AM/PM)
-  - Fixed an issue with `BusinessHoursEnd` (now terminating at midnight)
-  - `BusinessHoursEnd` is now an optional parameter
+- `Find-TeamsResourceAccount`: Fixed an issue with PhoneNumber not being displayed properly
 
 ### Draft - Look ahead
 

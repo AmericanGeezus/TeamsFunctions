@@ -121,7 +121,7 @@ function Find-TeamsResourceAccount {
           UserPrincipalName = $AdUser.UserPrincipalName
           DisplayName       = $AdUser.DisplayName
           UsageLocation     = $AdUser.UsageLocation
-          PhoneNumber       = $AdUser.PhoneNumber
+          PhoneNumber       = $ResourceAccount.TelephoneNumber
         }
 
         # Associations
