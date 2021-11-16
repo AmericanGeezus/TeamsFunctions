@@ -182,6 +182,7 @@ function Test-TeamsUserVoiceConfig {
       #endregion
 
       #region Testing Tenant Dial Plan Enablement
+      #VALIDATE May feed back that the DP is not assigned when it is?
       $TestObject = 'Tenant Dial Plan'
       $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {

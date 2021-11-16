@@ -5,7 +5,7 @@
 # Status:   Live
 
 #TODO Requirement capture for configuration for OperatorConnect needed
-
+#VALIDATE Add feedback (in Write-Output) which item was removed (if known)
 
 function Set-TeamsUserVoiceConfig {
   <#
@@ -553,7 +553,7 @@ function Set-TeamsUserVoiceConfig {
             $PhoneNumberExecResult = $null
             $PhoneNumberExecResult = Set-TeamsPhoneNumber -Object $UserWTN -PhoneNumber $null -WarningAction SilentlyContinue -ErrorAction Stop
             if ( $PhoneNumberExecResult ) {
-              $StatusMessage = "$($UserWTN.InterpretedVoiceConfigType) Number removed from $($UserWTN.ObjectType)"
+              $StatusMessage = "$($UserWTN.InterpretedVoiceConfigType) Number removed from $($UserWTN.ObjectType): '$($UserWTN.LineUri)'"
               Write-Information "SUCCESS: '$UserPrincipalName' - $CurrentOperationID0`: OK - $StatusMessage"
             }
             else {
@@ -597,7 +597,7 @@ function Set-TeamsUserVoiceConfig {
             $PhoneNumberExecResult = $null
             $PhoneNumberExecResult = Set-TeamsPhoneNumber -Object $CsUser -PhoneNumber $null -WarningAction SilentlyContinue -ErrorAction Stop
             if ( $PhoneNumberExecResult ) {
-              $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number removed from $ObjectType"
+              $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number removed from $ObjectType`: '$($CsUser.LineUri)'"
               Write-Information "SUCCESS: '$UserPrincipalName' - $CurrentOperationID0`: OK - $StatusMessage"
             }
             else {
@@ -653,7 +653,7 @@ function Set-TeamsUserVoiceConfig {
             $PhoneNumberExecResult = $null
             $PhoneNumberExecResult = Set-TeamsPhoneNumber -Object $CsUser -PhoneNumber $PhoneNumber -WarningAction SilentlyContinue -ErrorAction Stop
             if ( $PhoneNumberExecResult ) {
-              $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number assigned to $ObjectType"
+              $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number assigned to $ObjectType`: '$PhoneNumber'"
               Write-Information "SUCCESS: '$UserPrincipalName' - $CurrentOperationID0`: OK - $StatusMessage"
             }
             else {
@@ -671,7 +671,8 @@ function Set-TeamsUserVoiceConfig {
               Write-Error -Message $ErrorLogMessage
             }
             $ErrorLog += $ErrorLogMessage
-          }          <#
+          }
+          <#
           switch ( $ObjectType ) {
             'User' {
               switch ($PSCmdlet.ParameterSetName) {

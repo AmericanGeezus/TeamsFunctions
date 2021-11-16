@@ -481,7 +481,7 @@ function Set-TeamsResourceAccount {
 
           $AllTests = $false
           $AllTests = foreach ($PlanToTest in $PlansToTest) { Test-TeamsUserLicense -Identity "$UPN" -ServicePlan "$PlanToTest" }
-          $TeamsUserLicenseAssigned = if ( ($AllTests) -notcontains $false ) { $true } else { $false }
+          $TeamsUserLicenseAssigned = if ( ($AllTests) -contains $true ) { $true } else { $false }
         }
         while (-not $TeamsUserLicenseAssigned)
         Write-Progress -Id 1 -Activity $ActivityID1 -Completed
