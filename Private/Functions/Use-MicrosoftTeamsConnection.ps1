@@ -38,69 +38,23 @@ function Use-MicrosoftTeamsConnection {
   begin {
     #Show-FunctionStatus -Level Live
     #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    $TeamsModuleVersion = (Get-Module MicrosoftTeams).Version
-
-    #region Functions copied from SfBoRemotePowerShellModule.psm1
-    <#
-    $script:GetCsOnlineSession = $null
-
-    function Get-CsOnlineSessionCommand {
-      if ($null -eq $script:GetCsOnlineSession) {
-        $module = [Microsoft.Teams.ConfigApi.Cmdlets.PowershellUtils]::GetRootModule()
-        $script:GetCsOnlineSession = [Microsoft.Teams.ConfigApi.Cmdlets.PowershellUtils]::GetCmdletInfo($module, 'Microsoft.Teams.ConfigAPI.Cmdlets.private', 'Get-CsOnlineSession')
-      }
-
-      return $script:GetCsOnlineSession;
-    }
-
-    function Get-PSImplicitRemotingSession {
-      param(
-        [Parameter(Mandatory = $true, Position = 0)]
-        [string]$commandName
-      )
-
-      $remoteSession = & (Get-CsOnlineSessionCommand)
-
-      return $remoteSession
-    }
-    #>
-    #endregion
 
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
-      if ($TeamsModuleVersion.Major -lt 2) {
-        if (Test-SkypeOnlineConnection) {
-          return $true
-        }
-        else {
-          return $false
-        }
+      # MEASUREMENTS This currently takes about half a second (486ms on average)
+      $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
+
+      #Start-Sleep -Seconds 1
+      if (Test-MicrosoftTeamsConnection) {
+        return $true
       }
       else {
-        <#
-        $RemotingSession = Get-PSImplicitRemotingSession Get-CsCallingLineIdentity -ErrorAction SilentlyContinue
-        if ( -not $RemotingSession) {
-          return $false
-        }
-        else {
-          # MEASUREMENTS This currently takes about half a second (486ms on average)
-          $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-        }
-        #>
-        $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-
-        #Write-Verbose -Message "$($MyInvocation.MyCommand) - No Teams session found"
-        #Start-Sleep -Seconds 1
-        if (Test-MicrosoftTeamsConnection) {
-          return $true
-        }
-        else {
-          return $false
-        }
+        return $false
       }
+
     }
     catch {
       return $false

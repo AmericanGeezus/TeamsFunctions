@@ -1,55 +1,55 @@
 ---
 external help file: TeamsFunctions-help.xml
 Module Name: TeamsFunctions
-online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsIPP.md
+online version: https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCLI.md
 schema: 2.0.0
 ---
 
-# Get-TeamsIPP
+# Get-TeamsCLI
 
 ## SYNOPSIS
-Lists all IP Phone Policies by Name
+Lists all Calling Line Identities by Name
 
 ## SYNTAX
 
 ```
-Get-TeamsIPP [[-Identity] <String>] [<CommonParameters>]
+Get-TeamsCLI [[-Identity] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-To quickly find IP Phone Policies to assign, an Alias-Function to Get-CsTeamsIPPhonePolicy
+To quickly find Calling Line Identities to assign, an Alias-Function to Get-CsCallingLineIdentity
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-TeamsIPP
+Get-TeamsCLI
 ```
 
-Returns the Object for all IP Phone Policies (including "Global")
-Behaviour like: Get-CsTeamsIPPhonePolicy, showing only a few Parameters
+Returns the Object for all Calling Line Identities (including "Global")
+Behaviour like: Get-CsCallingLineIdentity, showing only a few Parameters
 
 ### EXAMPLE 2
 ```
-Get-TeamsIPP -Identity CommonAreaPhone
+Get-TeamsCLI -Identity ResourceAccount@domain.com
 ```
 
-Returns the Object for the Online Voice Route "CommonAreaPhone" (provided it exists).
-Behaviour like: Get-CsTeamsIPPhonePolicy -Identity "CommonAreaPhone"
+Returns the Object for the Online Voice Route "ResourceAccount@domain.com" (provided it exists).
+Behaviour like: Get-CsCallingLineIdentity -Identity "ResourceAccount@domain.com"
 
 ### EXAMPLE 3
 ```
-Get-TeamsIPP -Identity CommonAreaPhone-*
+Get-TeamsCLI -Identity ResourceAccount*
 ```
 
-Lists Online Voice Routes with "CommonAreaPhone" in the Name
-Behaviour like: Get-CsTeamsIPPhonePolicy -Filter "*CommonAreaPhone*"
+Lists Online Voice Routes with "ResourceAccount" in the Name
+Behaviour like: Get-CsCallingLineIdentity -Filter "*ResourceAccount*"
 
 ## PARAMETERS
 
 ### -Identity
 String.
-Name or part of the IP Phone Policy.
+Name or part of the Calling Line Identity.
 Can be omitted to list Names of all Policies (including "Global").
 If provided without a '*' in the name, an exact match is sought.
 
@@ -77,13 +77,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### System.Object
 ## NOTES
 This script is indulging the lazy admin.
-It behaves like Get-CsTeamsIPPhonePolicy with a twist:
+It behaves like Get-CsCallingLineIdentity with a twist:
 If more than three results are found, a reduced set of Parameters are shown for better visibility:
-Get-CsTeamsIPPhonePolicy | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
+Get-CsCallingLineIdentity | Select-Object Identity, Description, SignInMode, HotDeskingIdleTimeoutInMinutes
 
 ## RELATED LINKS
 
-[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsIPP.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsIPP.md)
+[https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCLI.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/Get-TeamsCLI.md)
 
 [https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md](https://github.com/DEberhardt/TeamsFunctions/tree/master/docs/about_VoiceConfiguration.md)
 

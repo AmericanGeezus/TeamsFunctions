@@ -32,19 +32,27 @@ For Direct Routing: Tests for EnterpriseVoice enablement, Online Voice Routing P
 
 ### EXAMPLE 1
 ```
+Test-TeamsUserVoiceConfig -Object $CsOnlineUser
+```
+
+Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
+To reduce query time, the CsOnlineUser Object can be passed to this function
+
+### EXAMPLE 2
+```
 Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
 ```
 
 Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
 
-### EXAMPLE 2
+### EXAMPLE 3
 ```
 Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial
 ```
 
 Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDialPlan
 ```
@@ -52,7 +60,7 @@ Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -IncludeTenantDi
 Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
 This requires a Tenant Dial Plan to be assigned as well.
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName -Partial -IncludeTenantDialPlan
 ```

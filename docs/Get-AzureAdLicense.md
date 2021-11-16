@@ -13,7 +13,7 @@ License information for AzureAD Licenses related to Teams
 ## SYNTAX
 
 ```
-Get-AzureAdLicense [-FilterRelevantForTeams] [<CommonParameters>]
+Get-AzureAdLicense [[-SearchString] <String>] [-FilterRelevantForTeams] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -29,6 +29,22 @@ Get-AzureAdLicense
 Returns Azure AD Licenses that relate to Teams for use in other commands
 
 ## PARAMETERS
+
+### -SearchString
+Optional.
+Filters output for String found in Parameters ProductName or SkuPartNumber
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -FilterRelevantForTeams
 Optional.

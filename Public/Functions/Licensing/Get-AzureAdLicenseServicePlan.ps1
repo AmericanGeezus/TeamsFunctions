@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add Parameter LicenseName and/or SearchString to query?
+
 
 
 function Get-AzureAdLicenseServicePlan {
@@ -13,6 +13,8 @@ function Get-AzureAdLicenseServicePlan {
     License information for AzureAD Service Plans related to Teams
   .DESCRIPTION
     Returns an Object containing all Teams related License Service Plans
+  .PARAMETER SearchString
+    Optional. Filters output for String found in Parameters ProductName or ServicePlanName
   .PARAMETER FilterRelevantForTeams
     Optional. By default, shows all 365 License Service Plans
     Using this switch, shows only Service Plans relevant for Teams
@@ -47,13 +49,15 @@ function Get-AzureAdLicenseServicePlan {
   [OutputType([Object[]])]
   param(
     [Parameter()]
+    [String]$SearchString,
+
+    [Parameter()]
     [switch]$FilterRelevantForTeams
   ) #param
 
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -187,6 +191,10 @@ function Get-AzureAdLicenseServicePlan {
     $PlansSorted = $Plans | Sort-Object ProductName
     if ($FilterRelevantForTeams) {
       $PlansSorted = $PlansSorted | Where-Object RelevantForTeams -EQ $TRUE
+    }
+
+    if ( $PSBoundParameters.ContainsKey('SearchString') ) {
+      $PlansSorted = $PlansSorted | Where-Object { $_.ProductName -like "*$SearchString*" -or $_.ServicePlanName -like "*$SearchString*" }
     }
 
     return $PlansSorted

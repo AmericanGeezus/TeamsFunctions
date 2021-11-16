@@ -47,13 +47,12 @@ function Remove-TeamsCallQueue {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -63,20 +62,20 @@ function Remove-TeamsCallQueue {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($DN in $Name) {
-      [int]$CountID0 = 0
-      [int]$StepsID0 = $Name.Count
-      $StatusID0 = 'Processing'
-      $CurrentOperationID0 = $ActivityID1 = "'$DN'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $StepsID0
+      [int] $private:CountID0 = 1
+      [int] $private:StepsID0 = $Name.Count
+      $StatusID0 = "Processing '$DN'"
+      $CurrentOperationID0 = 'Querying Object'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       try {
         Write-Information 'INFO:    The listed Queues are being removed:'
         if ( $DN -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$' ) {
@@ -88,12 +87,13 @@ function Remove-TeamsCallQueue {
         }
 
         if ( $QueueToRemove ) {
-          $StepsID1 = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
+          $StatusID0 = "Removing $($AAToRemove.Count) Objects"
+          $private:StepsID1 = if ($QueueToRemove -is [Array]) { $QueueToRemove.Count } else { 1 }
           foreach ($Q in $QueueToRemove) {
-            $StatusID1 = 'Removing Call Queue'
-            $CurrentOperationID1 = "'$($Q.Name)'"
-            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $StepsID1
-            Write-Information "INFO:    $StatusID1 $CurrentOperationID1"
+            $ActivityID1 = "Removing Call Queue '$($Q.Name)'"
+            $StatusID1 = $CurrentOperationID1 = ''
+            Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
+            Write-Information "INFO:    $ActivityID1"
             if ($PSCmdlet.ShouldProcess("$($Q.Name)", 'Remove-CsCallQueue')) {
               Remove-CsCallQueue -Identity "$($Q.Identity)" -ErrorAction STOP
             }

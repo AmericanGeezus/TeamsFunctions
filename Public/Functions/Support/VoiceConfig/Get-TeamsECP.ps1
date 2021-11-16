@@ -34,7 +34,7 @@ function Get-TeamsECP {
   .OUTPUTS
     System.Object
   .NOTES
-    This script is indulging the lazy admin. It behaves like Get-CsOnlineVoiceRoute with a twist:
+    This script is indulging the lazy admin. It behaves like Get-CsTeamsEmergencyCallingPolicy with a twist:
     If more than three results are found, a reordered set of Parameters are shown for better visibility:
     Get-CsTeamsEmergencyCallingPolicy | Select-Object Identity, Description, NotificationMode, NotificationGroup
   .COMPONENT
@@ -61,10 +61,9 @@ function Get-TeamsECP {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
   } #begin
 

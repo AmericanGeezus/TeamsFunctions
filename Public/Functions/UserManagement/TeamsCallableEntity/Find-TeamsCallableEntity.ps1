@@ -69,13 +69,12 @@ function Find-TeamsCallableEntity {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -85,9 +84,9 @@ function Find-TeamsCallableEntity {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     #region Information Gathering 1
     $StatusID0 = 'Information Gathering'
@@ -95,7 +94,7 @@ function Find-TeamsCallableEntity {
     if ( $Scope -in ('All', 'CallQueue') ) {
       # Query Queues
       $CurrentOperationID0 = 'Querying Call Queues'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $CQs = Get-CsCallQueue -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       Write-Verbose -Message "$Status - $Operation -Objects found: $($CQs.Count)"
     }
@@ -103,7 +102,7 @@ function Find-TeamsCallableEntity {
     if ( $Scope -in ('All', 'AutoAttendant') ) {
       # Query Auto Attendants
       $CurrentOperationID0 = 'Querying Auto Attendants'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $AAs = Get-CsAutoAttendant -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       Write-Verbose -Message "$Status - $Operation - Objects found: $($AAs.Count)"
     }
@@ -113,20 +112,19 @@ function Find-TeamsCallableEntity {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int] $CountID0 = 2
-    [int] $StepsID0 = $CountID0 + $Identity.Count
+    [int] $private:CountID0 = 1
+    [int] $private:StepsID0 = $private:CountID0 + $Identity.Count
     foreach ( $Id in $Identity) {
-      [int] $CountID1 = 0
+      [int] $private:CountID1 = 1
       $CallTarget = $null
       [System.Collections.ArrayList]$Output = @()
-      $StatusID0 = 'Processing Entities'
-      $CurrentOperationID0 = $ActivityID1 = "'$Id'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
-
+      $StatusID0 = $CurrentOperationID0 = ''
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
+      $ActivityID1 = "'$Id'"
       $StatusID1 = 'Querying Entity'
       #region Object
       $CurrentOperationID1 = 'Teams Callable Entity'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       try {
         $CallTarget = Get-TeamsCallableEntity -Identity "$Id"
         if ( -not $CallTarget ) {
@@ -152,7 +150,7 @@ function Find-TeamsCallableEntity {
       if ( $Scope -in ('All', 'CallQueue') ) {
         # 1 Searching for Agent or User
         $CurrentOperationID1 = 'Querying Agent or User'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.Agents.ObjectId ) {
             if ( $CallTarget.Identity -in $CQ.Users ) {
@@ -166,7 +164,7 @@ function Find-TeamsCallableEntity {
 
         # 2 Searching for Group
         $CurrentOperationID1 = 'Groups'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.DistributionLists ) {
             [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'Group', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
@@ -175,7 +173,7 @@ function Find-TeamsCallableEntity {
 
         # 3 Searching for Overflow Target
         $CurrentOperationID1 = 'Overflow Action Target'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.OverflowActionTarget ) {
             [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'OverflowActionTarget', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
@@ -184,7 +182,7 @@ function Find-TeamsCallableEntity {
 
         # 4 Searching for Timeout Target
         $CurrentOperationID1 = 'Timout Action Target'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         foreach ($CQ in $CQs) {
           if ( $CallTarget.Identity -in $CQ.TimeoutActionTarget ) {
             [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'TimeoutActionTarget', 'CallQueue', "$($CQ.Name)", "$($CQ.Identity)"))
@@ -199,7 +197,7 @@ function Find-TeamsCallableEntity {
       if ( $Scope -in ('All', 'AutoAttendant') ) {
         # 1 Searching for Operator
         $CurrentOperationID1 = 'Operator'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         foreach ($AA in $AAs) {
           if ( $CallTarget.Identity -in $AA.Operator.Id ) {
             [void]$Output.Add([TFCallableEntityConnection]::new( "$($CallTarget.Entity)", 'Operator', 'AutoAttendant', "$($AA.Name)", "$($AA.Identity)"))
@@ -208,7 +206,7 @@ function Find-TeamsCallableEntity {
 
         # 2 Searching for Routing Target
         $CurrentOperationID1 = 'Default Call Flow - Menu - MenuOption'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         foreach ($AA in $AAs) {
           foreach ($Target in $AA.DefaultCallFlow.Menu.MenuOptions.CallTarget) {
             if ( $CallTarget.Identity -in $Target.Id ) {
@@ -219,7 +217,7 @@ function Find-TeamsCallableEntity {
 
         # 3 Searching for Routing Target
         $CurrentOperationID1 = 'Call Flows - Menu - MenuOption'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         foreach ($AA in $AAs) {
           foreach ($Target in $AA.CallFlows.Menu.MenuOptions.CallTarget) {
             if ( $CallTarget.Identity -in $Target.Id ) {

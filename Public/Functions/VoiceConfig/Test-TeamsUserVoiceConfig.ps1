@@ -29,6 +29,10 @@ function Test-TeamsUserVoiceConfig {
     Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured
     No effect for Microsoft Calling Plans
   .EXAMPLE
+    Test-TeamsUserVoiceConfig -Object $CsOnlineUser
+    Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if ANY configuration is found
+    To reduce query time, the CsOnlineUser Object can be passed to this function
+  .EXAMPLE
     Test-TeamsUserVoiceConfig -UserPrincipalName $UserPrincipalName
     Tests a Users Voice Configuration (Direct Routing or Calling Plans) and returns TRUE if FULL configuration is found
   .EXAMPLE
@@ -96,13 +100,12 @@ function Test-TeamsUserVoiceConfig {
     $CalledByAssertTUVC = ($Stack.Command -Contains 'Assert-TeamsUserVoiceConfig')
 
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -145,9 +148,21 @@ function Test-TeamsUserVoiceConfig {
       else {
         Write-Warning -Message "User '$User' - $TestObject is '$IUT'"
         Write-Verbose -Message "Potential misconfiguration detected - Contains 'Disabled', 'OnPrem', 'Failed' or any other error-state. Please investigate!"
+        if ( $IUT -match 'WithMCOValidationError' ) {
+          $ErrorCode = (($CsUser.MCOValidationError -split '<ErrorCode>')[1] -split [regex]::Escape('</ErrorCode>'))[0]
+          $ErrorDescription = (($CsUser.MCOValidationError -split '<ErrorDescription>')[1] -split [regex]::Escape('</ErrorDescription>'))[0]
+          Write-Warning "User '$User' - MCOValidationError encountered: '$ErrorCode'"
+          Write-Information "INFO:    MCO Validation Error description: '$ErrorDescription'"
+        }
       }
       #endregion
 
+      #region SIP Address
+      $TestObject = 'SIP Address'
+      if ( -not $CsUser.SipAddress ) {
+        Write-Warning -Message "User '$User' - $TestObject is not present. User is not able to consume Teams or able to be provisioned for Teams Voice"
+      }
+      #endregion
 
       #region Testing EV Enablement as hard requirement
       $TestObject = 'Enterprise Voice Enabled'
@@ -167,6 +182,7 @@ function Test-TeamsUserVoiceConfig {
       #endregion
 
       #region Testing Tenant Dial Plan Enablement
+      #VALIDATE May feed back that the DP is not assigned when it is?
       $TestObject = 'Tenant Dial Plan'
       $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -188,7 +204,9 @@ function Test-TeamsUserVoiceConfig {
       #VALIDATE This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
       #region Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
-        Write-Verbose -Message "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          Write-Debug "InterpretedVoiceConfigType is 'CallingPlans' (VoicePolicy found as 'BusinessVoice')"
+        }
         $TestObject = 'BusinessVoice - Calling Plan License'
         $CallPlanPresent = Test-TeamsUserHasCallPlan $User
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
@@ -242,13 +260,17 @@ function Test-TeamsUserVoiceConfig {
         }
       }
       elseif ($CsUser.VoicePolicy -eq 'HybridVoice') {
-        Write-Verbose -Message "VoicePolicy found as 'HybridVoice'"
+        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+          Write-Debug "VoicePolicy found as 'HybridVoice'"
+        }
         $TestObject = 'HybridVoice - Voice Routing'
 
         $VRPPresent = ($null -ne $CsUser.VoiceRoutingPolicy)
         $OVPPresent = ($null -ne $CsUser.OnlineVoiceRoutingPolicy)
         if ($VRPPresent) {
-          Write-Verbose -Message "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            Write-Debug "InterpretedVoiceConfigType is 'SkypeHybridPSTN' (VoiceRoutingPolicy assigned and no OnlineVoiceRoutingPolicy found)"
+          }
           if ( -not $Called) {
             Write-Information "INFO:    User '$User' - $TestObject - Voice Routing Policy - Assigned"
           }
@@ -257,7 +279,9 @@ function Test-TeamsUserVoiceConfig {
           Write-Verbose -Message "User '$User' - $TestObject - Voice Routing Policy - Not assigned"
         }
         if ($OVPPresent) {
-          Write-Verbose -Message "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
+          if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+            Write-Debug "InterpretedVoiceConfigType is 'DirectRouting' (VoiceRoutingPolicy not assigned)"
+          }
           if ( -not $Called) {
             Write-Information "INFO:    User '$User' - $TestObject - Online Voice Routing Policy - Assigned"
           }

@@ -71,13 +71,12 @@ function Find-TeamsResourceAccount {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -122,7 +121,7 @@ function Find-TeamsResourceAccount {
           UserPrincipalName = $AdUser.UserPrincipalName
           DisplayName       = $AdUser.DisplayName
           UsageLocation     = $AdUser.UsageLocation
-          PhoneNumber       = $AdUser.PhoneNumber
+          PhoneNumber       = $ResourceAccount.TelephoneNumber
         }
 
         # Associations

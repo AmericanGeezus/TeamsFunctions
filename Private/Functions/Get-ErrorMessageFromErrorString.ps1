@@ -52,9 +52,9 @@ function Get-ErrorMessageFromErrorString {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level RC
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
+    #Show-FunctionStatus -Level Live
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     #$Stack = Get-PSCallStack
     #$Called = ($stack.length -ge 3)
@@ -67,14 +67,14 @@ function Get-ErrorMessageFromErrorString {
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing ErrorMessage Exception string"
     $Message = $Exception.Split("`n")[2]
 
     Write-Output $Message
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Get-ErrorMessageFromErrorString

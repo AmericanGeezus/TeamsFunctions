@@ -125,13 +125,12 @@ function Set-TeamsCommonAreaPhone {
   begin {
     Show-FunctionStatus -Level RC
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -141,16 +140,16 @@ function Set-TeamsCommonAreaPhone {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     $StatusID0 = 'Verifying input'
     #region Validating Licenses to be applied result in correct Licensing (contains Teams & PhoneSystem)
     $PlansToTest = 'TEAMS1', 'MCOEV'
     if ( $PSBoundParameters.ContainsKey('License') ) {
       $CurrentOperationID0 = 'Validating Licenses to be applied result in correct Licensing'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $IncludesTeams = 0
       $IncludesPhoneSystem = 0
       foreach ($L in $License) {
@@ -179,18 +178,17 @@ function Set-TeamsCommonAreaPhone {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Parameters = @{}
-    [int] $CountID0 = 1
-    [int] $StepsID0 = $CountID0 + $UserPrincipalName.Count
+    [int] $private:CountID0 = 1
+    [int] $private:StepsID0 = $private:CountID0 + $UserPrincipalName.Count
     ForEach ($UPN in $UserPrincipalName) {
-      $StatusID0 = 'Processing'
-      $CurrentOperationID0 = $ActivityID1 = "'$UPN'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
-
+      $StatusID0 = $CurrentOperationID0 = ''
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
+      $ActivityID1 = "'$UPN'"
       $StatusID1 = 'Verifying input'
       #region PREPARATION
       #region Lookup of UserPrincipalName
       $CurrentOperationID1 = 'Querying User Account'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       try {
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
         #$CsOnlineUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction STOP
@@ -223,7 +221,7 @@ function Set-TeamsCommonAreaPhone {
 
       #region Normalising $DisplayName
       $CurrentOperationID1 = 'DisplayName'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ($PSBoundParameters.ContainsKey('DisplayName')) {
         if ($UPN.IsArray) {
           Write-Warning -Message "'$UPN' Changing DisplayName for Array input disabled to avoid accidents."
@@ -241,7 +239,7 @@ function Set-TeamsCommonAreaPhone {
 
       #region UsageLocation
       $CurrentOperationID1 = 'UsageLocation'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $CurrentUsageLocation = $CsOnlineUser.UsageLocation
       if ($PSBoundParameters.ContainsKey('UsageLocation')) {
         if ($Usagelocation -eq $CurrentUsageLocation) {
@@ -270,7 +268,7 @@ function Set-TeamsCommonAreaPhone {
 
       #region Current License
       $CurrentOperationID1 = 'Querying current License and Testing Licensing Scope (Should contain Teams and PhoneSystem)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $IsLicensed = $false
       # Determining license Status of Object
       $UserLicense = Get-AzureAdUserLicense -Identity "$UPN"
@@ -291,11 +289,11 @@ function Set-TeamsCommonAreaPhone {
       $Parameters += @{ 'ErrorAction' = 'STOP' }
       #endregion
 
-      $StatusID1 = "Changing Common Area Phone"
+      $StatusID1 = 'Changing Common Area Phone'
       #region ACTION
       #region Setting Object
       $CurrentOperationID1 = 'Applying Settings'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       try {
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name) - Parameters", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
@@ -317,7 +315,7 @@ function Set-TeamsCommonAreaPhone {
 
       #region Licensing
       $CurrentOperationID1 = 'Processing License assignment'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ($PSBoundParameters.ContainsKey('License')) {
         if ( $License -in $UserLicense.Licenses.ParameterName -and $IsLicensed ) {
           # No action required
@@ -341,7 +339,7 @@ function Set-TeamsCommonAreaPhone {
 
       #region Policies
       $CurrentOperationID1 = 'Processing Policy assignments'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ( -not $IsLicensed ) {
         Write-Error -Message 'Policies can only be assigned to licensed objects. Please wait for propagation or apply a license before assigning policies.' -Category ResourceUnavailable -RecommendedAction 'Please apply a license before assigning any Policy.'
       }
@@ -383,7 +381,7 @@ function Set-TeamsCommonAreaPhone {
 
       #region OUTPUT
       $CurrentOperationID0 = 'Validation & Output'
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $CommonAreaPhone = $null
       if ($PassThru) {
         $CommonAreaPhone = Get-TeamsCommonAreaPhone -Identity "$UPN"

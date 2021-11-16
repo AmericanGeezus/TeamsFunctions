@@ -86,10 +86,10 @@ function Get-TeamsCommonAreaPhone {
     Write-Verbose -Message "Need help? Online: $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -99,14 +99,14 @@ function Get-TeamsCommonAreaPhone {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     # Querying Global Policies
     $StatusID0 = 'Information Gathering'
-    $CurrentOperationID0 = "Querying Global Policies"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    $CurrentOperationID0 = 'Querying Global Policies'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     $GlobalIPPhonePolicy = Get-CsTeamsIPPhonePolicy 'Global'
     $GlobalCallingPolicy = Get-CsTeamsCallingPolicy 'Global'
     $GlobalCallParkPolicy = Get-CsTeamsCallParkPolicy 'Global'
@@ -119,7 +119,7 @@ function Get-TeamsCommonAreaPhone {
 
     #region Data gathering
     $CurrentOperationID0 = 'Querying Common Area Phones'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     switch ($PSCmdlet.ParameterSetName) {
       'Identity' {
         # Default Parameterset
@@ -183,19 +183,18 @@ function Get-TeamsCommonAreaPhone {
 
     #region Information Gathering
     # Creating new PS Object
-    [int] $CountID0 = 2
-    [int] $StepsID0 = $CountID0 + $CommonAreaPhones.Count
+    [int] $private:CountID0 = 1
+    [int] $private:StepsID0 = $private:CountID0 + $CommonAreaPhones.Count
     foreach ($CommonAreaPhone in $CommonAreaPhones) {
-      [int] $CountID1 = 0
-      $StatusID0 = 'Processing found User Objects'
-      $CurrentOperationID0 = $ActivityID1 = "'$($CommonAreaPhone.UserPrincipalName)'"
-      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
-
-      $StatusID1 = 'Information Gathering'
+      [int] $private:CountID1 = 1
+      $StatusID0 = $CurrentOperationID0 = ''
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
+      $ActivityID1 = "'$($CommonAreaPhone.UserPrincipalName)'"
       #region Parsing Policies
+      $StatusID1 = 'Information Gathering'
       # TeamsIPPhonePolicy and CommonAreaPhoneSignIn
       $CurrentOperationID1 = 'Parsing IP Phone Policy (CommonAreaPhoneSignIn)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ( -not $CommonAreaPhone.TeamsIPPhonePolicy ) {
         $UserSignInMode = $GlobalIPPhonePolicy.SignInMode
         if ( $GlobalIPPhonePolicy.SignInMode -ne 'CommonAreaPhoneSignIn' ) {
@@ -234,7 +233,7 @@ function Get-TeamsCommonAreaPhone {
 
       # TeamsCallingPolicy and AllowPrivateCalling
       $CurrentOperationID1 = 'Parsing Teams Calling Policy (AllowPrivateCalling)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ( -not $CommonAreaPhone.TeamsCallingPolicy ) {
         $UserAllowPrivateCalling = $GlobalCallingPolicy.AllowPrivateCalling
         if ( -not $GlobalCallingPolicy.AllowPrivateCalling ) {
@@ -273,7 +272,7 @@ function Get-TeamsCommonAreaPhone {
 
       # TeamsCallParkPolicy and AllowCallPark
       $CurrentOperationID1 = 'Parsing Teams Call Park Policy (AllowCallPark)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ( -not $CommonAreaPhone.TeamsCallParkPolicy ) {
         $UserAllowCallPark = $GlobalCallParkPolicy.AllowCallPark
         if ( -not $GlobalCallParkPolicy.AllowCallPark ) {
@@ -313,12 +312,12 @@ function Get-TeamsCommonAreaPhone {
 
       # Parsing TeamsUserLicense
       $CurrentOperationID1 = 'Parsing License Assignments'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $CommonAreaPhoneLicense = Get-AzureAdUserLicense -Identity "$($CommonAreaPhone.UserPrincipalName)"
 
       # Phone Number Type
       $CurrentOperationID1 = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       if ( $CommonAreaPhone.LineURI ) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($CommonAreaPhone.LineURI)" -SpecialChars 'tel:+') -split ';')[0]
@@ -337,7 +336,7 @@ function Get-TeamsCommonAreaPhone {
 
       #region Output - Creating new PS Object (synchronous with Get and Set)
       $CurrentOperationID1 = 'Preparing Output Object'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $CommonAreaPhoneObject = [PSCustomObject][ordered]@{
         ObjectId                     = $CommonAreaPhone.ObjectId
         UserPrincipalName            = $CommonAreaPhone.UserPrincipalName
@@ -366,7 +365,6 @@ function Get-TeamsCommonAreaPhone {
     }
 
     #endregion
-    #CHECK Test Progress bars bleed-through. If not viable, close ID 0 before FOREACH
     Write-Progress -Id 0 -Activity $ActivityID0 -Completed
 
   } #process

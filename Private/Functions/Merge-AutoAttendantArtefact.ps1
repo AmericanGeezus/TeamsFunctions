@@ -80,6 +80,7 @@ function Merge-AutoAttendantArtefact {
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing Auto Attendant Artefact of Type '$Type'"
 
     $MergedObject = @()
     switch ($Type) {

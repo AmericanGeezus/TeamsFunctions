@@ -69,9 +69,6 @@
 
 ## Licenses
 
-- [x] Figure out how to enable disabled plans
-- [ ] Evaluate adding Enable/Disable CmdLet in addition to Set-AzureAdUserLicenseServicePlan
-- [x] Figure out ScriptMethod ToString
 
 ## Code Improvements
 

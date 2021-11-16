@@ -27,7 +27,7 @@ New-TeamsAutoAttendantSchedule -Name <String> [-WeeklyRecurrentSchedule] -Busine
 ### WeeklyBusinessHours2
 ```
 New-TeamsAutoAttendantSchedule -Name <String> [-WeeklyRecurrentSchedule] -BusinessDays <String>
- -BusinessHoursStart <String> -BusinessHoursEnd <String> [-Complement] [-WhatIf] [-Confirm]
+ -BusinessHoursStart <String> [-BusinessHoursEnd <String>] [-Complement] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -163,7 +163,7 @@ Accept wildcard characters: False
 Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
 Predefined business hours.
 Combined with BusinessDays, forms the WeeklyRecurrentSchedule
-Manual start and end time to be provided in the format "09:00" - 15 minute increments only
+Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "9:00 AM" or "08:45"
 
 ```yaml
 Type: String
@@ -181,14 +181,14 @@ Accept wildcard characters: False
 Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
 Predefined business hours.
 Combined with BusinessDays, forms the WeeklyRecurrentSchedule
-Manual start and end time to be provided in the format "09:00" - 15 minute increments only
+Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "5:15 PM" or "17:30"
 
 ```yaml
 Type: String
 Parameter Sets: WeeklyBusinessHours2
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

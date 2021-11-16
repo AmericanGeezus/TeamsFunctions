@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Create separate function for determination of OVP/OPU/OVR from Find-TeamsUVR - Add here when called with Identity
 
 function Get-TeamsOVP {
   <#
@@ -61,10 +61,9 @@ function Get-TeamsOVP {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
   } #begin
 

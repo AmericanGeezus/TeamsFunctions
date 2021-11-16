@@ -177,7 +177,7 @@ function New-TeamsAutoAttendant {
     [Parameter(HelpMessage = 'TimeZone Identifier from Get-CsAutoAttendantSupportedTimeZone')]
     #[ValidateSet('UTC-12:00', 'UTC-11:00', 'UTC-10:00', 'UTC-09:00', 'UTC-08:00', 'UTC-07:00', 'UTC-06:00', 'UTC-05:00', 'UTC-04:30', 'UTC-04:00', 'UTC-03:30', 'UTC-03:00', 'UTC-02:00', 'UTC-01:00', 'UTC', 'UTC+01:00', 'UTC+02:00', 'UTC+03:00', 'UTC+03:30', 'UTC+04:00', 'UTC+04:30', 'UTC+05:00', 'UTC+05:30', 'UTC+05:45', 'UTC+06:00', 'UTC+06:30', 'UTC+07:00', 'UTC+08:00', 'UTC+09:00', 'UTC+09:30', 'UTC+10:00', 'UTC+11:00', 'UTC+12:00', 'UTC+13:00', 'UTC+14:00')]
     [ValidateScript( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone }
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone ) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
         [System.Collections.Arraylist]$TimeZoneUTCStrings = ($TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -NotLike '(UTC)*').DisplayName.Substring(1, 9) | Get-Unique
         [void]$TimeZoneUTCStrings.Add('UTC')
         if ($_ -in $TimeZoneUTCStrings) { $True } else {
@@ -185,7 +185,7 @@ function New-TeamsAutoAttendant {
         }
       })]
     [ArgumentCompleter( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone }
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone ) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
         [System.Collections.Arraylist]$TimeZoneUTCStrings = ($TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -NotLike '(UTC)*').DisplayName.Substring(1, 9) | Get-Unique
         [void]$TimeZoneUTCStrings.Add('UTC')
         $TimeZoneUTCStrings | Sort-Object | ForEach-Object {
@@ -196,15 +196,15 @@ function New-TeamsAutoAttendant {
 
     [Parameter(HelpMessage = 'Language Identifier from Get-CsAutoAttendantSupportedLanguage.')]
     [ValidateScript( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
-        if ($_ -in $TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $True } else {
-          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $TeamsFunctionsCsAutoAttendantSupportedLanguageIds"
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedLanguage ) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguage = Get-CsAutoAttendantSupportedLanguage -WarningAction SilentlyContinue }
+        if ($_ -in $($TeamsFunctionsCsAutoAttendantSupportedLanguage).Id) { $True } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Parameter 'LanguageId' must be of the set: $($TeamsFunctionsCsAutoAttendantSupportedLanguage.Id)"
         }
       })]
     [ArgumentCompleter( {
-        if (-not $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguageIds = (Get-CsAutoAttendantSupportedLanguage).Id }
-        $TeamsFunctionsCsAutoAttendantSupportedLanguageIds | Sort-Object | ForEach-Object {
-          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguageIds.Count) records available")
+        if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedLanguage ) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguage = Get-CsAutoAttendantSupportedLanguage -WarningAction SilentlyContinue }
+        $($TeamsFunctionsCsAutoAttendantSupportedLanguage.Id) | Sort-Object | ForEach-Object {
+          [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', "$($TeamsFunctionsCsAutoAttendantSupportedLanguage.Count) records available")
         }
       })]
     [string]$LanguageId = 'en-US',
@@ -305,10 +305,10 @@ function New-TeamsAutoAttendant {
     Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -318,19 +318,21 @@ function New-TeamsAutoAttendant {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
 
     $StatusID0 = 'Verifying input'
     #region Parameter validation
-    $CurrentOperationID0 = "Validating Language, Voice capabilities & Time Zone"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    $CurrentOperationID0 = 'Validating Language, Voice capabilities & Time Zone'
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
 
     # Language has to be normalised as the Id is case sensitive. Default value: en-US
     $Language = $($LanguageId.Split('-')[0]).ToLower() + '-' + $($LanguageId.Split('-')[1]).ToUpper()
     Write-Verbose "LanguageId '$LanguageId' normalised to '$Language'"
-    $VoiceResponsesSupported = (Get-CsAutoAttendantSupportedLanguage -Id $Language).VoiceResponseSupported
+    # Query of Supported Languages based on previously calculated global Variable
+    if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedLanguage ) { $global:TeamsFunctionsCsAutoAttendantSupportedLanguage = Get-CsAutoAttendantSupportedLanguage -WarningAction SilentlyContinue }
+    $VoiceResponsesSupported = ($global:TeamsFunctionsCsAutoAttendantSupportedLanguage | Where-Object Id -eq "$Language").VoiceResponseSupported
 
     # TimeZoneId - Generated from $TimeZone. Default value: UTC
     Write-Verbose -Message "TimeZone - Parsing TimeZone '$TimeZone'"
@@ -338,8 +340,9 @@ function New-TeamsAutoAttendant {
       $TimeZoneId = $TimeZone
     }
     else {
-      #TODO Add variable of queried TimeZones to speed things up
-      $TimeZoneId = (Get-CsAutoAttendantSupportedTimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
+      # Query of Supported TimeZones based on previously calculated global Variable
+      if ( -not $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone ) { $global:TeamsFunctionsCsAutoAttendantSupportedZimeZone = Get-CsAutoAttendantSupportedTimeZone -WarningAction SilentlyContinue }
+      $TimeZoneId = ($global:TeamsFunctionsCsAutoAttendantSupportedZimeZone | Where-Object DisplayName -Like "($TimeZone)*" | Select-Object -First 1).Id
       Write-Verbose -Message "TimeZone - Found! Using: '$TimeZoneId'"
       Write-Information 'TimeZone - This is a correct match for the Time Zone, but might not be fully precise. - Please fine-tune Time Zone in the Admin Center if needed.'
     }
@@ -347,7 +350,7 @@ function New-TeamsAutoAttendant {
     #region BusinessHours
     # Main Call Flow -- DefaultCallFlow VS BusinessHours*
     $CurrentOperationID0 = 'Validating DefaultCallFlow'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($DefaultCallFlow) {
       # DefaultCallFlow
       Write-Information 'DefaultCallFlow - Overriding all BusinessHours-Parameters'
@@ -406,7 +409,7 @@ function New-TeamsAutoAttendant {
 
     #region Default Parameters VS AfterHours & HolidaySet Parameters
     $CurrentOperationID0 = 'Validating CallFlows'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     # Call Flows & Call Handling Associations
     if ($PSBoundParameters.ContainsKey('CallFlows') -or $PSBoundParameters.ContainsKey('CallHandlingAssociations')) {
       # Custom Call Flows
@@ -503,16 +506,16 @@ function New-TeamsAutoAttendant {
       }
       else {
         if ( $AfterHoursSchedule) {
-          Write-Information "INFO:    Auto Attendant '$NameNormalised' Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'"
+          Write-Information "INFO:    Auto Attendant '$Name' Schedule - AfterHoursSchedule provided, Using: '$AfterHoursSchedule'"
         }
         else {
           $AfterHoursSchedule = 'MonToFri9to5'
-          Write-Information "INFO:    Auto Attendant '$NameNormalised' Schedule - AfterHoursSchedule not provided, Using: '$AfterHoursSchedule'"
+          Write-Information "INFO:    Auto Attendant '$Name' Schedule - AfterHoursSchedule not provided, Using: '$AfterHoursSchedule'"
         }
 
         # Creating Schedule
-        $CurrentOperationID1 = 'Business Hours Call Flow - Creating Schedule'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        $CurrentOperationID0 = 'Business Hours Call Flow - Creating Schedule'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
         $Schedule = switch ($AfterHoursSchedule) {
           'Open24x7' {
             New-TeamsAutoAttendantSchedule -Name 'Business Hours Schedule' -WeeklyRecurrentSchedule -BusinessDays MonToSun -BusinessHours AllDay -Complement
@@ -595,7 +598,7 @@ function New-TeamsAutoAttendant {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     #region PREPARATION
-    $StatusID0 = 'Assembling Auto Attendant'
+    $StatusID0 = 'Assembling Auto Attendant Options'
     $ActivityID1 = 'Building Auto Attendant'
     $StatusID1 = 'Preparing Parameters'
     # preparing Splatting Object
@@ -603,7 +606,7 @@ function New-TeamsAutoAttendant {
 
     #region Required Parameters
     $CurrentOperationID1 = 'Name, TimeZone & Language, Voice Responses'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
     # Normalising $Name
     $NameNormalised = Format-StringForUse -InputString $Name -As DisplayName
     Write-Verbose -Message "'$Name' DisplayName normalised to: '$NameNormalised'"
@@ -641,7 +644,7 @@ function New-TeamsAutoAttendant {
 
     #region Operator
     $CurrentOperationID1 = 'Operator'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
     if ($PSBoundParameters.ContainsKey('Operator')) {
       try {
         $OperatorEntity = New-TeamsCallableEntity -Identity "$Operator"
@@ -658,7 +661,7 @@ function New-TeamsAutoAttendant {
 
     #region Business Hours Call Flow
     $CurrentOperationID1 = 'Business Hours Call Flow - Default Call Flow & Call Flow Option'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
     if ( $DefaultCallFlow ) {
       # Using As-Is
       Write-Information "INFO:    Auto Attendant '$NameNormalised' DefaultCallFlow - Custom Object provided. Over-riding other options (like switch 'BusinessHoursCallFlow')"
@@ -726,7 +729,7 @@ function New-TeamsAutoAttendant {
       #Adding optional BusinessHoursGreeting
       if ($PSBoundParameters.ContainsKey('BusinessHoursGreeting')) {
         $CurrentOperationID1 = 'Business Hours Call Flow - Greeting'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         try {
           $BusinessHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$BusinessHoursGreeting"
           if ($BusinessHoursGreetingObject) {
@@ -742,7 +745,7 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       $CurrentOperationID1 = 'Business Hours Call Flow - Building Call Flow'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       # Adding Business Hours Call Flow
       $BusinessHoursCallFlowParameters.Menu = $BusinessHoursMenuObject
       $BusinessHoursCallFlow = New-CsAutoAttendantCallFlow @BusinessHoursCallFlowParameters
@@ -755,11 +758,11 @@ function New-TeamsAutoAttendant {
     #region Processing provided CallFlows and CallHandlingAssociations Objects
     if ($PSBoundParameters.ContainsKey('CallFlows')) {
       $CurrentOperationID1 = 'After Hours Call Flow - Objects'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       # Custom Option provided - Using As-Is
       Write-Information "INFO:    Auto Attendant '$NameNormalised' CallFlow - Custom Object provided. Over-riding other options (like switch 'AfterHoursCallFlow')"
-      $Parameters += @{'CallFlows' = $CallFlows }
-      $Parameters += @{'CallHandlingAssociations' = $CallHandlingAssociations }
+      $Parameters += @{'CallFlows' = @($CallFlows) }
+      $Parameters += @{'CallHandlingAssociations' = @($CallHandlingAssociations) }
     }
     #endregion
 
@@ -772,7 +775,7 @@ function New-TeamsAutoAttendant {
     # Processing CallFlow
     if ($AfterHoursCallFlowOption -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
       $CurrentOperationID1 = 'After Hours Call Flow - Call Flows & Call Flow Option'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       # Option Selected
       Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'AfterHoursCallFlowOption'..."
       $AfterHoursCallFlowParameters = @{}
@@ -833,7 +836,7 @@ function New-TeamsAutoAttendant {
       #region AfterHoursGreeting
       if ($PSBoundParameters.ContainsKey('AfterHoursGreeting')) {
         $CurrentOperationID1 = 'After Hours Call Flow - Greeting'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         try {
           $AfterHoursGreetingObject = New-TeamsAutoAttendantPrompt -String "$AfterHoursGreeting"
           if ($AfterHoursGreetingObject) {
@@ -849,16 +852,17 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       $CurrentOperationID1 = 'After Hours Call Flow - Building Call Flow'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       # Adding After Hours Call Flow
       $AfterHoursCallFlowParameters.Menu = $AfterHoursMenuObject
       $AfterHoursCallFlow = New-CsAutoAttendantCallFlow @AfterHoursCallFlowParameters
       Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Flow created"
       if ($Parameters.ContainsKey('CallFlows')) {
-        $Parameters.CallFlows.Add($AfterHoursCallFlow)
+        $Parameters.CallFlows += $AfterHoursCallFlow
+        #$Parameters.CallFlows.Add($AfterHoursCallFlow)
       }
       else {
-        $Parameters += @{'CallFlows' = $AfterHoursCallFlow }
+        $Parameters += @{'CallFlows' = @($AfterHoursCallFlow) }
       }
 
       # Adding Call Flow ID(s) to Call handling Associations
@@ -868,12 +872,13 @@ function New-TeamsAutoAttendant {
 
       #region After Hours Schedule & Call Handling Association
       $CurrentOperationID1 = 'Schedule & Call Handling Association'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $AfterHoursCallHandlingAssociationParams.ScheduleId = $Schedule.Id
       $AfterHoursCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @AfterHoursCallHandlingAssociationParams
       Write-Information "INFO:    Auto Attendant '$NameNormalised' After Hours Call Flow - Call Handling Association created with Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
-        $Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
+        $Parameters.CallHandlingAssociation += $AfterHoursCallHandlingAssociation
+        #$Parameters.CallHandlingAssociation.Add($AfterHoursCallHandlingAssociation)
       }
       else {
         $Parameters += @{'CallHandlingAssociation' = @($AfterHoursCallHandlingAssociation) }
@@ -885,12 +890,12 @@ function New-TeamsAutoAttendant {
     #region HolidaySet Call Flow
     #Initialising Variables for Call Handling Association
     $HolidaySetCallHandlingAssociationParams = @{}
-    $HolidaySetCallHandlingAssociationParams.Type = 'HolidaySet'
+    $HolidaySetCallHandlingAssociationParams.Type = 'Holiday' # HolidaySet does not work anymore!?
 
     # Processing HolidaySetsCallFlowOption
     if ($HolidaySetCallFlowOption -and -not $PSBoundParameters.ContainsKey('CallFlows')) {
       $CurrentOperationID1 = 'Holiday Call Flow - Call Flows & Call Flow Option'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       # Option Selected
       Write-Verbose -Message "'$NameNormalised' CallFlow - No Custom Object - Processing 'HolidaySetCallFlowOption'..."
       $HolidaySetCallFlowParameters = @{}
@@ -951,7 +956,7 @@ function New-TeamsAutoAttendant {
       #region HolidaySetGreeting
       if ($PSBoundParameters.ContainsKey('HolidaySetGreeting')) {
         $CurrentOperationID1 = 'Holiday Call Flow - Greeting'
-        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+        Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
         try {
           $HolidaySetGreetingObject = New-TeamsAutoAttendantPrompt -String "$HolidaySetGreeting"
           if ($HolidaySetGreetingObject) {
@@ -967,16 +972,17 @@ function New-TeamsAutoAttendant {
 
       #region Building Call Flow
       $CurrentOperationID1 = 'Holiday Call Flow - Building Call Flow'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       # Adding Holiday Set Call Flow
       $HolidaySetCallFlowParameters.Menu = $HolidaySetMenuObject
       $HolidaySetCallFlow = New-CsAutoAttendantCallFlow @HolidaySetCallFlowParameters
       Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Flow created"
       if ($Parameters.ContainsKey('CallFlows')) {
-        $Parameters.CallFlows.Add($HolidaySetCallFlow)
+        $Parameters.CallFlows += $HolidaySetCallFlow
+        #$Parameters.CallFlows.Add($HolidaySetCallFlow)
       }
       else {
-        $Parameters += @{'CallFlows' = $HolidaySetCallFlow }
+        $Parameters += @{'CallFlows' = @($HolidaySetCallFlow) }
       }
 
       # Adding Call Flow ID(s) to Call handling Associations
@@ -986,12 +992,13 @@ function New-TeamsAutoAttendant {
 
       #region Holiday Set Schedule & Call Handling Association
       $CurrentOperationID1 = 'Holiday Call Flow - Schedule & Call Handling Association'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
       $HolidaySetCallHandlingAssociationParams.ScheduleId = $HolidaySchedule.Id
       $HolidaySetCallHandlingAssociation = New-CsAutoAttendantCallHandlingAssociation @HolidaySetCallHandlingAssociationParams
       Write-Information "INFO:    Auto Attendant '$NameNormalised' Holiday Set Call Flow - Call Handling Association created with Holiday Schedule"
       if ($Parameters.ContainsKey('CallHandlingAssociation')) {
-        $Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)
+        $Parameters.CallHandlingAssociation += $HolidaySetCallHandlingAssociation
+        #$Parameters.CallHandlingAssociation.Add($HolidaySetCallHandlingAssociation)
       }
       else {
         $Parameters += @{'CallHandlingAssociation' = @($HolidaySetCallHandlingAssociation) }
@@ -1003,7 +1010,7 @@ function New-TeamsAutoAttendant {
 
     #region Inclusion and Exclusion Scope
     $CurrentOperationID1 = 'Dial Scopes - Inclusion & Exclusion Scope'
-    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+    Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($private:CountID1++) -Of $private:StepsID1
     # Inclusion Scope
     if ($PSBoundParameters.ContainsKey('InclusionScope')) {
       Write-Verbose -Message "'$NameNormalised' InclusionScope provided. Using as-is"
@@ -1045,7 +1052,7 @@ function New-TeamsAutoAttendant {
     # Create AA (New-CsAutoAttendant)
     $StatusID0 = 'Creating Auto Attendant'
     $CurrentOperationID0 = "'$NameNormalised'"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSCmdlet.ShouldProcess("$NameNormalised", 'New-CsAutoAttendant')) {
       try {
         # Create the Auto Attendant with all enumerated Parameters passed through splatting
@@ -1066,7 +1073,7 @@ function New-TeamsAutoAttendant {
     #region OUTPUT
     $StatusID0 = 'Validation'
     $CurrentOperationID0 = 'Querying Object'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     $AAFinal = Get-TeamsAutoAttendant -Name "$NameNormalised" -WarningAction SilentlyContinue
     Write-Progress -Id 0 -Activity $ActivityID0 -Completed
     Write-Output $AAFinal

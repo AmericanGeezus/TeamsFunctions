@@ -4,7 +4,7 @@
 # Updated:    20-DEC-2020
 # Status:     Live
 
-#TODO: Privileged Admin Groups buildout
+#TODO: Privileged Admin Groups powershell required. Buildout to commence afterwards
 #TODO: Change validation of Request to return validated setting via GET-AzureADMSRoleAssignment
 
 function Enable-AzureAdAdminRole {
@@ -105,10 +105,9 @@ function Enable-AzureAdAdminRole {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
@@ -235,6 +234,7 @@ function Enable-AzureAdAdminRole {
 
       # Determining Group Assignments
       Write-Verbose -Message "User '$Id' Determining group assignments"
+      Write-Verbose -Message "Querying The AzureAdDirectory Role is performed assuming the  Teams Service Admin (Teams Administrator)"
       #BODGE This assumes Teams Service Admin (Teams Administrator) - may require multiple brushes Try/Catch with "Teams Communications Administrator" as well.
       $Role = Get-AzureADDirectoryRole -Filter "DisplayName eq 'Teams Administrator'"
       $MyGroups = (Get-AzureADDirectoryRoleMember -ObjectId $Role.ObjectId | Where-Object ObjectType -EQ 'Group').ObjectId

@@ -93,13 +93,12 @@ function Get-TeamsResourceAccount {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -107,16 +106,9 @@ function Get-TeamsResourceAccount {
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
     #Initialising Counters
-    $script:StepsID0, $script:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
-    $script:ActivityID0 = $($MyInvocation.MyCommand.Name)
-    [int]$script:CountID0 = [int]$script:CountID1 = 0
-
-    <#
-    # Initialising counters for Progress bars
-    [int]$step = 0
-    [int]$sMax = 2
-    #>
-
+    $private:StepsID0, $private:StepsID1 = Get-WriteBetterProgressSteps -Code $($MyInvocation.MyCommand.Definition) -MaxId 1
+    $private:ActivityID0 = $($MyInvocation.MyCommand.Name)
+    [int] $private:CountID0 = [int] $private:CountID1 = 1
   } #begin
 
   process {
@@ -126,7 +118,7 @@ function Get-TeamsResourceAccount {
     $StatusID0 = 'Information Gathering'
     #region Data gathering
     $CurrentOperationID0 = 'Querying Resource Accounts'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
+    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('UserPrincipalName')) {
       # Default Parameterset
       [System.Collections.ArrayList]$ResourceAccounts = @()
@@ -176,18 +168,14 @@ function Get-TeamsResourceAccount {
 
 
     #region OUTPUT
-    $StatusID0 = "Parsing Information for $($ResourceAccounts.Count) Resource Accounts"
+    Write-Verbose -Message "[PROCESS] Processing found Auto Attendants:  $($ResourceAccounts.Count)"
     # Creating new PS Object
-    $CurrentOperationID0 = $ActivityID1 = "Parsing Resource Accounts"
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($CountID0++) -Of $script:StepsID0
     foreach ($ResourceAccount in $ResourceAccounts) {
-      <# Initialising counters for Progress bars
-      [int]$step = 0
-      [int]$sMax = 7
-      #>
-      $StatusID1 = "'$($ResourceAccount.UserPrincipalName)' - '$($ResourceAccount.DisplayName)'"
-      $CurrentOperationID1 = 'Parsing ApplicationType'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      [int] $private:CountID0 = 1
+      $ActivityID0 = "'$($ResourceAccount.UserPrincipalName)' - '$($ResourceAccount.DisplayName)'"
+      $StatusID0 = 'Parsing'
+      $CurrentOperationID0 = 'Parsing ApplicationType'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       # readable Application type
       if ($PSBoundParameters.ContainsKey('ApplicationType')) {
         $ResourceAccountApplicationType = $ApplicationType
@@ -197,8 +185,8 @@ function Get-TeamsResourceAccount {
       }
 
       # Parsing CsOnlineUser
-      $CurrentOperationID1 = 'Parsing Online Voice Routing Policy'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      $CurrentOperationID0 = 'Parsing Online Voice Routing Policy'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       try {
         #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
         #$CsOnlineUser = Get-CsOnlineUser -Identity "$($ResourceAccount.UserPrincipalName)" -WarningAction SilentlyContinue -ErrorAction Stop
@@ -210,13 +198,13 @@ function Get-TeamsResourceAccount {
 
 
       # Parsing TeamsUserLicense
-      $CurrentOperationID1 = 'Parsing License Assignments'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      $CurrentOperationID0 = 'Parsing License Assignments'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $ResourceAccountLicense = Get-AzureAdUserLicense -Identity "$($ResourceAccount.UserPrincipalName)"
 
       # Phone Number Type
-      $CurrentOperationID1 = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      $CurrentOperationID0 = 'Parsing Online Telephone Numbers (validating Number against Microsoft Calling Plan Numbers)'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       if ($null -ne $ResourceAccount.PhoneNumber) {
         $MSNumber = $null
         $MSNumber = ((Format-StringForUse -InputString "$($ResourceAccount.PhoneNumber)" -SpecialChars 'tel:+') -split ';')[0]
@@ -233,8 +221,8 @@ function Get-TeamsResourceAccount {
       }
 
       # Associations
-      $CurrentOperationID1 = 'Parsing Association'
-      Write-BetterProgress -Id 1 -Activity $ActivityID1 -Status $StatusID1 -CurrentOperation $CurrentOperationID1 -Step ($CountID1++) -Of $script:StepsID1
+      $CurrentOperationID0 = 'Parsing Association'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $Association = Get-CsOnlineApplicationInstanceAssociation -Identity $ResourceAccount.ObjectId -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
       if ( $Association ) {
         $AssociationObject = switch ($Association.ConfigurationType) {
@@ -265,8 +253,8 @@ function Get-TeamsResourceAccount {
         AssociationStatus        = $AssociationStatus.Status
       }
 
-      Write-Progress -Id 1 -Activity $ActivityID1 -Completed
-      #TEST whether the ID0 completion is better placed outside or inside the ForEach
+      # Output
+      Write-Progress -Id 1 -Activity $ActivityID0 -Completed
       Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $ResourceAccountObject
     }

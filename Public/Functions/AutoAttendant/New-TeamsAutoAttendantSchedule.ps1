@@ -35,11 +35,11 @@ function New-TeamsAutoAttendantSchedule {
   .PARAMETER BusinessHoursStart
     Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
     Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule
-    Manual start and end time to be provided in the format "09:00" - 15 minute increments only
+    Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "9:00 AM" or "08:45"
   .PARAMETER BusinessHoursEnd
     Parameter for WeeklyReccurrentSchedule - Option 2: Select a specific Start and End Time
     Predefined business hours. Combined with BusinessDays, forms the WeeklyRecurrentSchedule
-    Manual start and end time to be provided in the format "09:00" - 15 minute increments only
+    Manual start and end time to be provided in 15 minute increments only, leading 0 can be omitted: "5:15 PM" or "17:30"
   .PARAMETER DateTimeRanges
     Parameter for WeeklyReccurrentSchedule - Option 3: Provide a DateTimeRange Object
     Object or Objects defined with New-CsOnlineTimeRange
@@ -109,13 +109,22 @@ function New-TeamsAutoAttendantSchedule {
     [ValidateSet('9to6', '9to5', '9to4', '8to6', '8to5', '8to4', '7to6', '7to5', '7to4', '6to6', '10to6', '0830to1700', '0830to1730', '0800to1730', '0830to1800', '0900to1730', '0930to1730', '0930to1800', '8to12and13to17', '8to12and13to18', '9to12and13to17', '9to12and13to18', '9to13and14to18', '8to12and14to18', 'AllDay')]
     [string]$BusinessHours,
 
-    #IMPROVE This does not allow for AM/PM notation, but for 12:00 and 1200 - improve?
     [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours2')]
-    [ValidatePattern( { '^(?:[01]?\d|2[0-3])(?::)(00|15|30|45)' })]
+    [ValidateScript( {
+        if ($_ -match '^(?:[01]?\d|2[0-3])(?::)(00|15|30|45)[:space:]?([AP]M)?') { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Time can be specified in 12 or 24h notation, leading zeros may be omitted. Minutes must be specified and as a multiple of 15, for example '09:00 AM', '9:15', '5:00PM', '17:15'"
+          return $false
+        }
+      })]
     [string]$BusinessHoursStart,
 
-    [Parameter(Mandatory, ParameterSetName = 'WeeklyBusinessHours2')]
-    [ValidatePattern( { '^(?:[01]?\d|2[0-3])(?::)(00|15|30|45)' })]
+    [Parameter(ParameterSetName = 'WeeklyBusinessHours2')]
+    [ValidateScript( {
+        if ($_ -match '^(?:[01]?\d|2[0-3])(?::)(00|15|30|45)[:space:]?([AP]M)?') { return $true } else {
+          throw [System.Management.Automation.ValidationMetadataException] "Time can be specified in 12 or 24h notation, leading zeros may be omitted. Minutes must be specified and as a multiple of 15, for example '09:00 AM', '9:15', '5:00PM', '17:15'"
+          return $false
+        }
+      })]
     [string]$BusinessHoursEnd,
 
     [Parameter(Mandatory, ParameterSetName = 'WeeklyTimeRange')]
@@ -131,13 +140,12 @@ function New-TeamsAutoAttendantSchedule {
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Asserting AzureAD Connection
-    if (-not (Assert-AzureADConnection)) { break }
+    if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if (-not (Assert-MicrosoftTeamsConnection)) { break }
+    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -185,9 +193,22 @@ function New-TeamsAutoAttendantSchedule {
     }
     else {
       # Differentiating between BusinessHours and BusinessHoursStart/End
-      if ($PSBoundParameters.ContainsKey('BusinessHoursStart') -and $PSBoundParameters.ContainsKey('BusinessHoursEnd')) {
+      if ($PSBoundParameters.ContainsKey('BusinessHoursStart')) {
+        Write-Verbose -Message "[PROCESS] Processing BusinessHoursStart '$BusinessHoursStart'"
+        if ( $BusinessHoursStart -match 'AM|PM') { $BusinessHoursStart = '{0:HH:mm}' -f [datetime]$Businesshoursstart }
+        if ($PSBoundParameters.ContainsKey('BusinessHoursEnd')) {
+          Write-Verbose -Message "[PROCESS] Processing BusinessHoursEnd '$BusinessHoursEnd'"
+          if ( $BusinessHoursEnd -match 'AM|PM') { $BusinessHoursEnd = '{0:HH:mm}' -f [datetime]$BusinessHoursEnd }
+        }
+        else {
+          Write-Verbose -Message '[PROCESS] Assuming BusinessHoursEnd is at midnight'
+          $BusinessHoursEnd = "00:00"
+        }
+
         Write-Verbose -Message "[PROCESS] Processing BusinessHoursStart '$BusinessHoursStart' and BusinessHoursEnd '$BusinessHoursEnd'"
         if ($BusinessHoursStart -gt $BusinessHoursEnd) {
+          Write-Warning -Message 'BusinessHoursEnd not specified or set before BusinessHoursStart. Assuming setup to midnight!'
+          $BusinessHoursEnd = '00:00'
           $TimeFrame = New-CsOnlineTimeRange -Start $BusinessHoursStart -End 1.$BusinessHoursEnd
         }
         else {

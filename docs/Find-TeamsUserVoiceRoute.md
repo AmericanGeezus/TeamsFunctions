@@ -12,8 +12,14 @@ Returns Voice Route for a User and a dialed number
 
 ## SYNTAX
 
+### UserPrincipalName (Default)
 ```
 Find-TeamsUserVoiceRoute [-UserPrincipalName] <String[]> [-DialedNumber <String[]>] [<CommonParameters>]
+```
+
+### Object
+```
+Find-TeamsUserVoiceRoute [-Object] <Object[]> [-DialedNumber <String[]>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -49,14 +55,31 @@ Returns one object for each number as they might be routed through different ent
 
 ## PARAMETERS
 
+### -Object
+Required for Parameterset Object.
+CsOnlineUser Object passed to the function to reduce query time.
+User must have a valid Voice Configuration applied for this script to return a valuable result
+
+```yaml
+Type: Object[]
+Parameter Sets: Object
+Aliases:
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
 ### -UserPrincipalName
-Required.
-Username or UserPrincipalname of the User to query Online Voice Routing Policy and Tenant Dial Plan
+Required for Parameterset UserPrincipalName.
+UserPrincipalName of the User to query.
 User must have a valid Voice Configuration applied for this script to return a valuable result
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: UserPrincipalName
 Aliases: ObjectId, Identity
 
 Required: True

@@ -4,9 +4,17 @@ Pre-releases are documented here and will be transferred to VERSION.md monthly i
 
 ## unreleased/vNext
 
-[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2239-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
+[![Passed Tests](https://img.shields.io/badge/Tests%20Passed-2262-blue.svg)](https://github.com/DEberhardt/TeamsFunctions)
 
-Major refactoring for support of MicrosoftTeams v2.6.0
+TBC
+
+### New
+
+- tbc
+
+### Updated
+
+- `Find-TeamsResourceAccount`: Fixed an issue with PhoneNumber not being displayed properly
 
 ### Draft - Look ahead
 

@@ -58,15 +58,16 @@ function Assert-TeamsAudioFile {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
-    Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
+    #Show-FunctionStatus -Level Live
+    #Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
   } #begin
 
   process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     # Testing File
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing AudioFile: '$File'"
     if (-not (Test-Path $File)) {
       Write-Error -Message "AudioFile: '$File': not found!"
       return $false
@@ -81,6 +82,6 @@ function Assert-TeamsAudioFile {
   } #process
 
   end {
-    Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
+    #Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
   } #end
 } #Assert-TeamsAudioFile

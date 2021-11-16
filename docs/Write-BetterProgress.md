@@ -13,7 +13,7 @@ Wrapper for Write-Progress to improve consistency with output
 ## SYNTAX
 
 ```
-Write-BetterProgress [-ID] <Int32> [[-ParentId] <Int32>] [-Activity] <String> [-Status] <String>
+Write-BetterProgress [-ID] <Int32> [[-ParentId] <Int32>] [-Activity] <String> [[-Status] <String>]
  [[-CurrentOperation] <String>] [-Step] <Int32> [[-Of] <Int32>] [<CommonParameters>]
 ```
 
@@ -24,13 +24,49 @@ This function improves upon Write-Progress to display more consistent and meanin
 
 ### EXAMPLE 1
 ```
-Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -Step $i -of 10
+Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Step $i -of 10
 ```
 
 Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
 Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
 
 ### EXAMPLE 2
+```
+Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -Step $i -of 10
+```
+
+Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+Displays the Status
+
+### EXAMPLE 3
+```
+Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -CurrentOperation "Task X" -Step $i -of 10
+```
+
+Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+Displays the Current Operation
+
+### EXAMPLE 4
+```
+Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "Step $i" -CurrentOperation "Task X" -Step $i -of 10
+```
+
+Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+Displays the Status and the Current Operation
+
+### EXAMPLE 5
+```
+Write-BetterProgress -Id 0 -Activity $MyInvocation.MyCommand -Status "" -CurrentOperation "" -Step $i -of 10
+```
+
+Assumes running an a foreach loop of 'foreach ($i in (1..10)) {Write-BetterProgress -Id 0...}'
+Displays the Progress for ID 0 - with the activity set to the calling command (useful when used in a Function)
+Contrary to Write-Progress, allows passing of empty strings to the omit displays of Status and/or Current Operation
+
+### EXAMPLE 6
 ```
 Write-BetterProgress -Id 1 -Activity "Processing Item #$i" -Status "Step $i - Substep $j" -Step $j -of 10
 ```
@@ -39,7 +75,7 @@ Assumes running an a foreach loop of 'foreach ($j in (1..10)) {Write-BetterProgr
 Displays the Progress for ID 1 - with the activity set to the calling command (useful when used in a Function)
 NOTE: The ParentId is set to 0 automatically (one less than the ID provided, unless Parameter ParentId is used)
 
-### EXAMPLE 3
+### EXAMPLE 7
 ```
 Write-BetterProgress -Id 2 -ParentId 1 -Activity 'Looping through Activities' -CurrentOperation 'Displaying Level 3' -Status "Step $i - Substep $j - iteration $k" -Step $k -of 10
 ```
@@ -116,7 +152,7 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 4
 Default value: None
 Accept pipeline input: False

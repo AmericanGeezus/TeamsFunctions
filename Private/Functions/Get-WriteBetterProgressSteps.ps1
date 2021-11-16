@@ -34,7 +34,7 @@ function Get-WriteBetterProgressSteps {
 	#>
 
   [CmdletBinding()]
-  [OutputType([Boolean])]
+  [OutputType([System.Int32])]
   param(
     [Parameter(Mandatory)]
     $Code,
@@ -68,7 +68,8 @@ function Get-WriteBetterProgressSteps {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
     0..$MaxId | ForEach-Object {
-      $Steps = ($ScriptAst.Extent.Text -Split "Write-BetterProgress -Id $_ " | Measure-Object | Select-Object -ExpandProperty Count) -1
+      Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing available Steps for ID:$_"
+      $Steps = ($ScriptAst.Extent.Text -Split "Write-BetterProgress -Id $_ " | Measure-Object | Select-Object -ExpandProperty Count) - 2 # Deducting two to be precise
       if ($PSBoundParameters.ContainsKey('Debug')) { "Function: '$FunctionCalling': Steps for Level $_`: $Steps" | Write-Debug }
       Write-Output $Steps
     }

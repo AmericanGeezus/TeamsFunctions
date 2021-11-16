@@ -4,7 +4,7 @@
 # Updated:  14-FEB-2021
 # Status:   Live
 
-#TODO Add Parameter LicenseName and/or SearchString to query?
+
 
 
 function Get-AzureAdLicense {
@@ -13,6 +13,8 @@ function Get-AzureAdLicense {
     License information for AzureAD Licenses related to Teams
   .DESCRIPTION
     Returns an Object containing all Teams related Licenses
+  .PARAMETER SearchString
+    Optional. Filters output for String found in Parameters ProductName or SkuPartNumber
   .PARAMETER FilterRelevantForTeams
     Optional. By default, shows all 365 Licenses
     Using this switch, shows only Licenses relevant for Teams
@@ -47,13 +49,15 @@ function Get-AzureAdLicense {
   [OutputType([Object[]])]
   param(
     [Parameter()]
+    [String]$SearchString,
+
+    [Parameter()]
     [switch]$FilterRelevantForTeams
   ) #param
 
   begin {
     Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
-    Write-Verbose -Message "Need help? Online:  $global:TeamsFunctionsHelpURLBase$($MyInvocation.MyCommand)`.md"
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -469,6 +473,10 @@ function Get-AzureAdLicense {
     $ProductsSorted = $Products | Sort-Object ProductName | Sort-Object LicenseType -Desc
     if ($FilterRelevantForTeams) {
       $ProductsSorted = $ProductsSorted | Where-Object { $_.ParameterName -NE '' -or $_.IncludesTeams -or $_.IncludesPhoneSystem }
+    }
+
+    if ( $PSBoundParameters.ContainsKey('SearchString') ) {
+      $ProductsSorted = $ProductsSorted | Where-Object { $_.ProductName -like "*$SearchString*" -or $_.SkuPartNumber -like "*$SearchString*" }
     }
 
     return $ProductsSorted
