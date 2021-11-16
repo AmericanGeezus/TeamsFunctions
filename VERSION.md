@@ -57,7 +57,11 @@ This Changelog includes the changes from the v21.10.31-prerelease
   - Added Warning for SIP Address not specified (not enabled for Teams)
   - Added Warning for MCOValidationError incl. the Error Description
 - `Get-TeamsResourceAccount`: Added the Exception message to "Account not found" to feed back the error (RBAC)
-- `New-TeamsResourceAccount`: Increased time to wait for Account creation to 60s
+- `New-TeamsResourceAccount`:
+  - Increased time to wait for Account creation to 60s
+  - Fixed an issue validating the License for ResourceAccounts
+- `Set-TeamsResourceAccount`:
+  - Fixed an issue validating the License for ResourceAccounts
 - `Find-TeamsUserVoiceRoute`:
   - Fixed an issue displaying the TDP instead of the OVP for the OnlineVoiceRoutingPolicy for v2.5.x
   - Refactored function to accept CsOnlineUser Object
