@@ -170,7 +170,7 @@ function Assert-TeamsCallableEntity {
         return $true
       }
       else {
-        $ErrorMessage = "Target '$Identity' found and licensed, but not enabled for EnterpriseVoice!"
+        $ErrorMessage = "Target '$Identity' found and licensed, but not enabled for EnterpriseVoice (unable to enable user - please verify)!"
         if ($Terminate) {
           throw $ErrorMessage
         }

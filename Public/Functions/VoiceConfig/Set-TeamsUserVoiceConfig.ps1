@@ -329,8 +329,8 @@ function Set-TeamsUserVoiceConfig {
             # Checking number is free
             Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number -WarningAction SilentlyContinue
-            $UserWithThisNumberIsSelf = $UserWithThisNumber | Where-Object UserPrincipalName -EQ $UserPrincipalName
-            $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object UserPrincipalName -NE $UserPrincipalName
+            $UserWithThisNumberIsSelf = $UserWithThisNumber | Where-Object {$_.UserPrincipalName -EQ $UserPrincipalName -or $_.SIPAddress -EQ $UserPrincipalName }
+            $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object { -not ($_.UserPrincipalName -EQ $UserPrincipalName -or $_.SIPAddress -EQ $UserPrincipalName) }
             if ( $UserWithThisNumberIsSelf ) {
               if ($Force) {
                 Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Assigned to self, will be reapplied"

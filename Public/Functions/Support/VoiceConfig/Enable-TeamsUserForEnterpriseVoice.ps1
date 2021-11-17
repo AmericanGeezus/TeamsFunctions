@@ -89,7 +89,9 @@ function Enable-TeamsUserForEnterpriseVoice {
     #region Worker Function
     function EnableEV ($UserObject, $UserLicense, $Called, $Force) {
       Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-      $Id = $($UserObject.UserPrincipalName)
+      #TEST Switching to SIP Address for better supportability
+      #$Id = $($UserObject.UserPrincipalName)
+      $Id = $($UserObject.SipAddress)
       Write-Verbose -Message "[PROCESS] Enabling User '$Id' for Enterprise Voice"
 
       if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
