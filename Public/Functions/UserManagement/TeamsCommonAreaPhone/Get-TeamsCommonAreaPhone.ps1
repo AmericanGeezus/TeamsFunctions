@@ -184,7 +184,8 @@ function Get-TeamsCommonAreaPhone {
     #region Information Gathering
     # Creating new PS Object
     [int] $private:CountID0 = 1
-    [int] $private:StepsID0 = $private:CountID0 + $CommonAreaPhones.Count
+    #TEST Application of ID1
+    [int] $private:StepsID0 = $private:StepsID0 * $(if ($CommonAreaPhones.IsArray) { $CommonAreaPhones.Count } else { 1 })
     foreach ($CommonAreaPhone in $CommonAreaPhones) {
       [int] $private:CountID1 = 1
       $StatusID0 = $CurrentOperationID0 = ''
