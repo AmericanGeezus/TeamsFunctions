@@ -4,9 +4,8 @@
 # Updated:  28-DEC-2020
 # Status:   Live
 
-#TODO Refactor to accept User Object for input as well as UPN, then use for parsing for other functions.
 #TODO Test performance for Voice Routing only.
-#TODO Create separate function for determination of OVP/OPU/OVR - Add to Get-TeamsOVP when called with Identity
+
 
 function Find-TeamsUserVoiceRoute {
   <#
