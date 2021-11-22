@@ -4,8 +4,8 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-
-
+#TODO Add Sync functionality - triggering Sync-CsOnlineApplicationInstance -ObjectId $RA.ObjectId
+#TODO Check out Compliance Recording Policy integration with RAs & Policy
 
 function New-TeamsResourceAccount {
   <#

@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   Live
 
-
+#TODO Add Sync functionality - triggering Sync-CsOnlineApplicationInstance -ObjectId $RA.ObjectId
 
 
 function Set-TeamsResourceAccount {
