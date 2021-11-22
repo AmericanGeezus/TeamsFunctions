@@ -306,7 +306,8 @@ function Get-TeamsUserVoiceConfig {
             $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
             # Query for User Location
             try {
-              $UserLocation = (Get-CsOnlineVoiceUser $CsUser).Location
+              $VoiceUser = Get-CsOnlineVoiceUser $CsUser -Erroraction SilentlyContinue
+              $UserLocation = if ( $VoiceUser ) { $VoiceUser.Location } else { $null }
               $UserAssignedAddress = if ( $UserLocation ) { (Get-CsOnlineLisLocation -LocationId $UserLocation).Description } else { $null }
             }
             catch {
