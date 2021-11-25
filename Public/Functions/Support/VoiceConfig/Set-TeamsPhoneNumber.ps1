@@ -300,7 +300,7 @@ function Set-TeamsPhoneNumber {
         # Previous assignments
         if ( $PhoneNumber ) {
           $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $PhoneNumber -WarningAction SilentlyContinue
-          $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object UserPrincipalName -NE $UserPrincipalName
+          $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object UserPrincipalName -NE $UserObject.UserPrincipalName
         }
         else {
           $UserWithThisNumber = $UserWithThisNumberExceptSelf = $null
