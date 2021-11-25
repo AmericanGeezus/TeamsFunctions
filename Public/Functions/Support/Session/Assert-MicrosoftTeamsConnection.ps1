@@ -79,9 +79,15 @@ function Assert-MicrosoftTeamsConnection {
             $null = Connect-MicrosoftTeams
           }
           elseif ( $_.Exception.Message -match 'The WinRM client received an HTTP status code of 403' ) {
-            Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Timed out - trying to reconnect!' -Verbose
-            $null = Connect-MicrosoftTeams
-            return ( Assert-MicrosoftTeamsConnection )
+            if ($stack.length -lt 4) {
+              Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Timed out - trying to reconnect!' -Verbose
+              $null = Connect-MicrosoftTeams
+              return ( Assert-MicrosoftTeamsConnection )
+            }
+            else {
+              Write-Error -Message '[ASSERT] MicrosoftTeams Session - Connection Denied - Please check your Admin Roles before trying to reconnect!' -Verbose
+              return $(if ($Called) { $false })
+            }
           }
           else {
             Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - No connection established or reconnect unsuccessful' -ForegroundColor Red
