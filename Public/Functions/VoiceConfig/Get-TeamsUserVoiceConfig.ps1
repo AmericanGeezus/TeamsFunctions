@@ -93,7 +93,7 @@ function Get-TeamsUserVoiceConfig {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -140,15 +140,15 @@ function Get-TeamsUserVoiceConfig {
           Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
           $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction STOP
           $CsUser = $AdUser
-          Write-Warning -Message "User '$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
+          Write-Warning -Message "'$User' - found in AzureAd but not in Teams (CsOnlineUser)!"
           Write-Verbose -Message 'You may receive this message if no License containing Teams is assigned or the Teams ServicePlan (TEAMS1) is disabled! Please validate the User License. No further validation is performed. The Object returned only contains data from AzureAd' -Verbose
         }
         catch [Microsoft.Open.AzureAD16.Client.ApiException] {
-          Write-Error -Message "User '$User' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$User' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
+          Write-Error -Message "'$User' not found in Teams (CsOnlineUser) nor in Azure Ad (AzureAdUser). Please validate UserPrincipalName. Exception message: Resource '$User' does not exist or one of its queried reference-property objects are not present." -Category ObjectNotFound
           continue
         }
         catch {
-          Write-Error -Message "User '$User' not found. Error encountered: $($_.Exception.Message)" -Category ObjectNotFound
+          Write-Error -Message "'$User' not found. Error encountered: $($_.Exception.Message)" -Category ObjectNotFound
           continue
         }
       }
@@ -268,7 +268,7 @@ function Get-TeamsUserVoiceConfig {
 
         #Info about PhoneSystemStatus (suppressing feedback if AzureAdUser is already populated)
         if ( -not $CsUserLicense.PhoneSystemStatus.Contains('Success') -and -not $AdUser) {
-          Write-Warning -Message "User '$User' - PhoneSystemStatus is not Success. User cannot be configured for Voice"
+          Write-Warning -Message "'$User' - PhoneSystemStatus is not Success. User cannot be configured for Voice"
         }
         $UserObject | Add-Member -MemberType NoteProperty -Name CurrentCallingPlan -Value $CsUserLicense.CallingPlan
         $UserObject | Add-Member -MemberType NoteProperty -Name PhoneSystemStatus -Value $CsUserLicense.PhoneSystemStatus
@@ -306,7 +306,7 @@ function Get-TeamsUserVoiceConfig {
             $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
             # Query for User Location
             try {
-              $VoiceUser = Get-CsOnlineVoiceUser $CsUser -Erroraction SilentlyContinue
+              $VoiceUser = Get-CsOnlineVoiceUser $CsUser -ErrorAction SilentlyContinue
               $UserLocation = if ( $VoiceUser ) { $VoiceUser.Location } else { $null }
               $UserAssignedAddress = if ( $UserLocation ) { (Get-CsOnlineLisLocation -LocationId $UserLocation).Description } else { $null }
             }
@@ -343,7 +343,7 @@ function Get-TeamsUserVoiceConfig {
                 $AdUser = Get-AzureADUser -ObjectId "$User" -WarningAction SilentlyContinue -ErrorAction Stop
               }
               catch {
-                Write-Warning -Message "User '$User' not found in AzureAD. Some data will not be available"
+                Write-Warning -Message "'$User' not found in AzureAD. Some data will not be available"
               }
             }
 

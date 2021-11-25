@@ -45,14 +45,13 @@ function Test-MicrosoftTeamsConnection {
     $Called = ($stack.length -ge 3)
 
     #if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
-    
+
   } #begin
 
   process {
     #Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     try {
       Write-Debug -Message 'This CmdLet detects a PSSession being created to be usable for Teams. As Microsoft updates more CmdLets not requiring this, this Cmdlet may become obsolete'
-      <#
       # Retained for later, as the CmdLets requiring/creating a PsSession are getting less and less
       if ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 ) {
         $VerbosePreference = 'SilentlyContinue'
@@ -61,33 +60,31 @@ function Test-MicrosoftTeamsConnection {
         if ( $Tenant ) { return $true } else { return $false }
       }
       else {
-        #>
-      $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
-      if ($Sessions.Count -lt 1) {
-        Write-Verbose 'No Teams Session found, not assuming a connection to MicrosoftTeams has been established.'
-        return $false
-      }
-      if ($Sessions.Count -ge 1) {
-        if (-not $Called) {
-          Write-Verbose 'Teams Session found'
-        }
-        $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
-        if ($Sessions.Count -ge 1) {
-          if (-not $Called) {
-            Write-Verbose 'Teams Session found, open and valid'
-          }
-          return $true
-        }
-        else {
-          Write-Verbose 'Teams Session found, but not open and valid'
+        $Sessions = Get-PSSession -WarningAction SilentlyContinue | Where-Object { $_.ComputerName -eq 'api.interfaces.records.teams.microsoft.com' }
+        if ($Sessions.Count -lt 1) {
+          Write-Verbose 'No Teams Session found, not assuming a connection to MicrosoftTeams has been established.'
           return $false
         }
+        if ($Sessions.Count -ge 1) {
+          if (-not $Called) {
+            Write-Verbose 'Teams Session found'
+          }
+          $Sessions = $Sessions | Where-Object { $_.State -eq 'Opened' -and $_.Availability -eq 'Available' }
+          if ($Sessions.Count -ge 1) {
+            if (-not $Called) {
+              Write-Verbose 'Teams Session found, open and valid'
+            }
+            return $true
+          }
+          else {
+            Write-Verbose 'Teams Session found, but not open and valid'
+            return $false
+          }
+        }
       }
-      #}
       else {
         return $false
       }
-      #<#
     }
     catch {
       return $false
