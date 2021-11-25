@@ -97,7 +97,7 @@ function Enable-TeamsUserForEnterpriseVoice {
       if ( -not $global:TeamsFunctionsMSTeamsModule) { $global:TeamsFunctionsMSTeamsModule = Get-Module MicrosoftTeams }
 
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
-        $Message = "User '$Id' is not hosted in Teams!"
+        $Message = "'$Id' is not hosted in Teams!"
         if ($Called) {
           Write-Warning -Message $Message
           #return $false
@@ -120,7 +120,7 @@ function Enable-TeamsUserForEnterpriseVoice {
         }
       }
       elseif ( -not $UserLicense.PhoneSystem ) {
-        $Message = "User '$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required)!"
+        $Message = "'$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required)!"
         if ($Called) {
           Write-Warning -Message $Message
           return $false
@@ -131,7 +131,7 @@ function Enable-TeamsUserForEnterpriseVoice {
         return $(if ($Called) { $false })
       }
       elseif ( -not [string]$UserLicense.PhoneSystemStatus.contains('Success') ) {
-        $Message = "User '$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required to be enabled)!"
+        $Message = "'$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required to be enabled)!"
         if ($Called) {
           Write-Warning -Message $Message
           return $false
@@ -145,13 +145,13 @@ function Enable-TeamsUserForEnterpriseVoice {
           return $true
         }
         else {
-          Write-Verbose -Message "User '$Id' Enterprise Voice Status: User is already enabled!" -Verbose
+          Write-Verbose -Message "'$Id' Enterprise Voice Status: User is already enabled!" -Verbose
           #Enabling HostedVoicemail is done silently (just in case)
           $null = Set-CsUser -Identity $Id -HostedVoiceMail $TRUE -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
         }
       }
       else {
-        Write-Information "TRYING:  User '$Id' - Enterprise Voice Status: Not enabled, trying to enable"
+        Write-Information "TRYING:  '$Id' - Enterprise Voice Status: Not enabled, trying to enable"
         try {
           if ($Force -or $PSCmdlet.ShouldProcess("$Id", 'Enabling User for EnterpriseVoice')) {
             $null = Set-CsUser -Identity $Id -EnterpriseVoiceEnabled $TRUE -HostedVoiceMail $TRUE -ErrorAction STOP
@@ -163,7 +163,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             Write-Verbose -Message "$Status - $Operation"
             do {
               if ($i -gt $iMax) {
-                Write-Error -Message "User '$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
+                Write-Error -Message "'$Id' - Enterprise Voice Status: FAILED (User status has not changed in the last $iMax Seconds" -Category LimitsExceeded -RecommendedAction 'Please verify Object has been enabled (EnterpriseVoiceEnabled)'
                 return $false
               }
               Write-Progress -Id 0 -Activity $Activity -Status $Status -CurrentOperation $Operation -SecondsRemaining $($iMax - $i) -PercentComplete (($i * 100) / $iMax)
@@ -177,12 +177,12 @@ function Enable-TeamsUserForEnterpriseVoice {
               return $true
             }
             else {
-              Write-Verbose -Message "User '$Id' - Enterprise Voice Status: SUCCESS" -Verbose
+              Write-Verbose -Message "'$Id' - Enterprise Voice Status: SUCCESS" -Verbose
             }
           }
         }
         catch {
-          $Message = "User '$Id' - Error enabling user for Enterprise Voice: $($_.Exception.Message)"
+          $Message = "'$Id' - Error enabling user for Enterprise Voice: $($_.Exception.Message)"
           if ($Called) {
             Write-Warning -Message $Message
             return $false
@@ -209,7 +209,7 @@ function Enable-TeamsUserForEnterpriseVoice {
             $UserLicense = Get-AzureAdUserLicense "$User"
           }
           catch {
-            Write-Error "User '$User' not found" -Category ObjectNotFound
+            Write-Error "'$User' not found" -Category ObjectNotFound
             continue
           }
           EnableEV -UserObject $CsUser -UserLicense $UserLicense @Parameters

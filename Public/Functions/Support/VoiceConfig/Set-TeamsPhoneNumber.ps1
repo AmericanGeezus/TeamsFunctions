@@ -181,7 +181,7 @@ function Set-TeamsPhoneNumber {
       #region Validating Object
       # Object Location (OnPrem VS Online)
       if ( $UserObject.InterpretedUserType -match 'OnPrem' ) {
-        $Message = "User '$Id' is not hosted in Teams!"
+        $Message = "'$Id' is not hosted in Teams!"
         if ($Called) {
           Write-Warning -Message $Message
           #return $false
@@ -214,7 +214,7 @@ function Set-TeamsPhoneNumber {
 
       #region Validating License
       if ( -not $UserLicense.PhoneSystem -and -not $UserLicense.PhoneSystemVirtualUser ) {
-        $Message = "User '$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required)!"
+        $Message = "'$Id' Enterprise Voice Status: User is not licensed correctly (PhoneSystem required)!"
         if ($Called) {
           Write-Warning -Message $Message
           return $false
@@ -226,7 +226,7 @@ function Set-TeamsPhoneNumber {
       }
 
       if ( -not [string]$UserLicense.PhoneSystemStatus.contains('Success') ) {
-        Write-Information "TRYING:  User '$Id' - Phone System: Not enabled, trying to enable"
+        Write-Information "TRYING:  '$Id' - Phone System: Not enabled, trying to enable"
         Set-AzureAdUserLicenseServicePlan -UserPrincipalName $UserObject.UserPrincipalName -Enable MCOEV
         $i = 0
         $iMax = 60
@@ -253,11 +253,11 @@ function Set-TeamsPhoneNumber {
         $EVenabled = $true
       }
       else {
-        Write-Information "TRYING:  User '$Id' - Enterprise Voice: Not enabled, trying to enable"
+        Write-Information "TRYING:  '$Id' - Enterprise Voice: Not enabled, trying to enable"
         $EVenabled = Enable-TeamsUserForEnterpriseVoice -UserPrincipalName $UserObject.UserPrincipalName
       }
       if ( -not $EVenabled ) {
-        $Message = "User '$Id' Enterprise Voice: User could not be enabled for Enterprise Voice!"
+        $Message = "'$Id' Enterprise Voice: User could not be enabled for Enterprise Voice!"
         if ($Called) {
           Write-Warning -Message $Message
           return $false
@@ -327,7 +327,7 @@ function Set-TeamsPhoneNumber {
               SetNumber -UserPrincipalName $($UserWTN.UserPrincipalName) -PhoneNumber $null -PhoneNumberIsMSNumber $($UserWtn.InterpretedVoiceConfigType -eq 'CallingPlans') -UserType $UserWTN.ObjectType
             }
             catch {
-              $Message = "User '$Id' - Error scavenging Phone Number: $($_.Exception.Message)"
+              $Message = "'$Id' - Error scavenging Phone Number: $($_.Exception.Message)"
               if ($Called) {
                 Write-Warning -Message $Message
                 return $false
@@ -347,7 +347,7 @@ function Set-TeamsPhoneNumber {
           SetNumber -UserPrincipalName $Id -PhoneNumber $null -PhoneNumberIsMSNumber $PhoneNumberIsMSNumber -UserType $UserType
         }
         catch {
-          $Message = "User '$Id' - Error removing Phone Number: $($_.Exception.Message)"
+          $Message = "'$Id' - Error removing Phone Number: $($_.Exception.Message)"
           if ($Called) {
             Write-Warning -Message $Message
             return $false
@@ -365,7 +365,7 @@ function Set-TeamsPhoneNumber {
           SetNumber -UserPrincipalName $Id -PhoneNumber $PhoneNumber -PhoneNumberIsMSNumber $PhoneNumberIsMSNumber -UserType $UserType
         }
         catch {
-          $Message = "User '$Id' - Error applying Phone Number: $($_.Exception.Message)"
+          $Message = "'$Id' - Error applying Phone Number: $($_.Exception.Message)"
           if ($Called) {
             Write-Warning -Message $Message
             return $false
@@ -398,7 +398,7 @@ function Set-TeamsPhoneNumber {
             $UserLicense = Get-AzureAdUserLicense "$User"
           }
           catch {
-            Write-Error "User '$User' not found" -Category ObjectNotFound
+            Write-Error "'$User' not found" -Category ObjectNotFound
             continue
           }
           SetPhoneNumber -UserObject $CsUser -UserLicense $UserLicense @Parameters
