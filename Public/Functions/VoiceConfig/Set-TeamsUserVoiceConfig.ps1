@@ -442,7 +442,7 @@ function Set-TeamsUserVoiceConfig {
             }
           }
           else {
-            Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+            Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned ('$($CsUser.TenantDialPlan)')" -Verbose
           }
         }
       }
@@ -492,7 +492,7 @@ function Set-TeamsUserVoiceConfig {
                 }
               }
               else {
-                Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+                Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned ('$($CsUser.OnlineVoiceRoutingPolicy)')" -Verbose
               }
             }
 
