@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#CHECK SupportsPaging could be added for OVP and TDP? (result size is not managable!)
+#TODO wrap paging parameters in Get-CsOnlineUser query itself to reduce load time?
 
 
 function Find-TeamsUserVoiceConfig {
@@ -30,6 +30,7 @@ function Find-TeamsUserVoiceConfig {
   .PARAMETER ConfigurationType
     Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'.
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
+    Please note, that seaching with ConfigurationType does not support paging
     Please see NOTES for details
   .PARAMETER VoicePolicy
     Optional. Searches all enabled Users which are reported as 'BusinessVoice' or 'HybridVoice'.
@@ -46,34 +47,32 @@ function Find-TeamsUserVoiceConfig {
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
     Please see NOTES for details
   .PARAMETER ValidateLicense
-    Optional. Can be combined only with -ConfigurationType
-    In addition to validation of Parameters, also validates License assignment for the found user.
+    Optional. In addition to validation of Parameters, also validates License assignment for the found user(s).
+    This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return
+    objects that are correctly configured
     License Check is performed AFTER parameters are verified.
   .EXAMPLE
     Find-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
-    Shows Voice Configuration for John, returning the full Object
+    Shows Voice Configuration for John, returning the full Object (query with Get-TeamsUserVoiceConfig)
   .EXAMPLE
     Find-TeamsUserVoiceConfig -PhoneNumber "15551234567"
     Shows all Users which have this String in their LineURI (TelephoneNumber or OnPremLineURI)
-    The expected ResultSize is limited, the full Object is returned (Get-TeamsUserVoiceConfig)
+    The expected ResultSize is limited, if only one result is shown, the full Object is returned (Get-TeamsUserVoiceConfig)
     Please see NOTES for details
   .EXAMPLE
-    Find-TeamsUserVoiceConfig -ConfigurationType CallingPlans
-    Shows all Users which are configured for CallingPlans (Full)
-    The expected ResultSize is big, therefore only Names (UPNs) of Users are returned
-    Pipe to Get-TeamsUserVoiceConfiguration for full output.
+    Find-TeamsUserVoiceConfig -ConfigurationType DirectRouting
+    Shows all Users which are configured for DirectRouting
+    The expected ResultSize is big
     Please see NOTES for details
   .EXAMPLE
     Find-TeamsUserVoiceConfig -VoicePolicy BusinessVoice
     Shows all Users which are configured for PhoneSystem with CallingPlans
     The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
-    Pipe to Get-TeamsUserVoiceConfiguration for full output.
     Please see NOTES and LINK for details
   .EXAMPLE
-    Find-TeamsUserVoiceConfig -OnlineVoiceRoutingPolicy O_VP_EMEA
+    Find-TeamsUserVoiceConfig -OnlineVoiceRoutingPolicy O_VP_EMEA -First 300
     Shows all Users which have the OnlineVoiceRoutingPolicy "O_VP_EMEA" assigned
-    The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
-    Pipe to Get-TeamsUserVoiceConfiguration for full output.
+    Depending on the Size of your tenant, the expected ResultSize is big, paging parameters can help reduce output
     Please see NOTES for details
   .EXAMPLE
     Find-TeamsUserVoiceConfig -TenantDialPlan DP-US
@@ -85,21 +84,26 @@ function Find-TeamsUserVoiceConfig {
     System.String - UserPrincipalName - With any Parameter except Identity or PhoneNumber
     System.Object - With Parameter Identity or PhoneNumber
   .NOTES
-    With the exception of Identity and PhoneNumber, all searches are filtering on Get-CsOnlineUser
+    All searches are filtering on Get-CsOnlineUser and are supporting paging
     This usually should not take longer than a minute to complete.
-    Identity is querying the provided UPN and only wraps Get-TeamsUserVoiceConfig
-    PhoneNumber has to do a full search with 'Where-Object' which will take time to complete
-    Depending on the number of Users in the Tenant, this may take a few minutes!
+    If a single result is found, the object queries the full output through Get-TeamsUserVoiceConfig
+    If more than three results are found, a reduced output is displayed
+    If more than five results are found, only UserPrincipalName, SipAddress and LineUri are displayed
 
-    All Parameters except UserPrincipalName or PhoneNumber will only return UserPrincipalNames (UPNs)
+    Search behaviour:
     - PhoneNumber: Searches against the LineURI parameter. For best compatibility, provide in E.164 format (with or without the +)
     This script can find duplicate assignments if the Number was assigned with and without an extension.
-    - ConfigurationType: This is determined with Test-TeamsUserVoiceConfig -Partial and will return all Accounts found
-    - VoicePolicy: BusinessVoice are PhoneSystem Users exclusively configured for Microsoft Calling Plans.
-      HybridVoice are PhoneSystem Users who are configured for TDR, Hybrid SkypeOnPrem PSTN or Hybrid CloudConnector PSTN breakouts
+    - Extension: Searches against the LineURI parameter and considers all strings after ";ext=" an extension.
+    This script can find duplicate assignments if the Extension was assigned to multiple Numbers.
+    - ConfigurationType: Filtering based on Microsofts Documentation for DirectRouting, SkypeForBusiness Hybrid PSTN and CallingPlans
+    - VoicePolicy:
+      - BusinessVoice are PhoneSystem Users exclusively configured for Microsoft Calling Plans.
+      - HybridVoice are PhoneSystem Users who are configured for TDR, Hybrid SkypeOnPrem PSTN or Hybrid CloudConnector PSTN breakouts
     - OnlineVoiceRoutingPolicy: Finds all users which have this particular Policy assigned
     - TenantDialPlan: Finds all users which have this particular DialPlan assigned.
     Please see Related Link for more information
+
+    Output is designed to be piped to Get-TeamsUserVoiceConfiguration for full evaluation of Licenses and configuration.
   .COMPONENT
     VoiceConfiguration
   .FUNCTIONALITY
@@ -116,7 +120,7 @@ function Find-TeamsUserVoiceConfig {
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   #>
 
-  [CmdletBinding(DefaultParameterSetName = 'Tel')]
+  [CmdletBinding(DefaultParameterSetName = 'Tel', SupportsPaging)]
   [Alias('Find-TeamsUVC')]
   [OutputType([PSCustomObject])]
   param(
@@ -132,11 +136,11 @@ function Find-TeamsUserVoiceConfig {
         }
       })]
     [Alias('Number', 'TelephoneNumber', 'Tel', 'LineURI', 'OnPremLineURI')]
-    [string[]]$PhoneNumber,
+    [string]$PhoneNumber,
 
     [Parameter(ParameterSetName = 'Ext', HelpMessage = 'String to be found in any of the PhoneNumber fields as an Extension')]
     [Alias('Ext')]
-    [string[]]$Extension,
+    [string]$Extension,
 
     [Parameter(ParameterSetName = 'CT', HelpMessage = 'Filters based on Configuration Type')]
     [ValidateSet('CallingPlans', 'SkypeHybridPSTN', 'DirectRouting')]
@@ -156,13 +160,13 @@ function Find-TeamsUserVoiceConfig {
     [Alias('TDP')]
     [String]$TenantDialPlan,
 
-    [Parameter(ParameterSetName = 'CT', HelpMessage = 'Additionally also validates License (CallingPlan or PhoneSystem)')]
+    [Parameter(HelpMessage = 'Additionally also validates License (CallingPlan or PhoneSystem)')]
     [switch]$ValidateLicense
 
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    #Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -179,193 +183,69 @@ function Find-TeamsUserVoiceConfig {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
-    if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-      Write-Warning -Message "The switch 'ValidateLicense' verifies whether the correct license is assigned before considering the User. This increases run-time tremendously!"
-    }
-
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
+    [System.Collections.ArrayList]$Query = @()
+    #region Creating Filter
+    #Filter must be written as-is, e.g '$Filter = 'SipAddress -like "*{0}*"' -f $UserPrincipalName' (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
     switch ($PsCmdlet.ParameterSetName) {
       'ID' {
         Write-Information "TRYING:  Finding Users with SipAddress '$UserPrincipalName'"
-        #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-        $Filter = 'SipAddress -like "*{0}*"' -f $UserPrincipalName
-        $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
-        if (-not $Users) {
-          $MailNickName = $UserPrincipalName.split('@') | Select-Object -First 1
-          Write-Information "TRYING:  Finding Users with MailNickName '$MailNickName'"
-          $Filter = 'MailNickName -like "*{0}*"' -f $MailNickName
-          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue | Select-Object UserPrincipalName
-        }
-
-        if ($Users) {
-          if ($Users.Count -gt 3) {
-            Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-            $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
-          }
-          else {
-            Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each'
-            Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
-          }
-        }
-        else {
-          Write-Verbose -Message "User: '$UserPrincipalName' - No records found (SipAddress)" -Verbose
-        }
+        $Filter = 'SipAddress -like "*{0}*"' -f $UserPrincipalName #Filter must be written as-is
         break
       } #ID
 
       'Tel' {
-        foreach ($PhoneNr in $PhoneNumber) {
-          Write-Verbose -Message "Normalising Input for Phone Number '$PhoneNr'"
-          if ($PhoneNr -match '@') {
-            Find-TeamsUserVoiceConfig -UserPrincipalName "$PhoneNr"
-            continue
-          }
-          elseif ($PhoneNr -match '([0-9]{3,25});ext=([0-9]{3,8})') {
-            $Number = $matches[1] # Phone Number
-            # $Number = $matches[2] # Extension
-          }
-          else {
-            $Number = Format-StringForUse "$($PhoneNr.split(';')[0].split('x')[0])" -SpecialChars 'telx:+() -'
-          }
-          if ( -not $Called) {
-            Write-Information "TRYING:  Finding all Users enabled for Teams with Phone Number string '$Number': Searching..."
-          }
-          #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-          $Filter = 'LineURI -like "*{0}*"' -f $Number
-          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          if ($Users) {
-            if ($Users.Count -gt 1) {
-              Write-Warning -Message "Number: '$Number' - Found multiple Users matching the criteria! If the search string represents the FULL number, it is assigned incorrectly. Inbound calls to this number will not work as Teams will not find a unique match"
-              Write-Verbose -Message "Investigate OnPremLineURI string. Has one of them set an Extension (';ext=') set, the other one not?" -Verbose
-            }
-            if ($Users.Count -gt 3) {
-              Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-              $Users | Select-Object UserPrincipalName, LineUri
-            }
-            else {
-              if ( -not $Called) {
-                Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
-              }
-              Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
-            }
-          }
-          else {
-            if ( -not $Called) {
-              Write-Verbose -Message "Number: '$Number' - No assignments found (LineURI)" -Verbose
-            }
-          }
+        Write-Verbose -Message "Normalising Input for Phone Number '$PhoneNumber'"
+        if ($PhoneNumber -match '([0-9]{3,25});ext=([0-9]{3,8})') {
+          $Number = $matches[1] # Phone Number
+          # $Number = $matches[2] # Extension
         }
+        else {
+          $Number = Format-StringForUse "$($PhoneNumber.split(';')[0].split('x')[0])" -SpecialChars 'telx:+() -'
+        }
+        if ( -not $Called) {
+          Write-Information "TRYING:  Finding all Users enabled for Teams with Phone Number string '$Number': Searching..."
+        }
+        $Filter = 'LineURI -like "*{0}*"' -f $Number #Filter must be written as-is
         break
       } #Tel
 
       'Ext' {
-        foreach ($Ext in $Extension) {
-          Write-Verbose -Message "Normalising Input for Extension '$Ext'"
-          if ($ext -match '([0-9]{3,15})?;?ext=([0-9]{3,8})') {
-            # $Number = $matches[1] # Phone Number
-            # $Number = $matches[2] # Extension
-            $ExtN = 'ext=' + $matches[2]
-          }
-          else {
-            $ExtN = 'ext=' + $ext
-          }
-          if ( -not $Called) {
-            Write-Information "TRYING:  Finding all Users enabled for Teams with Extension '$ExtN': Searching..."
-          }
-          #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-          $Filter = 'LineURI -like "*{0}*"' -f "$ExtN"
-          $Users = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
-          if ($Users) {
-            if ($Users.Count -gt 1) {
-              Write-Warning -Message "Extension: '$ExtN' - Found multiple Users matching the criteria! If the search string represents the FULL extension, it is assigned incorrectly. Inbound calls to this extension may fail depending on normalisation as Teams will not find a unique match"
-              Write-Verbose -Message 'Investigate OnPremLineURI string. Verify unique Extension is applied.' -Verbose
-            }
-            if ($Users.Count -gt 3) {
-              Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-              $Users | Select-Object UserPrincipalName, LineUri
-            }
-            else {
-              if ( -not $Called) {
-                Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
-              }
-              Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
-            }
-          }
-          else {
-            if ( -not $Called) {
-              Write-Verbose -Message "Extension: '$ExtN' - No assignments found (LineURI)" -Verbose
-            }
-          }
+        Write-Verbose -Message "Normalising Input for Extension '$Extension'"
+        if ($Extension -match '([0-9]{3,15})?;?ext=([0-9]{3,8})') {
+          # $Number = $matches[1] # Phone Number
+          # $Number = $matches[2] # Extension
+          $ExtN = 'ext=' + $matches[2]
         }
+        else {
+          $ExtN = 'ext=' + $ext
+        }
+        if ( -not $Called) {
+          Write-Information "TRYING:  Finding all Users enabled for Teams with Extension '$ExtN': Searching..."
+        }
+        $Filter = 'LineURI -like "*{0}*"' -f "$ExtN" #Filter must be written as-is
         break
       } #Ext
 
       'CT' {
-        Write-Verbose -Message 'Searching for all Users enabled for Teams: Searching... This will take quite some time!'
-        $Filter = 'Enabled -eq $TRUE'
-        $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction Stop
-        Write-Verbose -Message "Sifting through Information for $($CsUsers.Count) Users: Parsing..."
-        if ( -not $Called) {
-          Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching... This will take quite some time!"
-        }
+        #TEST Filter - If not working, may need filtering twice (runtime!)
+        Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching..."
         switch ($ConfigurationType) {
           'DirectRouting' {
-            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
-            }
-            foreach ($U in $CsUsers) {
-              if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
-                if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-                  if (Test-TeamsUserLicense $U -ServicePlan MCOEV) {
-                    $U.UserPrincipalName
-                  }
-                }
-                else {
-                  $U.UserPrincipalName
-                }
-              }
-            }
-            break
+            #$Filter = 'VoicePolicy -eq "HybridVoice" -and $null -eq VoiceRoutingPolicy -and ($null -ne OnPremLineURI -or $null -ne OnlineVoiceRoutingPolicy)' #Filter must be written as-is
+            $Filter = 'VoicePolicy -eq "HybridVoice"' #Filter must be written as-is
           }
           'SkypeHybridPSTN' {
-            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
-            }
-            foreach ($U in $CsUsers) {
-              if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.OnlineVoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.VoiceRoutingPolicy)) {
-                if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-                  if (Test-TeamsUserLicense $U -ServicePlan MCOEV) {
-                    $U.UserPrincipalName
-                  }
-                }
-                else {
-                  $U.UserPrincipalName
-                }
-              }
-              break
-            }
+            #$Filter = 'VoicePolicy -eq "HybridVoice" -and $null -eq OnlineVoiceRoutingPolicy -and ($null -ne OnPremLineURI -or $null -ne VoiceRoutingPolicy)' #Filter must be written as-is
+            $Filter = 'VoicePolicy -eq "HybridVoice"' #Filter must be written as-is
           }
           'CallingPlans' {
-            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-              Write-Verbose -Message 'Switch ValidateLicense: Only users with CallPlan license are displayed!' -Verbose
-            }
-            foreach ($U in $CsUsers) {
-              if ($U.VoicePolicy -eq 'BusinessVoice' -or $null -ne $U.TelephoneNumber) {
-                if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-                  if (Test-TeamsUserHasCallPlan $U) {
-                    $U.UserPrincipalName
-                  }
-                }
-                else {
-                  $U.UserPrincipalName
-                }
-              }
-            }
-            break
+            #$Filter = 'VoicePolicy -eq "BusinessVoice" -and TelephoneNumber -ne $null' #Filter must be written as-is
+            $Filter = 'VoicePolicy -eq "BusinessVoice"' #Filter must be written as-is
           }
         }
         break
@@ -373,11 +253,11 @@ function Find-TeamsUserVoiceConfig {
 
       'VP' {
         if ( -not $Called) {
-          Write-Information "TRYING:  Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!"
+          Write-Information "TRYING:  Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching..."
         }
-        $Filter = 'VoicePolicy -EQ "{0}"' -f $VoicePolicy
-        Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
-        break
+        $Filter = 'VoicePolicy -EQ "{0}"' -f $VoicePolicy #Filter must be written as-is
+        #break
+        continue
       } #VP
 
       'OVP' {
@@ -385,10 +265,9 @@ function Find-TeamsUserVoiceConfig {
         $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
         if ($null -ne $OVP) {
           if ( -not $Called) {
-            Write-Information "TRYING:  Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!"
+            Write-Information "TRYING:  Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..."
           }
-          $Filter = 'OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy
-          Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          $Filter = 'OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy #Filter must be written as-is
         }
         else {
           Write-Error -Message "OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -401,10 +280,9 @@ function Find-TeamsUserVoiceConfig {
         $TDP = Get-CsTenantDialPlan $TenantDialPlan -WarningAction SilentlyContinue
         if ($null -ne $TDP) {
           if ( -not $Called) {
-            Write-Information "TRYING:  Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!"
+            Write-Information "TRYING:  Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching..."
           }
-          $Filter = 'TenantDialPlan -EQ "{0}"' -f $TenantDialPlan
-          Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          $Filter = 'TenantDialPlan -EQ "{0}"' -f $TenantDialPlan #Filter must be written as-is
         }
         else {
           Write-Error -Message "TenantDialPlan '$TenantDialPlan' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -417,12 +295,153 @@ function Find-TeamsUserVoiceConfig {
         Write-Warning -Message 'No Parameters specified. Please specify search criteria (Parameter and value)!' -Verbose
         break
       } #default
-
     } #Switch
+    #endregion
 
+    #region Query
+    if ( $Filter ) {
+      Write-Verbose -Message "[QUERY  ] Performing search against Get-CsOnlineUser ($($PsCmdlet.ParameterSetName))"
+      try {
+        $CsUser = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        $CsUser | ForEach-Object { [void]$Query.Add($_) }
+        if ( -not $CsUser ) {
+          throw [Exception] 'No Object found'
+        }
+      }
+      catch [Exception] {
+        # Optional Secondary filter option to catch an ID that is not correctly configured (UPN deviates from SIP)
+        if ( $PsCmdlet.ParameterSetName -eq 'ID') {
+          Write-Information "TRYING:  Finding Users with UserPrincipalName '$UserPrincipalName'"
+          $Filter = 'UserPrincipalName -like "*{0}*"' -f $UserPrincipalName
+          $CsUser = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $CsUser | ForEach-Object { [void]$Query.Add($_) }
+        }
+      }
+      catch {
+        Write-Error -Message "Error executing Get-CsOnlineUser: $($_.Exception.Message)" -ErrorAction Stop
+      }
+    }
+
+    # Applying Secondary Filter for ConfigurationType
+    if ( $PsCmdlet.ParameterSetName -eq 'CT') {
+      [System.Collections.ArrayList]$ConfigurationTypeUsers = @()
+      switch ($ConfigurationType) {
+        'DirectRouting' {
+          $ConfigurationTypeObjects = $Query | Where-Object { $_.VoicePolicy -eq 'HybridVoice' -and $null -eq $_.VoiceRoutingPolicy -and ($null -ne $_.OnPremLineURI -or $null -ne $_.OnlineVoiceRoutingPolicy) }
+          $ConfigurationTypeObjects | ForEach-Object { [void]$ConfigurationTypeUsers.Add( $_ ) }
+        }
+        'SkypeHybridPSTN' {
+          #This will output overlapping with DirectRouting
+          #$Query | Where-Object { $_.VoicePolicy -eq 'HybridVoice' -and $null -eq $_.OnlineVoiceRoutingPolicy -and ($null -ne $_.OnPremLineURI -or $null -ne $_.VoiceRoutingPolicy) }
+          $ConfigurationTypeObjects = $Query | Where-Object { $_.VoicePolicy -eq 'HybridVoice' -and $null -eq $_.OnlineVoiceRoutingPolicy -and $null -ne $_.VoiceRoutingPolicy }
+          $ConfigurationTypeObjects | ForEach-Object { [void]$ConfigurationTypeUsers.Add( $_ ) }
+        }
+        'CallingPlans' {
+          # Secondary filter not required, but for more granularity, a TelephoneNumber (MicrosoftNumber) can be queried with -and instead:
+          $ConfigurationTypeObjects = $Query | Where-Object { $_.VoicePolicy -eq 'BusinessVoice' -or $null -ne $_.TelephoneNumber }
+          $ConfigurationTypeObjects | ForEach-Object { [void]$ConfigurationTypeUsers.Add( $_ ) }
+        }
+      }
+      $Query = $ConfigurationTypeUsers
+    }
+
+    $UnfilteredCount = $Query.Count
+    Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - $UnfilteredCount Objects found for the filter ('$Filter')"
+    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+      "  Function: $($MyInvocation.MyCommand.Name) - Unfiltered Output: ($UnfilteredCount)", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    }
+    #endregion
+
+    #region ValidateLicense
+    if ( $Query -and $PSBoundParameters.ContainsKey('ValidateLicense')) {
+      Write-Verbose -Message 'Verifying whether filtered Objects are correctly provisioned for PhoneSystem (assigned, enabled & provisioned successfully).'
+      [System.Collections.ArrayList]$LicensedUsers = @()
+      foreach ($U in $Query) {
+        if ( (Test-TeamsUserLicense $($U.UserPrincipalName) -ServicePlan MCOEV) ) {
+          #Adding all Users that are licensed for Phone System to LicensedUsers Object
+          [void]$LicensedUsers.Add($U)
+        }
+      }
+      $Query = $LicensedUsers
+    }
+    $LicensedCount = $Query.Count
+    Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - $LicensedCount Objects found with valid license"
+    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+      "  Function: $($MyInvocation.MyCommand.Name) - Filtered Output: ($LicensedCount)", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    }
+    #endregion
+
+
+    #region OUTPUT
+    # Paging: First & Skip
+    if ( $Query.Count -gt 0 ) {
+      # Displaying warnings & Feedback
+      if ( $Query.Count -gt 1 ) {
+        switch ( $PsCmdlet.ParameterSetName) {
+          'Tel' {
+            Write-Warning -Message "Number: '$Number' - Found multiple Users matching the criteria! If the search string represents the FULL number, it is assigned incorrectly. Inbound calls to this number will not work as Teams will not find a unique match"
+            Write-Verbose -Message 'Investigate OnPremLineURI string. Verify unique PhoneNumber is applied.' -Verbose
+          }
+          'Ext' {
+            Write-Warning -Message "Extension: '$ExtN' - Found multiple Users matching the criteria! If the search string represents the FULL extension, it is assigned incorrectly. Inbound calls to this extension may fail depending on normalisation as Teams will not find a unique match"
+            Write-Verbose -Message 'Investigate OnPremLineURI string. Verify unique Extension is applied.' -Verbose
+          }
+        }
+      }
+
+      # Processing paging
+      $FirstId = 0
+      $LastId = $LicensedCount - 1
+      if ($PSCmdlet.PagingParameters.Skip -ge $Query.count) {
+        Write-Verbose -Message "[PAGING ] $($MyInvocation.MyCommand) - No results satisfy the Skip parameters"
+      }
+      elseif ($PSCmdlet.PagingParameters.First -eq 0) {
+        Write-Verbose -Message "[PAGING ] $($MyInvocation.MyCommand) - No results satisfy the First parameters"
+      }
+      else {
+        $FirstId = $PSCmdlet.PagingParameters.Skip
+        Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - FirstId: {0}" -f $FirstId)
+        $LastId = $FirstId + ([Math]::Min($PSCmdlet.PagingParameters.First, $Query.Count - $PSCmdlet.PagingParameters.Skip) - 1)
+      }
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "  Function: $($MyInvocation.MyCommand.Name) - Queried:  $($Query.Count)" | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - FirstId:  $FirstId" | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - LastId:   $LastId" | Write-Debug
+      }
+      $Query = $Query[$FirstId..$LastId]
+      $FilteredCount = $Query.Count
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "  Function: $($MyInvocation.MyCommand.Name) - Paginated Output: ($FilteredCount)", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+
+      if ($Query) {
+        if ($Query.Count -gt 3 ) {
+          $Query | Select-Object UserPrincipalName, SipAddress, LineUri
+        }
+        elseif ($Query.Count -gt 1 ) {
+          $Query | Select-Object UserPrincipalName, SipAddress, InterpretedUserType, VoicePolicy, EnterpriseVoiceEnabled, OnlineVoiceRoutingPolicy, TenantDialPlan, TelephoneNumber, LineUri, OnPremLineURI
+        }
+        else {
+          $Query.UserPrincipalName | Get-TeamsUserVoiceConfig
+        }
+      }
+      Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - LastId: {0}" -f $LastId)
+    }
+    elseif ( -not $Called) {
+      Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - No results found ($($PsCmdlet.ParameterSetName))" -Verbose
+    }
+    #endregion
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
+    # Paging: IncludeTotalCount
+    If ($PSCmdlet.PagingParameters.IncludeTotalCount) {
+      [double]$Accuracy = 1.0
+      $PSCmdlet.PagingParameters.NewTotalCount($FilteredCount, $Accuracy)
+    }
+    if ( $FilteredCount -lt $UnfilteredCount ) {
+      Write-Information "INFO:    A total of $UnfilteredCount objects have been found$( if ( $ValidateLicense ) { " ($LicensedCount licensed correctly)"}), but only the requested $FilteredCount object(s) are displayed."
+    }
   } #end
 } # Find-TeamsUserVoiceConfig

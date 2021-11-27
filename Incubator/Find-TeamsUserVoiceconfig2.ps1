@@ -179,27 +179,18 @@ function Find-TeamsUserVoiceConfig2 {
     $Stack = Get-PSCallStack
     $Called = ($stack.length -ge 3)
 
-    if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-      Write-Warning -Message "The switch 'ValidateLicense' verifies whether the correct license is assigned before considering the User. This increases run-time tremendously!"
-      Write-Verbose -Message 'Only licensed objects are returned. Objects not successfully provisioned for PhoneSystem are omitted.'
-    }
-
-    #TODO Add individual search functions that each return a Query Object
-    # Each object must: Accept their required parameters
-    # handle for-each for multiple themselves
-    # return ONE object
   } #begin
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    [System.Collections.ArrayList]$Query = @() # rework needed to re-enable Array processing for Tel & Ext (and others?)
+    [System.Collections.ArrayList]$Query = @()
     #region Creating Filter
+    #Filter must be written as-is, e.g '$Filter = 'SipAddress -like "*{0}*"' -f $UserPrincipalName' (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
     switch ($PsCmdlet.ParameterSetName) {
       'ID' {
         Write-Information "TRYING:  Finding Users with SipAddress '$UserPrincipalName'"
-        #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-        $Filter = 'SipAddress -like "*{0}*"' -f $UserPrincipalName
+        $Filter = 'SipAddress -like "*{0}*"' -f $UserPrincipalName #Filter must be written as-is
         break
       } #ID
 
@@ -215,8 +206,7 @@ function Find-TeamsUserVoiceConfig2 {
         if ( -not $Called) {
           Write-Information "TRYING:  Finding all Users enabled for Teams with Phone Number string '$Number': Searching..."
         }
-        #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-        $Filter = 'LineURI -like "*{0}*"' -f $Number
+        $Filter = 'LineURI -like "*{0}*"' -f $Number #Filter must be written as-is
         break
       } #Tel
 
@@ -233,20 +223,37 @@ function Find-TeamsUserVoiceConfig2 {
         if ( -not $Called) {
           Write-Information "TRYING:  Finding all Users enabled for Teams with Extension '$ExtN': Searching..."
         }
-        #Filter must be written as-is (Get-CsOnlineUser is an Online command, handover of parameters is sketchy)
-        $Filter = 'LineURI -like "*{0}*"' -f "$ExtN"
+        $Filter = 'LineURI -like "*{0}*"' -f "$ExtN" #Filter must be written as-is
         break
       } #Ext
 
       'CT' {
+        #TEST Filter - If not working, may need filtering twice (runtime!)
+        Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching..."
+        switch ($ConfigurationType) {
+          'DirectRouting' {
+            #$Filter = 'VoicePolicy -eq "HybridVoice" -and $null -eq VoiceRoutingPolicy -and ($null -ne OnPremLineURI -or $null -ne OnlineVoiceRoutingPolicy)' #Filter must be written as-is
+            $Filter = 'VoicePolicy -eq "HybridVoice"' #Filter must be written as-is
+          }
+          'SkypeHybridPSTN' {
+            #$Filter = 'VoicePolicy -eq "HybridVoice" -and $null -eq OnlineVoiceRoutingPolicy -and ($null -ne OnPremLineURI -or $null -ne VoiceRoutingPolicy)' #Filter must be written as-is
+            $Filter = 'VoicePolicy -eq "HybridVoice"' #Filter must be written as-is
+          }
+          'CallingPlans' {
+            #$Filter = 'VoicePolicy -eq "BusinessVoice" -and TelephoneNumber -ne $null' #Filter must be written as-is
+            $Filter = 'VoicePolicy -eq "BusinessVoice"' #Filter must be written as-is
+          }
+        }
+
+        <# commented out due to refactor
         #NOTE: CT does not support paging!
         Write-Verbose -Message 'Searching for all Users enabled for Teams: Searching... This will take quite some time!'
         #BODGE Rework Filter to include required string (maybe filter twice?)
-        $Filter = 'Enabled -eq $TRUE'
+        $Filter = 'Enabled -eq $TRUE' #Filter must be written as-is
         $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction Stop
         Write-Verbose -Message "Sifting through Information for $($CsUsers.Count) Users: Parsing..."
         if ( -not $Called) {
-          Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching... This will take quite some time!"
+          Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching..."
         }
 
         switch ($ConfigurationType) {
@@ -305,14 +312,15 @@ function Find-TeamsUserVoiceConfig2 {
             break
           }
         }
+        #>
         break
       } #CT
 
       'VP' {
         if ( -not $Called) {
-          Write-Information "TRYING:  Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!"
+          Write-Information "TRYING:  Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching..."
         }
-        $Filter = 'VoicePolicy -EQ "{0}"' -f $VoicePolicy
+        $Filter = 'VoicePolicy -EQ "{0}"' -f $VoicePolicy #Filter must be written as-is
         #break
         continue
       } #VP
@@ -322,9 +330,9 @@ function Find-TeamsUserVoiceConfig2 {
         $OVP = Get-CsOnlineVoiceRoutingPolicy $OnlineVoiceRoutingPolicy -WarningAction SilentlyContinue
         if ($null -ne $OVP) {
           if ( -not $Called) {
-            Write-Information "TRYING:  Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!"
+            Write-Information "TRYING:  Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching..."
           }
-          $Filter = 'OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy
+          $Filter = 'OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy #Filter must be written as-is
         }
         else {
           Write-Error -Message "OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -337,9 +345,9 @@ function Find-TeamsUserVoiceConfig2 {
         $TDP = Get-CsTenantDialPlan $TenantDialPlan -WarningAction SilentlyContinue
         if ($null -ne $TDP) {
           if ( -not $Called) {
-            Write-Information "TRYING:  Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!"
+            Write-Information "TRYING:  Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching..."
           }
-          $Filter = 'TenantDialPlan -EQ "{0}"' -f $TenantDialPlan
+          $Filter = 'TenantDialPlan -EQ "{0}"' -f $TenantDialPlan #Filter must be written as-is
         }
         else {
           Write-Error -Message "TenantDialPlan '$TenantDialPlan' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -358,44 +366,86 @@ function Find-TeamsUserVoiceConfig2 {
     #region Query
     if ( $Filter ) {
       Write-Verbose -Message "[QUERY  ] Performing search against Get-CsOnlineUser ($($PsCmdlet.ParameterSetName))"
-      $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue
-      #Secondary filter option for ID
-      if ( $PsCmdlet.ParameterSetName -eq 'ID' -and -not $CsUsers) {
-        $MailNickName = $UserPrincipalName.split('@') | Select-Object -First 1
-        Write-Information "TRYING:  Finding Users with MailNickName '$MailNickName'"
-        $Filter = 'MailNickName -like "*{0}*"' -f $MailNickName
-        Write-Verbose -Message "[QUERY  ] Performing search against Get-CsOnlineUser ($($PsCmdlet.ParameterSetName))"
-        $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+      try {
+        $CsUser = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+        $CsUser | ForEach-Object { [void]$Query.Add($_) }
+        if ( -not $CsUser ) {
+          throw [Exception] 'No Object found'
+        }
       }
-      if ( $CsUsers ) { $Query.Add($CsUsers) }
+      catch [Exception] {
+        # Optional Secondary filter option to catch an ID that is not correctly configured (UPN deviates from SIP)
+        if ( $PsCmdlet.ParameterSetName -eq 'ID') {
+          Write-Information "TRYING:  Finding Users with UserPrincipalName '$UserPrincipalName'"
+          $Filter = 'UserPrincipalName -like "*{0}*"' -f $UserPrincipalName
+          $CsUser = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
+          $CsUser | ForEach-Object { [void]$Query.Add($_) }
+        }
+      }
+      catch {
+        Write-Error -Message "Error executing Get-CsOnlineUser: $($_.Exception.Message)" -ErrorAction Stop
+      }
     }
-    Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - $(if ( $Query.Count ) { $Query.Count } else { 0 }) Objects found for the filter ('$Filter')"
+
+    # Applying Secondary Filter for ConfigurationType
+    if ( $PsCmdlet.ParameterSetName -eq 'CT') {
+      [System.Collections.ArrayList]$ConfigurationTypeUsers = @()
+      switch ($ConfigurationType) {
+        'DirectRouting' {
+          $ConfigurationTypeObjects = $Query | Where-Object { $_.VoicePolicy -eq 'HybridVoice' -and $null -eq $_.VoiceRoutingPolicy -and ($null -ne $_.OnPremLineURI -or $null -ne $_.OnlineVoiceRoutingPolicy) }
+          $ConfigurationTypeObjects | ForEach-Object { [void]$ConfigurationTypeUsers.Add( $_ ) }
+        }
+        'SkypeHybridPSTN' {
+          #This will output overlapping with DirectRouting
+          #$Query | Where-Object { $_.VoicePolicy -eq 'HybridVoice' -and $null -eq $_.OnlineVoiceRoutingPolicy -and ($null -ne $_.OnPremLineURI -or $null -ne $_.VoiceRoutingPolicy) }
+          $ConfigurationTypeObjects = $Query | Where-Object { $_.VoicePolicy -eq 'HybridVoice' -and $null -eq $_.OnlineVoiceRoutingPolicy -and $null -ne $_.VoiceRoutingPolicy }
+          $ConfigurationTypeObjects | ForEach-Object { [void]$ConfigurationTypeUsers.Add( $_ ) }
+        }
+        'CallingPlans' {
+          # Secondary filter not required, but for more granularity, a TelephoneNumber (MicrosoftNumber) can be queried with -and instead:
+          $ConfigurationTypeObjects = $Query | Where-Object { $_.VoicePolicy -eq 'BusinessVoice' -or $null -ne $_.TelephoneNumber }
+          $ConfigurationTypeObjects | ForEach-Object { [void]$ConfigurationTypeUsers.Add( $_ ) }
+        }
+      }
+      $Query = $ConfigurationTypeUsers
+    }
+
+    $UnfilteredCount = $Query.Count
+    Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - $UnfilteredCount Objects found for the filter ('$Filter')"
+    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+      "  Function: $($MyInvocation.MyCommand.Name) - Unfiltered Output: ($UnfilteredCount)", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    }
     #endregion
 
     #region ValidateLicense
-    if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
-      $LicenseUsers = [Management.Automation.PSSerializer]::DeSerialize([Management.Automation.PSSerializer]::Serialize($Query))
-      foreach ($U in $LicenseUsers) {
-        if ( -not (Test-TeamsUserLicense $U -ServicePlan MCOEV) ) {
-          #Removing all Users that are not licensed for Phone System
-          [void]$Query.Remove($U)
+    if ( $Query -and $PSBoundParameters.ContainsKey('ValidateLicense')) {
+      Write-Verbose -Message 'Verifying whether filtered Objects are correctly provisioned for PhoneSystem (assigned, enabled & provisioned successfully).'
+      [System.Collections.ArrayList]$LicensedUsers = @()
+      foreach ($U in $Query) {
+        if ( (Test-TeamsUserLicense $($U.UserPrincipalName) -ServicePlan MCOEV) ) {
+          #Adding all Users that are licensed for Phone System to LicensedUsers Object
+          [void]$LicensedUsers.Add($U)
         }
       }
-      Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - $($Query.Count) Objects found with valid license"
+      $Query = $LicensedUsers
+    }
+    $LicensedCount = $Query.Count
+    Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - $LicensedCount Objects found with valid license"
+    if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+      "  Function: $($MyInvocation.MyCommand.Name) - Filtered Output: ($LicensedCount)", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
     #endregion
 
 
     #region OUTPUT
     # Paging: First & Skip
-    #if ($Query.count -gt 0) {
-    if ( $Query ) {
+    if ( $Query.Count -gt 0 ) {
       # Displaying warnings & Feedback
-      if ($Query.Count -gt 1) {
+      if ( $Query.Count -gt 1 ) {
         switch ( $PsCmdlet.ParameterSetName) {
           'Tel' {
             Write-Warning -Message "Number: '$Number' - Found multiple Users matching the criteria! If the search string represents the FULL number, it is assigned incorrectly. Inbound calls to this number will not work as Teams will not find a unique match"
-            Write-Verbose -Message "Investigate OnPremLineURI string. Has one of them set an Extension (';ext=') set, the other one not?" -Verbose
+            Write-Verbose -Message 'Investigate OnPremLineURI string. Verify unique PhoneNumber is applied.' -Verbose
           }
           'Ext' {
             Write-Warning -Message "Extension: '$ExtN' - Found multiple Users matching the criteria! If the search string represents the FULL extension, it is assigned incorrectly. Inbound calls to this extension may fail depending on normalisation as Teams will not find a unique match"
@@ -403,64 +453,60 @@ function Find-TeamsUserVoiceConfig2 {
           }
         }
       }
-      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "  Function: $($MyInvocation.MyCommand.Name) - Unfiltered Output:", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-      }
 
       # Processing paging
-      If ($PSCmdlet.PagingParameters.Skip -ge $Query.count) {
+      $FirstId = 0
+      $LastId = $LicensedCount - 1
+      if ($PSCmdlet.PagingParameters.Skip -ge $Query.count) {
         Write-Verbose -Message "[PAGING ] $($MyInvocation.MyCommand) - No results satisfy the Skip parameters"
       }
       elseif ($PSCmdlet.PagingParameters.First -eq 0) {
         Write-Verbose -Message "[PAGING ] $($MyInvocation.MyCommand) - No results satisfy the First parameters"
       }
       else {
-        $First = $PSCmdlet.PagingParameters.Skip
-        Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - First: {0}" -f $First)
-        $Last = $First + ([Math]::Min($PSCmdlet.PagingParameters.First, $Query.Count - $PSCmdlet.PagingParameters.Skip) - 1)
-
+        $FirstId = $PSCmdlet.PagingParameters.Skip
+        Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - FirstId: {0}" -f $FirstId)
+        $LastId = $FirstId + ([Math]::Min($PSCmdlet.PagingParameters.First, $Query.Count - $PSCmdlet.PagingParameters.Skip) - 1)
       }
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "  Function: $($MyInvocation.MyCommand.Name) - First: $First" | Write-Debug
-        "  Function: $($MyInvocation.MyCommand.Name) - Last: $Last" | Write-Debug
-        "  Function: $($MyInvocation.MyCommand.Name) - Count: $($Query.Count)" | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - Queried:  $($Query.Count)" | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - FirstId:  $FirstId" | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - LastId:   $LastId" | Write-Debug
       }
-      If ($Last -le 0) {
-        $Output = $Query
+      $Query = $Query[$FirstId..$LastId]
+      $FilteredCount = $Query.Count
+      if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
+        "  Function: $($MyInvocation.MyCommand.Name) - Paginated Output: ($FilteredCount)", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
-      else {
-        $Output = $Query[$First..$last]
-        if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "  Function: $($MyInvocation.MyCommand.Name) - Filtered Output:", ($Output | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+
+      if ($Query) {
+        if ($Query.Count -gt 3 ) {
+          $Query | Select-Object UserPrincipalName, SipAddress, LineUri
         }
-      }
-      if ($Output) {
-        # Changing output type depending on count
-        if ($Output.Count -gt 3) {
-          Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-          $Output | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+        elseif ($Query.Count -gt 1 ) {
+          $Query | Select-Object UserPrincipalName, SipAddress, InterpretedUserType, VoicePolicy, EnterpriseVoiceEnabled, OnlineVoiceRoutingPolicy, TenantDialPlan, TelephoneNumber, LineUri, OnPremLineURI
         }
         else {
-          Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each'
-          $Output.UserPrincipalName | Get-TeamsUserVoiceConfig
+          $Query.UserPrincipalName | Get-TeamsUserVoiceConfig
         }
       }
-      Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - Last: {0}" -f $Last)
+      Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - LastId: {0}" -f $LastId)
     }
     elseif ( -not $Called) {
       Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - No results found ($($PsCmdlet.ParameterSetName))" -Verbose
     }
-
-    # Paging: IncludeTotalCount
-    If ($PSCmdlet.PagingParameters.IncludeTotalCount) {
-      [double]$Accuracy = 1.0
-      $PSCmdlet.PagingParameters.NewTotalCount($Output.count, $Accuracy)
-    }
     #endregion
-
   } #process
 
   end {
     Write-Verbose -Message "[END    ] $($MyInvocation.MyCommand)"
+    # Paging: IncludeTotalCount
+    If ($PSCmdlet.PagingParameters.IncludeTotalCount) {
+      [double]$Accuracy = 1.0
+      $PSCmdlet.PagingParameters.NewTotalCount($FilteredCount, $Accuracy)
+    }
+    if ( $FilteredCount -lt $UnfilteredCount ) {
+      Write-Information "INFO:    A total of $UnfilteredCount objects have been found$( if ( $ValidateLicense ) { " ($LicensedCount licensed correctly)"}), but only the requested $FilteredCount object(s) are displayed."
+    }
   } #end
 } # Find-TeamsUserVoiceConfig2
