@@ -112,10 +112,8 @@ function Find-TeamsCallableEntity {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int] $private:CountID0 = 1
-    #TEST Application of ID1
-    [int] $private:StepsID0 = $private:StepsID0 * $(if ($Identity.IsArray) { $Identity.Count } else { 1 })
     foreach ( $Id in $Identity) {
+      [int] $private:CountID0 = 1
       [int] $private:CountID1 = 1
       $CallTarget = $null
       [System.Collections.ArrayList]$Output = @()

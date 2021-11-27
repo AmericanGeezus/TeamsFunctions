@@ -109,7 +109,6 @@ function Remove-TeamsResourceAccount {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($UPN in $UserPrincipalName) {
       [int] $private:CountID0 = 1
-      [int] $private:StepsID0 = $UserPrincipalName.Count
       $StatusID0 = "Processing '$UPN'"
       $CurrentOperationID0 = 'Querying Object'
 

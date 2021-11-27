@@ -190,7 +190,6 @@ function New-TeamsCommonAreaPhone {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Parameters = @{}
     [int] $private:CountID0 = 1
-    [int] $private:StepsID0 = $private:CountID0 + $private:StepsID0
     $StatusID0 = 'Verifying input'
     #region PREPARATION
     #region Normalising $UserPrincipalname

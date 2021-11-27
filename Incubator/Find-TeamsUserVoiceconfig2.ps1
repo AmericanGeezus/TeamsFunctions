@@ -181,7 +181,7 @@ function Find-TeamsUserVoiceConfig2 {
 
     if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
       Write-Warning -Message "The switch 'ValidateLicense' verifies whether the correct license is assigned before considering the User. This increases run-time tremendously!"
-      Write-Verbose -Message "Only licensed objects are returned. Objects not successfully provisioned for PhoneSystem are omitted."
+      Write-Verbose -Message 'Only licensed objects are returned. Objects not successfully provisioned for PhoneSystem are omitted.'
     }
 
     #TODO Add individual search functions that each return a Query Object
@@ -378,7 +378,7 @@ function Find-TeamsUserVoiceConfig2 {
       foreach ($U in $LicenseUsers) {
         if ( -not (Test-TeamsUserLicense $U -ServicePlan MCOEV) ) {
           #Removing all Users that are not licensed for Phone System
-          $Query.Remove($U)
+          [void]$Query.Remove($U)
         }
       }
       Write-Verbose -Message "[QUERY  ] $($MyInvocation.MyCommand) - $($Query.Count) Objects found with valid license"
@@ -404,7 +404,7 @@ function Find-TeamsUserVoiceConfig2 {
         }
       }
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "  Function: $($MyInvocation.MyCommand.Name) - Unfiltered Output:", ($Query | Select-Object UserPrincipalName,LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - Unfiltered Output:", ($Query | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
 
       # Processing paging
@@ -418,6 +418,7 @@ function Find-TeamsUserVoiceConfig2 {
         $First = $PSCmdlet.PagingParameters.Skip
         Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - First: {0}" -f $First)
         $Last = $First + ([Math]::Min($PSCmdlet.PagingParameters.First, $Query.Count - $PSCmdlet.PagingParameters.Skip) - 1)
+
       }
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
         "  Function: $($MyInvocation.MyCommand.Name) - First: $First" | Write-Debug
@@ -425,24 +426,23 @@ function Find-TeamsUserVoiceConfig2 {
         "  Function: $($MyInvocation.MyCommand.Name) - Count: $($Query.Count)" | Write-Debug
       }
       If ($Last -le 0) {
-        $Query = $Null
+        $Output = $Query
       }
       else {
         $Output = $Query[$First..$last]
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "  Function: $($MyInvocation.MyCommand.Name) - Filtered Output:", ($Output | Select-Object UserPrincipalName, LineUri | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
-
-        if ($Output) {
-          # Changing output type depending on count
-          if ($Output.Count -gt 3) {
-            Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-            $Output | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
-          }
-          else {
-            Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each'
-            $Output.UserPrincipalName | Get-TeamsUserVoiceConfig
-          }
+      }
+      if ($Output) {
+        # Changing output type depending on count
+        if ($Output.Count -gt 3) {
+          Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
+          $Output | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+        }
+        else {
+          Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each'
+          $Output.UserPrincipalName | Get-TeamsUserVoiceConfig
         }
       }
       Write-Verbose -Message ("[PAGING ] $($MyInvocation.MyCommand) - Last: {0}" -f $Last)
@@ -454,7 +454,7 @@ function Find-TeamsUserVoiceConfig2 {
     # Paging: IncludeTotalCount
     If ($PSCmdlet.PagingParameters.IncludeTotalCount) {
       [double]$Accuracy = 1.0
-      $PSCmdlet.PagingParameters.NewTotalCount($Query.count, $Accuracy)
+      $PSCmdlet.PagingParameters.NewTotalCount($Output.count, $Accuracy)
     }
     #endregion
 

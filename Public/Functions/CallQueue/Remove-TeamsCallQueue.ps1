@@ -72,7 +72,6 @@ function Remove-TeamsCallQueue {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($DN in $Name) {
       [int] $private:CountID0 = 1
-      [int] $private:StepsID0 = $Name.Count
       $StatusID0 = "Processing '$DN'"
       $CurrentOperationID0 = 'Querying Object'
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0

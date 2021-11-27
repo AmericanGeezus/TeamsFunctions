@@ -167,7 +167,7 @@ function Get-TeamsAutoAttendantAudioFile {
 
 
     # Parsing found Objects
-    [int] $private:StepsID0 = $private:StepsID0 + $AutoAttendants.Count
+    [int] $private:StepsID0 = $private:StepsID0 * $AutoAttendants.Count
     Write-Verbose -Message "[PROCESS] Processing found Auto Attendants:  $($AutoAttendants.Count)"
     #IMPROVE Explore Workflows with Parallel parsing:
     #foreach -parallel ($AA in $AutoAttendants) {

@@ -121,8 +121,8 @@ function Get-TeamsUserVoiceConfig {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int] $private:StepsID0 = $private:StepsID0 + $(if ($UserPrincipalName.IsArray) { $UserPrincipalName.Count } else { 1 })
     foreach ($User in $UserPrincipalName) {
+      [int] $private:CountID0 = 1
       #region Information Gathering
       $StatusID0 = "Processing '$User' - Information Gathering"
       #region Querying Identity
