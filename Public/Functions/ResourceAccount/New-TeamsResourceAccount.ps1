@@ -4,8 +4,8 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Add Sync functionality - triggering Sync-CsOnlineApplicationInstance -ObjectId $RA.ObjectId
 #TODO Check out Compliance Recording Policy integration with RAs & Policy
+
 
 function New-TeamsResourceAccount {
   <#
@@ -40,6 +40,9 @@ function New-TeamsResourceAccount {
     Required format is E.164, starting with a '+' and 10-15 digits long.
   .PARAMETER OnlineVoiceRoutingPolicy
     Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
+  .PARAMETER Sync
+    Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances
+    from Azure Active Directory into Agent Provisioning Service.
   .EXAMPLE
     New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
     Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
@@ -129,8 +132,10 @@ function New-TeamsResourceAccount {
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Routing Policy')]
     [Alias('OVP')]
-    [string]$OnlineVoiceRoutingPolicy
+    [string]$OnlineVoiceRoutingPolicy,
 
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Synchronizes Resource Account with the Agent Provisioning Service')]
+    [switch]$Sync
   ) #param
 
   begin {
@@ -479,9 +484,19 @@ function New-TeamsResourceAccount {
       # Output
       Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $ResourceAccountObject
+
+      # Synchronisation
+      if ( $PSBoundParameters.ContainsKey('Sync') ) {
+        Write-Verbose -Message "Switch 'Sync' - Resource Account is synchronised with Agent Provisioning Service"
+        $null = Sync-CsOnlineApplicationInstance -ObjectId $ResourceAccount.ObjectId #-Force
+        Write-Information "SUCCESS: Synchronising Resource Account with Agent Provisioning Service"
+      }
     }
     catch {
       Write-Warning -Message 'Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance'
+      if ( $PSBoundParameters.ContainsKey('Sync') ) {
+        Write-Verbose -Message 'Synchronisation could not be started. Please trigger again with Set-TeamsResourceAccount or Sync-CsOnlineApplicationInstance directly' -Verbose
+      }
     }
     #endregion
   } #process

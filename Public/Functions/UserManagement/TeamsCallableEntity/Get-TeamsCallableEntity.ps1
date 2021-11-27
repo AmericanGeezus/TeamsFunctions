@@ -121,7 +121,6 @@ function Get-TeamsCallableEntity {
         Write-Verbose 'Target is a Tel URI'
         $Id = Format-StringForUse -InputString "$Id" -As LineURI
         $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", 'TelURI', 'ExternalPstn')
-
       }
       else {
         Write-Verbose 'Target is not a Tel URI'
@@ -138,6 +137,10 @@ function Get-TeamsCallableEntity {
             catch {
               Write-Verbose 'Target is a User'
               $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", 'User', 'User')
+              #TEST - Re-querying the CsOnlineUser to obtain the SIP address - may not be needed
+              # This was introduced to ascertain why CQ Users fail to be added if their SIP Address is different than their UPN.
+              #$CsUser = Get-CsOnlineUser -Identity "$($CallTarget.ObjectId)" -WarningAction SilentlyContinue -ErrorAction Stop
+              #$CallableEntity = [TFCallableEntity]::new( "$($CsUser.SipAddress)", "$($CallTarget.ObjectId)", 'User', 'User')
             }
           }
           else {

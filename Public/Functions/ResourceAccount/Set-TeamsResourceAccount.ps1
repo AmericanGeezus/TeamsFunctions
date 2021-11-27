@@ -4,7 +4,7 @@
 # Updated:  01-OCT-2020
 # Status:   Live
 
-#TODO Add Sync functionality - triggering Sync-CsOnlineApplicationInstance -ObjectId $RA.ObjectId
+
 
 
 function Set-TeamsResourceAccount {
@@ -41,6 +41,9 @@ function Set-TeamsResourceAccount {
     Required format is E.164, starting with a '+' and 10-15 digits long.
   .PARAMETER OnlineVoiceRoutingPolicy
     Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
+  .PARAMETER Sync
+    Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances
+    from Azure Active Directory into Agent Provisioning Service.
   .PARAMETER PassThru
     By default, no output is generated, PassThru will display the Object changed
   .PARAMETER Force
@@ -144,6 +147,9 @@ function Set-TeamsResourceAccount {
 
     [Parameter(HelpMessage = 'By default, no output is generated, PassThru will display the Object changed')]
     [switch]$PassThru,
+
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Synchronizes Resource Account with the Agent Provisioning Service')]
+    [switch]$Sync,
 
     [Parameter(Mandatory = $false)]
     [switch]$Force
@@ -620,6 +626,13 @@ function Set-TeamsResourceAccount {
         }
       }
       #endregion
+
+      # Synchronisation
+      if ( $PSBoundParameters.ContainsKey('Sync') ) {
+        Write-Verbose -Message "Switch 'Sync' - Resource Account is synchronised with Agent Provisioning Service"
+        $null = Sync-CsOnlineApplicationInstance -ObjectId $ResourceAccount.ObjectId #-Force
+        Write-Information "SUCCESS: Synchronising Resource Account with Agent Provisioning Service"
+      }
       #endregion
 
 

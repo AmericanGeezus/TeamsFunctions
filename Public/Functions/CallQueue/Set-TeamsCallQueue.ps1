@@ -5,7 +5,7 @@
 # Status:   Live
 
 #TEST Overflow & Timeout - Voicemail does not work as desired!?
-#FIXME Adding Users where SIP and UPN are different will result in error - alleviation possible?
+#VALIDATE Adding Users where SIP and UPN are different results in error?
 
 function Set-TeamsCallQueue {
   <#
