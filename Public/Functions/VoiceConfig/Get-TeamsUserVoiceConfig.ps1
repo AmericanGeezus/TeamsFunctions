@@ -186,7 +186,7 @@ function Get-TeamsUserVoiceConfig {
       #region Refactoring ObjectId for v2.5.0 for backward compatibility
       #TEST rework based on Identity (needed for v2.5.0) - Parameter ObjectId seems to be removed? Reintroduced with v2.6.0!?
       if ($PSBoundParameters.ContainsKey('Debug')) {
-        "Function: $($MyInvocation.MyCommand.Name): ObjectId:", ($CsUser.ObjectId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - ObjectId:", ($CsUser.ObjectId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
 
       if ( $CsUser.ObjectId -is [object] ) {

@@ -184,7 +184,7 @@ function New-TeamsAutoAttendantCallFlow {
     # Create Call Flow
     Write-Verbose -Message '[PROCESS] Creating Call Flow'
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     if ($PSCmdlet.ShouldProcess("$($Parameters.Name)", 'New-CsAutoAttendantCallFlow')) {

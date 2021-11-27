@@ -114,10 +114,10 @@ function Get-TeamsUserLicenseServicePlan {
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
         if (($null -ne $Lic -and $Lic.RelevantForTeams) -or $PSBoundParameters.ContainsKey('DisplayAll')) {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
 
           $LicObj = [PSCustomObject][ordered]@{

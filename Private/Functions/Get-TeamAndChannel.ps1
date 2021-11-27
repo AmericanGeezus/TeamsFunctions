@@ -39,8 +39,8 @@ function Get-TeamAndChannel {
   $TeamId, $ChannelId = $String.split('\')
 
   if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-    "Function: $($MyInvocation.MyCommand.Name): Team:", ($TeamId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
-    "Function: $($MyInvocation.MyCommand.Name): Channel:", ($ChannelId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    "  Function: $($MyInvocation.MyCommand.Name) - Team:", ($TeamId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+    "  Function: $($MyInvocation.MyCommand.Name) - Channel:", ($ChannelId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
   }
   try {
     if ($TeamId -match '^[0-9a-f]{8}-([0-9a-f]{4}\-){3}[0-9a-f]{12}$') {
@@ -61,7 +61,7 @@ function Get-TeamAndChannel {
     }
 
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Team:", ($Team | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Team:", ($Team | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
   }
   catch {
@@ -87,7 +87,7 @@ function Get-TeamAndChannel {
     }
 
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Channel:", ($Channel | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Channel:", ($Channel | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
   }
   catch {

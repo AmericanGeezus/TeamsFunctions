@@ -84,7 +84,7 @@ function Assert-Module {
         Write-Verbose -Message "$($MyInvocation.MyCommand) - Verifying Module '$M' - Current Version installed: $($Current.Version)"
         $CurrentVersion = [Version] ($Current.Version.ToString() -replace '^(\d+(\.\d+){0,3})(\.\d+?)*$' , '$1')
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): CurrentVersion:", ($CurrentVersion | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "  Function: $($MyInvocation.MyCommand.Name) - CurrentVersion:", ($CurrentVersion | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
 
         if ($UpToDate) {
@@ -100,7 +100,7 @@ function Assert-Module {
           $LatestVersion = if ($Latest.Version -match '-') { $Latest.Version.Split('-')[0] } else { $Latest.Version }
           $LatestVersion = [Version] ($LatestVersion.ToString() -replace '^(\d+(\.\d+){0,3})(\.\d+?)*$' , '$1')
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): LatestVersion:", ($LatestVersion | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - LatestVersion:", ($LatestVersion | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
 
           if ($CurrentVersion -lt $LatestVersion) {
@@ -118,7 +118,7 @@ function Assert-Module {
             $CurrentlyLoadedVersion = [Version] ($CurrentlyLoaded.Version.ToString() -replace '^(\d+(\.\d+){0,3})(\.\d+?)*$' , '$1')
           }
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): CurrentlyLoadedVersion:", ($CurrentlyLoadedVersion | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - CurrentlyLoadedVersion:", ($CurrentlyLoadedVersion | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
           if ($CurrentlyLoadedVersion -ne $CurrentVersion -or $CurrentlyLoaded.IsArray) {
             Write-Verbose -Message "Removing Module '$M' - Version $CurrentlyLoadedVersion"

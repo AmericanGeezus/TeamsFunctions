@@ -527,7 +527,7 @@ function Set-TeamsResourceAccount {
           try {
             foreach ($UserWTN in $UserWithThisNumber) {
               if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-                "Function: $($MyInvocation.MyCommand.Name): InterpretedUserType:", ($($UserWTN.InterpretedUserType) | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+                "  Function: $($MyInvocation.MyCommand.Name) - InterpretedUserType:", ($($UserWTN.InterpretedUserType) | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
               }
               Write-Verbose -Message "'$Name ($UPN)' ACTION: $Operation FROM '$($UserWTN.UserPrincipalName)'"
               if ($UserWTN.InterpretedUserType.Contains('ApplicationInstance')) {

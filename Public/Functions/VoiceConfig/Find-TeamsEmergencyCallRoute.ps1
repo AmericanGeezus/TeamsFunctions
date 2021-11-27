@@ -258,7 +258,7 @@ function Find-TeamsEmergencyCallRoute {
 
     # Snippets for Scripts - Change $Parameters to what suits your needs
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Found NetworkSites for provided Sites or Subnets:", ($NetworkSites | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Found NetworkSites for provided Sites or Subnets:", ($NetworkSites | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
     #endregion
 
@@ -411,7 +411,7 @@ function Find-TeamsEmergencyCallRoute {
 
             # Populating EffectiveEmergencyDialString & MatchedEmergencyDialMask
             if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-              "Function: $($MyInvocation.MyCommand.Name): EmergencyNumber:", ($EmergencyNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+              "  Function: $($MyInvocation.MyCommand.Name) - EmergencyNumber:", ($EmergencyNumber | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
             if ( $EmergencyNumber ) {
               $EmergencyCallRoutingObject.EffectiveEmergencyDialString = $EmergencyNumber.EmergencyDialString

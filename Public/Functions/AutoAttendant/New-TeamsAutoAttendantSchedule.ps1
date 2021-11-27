@@ -325,7 +325,7 @@ function New-TeamsAutoAttendantSchedule {
     # Creating Schedule
     Write-Verbose -Message '[PROCESS] Creating Schedule'
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     if ($PSCmdlet.ShouldProcess("$Name", 'New-CsOnlineSchedule')) {

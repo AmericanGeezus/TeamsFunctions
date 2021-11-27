@@ -155,7 +155,7 @@ function New-TeamsResourceAccountLineIdentity {
     # Creating Line Identity
     Write-Verbose -Message '[PROCESS] Creating Line Identity'
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     if ($PSCmdlet.ShouldProcess("$($Object.UserPrincipalName)", 'New-CsCallingLineIdentity Identity')) {

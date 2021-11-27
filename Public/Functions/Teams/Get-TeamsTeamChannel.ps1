@@ -115,7 +115,7 @@ function Get-TeamsTeamChannel {
     }
 
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): TeamObject:", ($TeamObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - TeamObject:", ($TeamObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     if ($TeamObject.GetType().BaseType.Name -eq 'Array') {
@@ -136,7 +136,7 @@ function Get-TeamsTeamChannel {
           $ChannelObj = $TeamObj | Get-TeamChannel | Where-Object DisplayName -EQ "$Channel" -ErrorAction Stop
         }
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): Channel:", ($ChannelObj | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "  Function: $($MyInvocation.MyCommand.Name) - Channel:", ($ChannelObj | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
 
         # Output

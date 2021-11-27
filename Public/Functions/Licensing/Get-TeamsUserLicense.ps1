@@ -125,7 +125,7 @@ function Get-TeamsUserLicense {
         $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ $Partnumber
         if ($null -ne $Lic -or $Lic.IncludesTeams -or $Lic.IncludesPhoneSystem -or $PSBoundParameters.ContainsKey('DisplayAll')) {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
           [void]$UserLicenses.Add($Lic)
         }
@@ -140,10 +140,10 @@ function Get-TeamsUserLicense {
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
         if (($null -ne $Lic -and $Lic.RelevantForTeams) -or $PSBoundParameters.ContainsKey('DisplayAll')) {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
 
           $LicObj = [PSCustomObject][ordered]@{
