@@ -19,6 +19,7 @@ TBC
 - `Set-TeamsResourceAccount`: Added Parameter `Sync` to synchronise Resource Account with the Agent Provisioning Service
 - `Assert-MicrosoftTeamsConnection`: Addressing an issue with timed out RBAC Roles and reconnection
 - `Assert-TeamsUserVoiceConfig`: Refactored function to be able to receive an CsOnlineUser Object as well as a UserPrincipalName
+- `Find-TeamsUserVoiceConfig`: Complete Refactoring to add `SupportsPaging` for all Parameters.
 - `Get-TeamsUserVoiceConfig`: Refactored address query to catch non-provisioned addresses not to error
 - `Set-TeamsUserVoiceConfig`:
   - Fixed an issue with identifying "assigned to self" not being recognised
