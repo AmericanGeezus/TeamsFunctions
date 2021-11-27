@@ -15,6 +15,18 @@ TBC
 ### Updated
 
 - `Find-TeamsResourceAccount`: Fixed an issue with PhoneNumber not being displayed properly
+- `New-TeamsResourceAccount`: Added Parameter `Sync` to synchronise Resource Account with the Agent Provisioning Service
+- `Set-TeamsResourceAccount`: Added Parameter `Sync` to synchronise Resource Account with the Agent Provisioning Service
+- `Assert-MicrosoftTeamsConnection`: Addressing an issue with timed out RBAC Roles and reconnection
+- `Assert-TeamsUserVoiceConfig`: Refactored function to be able to receive an CsOnlineUser Object as well as a UserPrincipalName
+- `Get-TeamsUserVoiceConfig`: Refactored address query to catch non-provisioned addresses not to error
+- `Set-TeamsUserVoiceConfig`:
+  - Fixed an issue with identifying "assigned to self" not being recognised
+  - Added feedback for already assigned TDP and OVP
+- `Set-TeamsPhoneNumber`: Fixed an issue with identifying "assigned to self" not being recognised
+- `Assert-TeamsCallableEntity`: Increased the time to wait for License to be enabled successfully
+- `Enable-TeamsUserForEnterpriseVoice`: Switched from UserPrincipalName to SIPaddress for the Identity (accommodating misaligned configuration)
+- Fixed an issue with calculation of progress steps in multiple CmdLets
 
 ### Draft - Look ahead
 

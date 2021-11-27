@@ -19,7 +19,9 @@ function Assert-TeamsUserVoiceConfig {
     Configuration is always done on the assumption that a full configuration is desired.
     Any partial configuration is fed back on screen.
   .PARAMETER UserPrincipalName
-    Required. UserPrincipalName of the User to be tested
+    Required for Parameterset UserPrincipalName. UserPrincipalName or ObjectId of the Object
+  .PARAMETER Object
+    Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.
   .PARAMETER IncludeTenantDialPlan
     Optional. By default, only the core requirements for Voice Routing are verified.
     This extends the requirements to also include the Tenant Dial Plan.
@@ -63,11 +65,14 @@ function Assert-TeamsUserVoiceConfig {
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   #>
 
-  [CmdletBinding()]
+  [CmdletBinding(DefaultParameterSetName = 'UserPrincipalName')]
   [Alias('Assert-TeamsUVC')]
   #[OutputType([Boolean])]
   param (
-    [Parameter(Mandatory, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName, HelpMessage = 'Username(s)')]
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'Object', ValueFromPipeline)]
+    [Object[]]$Object,
+
+    [Parameter(Mandatory, Position = 0, ParameterSetName = 'UserPrincipalName', ValueFromPipeline, ValueFromPipelineByPropertyName)]
     [Alias('ObjectId', 'Identity')]
     [string[]]$UserPrincipalName,
 
@@ -99,29 +104,14 @@ function Assert-TeamsUserVoiceConfig {
     if (-not $PSBoundParameters.ContainsKey('Debug')) { $DebugPreference = $PSCmdlet.SessionState.PSVariable.GetValue('DebugPreference') } else { $DebugPreference = 'Continue' }
     if ( $PSBoundParameters.ContainsKey('InformationAction')) { $InformationPreference = $PSCmdlet.SessionState.PSVariable.GetValue('InformationAction') } else { $InformationPreference = 'Continue' }
 
-  } #begin
-
-  process {
-    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-
-    foreach ($UPN in $UserPrincipalName) {
+    function AssertVoiceConfig ($CsUser) {
       Write-Verbose -Message "[PROCESS] Processing '$UPN'"
-
-      try {
-        #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
-        #$CsUser = Get-CsOnlineUser -Identity "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
-        $CsUser = Get-CsOnlineUser "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
-        $User = $CsUser.UserPrincipalName
-      }
-      catch {
-        Write-Error -Message "User '$UPN' not found"
-        continue
-      }
       if ($CsUser.InterpretedUserType -notlike '*User*') {
         Write-Information "INFO:    User '$User' not a User"
         continue
       }
       else {
+        $User = $CsUser.UserPrincipalName
         # Testing Full Configuration
         Write-Verbose -Message "User '$User' - User Voice Configuration (Full)"
         #$TestFull = Test-TeamsUserVoiceConfig -UserPrincipalName "$User" -IncludeTenantDialPlan:$IncludeTenantDialPlan -ExtensionState:$ExtensionState
@@ -129,7 +119,6 @@ function Assert-TeamsUserVoiceConfig {
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
           "Function: $($MyInvocation.MyCommand.Name): TestFull:", ($TestFull | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
-
         if ($TestFull) {
           if ($Called) {
             Write-Output $TestFull
@@ -147,7 +136,6 @@ function Assert-TeamsUserVoiceConfig {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
             "Function: $($MyInvocation.MyCommand.Name): TestPart:", ($TestPart | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
-
           if ($TestPart) {
             if ($Called) {
               Write-Output $TestPart
@@ -159,9 +147,34 @@ function Assert-TeamsUserVoiceConfig {
           }
         }
       }
+    }
+  } #begin
 
-    } #foreach Identity
-
+  process {
+    Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
+    switch ($PSCmdlet.ParameterSetName) {
+      'UserprincipalName' {
+        foreach ($User in $UserPrincipalName) {
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing '$User'"
+          try {
+            #NOTE Call placed without the Identity Switch to make remoting call and receive object in tested format (v2.5.0 and higher)
+            #$CsUser = Get-CsOnlineUser -Identity "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+            $CsUser = Get-CsOnlineUser "$User" -WarningAction SilentlyContinue -ErrorAction Stop
+          }
+          catch {
+            Write-Error "User '$User' not found" -Category ObjectNotFound
+            continue
+          }
+          Write-Output (AssertVoiceConfig -CsUser $CsUser)
+        }
+      }
+      'Object' {
+        foreach ($O in $Object) {
+          Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand) - Processing provided CsOnlineUser Object for '$($O.UserPrincipalName)'"
+          Write-Output (AssertVoiceConfig -CsUser $O)
+        }
+      }
+    }
   } #process
 
   end {
