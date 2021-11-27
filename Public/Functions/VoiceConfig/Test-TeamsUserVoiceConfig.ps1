@@ -201,7 +201,7 @@ function Test-TeamsUserVoiceConfig {
       }
       #endregion
 
-      #VALIDATE This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
+      #FIXME This does not work for v2.5.0 - Parameter VoicePolicy seems to be removed?
       #region Testing Voice Configuration for Calling Plans (BusinessVoice) and Direct Routing (HybridVoice)
       if ($CsUser.VoicePolicy -eq 'BusinessVoice') {
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {

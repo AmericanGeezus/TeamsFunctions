@@ -30,6 +30,7 @@ function Find-TeamsUserVoiceConfig {
   .PARAMETER ConfigurationType
     Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'.
     The expected ResultSize is big, therefore only UserPrincipalNames are returned
+    Please note, that seaching with ConfigurationType does not support paging
     Please see NOTES for details
   .PARAMETER VoicePolicy
     Optional. Searches all enabled Users which are reported as 'BusinessVoice' or 'HybridVoice'.
@@ -116,7 +117,7 @@ function Find-TeamsUserVoiceConfig {
     https://docs.microsoft.com/en-us/microsoftteams/direct-routing-migrating
   #>
 
-  [CmdletBinding(DefaultParameterSetName = 'Tel')]
+  [CmdletBinding(DefaultParameterSetName = 'Tel', SupportsPaging)]
   [Alias('Find-TeamsUVC')]
   [OutputType([PSCustomObject])]
   param(
@@ -204,11 +205,13 @@ function Find-TeamsUserVoiceConfig {
         if ($Users) {
           if ($Users.Count -gt 3) {
             Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-            $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+            #$Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
+            $Query = $Users | Select-Object UserPrincipalName, TelephoneNumber, LineUri, OnPremLineURI
           }
           else {
             Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each'
-            Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
+            #Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
+            $Query = Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
           }
         }
         else {
@@ -221,7 +224,7 @@ function Find-TeamsUserVoiceConfig {
         foreach ($PhoneNr in $PhoneNumber) {
           Write-Verbose -Message "Normalising Input for Phone Number '$PhoneNr'"
           if ($PhoneNr -match '@') {
-            Find-TeamsUserVoiceConfig -UserPrincipalName "$PhoneNr"
+            Get-TeamsUserVoiceConfig -UserPrincipalName "$PhoneNr"
             continue
           }
           elseif ($PhoneNr -match '([0-9]{3,25});ext=([0-9]{3,8})') {
@@ -244,13 +247,15 @@ function Find-TeamsUserVoiceConfig {
             }
             if ($Users.Count -gt 3) {
               Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-              $Users | Select-Object UserPrincipalName, LineUri
+              #$Users | Select-Object UserPrincipalName, LineUri
+              $Query = $Users | Select-Object UserPrincipalName, LineUri
             }
             else {
               if ( -not $Called) {
                 Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
               }
-              Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
+              #Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
+              $Query = Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
             }
           }
           else {
@@ -286,13 +291,15 @@ function Find-TeamsUserVoiceConfig {
             }
             if ($Users.Count -gt 3) {
               Write-Verbose -Message 'Multiple results found - Displaying limited output only' -Verbose
-              $Users | Select-Object UserPrincipalName, LineUri
+              #$Users | Select-Object UserPrincipalName, LineUri
+              $Query = $Users | Select-Object UserPrincipalName, LineUri
             }
             else {
               if ( -not $Called) {
                 Write-Verbose -Message 'Limited results found - Displaying User Voice Configuration for each' -Verbose
               }
-              Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
+              #Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
+              $Query = Get-TeamsUserVoiceConfig -UserPrincipalName $($Users.UserPrincipalName)
             }
           }
           else {
@@ -305,6 +312,7 @@ function Find-TeamsUserVoiceConfig {
       } #Ext
 
       'CT' {
+        #NOTE: CT does not support paging!
         Write-Verbose -Message 'Searching for all Users enabled for Teams: Searching... This will take quite some time!'
         $Filter = 'Enabled -eq $TRUE'
         $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction Stop
@@ -376,8 +384,10 @@ function Find-TeamsUserVoiceConfig {
           Write-Information "TRYING:  Finding all Users enabled for Teams with VoicePolicy '$VoicePolicy': Searching... This will take a bit of time!"
         }
         $Filter = 'VoicePolicy -EQ "{0}"' -f $VoicePolicy
-        Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
-        break
+        #Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+        $Query = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+        #break
+        continue
       } #VP
 
       'OVP' {
@@ -388,7 +398,8 @@ function Find-TeamsUserVoiceConfig {
             Write-Information "TRYING:  Finding all Users enabled for Teams with OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy': Searching... This will take a bit of time!"
           }
           $Filter = 'OnlineVoiceRoutingPolicy -EQ "{0}"' -f $OnlineVoiceRoutingPolicy
-          Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          #Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          $Query = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
         else {
           Write-Error -Message "OnlineVoiceRoutingPolicy '$OnlineVoiceRoutingPolicy' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -404,7 +415,8 @@ function Find-TeamsUserVoiceConfig {
             Write-Information "TRYING:  Finding all Users enabled for Teams with TenantDialPlan '$TenantDialPlan': Searching... This will take a bit of time!"
           }
           $Filter = 'TenantDialPlan -EQ "{0}"' -f $TenantDialPlan
-          Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          #Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
+          $Query = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue | Select-Object UserPrincipalName
         }
         else {
           Write-Error -Message "TenantDialPlan '$TenantDialPlan' not found" -Category ObjectNotFound -ErrorAction Stop
@@ -417,8 +429,38 @@ function Find-TeamsUserVoiceConfig {
         Write-Warning -Message 'No Parameters specified. Please specify search criteria (Parameter and value)!' -Verbose
         break
       } #default
-
     } #Switch
+
+    #region OUTPUT
+    # Paging: First & Skip
+    if ($Query.count -gt 0) {
+      If ($PSCmdlet.PagingParameters.Skip -ge $Query.count) {
+        Write-Verbose "[PAGING] $($MyInvocation.MyCommand) - No results satisfy the Skip parameters"
+      }
+      elseif ($PSCmdlet.PagingParameters.First -eq 0) {
+        Write-Verbose "[PAGING] $($MyInvocation.MyCommand) - No results satisfy the First parameters"
+      }
+      else {
+        $First = $PSCmdlet.PagingParameters.Skip
+        Write-Verbose ("[PAGING] $($MyInvocation.MyCommand) - First: {0}" -f $First)
+        $Last = $First + ([Math]::Min($PSCmdlet.PagingParameters.First, $Query.Count - $PSCmdlet.PagingParameters.Skip) - 1)
+      }
+      If ($Last -le 0) {
+        $Query = $Null
+      }
+      else {
+        $Query = $Query[$First..$last]
+        Write-Output $Query
+      }
+      Write-Verbose ("[PAGING] $($MyInvocation.MyCommand) - Last: {0}" -f $Last)
+    }
+
+    # Paging: IncludeTotalCount
+    If ($PSCmdlet.PagingParameters.IncludeTotalCount) {
+      [double]$Accuracy = 1.0
+      $PSCmdlet.PagingParameters.NewTotalCount($Query.count, $Accuracy)
+    }
+    #endregion
 
   } #process
 

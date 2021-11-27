@@ -4,8 +4,8 @@
 # Updated:  24-MAY-2021
 # Status:   RC
 
-#TODO https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/  - check setup against blog
 #TODO Validate use with Pipeline for creating multiple Objects with CSV input (Identity, DisplayName & all policies)
+
 
 function New-TeamsCommonAreaPhone {
   <#
@@ -65,6 +65,8 @@ function New-TeamsCommonAreaPhone {
     or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
     a Phone Number and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
+    To enable a Common Area Phone with a meeting room experience, please follow this guide:
+    https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/
   .COMPONENT
     UserManagement
   .FUNCTIONALITY

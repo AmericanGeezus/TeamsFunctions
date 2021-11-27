@@ -285,7 +285,29 @@ function Set-TeamsResourceAccount {
       }
 
       if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
+        $CurrentOperationID0 = 'Applying Phone Number'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
+        # Applying Phone Number with Set-TeamsPhoneNumber
+        #TEST integration of Set-TeamsPhoneNumber
+        try {
+          $PhoneNumberExecResult = $null
+          $PhoneNumberExecResult = Set-TeamsPhoneNumber -UserPrincipalName "$UPN" -PhoneNumber $PhoneNumber -WarningAction SilentlyContinue -ErrorAction Stop
+          if ( $PhoneNumberExecResult ) {
+            $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number assigned to $ObjectType`: '$PhoneNumber'"
+            Write-Information "SUCCESS: '$UPN' - $CurrentOperationID0`: OK - $StatusMessage"
+          }
+          else {
+            throw
+          }
+        }
+        catch {
+          $ErrorLogMessage = "'$UPN' - $CurrentOperationID0`: Failed: '$($_.Exception.Message)'"
+          Write-Error -Message $ErrorLogMessage
+        }
+        <# Removed due to refactor
         #Validating Phone Number
+        #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts?
+        #TEST integration of Set-TeamsPhoneNumber
         if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
           if ($CurrentPhoneNumber) {
             Write-Warning -Message "'$Name ($UPN)' PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
@@ -321,6 +343,7 @@ function Set-TeamsResourceAccount {
         else {
           Write-Error -Message "PhoneNumber '$PhoneNumber' - Not a valid Phone number. Please provide a number starting with a + and 10 to 15 digits long" -ErrorAction Stop
         }
+        #>
       }
       else {
         #PhoneNumber is not provided
@@ -631,14 +654,14 @@ function Set-TeamsResourceAccount {
       if ( $PSBoundParameters.ContainsKey('Sync') ) {
         Write-Verbose -Message "Switch 'Sync' - Resource Account is synchronised with Agent Provisioning Service"
         $null = Sync-CsOnlineApplicationInstance -ObjectId $ResourceAccount.ObjectId #-Force
-        Write-Information "SUCCESS: Synchronising Resource Account with Agent Provisioning Service"
+        Write-Information 'SUCCESS: Synchronising Resource Account with Agent Provisioning Service'
       }
       #endregion
 
 
       if ( $PassThru ) {
         $StatusID0 = 'Output'
-        $CurrentOperationID0 = "Querying Object"
+        $CurrentOperationID0 = 'Querying Object'
         Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
         $RAObject = Get-TeamsResourceAccount -Identity "$UPN"
       }

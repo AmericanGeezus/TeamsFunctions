@@ -5,7 +5,7 @@
 # Status:   Live
 
 #TODO Requirement capture for configuration for OperatorConnect needed
-#VALIDATE Add feedback (in Write-Output) which item was removed (if known)
+
 
 function Set-TeamsUserVoiceConfig {
   <#

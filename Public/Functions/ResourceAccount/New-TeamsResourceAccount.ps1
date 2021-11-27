@@ -4,7 +4,7 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO Check out Compliance Recording Policy integration with RAs & Policy
+
 
 
 function New-TeamsResourceAccount {
@@ -374,10 +374,28 @@ function New-TeamsResourceAccount {
         Write-Error -Message 'A Phone Number can only be assigned to licensed objects. Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
       }
       else {
+        # Applying Phone Number with Set-TeamsPhoneNumber
+        #TEST integration of Set-TeamsPhoneNumber
+        try {
+          $PhoneNumberExecResult = $null
+          $PhoneNumberExecResult = Set-TeamsPhoneNumber -UserPrincipalName "$UPN" -PhoneNumber $PhoneNumber -WarningAction SilentlyContinue -ErrorAction Stop
+          if ( $PhoneNumberExecResult ) {
+            $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number assigned to $ObjectType`: '$PhoneNumber'"
+            Write-Information "SUCCESS: '$UPN' - $CurrentOperationID0`: OK - $StatusMessage"
+          }
+          else {
+            throw
+          }
+        }
+        catch {
+          $ErrorLogMessage = "'$UPN' - $CurrentOperationID0`: Failed: '$($_.Exception.Message)'"
+          Write-Error -Message $ErrorLogMessage
+        }
+
+        <# Removed due to refactor
         # Processing paths for Telephone Numbers depending on Type
         $E164Number = Format-StringForUse $PhoneNumber -As E164
         #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts?
-        #TEST integration of Set-TeamsPhoneNumber
         if ($PhoneNumberIsMSNumber) {
           # Set in VoiceApplicationInstance
           Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"
@@ -402,6 +420,7 @@ function New-TeamsResourceAccount {
             Write-Warning -Message "'$Name' Number '$PhoneNumber' not assigned! Please run Set-TeamsResourceAccount manually"
           }
         }
+        #>
       }
     }
 

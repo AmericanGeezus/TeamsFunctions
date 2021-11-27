@@ -180,7 +180,6 @@ function New-TeamsResourceAccountAssociation {
     $StatusID0 = 'Processing found Resource Accounts'
     $CurrentOperationID0 = ''
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
-    #TEST WriteProgress error for 150 - Accounts.Count not populating correctly?
     [int] $private:StepsID1 = $StepsID1 * $(if ($Accounts.IsArray) { $Accounts.Count } else { 1 })
     [System.Collections.ArrayList]$ValidatedAccounts = @()
     foreach ($Account in $Accounts) {

@@ -27,6 +27,8 @@ TBC
 - `Assert-TeamsCallableEntity`: Increased the time to wait for License to be enabled successfully
 - `Enable-TeamsUserForEnterpriseVoice`: Switched from UserPrincipalName to SIPaddress for the Identity (accommodating misaligned configuration)
 - Fixed an issue with calculation of progress steps in multiple CmdLets
+- `New-TeamsResourceAccount`: Refactored to use `Set-TeamsPhoneNumber`
+- `Set-TeamsResourceAccount`: Refactored to use `Set-TeamsPhoneNumber`
 
 ### Draft - Look ahead
 

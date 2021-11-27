@@ -140,7 +140,7 @@ function Enable-AzureAdAdminRole {
 
     # preparing Splatting Object
     $Parameters = $null
-    $Parameters += @{'ErrorAction' = 'Stop' }
+    $Parameters += @{ 'ErrorAction' = 'Stop' }
 
     #region Supporting Parameters
     # Duration

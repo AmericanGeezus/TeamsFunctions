@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-#VALIDATE v2.6.x - TenantDomain & HostedMigrationOverrideURL?
+
 
 function Get-TeamsTenant {
   <#
