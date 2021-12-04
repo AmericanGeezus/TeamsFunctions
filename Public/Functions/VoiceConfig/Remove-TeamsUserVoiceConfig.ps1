@@ -4,7 +4,8 @@
 # Updated:  15-NOV-2020
 # Status:   Live
 
-
+#TODO review to rely more on Set-CsOnlinePhoneNumber
+# https://docs.microsoft.com/en-us/powershell/module/teams/set-csphonenumberassignment?view=teams-ps
 
 
 function Remove-TeamsUserVoiceConfig {

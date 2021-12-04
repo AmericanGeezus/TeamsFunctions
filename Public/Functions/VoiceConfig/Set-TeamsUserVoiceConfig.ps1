@@ -5,8 +5,8 @@
 # Status:   Live
 
 #TODO Requirement capture for configuration for OperatorConnect needed
-
-
+#TODO review to rely more on Set-CsOnlinePhoneNumber
+# https://docs.microsoft.com/en-us/powershell/module/teams/set-csphonenumberassignment?view=teams-ps
 function Set-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
