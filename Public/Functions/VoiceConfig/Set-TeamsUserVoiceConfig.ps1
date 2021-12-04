@@ -3,8 +3,8 @@
 # Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
-
 #TODO Requirement capture for configuration for OperatorConnect needed
+#TODO Add Location as a parameter here to assign with Set-CsOnlineVoiceUer (pre-3.0) and Set-CsOnlinePhoneNumber post 3.0
 #TODO review to rely more on Set-CsOnlinePhoneNumber
 # https://docs.microsoft.com/en-us/powershell/module/teams/set-csphonenumberassignment?view=teams-ps
 function Set-TeamsUserVoiceConfig {
@@ -329,7 +329,7 @@ function Set-TeamsUserVoiceConfig {
             # Checking number is free
             Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number -WarningAction SilentlyContinue
-            $UserWithThisNumberIsSelf = $UserWithThisNumber | Where-Object {$_.UserPrincipalName -EQ $UserPrincipalName -or $_.SIPAddress -EQ $UserPrincipalName }
+            $UserWithThisNumberIsSelf = $UserWithThisNumber | Where-Object { $_.UserPrincipalName -EQ $UserPrincipalName -or $_.SIPAddress -EQ $UserPrincipalName }
             $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object { -not ($_.UserPrincipalName -EQ $UserPrincipalName -or $_.SIPAddress -EQ $UserPrincipalName) }
             if ( $UserWithThisNumberIsSelf ) {
               if ($Force) {
