@@ -221,32 +221,6 @@ function Get-TeamsUserVoiceConfig {
         #>
       }
 
-      <# When switching to new Query method
-      if ( $TeamsFunctionsMSTeamsModule.Version -lt 2.5.0 ) {
-        $UserObject | Add-Member -MemberType NoteProperty -Name ObjectId -Value $UserObjectId
-        $UserObject | Add-Member -MemberType NoteProperty -Name Identity -Value $Identity
-      }
-      else {
-        $UserObject | Add-Member -MemberType NoteProperty -Name Identity -Value $Identity
-        $UserObject | Add-Member -MemberType AliasProperty -Name ObjectId -Value $Identity
-      }
-
-      $UserObject | Add-Member -MemberType NoteProperty -Name HostingProvider -Value $CsUser.HostingProvider
-      $UserObject | Add-Member -MemberType NoteProperty -Name ObjectType -Value $ObjectType
-      $UserObject | Add-Member -MemberType NoteProperty -Name InterpretedUserType -Value $CsUser.InterpretedUserType
-
-      if ( $TeamsFunctionsMSTeamsModule.Version -lt 2.5.0 ) {
-        $UserObject | Add-Member -MemberType NoteProperty -Name InterpretedVoiceConfigType -Value $InterpretedVoiceConfigType
-        $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $CsUser.TeamsUpgradeEffectiveMode
-        $UserObject | Add-Member -MemberType NoteProperty -Name VoicePolicy -Value $CsUser.VoicePolicy
-      }
-      else {
-        $UserObject | Add-Member -MemberType NoteProperty -Name TeamsUpgradeEffectiveMode -Value $CsUser.TeamsUpgradeEffectiveMode
-      }
-
-      $UserObject | Add-Member -MemberType NoteProperty -Name UsageLocation -Value $CsUser.UsageLocation
-      #>
-
       # Adding Licensing Parameters if not skipped
       if (-not $PSBoundParameters.ContainsKey('SkipLicenseCheck')) {
         # Querying User Licenses

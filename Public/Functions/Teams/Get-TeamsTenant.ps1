@@ -94,10 +94,15 @@ function Get-TeamsTenant {
     $TenantObject | Add-Member -MemberType NoteProperty -Name HostedMigrationOverrideURL -Value $OverrideURL -Force
 
     #Filtering Object
-    if ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 ) {
+    if ( $TeamsFunctionsMSTeamsModule.Version -gt 3.0.0 ) {
+      $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, ProvisionedPlan, `
+        TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
+        DirSyncEnabled, WhenCreated, CompanyPartnership, HostedMigrationOverrideURL, TenantDomain, VerifiedDomains, SipDomain
+    }
+    elseif ( $TeamsFunctionsMSTeamsModule.Version -gt 2.3.1 ) {
       $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, `
         TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
-        DefaultDataLocation, DirSyncEnabled, WhenCreated, TenantDomain, HostedMigrationOverrideURL, Domains
+        DefaultDataLocation, DirSyncEnabled, WhenCreated, HostedMigrationOverrideURL, TenantDomain, Domains
 
       #Reworking Domains and filtering onmicrosoft.com domains. Adding Script Method for Domains
       $Domains = $TenantObject.Domains
