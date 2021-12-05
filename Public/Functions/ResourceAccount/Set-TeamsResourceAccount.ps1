@@ -304,46 +304,6 @@ function Set-TeamsResourceAccount {
           $ErrorLogMessage = "'$UPN' - $CurrentOperationID0`: Failed: '$($_.Exception.Message)'"
           Write-Error -Message $ErrorLogMessage
         }
-        <# Removed due to refactor
-        #Validating Phone Number
-        #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts?
-        #TEST integration of Set-TeamsPhoneNumber
-        if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
-          if ($CurrentPhoneNumber) {
-            Write-Warning -Message "'$Name ($UPN)' PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
-          }
-          else {
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken"
-          }
-          $PhoneNumber = $null
-        }
-        elseif ($PhoneNumber -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
-          if ( $PhoneNumber -match 'ext' ) {
-            Write-Warning -Message "'$Name ($UPN)' PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions! (EXT will be stripped)!"
-          }
-          $E164Number = Format-StringForUse $PhoneNumber -As E164
-          if ($CurrentPhoneNumber -eq $E164Number -and -not $force) {
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber '$E164Number' is already applied"
-          }
-          else {
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber '$E164Number' is in a usable format and will be applied"
-            # Checking number is free
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber - Finding Number assignments"
-            $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
-            if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UPN) {
-              if ($Force) {
-                Write-Warning -Message "'$Name ($UPN)' Number '$E164Number' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
-              }
-              else {
-                Write-Error -Message "'$Name ($UPN)' Number '$E164Number' is already assigned to another Object: '$($UserWithThisNumber.UserPrincipalName)'" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
-              }
-            }
-          }
-        }
-        else {
-          Write-Error -Message "PhoneNumber '$PhoneNumber' - Not a valid Phone number. Please provide a number starting with a + and 10 to 15 digits long" -ErrorAction Stop
-        }
-        #>
       }
       else {
         #PhoneNumber is not provided
