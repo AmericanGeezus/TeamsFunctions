@@ -345,7 +345,16 @@ function Enable-AzureAdAdminRole {
               [void]$ActivatedRoles.Add($ActivatedRole)
             }
             catch {
-              if ($_.Exception.Message.Contains('ExpirationRule')) {
+              if ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
+                Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('EligibilityRule')) {
+                Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
+                Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('ExpirationRule')) {
                 # Amending Schedule
                 if ($Duration -eq 4) { $Duration = 1 } else { $Duration = 4 }
                 Write-Warning -Message "Specified Duration is not allowed, re-trying for $Duration hour(s)"
@@ -366,9 +375,6 @@ function Enable-AzureAdAdminRole {
                   elseif ($_.Exception.Message.Contains('EligibilityRule')) {
                     Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
                   }
-                  elseif ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
-                    Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
-                  }
                   elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
                     Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
                   }
@@ -376,18 +382,6 @@ function Enable-AzureAdAdminRole {
                     Write-Error -Message $_.Exception.Message
                   }
                 }
-              }
-              elseif ($_.Exception.Message.Contains('EligibilityRule')) {
-                Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
-              }
-              elseif ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
-                Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
-              }
-              elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
-                Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
-              }
-              else {
-                Write-Error -Message $_.Exception.Message
               }
               else {
                 Write-Error -Message $_.Exception.Message
