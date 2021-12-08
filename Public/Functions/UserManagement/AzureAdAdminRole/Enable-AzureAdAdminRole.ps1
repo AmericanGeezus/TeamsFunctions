@@ -232,6 +232,8 @@ function Enable-AzureAdAdminRole {
       $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ 'Eligible'
       Write-Verbose -Message "User '$Id' has currently $($MyActiveRoles.Count) of $($MyEligibleRoles.Count) activated"
 
+      <#
+      #FIXME This somehow overwrites the SubjectID!
       # Determining Group Assignments
       Write-Verbose -Message "User '$Id' Determining group assignments"
       Write-Verbose -Message "Querying The AzureAdDirectory Role is performed assuming the  Teams Service Admin (Teams Administrator)"
@@ -248,12 +250,13 @@ function Enable-AzureAdAdminRole {
         }
       }
       Write-Verbose -Message "User '$Id' is a member of $($MyGroups.Count) Groups with $($MyGroupRoles.Count) assigned roles"
+      #>
 
       [System.Collections.ArrayList]$Roles = @()
       # Adding Direct assigned Roles
       if ($MyEligibleRoles.Count -gt 0) { foreach ($Role in $MyEligibleRoles) { [void]$Roles.Add($Role) } }
       # Adding Group assigned Roles
-      if ( $MyGroupRoles.Count -gt 0) { foreach ($Role in $MyGroupRoles) { [void]$Roles.Add($Role) } }
+      #if ( $MyGroupRoles.Count -gt 0) { foreach ($Role in $MyGroupRoles) { [void]$Roles.Add($Role) } }
 
       if ( $MyEligibleRoles.Count -eq 0 ) {
         if ( $MyGroupRoles.Count -eq 0 ) {
