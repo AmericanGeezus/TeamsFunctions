@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Refactor IDs to be cleaner!
 
 function New-TeamsResourceAccountAssociation {
   <#
@@ -149,15 +149,14 @@ function New-TeamsResourceAccountAssociation {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    # re-Initialising counters for Progress bars (for Pipeline processing)
-    [int] $private:CountID0 = 2
-
-    $StatusID0 = 'Verifying input'
     # Query $UserPrincipalName
     [System.Collections.ArrayList]$Accounts = @()
-    $CurrentOperationID0 = 'Processing provided UserPrincipalNames'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     foreach ($UPN in $UserPrincipalName) {
+      # re-Initialising counters for Progress bars (for Pipeline processing)
+      [int] $private:CountID0 = 2
+      $StatusID0 = 'Verifying input'
+      $CurrentOperationID0 = 'Processing provided UserPrincipalNames'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
         $RAObject = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
@@ -248,6 +247,7 @@ function New-TeamsResourceAccountAssociation {
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       # Processing Assignment
       foreach ($Account in $ValidatedAccounts) {
+        [int] $private:CountID1 = 1
         $ErrorEncountered = $null
         $ActivityID1 = "'$($Account.UserPrincipalName)'"
         $StatusID1 = "Assignment to $DesiredType '$($EntityObject.Name)'"

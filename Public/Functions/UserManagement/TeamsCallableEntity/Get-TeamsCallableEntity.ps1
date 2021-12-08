@@ -161,7 +161,7 @@ function Get-TeamsCallableEntity {
                 $CallTarget = Get-AzureADGroup -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
               }
               catch {
-                Write-Information 'Performing Search... finding ALL Groups'
+                Write-Information 'INFO:    Performing Search... finding ALL Groups'
                 if ( -not $global:TeamsFunctionsTenantAzureAdGroups) {
                   Write-Verbose -Message 'Groups not loaded yet, depending on the size of the Tenant, this will run for a while!' -Verbose
                   $global:TeamsFunctionsTenantAzureAdGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue
