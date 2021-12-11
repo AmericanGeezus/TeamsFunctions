@@ -74,7 +74,7 @@ function Find-TeamsCallableEntity {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -112,9 +112,8 @@ function Find-TeamsCallableEntity {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int] $private:CountID0 = 1
-    [int] $private:StepsID0 = $private:CountID0 + $Identity.Count
     foreach ( $Id in $Identity) {
+      [int] $private:CountID0 = 1
       [int] $private:CountID1 = 1
       $CallTarget = $null
       [System.Collections.ArrayList]$Output = @()

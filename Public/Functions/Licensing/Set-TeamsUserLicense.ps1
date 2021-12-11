@@ -434,7 +434,7 @@ function Set-TeamsUserLicense {
           foreach ($AddLic in $Add) {
             $License = $TenantLicenses | Where-Object ParameterName -EQ $AddLic
             if ($PSBoundParameters.ContainsKey('Debug')) {
-              "Function: $($MyInvocation.MyCommand.Name): License:", ($License | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+              "  Function: $($MyInvocation.MyCommand.Name) - License:", ($License | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
             }
             # Verifying user has not already this license assigned
             if ( $License.SkuPartNumber -in $ObjectAssignedLicenses.SkuPartNumber) {
@@ -503,26 +503,26 @@ function Set-TeamsUserLicense {
       $NewLicenseObjParameters = $null
       if ($PSBoundParameters.ContainsKey('Add')) {
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): AddSkuIds:", ($AddSkuIds | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "  Function: $($MyInvocation.MyCommand.Name) - AddSkuIds:", ($AddSkuIds | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         $NewLicenseObjParameters += @{'SkuId' = $AddSkuIds }
       }
       if ($PSBoundParameters.ContainsKey('Remove')) {
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): RemoveSkuId:", ($RemoveSkuId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "  Function: $($MyInvocation.MyCommand.Name) - RemoveSkuId:", ($RemoveSkuId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         $NewLicenseObjParameters += @{'RemoveSkuId' = $RemoveSkuIds }
       }
       if ($PSBoundParameters.ContainsKey('RemoveAll')) {
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): RemoveSkuId:", ($RemoveSkuId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "  Function: $($MyInvocation.MyCommand.Name) - RemoveSkuId:", ($RemoveSkuId | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
         $NewLicenseObjParameters += @{'RemoveSkuId' = $ObjectAssignedLicenses.SkuId }
       }
 
       $LicenseObject = New-AzureAdLicenseObject @NewLicenseObjParameters
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name): LicenseObject:", ($LicenseObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - LicenseObject:", ($LicenseObject | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
       Write-Verbose -Message "Account '$ID' - Creating License Object: Done"
       #endregion

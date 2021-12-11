@@ -4,8 +4,8 @@
 # Updated:  24-MAY-2021
 # Status:   RC
 
-#TODO https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/  - check setup against blog
 #TODO Validate use with Pipeline for creating multiple Objects with CSV input (Identity, DisplayName & all policies)
+
 
 function New-TeamsCommonAreaPhone {
   <#
@@ -65,6 +65,8 @@ function New-TeamsCommonAreaPhone {
     or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
     a Phone Number and optionally a Tenant Dial Plan.
     This Script only covers relevant elements for Common Area Phones themselves.
+    To enable a Common Area Phone with a meeting room experience, please follow this guide:
+    https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/
   .COMPONENT
     UserManagement
   .FUNCTIONALITY
@@ -139,7 +141,7 @@ function New-TeamsCommonAreaPhone {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -188,7 +190,6 @@ function New-TeamsCommonAreaPhone {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Parameters = @{}
     [int] $private:CountID0 = 1
-    [int] $private:StepsID0 = $private:CountID0 + $private:StepsID0
     $StatusID0 = 'Verifying input'
     #region PREPARATION
     #region Normalising $UserPrincipalname

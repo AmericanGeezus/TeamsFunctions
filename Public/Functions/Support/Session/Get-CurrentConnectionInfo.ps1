@@ -95,7 +95,7 @@ function Get-CurrentConnectionInfo {
       $SessionInfo.ConnectedTo += 'ExchangeOnline'
       #What to add?
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name): ExchangeOnlineFeedback:", ($ExchangeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - ExchangeOnlineFeedback:", ($ExchangeOnlineFeedback | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
     }
 

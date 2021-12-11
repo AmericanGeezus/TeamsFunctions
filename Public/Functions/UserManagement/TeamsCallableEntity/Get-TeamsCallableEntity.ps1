@@ -95,7 +95,7 @@ function Get-TeamsCallableEntity {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -121,7 +121,6 @@ function Get-TeamsCallableEntity {
         Write-Verbose 'Target is a Tel URI'
         $Id = Format-StringForUse -InputString "$Id" -As LineURI
         $CallableEntity = [TFCallableEntity]::new( "$Id", "$Id", 'TelURI', 'ExternalPstn')
-
       }
       else {
         Write-Verbose 'Target is not a Tel URI'
@@ -138,6 +137,11 @@ function Get-TeamsCallableEntity {
             catch {
               Write-Verbose 'Target is a User'
               $CallableEntity = [TFCallableEntity]::new( "$($CallTarget.UserPrincipalName)", "$($CallTarget.ObjectId)", 'User', 'User')
+              #TEST - Re-querying the CsOnlineUser to obtain the SIP address - may not be needed
+              # This was tried to ascertain why CQ Users fail to be added if their SIP Address is different than their UPN but did not work.
+              # Further investigation is needed
+              #$CsUser = Get-CsOnlineUser -Identity "$($CallTarget.ObjectId)" -WarningAction SilentlyContinue -ErrorAction Stop
+              #$CallableEntity = [TFCallableEntity]::new( "$($CsUser.SipAddress)", "$($CallTarget.ObjectId)", 'User', 'User')
             }
           }
           else {
@@ -157,7 +161,7 @@ function Get-TeamsCallableEntity {
                 $CallTarget = Get-AzureADGroup -ObjectId "$Id" -WarningAction SilentlyContinue -ErrorAction Stop
               }
               catch {
-                Write-Information 'Performing Search... finding ALL Groups'
+                Write-Information 'INFO:    Performing Search... finding ALL Groups'
                 if ( -not $global:TeamsFunctionsTenantAzureAdGroups) {
                   Write-Verbose -Message 'Groups not loaded yet, depending on the size of the Tenant, this will run for a while!' -Verbose
                   $global:TeamsFunctionsTenantAzureAdGroups = Get-AzureADGroup -All $true -WarningAction SilentlyContinue -ErrorAction SilentlyContinue

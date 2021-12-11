@@ -180,7 +180,12 @@ function Write-BetterProgress {
       Write-Debug '  Progress: Catching PercentComplete Error by increasing highest step by 1. Check code'
       $Of++
       $WriteProgressParams.PercentComplete = (($($Step - 1) / $Of) * 100)
-      Write-Progress @WriteProgressParams
+      try {
+        Write-Progress @WriteProgressParams -ErrorAction Stop
+      }
+      catch {
+        Write-Error -Message "Write-Progress failed at Step $Step of $Of - Check Activity '$Activity', Status '$Status' and optionally Current Operation '$CurrentOperation'"
+      }
     }
 
     Write-Debug "  Progress: Step $Step of $Of - $([math]::Round(($WriteProgressParams.PercentComplete)))% complete"

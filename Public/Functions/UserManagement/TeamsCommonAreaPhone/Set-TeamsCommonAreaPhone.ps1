@@ -130,7 +130,7 @@ function Set-TeamsCommonAreaPhone {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -178,9 +178,8 @@ function Set-TeamsCommonAreaPhone {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     $Parameters = @{}
-    [int] $private:CountID0 = 1
-    [int] $private:StepsID0 = $private:CountID0 + $UserPrincipalName.Count
-    ForEach ($UPN in $UserPrincipalName) {
+    foreach ($UPN in $UserPrincipalName) {
+      [int] $private:CountID0 = 1
       $StatusID0 = $CurrentOperationID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       $ActivityID1 = "'$UPN'"

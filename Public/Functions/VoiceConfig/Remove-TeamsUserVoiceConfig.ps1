@@ -4,7 +4,8 @@
 # Updated:  15-NOV-2020
 # Status:   Live
 
-
+#TODO review to rely more on Set-CsOnlinePhoneNumber
+# https://docs.microsoft.com/en-us/powershell/module/teams/set-csphonenumberassignment?view=teams-ps
 
 
 function Remove-TeamsUserVoiceConfig {
@@ -100,7 +101,7 @@ function Remove-TeamsUserVoiceConfig {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -123,7 +124,8 @@ function Remove-TeamsUserVoiceConfig {
 
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
-    [int] $private:StepsID0 = $UserPrincipalName.Count
+    #TEST Application of ID1
+    [int] $private:StepsID0 = $private:StepsID0 * $(if ($UserPrincipalName.IsArray) { $UserPrincipalName.Count } else { 1 })
     foreach ($UPN in $UserPrincipalName) {
       $CurrentOperationID0 = $StatusID0 = ''
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0

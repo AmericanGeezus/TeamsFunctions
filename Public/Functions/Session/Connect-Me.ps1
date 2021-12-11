@@ -229,7 +229,7 @@ function Connect-Me {
               else {
                 Write-Verbose 'Enable-AzureAdAdminrole - PIM or roles could not be activated or Tenant may not be enabled for PIM' -Verbose
                 if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-                  "Function: $($MyInvocation.MyCommand.Name): Exception:", $_.Exception.Message | Write-Debug
+                  "  Function: $($MyInvocation.MyCommand.Name) - Exception:", $_.Exception.Message | Write-Debug
                 }
               }
               $PIMavailable = $false

@@ -5,7 +5,7 @@
 # Status:   Live
 
 #TEST Overflow & Timeout - Voicemail does not work as desired!?
-
+#VALIDATE Adding Users where SIP and UPN are different results in error?
 
 function New-TeamsCallQueue {
   <#
@@ -343,7 +343,7 @@ function New-TeamsCallQueue {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -1258,7 +1258,7 @@ function New-TeamsCallQueue {
     $CurrentOperationID0 = "Creating Call Queue: '$NameNormalised'"
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     # Create CQ (New-CsCallQueue)

@@ -56,7 +56,7 @@ function Remove-TeamsAutoAttendant {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -76,7 +76,6 @@ function Remove-TeamsAutoAttendant {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
     foreach ($DN in $Name) {
       [int] $private:CountID0 = 1
-      [int] $private:StepsID0 = $Name.Count
       $StatusID0 = "Processing '$DN'"
       $CurrentOperationID0 = "Querying Object"
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0

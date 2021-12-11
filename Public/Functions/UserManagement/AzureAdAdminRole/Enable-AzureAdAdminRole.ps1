@@ -4,7 +4,7 @@
 # Updated:    20-DEC-2020
 # Status:     Live
 
-#TODO: Privileged Admin Groups powershell required. Buildout to commence afterwards
+#TODO: Privileged Admin Groups powershell required. Buildout to commence afterwards (code currently deactivated) #73
 #TODO: Change validation of Request to return validated setting via GET-AzureADMSRoleAssignment
 
 function Enable-AzureAdAdminRole {
@@ -140,7 +140,7 @@ function Enable-AzureAdAdminRole {
 
     # preparing Splatting Object
     $Parameters = $null
-    $Parameters += @{'ErrorAction' = 'Stop' }
+    $Parameters += @{ 'ErrorAction' = 'Stop' }
 
     #region Supporting Parameters
     # Duration
@@ -232,6 +232,8 @@ function Enable-AzureAdAdminRole {
       $MyEligibleRoles = $MyRoles | Where-Object AssignmentState -EQ 'Eligible'
       Write-Verbose -Message "User '$Id' has currently $($MyActiveRoles.Count) of $($MyEligibleRoles.Count) activated"
 
+      <#
+      #FIXME This somehow overwrites the SubjectID!
       # Determining Group Assignments
       Write-Verbose -Message "User '$Id' Determining group assignments"
       Write-Verbose -Message "Querying The AzureAdDirectory Role is performed assuming the  Teams Service Admin (Teams Administrator)"
@@ -248,12 +250,13 @@ function Enable-AzureAdAdminRole {
         }
       }
       Write-Verbose -Message "User '$Id' is a member of $($MyGroups.Count) Groups with $($MyGroupRoles.Count) assigned roles"
+      #>
 
       [System.Collections.ArrayList]$Roles = @()
       # Adding Direct assigned Roles
       if ($MyEligibleRoles.Count -gt 0) { foreach ($Role in $MyEligibleRoles) { [void]$Roles.Add($Role) } }
       # Adding Group assigned Roles
-      if ( $MyGroupRoles.Count -gt 0) { foreach ($Role in $MyGroupRoles) { [void]$Roles.Add($Role) } }
+      #if ( $MyGroupRoles.Count -gt 0) { foreach ($Role in $MyGroupRoles) { [void]$Roles.Add($Role) } }
 
       if ( $MyEligibleRoles.Count -eq 0 ) {
         if ( $MyGroupRoles.Count -eq 0 ) {
@@ -345,7 +348,16 @@ function Enable-AzureAdAdminRole {
               [void]$ActivatedRoles.Add($ActivatedRole)
             }
             catch {
-              if ($_.Exception.Message.Contains('ExpirationRule')) {
+              if ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
+                Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('EligibilityRule')) {
+                Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
+                Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
+              }
+              elseif ($_.Exception.Message.Contains('ExpirationRule')) {
                 # Amending Schedule
                 if ($Duration -eq 4) { $Duration = 1 } else { $Duration = 4 }
                 Write-Warning -Message "Specified Duration is not allowed, re-trying for $Duration hour(s)"
@@ -366,9 +378,6 @@ function Enable-AzureAdAdminRole {
                   elseif ($_.Exception.Message.Contains('EligibilityRule')) {
                     Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
                   }
-                  elseif ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
-                    Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
-                  }
                   elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
                     Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
                   }
@@ -376,18 +385,6 @@ function Enable-AzureAdAdminRole {
                     Write-Error -Message $_.Exception.Message
                   }
                 }
-              }
-              elseif ($_.Exception.Message.Contains('EligibilityRule')) {
-                Write-Error -Message 'User is not eligible to activate this role.' -Category InvalidData
-              }
-              elseif ($_.Exception.Message.Contains('UnauthorizedAccessException')) {
-                Write-Error -Message 'Attempted to perform an unauthorized operation.' -Category InvalidData
-              }
-              elseif ($_.Exception.Message.Contains('The following policy rules failed: ["MfaRule"]')) {
-                Write-Error -Message 'No valid authentication via MFA is present. Please authenticate again and retry.' -Category InvalidData
-              }
-              else {
-                Write-Error -Message $_.Exception.Message
               }
               else {
                 Write-Error -Message $_.Exception.Message

@@ -61,7 +61,7 @@ function Import-TeamsAudioFile {
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
   } #begin
 
@@ -94,7 +94,7 @@ function Import-TeamsAudioFile {
       $Parameters += @{ 'ErrorAction' = 'STOP' }
 
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
       $AudioFile = Import-CsOnlineAudioFile @Parameters
       return $AudioFile

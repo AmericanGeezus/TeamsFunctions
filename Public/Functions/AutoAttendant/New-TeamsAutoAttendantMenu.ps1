@@ -165,7 +165,7 @@ function New-TeamsAutoAttendantMenu {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -323,7 +323,7 @@ function New-TeamsAutoAttendantMenu {
     # Create Menu
     Write-Verbose -Message '[PROCESS] Creating Menu'
     if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-      "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
     }
 
     if ($PSCmdlet.ShouldProcess("$($Menu.Name)", 'New-CsAutoAttendantMenu')) {

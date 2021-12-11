@@ -122,10 +122,10 @@ function Get-AzureAdUserLicenseServicePlan {
         $Lic = $AllServicePlans | Where-Object ServicePlanName -EQ $ServicePlan.ServicePlanName
         if ($null -ne $Lic) {
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - License:", ($Lic | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
           if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-            "Function: $($MyInvocation.MyCommand.Name): ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - ServicePlan:", ($ServicePlan | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
           }
 
           if ($PSBoundParameters.ContainsKey('FilterRelevantForTeams') -and -not $Lic.RelevantForTeams -and -not $Called) {

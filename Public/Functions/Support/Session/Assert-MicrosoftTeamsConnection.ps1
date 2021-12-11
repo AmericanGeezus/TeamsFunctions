@@ -4,7 +4,7 @@
 # Updated:    01-OCT-2020
 # Status:     Live
 
-#TODO Returns TRUE (Object) if Connected but RBAC Roles have timed out - must capture PermissionDenied errors for GET-CmdLets
+#TEST Returns TRUE (Object) if Connected but RBAC Roles have timed out - must capture PermissionDenied errors for GET-CmdLets
 
 
 function Assert-MicrosoftTeamsConnection {
@@ -65,15 +65,35 @@ function Assert-MicrosoftTeamsConnection {
         }
         return $(if ($Called) { $true })
       }
-      elseif (Use-MicrosoftTeamsConnection) {
-        if ($stack.length -lt 3) {
-          Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!' -Verbose
-        }
-        return $(if ($Called) { $true })
-      }
       else {
-        Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - No connection established or reconnect unsuccessful' -ForegroundColor Red
-        return $(if ($Called) { $false })
+        try {
+          $null = Get-CsCallingLineIdentity -Identity Global -WarningAction SilentlyContinue -ErrorAction Stop
+          if ($stack.length -lt 3) {
+            Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Reconnected!' -Verbose
+          }
+          return $(if ($Called) { $true })
+        }
+        catch {
+          if ( $_.Exception.Message -match 'Run Connect-MicrosoftTeams before running cmdlets' ) {
+            Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Not connected - trying to connect!' -Verbose
+            $null = Connect-MicrosoftTeams
+          }
+          elseif ( $_.Exception.Message -match 'The WinRM client received an HTTP status code of 403' ) {
+            if ($stack.length -lt 4) {
+              Write-Verbose -Message '[ASSERT] MicrosoftTeams Session - Timed out - trying to reconnect!' -Verbose
+              $null = Connect-MicrosoftTeams
+              return ( Assert-MicrosoftTeamsConnection )
+            }
+            else {
+              Write-Error -Message '[ASSERT] MicrosoftTeams Session - Connection Denied - Please check your Admin Roles before trying to reconnect!' -Verbose
+              return $(if ($Called) { $false })
+            }
+          }
+          else {
+            Write-Host '[ASSERT] ERROR: MicrosoftTeams Session - No connection established or reconnect unsuccessful' -ForegroundColor Red
+            return $(if ($Called) { $false })
+          }
+        }
       }
     }
   } #process

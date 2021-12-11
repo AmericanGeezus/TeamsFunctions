@@ -40,6 +40,9 @@ function New-TeamsResourceAccount {
     Required format is E.164, starting with a '+' and 10-15 digits long.
   .PARAMETER OnlineVoiceRoutingPolicy
     Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
+  .PARAMETER Sync
+    Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances
+    from Azure Active Directory into Agent Provisioning Service.
   .EXAMPLE
     New-TeamsResourceAccount -UserPrincipalName "Resource Account@TenantName.onmicrosoft.com" -ApplicationType CallQueue -UsageLocation US
     Will create a ResourceAccount of the type CallQueue with a Usage Location for 'US'
@@ -129,8 +132,10 @@ function New-TeamsResourceAccount {
 
     [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Name of the Online Voice Routing Policy')]
     [Alias('OVP')]
-    [string]$OnlineVoiceRoutingPolicy
+    [string]$OnlineVoiceRoutingPolicy,
 
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Synchronizes Resource Account with the Agent Provisioning Service')]
+    [switch]$Sync
   ) #param
 
   begin {
@@ -141,7 +146,7 @@ function New-TeamsResourceAccount {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -369,33 +374,22 @@ function New-TeamsResourceAccount {
         Write-Error -Message 'A Phone Number can only be assigned to licensed objects. Please apply a license before assigning the number. Set-TeamsResourceAccount can be used to do both'
       }
       else {
-        # Processing paths for Telephone Numbers depending on Type
-        $E164Number = Format-StringForUse $PhoneNumber -As E164
-        #TODO Refactor to put this into separate Function, one for Users, one for ResourceAccounts?
+        # Applying Phone Number with Set-TeamsPhoneNumber
         #TEST integration of Set-TeamsPhoneNumber
-        if ($PhoneNumberIsMSNumber) {
-          # Set in VoiceApplicationInstance
-          Write-Verbose -Message "'$Name' Number '$PhoneNumber' found in Tenant, provisioning for: Microsoft Calling Plans"
-          try {
-            if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineVoiceApplicationInstance -Telephonenumber $E164Number")) {
-              $null = (Set-CsOnlineVoiceApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -TelephoneNumber $E164Number -ErrorAction STOP)
-            }
+        try {
+          $PhoneNumberExecResult = $null
+          $PhoneNumberExecResult = Set-TeamsPhoneNumber -UserPrincipalName "$UPN" -PhoneNumber $PhoneNumber -WarningAction SilentlyContinue -ErrorAction Stop
+          if ( $PhoneNumberExecResult ) {
+            $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number assigned to $ObjectType`: '$PhoneNumber'"
+            Write-Information "SUCCESS: '$UPN' - $CurrentOperationID0`: OK - $StatusMessage"
           }
-          catch {
-            Write-Warning -Message 'Phone number could not be assigned! Please run Set-TeamsResourceAccount manually'
+          else {
+            throw
           }
         }
-        else {
-          # Set in ApplicationInstance
-          Write-Verbose -Message "'$Name' Number '$PhoneNumber' not found in Tenant, provisioning for: Direct Routing"
-          try {
-            if ($PSCmdlet.ShouldProcess("$($ResourceAccountCreated.UserPrincipalName)", "Set-CsOnlineApplicationInstance -OnPremPhoneNumber $E164Number")) {
-              $null = (Set-CsOnlineApplicationInstance -Identity "$($ResourceAccountCreated.UserPrincipalName)" -OnpremPhoneNumber $E164Number -Force -ErrorAction STOP)
-            }
-          }
-          catch {
-            Write-Warning -Message "'$Name' Number '$PhoneNumber' not assigned! Please run Set-TeamsResourceAccount manually"
-          }
+        catch {
+          $ErrorLogMessage = "'$UPN' - $CurrentOperationID0`: Failed: '$($_.Exception.Message)'"
+          Write-Error -Message $ErrorLogMessage
         }
       }
     }
@@ -479,9 +473,19 @@ function New-TeamsResourceAccount {
       # Output
       Write-Progress -Id 0 -Activity $ActivityID0 -Completed
       Write-Output $ResourceAccountObject
+
+      # Synchronisation
+      if ( $PSBoundParameters.ContainsKey('Sync') ) {
+        Write-Verbose -Message "Switch 'Sync' - Resource Account is synchronised with Agent Provisioning Service"
+        $null = Sync-CsOnlineApplicationInstance -ObjectId $ResourceAccount.ObjectId #-Force
+        Write-Information "SUCCESS: Synchronising Resource Account with Agent Provisioning Service"
+      }
     }
     catch {
       Write-Warning -Message 'Object Output could not be verified. Please verify manually with Get-CsOnlineApplicationInstance'
+      if ( $PSBoundParameters.ContainsKey('Sync') ) {
+        Write-Verbose -Message 'Synchronisation could not be started. Please trigger again with Set-TeamsResourceAccount or Sync-CsOnlineApplicationInstance directly' -Verbose
+      }
     }
     #endregion
   } #process

@@ -133,8 +133,8 @@ function Get-TeamsTenantLicense {
       $Lic = $AllLicenses | Where-Object SkuPartNumber -EQ "$($tenantSKU.SkuPartNumber)"
 
       if ($PSBoundParameters.ContainsKey('Debug')) {
-        "Function: $($MyInvocation.MyCommand.Name): SkuPartNumber: $($tenantSKU.SkuPartNumber)" | Write-Debug
-        "Function: $($MyInvocation.MyCommand.Name): tenantSKU", $tenantSKU | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - SkuPartNumber: $($tenantSKU.SkuPartNumber)" | Write-Debug
+        "  Function: $($MyInvocation.MyCommand.Name) - tenantSKU", $tenantSKU | Write-Debug
       }
 
       # Current segmentation: Available = Enabled + Warning?; understand Suspended

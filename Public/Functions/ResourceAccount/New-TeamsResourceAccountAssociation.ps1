@@ -5,7 +5,7 @@
 # Status:   Live
 
 
-
+#TODO Refactor IDs to be cleaner!
 
 function New-TeamsResourceAccountAssociation {
   <#
@@ -74,7 +74,7 @@ function New-TeamsResourceAccountAssociation {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -149,15 +149,14 @@ function New-TeamsResourceAccountAssociation {
   process {
     Write-Verbose -Message "[PROCESS] $($MyInvocation.MyCommand)"
 
-    # re-Initialising counters for Progress bars (for Pipeline processing)
-    [int] $private:CountID0 = 2
-
-    $StatusID0 = 'Verifying input'
     # Query $UserPrincipalName
     [System.Collections.ArrayList]$Accounts = @()
-    $CurrentOperationID0 = 'Processing provided UserPrincipalNames'
-    Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
     foreach ($UPN in $UserPrincipalName) {
+      # re-Initialising counters for Progress bars (for Pipeline processing)
+      [int] $private:CountID0 = 2
+      $StatusID0 = 'Verifying input'
+      $CurrentOperationID0 = 'Processing provided UserPrincipalNames'
+      Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       Write-Verbose -Message "Querying Resource Account '$UPN'"
       try {
         $RAObject = Get-AzureADUser -ObjectId "$UPN" -WarningAction SilentlyContinue -ErrorAction Stop
@@ -180,7 +179,7 @@ function New-TeamsResourceAccountAssociation {
     $StatusID0 = 'Processing found Resource Accounts'
     $CurrentOperationID0 = ''
     Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
-    [int] $private:StepsID1 = $Accounts.Count
+    [int] $private:StepsID1 = $StepsID1 * $(if ($Accounts.IsArray) { $Accounts.Count } else { 1 })
     [System.Collections.ArrayList]$ValidatedAccounts = @()
     foreach ($Account in $Accounts) {
       $ActivityID1 = "'$($Account.UserPrincipalName)'"
@@ -248,6 +247,7 @@ function New-TeamsResourceAccountAssociation {
       Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
       # Processing Assignment
       foreach ($Account in $ValidatedAccounts) {
+        [int] $private:CountID1 = 1
         $ErrorEncountered = $null
         $ActivityID1 = "'$($Account.UserPrincipalName)'"
         $StatusID1 = "Assignment to $DesiredType '$($EntityObject.Name)'"
@@ -263,7 +263,7 @@ function New-TeamsResourceAccountAssociation {
 
         # Create CsAutoAttendantCallableEntity
         if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-          "Function: $($MyInvocation.MyCommand.Name): Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+          "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
         }
 
         if ($PSCmdlet.ShouldProcess("$($Account.UserPrincipalName)", 'New-CsOnlineApplicationInstanceAssociation')) {

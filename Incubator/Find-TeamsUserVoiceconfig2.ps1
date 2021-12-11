@@ -4,10 +4,10 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 
-#TODO wrap paging parameters in Get-CsOnlineUser query itself to reduce load time? #103
+#IMPROVE Add SupportsPaging for OVP and TDP? (result size is not managable!)
 
 
-function Find-TeamsUserVoiceConfig {
+function Find-TeamsUserVoiceConfig2 {
   <#
   .SYNOPSIS
     Displays User Accounts matching a specific Voice Configuration Parameter
@@ -48,31 +48,32 @@ function Find-TeamsUserVoiceConfig {
     Please see NOTES for details
   .PARAMETER ValidateLicense
     Optional. In addition to validation of Parameters, also validates License assignment for the found user(s).
-    This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return
-    objects that are correctly configured
     License Check is performed AFTER parameters are verified.
   .EXAMPLE
     Find-TeamsUserVoiceConfig -UserPrincipalName John@domain.com
-    Shows Voice Configuration for John, returning the full Object (query with Get-TeamsUserVoiceConfig)
+    Shows Voice Configuration for John, returning the full Object
   .EXAMPLE
     Find-TeamsUserVoiceConfig -PhoneNumber "15551234567"
     Shows all Users which have this String in their LineURI (TelephoneNumber or OnPremLineURI)
-    The expected ResultSize is limited, if only one result is shown, the full Object is returned (Get-TeamsUserVoiceConfig)
+    The expected ResultSize is limited, the full Object is returned (Get-TeamsUserVoiceConfig)
     Please see NOTES for details
   .EXAMPLE
-    Find-TeamsUserVoiceConfig -ConfigurationType DirectRouting
-    Shows all Users which are configured for DirectRouting
-    The expected ResultSize is big
+    Find-TeamsUserVoiceConfig -ConfigurationType CallingPlans
+    Shows all Users which are configured for CallingPlans (Full)
+    The expected ResultSize is big, therefore only Names (UPNs) of Users are returned
+    Pipe to Get-TeamsUserVoiceConfiguration for full output.
     Please see NOTES for details
   .EXAMPLE
     Find-TeamsUserVoiceConfig -VoicePolicy BusinessVoice
     Shows all Users which are configured for PhoneSystem with CallingPlans
     The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
+    Pipe to Get-TeamsUserVoiceConfiguration for full output.
     Please see NOTES and LINK for details
   .EXAMPLE
-    Find-TeamsUserVoiceConfig -OnlineVoiceRoutingPolicy O_VP_EMEA -First 300
+    Find-TeamsUserVoiceConfig -OnlineVoiceRoutingPolicy O_VP_EMEA
     Shows all Users which have the OnlineVoiceRoutingPolicy "O_VP_EMEA" assigned
-    Depending on the Size of your tenant, the expected ResultSize is big, paging parameters can help reduce output
+    The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed
+    Pipe to Get-TeamsUserVoiceConfiguration for full output.
     Please see NOTES for details
   .EXAMPLE
     Find-TeamsUserVoiceConfig -TenantDialPlan DP-US
@@ -84,26 +85,21 @@ function Find-TeamsUserVoiceConfig {
     System.String - UserPrincipalName - With any Parameter except Identity or PhoneNumber
     System.Object - With Parameter Identity or PhoneNumber
   .NOTES
-    All searches are filtering on Get-CsOnlineUser and are supporting paging
+    With the exception of Identity and PhoneNumber, all searches are filtering on Get-CsOnlineUser
     This usually should not take longer than a minute to complete.
-    If a single result is found, the object queries the full output through Get-TeamsUserVoiceConfig
-    If more than three results are found, a reduced output is displayed
-    If more than five results are found, only UserPrincipalName, SipAddress and LineUri are displayed
+    Identity is querying the provided UPN and only wraps Get-TeamsUserVoiceConfig
+    PhoneNumber has to do a full search with 'Where-Object' which will take time to complete
+    Depending on the number of Users in the Tenant, this may take a few minutes!
 
-    Search behaviour:
+    All Parameters except UserPrincipalName or PhoneNumber will only return UserPrincipalNames (UPNs)
     - PhoneNumber: Searches against the LineURI parameter. For best compatibility, provide in E.164 format (with or without the +)
     This script can find duplicate assignments if the Number was assigned with and without an extension.
-    - Extension: Searches against the LineURI parameter and considers all strings after ";ext=" an extension.
-    This script can find duplicate assignments if the Extension was assigned to multiple Numbers.
-    - ConfigurationType: Filtering based on Microsofts Documentation for DirectRouting, SkypeForBusiness Hybrid PSTN and CallingPlans
-    - VoicePolicy:
-      - BusinessVoice are PhoneSystem Users exclusively configured for Microsoft Calling Plans.
-      - HybridVoice are PhoneSystem Users who are configured for TDR, Hybrid SkypeOnPrem PSTN or Hybrid CloudConnector PSTN breakouts
+    - ConfigurationType: This is determined with Test-TeamsUserVoiceConfig -Partial and will return all Accounts found
+    - VoicePolicy: BusinessVoice are PhoneSystem Users exclusively configured for Microsoft Calling Plans.
+      HybridVoice are PhoneSystem Users who are configured for TDR, Hybrid SkypeOnPrem PSTN or Hybrid CloudConnector PSTN breakouts
     - OnlineVoiceRoutingPolicy: Finds all users which have this particular Policy assigned
     - TenantDialPlan: Finds all users which have this particular DialPlan assigned.
     Please see Related Link for more information
-
-    Output is designed to be piped to Get-TeamsUserVoiceConfiguration for full evaluation of Licenses and configuration.
   .COMPONENT
     VoiceConfiguration
   .FUNCTIONALITY
@@ -121,7 +117,7 @@ function Find-TeamsUserVoiceConfig {
   #>
 
   [CmdletBinding(DefaultParameterSetName = 'Tel', SupportsPaging)]
-  [Alias('Find-TeamsUVC')]
+  [Alias('Find-TeamsUVC2')]
   [OutputType([PSCustomObject])]
   param(
     [Parameter(ParameterSetName = 'ID')]
@@ -166,7 +162,7 @@ function Find-TeamsUserVoiceConfig {
   ) #param
 
   begin {
-    Show-FunctionStatus -Level Live
+    #Show-FunctionStatus -Level Live
     Write-Verbose -Message "[BEGIN  ] $($MyInvocation.MyCommand)"
 
     # Asserting AzureAD Connection
@@ -248,6 +244,75 @@ function Find-TeamsUserVoiceConfig {
             $Filter = 'VoicePolicy -eq "BusinessVoice"' #Filter must be written as-is
           }
         }
+
+        <# commented out due to refactor
+        #NOTE: CT does not support paging!
+        Write-Verbose -Message 'Searching for all Users enabled for Teams: Searching... This will take quite some time!'
+        #BODGE Rework Filter to include required string (maybe filter twice?)
+        $Filter = 'Enabled -eq $TRUE' #Filter must be written as-is
+        $CsUsers = Get-CsOnlineUser -Filter $Filter -WarningAction SilentlyContinue -ErrorAction Stop
+        Write-Verbose -Message "Sifting through Information for $($CsUsers.Count) Users: Parsing..."
+        if ( -not $Called) {
+          Write-Information "TRYING:  Finding all Users enabled for Teams with ConfigurationType '$ConfigurationType' Searching..."
+        }
+
+        switch ($ConfigurationType) {
+          'DirectRouting' {
+            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
+            }
+            foreach ($U in $CsUsers) {
+              if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.VoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.OnlineVoiceRoutingPolicy)) {
+                if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+                  if (Test-TeamsUserLicense $U -ServicePlan MCOEV) {
+                    $U.UserPrincipalName
+                  }
+                }
+                else {
+                  $U.UserPrincipalName
+                }
+              }
+            }
+            break
+          }
+          'SkypeHybridPSTN' {
+            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+              Write-Verbose -Message 'Switch ValidateLicense: Only users with PhoneSystem license (enabled ServicePlan) are displayed!' -Verbose
+            }
+            foreach ($U in $CsUsers) {
+              if ($U.VoicePolicy -eq 'HybridVoice' -and $null -eq $U.OnlineVoiceRoutingPolicy -and ($null -ne $U.OnPremLineURI -or $null -ne $U.VoiceRoutingPolicy)) {
+                if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+                  if (Test-TeamsUserLicense $U -ServicePlan MCOEV) {
+                    $U.UserPrincipalName
+                  }
+                }
+                else {
+                  $U.UserPrincipalName
+                }
+              }
+              break
+            }
+          }
+          'CallingPlans' {
+            if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+              Write-Verbose -Message 'Switch ValidateLicense: Only users with CallPlan license are displayed!' -Verbose
+            }
+            foreach ($U in $CsUsers) {
+              if ($U.VoicePolicy -eq 'BusinessVoice' -or $null -ne $U.TelephoneNumber) {
+                if ($PSBoundParameters.ContainsKey('ValidateLicense')) {
+                  if (Test-TeamsUserHasCallPlan $U) {
+                    $U.UserPrincipalName
+                  }
+                }
+                else {
+                  $U.UserPrincipalName
+                }
+              }
+            }
+            break
+          }
+        }
+        #>
         break
       } #CT
 
@@ -444,4 +509,4 @@ function Find-TeamsUserVoiceConfig {
       Write-Information "INFO:    A total of $UnfilteredCount objects have been found$( if ( $ValidateLicense ) { " ($LicensedCount licensed correctly)"}), but only the requested $FilteredCount object(s) are displayed."
     }
   } #end
-} # Find-TeamsUserVoiceConfig
+} # Find-TeamsUserVoiceConfig2

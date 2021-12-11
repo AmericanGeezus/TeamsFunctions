@@ -113,11 +113,11 @@ function Get-AzureAdLicense {
 
         #store the service plan string IDs for later match
         if ($PSBoundParameters.ContainsKey('Debug')) {
-          "Function: $($MyInvocation.MyCommand.Name): This ServicePlan: $srcServicePlan" | Write-Debug
+          "  Function: $($MyInvocation.MyCommand.Name) - This ServicePlan: $srcServicePlan" | Write-Debug
         }
         $srcServicePlan -split '<br.?>' | ForEach-Object {
           if ($PSBoundParameters.ContainsKey('Debug')) {
-            "Function: $($MyInvocation.MyCommand.Name): Splitting at '<br/>': $_" | Write-Debug
+            "  Function: $($MyInvocation.MyCommand.Name) - Splitting at '<br/>': $_" | Write-Debug
           }
           try {
             if ($_ -eq '') {

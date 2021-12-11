@@ -440,10 +440,48 @@
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Assert-TeamsUserVoiceConfig</maml:name>
+        <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+          <maml:name>Object</maml:name>
+          <maml:description>
+            <maml:para>Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
+          <dev:type>
+            <maml:name>Object[]</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTenantDialPlan</maml:name>
+          <maml:description>
+            <maml:para>Optional. By default, only the core requirements for Voice Routing are verified. This extends the requirements to also include the Tenant Dial Plan.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ExtensionState</maml:name>
+          <maml:description>
+            <maml:para>Optional. For DirectRouting, enforces the presence (or absence) of an Extension. Default: NotMeasured No effect for Microsoft Calling Plans</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>NotMeasured</dev:defaultValue>
+        </command:parameter>
+      </command:syntaxItem>
+      <command:syntaxItem>
+        <maml:name>Assert-TeamsUserVoiceConfig</maml:name>
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
           <maml:name>UserPrincipalName</maml:name>
           <maml:description>
-            <maml:para>Required. UserPrincipalName of the User to be tested</maml:para>
+            <maml:para>Required for Parameterset UserPrincipalName. UserPrincipalName or ObjectId of the Object</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
           <dev:type>
@@ -478,10 +516,22 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
+      <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByValue)" position="1" aliases="none">
+        <maml:name>Object</maml:name>
+        <maml:description>
+          <maml:para>Required for Parameterset Object. CsOnlineUser Object passed to the function to reduce query time.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">Object[]</command:parameterValue>
+        <dev:type>
+          <maml:name>Object[]</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName, ByValue)" position="1" aliases="ObjectId, Identity">
         <maml:name>UserPrincipalName</maml:name>
         <maml:description>
-          <maml:para>Required. UserPrincipalName of the User to be tested</maml:para>
+          <maml:para>Required for Parameterset UserPrincipalName. UserPrincipalName or ObjectId of the Object</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
         <dev:type>
@@ -2823,6 +2873,52 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ValidateLicense</maml:name>
+          <maml:description>
+            <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTotalCount</maml:name>
+          <maml:description>
+            <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Skip</maml:name>
+          <maml:description>
+            <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>First</maml:name>
+          <maml:description>
+            <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Find-TeamsUserVoiceConfig</maml:name>
@@ -2831,9 +2927,55 @@
           <maml:description>
             <maml:para>Optional. Searches all Users matching the given String in their LineURI. The expected ResultSize is limited, the full Object is displayed (Get-TeamsUserVoiceConfig) Please see NOTES for details</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
-            <maml:name>String[]</maml:name>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ValidateLicense</maml:name>
+          <maml:description>
+            <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTotalCount</maml:name>
+          <maml:description>
+            <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Skip</maml:name>
+          <maml:description>
+            <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>First</maml:name>
+          <maml:description>
+            <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -2846,9 +2988,55 @@
           <maml:description>
             <maml:para>String to be found in any of the PhoneNumber fields as an Extension</maml:para>
           </maml:description>
-          <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
-            <maml:name>String[]</maml:name>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ValidateLicense</maml:name>
+          <maml:description>
+            <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTotalCount</maml:name>
+          <maml:description>
+            <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Skip</maml:name>
+          <maml:description>
+            <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>First</maml:name>
+          <maml:description>
+            <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -2859,7 +3047,7 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ConfigurationType</maml:name>
           <maml:description>
-            <maml:para>Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'. The expected ResultSize is big, therefore only UserPrincipalNames are returned Please see NOTES for details</maml:para>
+            <maml:para>Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'. The expected ResultSize is big, therefore only UserPrincipalNames are returned Please note, that seaching with ConfigurationType does not support paging Please see NOTES for details</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
@@ -2871,13 +3059,48 @@
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>ValidateLicense</maml:name>
           <maml:description>
-            <maml:para>Optional. Can be combined only with -ConfigurationType In addition to validation of Parameters, also validates License assignment for the found user. License Check is performed AFTER parameters are verified.</maml:para>
+            <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTotalCount</maml:name>
+          <maml:description>
+            <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Skip</maml:name>
+          <maml:description>
+            <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>First</maml:name>
+          <maml:description>
+            <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
@@ -2890,6 +3113,52 @@
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
             <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ValidateLicense</maml:name>
+          <maml:description>
+            <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTotalCount</maml:name>
+          <maml:description>
+            <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Skip</maml:name>
+          <maml:description>
+            <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>First</maml:name>
+          <maml:description>
+            <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -2909,6 +3178,52 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ValidateLicense</maml:name>
+          <maml:description>
+            <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTotalCount</maml:name>
+          <maml:description>
+            <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Skip</maml:name>
+          <maml:description>
+            <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>First</maml:name>
+          <maml:description>
+            <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
       <command:syntaxItem>
         <maml:name>Find-TeamsUserVoiceConfig</maml:name>
@@ -2920,6 +3235,52 @@
           <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
           <dev:type>
             <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>ValidateLicense</maml:name>
+          <maml:description>
+            <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>IncludeTotalCount</maml:name>
+          <maml:description>
+            <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>Skip</maml:name>
+          <maml:description>
+            <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+          <maml:name>First</maml:name>
+          <maml:description>
+            <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+          <dev:type>
+            <maml:name>UInt64</maml:name>
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
@@ -2944,9 +3305,9 @@
         <maml:description>
           <maml:para>Optional. Searches all Users matching the given String in their LineURI. The expected ResultSize is limited, the full Object is displayed (Get-TeamsUserVoiceConfig) Please see NOTES for details</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
-          <maml:name>String[]</maml:name>
+          <maml:name>String</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -2956,9 +3317,9 @@
         <maml:description>
           <maml:para>String to be found in any of the PhoneNumber fields as an Extension</maml:para>
         </maml:description>
-        <command:parameterValue required="true" variableLength="false">String[]</command:parameterValue>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
-          <maml:name>String[]</maml:name>
+          <maml:name>String</maml:name>
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
@@ -2966,7 +3327,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ConfigurationType</maml:name>
         <maml:description>
-          <maml:para>Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'. The expected ResultSize is big, therefore only UserPrincipalNames are returned Please see NOTES for details</maml:para>
+          <maml:para>Optional. Searches all enabled Users which are at least partially configured for 'CallingPlans', 'DirectRouting' or 'SkypeHybridPSTN'. The expected ResultSize is big, therefore only UserPrincipalNames are returned Please note, that seaching with ConfigurationType does not support paging Please see NOTES for details</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
         <dev:type>
@@ -3014,7 +3375,7 @@
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
         <maml:name>ValidateLicense</maml:name>
         <maml:description>
-          <maml:para>Optional. Can be combined only with -ConfigurationType In addition to validation of Parameters, also validates License assignment for the found user. License Check is performed AFTER parameters are verified.</maml:para>
+          <maml:para>Optional. In addition to validation of Parameters, also validates License assignment for the found user(s). This Parameter will initiate a quick check against the PhoneSystem License of each found account and will only return objects that are correctly configured License Check is performed AFTER parameters are verified.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -3022,6 +3383,42 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>IncludeTotalCount</maml:name>
+        <maml:description>
+          <maml:para>Reports the total number of objects in the data set (an integer) followed by the selected objects. If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value. The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>Skip</maml:name>
+        <maml:description>
+          <maml:para>Ignores the specified number of objects and then gets the remaining objects. Enter the number of objects to skip.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+        <dev:type>
+          <maml:name>UInt64</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <maml:name>First</maml:name>
+        <maml:description>
+          <maml:para>Gets only the specified number of objects. Enter the number of objects to get.</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">UInt64</command:parameterValue>
+        <dev:type>
+          <maml:name>UInt64</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes>
@@ -3054,12 +3451,13 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>With the exception of Identity and PhoneNumber, all searches are filtering on Get-CsOnlineUser This usually should not take longer than a minute to complete. Identity is querying the provided UPN and only wraps Get-TeamsUserVoiceConfig PhoneNumber has to do a full search with 'Where-Object' which will take time to complete Depending on the number of Users in the Tenant, this may take a few minutes!</maml:para>
-        <maml:para>All Parameters except UserPrincipalName or PhoneNumber will only return UserPrincipalNames (UPNs) - PhoneNumber: Searches against the LineURI parameter. For best compatibility, provide in E.164 format (with or without the +) This script can find duplicate assignments if the Number was assigned with and without an extension. - ConfigurationType: This is determined with Test-TeamsUserVoiceConfig -Partial and will return all Accounts found</maml:para>
-        <maml:para>- VoicePolicy: BusinessVoice are PhoneSystem Users exclusively configured for Microsoft Calling Plans.</maml:para>
-        <maml:para>  HybridVoice are PhoneSystem Users who are configured for TDR, Hybrid SkypeOnPrem PSTN or Hybrid CloudConnector PSTN breakouts - OnlineVoiceRoutingPolicy: Finds all users which have this particular Policy assigned</maml:para>
+        <maml:para>All searches are filtering on Get-CsOnlineUser and are supporting paging This usually should not take longer than a minute to complete. If a single result is found, the object queries the full output through Get-TeamsUserVoiceConfig If more than three results are found, a reduced output is displayed If more than five results are found, only UserPrincipalName, SipAddress and LineUri are displayed</maml:para>
+        <maml:para>Search behaviour: - PhoneNumber: Searches against the LineURI parameter. For best compatibility, provide in E.164 format (with or without the +) This script can find duplicate assignments if the Number was assigned with and without an extension. - Extension: Searches against the LineURI parameter and considers all strings after ";ext=" an extension. This script can find duplicate assignments if the Extension was assigned to multiple Numbers. - ConfigurationType: Filtering based on Microsofts Documentation for DirectRouting, SkypeForBusiness Hybrid PSTN and CallingPlans</maml:para>
+        <maml:para>- VoicePolicy:</maml:para>
+        <maml:para>  - BusinessVoice are PhoneSystem Users exclusively configured for Microsoft Calling Plans.   - HybridVoice are PhoneSystem Users who are configured for TDR, Hybrid SkypeOnPrem PSTN or Hybrid CloudConnector PSTN breakouts - OnlineVoiceRoutingPolicy: Finds all users which have this particular Policy assigned</maml:para>
         <maml:para>- TenantDialPlan: Finds all users which have this particular DialPlan assigned.</maml:para>
         <maml:para>Please see Related Link for more information</maml:para>
+        <maml:para>Output is designed to be piped to Get-TeamsUserVoiceConfiguration for full evaluation of Licenses and configuration.</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -3067,35 +3465,35 @@
         <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Find-TeamsUserVoiceConfig -UserPrincipalName John@domain.com</dev:code>
         <dev:remarks>
-          <maml:para>Shows Voice Configuration for John, returning the full Object</maml:para>
+          <maml:para>Shows Voice Configuration for John, returning the full Object (query with Get-TeamsUserVoiceConfig)</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Find-TeamsUserVoiceConfig -PhoneNumber "15551234567"</dev:code>
         <dev:remarks>
-          <maml:para>Shows all Users which have this String in their LineURI (TelephoneNumber or OnPremLineURI) The expected ResultSize is limited, the full Object is returned (Get-TeamsUserVoiceConfig) Please see NOTES for details</maml:para>
+          <maml:para>Shows all Users which have this String in their LineURI (TelephoneNumber or OnPremLineURI) The expected ResultSize is limited, if only one result is shown, the full Object is returned (Get-TeamsUserVoiceConfig) Please see NOTES for details</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 3 --------------------------</maml:title>
-        <dev:code>Find-TeamsUserVoiceConfig -ConfigurationType CallingPlans</dev:code>
+        <dev:code>Find-TeamsUserVoiceConfig -ConfigurationType DirectRouting</dev:code>
         <dev:remarks>
-          <maml:para>Shows all Users which are configured for CallingPlans (Full) The expected ResultSize is big, therefore only Names (UPNs) of Users are returned Pipe to Get-TeamsUserVoiceConfiguration for full output. Please see NOTES for details</maml:para>
+          <maml:para>Shows all Users which are configured for DirectRouting The expected ResultSize is big Please see NOTES for details</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 4 --------------------------</maml:title>
         <dev:code>Find-TeamsUserVoiceConfig -VoicePolicy BusinessVoice</dev:code>
         <dev:remarks>
-          <maml:para>Shows all Users which are configured for PhoneSystem with CallingPlans The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed Pipe to Get-TeamsUserVoiceConfiguration for full output. Please see NOTES and LINK for details</maml:para>
+          <maml:para>Shows all Users which are configured for PhoneSystem with CallingPlans The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed Please see NOTES and LINK for details</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- EXAMPLE 5 --------------------------</maml:title>
-        <dev:code>Find-TeamsUserVoiceConfig -OnlineVoiceRoutingPolicy O_VP_EMEA</dev:code>
+        <dev:code>Find-TeamsUserVoiceConfig -OnlineVoiceRoutingPolicy O_VP_EMEA -First 300</dev:code>
         <dev:remarks>
-          <maml:para>Shows all Users which have the OnlineVoiceRoutingPolicy "O_VP_EMEA" assigned The expected ResultSize is big, therefore only Names (UPNs) of Users are displayed Pipe to Get-TeamsUserVoiceConfiguration for full output. Please see NOTES for details</maml:para>
+          <maml:para>Shows all Users which have the OnlineVoiceRoutingPolicy "O_VP_EMEA" assigned Depending on the Size of your tenant, the expected ResultSize is big, paging parameters can help reduce output Please see NOTES for details</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
@@ -13807,7 +14205,7 @@
     </command:returnValues>
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Execution requires User Admin Role in Azure AD This CmdLet deliberately does not apply a Phone Number to the Object. To do so, please run New-TeamsUserVoiceConfig or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy a Phone Number and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves.</maml:para>
+        <maml:para>Execution requires User Admin Role in Azure AD This CmdLet deliberately does not apply a Phone Number to the Object. To do so, please run New-TeamsUserVoiceConfig or Set-TeamsUserVoiceConfig. For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy a Phone Number and optionally a Tenant Dial Plan. This Script only covers relevant elements for Common Area Phones themselves. To enable a Common Area Phone with a meeting room experience, please follow this guide: https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
@@ -14141,6 +14539,17 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>Sync</maml:name>
+          <maml:description>
+            <maml:para>Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances from Azure Active Directory into Agent Provisioning Service.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
           <maml:name>WhatIf</maml:name>
           <maml:description>
@@ -14249,6 +14658,18 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <maml:name>Sync</maml:name>
+        <maml:description>
+          <maml:para>Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances from Azure Active Directory into Agent Provisioning Service.</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
       <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="wi">
         <maml:name>WhatIf</maml:name>
@@ -18547,6 +18968,17 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+          <maml:name>Sync</maml:name>
+          <maml:description>
+            <maml:para>Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances from Azure Active Directory into Agent Provisioning Service.</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
           <maml:name>Force</maml:name>
           <maml:description>
@@ -18671,6 +19103,18 @@
         <maml:name>PassThru</maml:name>
         <maml:description>
           <maml:para>By default, no output is generated, PassThru will display the Object changed</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="True (ByPropertyName)" position="named" aliases="none">
+        <maml:name>Sync</maml:name>
+        <maml:description>
+          <maml:para>Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances from Azure Active Directory into Agent Provisioning Service.</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>

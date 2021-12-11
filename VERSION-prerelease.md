@@ -14,7 +14,7 @@ TBC
 
 ### Updated
 
-- `Find-TeamsResourceAccount`: Fixed an issue with PhoneNumber not being displayed properly
+- TBC
 
 ### Draft - Look ahead
 

@@ -15,7 +15,7 @@ Creates a new Resource Account
 ```
 New-TeamsResourceAccount [-UserPrincipalName] <String> [-DisplayName <String>] -ApplicationType <String>
  -UsageLocation <String> [-License <String[]>] [-PhoneNumber <String>] [-OnlineVoiceRoutingPolicy <String>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Sync] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -179,6 +179,22 @@ Aliases: OVP
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Sync
+Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances
+from Azure Active Directory into Agent Provisioning Service.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```

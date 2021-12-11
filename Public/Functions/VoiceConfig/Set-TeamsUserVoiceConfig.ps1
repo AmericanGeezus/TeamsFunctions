@@ -3,10 +3,10 @@
 # Author:   David Eberhardt
 # Updated:  01-DEC-2020
 # Status:   Live
-
 #TODO Requirement capture for configuration for OperatorConnect needed
-#VALIDATE Add feedback (in Write-Output) which item was removed (if known)
-
+#TODO Add Location as a parameter here to assign with Set-CsOnlineVoiceUer (pre-3.0) and Set-CsPhoneNumberAssignment post 3.0
+#TODO review to rely more on Set-CsPhoneNumberAssignment
+# https://docs.microsoft.com/en-us/powershell/module/teams/set-csphonenumberassignment?view=teams-ps
 function Set-TeamsUserVoiceConfig {
   <#
   .SYNOPSIS
@@ -154,7 +154,7 @@ function Set-TeamsUserVoiceConfig {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -329,8 +329,8 @@ function Set-TeamsUserVoiceConfig {
             # Checking number is free
             Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Finding Number assignments"
             $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number -WarningAction SilentlyContinue
-            $UserWithThisNumberIsSelf = $UserWithThisNumber | Where-Object UserPrincipalName -EQ $UserPrincipalName
-            $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object UserPrincipalName -NE $UserPrincipalName
+            $UserWithThisNumberIsSelf = $UserWithThisNumber | Where-Object { $_.UserPrincipalName -EQ $UserPrincipalName -or $_.SIPAddress -EQ $UserPrincipalName }
+            $UserWithThisNumberExceptSelf = $UserWithThisNumber | Where-Object { -not ($_.UserPrincipalName -EQ $UserPrincipalName -or $_.SIPAddress -EQ $UserPrincipalName) }
             if ( $UserWithThisNumberIsSelf ) {
               if ($Force) {
                 Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Assigned to self, will be reapplied"
@@ -442,7 +442,7 @@ function Set-TeamsUserVoiceConfig {
             }
           }
           else {
-            Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+            Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned ('$($CsUser.TenantDialPlan)')" -Verbose
           }
         }
       }
@@ -492,7 +492,7 @@ function Set-TeamsUserVoiceConfig {
                 }
               }
               else {
-                Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned" -Verbose
+                Write-Verbose -Message "'$UserPrincipalName' - $Operation`: Already assigned ('$($CsUser.OnlineVoiceRoutingPolicy)')" -Verbose
               }
             }
 

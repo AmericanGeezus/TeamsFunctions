@@ -41,6 +41,9 @@ function Set-TeamsResourceAccount {
     Required format is E.164, starting with a '+' and 10-15 digits long.
   .PARAMETER OnlineVoiceRoutingPolicy
     Optional. Required for DirectRouting. Assigns an Online Voice Routing Policy to the Account
+  .PARAMETER Sync
+    Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances
+    from Azure Active Directory into Agent Provisioning Service.
   .PARAMETER PassThru
     By default, no output is generated, PassThru will display the Object changed
   .PARAMETER Force
@@ -145,6 +148,9 @@ function Set-TeamsResourceAccount {
     [Parameter(HelpMessage = 'By default, no output is generated, PassThru will display the Object changed')]
     [switch]$PassThru,
 
+    [Parameter(ValueFromPipelineByPropertyName, HelpMessage = 'Synchronizes Resource Account with the Agent Provisioning Service')]
+    [switch]$Sync,
+
     [Parameter(Mandatory = $false)]
     [switch]$Force
   ) #param
@@ -157,7 +163,7 @@ function Set-TeamsResourceAccount {
     if ( -not $script:TFPSSA) { $script:TFPSSA = Assert-AzureADConnection; if ( -not $script:TFPSSA ) { break } }
 
     # Asserting MicrosoftTeams Connection
-    if ( -not $script:TFPSST) { $script:TFPSST = Assert-MicrosoftTeamsConnection; if ( -not $script:TFPSST ) { break } }
+    if ( -not (Assert-MicrosoftTeamsConnection) ) { break }
 
     # Setting Preference Variables according to Upstream settings
     if (-not $PSBoundParameters.ContainsKey('Verbose')) { $VerbosePreference = $PSCmdlet.SessionState.PSVariable.GetValue('VerbosePreference') }
@@ -279,41 +285,24 @@ function Set-TeamsResourceAccount {
       }
 
       if ($PSBoundParameters.ContainsKey('PhoneNumber')) {
-        #Validating Phone Number
-        if ( [String]::IsNullOrEmpty($PhoneNumber) ) {
-          if ($CurrentPhoneNumber) {
-            Write-Warning -Message "'$Name ($UPN)' PhoneNumber is NULL or Empty. The Existing Number '$CurrentPhoneNumber' will be removed"
+        $CurrentOperationID0 = 'Applying Phone Number'
+        Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
+        # Applying Phone Number with Set-TeamsPhoneNumber
+        #TEST integration of Set-TeamsPhoneNumber
+        try {
+          $PhoneNumberExecResult = $null
+          $PhoneNumberExecResult = Set-TeamsPhoneNumber -UserPrincipalName "$UPN" -PhoneNumber $PhoneNumber -WarningAction SilentlyContinue -ErrorAction Stop
+          if ( $PhoneNumberExecResult ) {
+            $StatusMessage = "$(if ($PhoneNumberIsMSNumber) { 'Calling Plan' } else { 'Direct Routing'}) Number assigned to $ObjectType`: '$PhoneNumber'"
+            Write-Information "SUCCESS: '$UPN' - $CurrentOperationID0`: OK - $StatusMessage"
           }
           else {
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber is NULL or Empty, but no Number is currently assigned. No Action taken"
-          }
-          $PhoneNumber = $null
-        }
-        elseif ($PhoneNumber -match '^(tel:\+|\+)?([0-9]?[-\s]?(\(?[0-9]{3}\)?)[-\s]?([0-9]{3}[-\s]?[0-9]{4})|[0-9]{8,15})((;ext=)([0-9]{3,8}))?$') {
-          if ( $PhoneNumber -match 'ext' ) {
-            Write-Warning -Message "'$Name ($UPN)' PhoneNumber '$PhoneNumber' has an extension set. Resource Accounts do not allow applications of Extensions! (EXT will be stripped)!"
-          }
-          $E164Number = Format-StringForUse $PhoneNumber -As E164
-          if ($CurrentPhoneNumber -eq $E164Number -and -not $force) {
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber '$E164Number' is already applied"
-          }
-          else {
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber '$E164Number' is in a usable format and will be applied"
-            # Checking number is free
-            Write-Verbose -Message "'$Name ($UPN)' PhoneNumber - Finding Number assignments"
-            $UserWithThisNumber = Find-TeamsUserVoiceConfig -PhoneNumber $E164Number
-            if ($UserWithThisNumber -and $UserWithThisNumber.UserPrincipalName -ne $UPN) {
-              if ($Force) {
-                Write-Warning -Message "'$Name ($UPN)' Number '$E164Number' is currently assigned to User '$($UserWithThisNumber.UserPrincipalName)'. This assignment will be removed!"
-              }
-              else {
-                Write-Error -Message "'$Name ($UPN)' Number '$E164Number' is already assigned to another Object: '$($UserWithThisNumber.UserPrincipalName)'" -Category NotImplemented -RecommendedAction 'Please specify a different Number or use -Force to re-assign' -ErrorAction Stop
-              }
-            }
+            throw
           }
         }
-        else {
-          Write-Error -Message "PhoneNumber '$PhoneNumber' - Not a valid Phone number. Please provide a number starting with a + and 10 to 15 digits long" -ErrorAction Stop
+        catch {
+          $ErrorLogMessage = "'$UPN' - $CurrentOperationID0`: Failed: '$($_.Exception.Message)'"
+          Write-Error -Message $ErrorLogMessage
         }
       }
       else {
@@ -498,7 +487,7 @@ function Set-TeamsResourceAccount {
           try {
             foreach ($UserWTN in $UserWithThisNumber) {
               if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-                "Function: $($MyInvocation.MyCommand.Name): InterpretedUserType:", ($($UserWTN.InterpretedUserType) | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+                "  Function: $($MyInvocation.MyCommand.Name) - InterpretedUserType:", ($($UserWTN.InterpretedUserType) | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
               }
               Write-Verbose -Message "'$Name ($UPN)' ACTION: $Operation FROM '$($UserWTN.UserPrincipalName)'"
               if ($UserWTN.InterpretedUserType.Contains('ApplicationInstance')) {
@@ -620,12 +609,19 @@ function Set-TeamsResourceAccount {
         }
       }
       #endregion
+
+      # Synchronisation
+      if ( $PSBoundParameters.ContainsKey('Sync') ) {
+        Write-Verbose -Message "Switch 'Sync' - Resource Account is synchronised with Agent Provisioning Service"
+        $null = Sync-CsOnlineApplicationInstance -ObjectId $ResourceAccount.ObjectId #-Force
+        Write-Information 'SUCCESS: Synchronising Resource Account with Agent Provisioning Service'
+      }
       #endregion
 
 
       if ( $PassThru ) {
         $StatusID0 = 'Output'
-        $CurrentOperationID0 = "Querying Object"
+        $CurrentOperationID0 = 'Querying Object'
         Write-BetterProgress -Id 0 -Activity $ActivityID0 -Status $StatusID0 -CurrentOperation $CurrentOperationID0 -Step ($private:CountID0++) -Of $private:StepsID0
         $RAObject = Get-TeamsResourceAccount -Identity "$UPN"
       }
