@@ -12,8 +12,15 @@ Tests the validity of the Voice Configuration for one or more Users
 
 ## SYNTAX
 
+### UserPrincipalName (Default)
 ```
 Assert-TeamsUserVoiceConfig [-UserPrincipalName] <String[]> [-IncludeTenantDialPlan] [-ExtensionState <String>]
+ [<CommonParameters>]
+```
+
+### Object
+```
+Assert-TeamsUserVoiceConfig [-Object] <Object[]> [-IncludeTenantDialPlan] [-ExtensionState <String>]
  [<CommonParameters>]
 ```
 
@@ -55,13 +62,29 @@ Returns output of Get-TeamsUserVoiceConfig for all Objects that have an incorrec
 
 ## PARAMETERS
 
+### -Object
+Required for Parameterset Object.
+CsOnlineUser Object passed to the function to reduce query time.
+
+```yaml
+Type: Object[]
+Parameter Sets: Object
+Aliases:
+
+Required: True
+Position: 1
+Default value: None
+Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
 ### -UserPrincipalName
-Required.
-UserPrincipalName of the User to be tested
+Required for Parameterset UserPrincipalName.
+UserPrincipalName or ObjectId of the Object
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: UserPrincipalName
 Aliases: ObjectId, Identity
 
 Required: True

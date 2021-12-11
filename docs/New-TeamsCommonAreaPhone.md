@@ -247,6 +247,8 @@ or Set-TeamsUserVoiceConfig.
 For a full Voice Configuration apply a Calling Plan or Online Voice Routing Policy
 a Phone Number and optionally a Tenant Dial Plan.
 This Script only covers relevant elements for Common Area Phones themselves.
+To enable a Common Area Phone with a meeting room experience, please follow this guide:
+https://www.graham-walsh.com/creating-a-common-area-phones-for-microsoft-teams/
 
 ## RELATED LINKS
 

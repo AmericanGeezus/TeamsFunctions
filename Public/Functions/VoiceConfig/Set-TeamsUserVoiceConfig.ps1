@@ -4,8 +4,8 @@
 # Updated:  01-DEC-2020
 # Status:   Live
 #TODO Requirement capture for configuration for OperatorConnect needed
-#TODO Add Location as a parameter here to assign with Set-CsOnlineVoiceUer (pre-3.0) and Set-CsOnlinePhoneNumber post 3.0
-#TODO review to rely more on Set-CsOnlinePhoneNumber
+#TODO Add Location as a parameter here to assign with Set-CsOnlineVoiceUer (pre-3.0) and Set-CsPhoneNumberAssignment post 3.0
+#TODO review to rely more on Set-CsPhoneNumberAssignment
 # https://docs.microsoft.com/en-us/powershell/module/teams/set-csphonenumberassignment?view=teams-ps
 function Set-TeamsUserVoiceConfig {
   <#

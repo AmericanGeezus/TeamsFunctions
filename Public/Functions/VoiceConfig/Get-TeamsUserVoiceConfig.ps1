@@ -280,11 +280,12 @@ function Get-TeamsUserVoiceConfig {
             $UserObject | Add-Member -MemberType NoteProperty -Name PrivateLine -Value $CsUser.PrivateLine
             # Query for User Location
             try {
-              $VoiceUser = Get-CsOnlineVoiceUser $CsUser -ErrorAction SilentlyContinue
+              $VoiceUser = Get-CsOnlineVoiceUser $CsUser -ErrorAction Stop
               $UserLocation = if ( $VoiceUser ) { $VoiceUser.Location } else { $null }
               $UserAssignedAddress = if ( $UserLocation ) { (Get-CsOnlineLisLocation -LocationId $UserLocation).Description } else { $null }
             }
             catch {
+              Write-Verbose -Message "User Location could not be queried: $($_.Exception.Message)"
               $UserAssignedAddress = $null
             }
             #TEST Address information (from Get-CsOnlineVoiceUser & Translate LocationId to Address name - nest Object?)

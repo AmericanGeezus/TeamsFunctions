@@ -186,7 +186,7 @@ function Test-TeamsUserVoiceConfig {
       $TestObject = 'Tenant Dial Plan'
       $TDPPresent = ('' -ne $CsUser.TenantDialPlan)
       if ($PSBoundParameters.ContainsKey('Debug') -or $DebugPreference -eq 'Continue') {
-        Write-Debug "General - TDPPresent: $TDPPresent"
+        Write-Debug "General - TDPPresent: $TDPPresent ($($CsUser.TenantDialPlan))"
       }
       if ($IncludeTDP) {
         if ($TDPPresent) {

@@ -3,6 +3,48 @@
 Full Change Log for all major releases. See abbreviated history at the bottom
 Pre-releases are documented in VERSION-PreRelease.md and will be transferred here monthly in cadence with the release cycle
 
+## v21.12 - Dec 2021 release
+
+MicrosoftTeams v3.0.0 is live. A lot more bug have been quashed, thankfully mostly small ones. Could not test every single function, but the core functions are fine.
+### Component Status
+
+|           |                                                                                                                                                                                                                                                                                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Functions | ![Public](https://img.shields.io/badge/Public-109-blue.svg) ![Private](https://img.shields.io/badge/Private-17-grey.svg) ![Aliases](https://img.shields.io/badge/Aliases-55-green.svg)                                                                                                                                                                            |
+| Status    | ![Live](https://img.shields.io/badge/Live-95-blue.svg) ![RC](https://img.shields.io/badge/RC-8-green.svg) ![BETA](https://img.shields.io/badge/BETA-0-yellow.svg) ![ALPHA](https://img.shields.io/badge/ALPHA-0-orange.svg) ![Deprecated](https://img.shields.io/badge/Deprecated-0-grey.svg) ![Unmanaged](https://img.shields.io/badge/Unmanaged-6-darkgrey.svg) |
+| Pester    | ![Passed](https://img.shields.io/badge/Passed-2281-blue.svg) ![Failed](https://img.shields.io/badge/Failed-0-red.svg) ![Skipped](https://img.shields.io/badge/Skipped-0-yellow.svg) ![NotRun](https://img.shields.io/badge/NotRun-0-grey.svg)                                                                                                                     |
+| Focus     | MicrosoftTeams v3.0.0, Stability, Bugfixing                                                                                                                                                                                                                                                                  |
+
+### New
+
+None
+
+### Updated
+
+- `Find-TeamsResourceAccount`: Fixed an issue with PhoneNumber not being displayed properly
+- `New-TeamsResourceAccount`: Added Parameter `Sync` to synchronise Resource Account with the Agent Provisioning Service
+- `Set-TeamsResourceAccount`: Added Parameter `Sync` to synchronise Resource Account with the Agent Provisioning Service
+- `Assert-MicrosoftTeamsConnection`: Addressing an issue with timed out RBAC Roles and reconnection
+- `Assert-TeamsUserVoiceConfig`: Refactored function to be able to receive an CsOnlineUser Object as well as a UserPrincipalName
+- `Find-TeamsUserVoiceConfig`: Complete Refactoring to add `SupportsPaging` for all Parameters.
+- `Get-TeamsUserVoiceConfig`: Refactored address query to catch non-provisioned addresses not to error
+- `Set-TeamsUserVoiceConfig`:
+  - Fixed an issue with identifying "assigned to self" not being recognised
+  - Added feedback for already assigned TDP and OVP
+- `Set-TeamsPhoneNumber`: Fixed an issue with identifying "assigned to self" not being recognised
+- `Assert-TeamsCallableEntity`: Increased the time to wait for License to be enabled successfully
+- `Enable-TeamsUserForEnterpriseVoice`: Switched from UserPrincipalName to SIPaddress for the Identity (accommodating misaligned configuration)
+- Fixed an issue with calculation of progress steps in multiple CmdLets
+- `New-TeamsResourceAccount`: Refactored to use `Set-TeamsPhoneNumber`
+- `Set-TeamsResourceAccount`: Refactored to use `Set-TeamsPhoneNumber`
+
+### Current Limitations
+
+- MicrosoftTeams v3.0.0 is not fully tested, "Here be Dragons"
+- Piping of `CsOnlineUser`-Object to other CmdLets currently not possible due to change in `Identity` - This may be alleviated with release of all new Policy Cmdlets - Requires testing
+- Some output seems to be changed in recent releases (nested objects received for Policies rather than name) - To be reviewed
+
+
 ## v21.11 - Nov 2021 release
 
 MicrosoftTeams v2.6.0 is live and with it come a few changes. A lot of testing has gone into this release, though not every function could be ascertained in full.

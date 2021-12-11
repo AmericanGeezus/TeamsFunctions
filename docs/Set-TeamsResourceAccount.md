@@ -15,7 +15,7 @@ Changes a new Resource Account
 ```
 Set-TeamsResourceAccount [-UserPrincipalName] <String> [-DisplayName <String>] [-ApplicationType <String>]
  [-UsageLocation <String>] [-License <String[]>] [-PhoneNumber <String>] [-OnlineVoiceRoutingPolicy <String>]
- [-PassThru] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [-Sync] [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -213,6 +213,22 @@ Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Sync
+Calls Sync-CsOnlineApplicationInstance cmdlet after applying settings synchronizing the application instances
+from Azure Active Directory into Agent Provisioning Service.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
