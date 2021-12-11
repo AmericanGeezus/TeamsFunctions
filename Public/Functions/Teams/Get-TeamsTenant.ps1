@@ -94,7 +94,7 @@ function Get-TeamsTenant {
     $TenantObject | Add-Member -MemberType NoteProperty -Name HostedMigrationOverrideURL -Value $OverrideURL -Force
 
     #Filtering Object
-    if ( $TeamsFunctionsMSTeamsModule.Version -gt 3.0.0 ) {
+    if ( $TeamsFunctionsMSTeamsModule.Version -ge 3.0.0 ) {
       $Object = $TenantObject | Select-Object TenantId, DisplayName, CountryAbbreviation, PreferredLanguage, ProvisionedPlan, `
         TeamsUpgradeEffectiveMode, TeamsUpgradeNotificationsEnabled, TeamsUpgradePolicyIsReadOnly, TeamsUpgradeOverridePolicy, `
         DirSyncEnabled, WhenCreated, CompanyPartnership, HostedMigrationOverrideURL, TenantDomain, VerifiedDomains, SipDomain
