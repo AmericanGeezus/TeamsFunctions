@@ -477,7 +477,7 @@ function New-TeamsResourceAccount {
       # Synchronisation
       if ( $PSBoundParameters.ContainsKey('Sync') ) {
         Write-Verbose -Message "Switch 'Sync' - Resource Account is synchronised with Agent Provisioning Service"
-        $null = Sync-CsOnlineApplicationInstance -ObjectId $ResourceAccount.ObjectId #-Force
+        $null = Sync-CsOnlineApplicationInstance -ObjectId $ResourceAccount.ObjectId -Force
         Write-Information "SUCCESS: Synchronising Resource Account with Agent Provisioning Service"
       }
     }
