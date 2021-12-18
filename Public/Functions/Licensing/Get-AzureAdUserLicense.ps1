@@ -4,8 +4,8 @@
 # Updated:  01-APR-2020
 # Status:   Live
 
-
-
+#TODO Rethink CallingPlans As there are now 8 CallingPlan Licenses
+#CHECK Calling Plan Licenses: BUSINESS_VOICE_MED2_TELCO, MCOPSTNEAU2, MCOPSTN5, MCOPSTN1, MCOPSTN2, MCOPSTNC, MCOPSTN_5, MCOPSTN_1_GOV
 
 function Get-AzureAdUserLicense {
   <#
