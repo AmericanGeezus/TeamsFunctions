@@ -79,18 +79,24 @@ function Test-TeamsUserHasCallPlan {
         $UserObject = Get-AzureADUser -ObjectId "$ID" -WarningAction SilentlyContinue -ErrorAction Stop
         $UserLicenseObject = Get-AzureADUserLicenseDetail -ObjectId $($UserObject.ObjectId) -WarningAction SilentlyContinue
         $UserLicenseSKU = $UserLicenseObject.SkuPartNumber
+        if ($PSBoundParameters.ContainsKey('Debug')) {
+          "  Function: $($MyInvocation.MyCommand.Name) - UserLicenseSKU:", ($UserLicenseSKU | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+        }
       }
       catch {
         [string]$Message = $_ | Get-ErrorMessageFromErrorString
         Write-Warning -Message "User '$ID': GetUser$($Message.Split(':')[1])"
       }
 
-      $DOM120b = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120b).SkuPartNumber -in $UserLicenseSKU)
-      $DOM120 = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan120).SkuPartNumber -in $UserLicenseSKU)
-      $DOM = (($AllLicenses | Where-Object ParameterName -EQ DomesticCallingPlan).SkuPartNumber -in $UserLicenseSKU)
-      $INT = (($AllLicenses | Where-Object ParameterName -EQ InternationalCallingPlan).SkuPartNumber -in $UserLicenseSKU)
-
-      if ($INT -or - $DOM -or $DOM120 -or $DOM120b) {
+      $CallingPlanLicenses = $AllLicenses | Where-Object { $_.Serviceplans.ServicePlanName -match 'MCOPSTN' }
+      if ($PSBoundParameters.ContainsKey('Debug')) {
+        "  Function: $($MyInvocation.MyCommand.Name) - CallingPlanLicenses:", ($CallingPlanLicenses | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
+      }
+      $HasCallingPlan = $userLicenseSku | Foreach-Object {
+        Write-Verbose -Message "Testing '$_'"
+        $_ -in $CallingPlanLicenses.Serviceplans.ServicePlanName
+      }
+      if ( $HasCallingPlan -contains $true ) {
         return $true
       }
       else {

@@ -14,7 +14,9 @@ TBC
 
 ### Updated
 
-- TBC
+- Fixed an issue where assigning Function to variable resulted in empty variable despite function on its own returning output (changed `return` to `Write-Output`)
+- Added new `Microsoft Business Voice` licenses
+- `Test-TeamsUserHasCallPlan`: Refactored to be more inclusive (now 8 Licenses are tested against user-assigned licenses)
 
 ### Draft - Look ahead
 

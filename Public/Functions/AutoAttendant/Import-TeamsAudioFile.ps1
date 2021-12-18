@@ -97,7 +97,7 @@ function Import-TeamsAudioFile {
         "  Function: $($MyInvocation.MyCommand.Name) - Parameters:", ($Parameters | Format-Table -AutoSize | Out-String).Trim() | Write-Debug
       }
       $AudioFile = Import-CsOnlineAudioFile @Parameters
-      return $AudioFile
+      Write-Output $AudioFile
     }
     catch {
       Write-Error "Importing file failed - Please check file size and compression ratio. If in doubt, provide in WAV Format. Exception: $($_.Exception.Message)" -ErrorAction Stop

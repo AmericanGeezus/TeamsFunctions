@@ -196,16 +196,6 @@ function Get-AzureAdLicense {
       # Adding ParameterName
       $ParameterName = switch ($srcSkuPartNumber) {
         #region Main Licenses
-        'M365EDU_A1' { 'Microsoft365A1' }
-        'ENTERPRISEPACKPLUS_FACULTY' { 'Office365A3faculty' }
-        'M365EDU_A3_FACULTY' { 'Microsoft365A3faculty' }
-        'M365EDU_A3_STUDENT' { 'Microsoft365A3students' }
-        'M365EDU_A3_STUUSEBNFT' { 'Microsoft365A3studentsUseBenefit' }
-        'M365EDU_A3_STUUSEBNFT_RPA1' { 'Microsoft365A3studentsUseBenefitUnattended' }
-        'M365EDU_A5_FACULTY' { 'Microsoft365A5faculty' }
-        'M365EDU_A5_STUDENT' { 'Microsoft365A5students' }
-        'M365EDU_A5_STUUSEBNFT' { 'Microsoft365A5studentsUseBenefit' }
-        'M365EDU_A5_NOPSTNCONF_STUUSEBNFT' { 'Microsoft365A5studentsUseBenefitNoAudiConferencing' }
         'SMB_APPS' { 'Microsoft365AppsForBusinessFree' }
         'SMB_BUSINESS' { 'Microsoft365AppsForBusiness' }
         'SMB_BUSINESS_ESSENTIALS' { 'Microsoft365BusinessBasic' }
@@ -219,8 +209,6 @@ function Get-AzureAdLicense {
         'M365_F1' { 'Microsoft365F1' }
         'M365_F1_COMM' { 'Microsoft365F1Comm' }
         'SPE_F1' { 'Microsoft365F3' }
-        'ENTERPRISEPREMIUM_FACULTY' { 'Office365A5faculty' }
-        'ENTERPRISEPREMIUM_STUDENT' { 'Office365A5students' }
         'STANDARDPACK' { 'Office365E1' }
         'STANDARDWOFFPACK' { 'Office365E2' }
         'ENTERPRISEPACK' { 'Office365E3' }
@@ -229,9 +217,31 @@ function Get-AzureAdLicense {
         'ENTERPRISEPREMIUM' { 'Office365E5' }
         'ENTERPRISEPREMIUM_NOPSTNCONF' { 'Office365E5NoAudioConferencing' }
         'DESKLESSPACK' { 'Office365F1' }
+        'BUSINESS_VOICE_DIRECTROUTING_MED' { 'Microsoft365BusinessVoiceUSNoCallingPlan' }
+        'BUSINESS_VOICE_DIRECTROUTING' { 'Microsoft365BusinessVoice' }
+        'BUSINESS_VOICE_MED2_TELCO' { 'Microsoft365BusinessVoiceUS' }
+        'SPE_E5_NOPSTNCONF' { 'Microsoft365E5NoAudioConferencing' }
+        'MS_TEAMS_IW' { 'MicrosoftTeamsTrial' }
+        'OFFICE365_MULTIGEO' { 'Office365MultiGeo' }
         #endregion
 
-        #region Government Licenses
+        #region EDU Licenses
+        'M365EDU_A1' { 'Microsoft365A1' }
+        'ENTERPRISEPREMIUM_FACULTY' { 'Office365A5faculty' }
+        'ENTERPRISEPREMIUM_STUDENT' { 'Office365A5students' }
+        'ENTERPRISEPACKPLUS_FACULTY' { 'Office365A3faculty' }
+        'ENTERPRISEPACKPLUS_STUDENT' { 'Office365A3students' }
+        'M365EDU_A3_FACULTY' { 'Microsoft365A3faculty' }
+        'M365EDU_A3_STUDENT' { 'Microsoft365A3students' }
+        'M365EDU_A3_STUUSEBNFT' { 'Microsoft365A3studentsUseBenefit' }
+        'M365EDU_A3_STUUSEBNFT_RPA1' { 'Microsoft365A3studentsUseBenefitUnattended' }
+        'M365EDU_A5_FACULTY' { 'Microsoft365A5faculty' }
+        'M365EDU_A5_STUDENT' { 'Microsoft365A5students' }
+        'M365EDU_A5_STUUSEBNFT' { 'Microsoft365A5studentsUseBenefit' }
+        'M365EDU_A5_NOPSTNCONF_STUUSEBNFT' { 'Microsoft365A5studentsUseBenefitNoAudiConferencing' }
+        #endregion
+
+        #region GOV Licenses
         'SPE_E3_USGOV_DOD' { 'Microsoft365E3USGovDoD' }
         'SPE_E3_USGOV_GCCHIGH' { 'Microsoft365E3USGovGCCHigh' }
         'ENTERPRISEPACK_GOV' { 'Office365G3GCC' }
@@ -479,7 +489,7 @@ function Get-AzureAdLicense {
       $ProductsSorted = $ProductsSorted | Where-Object { $_.ProductName -like "*$SearchString*" -or $_.SkuPartNumber -like "*$SearchString*" }
     }
 
-    return $ProductsSorted
+    Write-Output $ProductsSorted
 
   } #process
 

@@ -197,7 +197,7 @@ function Get-AzureAdLicenseServicePlan {
       $PlansSorted = $PlansSorted | Where-Object { $_.ProductName -like "*$SearchString*" -or $_.ServicePlanName -like "*$SearchString*" }
     }
 
-    return $PlansSorted
+    Write-Output $PlansSorted
   } #process
 
   end {

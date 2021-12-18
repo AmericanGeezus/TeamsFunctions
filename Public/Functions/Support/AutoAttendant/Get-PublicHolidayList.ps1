@@ -4,8 +4,8 @@
 # Updated:  15-JAN-2021
 # Status:   Live
 
-
-
+#TODO Check where this is used and maybe add option for multiple years
+#TODO accept Alpha 3-notation too?
 
 function Get-PublicHolidayList {
   <#
@@ -98,7 +98,7 @@ function Get-PublicHolidayList {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $Holidays = Invoke-RestMethod -Method Get -UseBasicParsing -Uri $url
 
-    return $Holidays
+    Write-Output $Holidays
 
   } #process
 
